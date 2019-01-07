@@ -1,0 +1,338 @@
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=5,IE=9" ><![endif]-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grapheditor</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="./styles/grapheditor.css">
+	<script type="text/javascript">
+		// Parses URL parameters. Supported parameters are:
+		// - lang=xy: Specifies the language of the user interface.
+		// - touch=1: Enables a touch-style user interface.
+		// - storage=local: Enables HTML5 local storage.
+		// - chrome=0: Chromeless mode.
+		var urlParams = (function(url)
+		{
+			var result = new Object();
+			var idx = url.lastIndexOf('?');
+	
+			if (idx > 0)
+			{
+				var params = url.substring(idx + 1).split('&');
+				
+				for (var i = 0; i < params.length; i++)
+				{
+					idx = params[i].indexOf('=');
+					
+					if (idx > 0)
+					{
+						result[params[i].substring(0, idx)] = params[i].substring(idx + 1);
+					}
+				}
+			}
+			
+			return result;
+		})(window.location.href);
+	
+		// Default resources are included in grapheditor resources
+		mxLoadResources = false;
+	</script>
+	<script type="text/javascript" src="./js/Init.js"></script>
+	<script type="text/javascript" src="./deflate/pako.min.js"></script>
+	<script type="text/javascript" src="./deflate/base64.js"></script>
+	<script type="text/javascript" src="./jscolor/jscolor.js"></script>
+	<script type="text/javascript" src="./sanitizer/sanitizer.min.js"></script>
+	<script type="text/javascript" src="./js/client.js"></script>
+	<script type="text/javascript" src="./js/EditorUi.js"></script>
+	<script type="text/javascript" src="./js/Editor.js"></script>
+	<script type="text/javascript" src="./js/Sidebar.js"></script>
+	<script type="text/javascript" src="./js/Graph.js"></script>
+	<script type="text/javascript" src="./js/Format.js"></script>
+	<script type="text/javascript" src="./js/Shapes.js"></script>
+	<script type="text/javascript" src="./js/Actions.js"></script>
+	<script type="text/javascript" src="./js/Menus.js"></script>
+	<script type="text/javascript" src="./js/Toolbar.js"></script>
+	<script type="text/javascript" src="./js/Dialogs.js"></script>
+</head>
+<body class="geEditor">
+	<script type="text/javascript">
+		// Extends EditorUi to update I/O action states based on availability of backend
+		(function()
+		{
+			EditorUi.prototype.save = function () {
+				var xml = mxUtils.getXml(this.editor.getGraphXml());
+				console.log(xml)
+			}
+			
+			// Adds required resources (disables loading of fallback properties, this can only
+			// be used if we know that all keys are defined in the language specific file)
+			mxResources.loadDefaultBundle = false;
+			var bundle = mxResources.getDefaultBundle(RESOURCE_BASE, mxLanguage) ||
+				mxResources.getSpecialBundle(RESOURCE_BASE, mxLanguage);
+
+			// Fixes possible asynchronous requests
+			mxUtils.getAll([bundle, STYLE_PATH + '/default.xml'], function(xhr)
+			{
+				// Adds bundle text to resources
+				mxResources.parse(xhr[0].getText());
+				
+				// Configures the default graph theme
+				var themes = new Object();
+				themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement(); 
+				// Main
+				editorUi = new EditorUi(new Editor(urlParams['chrome'] == '0', themes));
+				var xml = `
+					<mxGraphModel dx="86" dy="816" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff">
+						<root>
+							<mxCell id="0"/>
+							<mxCell id="1" parent="0"/>
+							<mxCell id="2" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/t2_cl2_layout.png" parent="1" vertex="1">
+							<mxGeometry width="538" height="707" as="geometry"/>
+							</mxCell>
+							<mxCell id="18" value="PT2" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="11" y="99" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="20" value="PT6" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="12" y="172" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="21" value="PT5&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="12" y="244" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="22" value="PT1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="12" y="317" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="23" value="PT8" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="311" y="99" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="24" value="PT4" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="308" y="172" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="25" value="PT3" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="309" y="244" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="26" value="PT7" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="310" y="317" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="27" value="PT8" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="12" y="455" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="28" value="PT4" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="14" y="528" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="29" value="PT7" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="10" y="600" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="30" value="PT6" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="309" y="455" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="31" value="PT2" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="310" y="528" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="32" value="PT1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="308" y="600" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<mxCell id="33" value="PT5" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+							<mxGeometry x="309" y="673" width="20" height="10" as="geometry"/>
+							</mxCell>
+							<object label="" DEVICE_NAME="ASTK01_DOD" DEVICE_TOKEN="CSOT0T10005ASTK010DO" id="64">
+							<mxCell style="group" vertex="1" connectable="0" parent="1">
+								<mxGeometry x="4" y="47" width="36" height="269" as="geometry"/>
+							</mxCell>
+							</object>
+							<object label="" PT_NAME="DOD_ASTK01_PT2" PARAMS="DOD_TBDRY400_04_Cl2,DOD_TBDRY400_04_Cl2_Alarm1,DOD_TBDRY400_04_Cl2_Alarm2,DOD_TBDRY400_04_Cl2_Color" id="49">
+							<mxCell style="group" vertex="1" connectable="0" parent="64">
+								<mxGeometry width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="34" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="49" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="3" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="49" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" PT_NAME="DOD_ASTK01_PT6" PARAMS="DOD_TBDRY300_03_Cl2,DOD_TBDRY300_03_Cl2_Alarm1,DOD_TBDRY300_03_Cl2_Alarm2,DOD_TBDRY300_03_Cl2_Color" id="50">
+							<mxCell style="group" vertex="1" connectable="0" parent="64">
+								<mxGeometry y="73" width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="35" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#BBBB1C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="50" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="4" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_yellow.png;aspect=fixed;" parent="50" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" PT_NAME="DOD_ASTK01_PT5" PARAMS="DOD_TBDRY200_02_Cl2,DOD_TBDRY200_02_Cl2_Alarm1,DOD_TBDRY200_02_Cl2_Alarm2,DOD_TBDRY200_02_Cl2_Color" id="51">
+							<mxCell style="group" vertex="1" connectable="0" parent="64">
+								<mxGeometry y="145" width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="36" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="51" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="5" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="51" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" PT_NAME="DOD_ASTK01_PT1" PARAMS="DOD_TBDRY100_01_Cl2,DOD_TBDRY100_01_Cl2_Alarm1,DOD_TBDRY100_01_Cl2_Alarm2,DOD_TBDRY100_01_Cl2_Color" id="52">
+							<mxCell style="group" vertex="1" connectable="0" parent="64">
+								<mxGeometry y="218" width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="37" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="52" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="6" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="52" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" DEVICE_NAME="ASTK02_DOD" DEVICE_TOKEN="CSOT0T10005ASTK020DO" id="65">
+							<mxCell style="group" vertex="1" connectable="0" parent="1">
+								<mxGeometry x="302" y="47" width="36" height="269" as="geometry"/>
+							</mxCell>
+							</object>
+							<object label="" PT_NAME="DOD_ASTK02_PT8" PARAMS="DOD_TBDRY800_08_Cl2,DOD_TBDRY800_08_Cl2_Alarm1,DOD_TBDRY800_08_Cl2_Alarm2,DOD_TBDRY800_08_Cl2_Color" id="53">
+							<mxCell style="group" vertex="1" connectable="0" parent="65">
+								<mxGeometry width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="38" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="53" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="7" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="53" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" PT_NAME="DOD_ASTK02_PT4" PARAMS="DOD_TBDRY700_07_Cl2,DOD_TBDRY700_07_Cl2_Alarm1,DOD_TBDRY700_07_Cl2_Alarm2,DOD_TBDRY700_07_Cl2_Color" id="54">
+							<mxCell style="group" vertex="1" connectable="0" parent="65">
+								<mxGeometry y="73" width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="39" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="54" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="8" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="54" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" PT_NAME="DOD_ASTK02_PT3" PARAMS="DOD_TBDRY600_06_Cl2,DOD_TBDRY600_06_Cl2_Alarm1,DOD_TBDRY600_06_Cl2_Alarm2,DOD_TBDRY600_06_Cl2_Color" id="55">
+							<mxCell style="group" vertex="1" connectable="0" parent="65">
+								<mxGeometry y="145" width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="40" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="55" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="9" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="55" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" PT_NAME="DOD_ASTK02_PT7" PARAMS="DOD_TBDRY500_05_Cl2,DOD_TBDRY500_05_Cl2_Alarm1,DOD_TBDRY500_05_Cl2_Alarm2,DOD_TBDRY500_05_Cl2_Color" id="56">
+							<mxCell style="group" vertex="1" connectable="0" parent="65">
+								<mxGeometry y="218" width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="41" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="56" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="10" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="56" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<mxCell id="66" value="" style="group" vertex="1" connectable="0" parent="1">
+							<mxGeometry x="5" y="403" width="36" height="196" as="geometry"/>
+							</mxCell>
+							<object label="" PT_NAME="DOD_ASTK13_PT8" PARAMS="DOD_TBDRYF00_08_Cl2,DOD_TBDRYF00_08_Cl2_Alarm1,DOD_TBDRYF00_08_Cl2_Alarm2,DOD_TBDRYF00_08_Cl2_Color" id="57">
+							<mxCell style="group" vertex="1" connectable="0" parent="66">
+								<mxGeometry width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="42" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="57" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="11" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="57" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" PT_NAME="DOD_ASTK13_PT4" PARAMS="DOD_TBDRYE00_07_Cl2,DOD_TBDRYE00_07_Cl2_Alarm1,DOD_TBDRYE00_07_Cl2_Alarm2,DOD_TBDRYE00_07_Cl2_Color" id="58">
+							<mxCell style="group" vertex="1" connectable="0" parent="66">
+								<mxGeometry y="73" width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="43" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="58" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="12" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="58" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" PT_NAME="DOD_ASTK13_PT7" PARAMS="DOD_TBDRYD00_05_Cl2,DOD_TBDRYD00_05_Cl2_Alarm1,DOD_TBDRYD00_05_Cl2_Alarm2,DOD_TBDRYD00_05_Cl2_Color" id="59">
+							<mxCell style="group" vertex="1" connectable="0" parent="66">
+								<mxGeometry y="145" width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="44" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="59" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="13" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="59" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" DEVICE_NAME="ASTK14_DOD" DEVICE_TOKEN="CSOT0T10005ASTK140DO" id="67">
+							<mxCell style="group" vertex="1" connectable="0" parent="1">
+								<mxGeometry x="302" y="403" width="36" height="269" as="geometry"/>
+							</mxCell>
+							</object>
+							<object label="" PT_NAME="DOD_ASTK14_PT6" PARAMS="DOD_TBDRYC00_04_Cl2,DOD_TBDRYC00_04_Cl2_Alarm1,DOD_TBDRYC00_04_Cl2_Alarm2,DOD_TBDRYC00_04_Cl2_Color" id="60">
+							<mxCell style="group" vertex="1" connectable="0" parent="67">
+								<mxGeometry width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="45" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="60" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="14" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="60" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" PT_NAME="DOD_ASTK14_PT2" PARAMS="DOD_TBDRYB00_03_Cl2,DOD_TBDRYB00_03_Cl2_Alarm1,DOD_TBDRYB00_03_Cl2_Alarm2,DOD_TBDRYB00_03_Cl2_Color" id="61">
+							<mxCell style="group" vertex="1" connectable="0" parent="67">
+								<mxGeometry y="73" width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="46" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="61" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="15" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="61" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" PT_NAME="DOD_ASTK14_PT1" PARAMS="DOD_TBDRYA00_02_Cl2,DOD_TBDRYA00_02_Cl2_Alarm1,DOD_TBDRYA00_02_Cl2_Alarm2,DOD_TBDRYA00_02_Cl2_Color" id="62">
+							<mxCell style="group" vertex="1" connectable="0" parent="67">
+								<mxGeometry y="145" width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="47" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#A70000;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="62" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="16" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_red.png;aspect=fixed;" parent="62" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+							<object label="" PT_NAME="DOD_ASTK14_PT6" PARAMS="DOD_TBDRYC00_04_Cl2,DOD_TBDRYC00_04_Cl2_Alarm1,DOD_TBDRYC00_04_Cl2_Alarm2,DOD_TBDRYC00_04_Cl2_Color" id="63">
+							<mxCell style="group" vertex="1" connectable="0" parent="67">
+								<mxGeometry y="218" width="36" height="51" as="geometry"/>
+							</mxCell>
+							</object>
+							<mxCell id="48" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;fontFamily=Courier New;" parent="63" vertex="1">
+							<mxGeometry x="6" width="24" height="20" as="geometry"/>
+							</mxCell>
+							<mxCell id="17" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png;aspect=fixed;" parent="63" vertex="1">
+							<mxGeometry y="15" width="36" height="36" as="geometry"/>
+							</mxCell>
+						</root>
+					</mxGraphModel>
+                `
+				var doc = mxUtils.parseXml(xml); 
+				editorUi.editor.setGraphXml(doc.documentElement);
+				editorUi.editor.setModified(false);
+				editorUi.editor.undoManager.clear();
+				editorUi.editor.setFilename('图');
+				editorUi.updateDocumentTitle();
+			}, function()
+			{
+				document.body.innerHTML = '<center style="margin-top:10%;">Error loading resource files. Please check browser console.</center>';
+			});
+		})();
+
+	</script>
+</body>
+</html>

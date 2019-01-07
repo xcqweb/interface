@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>mxGraph</title>
+	<style>
+		*{
+			padding: 0;
+			margin: 0;
+			font-size: 14px;
+		}
+		ul, li {
+			list-style: none;
+		}
+		a{
+			text-decoration: none;
+		}
+		html, body{
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, .01);
+		}
+		#title{
+			width: 100%;
+			height: 30px;
+			padding: 20px 0;
+			font-size: 20px;
+			color: #ffffff;
+			text-align: center;
+			background-color: #2F4050;
+		}
+		.g-header{
+			width: 100%;
+			height: 120px;
+			padding: 15px 0;
+		}
+		.u-btn{
+			width: 60px;
+			height:30px;
+			line-height:28px;
+			font-size: 14px;
+			color: #687993;
+			border: 1px solid #bcc8d9;
+			border-radius: 3px;
+			background: #fff;
+			text-align: center;
+			padding: 0;
+			margin: 15px 0;
+			outline:none;
+			cursor: pointer;
+			display:inline-block;
+			-webkit-box-sizing:border-box ;
+			-moz-box-sizing:border-box ;
+			-ms-box-sizing:border-box ;
+			-o-box-sizing:border-box ;
+			box-sizing:border-box ;	
+		}
+		.u-btn:hover{
+			box-shadow: 0 0 2px #bcc8d9;
+		}
+		.g-content{
+			width: 100%;
+			overflow: hidden;
+			padding: 15px;
+			box-sizing: border-box;
+		}
+		.m-list{
+			width: 100%;
+			float: left;
+			display: flex;
+			margin-top: -1px;
+		}
+		.m-list:nth-child(2n) {
+			background-color: rgba(0, 0, 0, .05);
+		}
+		.m-list:nth-child(2n+1) {
+			background-color: rgba(0, 0, 0, .01);
+		}
+		.u-top{
+			margin-top: 0;
+		}
+		.m-list.u-top li{
+			height: 50px;
+			line-height: 50px;
+		}
+		.m-list li.u-num{
+			width: 70px;
+		}
+		.m-list li{
+			float: left;
+			height: 40px;
+			line-height: 40px;
+			text-align: center;
+			border-top: 1px solid rgba(120, 130, 140, 0.045);
+			box-sizing: border-box;
+		}
+		.m-list li.f-collpase-border{
+			flex: 1;
+			margin-left: -1px;
+		}
+		.m-operate{
+			font-size: 14px;
+		}
+		.m-operate span{
+			color: #687993;
+			cursor: pointer;
+		}
+		.m-title{
+			line-height: 40px;
+			font-size: 16px;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<div class="g-content">
+		<p class="m-title">拓扑图列表</p>
+		<div>
+			<button class="u-btn">新建</button>
+		</div>
+		<ul class="m-list u-top">
+			<li class="u-num">序号</li>
+			<li class="f-collpase-border">名称</li>
+			<li class="f-collpase-border">操作</li>
+		</ul>
+		<ul class="m-list">
+			<li class="u-num">1</li>
+			<li class="f-collpase-border">拓扑图demo1</li>
+			<li class="f-collpase-border m-operate">
+				<span class="f-edit">编辑</span>
+				<span class="f-show">查看</span>
+			</li>
+		</ul>
+		<ul class="m-list">
+			<li class="u-num">2</li>
+			<li class="f-collpase-border">拓扑图demo2</li>
+			<li class="f-collpase-border m-operate">
+				<span class="f-edit">编辑</span>
+				<span class="f-show">查看</span>
+			</li>
+		</ul>
+		<ul class="m-list">
+			<li class="u-num">3</li>
+			<li class="f-collpase-border">拓扑图demo3</li>
+			<li class="f-collpase-border m-operate">
+				<span class="f-edit">编辑</span>
+				<span class="f-show">查看</span>
+			</li>
+		</ul>
+		<ul class="m-list">
+			<li class="u-num">4</li>
+			<li class="f-collpase-border">拓扑图demo4</li>
+			<li class="f-collpase-border m-operate">
+				<span class="f-edit">编辑</span>
+				<span class="f-show">查看</span>
+			</li>
+		</ul>
+		<ul class="m-list">
+			<li class="u-num">5</li>
+			<li class="f-collpase-border">拓扑图demo5</li>
+			<li class="f-collpase-border m-operate">
+				<span class="f-edit">编辑</span>
+				<span class="f-show">查看</span>
+			</li>
+		</ul>
+		<ul class="m-list">
+			<li class="u-num">6</li>
+			<li class="f-collpase-border">拓扑图demo6</li>
+			<li class="f-collpase-border m-operate">
+				<span class="f-edit">编辑</span>
+				<span class="f-show">查看</span>
+			</li>
+		</ul>
+		<ul class="m-list">
+			<li class="u-num">7</li>
+			<li class="f-collpase-border">拓扑图demo7</li>
+			<li class="f-collpase-border m-operate">
+				<span class="f-edit">编辑</span>
+				<span class="f-show">查看</span>
+			</li>
+		</ul>
+		<ul class="m-list">
+			<li class="u-num">8</li>
+			<li class="f-collpase-border">拓扑图demo8</li>
+			<li class="f-collpase-border m-operate">
+				<span class="f-edit">编辑</span>
+				<span class="f-show">查看</span>
+			</li>
+		</ul>
+		<ul class="m-list">
+			<li class="u-num">9</li>
+			<li class="f-collpase-border">拓扑图demo9</li>
+			<li class="f-collpase-border m-operate">
+				<span class="f-edit">编辑</span>
+				<span class="f-show">查看</span>
+			</li>
+		</ul>
+		<ul class="m-list">
+			<li class="u-num">10</li>
+			<li class="f-collpase-border">拓扑图demo10</li>
+			<li class="f-collpase-border m-operate">
+				<span class="f-edit">编辑</span>
+				<span class="f-show">查看</span>
+			</li>
+		</ul>
+	</div>
+	<script>
+		let title = document.getElementById('title');
+		document.addEventListener('click', function (e) {
+			let target = e.target.className;
+			if (target === 'f-edit') {
+				window.location.href = './edit.html';
+				return;
+			} else if (target === 'f-show') {
+				window.location.href = './show.html';				
+				return;
+			} else if (target === 'u-btn') {
+				window.location.href = './newEditor.html';				
+				return;
+			};
+			return false;
+		})
+	</script>
+</body>
+</html>

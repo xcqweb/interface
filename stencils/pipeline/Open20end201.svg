@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd"><svg width="280" height="530" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<path style="fill:#7f7f7f" d="M265,16 l-167,0 0,499 167,0 0,-499z" />
+<path style="fill:#999" d="M265,47 l-167,0 0,437 167,0 0,-437z" />
+<path style="fill:#b2b2b2" d="M265,100 l-167,0 0,332 167,0 0,-332z" />
+<path style="fill:#ccc" d="M265,151 l-167,0 0,229 167,0 0,-229z" />
+<path style="fill:#e5e5e5" d="M265,192 l-167,0 0,146 167,0 0,-146z" />
+<path style="fill:#fff" d="M265,235 l-167,0 0,61 167,0 0,-61z" />
+<path style="fill:none;stroke:#000;stroke-width:2" d="M265,515 l-167,0" />
+<path style="fill:none;stroke:#000;stroke-width:2" d="M98,16 l167,0" />
+<ellipse style="fill:#b2b2b2;stroke:#000;stroke-width:2" cx="98" cy="265" rx="83" ry="250" />
+<ellipse style="fill:#666;stroke:#000;stroke-width:2" cx="98" cy="265" rx="52" ry="219" />
+
+</svg>

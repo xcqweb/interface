@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd"><svg width="607" height="999" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<path style="fill:#7f7f7f;stroke:#000;stroke-width:2" d="M421,617 l158,0 0,-589 -158,0 0,589z" />
+<path style="fill:#7f7f7f;stroke:#000;stroke-width:2" d="M28,617 l157,0 0,-589 -157,0 0,589z" />
+<path style="fill:#000" d="M442,598 l117,0 0,-550 -117,0 0,550z" />
+<path style="fill:#000" d="M48,598 l118,0 0,-550 -118,0 0,550z" />
+<path style="fill:#7f7f7f;stroke:#000;stroke-width:2" d="M343,656 l196,0 0,-333 -79,0 0,255 -314,0 0,-255 -78,0 0,333 196,0 0,202 79,0 0,-202z" />
+<path style="fill:#e5e5e5" d="M318,632 l196,0 0,-305 -29,0 0,275 -363,0 0,-275 -30,0 0,305 197,0 0,186 29,0 0,-186z" />
+<circle style="fill:#f00;stroke:#000;stroke-width:2" cx="303" cy="901" r="69" />
+<circle style="fill:#ffd9d9" cx="324" cy="880" r="21" />
+
+</svg>

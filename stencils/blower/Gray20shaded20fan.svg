@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd"><svg width="861" height="999" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<path style="fill:#ccc" d="M86,459 l-19,472 686,0 0,-315 -667,-157z" />
+<path style="fill:#c4c4c4" d="M154,459 l-16,472 544,0 0,-315 -528,-157z" />
+<path style="fill:#bababa" d="M222,459 l-11,472 399,0 0,-315 -388,-157z" />
+<path style="fill:#b2b2b2" d="M290,459 l-8,472 257,0 0,-315 -249,-157z" />
+<path style="fill:none;stroke:#000;stroke-width:2" d="M86,459 l-19,472 686,0 0,-315 -667,-157" />
+<path style="fill:#ccc;stroke:#000;stroke-width:2" d="M595,143 l-28,-12 -29,-10 -29,-7 -30,-5 -29,-2 -28,0 -35,4 -35,7 -33,10 -32,14 -30,16 -28,19 -27,22 -24,24 -21,26 -20,28 -16,30 -13,31 -11,33 -7,35 -3,35 -1,18 1,19 3,35 7,34 11,34 13,31 16,31 20,28 21,26 24,24 27,22 28,19 30,17 32,13 33,10 35,8 35,3 19,1 18,-1 35,-3 35,-8 33,-10 31,-13 30,-17 28,-19 26,-22 24,-24 22,-26 19,-28 16,-31 14,-31 10,-34 7,-34 4,-35 0,-19 0,-392 -196,0 -2,76z" />
+<circle style="fill:#d4d4d4" cx="439" cy="459" r="268" />
+<circle style="fill:#dedede" cx="438" cy="459" r="222" />
+<circle style="fill:#e5e5e5" cx="439" cy="459" r="176" />
+<path style="fill:#f2f2f2;stroke:#000;stroke-width:2" d="M793,67 l40,-39 -276,0 40,39 196,0z" />
+<path style="fill:#f2f2f2;stroke:#000;stroke-width:2" d="M67,931 l-39,39 765,0 -40,-39 -686,0z" />
+
+</svg>

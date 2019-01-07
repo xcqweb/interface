@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd"><svg width="530" height="530" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<path style="fill:#7f7f7f" d="M515,140 l-125,0 0,-125 -250,0 0,125 -125,0 0,250 125,0 0,125 250,0 0,-125 125,0 0,-250z" />
+<path style="fill:#999" d="M515,156 l-141,0 0,-141 -219,0 0,141 -140,0 0,218 140,0 0,141 219,0 0,-141 141,0 0,-218z" />
+<path style="fill:#b2b2b2" d="M515,182 l-167,0 0,-167 -167,0 0,167 -166,0 0,166 166,0 0,167 167,0 0,-167 167,0 0,-166z" />
+<path style="fill:#ccc" d="M515,208 l-193,0 0,-193 -115,0 0,193 -192,0 0,114 192,0 0,193 115,0 0,-193 193,0 0,-114z" />
+<path style="fill:#e5e5e5" d="M515,229 l-214,0 0,-214 -73,0 0,214 -213,0 0,73 213,0 0,213 73,0 0,-213 214,0 0,-73z" />
+<path style="fill:#fff" d="M515,249 l-235,0 0,-234 -31,0 0,234 -234,0 0,32 234,0 0,234 31,0 0,-234 235,0 0,-32z" />
+<path style="fill:none;stroke:#000;stroke-width:2" d="M515,140 l-125,0 0,-125" />
+<path style="fill:none;stroke:#000;stroke-width:2" d="M140,15 l0,125 -125,0" />
+<path style="fill:none;stroke:#000;stroke-width:2" d="M15,390 l125,0 0,125" />
+<path style="fill:none;stroke:#000;stroke-width:2" d="M390,515 l0,-125 125,0" />
+
+</svg>

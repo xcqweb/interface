@@ -1,0 +1,553 @@
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=5,IE=9" ><![endif]-->
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Grapheditor show</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<script type="text/javascript">
+		var STENCIL_PATH = 'stencils';
+		var IMAGE_PATH = 'images';
+		var STYLE_PATH = 'styles';
+
+		var urlParams = (function (url) {
+			var result = new Object();
+			var idx = url.lastIndexOf('?');
+
+			if (idx > 0) {
+				var params = url.substring(idx + 1).split('&');
+
+				for (var i = 0; i < params.length; i++) {
+					idx = params[i].indexOf('=');
+
+					if (idx > 0) {
+						result[params[i].substring(0, idx)] = params[i].substring(idx + 1);
+					}
+				}
+			}
+
+			return result;
+		})(window.location.href);
+
+		// Sets the base path, the UI language via URL param and configures the
+		// supported languages to avoid 404s. The loading of all core language
+		// resources is disabled as all required resources are in grapheditor.
+		// properties. Note that in this example the loading of two resource
+		// files (the special bundle and the default bundle) is disabled to
+		// save a GET request. This requires that all resources be present in
+		// each properties file since only one file is loaded.
+		var mxLoadResources = false;
+		var mxBasePath = 'src';
+	</script>
+	<script type="text/javascript" src="sanitizer/sanitizer.min.js"></script>
+	<script type="text/javascript" src="./js/client.js"></script>
+	<script type="text/javascript" src="js/Graph.js"></script>
+	<script type="text/javascript" src="js/Shapes.js"></script>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+		}
+
+		.content {
+			width: 100%;
+			height: 100%;
+			position: relative;
+		}
+
+		#graph {
+			/* width: 100% !important; */
+			/* height: 100%; */
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: auto;
+		}
+
+		rect {
+			/* fill: none; */
+			/* stroke: unset; */
+		}
+	</style>
+</head>
+
+<body class="geEditor">
+	<div class="content">
+		<div id="graph"></div>
+	</div>
+	<script type="text/javascript">
+		var model = new mxGraphModel();
+		var graph = new Graph(document.getElementById('graph'), model);
+		graph.resizeContainer = true;
+		// 不允许编辑
+		graph.setEnabled(false);
+		//更改mxcell样式
+		var style = new Object();
+		style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_IMAGE;
+		style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
+		// style[mxConstants.STYLE_IMAGE] = 'images/start_event_empty.png';
+		style[mxConstants.STYLE_IMAGE_WIDTH] = '48';
+		style[mxConstants.STYLE_IMAGE_HEIGHT] = '48';
+		style[mxConstants.STYLE_FONTCOLOR] = '#000000';
+		style[mxConstants.STYLE_FILLCOLOR] = '#ffffff';
+		style[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = mxConstants.ALIGN_CENTER;
+		//start-s 样式名称
+		graph.getStylesheet().putCellStyle('image', style);
+		graph.getModel().beginUpdate();
+
+		// t1_cl_layout
+		let xmlstr = `
+			<mxGraphModel dx="73" dy="679" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff">
+				<root>
+					<mxCell id="0"/>
+					<mxCell id="1" parent="0"/>
+					<mxCell id="2" value="" style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/t1_cl2_layout.png" parent="1" vertex="1">
+					<mxGeometry width="538" height="845" as="geometry"/>
+					</mxCell>
+					<mxCell id="19" value="&lt;span style=&quot;&quot;&gt;&lt;font&gt;DOD-02-STK200-01&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="97" y="84" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="20" value="&lt;span&gt;&lt;font&gt;DOD-01-STK300-01&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="332" y="87" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="21" value="&lt;span&gt;&lt;font&gt;DOD-02-STK200-02&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="97" y="196" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="22" value="&lt;span&gt;&lt;font&gt;DOD-02-STK200-03&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="97" y="326" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="23" value="&lt;span&gt;&lt;font&gt;DOD-02-STK200-04&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="97" y="422" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="24" value="&lt;span&gt;&lt;font&gt;DOD-01-STK300-02&lt;br&gt;&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="332" y="216" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="25" value="&lt;span&gt;&lt;font&gt;DOD-01-STK300-03&lt;br&gt;&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="332" y="328" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="26" value="&lt;span&gt;&lt;font&gt;DOD-01-STK300-04&lt;br&gt;&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="335" y="421" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="27" value="&lt;span&gt;&lt;font&gt;DOD-02-STK600-04&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="97" y="563" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="28" value="&lt;span&gt;&lt;font&gt;DOD-02-STK600-03&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="97" y="648" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="29" value="&lt;span&gt;&lt;font&gt;DOD-02-STK600-02&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="98" y="732" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="30" value="&lt;span&gt;&lt;font&gt;DOD-02-STK600-01&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="98" y="817" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="31" value="&lt;span&gt;&lt;font&gt;DOD-01-STK400-04&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="360" y="554" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="32" value="&lt;span&gt;&lt;font&gt;DOD-01-STK400-03&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="360" y="637" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="33" value="&lt;span&gt;&lt;font&gt;DOD-01-STK400-02&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="360" y="730" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<mxCell id="34" value="&lt;span&gt;&lt;font&gt;DOD-01-STK400-01&lt;/font&gt;&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#4B771C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontColor=#FFFFFF;labelBackgroundColor=none;labelBorderColor=none;fontFamily=Courier New;opacity=50;comic=0;" parent="1" vertex="1">
+					<mxGeometry x="360" y="813" width="120" height="16" as="geometry"/>
+					</mxCell>
+					<object label="" DEVICE_NAME="TASTK200_DOD_02" DEVICE_TOKEN="CSOT0T10005TASTK2000" id="72">
+					<mxCell style="group" vertex="1" connectable="0" parent="1">
+						<mxGeometry x="139" y="33" width="36" height="389" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_02_STK200_01" PARAMS="DOD_TADRY200_01_Cl2;DOD_TADRY200_01_Cl2_Alarm1;DOD_TADRY200_01_Cl2_Alarm2;DOD_TADRY200_01_Cl2_Flow;DOD_TADRY200_01_Cl2_Color" id="56">
+					<mxCell style="group" vertex="1" connectable="0" parent="72">
+						<mxGeometry width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="36" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="56" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK200" SamplingPoint="DOD_02_STK200_01" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="3">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="56" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_02_STK200_02" PARAMS="DOD_TADRY200_02_Cl2,DOD_TADRY200_02_Cl2_Alarm1,DOD_TADRY200_02_Cl2_Alarm2,DOD_TADRY200_02_Cl2_Flow,DOD_TADRY200_02_Cl2_Color" id="57">
+					<mxCell style="group" vertex="1" connectable="0" parent="72">
+						<mxGeometry y="112" width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="38" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#BBBB1C;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="57" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK200" SamplingPoint="DOD_02_STK200_02" UnitState="Warn" LastAlarmTime="2018-07-09 21:00:00" id="16">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_yellow.png;aspect=fixed;" parent="57" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_02_STK200_03" PARAMS="DOD_TADRY200_03_Cl2,DOD_TADRY200_03_Cl2_Alarm1,DOD_TADRY200_03_Cl2_Alarm2,DOD_TADRY200_03_Cl2_Flow,DOD_TADRY200_03_Cl2_Color" id="58">
+					<mxCell style="group" vertex="1" connectable="0" parent="72">
+						<mxGeometry y="242" width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="40" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="58" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK200" SamplingPoint="DOD_02_STK200_03" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="6">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="58" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_02_STK200_04" PARAMS="DOD_TADRY300_04_Cl2,DOD_TADRY300_04_Cl2_Alarm1,DOD_TADRY300_04_Cl2_Alarm2,DOD_TADRY300_04_Cl2_Flow,DOD_TADRY300_04_Cl2_Color" id="59">
+					<mxCell style="group" vertex="1" connectable="0" parent="72">
+						<mxGeometry y="338" width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="42" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="59" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK200" SamplingPoint="DOD_02_STK200_04" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="7">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="59" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" DEVICE_NAME="TASTK300_DOD_01" DEVICE_TOKEN="CSOT0T10005TASTK3000" id="73">
+					<mxCell style="group" vertex="1" connectable="0" parent="1">
+						<mxGeometry x="374" y="36" width="39" height="385" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_01_STK300_01" PARAMS="DOD_TADRY400_01_Cl2,DOD_TADRY400_01_Cl2_Alarm1,DOD_TADRY400_01_Cl2_Alarm2,DOD_TADRY400_01_Cl2_Flow,DOD_TADRY400_01_Cl2_Color" id="60">
+					<mxCell style="group" vertex="1" connectable="0" parent="73">
+						<mxGeometry width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="37" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="60" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK300" SamplingPoint="DOD_01_STK300_01" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="4">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="60" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_01_STK300_02" PARAMS="DOD_TADRY500_02_Cl2,DOD_TADRY500_02_Cl2_Alarm1,DOD_TADRY500_02_Cl2_Alarm2,DOD_TADRY500_02_Cl2_Flow,DOD_TADRY500_02_Cl2_Color" id="61">
+					<mxCell style="group" vertex="1" connectable="0" parent="73">
+						<mxGeometry y="129" width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="39" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="61" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK300" SamplingPoint="DOD_01_STK300_02" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="5">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="61" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_01_STK300_03" PARAMS="DOD_TADRY600_03_Cl2,DOD_TADRY600_03_Cl2_Alarm1,DOD_TADRY600_03_Cl2_Alarm2,DOD_TADRY600_03_Cl2_Flow,DOD_TADRY600_03_Cl2_Color" id="62">
+					<mxCell style="group" vertex="1" connectable="0" parent="73">
+						<mxGeometry y="241" width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="41" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="62" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK300" SamplingPoint="DOD_01_STK300_03" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="17">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="62" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_01_STK300_04" PARAMS="DOD_TADRY700_04_Cl2,DOD_TADRY700_04_Cl2_Alarm1,DOD_TADRY700_04_Cl2_Alarm2,DOD_TADRY700_04_Cl2_Flow,DOD_TADRY700_04_Cl2_Color" id="63">
+					<mxCell style="group" vertex="1" connectable="0" parent="73">
+						<mxGeometry x="3" y="334" width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="43" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="63" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK300" SamplingPoint="DOD_01_STK300_04" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="8">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="63" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" DEVICE_NAME="TASTK600_DOD_02" DEVICE_TOKEN="CSOT0T10005TASTK6000" id="74">
+					<mxCell style="group" vertex="1" connectable="0" parent="1">
+						<mxGeometry x="139" y="512" width="37" height="305" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_02_STK600_01" PARAMS="DOD_TADRYC00_01_Cl2,DOD_TADRYC00_01_Cl2_Alarm1,DOD_TADRYC00_01_Cl2_Alarm2,DOD_TADRYC00_01_Cl2_Flow,DOD_TADRYC00_01_Cl2_Color" id="64">
+					<mxCell style="group" vertex="1" connectable="0" parent="74">
+						<mxGeometry width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="44" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="64" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK600" SamplingPoint="DOD_02_STK600_04" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="9">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="64" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_02_STK600_02" PARAMS="DOD_TADRYD00_02_Cl2,DOD_TADRYD00_02_Cl2_Alarm1,DOD_TADRYD00_02_Cl2_Alarm2,DOD_TADRYD00_02_Cl2_Flow,DOD_TADRYD00_02_Cl2_Color" id="65">
+					<mxCell style="group" vertex="1" connectable="0" parent="74">
+						<mxGeometry y="85" width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="46" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="65" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK600" SamplingPoint="DOD_02_STK600_03" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="10">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="65" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_02_STK600_03" PARAMS="DOD_TADRYE00_03_Cl2,DOD_TADRYE00_03_Cl2_Alarm1,DOD_TADRYE00_03_Cl2_Alarm2,DOD_TADRYE00_03_Cl2_Flow,DOD_TADRYE00_03_Cl2_Color" id="66">
+					<mxCell style="group" vertex="1" connectable="0" parent="74">
+						<mxGeometry x="1" y="169" width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="48" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="66" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK600" SamplingPoint="DOD_02_STK600_02" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="11">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="66" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_02_STK600_04" PARAMS="DOD_TADRYF00_04_Cl2,DOD_TADRYF00_04_Cl2_Alarm1,DOD_TADRYF00_04_Cl2_Alarm2,DOD_TADRYF00_04_Cl2_Flow,DOD_TADRYF00_04_Cl2_Color" id="67">
+					<mxCell style="group" vertex="1" connectable="0" parent="74">
+						<mxGeometry x="1" y="254" width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="50" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="67" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK600" SamplingPoint="DOD_02_STK600_01" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="12">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="67" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" DEVICE_NAME="TASTK400_DOD_01" DEVICE_TOKEN="CSOT0T10005TASTK4000" id="75">
+					<mxCell style="group" vertex="1" connectable="0" parent="1">
+						<mxGeometry x="402" y="503" width="36" height="310" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_01_STK400_01" PARAMS="DOD_TADRYA00_01_Cl2,DOD_TADRYA00_01_Cl2_Alarm1,DOD_TADRYA00_01_Cl2_Alarm2,DOD_TADRYA00_01_Cl2_Flow,DOD_TADRYA00_01_Cl2_Color" id="68">
+					<mxCell style="group" vertex="1" connectable="0" parent="75">
+						<mxGeometry width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="45" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#A70000;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="68" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK400" SamplingPoint="DOD_01_STK400_04" UnitState="Alarm" LastAlarmTime="2018-07-09 21:00:00" id="18">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_red.png;aspect=fixed;" parent="68" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_01_STK400_02" PARAMS="DOD_TADRYB00_02_Cl2,DOD_TADRYB00_02_Cl2_Alarm1,DOD_TADRYB00_02_Cl2_Alarm2,DOD_TADRYB00_02_Cl2_Flow,DOD_TADRYB00_02_Cl2_Color" id="69">
+					<mxCell style="group" vertex="1" connectable="0" parent="75">
+						<mxGeometry y="83" width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="47" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="69" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK400" SamplingPoint="DOD_01_STK400_03" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="13">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="69" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_01_STK400_03" PARAMS="DOD_TADRYB00_03_Cl2,DOD_TADRYB00_03_Cl2_Alarm1,DOD_TADRYB00_03_Cl2_Alarm2,DOD_TADRYB00_03_Cl2_Flow,DOD_TADRYB00_03_Cl2_Color" id="70">
+					<mxCell style="group" vertex="1" connectable="0" parent="75">
+						<mxGeometry y="176" width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="49" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="70" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK400" SamplingPoint="DOD_01_STK400_02" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="14">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="70" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+					<object label="" PT_NAME="DOD_01_STK400_04" PARAMS="DOD_TADRYB00_04_Cl2,DOD_TADRYB00_04_Cl2_Alarm1,DOD_TADRYB00_04_Cl2_Alarm2,DOD_TADRYB00_04_Cl2_Flow,DOD_TADRYB00_04_Cl2_Color" id="71">
+					<mxCell style="group" vertex="1" connectable="0" parent="75">
+						<mxGeometry y="259" width="36" height="51" as="geometry"/>
+					</mxCell>
+					</object>
+					<mxCell id="51" value="25&lt;br&gt;" style="text;html=1;strokeColor=none;fillColor=#3A8320;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;comic=0;labelBackgroundColor=none;fontFamily=Courier New;fontColor=#FFFFFF;" parent="71" vertex="1">
+					<mxGeometry x="6" width="24" height="20" as="geometry"/>
+					</mxCell>
+					<object label="" LineName="TASK400" SamplingPoint="DOD_01_STK400_01" UnitState="Nomal" LastAlarmTime="2018-07-09 21:00:00" id="15">
+					<mxCell style="image;html=1;labelBackgroundColor=#ffffff;image=stencils/IOT/cl2_green.png" parent="71" vertex="1">
+						<mxGeometry y="15" width="36" height="36" as="geometry"/>
+					</mxCell>
+					</object>
+				</root>
+			</mxGraphModel>
+		`;
+
+		let xmlstr3 = `
+        <mxGraphModel dx="441" dy="508" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="" style="shape=triangle;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxGeometry x="110" y="120" width="60" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="" style="shape=tape;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxGeometry x="100" y="270" width="120" height="100" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+
+		`
+
+		// 解析为xml格式
+		var xmlDoc = mxUtils.parseXml(xmlstr).documentElement
+
+		// 解释为mxCodec对象
+		var dec = new mxCodec(xmlDoc)
+		dec.decode(xmlDoc, graph.getModel())
+		// 获取全部节点
+		let cells = graph.getModel().cells
+		update(cells)
+		
+		function update(cells) {
+			for (let i in cells) {
+				let cell = cells[i]
+				if (typeof cell.value === 'object' && cell.value.getAttribute('DEVICE_NAME')) {
+					let id = cell.value.getAttribute('DEVICE_TOKEN')
+					// console.log(cell.value.getAttribute('DEVICE_NAME'))
+					for (let j in cell.children) {
+						// console.log(cell.children[j].value.getAttribute('PARAMS'))
+						if (typeof cell.children[j].value === 'object') {
+							let childrenCell = cell.children[j]
+							// stateChange(childrenCell,'0')
+							let params = cell.children[j].value.getAttribute('PARAMS')
+							// console.log(params)
+							// data_ajax(id,params)
+						}
+					}
+				}
+			}
+			console.log(cells)
+			graph.getModel().endUpdate()
+		}
+
+		function stateChange(cell,state) {
+			let style = cell.children[1].style
+			let newStyle = ''
+			let eles = style.split(';')
+			for (let k in eles) {
+				if (eles[k].indexOf('image=')>-1) {
+					if (state === '0') {
+						eles[k] = 'image=stencils/IOT/cl2_green.png'
+					} else if (state === '1') {
+						eles[k] = 'image=stencils/IOT/cl2_yellow.png'
+					} else {
+						eles[k] = 'image=stencils/IOT/cl2_red.png'
+					}
+				}
+				if (eles[k] != '') {
+					newStyle = newStyle + eles[k] + ';'
+				}
+			}
+			cell.children[1].style = newStyle
+
+			style = cell.children[0].style
+			newStyle = ''
+			eles = style.split(';')
+			for(let k in eles) {
+				if (eles[k].indexOf('fillColor=')>-1) {
+					if (state === '0') {
+						eles[k] = 'fillColor=#3A8320'
+					} else if (state === '1') {
+						eles[k] = 'fillColor=#BBBB1C'
+					} else {
+						eles[k] = 'fillColor=#A70000'
+					}
+				}
+				if (eles[k] != '') {
+					newStyle = newStyle + eles[k] + ';'
+				}
+			}
+			cell.children[0].style = newStyle
+		}
+
+		function data_ajax(id,params)
+		{
+			let url = 'http://172.16.16.39:8080'
+			let xmlhttp;
+			if (window.XMLHttpRequest)
+			{
+				//  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+				xmlhttp=new XMLHttpRequest();
+			}
+			else
+			{
+				// IE6, IE5 浏览器执行代码
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			xmlhttp.onreadystatechange=function()
+			{
+				if (xmlhttp.readyState==4 && xmlhttp.status==200)
+				{
+					console.log(innerHTML=xmlhttp.response)
+				}
+			}
+			console.log(`${url}/api/plugins/telemetry/DEVICE/${id}/values/timeseries?keys=${params}`)
+			xmlhttp.open("GET",`${url}/api/plugins/telemetry/DEVICE/${id}/values/timeseries?keys=${params}`,true);
+			xmlhttp.send();
+		}
+
+		function show(data) {
+			// 解析为xml格式
+			var xmlDoc = mxUtils.parseXml(data).documentElement;
+			// 解析为mxCodec对象
+			var dec = new mxCodec(xmlDoc);
+			dec.decode(xmlDoc, graph.getModel());
+			// 全部节点
+			let cells = graph.getModel().cells;
+			// console.log(cells)
+			// 遍历节点
+			for (let item in cells) {
+				// console.log(cells[item].getStyle())
+				// console.log(cells[item])
+				if (cells[item].children && cells[item].children.length === 2) {
+					cells[item].children[0].value = cells[item].getAttribute('val')
+					console.log(cells[item].children[0].value)
+					console.log(cells[item].getAttribute('val'))
+				}
+			}
+			graph.getModel().endUpdate();
+		};
+
+
+		function socketIo() {
+			let ws = new WebSocket('ws://localhost:8089/jevin/?id=123');
+			ws.onopen = function (e) {
+				console.log("连接服务器成功");
+			}
+			ws.onclose = function (e) {
+				console.log("服务器关闭");
+			}
+			ws.onerror = function () {
+				console.log("连接出错");
+			}
+
+			ws.onmessage = function (e) {
+				// console.log(e.data)
+			}
+		}
+
+	</script>
+</body>
+
+</html>
