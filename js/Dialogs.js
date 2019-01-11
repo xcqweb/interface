@@ -246,7 +246,6 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
 	{
 		if (e.keyCode == 27)
 		{
-			console.log(11111111)
 			editorUi.hideDialog();
 			
 			if (cancelFn != null)
@@ -1703,81 +1702,6 @@ EditDataDialog.placeholderHelpLink = null;
  */
 var EditPropDialog = function(ui, cell)
 {
-	var list = [
-		{
-			id: 1,
-			name: '温度',
-			func: [
-				{
-					id: 1,
-					name: '小于'
-				}, {
-					id: 2,
-					name: '等于'
-				}, {
-					id: 3,
-					name: '大于'
-				}
-			],
-			events: [
-				{
-					id: 1,
-					name: 'alarm'
-				}, {
-					id: 2,
-					name: 'stop'
-				}
-			]
-		}, {
-			id: 2,
-			name: '湿度',
-			func: [
-				{
-					id: 1,
-					name: '小于'
-				}, {
-					id: 2,
-					name: '等于'
-				}, {
-					id: 3,
-					name: '大于'
-				}
-			],
-			events: [
-				{
-					id: 1,
-					name: 'alarm'
-				}, {
-					id: 2,
-					name: 'stop'
-				}
-			]
-		}, {
-			id: 3,
-			name: '浓度值',
-			func: [
-				{
-					id: 1,
-					name: '小于'
-				}, {
-					id: 2,
-					name: '等于'
-				}, {
-					id: 3,
-					name: '大于'
-				}
-			],
-			events: [
-				{
-					id: 1,
-					name: 'alarm'
-				}, {
-					id: 2,
-					name: 'stop'
-				}
-			]
-		}
-	];
 	var div = document.createElement('div');
 
 	var graph = ui.editor.graph;
@@ -1872,17 +1796,20 @@ var EditPropDialog = function(ui, cell)
 	var temp = {
 		device: '',
 		singleVariable: true,
-		variable: ''
+		variables: []
 	};
 	var isLayer = graph.getModel().getParent(cell) == graph.getModel().getRoot();
 	for (var i = 0; i < attrs.length; i++)
 	{
 		if ((isLayer || attrs[i].nodeName != 'label') && attrs[i].nodeName != 'placeholders')
 		{
-			temp[attrs[i].nodeName] = attrs[i].nodeValue;
+			// temp[attrs[i].nodeName] = attrs[i].nodeValue;
+		}
+		if (attrs[i].nodeName == 'getech') {
+			temp = JSON.parse(attrs[i].nodeValue)
 		}
 	}
-	
+	console.log(temp)
 	for (var i = 0; i < temp.length; i++)
 	{
 		addTextArea(count, temp[i].name, temp[i].value);
@@ -1894,60 +1821,9 @@ var EditPropDialog = function(ui, cell)
 	top.appendChild(form.table);
 	
 	// jevin
-	// 增加下拉框
-	var addSelect = function (name, opList) {
-		var name = name || "";
-		var opList = opList || [];
-		opList = [].concat(opList);
-		selectOp = temp[name] || 0;
-		opList.unshift({id: 0, name: '请选择'});
-		// 新增选择节点
-		var sel = document.createElement('select');
-		sel.style.width = "140px";
-		sel.style.height = "30px";
-		sel.style.marginLeft = "14px";
-		sel.style.marginTop = "14px";
-		sel.setAttribute("name", name);
-		for (var i = 0; i < opList.length; i++) {
-			var option = document.createElement('option');
-			mxUtils.writeln(option, opList[i].name);
-			option.setAttribute('value', opList[i].id);
-			if (selectOp == opList[i].id) {
-				option.setAttribute('selected', 'selected')
-			}
-			sel.appendChild(option)
-		};
-		top.appendChild(sel);
-		return sel;
-	};
-
-	
-	// 增加文本框
-	var addinput = function (name) {
-		var name = name || "";
-		// 新增选择节点
-		var sel = document.createElement('input');
-		sel.style.width = "140px";
-		sel.style.height = "30px";
-		sel.style.marginLeft = "14px";
-		sel.style.marginTop = "14px";
-		sel.setAttribute("name", name);
-		top.appendChild(sel);
-		return sel;
-	};
-
-	mxUtils.write(top, mxResources.get('deviceName') + ':');
-	var variableSel = addSelect('deviceName', list)
-	mxUtils.br(top);
-	mxUtils.write(top, mxResources.get('data') + ':');
-	var functionSel = addSelect('function', list[0].func)
-	mxUtils.br(top);
-	mxUtils.write(top, mxResources.get('name') + ':');
-	var eventsSel = addinput('name')
-	mxUtils.br(top);
 	let pointList = [
 		{
-			id: 0,
+			id: '',
 			name: '请选择'
 		},{
 			id: 1,
@@ -1966,7 +1842,7 @@ var EditPropDialog = function(ui, cell)
 			<select class="geDialogRight" id="pointName">
 			${
 				pointList.map(val => `
-					<option value=${val.name}>${val.name}</option>
+					<option value=${val.id} ${val.id == temp.device ? 'selected' : ''}>${val.name}</option>
 				`)
 			}
 			</select>
@@ -1979,14 +1855,14 @@ var EditPropDialog = function(ui, cell)
 						<input name="dialogVariable" type="radio" id="singleVariable" ${temp.singleVariable ? "checked" : ''}/>
 						单个变量
 					</label>
-					<button style="margin-left:8px" id="selectSingleVariable">点击勾选变量</button>
+					<button style="margin-left:8px" ${!temp.singleVariable ? 'disabled' : ""} id="selectSingleVariable">点击勾选变量</button>
 				</div>
 				<div style="padding: 5px 0;">
 					<label>
-						<input name="dialogVariable" type="radio" id="multipeVariable" ${!temp.singleVariable ? "checked" : ''}/>
+						<input name="dialogVariable" type="radio" id="multipleVariable" ${!temp.singleVariable ? "checked" : ''}/>
 						多个变量
 					</label>
-					<button style="margin-left:8px" disabled id="selectMultipeVariable">点击勾选多个变量</button>
+					<button style="margin-left:8px" ${temp.singleVariable ? 'disabled' : ""} id="selectMultipleVariable">点击勾选多个变量</button>
 				</div>
 			</div>
 		</div>
@@ -2001,9 +1877,7 @@ var EditPropDialog = function(ui, cell)
 			</select>
 		</div>
 	`
-	div.appendChild(top);
-
-	
+	div.appendChild(top);	
 	// jevin
 	var addBtn = mxUtils.button(mxResources.get('addProperty'), function()
 	{
@@ -2055,31 +1929,35 @@ var EditPropDialog = function(ui, cell)
 	// 弹窗弹出，初始化之后的操作
 	this.init = function()
 	{
-		let that = this;
+		// 选择点位
+		document.getElementById('pointName').addEventListener('change', function (e) {
+			temp.device = e.target.value;
+		})
 		// 单个变量
 		document.getElementById('singleVariable').addEventListener('click', function () {
-			console.log(111)
+			temp.singleVariable = true;
 			document.getElementById('selectSingleVariable').removeAttribute('disabled')
-			document.getElementById('selectMultipeVariable').setAttribute('disabled', true)
+			document.getElementById('selectMultipleVariable').setAttribute('disabled', true)
 		})
+		// 选择单个变量
 		document.getElementById('selectSingleVariable').addEventListener('click', function () {
-			EditPropDialog.selectVariableDialog();
+			selectVariableDialog();
 		})
 		// 多个变量
-		document.getElementById('multipeVariable').addEventListener('click', function () {
-			console.log(222)
+		document.getElementById('multipleVariable').addEventListener('click', function () {
+			temp.singleVariable = false;
 			document.getElementById('selectSingleVariable').setAttribute('disabled', true)
-			document.getElementById('selectMultipeVariable').removeAttribute('disabled')
+			document.getElementById('selectMultipleVariable').removeAttribute('disabled')
 		})
-		document.getElementById('selectMultipeVariable').addEventListener('click', function () {
-			console.log(444)
+		// 选择多个变量
+		document.getElementById('selectMultipleVariable').addEventListener('click', function () {
+			selectMultipleVariableDialog();
 		})
 	};
 	
 	addBtn.setAttribute('disabled', 'disabled');
 	addBtn.style.marginLeft = '10px';
 	addBtn.style.width = '76px';
-	// newProp.appendChild(addBtn);
 
 	// 取消按钮
 	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
@@ -2151,54 +2029,157 @@ var EditPropDialog = function(ui, cell)
 
 	div.appendChild(buttons);
 	this.container = div;
-};
-/**
- * 变量窗口
- */
-EditPropDialog.selectVariableDialog = function () {
-	let oDiv = document.createElement('div');
-	oDiv.className = "selectVariableDialog";
-	oDiv.innerHTML = `
-		<p class="dialogTitle">选择变量</p>
-		<div class="searchBox">
-			<input />
-			<button>搜索</button>
-		</div>
-		<div class="variablesList">
-			<p>11111</p>
-			<p>11111</p>
-			<p>11111</p>
-			<p>11111</p>
-			<p>11111</p>
-			<p>11111</p>
-			<p>11111</p>
-		</div>
-		<div class="dialogBtns">
-			<button class="geBtn" id="variableDialogCancel">取消</button>
-			<button class="geBtn gePrimaryBtn" id="variableDialogEnsure">应用</button>
-		</div>
-	`
-	document.body.append(oDiv);
-	// 选择变量
-	document.getElementsByClassName('variablesList')[0].addEventListener("click", function (e) {
-		let p_children = document.getElementsByClassName('variablesList')[0].children;
-		for (let i = 0; i < p_children.length; i++) {
-			p_children[i].style = "";
-		}
-		let _target = e.target;
-		_target.style.color = "#fff";
-		_target.style.backgroundColor = "#3B72A8";
-	});
 
-	// 取消
-	document.getElementById('variableDialogCancel').addEventListener("click", function () {
-		document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
-	})
-	// 确定
-	document.getElementById('variableDialogEnsure').addEventListener("click", function () {
-		document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
-	})
-}
+	// 单选变量窗口
+	function selectVariableDialog() {
+		// 存储临时变量
+		let tempVariable = temp.variables;
+		let oDiv = document.createElement('div');
+		oDiv.className = "selectVariableDialog";
+		oDiv.innerHTML = `
+			<p class="dialogTitle">选择单个变量</p>
+			<div class="searchBox">
+				<input />
+				<button id="searchVariable">搜索</button>
+			</div>
+			<div class="variablesList">
+			</div>
+			<div class="dialogBtns">
+				<button class="geBtn" id="variableDialogCancel">取消</button>
+				<button class="geBtn gePrimaryBtn" id="variableDialogEnsure">应用</button>
+			</div>
+		`
+		document.body.append(oDiv);searchVariable;
+		// 通过请求获取变量列表
+		function getVariables() {
+			let list1 = [
+				'cl', 'header2', 'sn', 'dp_power', 'dp_speed'
+			];
+			let list2 = [
+				'hpcp', 'cda', 'mdp', 'heater', 'particle'
+			];
+			let list = Math.random() > 0.5 ? list1 : list2;
+			let str = list.reduce((item, val) => {
+				item += `<p>${val}</p>`
+				return item;
+			}, '')
+			document.getElementsByClassName('variablesList')[0].innerHTML = str
+		};
+		getVariables();
+		// 选择变量
+		document.getElementById('searchVariable').addEventListener("click", function () {
+			getVariables()
+		});
+		// 选择变量
+		document.getElementsByClassName('variablesList')[0].addEventListener("click", function (e) {
+			let _target = e.target;
+			if (_target.nodeName == 'DIV') return false;
+			tempVariable = _target.innerHTML;
+			// 清空其他选中样式
+			let p_children = document.getElementsByClassName('variablesList')[0].children;
+			for (let i = 0; i < p_children.length; i++) {
+				p_children[i].style = "";
+			}
+			// 设置选中状态
+			_target.style.color = "#fff";
+			_target.style.backgroundColor = "#3B72A8";
+		});
+	
+		// 取消
+		document.getElementById('variableDialogCancel').addEventListener("click", function () {
+			document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
+		})
+		// 确定
+		document.getElementById('variableDialogEnsure').addEventListener("click", function () {
+			temp.variables = [tempVariable];
+			document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
+		})
+	}
+
+	// 多选变量窗口
+	function selectMultipleVariableDialog () {
+		let tempVariables = temp.variables;
+		let oDiv = document.createElement('div');
+		oDiv.className = "selectVariableDialog selectMultipleVariableDialog";
+		oDiv.innerHTML = `
+			<p class="dialogTitle">选择多个变量</p>
+			<div class="searchBox">
+				<input />
+				<button id="searchVariable">搜索</button>
+			</div>
+			<div class="selectedVariables">
+			</div>
+			<div class="variablesList">
+			</div>
+			<div class="dialogBtns">
+				<button class="geBtn" id="variableDialogCancel">取消</button>
+				<button class="geBtn gePrimaryBtn" id="variableDialogEnsure">应用</button>
+			</div>
+		`
+		document.body.append(oDiv);searchVariable;
+		// 通过请求获取变量列表
+		function getVariables() {
+			let list1 = [
+				'cl', 'header2', 'sn', 'dp_power', 'dp_speed'
+			];
+			let list2 = [
+				'hpcp', 'cda', 'mdp', 'heater', 'particle'
+			];
+			let list = Math.random() > 0.5 ? list1 : list2;
+			let str = list.reduce((item, val) => {
+				item += `<p>${val}</p>`
+				return item;
+			}, '')
+			document.getElementsByClassName('variablesList')[0].innerHTML = str
+		};
+		// 渲染选中列表
+		function setSelecteds() {
+			let str = tempVariables.reduce((item, val) => {
+				item += `<span class="variableDetail">${val}<a v_name="${val}" class="variableDetailDel">x</a></span>`
+				return item;
+			}, '')
+			document.getElementsByClassName('selectedVariables')[0].innerHTML = str
+		}
+		getVariables();
+		setSelecteds();
+		// 选择变量
+		document.getElementById('searchVariable').addEventListener("click", function () {
+			getVariables()
+		});
+		// 选择变量
+		document.getElementsByClassName('variablesList')[0].addEventListener("click", function (e) {
+			let _target = e.target;
+			if (_target.nodeName == 'DIV') return false; 
+			if (tempVariables.indexOf(_target.innerHTML) == -1) {
+				tempVariables.push(_target.innerHTML);
+				setSelecteds();
+			}
+			let p_children = document.getElementsByClassName('variablesList')[0].children;
+			for (let i = 0; i < p_children.length; i++) {
+				p_children[i].style = "";
+			}
+			_target.style.color = "#fff";
+			_target.style.backgroundColor = "#3B72A8";
+		});
+		// 删除选中
+		document.getElementsByClassName('selectedVariables')[0].addEventListener("click", function (e) {
+			if (e.target.className == "variableDetailDel") {
+				let idx = tempVariables.indexOf(e.target.getAttribute('v_name'));
+				tempVariables.splice(idx, 1);
+				setSelecteds();
+			}
+		})
+		// 取消
+		document.getElementById('variableDialogCancel').addEventListener("click", function () {
+			document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
+		})
+		// 确定
+		document.getElementById('variableDialogEnsure').addEventListener("click", function () {
+			temp.variables = tempVariables;
+			document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
+		})
+	}
+};
 /**
  * Optional help link.
  */

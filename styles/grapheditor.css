@@ -452,6 +452,42 @@ div.mxWindow .geButton {
 	margin: auto;
 	padding: 30px;
 }
+.selectMultipleVariableDialog {
+    height: 450px;
+}
+.selectVariableDialog .selectedVariables {
+	height: 100px;
+	margin-top: 15px;
+	overflow: auto;
+	padding: 8px;
+	border: 1px solid #EBF0F2;
+	background: #F4F8FA;
+}
+.variableDetail {
+	height: 28px;
+    background: rgba(115,132,138,1);
+    border-radius: 2px;
+    margin-right: 6px;
+    display: inline-block;
+    text-align: center;
+    line-height: 28px;
+    color: #fff;
+	padding: 0 20px;
+	margin-bottom: 14px;
+	position: relative;
+}
+.variableDetail .variableDetailDel{
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 12px;
+    height: 12px;
+    background: #fff;
+    color: red;
+	line-height: 12px;
+	cursor: pointer;
+}
+
 .selectVariableDialog p{
 	margin: 0;
 }

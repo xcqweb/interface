@@ -191,8 +191,11 @@ EditorUi = function(editor, container, lightbox)
 		}
 		else if (!mxEvent.isConsumed(evt) && evt.keyCode == 27 /* Escape */)
 		{
-			document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
-			this.hideDialog();
+			if (document.getElementsByClassName('selectVariableDialog')[0]) {
+				document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
+			} else {
+				this.hideDialog();
+			}
 		}
 	});
    	

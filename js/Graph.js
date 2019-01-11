@@ -2841,7 +2841,7 @@ Graph.prototype.getTooltipForCell = function(cell)
 		}
 		else
 		{
-			var ignored = ['label', 'tooltip', 'placeholders', 'placeholder', 'param1', 'getech'];
+			var ignored = ['label', 'tooltip', 'placeholders', 'placeholder', 'param1', 'getech', 'effectAction', 'mouseEvent'];
 			var attrs = cell.value.attributes;
 			var temp = [];
 

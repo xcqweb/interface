@@ -4444,23 +4444,7 @@ PropertiesPanel.prototype.addConditions = function (container) {
 			modelInfo = obj;
 		}
 			
-		// 事件监听	
-		// mxEvent.addListener(fouthParam, 'change', function () {
-		// 	modelInfo = modelInfo.cloneNode(true);
-		// 	modelInfo.setAttribute('fouthParam', fouthParam.value);
-		// 	graph.getModel().setValue(cell, modelInfo);
-		// 	console.log(1, this.value)
-		// });
-		// mxEvent.addListener(fifthParam, 'change', function () {
-		// 	modelInfo.setAttribute('fifthParam', fifthParam.value);
-		// 	graph.getModel().setValue(cell, modelInfo);
-		// 	console.log(2, this.value)
-		// });
-		// mxEvent.addListener(thirdParam, 'change', function () {
-		// 	modelInfo.setAttribute('thirdParam', thirdParam.value);
-		// 	graph.getModel().setValue(cell, modelInfo);
-		// 	console.log(3, this.value)
-		// });
+		// 事件监听
 		
 		container.appendChild(divpanel);
 		
