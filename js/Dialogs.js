@@ -697,7 +697,7 @@ var EditDiagramDialog = function(editorUi)
 	textarea.setAttribute('autocapitalize', 'off');
 	textarea.style.overflow = 'auto';
 	textarea.style.resize = 'none';
-	textarea.style.width = '600px';
+	textarea.style.width = '590px';
 	textarea.style.height = '360px';
 	textarea.style.marginBottom = '16px';
 	

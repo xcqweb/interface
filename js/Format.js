@@ -4473,6 +4473,7 @@ PropertiesPanel.prototype.addAlarm = function (container) {
 				}
 			}
 		}
+		// 告警标题
 		var title = this.createTitle(mxResources.get('alarm'));
 		title.style.paddingLeft = '18px';
 		title.style.paddingTop = '10px';
@@ -4525,7 +4526,7 @@ PropertiesPanel.prototype.addSingleInput = function (container, name, value ) {
 	input.className = input.className + ' u-prop-cell';
 	mxUtils.write(box, mxResources.get(name) + ': ');
 	box.appendChild(input);
-	// 监听事件
+	// 监听事件、失去焦点进行赋值操作
 	mxEvent.addListener(input, 'blur', function(evt)
     {
 		modelInfo.setAttribute(name, evt.target.value);

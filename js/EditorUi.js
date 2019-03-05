@@ -961,7 +961,8 @@ EditorUi.prototype.splitSize = (mxClient.IS_TOUCH || mxClient.IS_POINTER) ? 12 :
 /**
  * Specifies the height of the menubar. Default is 34.
  */
-EditorUi.prototype.menubarHeight = 0;
+// 顶部操作栏高度
+EditorUi.prototype.menubarHeight = 34;
 
 /**
  * Specifies the width of the format panel should be enabled. Default is true.
@@ -3056,7 +3057,7 @@ EditorUi.prototype.createUi = function()
 	// Creates menubar
 	this.menubar = (this.editor.chromeless) ? null : null;
 	// 顶部操作栏
-	// this.menubar = (this.editor.chromeless) ? null : this.menus.createMenubar(this.createDiv('geMenubar'));
+	this.menubar = (this.editor.chromeless) ? null : this.menus.createMenubar(this.createDiv('geMenubar'));
 	
 	if (this.menubar != null)
 	{

@@ -190,3 +190,9 @@ td.mxPopupMenuIcon {
 	border-radius: 4px;
 	outline: none;
 }
+.com-input {
+	margin: 0;
+	padding: 0;
+	width: 140px;
+	height: 30px;
+}
