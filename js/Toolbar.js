@@ -58,12 +58,11 @@ Toolbar.prototype.init = function()
 	
 	// Takes into account initial compact mode
 	sw -= (screen.height > 740) ? 56 : 0;
-	
 	if (sw >= 700)
 	{
-		var formatMenu = this.addMenu('', mxResources.get('view') + ' (' + mxResources.get('panTooltip') + ')', true, 'viewPanels', null, true);
-		this.addDropDownArrow(formatMenu, 'geSprite-formatpanel', 38, 50, -4, -3, 36, -8);
-		this.addSeparator();
+		// var formatMenu = this.addMenu('', mxResources.get('view') + ' (' + mxResources.get('panTooltip') + ')', true, 'viewPanels', null, true);
+		// this.addDropDownArrow(formatMenu, 'geSprite-formatpanel', 38, 50, -4, -3, 36, -8);
+		// this.addSeparator();
 	}
 	
 	var viewMenu = this.addMenu('', mxResources.get('zoom') + ' (Alt+Mousewheel)', true, 'viewZoom', null, true);
@@ -71,7 +70,6 @@ Toolbar.prototype.init = function()
 	viewMenu.style.whiteSpace = 'nowrap';
 	viewMenu.style.position = 'relative';
 	viewMenu.style.overflow = 'hidden';
-	
 	if (EditorUi.compactUi)
 	{
 		viewMenu.style.width = (mxClient.IS_QUIRKS) ? '58px' : '50px';
@@ -83,13 +81,16 @@ Toolbar.prototype.init = function()
 	
 	if (sw >= 420)
 	{
-		this.addSeparator();
+		// 放大缩小
 		var elts = this.addItems(['zoomIn', 'zoomOut']);
 		elts[0].setAttribute('title', mxResources.get('zoomIn') + ' (' + this.editorUi.actions.get('zoomIn').shortcut + ')');
 		elts[1].setAttribute('title', mxResources.get('zoomOut') + ' (' + this.editorUi.actions.get('zoomOut').shortcut + ')');
 	}
-	
-	// Updates the label if the scale changes
+	// jevin**************************
+	this.addItems(['copy', 'paste']);
+	this.addItems(['cut', 'duplicate']);
+	// jevin**************************
+	// 如果缩放后，更新标签
 	this.updateZoom = mxUtils.bind(this, function()
 	{
 		viewMenu.innerHTML = Math.round(this.editorUi.editor.graph.view.scale * 100) + '%' +
@@ -105,24 +106,24 @@ Toolbar.prototype.init = function()
 	this.editorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
 	this.editorUi.editor.addListener('resetGraphView', this.updateZoom);
 
-	var elts = this.addItems(['-', 'undo', 'redo']);
-	elts[1].setAttribute('title', mxResources.get('undo') + ' (' + this.editorUi.actions.get('undo').shortcut + ')');
-	elts[2].setAttribute('title', mxResources.get('redo') + ' (' + this.editorUi.actions.get('redo').shortcut + ')');
+	var elts = this.addItems(['undo', 'redo']);
+	elts[0].setAttribute('title', mxResources.get('undo') + ' (' + this.editorUi.actions.get('undo').shortcut + ')');
+	elts[1].setAttribute('title', mxResources.get('redo') + ' (' + this.editorUi.actions.get('redo').shortcut + ')');
 	
 	if (sw >= 320)
 	{
-		var elts = this.addItems(['-', 'delete']);
-		elts[1].setAttribute('title', mxResources.get('delete') + ' (' + this.editorUi.actions.get('delete').shortcut + ')');
+		var elts = this.addItems([ 'delete']);
+		elts[0].setAttribute('title', mxResources.get('delete') + ' (' + this.editorUi.actions.get('delete').shortcut + ')');
 	}
 	
 	if (sw >= 550)
 	{
-		this.addItems(['-', 'toFront', 'toBack']);
+		this.addItems(['toFront', 'toBack']);
 	}
 
 	if (sw >= 740)
 	{
-		this.addItems(['-', 'fillColor']);
+		this.addItems(['fillColor']);
 		
 		if (sw >= 780)
 		{
@@ -167,7 +168,7 @@ Toolbar.prototype.init = function()
 	// 	this.addDropDownArrow(this.edgeStyleMenu, 'geSprite-orthogonal', 44, 50, 0, 0, 22, -4);
 	// }
 
-	this.addSeparator();
+	// this.addSeparator();
 
 	// var insertMenu = this.addMenu('', mxResources.get('insert') + ' (' + mxResources.get('doubleClickTooltip') + ')', true, 'insert', null, true);
 	// this.addDropDownArrow(insertMenu, 'geSprite-plus', 38, 48, -4, -3, 36, -8);
@@ -246,7 +247,7 @@ Toolbar.prototype.createTextToolbar = function()
 		styleElt.getElementsByTagName('img')[0].style.top = '5px';
 	}
 	
-	this.addSeparator();
+	// this.addSeparator();
 	
 	this.fontMenu = this.addMenu('', mxResources.get('fontFamily'), true, 'fontFamily');
 	this.fontMenu.style.position = 'relative';
@@ -263,7 +264,7 @@ Toolbar.prototype.createTextToolbar = function()
 		this.fontMenu.getElementsByTagName('img')[0].style.top = '5px';
 	}
 	
-	this.addSeparator();
+	// this.addSeparator();
 	
 	this.sizeMenu = this.addMenu(Menus.prototype.defaultFontSize, mxResources.get('fontSize'), true, 'fontSize');
 	this.sizeMenu.style.position = 'relative';
@@ -391,7 +392,7 @@ Toolbar.prototype.createTextToolbar = function()
 		formatMenu.getElementsByTagName('img')[0].style.top = '5px';
 	}
 
-	this.addSeparator();
+	// this.addSeparator();
 
 	this.addButton('geIcon geSprite geSprite-code', mxResources.get('html'), function()
 	{
@@ -406,7 +407,7 @@ Toolbar.prototype.createTextToolbar = function()
 		}
 	});
 	
-	this.addSeparator();
+	// this.addSeparator();
 	
 	// FIXME: Uses geButton here and geLabel in main menu
 	var insertMenu = this.addMenuFunction('', mxResources.get('insert'), true, mxUtils.bind(this, function(menu)
@@ -442,7 +443,7 @@ Toolbar.prototype.createTextToolbar = function()
 		insertMenu.style.width = (mxClient.IS_QUIRKS) ? '50px' : '30px';
 	}
 	
-	this.addSeparator();
+	// this.addSeparator();
 	
 	// KNOWN: All table stuff does not work with undo/redo
 	// KNOWN: Lost focus after click on submenu with text (not icon) in quirks and IE8. This is because the TD seems
@@ -711,7 +712,6 @@ Toolbar.prototype.addSeparator = function(c)
 Toolbar.prototype.addItems = function(keys, c, ignoreDisabled)
 {
 	var items = [];
-	
 	for (var i = 0; i < keys.length; i++)
 	{
 		var key = keys[i];
@@ -734,6 +734,7 @@ Toolbar.prototype.addItems = function(keys, c, ignoreDisabled)
  */
 Toolbar.prototype.addItem = function(sprite, key, c, ignoreDisabled)
 {
+	// 通过key值获取action
 	var action = this.editorUi.actions.get(key);
 	var elt = null;
 	
@@ -801,7 +802,6 @@ Toolbar.prototype.addEnabledState = function(elt)
 	elt.setEnabled = function(value)
 	{
 		elt.enabled = value;
-		
 		if (value)
 		{
 			elt.className = classname;

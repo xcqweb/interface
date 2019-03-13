@@ -977,7 +977,7 @@ EditorUi.prototype.formatWidth = 240;
 /**
  * Specifies the height of the toolbar. Default is 36.
  */
-EditorUi.prototype.toolbarHeight = 34;
+EditorUi.prototype.toolbarHeight = 80;
 
 /**
  * Specifies the height of the footer. Default is 28.
@@ -3119,9 +3119,8 @@ EditorUi.prototype.createUi = function()
 		this.container.appendChild(this.tabContainer);
 	}
 
-	// Creates toolbar
+	// 创建 toolbar
 	this.toolbar = (this.editor.chromeless) ? null : this.createToolbar(this.createDiv('geToolbar'));
-	
 	if (this.toolbar != null)
 	{
 		this.toolbarContainer.appendChild(this.toolbar.container);

@@ -30,7 +30,7 @@ Menus.prototype.defaultFontSize = '12';
 /**
  * Sets the default font size.
  */
-Menus.prototype.defaultMenuItems = ['file', 'edit', 'view', 'arrange', 'extras'];
+Menus.prototype.defaultMenuItems = ['file', 'edit', 'view', 'arrange', 'help'];
 
 /**
  * Adds the label menu items to the given menu and parent.
@@ -48,7 +48,7 @@ Menus.prototype.init = function()
 
 	this.customFonts = [];
 	this.customFontSizes = [];
-
+	// 字体
 	this.put('fontFamily', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		var addItem = mxUtils.bind(this, function(fontname)
@@ -413,32 +413,36 @@ Menus.prototype.init = function()
     		}, true);
 		}), parent);
 	})));
+	// 导航
 	this.put('navigation', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		this.addMenuItems(menu, ['home', '-', 'exitGroup', 'enterGroup', '-', 'expand', 'collapse', '-', 'collapsible'], parent);
 	})));
+	// 布局
 	this.put('arrange', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['toFront', 'toBack', '-'], parent);
+		this.addMenuItems(menu, ['toFront', 'toBack'], parent);
 		this.addSubmenu('direction', menu, parent);
-		this.addMenuItems(menu, ['turn', '-'], parent);
+		this.addMenuItems(menu, ['turn'], parent);
 		this.addSubmenu('align', menu, parent);
-		this.addSubmenu('distribute', menu, parent);
-		menu.addSeparator(parent);
-		this.addSubmenu('navigation', menu, parent);
-		this.addSubmenu('insert', menu, parent);
-		this.addSubmenu('layout', menu, parent);
-		this.addMenuItems(menu, ['-', 'group', 'ungroup', 'removeFromGroup', '-', 'clearWaypoints', 'autosize'], parent);
+		// this.addSubmenu('distribute', menu, parent);
+		// menu.addSeparator(parent);
+		// this.addSubmenu('navigation', menu, parent);
+		// this.addSubmenu('insert', menu, parent);
+		// this.addSubmenu('layout', menu, parent);
+		this.addMenuItems(menu, ['group', 'ungroup', 'removeFromGroup', 'autosize'], parent);
 	}))).isEnabled = isGraphEnabled;
+	// 插入
 	this.put('insert', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		this.addMenuItems(menu, ['insertLink', 'insertImage'], parent);
 	})));
+	// 视图
 	this.put('view', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		this.addMenuItems(menu, ((this.editorUi.format != null) ? ['formatPanel'] : []).
-			concat(['outline', 'layers', '-', 'pageView', 'pageScale', '-', 'scrollbars', 'tooltips', '-',
-			        'grid', 'guides', '-', 'connectionArrows', 'connectionPoints', '-',
+			concat(['outline', 'layers', 'pageView', 'pageScale', 'scrollbars', 'tooltips',
+			        'grid', 'guides',
 			        'resetView', 'zoomIn', 'zoomOut'], parent));
 	})));
 	// Two special dropdowns that are only used in the toolbar
@@ -453,7 +457,7 @@ Menus.prototype.init = function()
 	})));
 	this.put('viewZoom', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['resetView', '-'], parent);
+		this.addMenuItems(menu, ['resetView'], parent);
 		var scales = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4];
 		
 		for (var i = 0; i < scales.length; i++)
@@ -467,24 +471,27 @@ Menus.prototype.init = function()
 			})(scales[i]);
 		}
 
-		this.addMenuItems(menu, ['-', 'fitWindow', 'fitPageWidth', 'fitPage', 'fitTwoPages', '-', 'customZoom'], parent);
+		// this.addMenuItems(menu, ['-', 'fitWindow', 'fitPageWidth', 'fitPage', 'fitTwoPages', '-', 'customZoom'], parent);
 	})));
+	// 文件
 	this.put('file', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['new', 'open', '-', 'save', 'saveAs', '-', 'import', 'export', '-', 'pageSetup', 'print'], parent);
+		this.addMenuItems(menu, ['new', 'open', 'save', 'saveAs', 'pageSetup', 'print'], parent);
 	})));
+	// 编辑
 	this.put('edit', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['undo', 'redo', '-', 'cut', 'copy', 'paste', 'delete', '-', 'duplicate', '-',
-		                         'editData', 'editTooltip', 'editStyle', '-', 'edit', '-', '-', 'selectAll', 'selectNone', '-']);
+		this.addMenuItems(menu, ['undo', 'redo', 'cut', 'copy', 'paste', 'delete', 'selectAll', 'selectNone']);
 	})));
+	// 其他
 	this.put('extras', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		this.addMenuItems(menu, ['copyConnect', 'collapseExpand', '-', 'editDiagram']);
 	})));
+	// 帮助
 	this.put('help', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['help', '-', 'about']);
+		this.addMenuItems(menu, ['about']);
 	})));
 };
 
@@ -1114,41 +1121,41 @@ Menus.prototype.createMenubar = function(container)
 		}))(this.get(menus[i]));
 	}
 
-	//输入框保存
-    var input = document.createElement('input')
-    input.setAttribute('id', 'filenameInput')
-    input.setAttribute('placeholder', this.editorUi.editor.filename || mxResources.get('unsave'));
-    input.setAttribute('type', 'text');
-    input.style.fontSize = '12px';
-    input.style.overflow = 'hidden';
-    input.style.boxSizing = 'border-box';
-    input.style.border = 'solid 1px #d5d5d5';
-    input.style.borderRadius = '4px';
-    input.style.width = '30%';
-    input.style.outline = 'none';
-    input.style.padding = '6px';
-    container.appendChild(input)
+	// //输入框保存
+  //   var input = document.createElement('input')
+  //   input.setAttribute('id', 'filenameInput')
+  //   input.setAttribute('placeholder', '你大爷的');
+  //   input.setAttribute('type', 'text');
+  //   input.style.fontSize = '12px';
+  //   input.style.overflow = 'hidden';
+  //   input.style.boxSizing = 'border-box';
+  //   input.style.border = 'solid 1px #d5d5d5';
+  //   input.style.borderRadius = '4px';
+  //   input.style.width = '30%';
+  //   input.style.outline = 'none';
+  //   input.style.padding = '6px';
+  //   container.appendChild(input)
 
-    // Workaround for blocked text selection in Editor
-    mxEvent.addListener(input, 'mousedown', function(evt)
-    {
-        if (evt.stopPropagation)
-        {
-            evt.stopPropagation();
-        }
+  //   // Workaround for blocked text selection in Editor
+  //   mxEvent.addListener(input, 'mousedown', function(evt)
+  //   {
+  //       if (evt.stopPropagation)
+  //       {
+  //           evt.stopPropagation();
+  //       }
         
-        evt.cancelBubble = true;
-    });
+  //       evt.cancelBubble = true;
+  //   });
 
-	mxEvent.addListener(input, 'keydown', mxUtils.bind(this, function(evt)
-	{
-		if (evt.keyCode == 13 /* Enter */)
-		{
-			this.editorUi.save(input.value, this.editorUi.editor.getFiledes())
-			mxEvent.consume(evt);
-		}
-	}));
-	//
+	// mxEvent.addListener(input, 'keydown', mxUtils.bind(this, function(evt)
+	// {
+	// 	if (evt.keyCode == 13 /* Enter */)
+	// 	{
+	// 		this.editorUi.save(input.value, this.editorUi.editor.getFiledes())
+	// 		mxEvent.consume(evt);
+	// 	}
+	// }));
+	// //
 
 	return menubar;
 };

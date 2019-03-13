@@ -809,7 +809,7 @@ Actions.prototype.init = function()
 	
 	var showingAbout = false;
 	
-	this.put('about', new Action(mxResources.get('about') + ' Graph Editor...', function()
+	this.put('about', new Action(mxResources.get('about') + ' 界面工具...', function()
 	{
 		if (!showingAbout)
 		{

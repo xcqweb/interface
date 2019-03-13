@@ -71936,7 +71936,7 @@ mxConnectionHandler.prototype.targetConnectImage = false;
  * 
  * Specifies if events are handled. Default is true.
  */
-mxConnectionHandler.prototype.enabled = true;
+mxConnectionHandler.prototype.enabled = false;
 
 /**
  * Variable: select

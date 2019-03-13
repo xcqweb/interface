@@ -382,7 +382,7 @@ Editor.prototype.resetGraph = function()
 	this.graph.gridEnabled = !this.isChromelessView() || urlParams['grid'] == '1';
 	this.graph.graphHandler.guidesEnabled = true;
 	this.graph.setTooltips(true);
-	this.graph.setConnectable(true);
+	// this.graph.setConnectable(true);
 	this.graph.foldingEnabled = true;
 	this.graph.scrollbars = this.graph.defaultScrollbars;
 	this.graph.pageVisible = this.graph.defaultPageVisible;
