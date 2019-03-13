@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd"><svg width="530" height="270" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<path style="fill:#366;stroke:#000;stroke-width:2" d="M344,28 l-83,0 0,27 83,0 0,-27z" />
+<path style="fill:#4c7f7f" d="M336,28 l-67,0 0,27 67,0 0,-27z" />
+<path style="fill:#699" d="M323,28 l-41,0 0,27 41,0 0,-27z" />
+<path style="fill:#9cc" d="M307,28 l-9,0 0,27 9,0 0,-27z" />
+<path style="fill:#194c4c;stroke:#000;stroke-width:2" d="M48,255 l434,0 7,-2 11,-15 5,-12 4,-15 3,-17 2,-19 1,-20 -1,-20 -2,-19 -3,-17 -4,-15 -5,-12 -11,-15 -7,-2 -434,0 -7,2 -11,15 -5,12 -4,15 -3,17 -2,19 -1,20 1,20 2,19 3,17 4,15 5,12 11,15 7,2z" />
+<path style="fill:#366" d="M48,247 l434,0 7,-2 6,-5 10,-20 4,-13 3,-16 2,-17 1,-19 -1,-19 -2,-17 -3,-16 -4,-13 -10,-20 -6,-5 -7,-2 -434,0 -7,2 -6,5 -10,20 -4,13 -3,16 -2,17 -1,19 1,19 2,17 3,16 4,13 10,20 6,5 7,2z" />
+<path style="fill:#4c7f7f" d="M48,234 l434,0 13,-6 10,-17 4,-12 3,-13 2,-15 1,-16 -1,-16 -2,-15 -3,-13 -9,-22 -5,-7 -13,-6 -434,0 -13,6 -10,17 -4,12 -3,13 -2,15 -1,16 1,16 2,15 3,13 9,22 5,7 13,6z" />
+<path style="fill:#699" d="M48,213 l434,0 7,-1 11,-9 9,-16 5,-20 1,-12 -3,-23 -7,-18 -10,-12 -6,-4 -7,-1 -434,0 -7,1 -11,9 -9,16 -5,20 -1,12 3,23 7,18 10,12 6,4 7,1z" />
+<path style="fill:#7fb2b2" d="M48,188 l434,0 13,-3 14,-12 6,-18 -3,-13 -12,-14 -18,-6 -434,0 -13,3 -14,12 -6,18 3,13 12,14 18,6z" />
+<ellipse style="fill:#9cc" cx="265" cy="155" rx="250" ry="8" />
+<path style="fill:none;stroke:#000;stroke-width:2" d="M482,55 l0,200" />
+<path style="fill:none;stroke:#000;stroke-width:2" d="M48,55 l0,200" />
+<path style="fill:#366" d="M357,15 l-109,0 0,13 109,0 0,-13z" />
+<path style="fill:#4c7f7f" d="M346,15 l-87,0 0,13 87,0 0,-13z" />
+<path style="fill:#699" d="M330,15 l-55,0 0,13 55,0 0,-13z" />
+<path style="fill:#9cc" d="M308,15 l-11,0 0,13 11,0 0,-13z" />
+<path style="fill:none;stroke:#000;stroke-width:2" d="M357,15 l-109,0 0,13 109,0 0,-13" />
+
+</svg>

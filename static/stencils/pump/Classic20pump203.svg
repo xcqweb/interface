@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd"><svg width="999" height="841" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<path style="fill:#fc0;stroke:#000;stroke-width:2" d="M189,342 l-2,28 -2,31 0,39 4,40 8,38 12,37 15,35 18,34 21,31 25,29 26,26 29,25 31,21 34,18 35,15 37,12 38,8 40,4 19,0 20,0 40,-4 39,-8 36,-12 35,-15 33,-18 32,-21 29,-25 26,-26 25,-29 21,-31 18,-34 15,-35 12,-37 8,-38 4,-40 0,-19 0,-20 -4,-40 -8,-39 -12,-36 -15,-35 -18,-33 -21,-32 -25,-29 -26,-26 -29,-25 -32,-21 -33,-18 -35,-15 -36,-12 -39,-8 -40,-4 -20,0 -549,0 0,314 161,0z" />
+<circle style="fill:#ffd633" cx="577" cy="420" r="368" />
+<circle style="fill:#ffe066" cx="577" cy="420" r="343" />
+<circle style="fill:#ffeb99" cx="577" cy="420" r="318" />
+<circle style="fill:#fff5cc" cx="577" cy="420" r="294" />
+<circle style="fill:#ffeb99" cx="577" cy="420" r="260" />
+<circle style="fill:#ffe066" cx="577" cy="420" r="235" />
+<circle style="fill:#ffd633" cx="577" cy="420" r="211" />
+<circle style="fill:#fc0;stroke:#e5b200;stroke-width:2" cx="577" cy="420" r="181" />
+<path style="fill:none;stroke:#e5b200;stroke-width:2" d="M577,421 l0,-182" />
+<path style="fill:none;stroke:#e5b200;stroke-width:2" d="M577,419 l-157,91" />
+<path style="fill:none;stroke:#e5b200;stroke-width:2" d="M576,420 l157,91" />
+
+</svg>
