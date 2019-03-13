@@ -265,6 +265,7 @@ EditorUi = function(editor, container, lightbox)
 			
 			if (nodes == null)
 			{
+				// 输入文字时
 				this.toolbar.createTextToolbar();
 			}
 			else
@@ -3120,7 +3121,7 @@ EditorUi.prototype.createUi = function()
 	}
 
 	// 创建 toolbar
-	this.toolbar = (this.editor.chromeless) ? null : this.createToolbar(this.createDiv('geToolbar'));
+		this.toolbar = (this.editor.chromeless) ? null : this.createToolbar(this.createDiv('geToolbar'));
 	if (this.toolbar != null)
 	{
 		this.toolbarContainer.appendChild(this.toolbar.container);

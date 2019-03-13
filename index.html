@@ -38,8 +38,7 @@
 			{
 				editorUiInit.apply(this, arguments);
 				// this.actions.get('export').setEnabled(false);
-
-				// Updates action states which require a backend
+				
 				if (Editor.useLocalStorage)
 				{
 					mxUtils.post(OPEN_URL, '', mxUtils.bind(this, function(req)
@@ -54,23 +53,20 @@
 				}
 			};
 			
-			// Adds required resources (disables loading of fallback properties, this can only
-			// be used if we know that all keys are defined in the language specific file)
+			
 			mxResources.loadDefaultBundle = false;
 			var bundle = mxResources.getDefaultBundle(RESOURCE_BASE, mxLanguage) ||
 				mxResources.getSpecialBundle(RESOURCE_BASE, mxLanguage);
 
-			// Fixes possible asynchronous requests
 			mxUtils.getAll([bundle, STYLE_PATH + '/default.xml'], function(xhr)
 			{
-				// Adds bundle text to resources
 				mxResources.parse(xhr[0].getText());
 				
-				// Configures the default graph theme
+				// 配置默认配置
 				var themes = new Object();
 				themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement(); 
 				
-				// Main
+				// 实例化
 				new EditorUi(new Editor(false, themes));
 			})
 		})();
