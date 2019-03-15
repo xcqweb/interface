@@ -6,8 +6,9 @@
  */
 function Toolbar(editorUi, container)
 {
+	this.containerList = container;
 	this.editorUi = editorUi;
-	this.container = container;
+	this.container = container[0];
 	this.staticElements = [];
 	this.init();
 
@@ -74,10 +75,6 @@ Toolbar.prototype.init = function()
 	var zoom_elts = this.addItems(['zoomIn', 'zoomOut']);
 	zoom_elts[0].setAttribute('title', mxResources.get('zoomIn') + ' (' + this.editorUi.actions.get('zoomIn').shortcut + ')');
 	zoom_elts[1].setAttribute('title', mxResources.get('zoomOut') + ' (' + this.editorUi.actions.get('zoomOut').shortcut + ')');
-	// jevin**************************
-	this.addItems(['copy', 'paste']);
-	this.addItems(['cut', 'duplicate']);
-	// jevin**************************
 	// 如果缩放后，更新标签
 	this.updateZoom = mxUtils.bind(this, function()
 	{
@@ -94,20 +91,12 @@ Toolbar.prototype.init = function()
 	this.editorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
 	this.editorUi.editor.addListener('resetGraphView', this.updateZoom);
 
-	// 撤销、重做
-	var do_elts = this.addItems(['undo', 'redo']);
-	do_elts[0].setAttribute('title', mxResources.get('undo') + ' (' + this.editorUi.actions.get('undo').shortcut + ')');
-	do_elts[1].setAttribute('title', mxResources.get('redo') + ' (' + this.editorUi.actions.get('redo').shortcut + ')');
-	
-	// 删除
-	var d_elts = this.addItems([ 'delete']);
-	d_elts[0].setAttribute('title', mxResources.get('delete') + ' (' + this.editorUi.actions.get('delete').shortcut + ')');
+	this.addItems(['copy', 'paste', 'cut', 'duplicate', 'undo', 'redo', 'toFront', 'toBack'], this.containerList[1]);
+	this.addItems([ 'fillColor', 'strokeColor', 'shadow', 'delete'], this.containerList[2]);
+	this.addItems([ 'fillColor', 'strokeColor', 'shadow', 'delete'], this.containerList[3]);
+	this.addItems([ 'fillColor', 'strokeColor', 'shadow', 'delete'], this.containerList[4]);
+	this.addItems([ 'fillColor', 'strokeColor'], this.containerList[5]);
 
-	this.addItems(['toFront', 'toBack']);
-
-	this.addItems(['fillColor']);
-	this.addItems(['strokeColor']);
-	this.addItems(['shadow']);
 };
 
 
@@ -136,7 +125,7 @@ Toolbar.prototype.setFontSize = function(value)
 };
 
 /**
- * Hides the current menu.
+ * 编辑内容时的工具栏.
  */
 Toolbar.prototype.createTextToolbar = function()
 {
@@ -155,8 +144,6 @@ Toolbar.prototype.createTextToolbar = function()
 		styleElt.getElementsByTagName('img')[0].style.top = '5px';
 	}
 	
-	// this.addSeparator();
-	
 	this.fontMenu = this.addMenu('', mxResources.get('fontFamily'), true, 'fontFamily');
 	this.fontMenu.style.position = 'relative';
 	this.fontMenu.style.whiteSpace = 'nowrap';
@@ -172,7 +159,6 @@ Toolbar.prototype.createTextToolbar = function()
 		this.fontMenu.getElementsByTagName('img')[0].style.top = '5px';
 	}
 	
-	// this.addSeparator();
 	
 	this.sizeMenu = this.addMenu(Menus.prototype.defaultFontSize, mxResources.get('fontSize'), true, 'fontSize');
 	this.sizeMenu.style.position = 'relative';
@@ -514,6 +500,7 @@ Toolbar.prototype.createTextToolbar = function()
 						table.removeAttribute('cellPadding');
 					}
 				}), mxResources.get('spacing'));
+				
 				this.editorUi.showDialog(dlg.container, 300, 80, true, true);
 				dlg.init();
 			}), null, 'geIcon geSprite geSprite-fit');
@@ -585,7 +572,7 @@ Toolbar.prototype.addMenu = function(label, tooltip, showLabels, name, c, showAl
  */
 Toolbar.prototype.addMenuFunction = function(label, tooltip, showLabels, funct, c, showAll)
 {
-	return this.addMenuFunctionInContainer((c != null) ? c : this.container, label, tooltip, showLabels, funct, showAll);
+	return this.addMenuFunctionInContainer((c != null) ? c : this.containerList[0], label, tooltip, showLabels, funct, showAll);
 };
 
 /**
@@ -606,7 +593,7 @@ Toolbar.prototype.addMenuFunctionInContainer = function(container, label, toolti
  */
 Toolbar.prototype.addSeparator = function(c)
 {
-	c = (c != null) ? c : this.container;
+	c = (c != null) ? c : this.containerList[0];
 	var elt = document.createElement('div');
 	elt.className = 'geSeparator';
 	c.appendChild(elt);
@@ -677,7 +664,7 @@ Toolbar.prototype.addItem = function(sprite, key, c, ignoreDisabled)
 Toolbar.prototype.addButton = function(classname, tooltip, funct, c)
 {
 	var elt = this.createButton(classname);
-	c = (c != null) ? c : this.container;
+	c = (c != null) ? c : this.containerList[0];
 	
 	this.initElement(elt, tooltip);
 	this.addClickHandler(elt, funct);

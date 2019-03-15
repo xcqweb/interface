@@ -245,7 +245,6 @@ EditorUi = function(editor, container, lightbox)
 		{
 			var node = this.toolbar.container.firstChild;
 			var newNodes = [];
-			
 			while (node != null)
 			{
 				var tmp = node.nextSibling;
@@ -262,7 +261,6 @@ EditorUi = function(editor, container, lightbox)
 			// Saves references to special items
 			var tmp1 = this.toolbar.fontMenu;
 			var tmp2 = this.toolbar.sizeMenu;
-			
 			if (nodes == null)
 			{
 				// 输入文字时
@@ -284,7 +282,7 @@ EditorUi = function(editor, container, lightbox)
 			fontMenu = tmp1;
 			sizeMenu = tmp2;
 			nodes = newNodes;
-		}
+		} 
 	});
 
 	var ui = this;
@@ -294,7 +292,8 @@ EditorUi = function(editor, container, lightbox)
 	graph.cellEditor.startEditing = function()
 	{
 		cellEditorStartEditing.apply(this, arguments);
-		updateToolbar();
+		// 停止编辑内容时更新工具栏
+		// updateToolbar();
 		
 		if (graph.cellEditor.isContentEditing())
 		{
@@ -963,7 +962,7 @@ EditorUi.prototype.splitSize = (mxClient.IS_TOUCH || mxClient.IS_POINTER) ? 12 :
  * Specifies the height of the menubar. Default is 34.
  */
 // 顶部操作栏高度
-EditorUi.prototype.menubarHeight = 34;
+EditorUi.prototype.menubarHeight = 30;
 
 /**
  * Specifies the width of the format panel should be enabled. Default is true.
@@ -976,9 +975,9 @@ EditorUi.prototype.formatEnabled = true;
 EditorUi.prototype.formatWidth = 240;
 
 /**
- * Specifies the height of the toolbar. Default is 36.
+ * 工具栏的高度
  */
-EditorUi.prototype.toolbarHeight = 80;
+EditorUi.prototype.toolbarHeight = 70;
 
 /**
  * Specifies the height of the footer. Default is 28.
@@ -995,7 +994,6 @@ EditorUi.prototype.sidebarFooterHeight = 34;
  * screen widths <= 640px.
  */
 EditorUi.prototype.hsplitPosition = (screen.width <= 640) ? 118 : 208;
-
 /**
  * Specifies if animations are allowed in <executeLayout>. Default is true.
  */
@@ -2906,7 +2904,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
 	
 	if (tmp > 0 && !mxClient.IS_QUIRKS)
 	{
-		tmp += 1;
+		tmp += 2;
 	}
 	
 	var sidebarFooterHeight = 0;
@@ -3120,12 +3118,19 @@ EditorUi.prototype.createUi = function()
 		this.container.appendChild(this.tabContainer);
 	}
 
+	// 多个toolbar功能区
+	var containerList = []
+	for(var i = 1; i < 7; i++) {
+		containerList.push(this.createDiv('geToolbar geToolbar' + i))
+	}
 	// 创建 toolbar
-	console.log(this.createToolbar)
-	this.toolbar = (this.editor.chromeless) ? null : this.createToolbar(this.createDiv('geToolbar'));
+	this.toolbar = (this.editor.chromeless) ? null : this.createToolbar(containerList);
 	if (this.toolbar != null)
 	{
-		this.toolbarContainer.appendChild(this.toolbar.container);
+		// 多个功能区加入toolbarContainer
+		for (var i = 0; i < this.toolbar.containerList.length; i++) {
+			this.toolbarContainer.appendChild(this.toolbar.containerList[i]);
+		}
 		this.container.appendChild(this.toolbarContainer);
 	}
 
