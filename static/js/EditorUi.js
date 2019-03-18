@@ -2272,7 +2272,7 @@ EditorUi.prototype.hideCurrentMenu = function()
 };
 
 /**
- * Updates the document title.
+ * 更新文档标题.
  */
 EditorUi.prototype.updateDocumentTitle = function()
 {
@@ -2284,8 +2284,8 @@ EditorUi.prototype.updateDocumentTitle = function()
 	}
 	
 	document.title = title;
-	document.getElementById('filename').innerHTML = this.editor.getOrCreateFilename();
-	document.getElementById('filenameInput').setAttribute('placeholder', this.editor.getOrCreateFilename())
+	// document.getElementById('filename').innerHTML = this.editor.getOrCreateFilename();
+	// document.getElementById('filenameInput').setAttribute('placeholder', this.editor.getOrCreateFilename())
 };
 
 /**
@@ -3467,10 +3467,12 @@ EditorUi.prototype.saveFile = function(forceDialog)
 {
 	if (!forceDialog && this.editor.filename != null)
 	{
+		// 新建保存
 		this.save(this.editor.getOrCreateFilename(), this.editor.getFiledes());
 	}
 	else
 	{
+		// 编辑保存
 		var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), mxResources.get('save'), mxUtils.bind(this, function(name, des)
 		{
 			this.save(name, des);
@@ -3485,7 +3487,7 @@ EditorUi.prototype.saveFile = function(forceDialog)
 			
 			return false;
 		}));
-		this.showDialog(dlg.container, 300, 100, true, true);
+		this.showDialog(dlg.container, 300, 210, true, false);
 		dlg.init();
 	}
 };
@@ -3503,7 +3505,6 @@ EditorUi.prototype.save = function(name, des)
 		}
 		
 		var xml = mxUtils.getXml(this.editor.getGraphXml());
-		
 		try
 		{
 			if (Editor.useLocalStorage)
@@ -3524,9 +3525,6 @@ EditorUi.prototype.save = function(name, des)
 					var filename = name
 					var filedes = des
 					var filecontent = xml
-					console.log(filename)
-					console.log(filedes)
-					console.log(filecontent)
 				}
 				else
 				{
@@ -3536,15 +3534,18 @@ EditorUi.prototype.save = function(name, des)
 					return;
 				}
 			}
-
+			
 			this.editor.setModified(false);
+			// 设置名称和描述
 			this.editor.setFilename(name);
 			this.editor.setFiledes(des);
-
+			console.log('保存文件', name, des, xml)
+			// 更新标题
 			this.updateDocumentTitle();
 		}
 		catch (e)
 		{
+			console.log(e)
 			this.editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
 		}
 	}

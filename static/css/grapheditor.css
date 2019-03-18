@@ -191,7 +191,7 @@
 	text-decoration:none;
 }
 .geMenubarContainer {
-	background-color:#e3e2e3;
+	background-color:#E4E3E4;
 }
 .geMenubar {
 	padding:0px 2px 0px 2px;
@@ -200,10 +200,10 @@
 .geMenubarContainer .geItem, .geToolbar .geItem {
 	cursor:default;
 	font-size: 14px;
-	padding:6px 8px 6px 8px;
+	padding:6px 15px 6px 15px;
 }
 .geMenubarContainer .geItem:hover {
-	background:#eeeeee;
+	/* background:#eeeeee; */
 }
 .mxDisabled:hover {
 	background:inherit !important;

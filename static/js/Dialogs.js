@@ -349,7 +349,7 @@ var AboutDialog = function(editorUi)
 };
 
 /**
- * Constructs a new filename dialog.
+ * 保存文件弹窗
  */
 var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validateFn, content, helpLink, closeOnBtn, cancelFn)
 {
@@ -364,16 +364,17 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 	
 	td = document.createElement('td');
 	td.style.whiteSpace = 'nowrap';
-	td.style.fontSize = '10pt';
-	td.style.width = '120px';
+	td.style.fontSize = '12px';
+	td.style.width = '60px';
 	mxUtils.write(td, (label || mxResources.get('filename')) + ':');
 	
 	row.appendChild(td);
-	
 	var nameInput = document.createElement('input');
 	nameInput.setAttribute('value', filename || '');
 	nameInput.style.marginLeft = '4px';
 	nameInput.style.width = '180px';
+	nameInput.style.height = '30px';
+	nameInput.style.marginBottom = '10px';
 	
 	var genericBtn = mxUtils.button(buttonText, function()
 	{
@@ -484,16 +485,18 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 
 	td = document.createElement('td');
 	td.style.whiteSpace = 'nowrap';
-	td.style.fontSize = '10pt';
-	td.style.width = '120px';
+	td.style.fontSize = '12px';
+	td.style.width = '60px';
 	mxUtils.write(td, mxResources.get('des') + ':');
 	
 	row.appendChild(td);
 
-	var desInput = document.createElement('input');
-	desInput.setAttribute('value', editorUi.editor.getFiledes())
+	var desInput = document.createElement('textarea');
+	desInput.setAttribute('value', editorUi.editor.getFiledes() || '')
 	desInput.style.marginLeft = '4px';
 	desInput.style.width = '180px';
+	desInput.style.height = '90px';
+	desInput.style.resize = 'none';
 
 	td = document.createElement('td');
 	td.appendChild(desInput);
@@ -553,7 +556,6 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 	row.appendChild(td);
 	tbody.appendChild(row);
 	table.appendChild(tbody);
-	
 	this.container = table;
 };
 
