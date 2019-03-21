@@ -354,28 +354,37 @@ var AboutDialog = function(editorUi)
 var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validateFn, content, helpLink, closeOnBtn, cancelFn)
 {
 	closeOnBtn = (closeOnBtn != null) ? closeOnBtn : true;
-	var row, td;
 	
-	var table = document.createElement('table');
-	var tbody = document.createElement('tbody');
-	table.style.marginTop = '8px';
+	var saveContent = document.createElement('div')
+	saveContent.style.padding = "22px";
+	saveContent.className = 'geDialogInfo';
+	// 文件名称
+	var nameTitle = document.createElement('p')
+	nameTitle.innerHTML = '文件名称'
+	nameTitle.style.margin = "9px 0 5px";
+	nameTitle.style.color = "#929292";
+	saveContent.appendChild(nameTitle)
 	
-	row = document.createElement('tr');
-	
-	td = document.createElement('td');
-	td.style.whiteSpace = 'nowrap';
-	td.style.fontSize = '12px';
-	td.style.width = '60px';
-	mxUtils.write(td, (label || mxResources.get('filename')) + ':');
-	
-	row.appendChild(td);
 	var nameInput = document.createElement('input');
 	nameInput.setAttribute('value', filename || '');
-	nameInput.style.marginLeft = '4px';
-	nameInput.style.width = '180px';
-	nameInput.style.height = '30px';
-	nameInput.style.marginBottom = '10px';
+	nameInput.className = 'saveFileInput'
+	saveContent.appendChild(nameInput)
+
+	// 文件描述
+	var desTitle = document.createElement('p');
+	desTitle.innerHTML = '文件描述';
+	desTitle.style.margin = "9px 0 5px";
+	desTitle.style.color = "#929292";
+	saveContent.appendChild(desTitle)
 	
+	var desInput = document.createElement('input');
+	desInput.setAttribute('value', editorUi.editor.getFiledes() || '');
+	desInput.className = 'saveFileInput'
+	saveContent.appendChild(desInput)
+
+	// 按钮
+	var btnContent = document.createElement('div');
+	btnContent.className = "btnContent";
 	var genericBtn = mxUtils.button(buttonText, function()
 	{
 		if (validateFn == null || validateFn(nameInput.value))
@@ -412,7 +421,7 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 		if (Graph.fileSupport)
 		{
 			// Setup the dnd listeners
-			var dlg = table.parentNode;
+			var dlg = saveContent.parentNode;
 			var graph = editorUi.editor.graph;
 			var dropElt = null;
 				
@@ -460,57 +469,6 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 			}));
 		}
 	};
-
-	td = document.createElement('td');
-	td.appendChild(nameInput);
-	row.appendChild(td);
-
-	if (label != null || content == null)
-	{
-		tbody.appendChild(row);
-	}
-	
-	if (content != null)
-	{
-		row = document.createElement('tr');
-		td = document.createElement('td');
-		td.colSpan = 2;
-		td.appendChild(content);
-		row.appendChild(td);
-		tbody.appendChild(row);
-	}
-
-	//添加描述输入框
-	row = document.createElement('tr')
-
-	td = document.createElement('td');
-	td.style.whiteSpace = 'nowrap';
-	td.style.fontSize = '12px';
-	td.style.width = '60px';
-	mxUtils.write(td, mxResources.get('des') + ':');
-	
-	row.appendChild(td);
-
-	var desInput = document.createElement('textarea');
-	desInput.setAttribute('value', editorUi.editor.getFiledes() || '')
-	desInput.style.marginLeft = '4px';
-	desInput.style.width = '180px';
-	desInput.style.height = '90px';
-	desInput.style.resize = 'none';
-
-	td = document.createElement('td');
-	td.appendChild(desInput);
-	row.appendChild(td);
-	tbody.appendChild(row);
-	//
-	
-	row = document.createElement('tr');
-	td = document.createElement('td');
-	td.colSpan = 2;
-	td.style.paddingTop = '20px';
-	td.style.whiteSpace = 'nowrap';
-	td.setAttribute('align', 'right');
-	
 	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
 	{
 		editorUi.hideDialog();
@@ -524,7 +482,7 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 	
 	if (editorUi.editor.cancelFirst)
 	{
-		td.appendChild(cancelBtn);
+		btnContent.appendChild(cancelBtn);
 	}
 	
 	if (helpLink != null)
@@ -535,7 +493,7 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 		});
 		
 		helpBtn.className = 'geBtn';	
-		td.appendChild(helpBtn);
+		btnContent.appendChild(helpBtn);
 	}
 
 	mxEvent.addListener(nameInput, 'keypress', function(e)
@@ -546,19 +504,118 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 		}
 	});
 	
-	td.appendChild(genericBtn);
+	btnContent.appendChild(genericBtn);
 	
 	if (!editorUi.editor.cancelFirst)
 	{
-		td.appendChild(cancelBtn);
+		btnContent.appendChild(cancelBtn);
 	}
-
-	row.appendChild(td);
-	tbody.appendChild(row);
-	table.appendChild(tbody);
-	this.container = table;
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
 };
 
+/**
+ * 链接弹窗
+ */
+var LinkReportDialog = function(editorUi, defaultLink) {
+	var saveContent = document.createElement('div')
+	saveContent.style.padding = "22px";
+	saveContent.className = 'geDialogInfo';
+	// 链接
+	var nameTitle = document.createElement('p')
+	nameTitle.innerHTML = '链接'
+	nameTitle.style.margin = "9px 0 5px";
+	nameTitle.style.color = "#929292";
+	saveContent.appendChild(nameTitle)
+	
+	var nameInput = document.createElement('input');
+	nameInput.setAttribute('value', defaultLink || '');
+	nameInput.setAttribute('placeholder', '请输入链接地址');
+	nameInput.className = 'saveFileInput'
+	saveContent.appendChild(nameInput)
+
+	// 保存按钮
+	var btnContent = document.createElement('div');
+	btnContent.className = "btnContent";
+	var genericBtn = mxUtils.button('创建', function()
+	{
+		editorUi.hideDialog();
+	});
+	genericBtn.className = 'geBtn gePrimaryBtn';
+	// 取消按钮
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+	});
+	cancelBtn.className = 'geBtn';
+	
+	if (editorUi.editor.cancelFirst)
+	{
+		btnContent.appendChild(cancelBtn);
+	}
+
+	mxEvent.addListener(nameInput, 'keypress', function(e)
+	{
+		if (e.keyCode == 13)
+		{
+			genericBtn.click();
+		}
+	});
+	
+	btnContent.appendChild(genericBtn);
+	
+	if (!editorUi.editor.cancelFirst)
+	{
+		btnContent.appendChild(cancelBtn);
+	}
+
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
+}
+/**
+ * 分享弹窗
+ */
+var ShareDialog = function(editorUi) {
+	var saveContent = document.createElement('div')
+	saveContent.style.padding = "22px";
+	saveContent.className = 'geDialogInfo';
+	// 链接
+	var nameTitle = document.createElement('p')
+	nameTitle.innerHTML = '分享之后，生成的页面将在平台展示。';
+	nameTitle.style.margin = "9px 0 5px";
+	nameTitle.style.color = "#929292";
+	saveContent.appendChild(nameTitle)
+
+	// 保存按钮
+	var btnContent = document.createElement('div');
+	btnContent.className = "btnContent";
+	var genericBtn = mxUtils.button('分享', function()
+	{
+		editorUi.hideDialog();
+	});
+	genericBtn.className = 'geBtn gePrimaryBtn';
+	// 取消按钮
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+	});
+	cancelBtn.className = 'geBtn';
+	
+	if (editorUi.editor.cancelFirst)
+	{
+		btnContent.appendChild(cancelBtn);
+	}
+	
+	btnContent.appendChild(genericBtn);
+	
+	if (!editorUi.editor.cancelFirst)
+	{
+		btnContent.appendChild(cancelBtn);
+	}
+
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
+}
 /**
  * Constructs a new textarea dialog.
  */
@@ -2636,7 +2693,7 @@ var LayersWindow = function(editorUi, x, y, w, h)
 					graph.cellLabelChanged(layer, newValue);
 				}
 			}), mxResources.get('enterName'));
-			editorUi.showDialog(dlg.container, 300, 100, true, true);
+			editorUi.showDialog(dlg.container, 410, 100, true, true);
 			dlg.init();
 		}
 	};

@@ -24,6 +24,63 @@ Actions.prototype.init = function()
 		return Action.prototype.isEnabled.apply(this, arguments) && graph.isEnabled();
 	};
 
+	// 排版操作
+	// 文本左对齐
+	this.addAction('leftalign', function () {
+		ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_LEFT])()
+	}, false)
+	// 文本居中对齐
+	this.addAction('centeralign', function () {
+		ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_CENTER])()
+	}, false)
+	// 文本右对齐
+	this.addAction('rightalign', function () {
+		ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_RIGHT])()
+	}, false)
+	// 控件向上对齐
+	this.addAction('top', function () {
+		graph.alignCells(mxConstants.ALIGN_TOP)
+	}, false)
+	// 控件向下对齐
+	this.addAction('bottom', function () {
+		graph.alignCells(mxConstants.ALIGN_BOTTOM)
+	}, false)
+	// 控件垂直居中对齐
+	this.addAction('verticalcenter', function () {
+		graph.alignCells(mxConstants.ALIGN_CENTER)
+	}, false)
+	// 控件水平居中对齐
+	this.addAction('horizontalcenter', function () {
+		graph.alignCells(mxConstants.ALIGN_MIDDLE)
+	}, false)
+	// 控件垂直等距分布
+	this.addAction('verticalalign', function () {
+		graph.distributeCells(false);
+	}, false)
+	// 控件水平等距分布
+	this.addAction('horizontalalign', function () {
+		graph.distributeCells(true);
+	}, false)
+
+	// 水平翻转
+	this.addAction('flipH', function () {
+		graph.toggleCellStyles(mxConstants.STYLE_FLIPH, false);
+	}, false)
+	// 垂直翻转
+	this.addAction('flipV', function() {
+		graph.toggleCellStyles(mxConstants.STYLE_FLIPV, false);
+	}, false)
+	// 链接报表
+	this.addAction('linkReport', function() {
+		var dlg = new LinkReportDialog(ui, '')
+		ui.showDialog(dlg.container, 410, 200, true, false, null, null, '链接');
+	}, true)
+	// 分享
+	this.addAction('share', function() {
+		var dlg = new ShareDialog(ui, '')
+		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '链接');
+	}, true)
+
 	// File actions
 	this.addAction('new...', function() { graph.openLink(ui.getUrl()); });
 	this.addAction('open...', function()
@@ -419,7 +476,7 @@ Actions.prototype.init = function()
 			});
 		}
 	}).isEnabled = isGraphEnabled;
-	this.addAction('link...', mxUtils.bind(this, function()
+	this.addAction('link', mxUtils.bind(this, function()
 	{
 		var graph = ui.editor.graph;
 		
@@ -475,7 +532,7 @@ Actions.prototype.init = function()
 				this.get('editLink').funct();
 			}
 		}
-	})).isEnabled = isGraphEnabled;
+	}), false);
 	this.addAction('autosize', function()
 	{
 		var cells = graph.getSelectionCells();
@@ -770,8 +827,10 @@ Actions.prototype.init = function()
 	}, null, null, 'Alt+Shift+A');
 	action.setToggleAction(true);
 	action.setSelectedCallback(function() { return graph.connectionArrowsEnabled; });
+	console.log(graph.connectionHandler.isEnabled)
 	action = this.addAction('connectionPoints', function()
 	{
+		console.log(122)
 		graph.setConnectable(!graph.connectionHandler.isEnabled());
 		ui.fireEvent(new mxEventObject('connectionPointsChanged'));
 	}, null, null, 'Alt+Shift+P');
@@ -899,7 +958,7 @@ Actions.prototype.init = function()
 	this.addAction('borderColor...', function() { ui.menus.pickColor(mxConstants.STYLE_LABEL_BORDERCOLOR); });
 	
 	// Format actions
-	this.addAction('vertical', function() { ui.menus.toggleStyle(mxConstants.STYLE_HORIZONTAL, true); });
+	this.addAction('vertical', function() { ui.menus.toggleStyle(mxConstants.STYLE_HORIZONTAL, true); }, false);
 	this.addAction('shadow', function() { ui.menus.toggleStyle(mxConstants.STYLE_SHADOW); });
 	this.addAction('solid', function()
 	{

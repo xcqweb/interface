@@ -26,8 +26,9 @@ td {
     padding: 0;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     -webkit-touch-callout: none;
-		color: #333333;
+		color: #252525;
 		box-sizing: border-box;
+		font-family: 'MicrosoftYaHei';
 }
 div.mxRubberband {
 	position: absolute;
@@ -188,7 +189,7 @@ td.mxPopupMenuIcon {
 	padding: 2px 4px 2px 4px;
 }
 .mxDisabled {
-	opacity: 0.2 !important;
+	opacity: 0.5 !important;
 	cursor:default !important;
 }
 .u-prop-cell{

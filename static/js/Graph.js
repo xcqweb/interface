@@ -398,7 +398,7 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 	// All code below not available and not needed in embed mode
 	if (typeof mxVertexHandler !== 'undefined')
 	{
-		this.setConnectable(true);
+		this.setConnectable(false);
 		this.setDropEnabled(true);
 		this.setPanning(true);
 		this.setTooltips(true);

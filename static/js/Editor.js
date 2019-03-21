@@ -737,10 +737,10 @@ OpenFile.prototype.cancel = function(cancel)
 /**
  * Basic dialogs that are available in the viewer (print dialog).
  */
-function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll)
+function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 {
 	var dx = 0;
-	
+	title = title || '';
 	if (mxClient.IS_VML && (document.documentMode == null || document.documentMode < 8))
 	{
 		// Adds padding as a workaround for box model in older IE versions
@@ -763,7 +763,7 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll)
 	// Keeps window size inside available space
 	if (!mxClient.IS_QUIRKS)
 	{
-		elt.style.maxHeight = '100%';
+		elt.style.maxHeight = h - 36 + 'px';
 	}
 	
 	w = Math.min(w, document.body.scrollWidth - 64);
@@ -814,9 +814,18 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll)
 	// div.style.top = top + 'px';
 	div.style.zIndex = this.zIndex;
 	
+	// 标题栏
+	var titleBox = document.createElement('p')
+	titleBox.className = 'geDialogTitle'
+	titleBox.innerHTML = title;
+	div.appendChild(titleBox);
+
 	div.appendChild(elt);
 	document.body.appendChild(div);
-	
+	titleBox.addEventListener('click', function(e) {
+		e = e || window.event;
+		editorUi.hideDialog();
+	})
 	// Adds vertical scrollbars if needed
 	if (!noScroll && elt.clientHeight > div.clientHeight - 64)
 	{

@@ -55,9 +55,11 @@ Toolbar.prototype.staticElements = null;
  */
 Toolbar.prototype.init = function()
 {
-	
+	// 新建、保存
+	this.addItems(['new', 'save'], this.containerList[0]);
 	// 重置视图百分比
-	var viewMenu = this.addMenu('', mxResources.get('zoom') + ' (Alt+Mousewheel)', true, 'viewZoom', null, true);
+	this.addItems(['zoomIn'], this.containerList[1]);
+	var viewMenu = this.addMenu('', mxResources.get('zoom') + ' (Alt+Mousewheel)', true, 'viewZoom', this.containerList[1], true);
 	viewMenu.showDisabled = true;
 	viewMenu.style.whiteSpace = 'nowrap';
 	viewMenu.style.position = 'relative';
@@ -72,9 +74,7 @@ Toolbar.prototype.init = function()
 	}
 	
 	// 放大缩小
-	var zoom_elts = this.addItems(['zoomIn', 'zoomOut']);
-	zoom_elts[0].setAttribute('title', mxResources.get('zoomIn') + ' (' + this.editorUi.actions.get('zoomIn').shortcut + ')');
-	zoom_elts[1].setAttribute('title', mxResources.get('zoomOut') + ' (' + this.editorUi.actions.get('zoomOut').shortcut + ')');
+	this.addItems(['zoomOut'], this.containerList[1]);
 	// 如果缩放后，更新标签
 	this.updateZoom = mxUtils.bind(this, function()
 	{
@@ -90,13 +90,18 @@ Toolbar.prototype.init = function()
 
 	this.editorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
 	this.editorUi.editor.addListener('resetGraphView', this.updateZoom);
-
-	this.addItems(['copy', 'paste', 'cut', 'duplicate', 'undo', 'redo', 'toFront', 'toBack'], this.containerList[1]);
-	this.addItems([ 'fillColor', 'strokeColor', 'shadow', 'delete'], this.containerList[2]);
-	this.addItems([ 'fillColor', 'strokeColor', 'shadow', 'delete'], this.containerList[3]);
-	this.addItems([ 'fillColor', 'strokeColor', 'shadow', 'delete'], this.containerList[4]);
-	this.addItems([ 'fillColor', 'strokeColor'], this.containerList[5]);
-
+	// 复制、粘贴
+	this.addItems(['copy', 'paste', 'cut', 'duplicate', 'undo', 'redo', 'delete'], this.containerList[2]);
+	// 排版
+	this.addItems([ 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'], this.containerList[3]);
+	// 置前
+	this.addItems([ 'toFront', 'toBack'], this.containerList[4]);
+	// 组合
+	this.addItems([ 'group', 'ungroup'], this.containerList[5]);
+	// 旋转
+	this.addItems([ 'turn', 'flipV', 'flipH'], this.containerList[6]);
+	// 链接分享
+	this.addItems([ 'linkReport', 'share'], this.containerList[7]);
 };
 
 
@@ -643,7 +648,6 @@ Toolbar.prototype.addItem = function(sprite, key, c, ignoreDisabled)
 		}
 		
 		elt = this.addButton(sprite, tooltip, action.funct, c);
-
 		if (!ignoreDisabled)
 		{
 			elt.setEnabled(action.enabled);
@@ -693,7 +697,6 @@ Toolbar.prototype.initElement = function(elt, tooltip)
 Toolbar.prototype.addEnabledState = function(elt)
 {
 	var classname = elt.className;
-	
 	elt.setEnabled = function(value)
 	{
 		elt.enabled = value;

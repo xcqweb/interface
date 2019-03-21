@@ -977,7 +977,7 @@ EditorUi.prototype.formatWidth = 240;
 /**
  * 工具栏的高度
  */
-EditorUi.prototype.toolbarHeight = 70;
+EditorUi.prototype.toolbarHeight = 72;
 
 /**
  * Specifies the height of the footer. Default is 28.
@@ -2794,12 +2794,12 @@ EditorUi.prototype.updateActionStates = function()
 		}
 	}
 	
-	// Updates action states
+	// 更新 action 状态
 	var actions = ['cut', 'copy', 'bold', 'italic', 'underline', 'delete', 'duplicate',
 	               'editStyle', 'editTooltip', 'editLink', 'backgroundColor', 'borderColor',
 	               'edit', 'toFront', 'toBack', 'lockUnlock', 'solid', 'dashed', 'pasteSize',
 	               'dotted', 'fillColor', 'gradientColor', 'shadow', 'fontColor',
-	               'formattedText', 'rounded', 'toggleRounded', 'sharp', 'strokeColor'];
+	               'formattedText', 'rounded', 'toggleRounded', 'sharp', 'strokeColor', 'flipH', 'flipV', 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'];
 	
 	for (var i = 0; i < actions.length; i++)
 	{
@@ -2904,7 +2904,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
 	
 	if (tmp > 0 && !mxClient.IS_QUIRKS)
 	{
-		tmp += 2;
+		tmp += 0;
 	}
 	
 	var sidebarFooterHeight = 0;
@@ -3120,7 +3120,7 @@ EditorUi.prototype.createUi = function()
 
 	// 多个toolbar功能区
 	var containerList = []
-	for(var i = 1; i < 7; i++) {
+	for(var i = 1; i < 9; i++) {
 		containerList.push(this.createDiv('geToolbar geToolbar' + i))
 	}
 	// 创建 toolbar
@@ -3295,9 +3295,9 @@ EditorUi.prototype.addSplitHandler = function(elt, horizontal, dx, onChange)
 };
 
 /**
- * Displays a print dialog.
+ * 显示弹窗
  */
-EditorUi.prototype.showDialog = function(elt, w, h, modal, closable, onClose, noScroll)
+EditorUi.prototype.showDialog = function(elt, w, h, modal, closable, onClose, noScroll, title)
 {
 	this.editor.graph.tooltipHandler.hideTooltip();
 	
@@ -3305,7 +3305,7 @@ EditorUi.prototype.showDialog = function(elt, w, h, modal, closable, onClose, no
 	{
 		this.dialogs = [];
 	}
-	this.dialog = new Dialog(this, elt, w, h, modal, closable, onClose, noScroll);
+	this.dialog = new Dialog(this, elt, w, h, modal, closable, onClose, noScroll, title);
 	this.dialogs.push(this.dialog);
 };
 
@@ -3473,7 +3473,7 @@ EditorUi.prototype.saveFile = function(forceDialog)
 	else
 	{
 		// 编辑保存
-		var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), mxResources.get('save'), mxUtils.bind(this, function(name, des)
+		var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '创建', mxUtils.bind(this, function(name, des)
 		{
 			this.save(name, des);
 		}), null, mxUtils.bind(this, function(name)
@@ -3487,7 +3487,8 @@ EditorUi.prototype.saveFile = function(forceDialog)
 			
 			return false;
 		}));
-		this.showDialog(dlg.container, 300, 210, true, false);
+		// 显示弹窗
+		this.showDialog(dlg.container, 410, 266, true, false, null, null, '保存文件');
 		dlg.init();
 	}
 };

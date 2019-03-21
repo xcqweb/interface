@@ -15445,9 +15445,10 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 mxPopupMenu.prototype.addCheckmark = function(item, img)
 {
 	var td = item.firstChild.nextSibling;
-	td.style.backgroundImage = 'url(\'' + img + '\')';
+	td.style.backgroundImage = 'url(\'static/images/menu/checked.png\')';
 	td.style.backgroundRepeat = 'no-repeat';
 	td.style.backgroundPosition = '2px 50%';
+	td.style.backgroundSize = '16px 16px';
 };
 
 /**

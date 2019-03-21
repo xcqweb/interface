@@ -978,7 +978,6 @@ Menus.prototype.addShortcut = function(item, action)
 	{
 		var td = item.firstChild.nextSibling.nextSibling;
 		var span = document.createElement('span');
-		span.style.color = 'gray';
 		mxUtils.write(span, action.shortcut);
 		td.appendChild(span);
 	}
@@ -1106,6 +1105,12 @@ Menus.prototype.createMenubar = function(container)
 {
 	var menubar = new Menubar(this.editorUi, container);
 	var menus = this.defaultMenuItems;
+
+	// logo
+	var logoImg = document.createElement('img');
+	logoImg.className = 'geLogo'
+	logoImg.setAttribute('src', '/static/images/logo.png');
+	container.appendChild(logoImg);
 
 	for (var i = 0; i < menus.length; i++)
 	{
