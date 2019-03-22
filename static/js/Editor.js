@@ -763,7 +763,7 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 	// Keeps window size inside available space
 	if (!mxClient.IS_QUIRKS)
 	{
-		elt.style.maxHeight = h - 36 + 'px';
+		elt.style.maxHeight = h + 'px';
 	}
 	
 	w = Math.min(w, document.body.scrollWidth - 64);
@@ -814,18 +814,21 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 	// div.style.top = top + 'px';
 	div.style.zIndex = this.zIndex;
 	
-	// 标题栏
-	var titleBox = document.createElement('p')
-	titleBox.className = 'geDialogTitle'
-	titleBox.innerHTML = title;
-	div.appendChild(titleBox);
-
-	div.appendChild(elt);
+	if(title) {
+		elt.style.maxHeight = h - 36 + 'px';
+		// 标题栏
+		var titleBox = document.createElement('p')
+		titleBox.className = 'geDialogTitle'
+		titleBox.innerHTML = title;
+		div.appendChild(titleBox);
+	
+		titleBox.addEventListener('click', function(e) {
+			e = e || window.event;
+			editorUi.hideDialog();
+		})
+	}
 	document.body.appendChild(div);
-	titleBox.addEventListener('click', function(e) {
-		e = e || window.event;
-		editorUi.hideDialog();
-	})
+	div.appendChild(elt);
 	// Adds vertical scrollbars if needed
 	if (!noScroll && elt.clientHeight > div.clientHeight - 64)
 	{

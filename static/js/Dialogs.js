@@ -592,6 +592,11 @@ var ShareDialog = function(editorUi) {
 	var genericBtn = mxUtils.button('分享', function()
 	{
 		editorUi.hideDialog();
+		if (Math.random() > 0.5) {
+			editorUi.showDialog(tipDialog(editorUi, true, '分享'), 120, 90, true, false, null, null, '')
+		} else {
+			editorUi.showDialog(tipDialog(editorUi, false, '分享'), 120, 90, true, false, null, null, '')
+		}
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	// 取消按钮
@@ -615,6 +620,28 @@ var ShareDialog = function(editorUi) {
 
 	saveContent.appendChild(btnContent)
 	this.container = saveContent;
+}
+/**
+ * 提示弹窗
+ * @param {boolean} flag true：成功；false失败
+ * @param {string} info	提示信息
+ */
+var tipDialog = function(editorUi, flag, info) {
+	var tipContent = document.createElement('div')
+	tipContent.className = 'tipDialogInfo';
+	// 图标
+	var img = document.createElement('img')
+	img.setAttribute('src', flag ? '/static/images/success.png' : '/static/images/error.png');
+	tipContent.appendChild(img)
+	// 内容
+	var infoText = document.createElement('p')
+	infoText.className = 'tipText'
+	infoText.innerHTML = info + (flag ? '成功' : '失败');
+	tipContent.appendChild(infoText)
+	setTimeout(function () {
+		editorUi.hideDialog()
+	}, 3000)
+	return tipContent
 }
 /**
  * Constructs a new textarea dialog.

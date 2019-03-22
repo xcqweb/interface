@@ -567,6 +567,19 @@ div.mxWindow .geButton {
 	overflow: hidden;
 	padding: 5px 0;
 }
+.geDialog .tipDialogInfo {
+	padding: 22px;
+	text-align: center;
+}
+.geDialog .tipDialogInfo img {
+	width: 24px;
+	height: 24px;
+}
+.geDialog .tipDialogInfo .tipText{
+	color: #252525;
+	font-size: 14px;
+	line-height: 18px;
+}
 .geDialog .geDialogInfo .btnContent {
 	text-align: right;
 	padding-top: 20px;
