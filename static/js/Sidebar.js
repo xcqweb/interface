@@ -87,20 +87,20 @@ Sidebar.prototype.init = function()
 //原型初始化
 {
 	var dir = STENCIL_PATH;
-	// this.addSearchPalette(true);//搜索
+	this.addSearchPalette(true);//搜索
 	this.addGeneralPalette(true);//通用 自己写的svg
-	// this.addMiscPalette(false);//杂项
-	// this.addAdvancedPalette(false);//高级
- //    this.addUmlPalette(false);//UML
+	this.addMiscPalette(false);//杂项
+	this.addAdvancedPalette(false);//高级
+    this.addUmlPalette(false);//UML
 
 	//从路径下读取xml加载svg图像 dir basic.xml，bpmn.xml
-	// this.addBasicPalette(dir);//基本图形
-    // this.addBpmnPalette(dir, false);//BPMN通用
+	this.addBasicPalette(dir);//基本图形
+    this.addBpmnPalette(dir, false);//BPMN通用
 
-	// this.addStencilPalette('arrows', mxResources.get('arrows'), dir + '/arrows.xml',
-	// 	';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2');//箭头
-	// this.addStencilPalette('flowchart', 'Flowchart', dir + '/flowchart.xml',
-	// 	';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2');//flowchart
+	this.addStencilPalette('arrows', mxResources.get('arrows'), dir + '/arrows.xml',
+		';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2');//箭头
+	this.addStencilPalette('flowchart', 'Flowchart', dir + '/flowchart.xml',
+		';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2');//flowchart
 
 	// //png IOT平台图片集
 	this.addImagePalette('IOT', 'IOT', dir + '/IOT/','.png',
@@ -114,512 +114,15 @@ Sidebar.prototype.init = function()
         {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
             'Router_Icon': 'router switch'});//IOT
 
-	// //png 图片名字拼接
-	// this.addImagePalette('clipart', mxResources.get('clipart'), dir + '/clipart/', '_128x128.png',
-	// 	['Earth_globe', 'Empty_Folder', 'Full_Folder', 'Gear', 'Lock', 'Software', 'Virus', 'Email',
-	// 	 'Database', 'Router_Icon', 'iPad', 'iMac', 'Laptop', 'MacBook', 'Monitor_Tower', 'Printer',
-	// 	 'Server_Tower', 'Workstation', 'Firewall_02', 'Wireless_Router_N', 'Credit_Card',
-	// 	 'Piggy_Bank', 'Graph', 'Safe', 'Shopping_Cart', 'Suit1', 'Suit2', 'Suit3', 'Pilot1',
-	// 	 'Worker1', 'Soldier1', 'Doctor1', 'Tech1', 'Security1', 'Telesales1'], null,
-	// 	 {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
-	// 	  'Router_Icon': 'router switch'});//剪切画
-
-
-
- //    this.addImagePalette('button', mxResources.get('button'), dir + '/button/','.svg',
- //        ['3-D20green20button20(not20pressed)', '3-D20green20button20(pressed)', '3-D20red20button20(not20pressed)', '3-D20red20button20(pressed)', '3-D20yellow20button20(not20pressed)', '3-D20yellow20button20(pressed)',
-	// 	'Blue20pilot20light201','Blue20pilot20light202','Dark20green20pilot20light202','Dial201','Dial202','Dial203','E-stop','Green20pilot20light201','Green20pilot20light202','Green20pushbutton201','Green20pushbutton202'
-	// 	,'Navy20pilot20light202','Pilot20light20120(off)','Pilot20light20220(off)','Pushbutton20220(off)','Rectangular20pushbutton201','Rectangular20pushbutton202','Red20pilot20light201'
-	// 	,'Red20pilot20light202','Red20pushbutton201','Red20pushbutton202','Rocker20switch20(down)','Rocker20switch20(left)','Rocker20switch20(right)','Rocker20switch20(up)','Selector20switch20120(left)','Selector20switch20120(no20knob)','Selector20switch20120(right)',
-	// 	'Selector20switch20120(up)','Selector20switch20220(left)','Selector20switch20220(right)','Selector20switch20220(up)','Selector20switch20320(left)','Selector20switch20320(right)','Selector20switch20420(left)','Selector20switch20420(right)',
-	// 	'Slide20switch20(down)','Slide20switch20(left)','Slide20switch20(right)','Slide20switch20(up)','Start20button','Throw20switch20(down)','Throw20switch20(left)','Throw20switch20(right)','Throw20switch20(up)',
-	// 	'Tick20marks','White20pilot20light202','Yellow20pilot20light201','Yellow20pilot20light202','Yellow20pushbutton201'], null,
- //        {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
- //            'Router_Icon': 'router switch'});//按钮
-
- //    this.addImagePalette('pump', mxResources.get('pump'), dir + '/pump/','.svg',
- //        ['3-D20ISA20Pump', '3-D20Pump', 'Air20powered20pump', 'Air-operated20diaphragm20pump', 'Centrifugal20pump20with20integral20pump-motor20shaft', 'Centrifugal20pump201','Centrifugal20pump203','Centrifugal20pump204'
-	// 	,'Centrifugal20pump205','Centrifugal20pump206','Centrifugal20pump207','Centrifugal20thermoplastic20pump','Chemical20pump201','Chemical20pump202','Classic20pump201','Classic20pump202','Classic20pump203','Classic20pump204','Classic20pump205','Cool20pump','Corrosion20resistant20submersible20pump','Corrosion-resistant20continuous20duty20pump',
-	// 	'Diaphragm20pump201','Diaphragm20pump202','End-suction20centrifugal20pump','Explosion-proof20pump','Flex-mounted20centrifugal20pump','Heavy-duty20plastic20centrifugal20pump','High20temp20heat20trans20pump','High20volume20pump','High-viscosity20pump','Horizontal20pump20(left)','Horizontal20pump20(right)','Horizontal20pump201','Horizontal20pump202',
-	// 	'Horizontal20pump203','Horizontal20pump204','Horizontal20pump205','Horizontal20pump206','Horizontal20pump207','Horizontal20pump20220(left)','Horizontal20pump20220(right)','Horizontal20solids20handling20vortex20pump','Horizontal20split20case20pump','Isolating20diaphragm20pump','Large20volume20chemical20and20submersible20pump','Mag20drive20non-metallic20pump','Mag20drive20pump201',
-	// 	'Mag20drive20pump202','Mag20drive20pump203','Metering20pump201','Metering20pump202','Metering20pump203','Metering20pump204','Oil20pump','Oil20well20pump','Plunger20pump','Positive20displacement20gear20pump','Pump','Pump20for20highly-corrosive20applications','Pumping20trap','Rotary20vacuum20pump','Sealless20pump','Self-priming20centrifugal20pump','Sewage20pump','Simple20pump201','Simple20pump202','Simple20pump203','Simple20pump204','Simple20vertical20pump201','Simple20vertical20pump202','Solids-handling20self-priming20pump','SRH20pump','Standard-flange20positive20displacement20pump','Submersible20sump20pump201',
-	// 	'Submersible20sump20pump202','Sump20pump','Threaded20gear'], null,
- //        {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
- //            'Router_Icon': 'router switch'});//泵
-
-
-    // this.addImagePalette('electricalMachine', mxResources.get('electricalMachine'), dir + '/electricalMachine/','.svg',
-    //     ['3-D20ISA20Motor201' ,
-    //     '3-D20ISA20Motor202' ,
-    //     '3-D20Motor' ,
-    //     'Actuator' ,
-    //     'Brake20motor' ,
-    //     'Brushless20motor' ,
-    //     'Explosion-proof20motor' ,
-    //     'Inverter20drive' ,
-    //     'ISA20Motor' ,
-    //     'Motor201' ,
-    //     'Motor202' ,
-    //     'Motor203' ,
-    //     'Motor204' ,
-    //     'Motor205' ,
-    //     'Motor206' ,
-    //     'Motor208' ,
-    //     'Motor209' ,
-    //     'Motor2010' ,
-    //     'Motor2011' ,
-    //     'Motor2012' ,
-    //     'Motor2013' ,
-    //     'Motor2014' ,
-    //     'Motor2015' ,
-    //     'Motor2016' ,
-    //     'Motor2017' ,
-    //     'Motor2018' ,
-    //     'Motor2019' ,
-    //     'Pneumatic20brake' ,
-    //     'Servo20motor201' ,
-    //     'Servo20motor202' ,
-    //     'Shaft20encoder' ,
-    //     'Simple20motor201' ,
-    //     'Simple20motor202' ,
-    //     'Simple20motor203' ,
-    //     'Simple20motor204' ,
-    //     'Smart20motor' ,
-    //     'Speed20reducer' ,
-    //     'Stepping20motor-driver20unit'], null,
-    //     {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
-    //         'Router_Icon': 'router switch'});//电机
-
-
- //    this.addImagePalette('valve', mxResources.get('valve'), dir + '/valve/','.svg',
- //        ['3-D Angle blowdown valve' ,
- //        '3-D Angle valve' ,
- //        '3-D Ball valve' ,
- //        '3-D Blowdown valve' ,
- //        '3-D Butterfly valve or damper' ,
- //        '3-D Check valve' ,
- //        '3-D Control valve with hand actuator' ,
- //        '3-D Cylinder actuated valve (double-acting)' ,
- //        '3-D Diaphragm actuated valve with positioner' ,
- //        '3-D Diaphragm valve' ,
- //        '3-D Flow regulator, self-contained' ,
- //        '3-D Gate valve' ,
- //        '3-D Hand control valve' ,
- //        '3-D Plug valve' ,
- //        '3-D Pressure safety valve' ,
- //        '3-D Pressure-balanced diaphragm actuated' ,
- //        '3-D Regulator, self-contained' ,
- //        '3-D Regulator with external pressure tap' ,
- //        '3-D Restriction orifice drilled in valve' ,
- //        '3-D Rotary actuated' ,
- //        '3-D Rotary plug valve' ,
- //        '3-D Stop check valve' ,
- //        '3-D Vacuum safety valve' ,
- //        '3-D Valve, fail indeterminate' ,
- //        '3-D Valve, fail locked' ,
- //        '3-D Valve' ,
- //        '3-D Valve with actuator' ,
- //        '3-D Valve with bleed or purge connection under disc' ,
- //        '3-D Valve with long shaft' ,
- //        '3-D 3-way solenoid valve with reset' ,
- //        '3-D 3-way valve' ,
- //        '3-D 4-way solenoid valve' ,
- //        '3-D 4-way valve' ,
- //        'Air-operated shutoff valve' ,
- //        'Ball valve 1' ,
- //        'Ball valve 2' ,
- //        'Blue control valve with flange' ,
- //        'Blue control valve with no flange' ,
- //        'Check valve - horizontal' ,
- //        'Check valve - Vertical' ,
- //        'Compact valve' ,
- //        'Control value' ,
- //        'Control valve - horizontal' ,
- //        'Control valve - vertical' ,
- //        'Control valve with diaphragm activator' ,
- //        'Control valve with gray fitting' ,
- //        'Control valve 2' ,
- //        'Control valve 3' ,
- //        'Drain valve' ,
- //        'Globe control valve' ,
- //        'Hand valve - horizontal' ,
- //        'Hand valve - vertical' ,
- //        'Hand valve 1' ,
- //        'Hand valve 2' ,
- //        'Hand valve 3' ,
- //        'Hand valve 4' ,
- //        'High resolution valve positioner' ,
- //        'Knob' ,
- //        'Motor valve' ,
- //        'Pinch valve' ,
- //        'Plastic control valve' ,
- //        'Plastic diaphragm valve' ,
- //        'Plastic swing check valve' ,
- //        'PVC check valve' ,
- //        'PVC two-way ball valve' ,
- //        'Rotary plug valve' ,
- //        'Safety shutoff valve' ,
- //        'Safety valve' ,
- //        'Simple valve' ,
- //        'Solenoid valve' ,
- //        'Valve handle 1' ,
- //        'Valve handle 2' ,
- //        'Valve wheel'], null,
- //        {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
- //            'Router_Icon': 'router switch'});//阀门
-	
- //    this.addImagePalette('blower', mxResources.get('blower'), dir + '/blower/','.svg',
- //        ['3-D20ISA20Blower',
- //        'Air20compressor201',
- //        'Air20compressor202',
- //        'Air20compressor203',
- //        'Air20compressor204',
- //        'Blower201',
- //        'Blower202',
- //        'Centrifugal20air20blower',
- //        'Centrifugal20square20inline20fan',
- //        'cool',
- //        'Cool20fan20(animation20frame201)',
- //        'Cool20fan20(animation20frame202)',
- //        'Fan-powered20terminal20unit',
- //        'Fiberglass20fan',
- //        'Fume20exhauster',
- //        'Gas20pump',
- //        'Gray20shaded20fan',
- //        'HVAC20compressor',
- //        'Inline20air20filter',
- //        'Mixed20flow20inline20fan',
- //        'Natural20gas20compressor',
- //        'Plastic20blower',
- //        'Pressure20blower',
- //        'Radial20fume20exhauster',
- //        'Reciprocating20compressor',
- //        'Regenerative20blower',
- //        'Simple20blower',
- //        'Simple20compressor201',
- //        'Simple20fan201',
- //        'Simple20fan202',
- //        'Single20stage20compressor',
- //        'Turbo20blower',
- //        'Vaneaxial20fan',
- //        'Vortex20blower'], null,
- //        {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
- //            'Router_Icon': 'router switch'});//风机
-	
- //    this.addImagePalette('pipeline', mxResources.get('pipeline'), dir + '/pipeline/','.svg',
- //        ['30angle201',
- //        '30angle202',
- //        '30angle203',
- //        '30angle204',
- //        '30angle205',
- //        '30angle206',
- //        '30angle207',
- //        '30angle208',
- //        '30straight20(long)',
- //        '30straight20(short)',
- //        '45angle201',
- //        '45angle202',
- //        '45angle203',
- //        '45angle204',
- //        '45angle205',
- //        '45angle206',
- //        '45angle207',
- //        '45angle208',
- //        '45straight20(short)',
- //        '60angle201',
- //        '60angle202',
- //        '60angle203',
- //        '60angle204',
- //        '60angle205',
- //        '60angle206',
- //        '60angle207',
- //        '60angle208',
- //        '60straight20(long)',
- //        '60straight20(short)',
- //        '90curve',
- //        '90curve202',
- //        '90curve203',
- //        '90curve204',
- //        '120straight20(long)',
- //        '120straight20(short)',
- //        '135straight20(short)',
- //        '150straight20(long)',
- //        '150straight20(short)',
- //        '180angle201',
- //        '180angle202',
- //        '180angle203',
- //        '180angle204',
- //        'Cracked20pipe20-20horizontal',
- //        'Cracked20pipe20-20vertical',
- //        'Cut20end201',
- //        'Cut20end202',
- //        'Double20flange20with20bolts20-20horizontal',
- //        'Double20flange20with20bolts20-20vertical',
- //        'Flange20-20horizontal',
- //        'Flange20-20vertical',
- //        'Flange20with20bolts20on20bottom',
- //        'Flange20with20bolts20on20left',
- //        'Flange20with20bolts20on20right',
- //        'Flange20with20bolts20on20top',
- //        'Flange20with20pipe20extending20down',
- //        'Hairpin20turn20down',
- //        'Hairpin20turn20left',
- //        'Hairpin20turn20up',
- //        'Intersection201',
- //        'Intersection202',
- //        'Intersection203',
- //        'Long20horizontal20pipe',
- //        'Long20vertical20pipe',
- //        'Open20end201',
- //        'Open20end202',
- //        'Reducer201',
- //        'Reducer202',
- //        'Reducer203',
- //        'Right20angle201',
- //        'Right20angle202',
- //        'Right20angle203',
- //        'Right20angle204',
- //        'Short20horizontal20pipe',
- //        'Short20vertical20pipe',
- //        'Tee201',
- //        'Tee202',
- //        'Tee203',
- //        'Tee204',
- //        'Tee205',
- //        'Tee206',
- //        'Tee207',
- //        'Tee208'], null,
- //        {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
- //            'Router_Icon': 'router switch'});//管道
-	
- //    this.addImagePalette('boiler', mxResources.get('boiler'), dir + '/boiler/','.svg',
- //        ['Boiler20(perspective20view)',
- //        'Boiler20control201',
- //        'Boiler20control202',
- //        'Boiler20control203',
- //        'Boiler20symbol',
- //        'Boiler20with20flames',
- //        'Boiler20with20flames20and20a20pipe',
- //        'Boiler20with20small20fire',
- //        'Boiler201',
- //        'Boiler202',
- //        'Boiler203',
- //        'Boiler204',
- //        'Boiler205',
- //        'Boiler206',
- //        'Boiler207',
- //        'Boiler208',
- //        'Boiler209',
- //        'Boiler2010',
- //        'Boiler2011',
- //        'Electric20hot20water20and20steam20boiler',
- //        'Firebox20boiler',
- //        'Flexible20water20tube20boiler',
- //        'Flexible20water20tube20boiler20(cutaway)',
- //        'Four-pass20boiler',
- //        'Gas-fired20boiler201',
- //        'Gas-fired20boiler202',
- //        'Low20emission20boiler',
- //        'Oil20fired20boiler201',
- //        'Oil20fired20boiler202',
- //        'Packaged20firetube20boiler',
- //        'Pulse20combustion20boiler',
- //        'Skid-mounted20boiler',
- //        'Steam20boiler201',
- //        'Steam20boiler202',
- //        'Thermal20recycling20boiler',
- //        'Water20boiler'], null,
- //        {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
- //            'Router_Icon': 'router switch'});//锅炉
-	
- //    this.addImagePalette('vessel', mxResources.get('vessel'), dir + '/vessel/','.svg',
- //        ['5-gallon20bucket',
- //        'Air20cylinder',
- //        'Air20tank',
- //        'Barrel',
- //        'Batch20tank',
- //        'Bolt',
- //        'Brew20kettle',
- //        'Chamber20with20flange',
- //        'Container',
- //        'Corrosion20resistant20tank20(medium)',
- //        'Corrosion20resistant20tank20(short)',
- //        'Corrosion20resistant20tank20(tall)',
- //        'Day20tank',
- //        'Drum',
- //        'Elliptical20bulk20storage20tank',
- //        'Free-standing20leg20tank',
- //        'Glass20lined20tank',
- //        'Green20cylinder',
- //        'Green20vessel',
- //        'Hatch',
- //        'Heat20exchanger',
- //        'Hopper',
- //        'Hydropneumatic20tank',
- //        'Large20cone-bottom20polyethylene20tank',
- //        'Liquid20storage20drum',
- //        'Mix20tank',
- //        'Molded20polyethylene20tank',
- //        'Polyethylene20chemical20mix20tank',
- //        'Polyethylene20mix20and20fill20tank',
- //        'Polyethylene20storage20tank',
- //        'Polyethylene20storage20tank20with20twin20legs',
- //        'Polyethylene20tank20with20mixer',
- //        'Polyethylene20tank201',
- //        'Polyethylene20tank202',
- //        'Pressure20vessel',
- //        'Reactor20tank',
- //        'Reactor20with20agitator',
- //        'Reactor20with20hatch20and20ladder',
- //        'Reactor201',
- //        'Reactor202',
- //        'Reactor203',
- //        'Reactor204',
- //        'Reactor205',
- //        'Reactor206',
- //        'Reactor207',
- //        'Reinforced20tank20with20mixer',
- //        'Round20reactor20with20legs',
- //        'Silo20with20spiral20ladder',
- //        'Silo20with20straight20ladder',
- //        'Simple20process20tank',
- //        'Simple20tank20system201',
- //        'Simple20tank20system202',
- //        'Simple20tank20system203',
- //        'Smooth20silo',
- //        'Spherical20tank20with20rivets',
- //        'Spherical20tank201',
- //        'Spherical20tank202',
- //        'Stabilization20tank',
- //        'Stainless20steel20cylinder',
- //        'Storage20facility201',
- //        'Storage20facility202',
- //        'Storage20facility203',
- //        'Storage20facility204',
- //        'Storage20facility205',
- //        'Storage20facility206',
- //        'Storage20facility207',
- //        'Storage20facility208',
- //        'Storage20facility209',
- //        'Storage20facility2010',
- //        'Storage20facility2011',
- //        'Storage20facility2012',
- //        'Storage20facility2013',
- //        'Storage20tank20with20ladder',
- //        'Tank20bank',
- //        'Tank20support201',
- //        'Tank20support202',
- //        'Tank20with20cutaway',
- //        'Tank20with20hatch',
- //        'Tank20with20rivets20and20ladder',
- //        'Tank20with20rivets201',
- //        'Tank20with20rivets202',
- //        'Tank20with20rivets203',
- //        'Tank201',
- //        'Tank202',
- //        'Tank203',
- //        'Tank204',
- //        'Tank205',
- //        'Tank206',
- //        'Tank207',
- //        'Tank208',
- //        'Tank209',
- //        'Tank2010',
- //        'Tank2011',
- //        'Tank2012',
- //        'Tank2013',
- //        'Tank2014',
- //        'Tank2015',
- //        'Tank2016',
- //        'Tank2017',
- //        'Tank2018',
- //        'Tank2019',
- //        'Tank2020',
- //        'Tank2021',
- //        'Tank2022',
- //        'Tank2023',
- //        'Tank2024',
- //        'Tank2025',
- //        'Tank2026',
- //        'Tank2027',
- //        'Tank2028',
- //        'Tank2029',
- //        'Tank2030',
- //        'Tank2031',
- //        'Tank2032',
- //        'Tank2033',
- //        'Tank2034',
- //        'Tank2035',
- //        'Tank2036',
- //        'Tank2037',
- //        'Tank2038',
- //        'Tank2039',
- //        'Tank2040',
- //        'Underground20storage20tank2C20or20butterfly20larva',
- //        'Very20smooth20tank201',
- //        'Very20smooth20tank202',
- //        'Very20smooth20tank203',
- //        'Very20smooth20tank204',
- //        'Welded20tank'], null,
- //        {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
- //            'Router_Icon': 'router switch'});//容器
-	
- //    this.addImagePalette('instrument', mxResources.get('instrument'), dir + '/instrument/','.svg',
- //        ['3-D20Flow20nozzle',
- //        '3-D20Venturi20tube',
- //        'Analog20output20flow20sensor',
- //        'Cyclonic20flow20meter',
- //        'Flow20element201',
- //        'Flow20element202',
- //        'Flow20meter20with20cone',
- //        'Flow20system',
- //        'Flow20totalizer',
- //        'Flow20tube',
- //        'Flowmeter202',
- //        'Flowmeter203',
- //        'Flowmeter204',
- //        'Flowmeter205',
- //        'Flowmeter206',
- //        'Flowmeter207',
- //        'Flowmeter208',
- //        'Magnetic',
- //        'Magnetic20flow20meter201',
- //        'Magnetic20flowmeter202',
- //        'Mass',
- //        'Multi-point',
- //        'Simple',
- //        'Simple201',
- //        'Simple202',
- //        'Smart20coriolis20mass20flowmeter',
- //        'Smart20magnetic20flowmeter',
- //        'Thermal20mass20flowmeter',
- //        'Turbine20meter201',
- //        'Turbine20meter202',
- //        'Turbine20meter203',
- //        'Ultrasonic20flow20transmitter',
- //        'Venturi20flow20meter',
- //        'Venturi20flow20meter201',
- //        'Vortex20meter'], null,
- //        {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
- //            'Router_Icon': 'router switch'});//仪表
-	
- //    this.addImagePalette('smart', mxResources.get('smart'), dir + '/smart/','.png',
- //        ['AlarmAnalysis',
- //        'clock',
- //        'column',
- //        'column-r',
- //        'dashboard',
- //        'DataAnalysis',
- //        'digit',
- //        'digitalTime',
- //        'HistoryAlarm',
- //        'HistoryData',
- //        'primitive',
- //        'RealTimeAlarm',
- //        'RealTimeCurve',
- //        'weather'], null,
- //        {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
- //            'Router_Icon': 'router switch'});//智能对象
+	//png 图片名字拼接
+	this.addImagePalette('clipart', mxResources.get('clipart'), dir + '/clipart/', '_128x128.png',
+		['Earth_globe', 'Empty_Folder', 'Full_Folder', 'Gear', 'Lock', 'Software', 'Virus', 'Email',
+		 'Database', 'Router_Icon', 'iPad', 'iMac', 'Laptop', 'MacBook', 'Monitor_Tower', 'Printer',
+		 'Server_Tower', 'Workstation', 'Firewall_02', 'Wireless_Router_N', 'Credit_Card',
+		 'Piggy_Bank', 'Graph', 'Safe', 'Shopping_Cart', 'Suit1', 'Suit2', 'Suit3', 'Pilot1',
+		 'Worker1', 'Soldier1', 'Doctor1', 'Tech1', 'Security1', 'Telesales1'], null,
+		 {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
+		  'Router_Icon': 'router switch'});//剪切画
 
 };
 
@@ -965,13 +468,12 @@ Sidebar.prototype.addEntry = function(tags, fn)
 	{
 		// Replaces special characters
 		var tmp = tags.toLowerCase().replace(/[\/\,\(\)]/g, ' ').split(' ');
-
+		
 		var doAddEntry = mxUtils.bind(this, function(tag)
 		{
 			if (tag.length > 1)
 			{
 				var entry = this.taglist[tag];
-				
 				if (typeof entry !== 'object')
 				{
 					entry = {entries: [], dict: new mxDictionary()};
@@ -986,7 +488,6 @@ Sidebar.prototype.addEntry = function(tags, fn)
 				}
 			}
 		});
-		
 		for (var i = 0; i < tmp.length; i++)
 		{
 			doAddEntry(tmp[i]);
@@ -1450,57 +951,23 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 	var lineTags = 'line lines connector connectors connection connections arrow arrows ';
 	
 	var fns = [
-	 	this.createVertexTemplateEntry('rounded=0;whiteSpace=wrap;html=1;', 120, 60, '', 'Rectangle', null, null, 'rect rectangle box'),
-	 	this.createVertexTemplateEntry('rounded=1;whiteSpace=wrap;html=1;', 120, 60, '', 'Rounded Rectangle', null, null, 'rounded rect rectangle box'),
-	 	// Explicit strokecolor/fillcolor=none is a workaround to maintain transparent background regardless of current style
+	 	this.createVertexTemplateEntry('rounded=0;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, 'rect rectangle box'),
+		 this.createVertexTemplateEntry('line;strokeWidth=2;html=1;', 160, 10, '', '直线'),
+		 this.addEntry('link hyperlink', mxUtils.bind(this, function()
+	 	{
+	 		var cell = new mxCell('Link', new mxGeometry(0, 0, 60, 40), 'text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=center;verticalAlign=middle;fontColor=#0000EE;fontStyle=4;');
+	 		cell.vertex = true;
+	 		this.graph.setLinkForCell(cell, 'https://www.getech.cn');
+
+	 		return this.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '链接');
+		 })),
+	 	this.createEdgeTemplateEntry('edgeStyle=isometricEdgeStyle;endArrow=none;html=1;', 50, 100, '', '曲线'),
 	 	this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',
- 			40, 20, 'Text', 'Text', null, null, 'text textbox textarea label'),
-	 	// this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;', 190, 120,
-			// '<h1>Heading</h1><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>',
-			// 'Textbox', null, null, 'text textbox textarea'),
- 		// this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;', 120, 80, '', 'Ellipse', null, null, 'oval ellipse state'),
-		this.createVertexTemplateEntry('whiteSpace=wrap;html=1;aspect=fixed;', 80, 80, '', 'Square', null, null, 'square'),
-		this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 80, 80, '', 'Circle', null, null, 'circle'),
-	 	// this.createVertexTemplateEntry('shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;', 120, 60, '', 'Process', null, null, 'process task'),
-	 	// this.createVertexTemplateEntry('rhombus;whiteSpace=wrap;html=1;', 80, 80, '', 'Diamond', null, null, 'diamond rhombus if condition decision conditional question test'),
-	 	// this.createVertexTemplateEntry('shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;', 120, 60, '', 'Parallelogram'),
-	 	// this.createVertexTemplateEntry('shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;', 120, 80, '', 'Hexagon', null, null, 'hexagon preparation'),
-	 	// this.createVertexTemplateEntry('triangle;whiteSpace=wrap;html=1;', 60, 80, '', 'Triangle', null, null, 'triangle logic inverter buffer'),
-	 	// this.createVertexTemplateEntry('shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;', 60, 80, '', 'Cylinder', null, null, 'cylinder data database'),
-	 	// this.createVertexTemplateEntry('ellipse;shape=cloud;whiteSpace=wrap;html=1;', 120, 80, '', 'Cloud', null, null, 'cloud network'),
-	 	// this.createVertexTemplateEntry('shape=document;whiteSpace=wrap;html=1;boundedLbl=1;', 120, 80, '', 'Document'),
-	 	// this.createVertexTemplateEntry('shape=internalStorage;whiteSpace=wrap;html=1;backgroundOutline=1;', 80, 80, '', 'Internal Storage'),
-	 	// this.createVertexTemplateEntry('shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;', 120, 80, '', 'Cube'),
-	 	// this.createVertexTemplateEntry('shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;', 120, 80, '', 'Step'),
-	 	// this.createVertexTemplateEntry('shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;', 120, 60, '', 'Trapezoid'),
-	 	// this.createVertexTemplateEntry('shape=tape;whiteSpace=wrap;html=1;', 120, 100, '', 'Tape'),
-	 	// this.createVertexTemplateEntry('shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;', 80, 100, '', 'Note'),
-	  //   this.createVertexTemplateEntry('shape=card;whiteSpace=wrap;html=1;', 80, 100, '', 'Card'),
-	  //   this.createVertexTemplateEntry('shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;', 120, 80, '', 'Callout', null, null, 'bubble chat thought speech message'),
-	 	// this.createVertexTemplateEntry('shape=umlActor;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;html=1;outlineConnect=0;', 30, 60, 'Actor', 'Actor', false, null, 'user person human stickman'),
-
-		// this.addEntry('curve', mxUtils.bind(this, function()
-	 // 	{
-		// 	var cell = new mxCell('', new mxGeometry(0, 0, 50, 50), 'curved=1;endArrow=classic;html=1;');
-		// 	cell.geometry.setTerminalPoint(new mxPoint(0, 50), true);
-		// 	cell.geometry.setTerminalPoint(new mxPoint(50, 0), false);
-		// 	cell.geometry.points = [new mxPoint(50, 50), new mxPoint(0, 0)];
-		// 	cell.geometry.relative = true;
-		// 	cell.edge = true;
-			
-		//     return this.createEdgeTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, 'Curve');
-	 // 	})),
-
-	 	// this.createEdgeTemplateEntry('shape=flexArrow;endArrow=classic;startArrow=classic;html=1;fillColor=#ffffff;', 50, 50, '', 'Bidirectional Arrow', null, lineTags + 'bidirectional'),
-	 	// this.createEdgeTemplateEntry('shape=flexArrow;endArrow=classic;html=1;fillColor=#ffffff;', 50, 50, '', 'Arrow', null, lineTags + 'directional directed'),
-	 	// this.createEdgeTemplateEntry('shape=link;html=1;', 50, 50, '', 'Link', null, lineTags + 'link'),
-	 	// this.createEdgeTemplateEntry('endArrow=none;dashed=1;html=1;', 50, 50, '', 'Dashed Line', null, lineTags + 'dashed undirected no'),
-	 	// this.createEdgeTemplateEntry('endArrow=none;html=1;', 50, 50, '', 'Line', null, lineTags + 'simple undirected plain blank no'),
-	 	// this.createEdgeTemplateEntry('endArrow=classic;startArrow=classic;html=1;', 50, 50, '', 'Bidirectional Connector', null, lineTags + 'bidirectional'),
-	 	// this.createEdgeTemplateEntry('endArrow=classic;html=1;', 50, 50, '', 'Directional Connector', null, lineTags + 'directional directed')
+ 			40, 20, '文本', '文本', null, null, 'text textbox textarea label'),
+		this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 80, 80, '', '圆', null, null, 'circle'),
 	];
 	//封装
-	this.addPaletteFunctions('general', mxResources.get('general'), (expand != null) ? expand : true, fns);
+	this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
 };
 
 /**
@@ -1510,12 +977,7 @@ Sidebar.prototype.addBasicPalette = function(dir)
 {
 	this.addStencilPalette('basic', mxResources.get('basic'), dir + '/basic.xml',
 		';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2',
-		null, null, null, null, [
-			this.createVertexTemplateEntry('shape=partialRectangle;whiteSpace=wrap;html=1;top=0;bottom=0;fillColor=none;', 120, 60, '', 'Partial Rectangle'),
-			this.createVertexTemplateEntry('shape=partialRectangle;whiteSpace=wrap;html=1;right=0;top=0;bottom=0;fillColor=none;routingCenterX=-0.5;', 120, 60, '', 'Partial Rectangle'),
-			this.createVertexTemplateEntry('shape=partialRectangle;whiteSpace=wrap;html=1;bottom=0;right=0;fillColor=none;', 120, 60, '', 'Partial Rectangle'),
-			this.createVertexTemplateEntry('shape=partialRectangle;whiteSpace=wrap;html=1;top=0;left=0;fillColor=none;', 120, 60, '', 'Partial Rectangle')
-	]);
+		null, null, null, null, []);
 };
 
 /**
@@ -1558,7 +1020,7 @@ Sidebar.prototype.addMiscPalette = function(expand)
 	 	{
 	 		var cell = new mxCell('Link', new mxGeometry(0, 0, 60, 40), 'text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=center;verticalAlign=middle;fontColor=#0000EE;fontStyle=4;');
 	 		cell.vertex = true;
-	 		this.graph.setLinkForCell(cell, 'https://www.draw.io');
+	 		this.graph.setLinkForCell(cell, 'https://www.getech.cn');
 
 	 		return this.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, 'Link');
 	 	})),
@@ -2416,7 +1878,7 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 	elt.style.overflow = 'hidden';
 	var border = (mxClient.IS_QUIRKS) ? 8 + 2 * this.thumbPadding : 2 * this.thumbBorder;
 	elt.style.width = (this.thumbWidth + border) + 'px';
-	elt.style.height = (this.thumbHeight + border) + 'px';
+	elt.style.height = (this.thumbHeight + border + 20) + 'px';
 	elt.style.padding = this.thumbPadding + 'px';
 	
 	if (mxClient.IS_IE6)
@@ -2463,7 +1925,14 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 			}
 		}));
 	}
-	
+	// 控件名称
+	var nameText = document.createElement('p')
+	nameText.className = 'geItemTitle'
+	nameText.style.textAlign = 'center'
+	nameText.style.textOverflow = 'ellipsis'
+	nameText.style.overflow = 'hidden'
+	nameText.innerText = title
+	elt.appendChild(nameText)
 	return elt;
 };
 
@@ -4026,7 +3495,6 @@ Sidebar.prototype.getTagsForStencil = function(packageName, stencilName, moreTag
 Sidebar.prototype.addStencilPalette = function(id, title, stencilFile, style, ignore, onInit, scale, tags, customFns)
 {
 	scale = (scale != null) ? scale : 1;
-	
 	if (this.addStencilsToIndex)
 	{
 		// LATER: Handle asynchronous loading dependency
@@ -4051,13 +3519,11 @@ Sidebar.prototype.addStencilPalette = function(id, title, stencilFile, style, ig
 				{
 					tmp.push(tmpTags);
 				}
-				
 				fns.push(this.createVertexTemplateEntry('shape=' + packageName + stencilName.toLowerCase() + style,
 					Math.round(w * scale), Math.round(h * scale), '', stencilName.replace(/_/g, ' '), null, null,
 					this.filterTags(tmp.join(' '))));
 			}
 		}), true, true);
-
 		this.addPaletteFunctions(id, title, false, fns);
 	}
 	else

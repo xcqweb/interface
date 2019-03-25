@@ -370,6 +370,15 @@ div.mxWindow .geButton {
 .geSidebar .geItem:hover {
 	border:1px solid gray !important;
 }
+.geSidebar .geItem .geItemTitle {
+	color: #252525;
+	font-size: 12px;
+	overflow: hidden;
+	text-align: center;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	line-height: 20px;
+}
 .geItem {
 	vertical-align: top;
 	display: inline-block;

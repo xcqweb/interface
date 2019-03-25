@@ -1,27 +1,27 @@
 <shapes name="mxgraph.basic">
 <shape name="4 Point Star" h="92" w="92" aspect="variable" strokewidth="inherit">
-<connections>
-<constraint x="0.5" y="0" perimeter="0" name="N"/>
-<constraint x="0.5" y="1" perimeter="0" name="S"/>
-<constraint x="0" y="0.5" perimeter="0" name="W"/>
-<constraint x="1" y="0.5" perimeter="0" name="E"/>
-</connections>
-<background>
-<path>
-<move x="46" y="0"/>
-<line x="56" y="36"/>
-<line x="92" y="46"/>
-<line x="56" y="56"/>
-<line x="46" y="92"/>
-<line x="36" y="56"/>
-<line x="0" y="46"/>
-<line x="36" y="36"/>
-<close/>
-</path>
-</background>
-<foreground>
-<fillstroke/>
-</foreground>
+  <connections>
+  <constraint x="0.5" y="0" perimeter="0" name="N"/>
+  <constraint x="0.5" y="1" perimeter="0" name="S"/>
+  <constraint x="0" y="0.5" perimeter="0" name="W"/>
+  <constraint x="1" y="0.5" perimeter="0" name="E"/>
+  </connections>
+  <background>
+  <path>
+  <move x="46" y="0"/>
+  <line x="56" y="36"/>
+  <line x="92" y="46"/>
+  <line x="56" y="56"/>
+  <line x="46" y="92"/>
+  <line x="36" y="56"/>
+  <line x="0" y="46"/>
+  <line x="36" y="36"/>
+  <close/>
+  </path>
+  </background>
+  <foreground>
+  <fillstroke/>
+  </foreground>
 </shape>
 <shape name="6 Point Star" h="84.5" w="96" aspect="variable" strokewidth="inherit">
 <connections>
