@@ -1008,7 +1008,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 {
 	var graph = this.editorUi.editor.graph;
 	menu.smartSeparators = true;
-	
+	// 未选择节点
 	if (graph.isSelectionEmpty())
 	{
 		this.addMenuItems(menu, ['undo', 'redo', 'pasteHere'], null, evt);
@@ -1018,13 +1018,11 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 		this.addMenuItems(menu, ['delete', '-', 'cut', 'copy', '-'], null, evt);
 	}
 
+	// 选择节点
 	if (!graph.isSelectionEmpty())
 	{
-		
-		
 		cell = graph.getSelectionCell();
 		var state = graph.view.getState(cell);
-
 		if (state != null)
 		{
 			var hasWaypoints = false;
@@ -1076,10 +1074,25 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 				this.addMenuItems(menu, ['ungroup'], null, evt);
 			}
 			
+			// 选中单个节点,展示不同的右键目录
 			if (graph.getSelectionCount() == 1)
 			{
 				menu.addSeparator();
-				this.addMenuItems(menu, ['editProp'], null, evt);
+				var target;
+				if (typeof(cell.value) === "string") {
+					target = cell.value;
+				} else {
+					target = cell.value.getAttribute('label')
+				}
+				var palette = target.match(/class=\"(\S*)\"/)
+				palette = palette ? palette[1] : palette;
+				if(palette == 'linkTag') {
+					// 链接
+					this.addMenuItems(menu, ['configLink'], null, evt);
+				} else if (palette === 'selectTag') {
+					// 下拉列表
+					this.addMenuItems(menu, ['editProp'], null, evt);
+				}
 				// this.addMenuItems(menu, ['editData', 'editLink', 'editProp'], null, evt);
 
 				// Shows edit image action if there is an image in the style

@@ -8044,7 +8044,7 @@ if (typeof mxVertexHandler != 'undefined')
 
 			var link = this.graph.getLinkForCell(this.state.cell);
 			var links = this.graph.getLinksForState(this.state);
-			this.updateLinkHint(link, links);
+			// this.updateLinkHint(link, links);
 			
 			if (link != null || (links != null && links.length > 0))
 			{
@@ -8077,6 +8077,7 @@ if (typeof mxVertexHandler != 'undefined')
 					this.linkHint.style.fontSize = '90%';
 					this.linkHint.style.opacity = '1';
 					this.linkHint.style.filter = '';
+					this.linkHint.style.display = 'none';
 					
 					this.graph.container.appendChild(this.linkHint);
 				}
@@ -8188,7 +8189,7 @@ if (typeof mxVertexHandler != 'undefined')
 									
 			if (link != null || (links != null && links.length > 0))
 			{
-				this.updateLinkHint(link, links);
+				// this.updateLinkHint(link, links);
 				this.redrawHandles();
 			}
 		};

@@ -95,7 +95,7 @@ Sidebar.prototype.init = function()
 
 	//从路径下读取xml加载svg图像 dir basic.xml，bpmn.xml
 	this.addBasicPalette(dir);//基本图形
-    this.addBpmnPalette(dir, false);//BPMN通用
+	this.addBpmnPalette(dir, false);//BPMN通用
 
 	this.addStencilPalette('arrows', mxResources.get('arrows'), dir + '/arrows.xml',
 		';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2');//箭头
@@ -103,27 +103,8 @@ Sidebar.prototype.init = function()
 		';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2');//flowchart
 
 	// //png IOT平台图片集
-	this.addImagePalette('IOT', 'IOT', dir + '/IOT/','.png',
-		['t1_cl2_layout',
-		't2_cl2_layout',
-		'cl2_green',
-        'cl2_yellow',
-		'cl2_red',
-		't1_cl2_tooltip',
-        't2_cl2_tooltip'], null,
-        {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
-            'Router_Icon': 'router switch'});//IOT
-
-	//png 图片名字拼接
-	this.addImagePalette('clipart', mxResources.get('clipart'), dir + '/clipart/', '_128x128.png',
-		['Earth_globe', 'Empty_Folder', 'Full_Folder', 'Gear', 'Lock', 'Software', 'Virus', 'Email',
-		 'Database', 'Router_Icon', 'iPad', 'iMac', 'Laptop', 'MacBook', 'Monitor_Tower', 'Printer',
-		 'Server_Tower', 'Workstation', 'Firewall_02', 'Wireless_Router_N', 'Credit_Card',
-		 'Piggy_Bank', 'Graph', 'Safe', 'Shopping_Cart', 'Suit1', 'Suit2', 'Suit3', 'Pilot1',
-		 'Worker1', 'Soldier1', 'Doctor1', 'Tech1', 'Security1', 'Telesales1'], null,
-		 {'Wireless_Router_N': 'wireless router switch wap wifi access point wlan',
-		  'Router_Icon': 'router switch'});//剪切画
-
+	// this.addImagePalette('IOT', 'IOT', dir + '/IOT/','.png',
+		// ['t1_cl2_layout', 't2_cl2_layout', 'cl2_green', 'cl2_yellow', 'cl2_red', 't1_cl2_tooltip', 't2_cl2_tooltip'], ['t1_cl2_layout', 't2_cl2_layout', 'cl2_green', 'cl2_yellow', 'cl2_red', 't1_cl2_tooltip', 't2_cl2_tooltip'],null);//IOT
 };
 
 
@@ -249,7 +230,7 @@ Sidebar.prototype.getTooltipOffset = function()
 };
 
 /**
- * Adds all palettes to the sidebar.
+ * 显示控件浮窗.
  */
 Sidebar.prototype.showTooltip = function(elt, cells, w, h, title, showLabel)
 {
@@ -417,11 +398,11 @@ Sidebar.prototype.showTooltip = function(elt, cells, w, h, title, showLabel)
 
 			if (this.tooltip != null && this.tooltip.style.display != 'none')
 			{
-				show();
+				// show();
 			}
 			else
 			{
-				this.thread = window.setTimeout(show, this.tooltipDelay);
+				// this.thread = window.setTimeout(show, this.tooltipDelay);
 			}
 
 			this.currentElt = elt;
@@ -430,7 +411,7 @@ Sidebar.prototype.showTooltip = function(elt, cells, w, h, title, showLabel)
 };
 
 /**
- * Hides the current tooltip.
+ * 隐藏控件浮窗.
  */
 Sidebar.prototype.hideTooltip = function()
 {
@@ -944,15 +925,14 @@ Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, resu
 };
 
 /**
- * Adds the general palette to the sidebar.通用 svg 手写
+ * 基本控件
  */
 Sidebar.prototype.addGeneralPalette = function(expand)
 {
-	var lineTags = 'line lines connector connectors connection connections arrow arrows ';
-	
 	var fns = [
 	 	this.createVertexTemplateEntry('rounded=0;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, 'rect rectangle box'),
 		 this.createVertexTemplateEntry('line;strokeWidth=2;html=1;', 160, 10, '', '直线'),
+
 		 this.addEntry('link hyperlink', mxUtils.bind(this, function()
 	 	{
 	 		var cell = new mxCell('Link', new mxGeometry(0, 0, 60, 40), 'text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=center;verticalAlign=middle;fontColor=#0000EE;fontStyle=4;');
@@ -963,8 +943,20 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		 })),
 	 	this.createEdgeTemplateEntry('edgeStyle=isometricEdgeStyle;endArrow=none;html=1;', 50, 100, '', '曲线'),
 	 	this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',
- 			40, 20, '文本', '文本', null, null, 'text textbox textarea label'),
+ 			40, 20, 'text', '文本'),
 		this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 80, 80, '', '圆', null, null, 'circle'),
+		this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;overflow=fill', 70, 40, '<select style="width:100%;height:100%;" class="selectTag"></select>', '下拉列表'),
+		// 图片
+		this.createVertexTemplateEntry('image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
+		// 表格
+		this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
+		 	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
+ 			'<table border="1" style="width:100%;height:75%;border-collapse:collapse;">' +
+ 			'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
+ 			'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
+			 '<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
+			//  链接
+		this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
 	];
 	//封装
 	this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
@@ -1828,7 +1820,6 @@ Sidebar.prototype.createThumb = function(cells, width, height, parent, title, sh
 	{
 		parent.style.backgroundImage = 'url(' + this.editorUi.editor.transparentImage + ')';
 	}
-	
 	node.style.position = 'relative';
 	node.style.overflow = 'hidden';
 	node.style.cursor = 'move';
@@ -1839,6 +1830,7 @@ Sidebar.prototype.createThumb = function(cells, width, height, parent, title, sh
 	node.style.visibility = '';
 	node.style.minWidth = '';
 	node.style.minHeight = '';
+	node.style.margin = '0 auto';
 	
 	parent.appendChild(node);
 	
@@ -1877,7 +1869,7 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 	elt.className = 'geItem';
 	elt.style.overflow = 'hidden';
 	var border = (mxClient.IS_QUIRKS) ? 8 + 2 * this.thumbPadding : 2 * this.thumbBorder;
-	elt.style.width = (this.thumbWidth + border) + 'px';
+	elt.style.width = (this.thumbWidth + border + 14) + 'px';
 	elt.style.height = (this.thumbHeight + border + 20) + 'px';
 	elt.style.padding = this.thumbPadding + 'px';
 	
@@ -3441,7 +3433,7 @@ Sidebar.prototype.removePalette = function(id)
 };
 
 /**
- * Adds the given image palette.
+ * 增加图片palette.
  */
 Sidebar.prototype.addImagePalette = function(id, title, prefix, postfix, items, titles, tags)
 {
@@ -3458,7 +3450,6 @@ Sidebar.prototype.addImagePalette = function(id, title, prefix, postfix, items, 
 				var dot = item.lastIndexOf('.');
 				tmpTags = item.substring((slash >= 0) ? slash + 1 : 0, (dot >= 0) ? dot : item.length).replace(/[-_]/g, ' ');
 			}
-			
 			fns.push(this.createVertexTemplateEntry('image;html=1;labelBackgroundColor=#ffffff;image=' + prefix + item + postfix,
 				this.defaultImageWidth, this.defaultImageHeight, '', title, title != null, null, this.filterTags(tmpTags)));
 		}))(items[i], (titles != null) ? titles[i] : null, (tags != null) ? tags[items[i]] : null);

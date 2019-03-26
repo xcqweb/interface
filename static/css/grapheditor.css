@@ -326,6 +326,11 @@ div.mxWindow .geButton {
 	padding-bottom:12px;
 	overflow:hidden;
 }
+.geSidebar .comInput {
+	width: 32px;
+	height: 16px;
+	border: 1px solid #7D7D7D;
+}
 .geSidebarContainer .geTitle {
 	display:block;
 	font-size:9pt;
@@ -368,7 +373,9 @@ div.mxWindow .geButton {
 	cursor: move;
 }
 .geSidebar .geItem:hover {
-	border:1px solid gray !important;
+	border-radius:2px;
+	opacity:1;
+	background: #D9E6F6;
 }
 .geSidebar .geItem .geItemTitle {
 	color: #252525;

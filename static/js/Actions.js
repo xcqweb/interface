@@ -24,7 +24,7 @@ Actions.prototype.init = function()
 		return Action.prototype.isEnabled.apply(this, arguments) && graph.isEnabled();
 	};
 
-	// 排版操作
+	// 菜单部分排版操作
 	// 文本左对齐
 	this.addAction('leftalign', function () {
 		ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_LEFT])()
@@ -81,7 +81,11 @@ Actions.prototype.init = function()
 		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '链接');
 	}, true)
 
-	// File actions
+	// 配置链接
+	this.addAction('configLink', function () {
+		console.log('配置链接')
+	}, true)
+	// 文件操作
 	this.addAction('new...', function() { graph.openLink(ui.getUrl()); });
 	this.addAction('open...', function()
 	{
@@ -827,10 +831,8 @@ Actions.prototype.init = function()
 	}, null, null, 'Alt+Shift+A');
 	action.setToggleAction(true);
 	action.setSelectedCallback(function() { return graph.connectionArrowsEnabled; });
-	console.log(graph.connectionHandler.isEnabled)
 	action = this.addAction('connectionPoints', function()
 	{
-		console.log(122)
 		graph.setConnectable(!graph.connectionHandler.isEnabled());
 		ui.fireEvent(new mxEventObject('connectionPointsChanged'));
 	}, null, null, 'Alt+Shift+P');

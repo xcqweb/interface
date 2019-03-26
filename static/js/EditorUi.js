@@ -99,8 +99,7 @@ EditorUi = function(editor, container, lightbox)
 		var linkHandler = function(evt)
 		{
 			var source = mxEvent.getSource(evt);
-			
-			if (source.nodeName == 'A')
+			if (source.nodeName == 'linkTag')
 			{
 				while (source != null)
 				{
@@ -115,7 +114,6 @@ EditorUi = function(editor, container, lightbox)
 			
 			return textEditing(evt);
 		};
-		
 		if (mxClient.IS_IE && (typeof(document.documentMode) === 'undefined' || document.documentMode < 9))
 		{
 			mxEvent.addListener(this.diagramContainer, 'contextmenu', linkHandler);
@@ -3935,9 +3933,9 @@ EditorUi.prototype.createKeyHandler = function(editor)
 
 	// Alt+Shift+Keycode mapping to action
 	var altShiftActions = {67: this.actions.get('clearWaypoints'), // Alt+Shift+C
-						  65: this.actions.get('connectionArrows'), // Alt+Shift+A
+						  // 65: this.actions.get('connectionArrows'), // Alt+Shift+A
 						  76: this.actions.get('editLink'), // Alt+Shift+L
-						  80: this.actions.get('connectionPoints'), // Alt+Shift+P
+						  // 80: this.actions.get('connectionPoints'), // Alt+Shift+P
 						  84: this.actions.get('editTooltip'), // Alt+Shift+T
 						  86: this.actions.get('pasteSize'), // Alt+Shift+V
 						  88: this.actions.get('copySize') // Alt+Shift+X
@@ -4108,7 +4106,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		keyHandler.bindAction(72, true, 'fitWindow', true); // Ctrl+Shift+H
 		keyHandler.bindAction(74, true, 'fitPage'); // Ctrl+J
 		keyHandler.bindAction(74, true, 'fitTwoPages', true); // Ctrl+Shift+J
-		keyHandler.bindAction(48, true, 'customZoom'); // Ctrl+0
+		// keyHandler.bindAction(48, true, 'customZoom'); // Ctrl+0
 		keyHandler.bindAction(82, true, 'turn'); // Ctrl+R
 		keyHandler.bindAction(82, true, 'clearDefaultStyle', true); // Ctrl+Shift+R
 		keyHandler.bindAction(83, true, 'save'); // Ctrl+S
