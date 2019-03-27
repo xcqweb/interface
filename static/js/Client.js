@@ -15329,7 +15329,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 		col3.style.paddingRight = '6px';
 		col3.style.textAlign = 'right';
 		
-		tr.appendChild(col3);
+		// tr.appendChild(col3);
 		
 		if (parent.div == null)
 		{

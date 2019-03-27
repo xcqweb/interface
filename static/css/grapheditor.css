@@ -1037,22 +1037,24 @@ td.mxPopupMenuIcon div {
 	height:16px;
 }
 html div.mxPopupMenu {
-	-webkit-box-shadow: 0 3px 8px 0 #d5d5d5;
-	-moz-box-shadow: 0 3px 8px 0 #d5d5d5;
-	box-shadow: 0 3px 8px 0 #d5d5d5;
+	-webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0 , .3);
+	-moz-box-shadow: 0 0 10px 0 rgba(0, 0, 0 , .3);
+	box-shadow: 0 0 10px 0 rgba(0, 0, 0 , .3);
 	background:#F5F5F5;
 	position:absolute;
-	border:3px solid #e7e7e7;
-	border-radius: 0 0 2px 2px;
-	padding:3px;
+	border:1px solid #CCCCCC;
+	border-radius: 2px;
+	padding-bottom: 6px;
 }
 html table.mxPopupMenu {
 	border-collapse:collapse;
 	margin:0px;
 }
 html td.mxPopupMenuItem {
-	padding: 5px 25px;
-	font-size:10pt;
+	padding: 5px 15px;
+	font-size: 14px;
+	color: #252525;
+	line-height: 14px;
 }
 html td.mxPopupMenuIcon {
 	background-color:white;
@@ -1086,7 +1088,7 @@ table.mxPopupMenu hr {
 	height:1px;
 }
 table.mxPopupMenu tr {
-	font-size:4pt;
+	font-size: 14px;
 }
 html td.mxWindowTitle {
  	text-align:left;

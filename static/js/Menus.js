@@ -960,8 +960,8 @@ Menus.prototype.addMenuItem = function(menu, key, parent, trigger, sprite, label
 		{
 			menu.addCheckmark(item, Editor.checkmarkImage);
 		}
-
-		this.addShortcut(item, action);
+		// 右键菜单，快捷键提示
+		// this.addShortcut(item, action);
 		
 		return item;
 	}
@@ -1061,7 +1061,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 			{
 				this.addMenuItems(menu, ['clearWaypoints'], null, evt);
 			}
-			
+			// 选择多个节点，增加组合操作
 			if (graph.getSelectionCount() > 1)	
 			{
 				menu.addSeparator();
@@ -1074,7 +1074,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 				this.addMenuItems(menu, ['ungroup'], null, evt);
 			}
 			
-			// 选中单个节点,展示不同的右键目录
+			// 选中单个节点,展示不同的右键菜单
 			if (graph.getSelectionCount() == 1)
 			{
 				menu.addSeparator();
@@ -1095,7 +1095,8 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 				}
 				// this.addMenuItems(menu, ['editData', 'editLink', 'editProp'], null, evt);
 
-				// Shows edit image action if there is an image in the style
+				// 编辑图片
+				console.log(graph.getModel().isVertex(cell), mxUtils.getValue(state.style, mxConstants.STYLE_IMAGE, null))
 				if (graph.getModel().isVertex(cell) && mxUtils.getValue(state.style, mxConstants.STYLE_IMAGE, null) != null)
 				{
 					menu.addSeparator();
@@ -1106,8 +1107,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 	}
 	else
 	{
-		this.addMenuItems(menu, ['-', 'selectVertices', 'selectEdges',
-			'selectAll', '-', 'clearDefaultStyle'], null, evt);
+		// this.addMenuItems(menu, ['-', 'selectVertices', 'selectEdges', 'selectAll', '-', 'clearDefaultStyle'], null, evt);
 	}
 };
 
