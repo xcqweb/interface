@@ -740,6 +740,7 @@ OpenFile.prototype.cancel = function(cancel)
 function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 {
 	var dx = 0;
+	var dialogType = elt.getAttribute('data-dialog');
 	title = title || '';
 	if (mxClient.IS_VML && (document.documentMode == null || document.documentMode < 8))
 	{
@@ -763,7 +764,7 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 	// Keeps window size inside available space
 	if (!mxClient.IS_QUIRKS)
 	{
-		elt.style.maxHeight = h + 'px';
+		// elt.style.maxHeight = h + 'px';
 	}
 	
 	w = Math.min(w, document.body.scrollWidth - 64);
@@ -774,7 +775,6 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 	{
 		this.zIndex += editorUi.dialogs.length * 2;
 	}
-
 	if (this.bg == null)
 	{
 		this.bg = editorUi.createDiv('background');
@@ -807,15 +807,22 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 	var pos = this.getPosition(left, top, w, h);
 	left = pos.x;
 	top = pos.y;
-	
+	switch (dialogType) {
+		case 'chooseVariable':
+			left += 140;
+			top += 200;
+			break
+		default:
+			break;
+	}
 	div.style.width = w + 'px';
-	div.style.height = h + 'px';
-	// div.style.left = left + 'px';
-	// div.style.top = top + 'px';
+	div.style.minHeight = h + 'px';
+	div.style.left = left + 'px';
+	div.style.top = top + 'px';
 	div.style.zIndex = this.zIndex;
 	
 	if(title) {
-		elt.style.maxHeight = h - 36 + 'px';
+		// elt.style.maxHeight = h - 36 + 'px';
 		// 标题栏
 		var titleBox = document.createElement('p')
 		titleBox.className = 'geDialogTitle'
@@ -862,34 +869,34 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 	
 	this.resizeListener = mxUtils.bind(this, function()
 	{
-		// dh = Math.max(document.body.clientHeight, document.documentElement.clientHeight);
-		// this.bg.style.height = dh + 'px';
+		dh = Math.max(document.body.clientHeight, document.documentElement.clientHeight);
+		this.bg.style.height = dh + 'px';
 		
-		// left = Math.max(1, Math.round((document.body.clientWidth - w - 64) / 2));
-		// top = Math.max(1, Math.round((dh - h - editorUi.footerHeight) / 3));
-		// w = Math.min(w0, document.body.scrollWidth - 64);
-		// h = Math.min(h0, dh - 64);
+		left = Math.max(1, Math.round((document.body.clientWidth - w - 64) / 2));
+		top = Math.max(1, Math.round((dh - h - editorUi.footerHeight) / 3));
+		w = Math.min(w0, document.body.scrollWidth - 64);
+		h = Math.min(h0, dh - 64);
 		
-		// var pos = this.getPosition(left, top, w, h);
-		// left = pos.x;
-		// top = pos.y;
+		var pos = this.getPosition(left, top, w, h);
+		left = pos.x;
+		top = pos.y;
 		
-		// div.style.left = left + 'px';
-		// div.style.top = top + 'px';
-		// div.style.width = w + 'px';
-		// div.style.height = h + 'px';
+		div.style.left = left + 'px';
+		div.style.top = top + 'px';
+		div.style.width = w + 'px';
+		div.style.height = h + 'px';
 		
-		// // Adds vertical scrollbars if needed
-		// if (!noScroll && elt.clientHeight > div.clientHeight - 64)
-		// {
-		// 	elt.style.overflowY = 'auto';
-		// }
+		// Adds vertical scrollbars if needed
+		if (!noScroll && elt.clientHeight > div.clientHeight - 64)
+		{
+			elt.style.overflowY = 'auto';
+		}
 		
-		// if (this.dialogImg != null)
-		// {
-		// 	this.dialogImg.style.top = (top + 14) + 'px';
-		// 	this.dialogImg.style.left = (left + w + 38 - dx) + 'px';
-		// }
+		if (this.dialogImg != null)
+		{
+			this.dialogImg.style.top = (top + 14) + 'px';
+			this.dialogImg.style.left = (left + w + 38 - dx) + 'px';
+		}
 	});
 	
 	mxEvent.addListener(window, 'resize', this.resizeListener);
@@ -938,7 +945,7 @@ Dialog.prototype.unlockedImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/unlocked.pn
 /**
  * Removes the dialog from the DOM.
  */
-Dialog.prototype.bgOpacity = 80;
+Dialog.prototype.bgOpacity = 0;
 
 /**
  * Removes the dialog from the DOM.

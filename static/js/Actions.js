@@ -1216,7 +1216,29 @@ Actions.prototype.init = function()
 			document.execCommand('superscript', false, null);
 		}
 	}), null, null, Editor.ctrlKey + '+.');
-	this.addAction('image...', function()
+	// 编辑图片
+	this.addAction('image', function () {
+		var cell = graph.getSelectionCell();
+		var dlg = new ImageDialog(ui, cell)
+		ui.showDialog(dlg.container, 410, 370, true, false, null, null, '选择图片');
+		dlg.init()
+	})
+	// 编辑图片
+	this.addAction('selectProp', function () {
+		var cell = graph.getSelectionCell();
+		var dlg = new SelectPropDialog(ui, cell)
+		ui.showDialog(dlg.container, 410, 370, true, false, null, null, '属性');
+		dlg.init()
+	})
+	// 数据弹窗
+	this.addAction('paletteData', function () {
+		var cell = graph.getSelectionCell();
+		var dlg = new PaletteDataDialog(ui, cell)
+		ui.showDialog(dlg.container, 410, 450, true, false, null, null, '绑定数据源');
+		dlg.init()
+	})
+	
+	this.addAction('images', function()
 	{
 		if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent()))
 		{
@@ -1230,10 +1252,10 @@ Actions.prototype.init = function()
 	    	}
 	    	
 	    	var selectionState = graph.cellEditor.saveSelection();
-	    	
 	    	ui.showImageDialog(title, value, function(newValue, w, h)
-			{
-	    		// Inserts image into HTML text
+				{
+					console.log(graph.cellEditor.isContentEditing())
+	    		// 将图片插入html
 	    		if (graph.cellEditor.isContentEditing())
 	    		{
 	    			graph.cellEditor.restoreSelection(selectionState);

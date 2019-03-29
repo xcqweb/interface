@@ -1015,7 +1015,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 	}
 	else
 	{
-		this.addMenuItems(menu, ['delete', '-', 'cut', 'copy', '-'], null, evt);
+		this.addMenuItems(menu, ['cut', 'copy', 'delete','-'], null, evt);
 	}
 
 	// 选择节点
@@ -1086,21 +1086,19 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 				}
 				var palette = target.match(/class=\"(\S*)\"/)
 				palette = palette ? palette[1] : palette;
+				var shapeName = state.style.shape;
+				console.log(shapeName)
 				if(palette == 'linkTag') {
 					// 链接
 					this.addMenuItems(menu, ['configLink'], null, evt);
+				} else if (shapeName == 'rectangle') {
+					this.addMenuItem(menu, 'paletteData', null, evt).firstChild.nextSibling.innerHTML = '数据...';
 				} else if (palette === 'selectTag') {
 					// 下拉列表
-					this.addMenuItems(menu, ['editProp'], null, evt);
-				}
-				// this.addMenuItems(menu, ['editData', 'editLink', 'editProp'], null, evt);
-
-				// 编辑图片
-				console.log(graph.getModel().isVertex(cell), mxUtils.getValue(state.style, mxConstants.STYLE_IMAGE, null))
-				if (graph.getModel().isVertex(cell) && mxUtils.getValue(state.style, mxConstants.STYLE_IMAGE, null) != null)
-				{
-					menu.addSeparator();
-					this.addMenuItem(menu, 'image', null, evt).firstChild.nextSibling.innerHTML = mxResources.get('editImage') + '...';
+					this.addMenuItem(menu, 'selectProp', null, evt).firstChild.nextSibling.innerHTML = '属性...';
+				} else if (shapeName == 'image') {
+					// 编辑图片
+					this.addMenuItem(menu, 'image', null, evt).firstChild.nextSibling.innerHTML = '选择图片...';
 				}
 			}
 		}

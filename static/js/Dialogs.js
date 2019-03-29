@@ -361,8 +361,7 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 	// 文件名称
 	var nameTitle = document.createElement('p')
 	nameTitle.innerHTML = '文件名称'
-	nameTitle.style.margin = "9px 0 5px";
-	nameTitle.style.color = "#929292";
+	nameTitle.className = 'geDialogInfoTitle';	
 	saveContent.appendChild(nameTitle)
 	
 	var nameInput = document.createElement('input');
@@ -524,8 +523,7 @@ var LinkReportDialog = function(editorUi, defaultLink) {
 	// 链接
 	var nameTitle = document.createElement('p')
 	nameTitle.innerHTML = '链接'
-	nameTitle.style.margin = "9px 0 5px";
-	nameTitle.style.color = "#929292";
+	nameTitle.className = 'geDialogInfoTitle';	
 	saveContent.appendChild(nameTitle)
 	
 	var nameInput = document.createElement('input');
@@ -572,6 +570,7 @@ var LinkReportDialog = function(editorUi, defaultLink) {
 	saveContent.appendChild(btnContent)
 	this.container = saveContent;
 }
+
 /**
  * 分享弹窗
  */
@@ -582,8 +581,7 @@ var ShareDialog = function(editorUi) {
 	// 链接
 	var nameTitle = document.createElement('p')
 	nameTitle.innerHTML = '分享之后，生成的页面将在平台展示。';
-	nameTitle.style.margin = "9px 0 5px";
-	nameTitle.style.color = "#929292";
+	nameTitle.className = 'geDialogInfoTitle';
 	saveContent.appendChild(nameTitle)
 
 	// 保存按钮
@@ -605,24 +603,16 @@ var ShareDialog = function(editorUi) {
 		editorUi.hideDialog();
 	});
 	cancelBtn.className = 'geBtn';
-	
-	if (editorUi.editor.cancelFirst)
-	{
-		btnContent.appendChild(cancelBtn);
-	}
-	
+	btnContent.appendChild(cancelBtn);
 	btnContent.appendChild(genericBtn);
 	
-	if (!editorUi.editor.cancelFirst)
-	{
-		btnContent.appendChild(cancelBtn);
-	}
-
 	saveContent.appendChild(btnContent)
 	this.container = saveContent;
 }
+
 /**
  * 提示弹窗
+ * @param {object} editorUi
  * @param {boolean} flag true：成功；false失败
  * @param {string} info	提示信息
  */
@@ -642,6 +632,482 @@ var tipDialog = function(editorUi, flag, info) {
 		editorUi.hideDialog()
 	}, 3000)
 	return tipContent
+}
+
+/**
+ * 图片弹窗
+ * @param {object} editorUi 
+ * @param {object} cell 选择的节点 
+ */
+var ImageDialog = function (editorUi, cell) {
+	var graph = editorUi.editor.graph;
+
+	var value = graph.getModel().getValue(cell);
+	// Converts the value to an XML node
+	if (!mxUtils.isNode(value))
+	{
+		var doc = mxUtils.createXmlDocument();
+		var obj = doc.createElement('object');
+		obj.setAttribute('label', value || '');
+		value = obj;
+	}
+
+	var saveContent = document.createElement('div')
+	saveContent.style.padding = "22px";
+	saveContent.className = 'geDialogInfo';
+	var mockData = [
+		{
+			name: 'T1',
+			data: [
+				{
+					name: 't1_AC_L20',
+					url: 't1_AC_L20 url'
+				},{
+					name: 't1_AC_L40',
+					url: 't1_AC_L40 url'
+				},{
+					name: 't1_Cl2',
+					url: 't1_Cl2 url'
+				},{
+					name: 't1_HPCP',
+					url: 't1_HPCP url'
+				}
+			]
+		},{
+			name: 'T2',
+			data: [
+				{
+					name: 't2_AC_L20',
+					url: 't2_AC_L20 url'
+				},{
+					name: 't2_AC_L40',
+					url: 't2_AC_L40 url'
+				},{
+					name: 't2_Cl2',
+					url: 't2_Cl2 url'
+				},{
+					name: 't2_HPCP',
+					url: 't2_HPCP url'
+				}
+			]
+		}
+	]
+	// 内部图片
+	saveContent.innerHTML = `
+		<label class="imageRadio">
+			<input class="imageTypeRadio" id="innerTypeRadio" type="radio" name="image" checked/>
+			内部图片
+		</label>
+		<div id="innerImageBox">
+			${
+				mockData.reduce((str, v) => str += `
+					<ul>
+						<li class="innerImageType expandedImage">${v.name}</li>
+						<ul class="innerImageList">
+							${
+								v.data.reduce((s, item) => s += `
+								<li>${item.name}</li>
+								`, '')
+							}
+						</ul>
+					</ul>`, '')
+			}
+		</div>
+		<label class="imageRadio">
+			<input class="imageTypeRadio" id="localTypeRadio" type="radio" name="image" />
+			<input type="file" id="chooseImage" title="" accept=".jpg,.jpge,.gif,.png"/>
+			其他图片
+		</label>
+	`
+	this.init = function () {
+		// 选择图片方式
+		document.getElementById('innerTypeRadio').addEventListener('click', function (e) {
+			e.stopImmediatePropagation()
+		})
+		document.getElementsByClassName('imageRadio')[1].addEventListener('click', function (e) {
+				document.getElementById('checkedImage') ? document.getElementById('checkedImage').id = '' : null;
+				document.getElementById('localTypeRadio').checked = true
+		})
+		// 获取本地图片
+		document.getElementById('chooseImage').addEventListener('change', function (e) {
+			var fr = new FileReader();//创建new FileReader()对象
+			var imgObj = e.target.files[0];//获取图片
+
+			fr.readAsDataURL(imgObj);//将图片读取为DataURL
+			fr.onload = function() {
+				console.log(this.result)
+			}
+		})
+		// 内部图片点击事件
+		document.getElementById('innerImageBox').addEventListener('click', function (e) {
+			var className = e.target.className
+			if (/^innerImageType/.test(className)) {
+				// 点击图片类型名称
+				if (/expandedImage$/.test(className)) {
+					// 展开状态点击
+					e.target.className = 'innerImageType collapsedImage';
+					e.target.nextElementSibling.style.height = '0px'
+				} else {
+					// 收缩状态点击
+					e.target.className = 'innerImageType expandedImage';
+					e.target.nextElementSibling.style.height = ''
+				}
+			} else if (/innerImageList/.test(e.target.parentNode.className)) {
+				document.getElementById('innerTypeRadio').checked = true
+			// 点击选择图片
+				document.getElementById('checkedImage') ? document.getElementById('checkedImage').id = '' : null;
+				e.target.id = 'checkedImage'
+			}
+		})
+	}
+	// 保存按钮
+	var btnContent = document.createElement('div');
+	btnContent.className = "btnContent";
+	var genericBtn = mxUtils.button('应用', function()
+	{
+		editorUi.hideDialog();
+		// 更换图片
+		var select = null;
+		var cells = graph.getSelectionCells();
+		// mock数据
+		var newValue;
+		var mockNum = Math.random()
+		if (mockNum < 0.3) {
+			newValue = "/static/stencils/IOT/t1_cl2_layout.png"
+		} else if (mockNum < 0.5) {
+			newValue = "/static/stencils/IOT/cl2_green.png"
+		} else if (mockNum < 0.8) {
+			newValue = "/static/stencils/IOT/cl2_red.png"
+		} else {
+			newValue = "/static/stencils/IOT/t2_cl2_layout.png"
+		}
+		graph.getModel().beginUpdate();
+		try {
+			graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
+		}
+		finally {
+			graph.getModel().endUpdate();
+		}
+
+		if (select != null) {
+			graph.setSelectionCells(select);
+			graph.scrollCellToVisible(select[0]);
+		}
+	});
+	genericBtn.className = 'geBtn gePrimaryBtn';
+	// 取消按钮
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+	});
+	cancelBtn.className = 'geBtn';
+	btnContent.appendChild(cancelBtn);
+	btnContent.appendChild(genericBtn);
+	
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
+}
+
+/**
+ * 下拉列表属性弹窗
+ * @param {object} editorUi 
+ */
+
+/**
+ * 第一次弹窗将其转为xml
+ * @param {object} graph 
+ * @param {object} cell 
+ */
+function convertsToXml (graph, cell) {
+	var value = graph.getModel().getValue(cell);
+	if (!mxUtils.isNode(value))
+	{
+		var doc = mxUtils.createXmlDocument();
+		var obj = doc.createElement('object');
+		obj.setAttribute('label', value || '');
+		value = obj;
+	}
+	return value;
+}
+var SelectPropDialog = function (editorUi, cell) {
+	var graph = editorUi.editor.graph;
+	var value = convertsToXml(graph, cell)
+
+	var saveContent = document.createElement('div')
+	saveContent.style.padding = "22px";
+	saveContent.className = 'geDialogInfo';
+	var mockData = ['particle', 'hpcp', 'erp']
+	this.fillContent = function (data) {
+		
+	}
+	// 属性列表
+	saveContent.innerHTML = `
+		<div id="innerPropsBox">
+			<div class="innerPropsOperate">
+				<img id="addProp" src="/static/images/checkmark.gif" />
+				<img id="moveUp" src="/static/images/checkmark.gif" />
+				<img id="moveDown" src="/static/images/checkmark.gif" />
+				<img id="delProp" src="/static/images/checkmark.gif" />
+			</div>
+			<ul class="innerPropsList">
+			${
+				mockData.reduce((str, v) => str += `
+						<li class="innerPropsType expandedProps">
+							<input type="checkbox" />
+							<span>${v}</span>
+						</li>
+				`, '')
+			}
+			</ul>
+		</div>
+	`
+	this.init = function () {
+	}
+	// 保存按钮
+	var btnContent = document.createElement('div');
+	btnContent.className = "btnContent";
+	var genericBtn = mxUtils.button('应用', function()
+	{
+		editorUi.hideDialog();
+		// 绑定列表
+		var select = null;
+		var cells = graph.getSelectionCells();
+		// mock数据
+		var newValue;
+		var mockNum = Math.random()
+		if (mockNum < 0.3) {
+			newValue = "/static/stencils/IOT/t1_cl2_layout.png"
+		} else if (mockNum < 0.5) {
+			newValue = "/static/stencils/IOT/cl2_green.png"
+		} else if (mockNum < 0.8) {
+			newValue = "/static/stencils/IOT/cl2_red.png"
+		} else {
+			newValue = "/static/stencils/IOT/t2_cl2_layout.png"
+		}
+		graph.getModel().beginUpdate();
+		try {
+			graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
+		}
+		finally {
+			graph.getModel().endUpdate();
+		}
+
+		if (select != null) {
+			graph.setSelectionCells(select);
+			graph.scrollCellToVisible(select[0]);
+		}
+	});
+	genericBtn.className = 'geBtn gePrimaryBtn';
+	// 取消按钮
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+	});
+	cancelBtn.className = 'geBtn';
+	btnContent.appendChild(cancelBtn);
+	btnContent.appendChild(genericBtn);
+	
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
+}
+
+/**
+ * 控件数据弹窗
+ * @param {object} editorUi 
+ * @param {object} cell 
+ */
+var PaletteDataDialog = function(editorUi, cell) {
+	var graph = editorUi.editor.graph;
+	var value = convertsToXml(graph, cell)
+
+	var saveContent = document.createElement('div')
+	saveContent.style.padding = "22px";
+	saveContent.className = 'geDialogInfo';
+	var mockData = [{
+		name: '氯气',
+		points: ['DOD_ASTK01_PT6', 'DOD_ASTK01_PT2']
+	}, {
+		name: 'particle',
+		points: ['CBBPC121_Particle', 'CBBPC144_Particle', 'CBBPC140_Particle']
+	}]
+	// 填充列表
+	this.fillContent = function (ele, data) {
+		ele.innerHTML = '';
+		for (var i = 0; i < data.length; i++) {
+			var opt = document.createElement('option')
+			opt.innerText = data[i].name || data[i]
+			if (data[i].points) {
+				opt.setAttribute('data-points', data[i].points)
+			}
+			ele.appendChild(opt)
+		}
+	}
+	
+	// 采集点类型：
+	var typeTitle = document.createElement('p')
+	typeTitle.innerHTML = '采集点类型：';
+	typeTitle.className = 'geDialogInfoTitle';
+	saveContent.appendChild(typeTitle)
+	
+	var typeSelect = document.createElement('select');
+	typeSelect.setAttribute('value', '');
+	typeSelect.className = 'dialogSelect'
+	typeSelect.id = 'typeSelect'
+	saveContent.appendChild(typeSelect)
+	this.fillContent(typeSelect, mockData)
+	
+	// 采集点：
+	var pointTitle = document.createElement('p');
+	pointTitle.innerHTML = '采集点：';
+	pointTitle.className = 'geDialogInfoTitle';
+	saveContent.appendChild(pointTitle)
+	
+	var pointSelect = document.createElement('select');
+	pointSelect.setAttribute('value', '');
+	pointSelect.className = 'dialogSelect'
+	pointSelect.id = 'pointSelect'
+	saveContent.appendChild(pointSelect)
+	this.fillContent(pointSelect, mockData[0].points)
+
+	// 变量：
+	var variableTitle = document.createElement('p');
+	variableTitle.innerHTML = '变量：';
+	variableTitle.className = 'geDialogInfoTitle';
+	saveContent.appendChild(variableTitle)
+
+	var variableBtn = document.createElement('button');
+	variableBtn.innerHTML = '点击勾选多个变量';
+	variableBtn.className = 'dialogBtn'
+	variableBtn.id = 'variableBtn'
+	saveContent.appendChild(variableBtn)
+	
+	// 展示变量
+	var showVariable = document.createElement('label')
+	showVariable.innerText = '显示变量值'
+	showVariable.style.display = 'inline-block'
+	showVariable.style.paddingLeft = '12px'
+
+	var showVariableCheck = document.createElement('input')
+	showVariableCheck.setAttribute('type', 'checkbox')
+	showVariableCheck.id = "showVariableCheck"
+	showVariableCheck.style.float = 'left'
+	showVariable.appendChild(showVariableCheck)
+	saveContent.appendChild(showVariable)
+	
+	// 选择模型：
+	var modelTitle = document.createElement('p');
+	modelTitle.innerHTML = '选择模型：';
+	modelTitle.className = 'geDialogInfoTitle';
+	saveContent.appendChild(modelTitle)
+
+	var modelBtn = document.createElement('button');
+	modelBtn.innerHTML = '+ 模型';
+	modelBtn.className = 'dialogBtn'
+	modelBtn.id = 'modelBtn'
+	saveContent.appendChild(modelBtn)
+	
+	// 执行：
+	var activeTitle = document.createElement('p');
+	activeTitle.innerHTML = '执行：';
+	activeTitle.className = 'geDialogInfoTitle';
+	saveContent.appendChild(activeTitle)
+
+	var activeBtn = document.createElement('button');
+	activeBtn.innerHTML = '+ 执行';
+	activeBtn.className = 'dialogBtn'
+	activeBtn.id = 'activeBtn'
+	saveContent.appendChild(activeBtn)
+	this.init = function () {
+	}
+	
+	// 绑定事件
+	// 选择采集点类型
+	typeSelect.addEventListener('change', function (e) {
+		var data = e.target.selectedOptions[0].getAttribute('data-points').split(',')
+		this.fillContent(pointSelect, data)
+	}.bind(this))
+	
+	// 选择变量
+	variableBtn.addEventListener('click', function (e) {
+		var dlg = new chooseVariableDialog(editorUi, cell)
+		editorUi.showDialog(dlg.container, 410, 380, true, false, null, null, '选择变量');
+	})
+
+	// 保存按钮
+	var btnContent = document.createElement('div');
+	btnContent.className = "btnContent";
+	var genericBtn = mxUtils.button('应用', function()
+	{
+		editorUi.hideDialog();
+		// 绑定列表
+		var select = null;
+		var cells = graph.getSelectionCells();
+		// mock数据
+		var newValue;
+		var mockNum = Math.random()
+		if (mockNum < 0.3) {
+			newValue = "/static/stencils/IOT/t1_cl2_layout.png"
+		} else if (mockNum < 0.5) {
+			newValue = "/static/stencils/IOT/cl2_green.png"
+		} else if (mockNum < 0.8) {
+			newValue = "/static/stencils/IOT/cl2_red.png"
+		} else {
+			newValue = "/static/stencils/IOT/t2_cl2_layout.png"
+		}
+		graph.getModel().beginUpdate();
+		try {
+			graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
+		}
+		finally {
+			graph.getModel().endUpdate();
+		}
+
+		if (select != null) {
+			graph.setSelectionCells(select);
+			graph.scrollCellToVisible(select[0]);
+		}
+	});
+	genericBtn.className = 'geBtn gePrimaryBtn';
+	// 取消按钮
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+	});
+	cancelBtn.className = 'geBtn';
+	btnContent.appendChild(cancelBtn);
+	btnContent.appendChild(genericBtn);
+	
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
+}
+
+/**
+ * 选择变量
+ */
+var chooseVariableDialog = function (editorUi) {
+	var saveContent = document.createElement('div')
+	saveContent.style.padding = "22px";
+	saveContent.className = 'geDialogInfo';
+	saveContent.setAttribute('data-dialog', 'chooseVariable');
+	// 保存按钮
+	var btnContent = document.createElement('div');
+	btnContent.className = "btnContent";
+	var genericBtn = mxUtils.button('应用', function()
+	{
+		editorUi.hideDialog();
+	});
+	genericBtn.className = 'geBtn gePrimaryBtn';
+	// 取消按钮
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+	});
+	cancelBtn.className = 'geBtn';
+	btnContent.appendChild(cancelBtn);
+	btnContent.appendChild(genericBtn);
+	
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
 }
 /**
  * Constructs a new textarea dialog.
@@ -1880,7 +2346,6 @@ var EditPropDialog = function(ui, cell)
 			temp = JSON.parse(attrs[i].nodeValue)
 		}
 	}
-	console.log(temp)
 	for (var i = 0; i < temp.length; i++)
 	{
 		addTextArea(count, temp[i].name, temp[i].value);

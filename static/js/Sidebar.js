@@ -930,33 +930,33 @@ Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, resu
 Sidebar.prototype.addGeneralPalette = function(expand)
 {
 	var fns = [
-	 	this.createVertexTemplateEntry('rounded=0;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, 'rect rectangle box'),
-		 this.createVertexTemplateEntry('line;strokeWidth=2;html=1;', 160, 10, '', '直线'),
+	 	this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, '矩形'),
+		//  this.createVertexTemplateEntry('line;strokeWidth=2;html=1;', 160, 10, '', '直线'),
 
-		 this.addEntry('link hyperlink', mxUtils.bind(this, function()
-	 	{
-	 		var cell = new mxCell('Link', new mxGeometry(0, 0, 60, 40), 'text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=center;verticalAlign=middle;fontColor=#0000EE;fontStyle=4;');
-	 		cell.vertex = true;
-	 		this.graph.setLinkForCell(cell, 'https://www.getech.cn');
+		//  this.addEntry('link hyperlink', mxUtils.bind(this, function()
+	 	// {
+	 	// 	var cell = new mxCell('Link', new mxGeometry(0, 0, 60, 40), 'text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=center;verticalAlign=middle;fontColor=#0000EE;fontStyle=4;');
+	 	// 	cell.vertex = true;
+	 	// 	this.graph.setLinkForCell(cell, 'https://www.getech.cn');
 
-	 		return this.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '链接');
-		 })),
-	 	this.createEdgeTemplateEntry('edgeStyle=isometricEdgeStyle;endArrow=none;html=1;', 50, 100, '', '曲线'),
-	 	this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',
- 			40, 20, 'text', '文本'),
-		this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 80, 80, '', '圆', null, null, 'circle'),
-		this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;overflow=fill', 70, 40, '<select style="width:100%;height:100%;" class="selectTag"></select>', '下拉列表'),
+	 	// 	return this.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '链接');
+		//  })),
+	 	// this.createEdgeTemplateEntry('edgeStyle=isometricEdgeStyle;endArrow=none;html=1;', 50, 100, '', '曲线'),
+	 	// this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',
+ 		// 	40, 20, 'text', '文本'),
+		// this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 80, 80, '', '圆', null, null, 'circle'),
+		this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 65, 40, '<div style="width:100%;height:100%;position: relative"><select class="selectTag"></select><div class="selectTagShade"></div></div>', '下拉列表'),
 		// 图片
 		this.createVertexTemplateEntry('image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
 		// 表格
-		this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
-		 	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
- 			'<table border="1" style="width:100%;height:75%;border-collapse:collapse;">' +
- 			'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
- 			'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
-			 '<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
-			//  链接
-		this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
+		// this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
+		//  	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
+ 		// 	'<table border="1" style="width:100%;height:75%;border-collapse:collapse;">' +
+ 		// 	'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
+ 		// 	'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
+		// 	 '<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
+		// 	//  链接
+		// this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
 	];
 	//封装
 	this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);

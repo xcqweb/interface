@@ -30,6 +30,9 @@ td {
 		box-sizing: border-box;
 		font-family: 'MicrosoftYaHei';
 }
+ul li {
+	list-style: none;
+}
 div.mxRubberband {
 	position: absolute;
 	overflow: hidden;

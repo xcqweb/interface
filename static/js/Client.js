@@ -15329,7 +15329,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 		col3.style.paddingRight = '6px';
 		col3.style.textAlign = 'right';
 		
-		// tr.appendChild(col3);
+		tr.appendChild(col3);
 		
 		if (parent.div == null)
 		{
@@ -19835,7 +19835,6 @@ mxSvgCanvas2D.prototype.updateText = function(x, y, w, h, align, valign, wrap, o
 		{
 			tr += 'rotate(' + (rotation) + ',' + (-dx) + ',' + (-dy) + ')';
 		}
-
 		group.setAttribute('transform', 'translate(' + Math.round(x) + ',' + Math.round(y) + ')' + tr);
 		fo.setAttribute('width', Math.round(Math.max(1, w)));
 		fo.setAttribute('height', Math.round(Math.max(1, h)));
@@ -43016,7 +43015,6 @@ mxGeometry.prototype.scale = function(sx, sy, fixedAspect)
 {
 	sx = parseFloat(sx);
 	sy = parseFloat(sy);
-
 	// Translates the source point
 	if (this.sourcePoint != null)
 	{
