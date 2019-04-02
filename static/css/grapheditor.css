@@ -543,7 +543,6 @@ div.mxWindow .geButton {
 	position:absolute;
 	margin: auto;
 	background:#F5F5F5;
-	line-height:1em;
 	overflow:hidden;
 	border:1px solid #CCCCCC;
 	border-radius: 4px;
@@ -551,6 +550,7 @@ div.mxWindow .geButton {
 	-moz-box-shadow:0px 0px 24px 0px #d5d5d5;
 	box-shadow:0px 0px 24px 0px #d5d5d5;
 	z-index: 2;
+	transition: box-shadow .3s .1s;
 }
 .geDialog .geDialogTitle {
 	color: #252525;
@@ -577,7 +577,7 @@ div.mxWindow .geButton {
 }
 .geDialog .geDialogInfo {
 	overflow: hidden;
-	padding: 5px 0;
+	padding: 22px;
 }
 .geDialog .tipDialogInfo {
 	padding: 22px;
@@ -595,12 +595,13 @@ div.mxWindow .geButton {
 .geDialog .geDialogInfo .btnContent {
 	text-align: right;
 	padding-top: 20px;
+	clear: left;
 }
 .geDialog .geDialogInfo button {
 	text-overflow:ellipsis;
 	overflow:hidden;
 	width: 84px;
-	height: 30px;
+	height: 32px;
 	font-size: 12px;
 	border: 1px solid #C4C4C4;
 	color: #252525;
@@ -1095,7 +1096,7 @@ html td.mxWindowTitle {
 }
 .geDialog .geDialogInfo .saveFileInput, .geDialog .geDialogInfo .dialogSelect {
 	width:100%;
-	height:36px;
+	height:32px;
 	border:1px solid #C5C5C5;
 	border-radius:2px;
 	outline: none;
@@ -1193,8 +1194,8 @@ html td.mxWindowTitle {
 	z-index: 9;
 }
 .innerPropsOperate {
-	height: 16px;
-	padding-bottom: 10px;
+	height: 36px;
+	padding-bottom: 20px;
 }
 .innerPropsOperate img {
 	float: left;
@@ -1203,19 +1204,104 @@ html td.mxWindowTitle {
 	margin-right: 20px;
 	cursor: pointer;
 }
-.innerPropsList li {
-	height: 24px;
-	line-height: 24px;
+#innerPropsList {
+	height: 180px;
+	padding: 12px 0;
+	background: #fff;
+	border-radius: 2px;
+	overflow-y: auto;
 }
-.innerPropsList li input {
+#innerPropsList li {
+	height: 28px;
+	line-height: 28px;
+	padding-left: 12px;
+	position: relative;
+}
+#innerPropsList li .editInput {
+	position: absolute;
+	top: 0;
+	left: 30px;
+	width: calc( 100% - 31px);
+	height: 28px;
+	padding: 0;
+	margin: 0;
+}
+#innerPropsList li.active {
+	background-color: #D9E6F6
+}
+#innerPropsList li input {
 	float: left;
 	margin: 6px 6px 0 0;
 }
-.innerPropsList li span {
+#innerPropsList li span {
 	float: left;
 	cursor: default;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	width: calc(100% - 22px);
+}
+.geDialog .geDialogInfo .searchBox {
+	overflow: hidden;
+}
+.geDialog .geDialogInfo .searchBox input {
+	width: 290px;
+	float: left;
+	padding-left: 34px;
+	margin-bottom: 12px;
+	background: url(./../images/search.png) no-repeat 12px 8px #fff;
+	background-size: 16px 16px;
+}
+.geDialog .geDialogInfo .searchBox button {
+	float: left;
+	width: 60px;
+}
+.geDialog .geDialogInfo .operateList {
+	float: left;
+	width: 40px;
+	height: 52px;
+	padding: 0 8px;
+	transform: translateY(74px);
+}
+.geDialog .geDialogInfo .increment, .geDialog .geDialogInfo .decrement {
+	color: #fff;
+	background-color: #3D91F7;
+	width: 24px;
+	height: 20px;
+	line-height: 20px;
+	text-align: center;
+	margin: 3px 0;
+	cursor: default;
+}
+.geDialog .geDialogInfo .disabledCrement {
+	color: #CECECE;
+	border: 1px solid #CECECE;
+	background: transparent;
+}
+.geDialog .geDialogInfo .variableList {
+	width: 160px;
+	height: 200px;
+	float: left;
+	overflow: auto;
+	padding: 7px 0;
+	border-radius: 2px;
+	border: 1px solid #C5C5C5;
+}
+.geDialog .geDialogInfo .variableList li {
+	height: 24px;
+	font-size: 14px;
+	padding: 0 25px 0 10px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	cursor: default;
+}
+.geDialog .geDialogInfo .variableList li.active {
+	color: #fff;
+	background-color: #3D91F7;
+	background-image: url(./../images/checked.png);
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
+	background-position: right 9px top 4px;
+	border-top: 1px solid #78c3ef;
 }

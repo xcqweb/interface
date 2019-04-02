@@ -783,7 +783,9 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 		this.bg.style.height = dh + 'px';
 		this.bg.style.right = '0px';
 		this.bg.style.zIndex = this.zIndex - 2;
-		
+		this.bg.addEventListener('click', function () {
+			this.nextSibling.style.boxShadow = "0px 0px 10px 1px #bb9c6f"
+		})
 		mxUtils.setOpacity(this.bg, this.bgOpacity);
 		
 		if (mxClient.IS_QUIRKS)
@@ -809,9 +811,17 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 	top = pos.y;
 	switch (dialogType) {
 		case 'chooseVariable':
-			left += 140;
-			top += 200;
-			break
+			left += 90;
+			top += 197;
+			break;
+		case 'chooseModel':
+			left += 90;
+			top += 262;
+			break;
+		case 'chooseExecute':
+			left += 90;
+			top += 59;
+			break;
 		default:
 			break;
 	}
@@ -820,7 +830,9 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 	div.style.left = left + 'px';
 	div.style.top = top + 'px';
 	div.style.zIndex = this.zIndex;
-	
+	div.addEventListener('click', function () {
+		this.style.boxShadow = ''
+	})
 	if(title) {
 		// elt.style.maxHeight = h - 36 + 'px';
 		// 标题栏

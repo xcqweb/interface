@@ -1223,11 +1223,11 @@ Actions.prototype.init = function()
 		ui.showDialog(dlg.container, 410, 370, true, false, null, null, '选择图片');
 		dlg.init()
 	})
-	// 编辑图片
+	// 下拉列表
 	this.addAction('selectProp', function () {
 		var cell = graph.getSelectionCell();
 		var dlg = new SelectPropDialog(ui, cell)
-		ui.showDialog(dlg.container, 410, 370, true, false, null, null, '属性');
+		ui.showDialog(dlg.container, 410, 340, true, false, null, null, '属性');
 		dlg.init()
 	})
 	// 数据弹窗

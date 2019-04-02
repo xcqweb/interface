@@ -87,20 +87,20 @@ Sidebar.prototype.init = function()
 //原型初始化
 {
 	var dir = STENCIL_PATH;
-	this.addSearchPalette(true);//搜索
+	// this.addSearchPalette(true);//搜索
 	this.addGeneralPalette(true);//通用 自己写的svg
-	this.addMiscPalette(false);//杂项
-	this.addAdvancedPalette(false);//高级
-    this.addUmlPalette(false);//UML
+	// this.addMiscPalette(false);//杂项
+	// this.addAdvancedPalette(false);//高级
+  //   this.addUmlPalette(false);//UML
 
-	//从路径下读取xml加载svg图像 dir basic.xml，bpmn.xml
-	this.addBasicPalette(dir);//基本图形
-	this.addBpmnPalette(dir, false);//BPMN通用
+	// //从路径下读取xml加载svg图像 dir basic.xml，bpmn.xml
+	// this.addBasicPalette(dir);//基本图形
+	// this.addBpmnPalette(dir, false);//BPMN通用
 
-	this.addStencilPalette('arrows', mxResources.get('arrows'), dir + '/arrows.xml',
-		';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2');//箭头
-	this.addStencilPalette('flowchart', 'Flowchart', dir + '/flowchart.xml',
-		';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2');//flowchart
+	// this.addStencilPalette('arrows', mxResources.get('arrows'), dir + '/arrows.xml',
+	// 	';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2');//箭头
+	// this.addStencilPalette('flowchart', 'Flowchart', dir + '/flowchart.xml',
+	// 	';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2');//flowchart
 
 	// //png IOT平台图片集
 	// this.addImagePalette('IOT', 'IOT', dir + '/IOT/','.png',
@@ -949,14 +949,14 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		// 图片
 		this.createVertexTemplateEntry('image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
 		// 表格
-		// this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
-		//  	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
- 		// 	'<table border="1" style="width:100%;height:75%;border-collapse:collapse;">' +
- 		// 	'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
- 		// 	'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
-		// 	 '<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
-		// 	//  链接
-		// this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
+		this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
+		 	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
+ 			'<table border="1" style="width:100%;height:75%;border-collapse:collapse;">' +
+ 			'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
+ 			'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
+			 '<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
+			//  链接
+		this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
 	];
 	//封装
 	this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);

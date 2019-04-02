@@ -1087,7 +1087,6 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 				var palette = target.match(/class=\"(\S*)\"/)
 				palette = palette ? palette[1] : palette;
 				var shapeName = state.style.shape;
-				console.log(shapeName)
 				if(palette == 'linkTag') {
 					// 链接
 					this.addMenuItems(menu, ['configLink'], null, evt);

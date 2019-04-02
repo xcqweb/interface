@@ -355,9 +355,7 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 {
 	closeOnBtn = (closeOnBtn != null) ? closeOnBtn : true;
 	
-	var saveContent = document.createElement('div')
-	saveContent.style.padding = "22px";
-	saveContent.className = 'geDialogInfo';
+	var saveContent = editorUi.createDiv('geDialogInfo')
 	// 文件名称
 	var nameTitle = document.createElement('p')
 	nameTitle.innerHTML = '文件名称'
@@ -382,8 +380,7 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 	saveContent.appendChild(desInput)
 
 	// 按钮
-	var btnContent = document.createElement('div');
-	btnContent.className = "btnContent";
+	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button(buttonText, function()
 	{
 		if (validateFn == null || validateFn(nameInput.value))
@@ -517,9 +514,7 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
  * 链接弹窗
  */
 var LinkReportDialog = function(editorUi, defaultLink) {
-	var saveContent = document.createElement('div')
-	saveContent.style.padding = "22px";
-	saveContent.className = 'geDialogInfo';
+	var saveContent = editorUi.createDiv('geDialogInfo');
 	// 链接
 	var nameTitle = document.createElement('p')
 	nameTitle.innerHTML = '链接'
@@ -533,8 +528,7 @@ var LinkReportDialog = function(editorUi, defaultLink) {
 	saveContent.appendChild(nameInput)
 
 	// 保存按钮
-	var btnContent = document.createElement('div');
-	btnContent.className = "btnContent";
+	var btnContent =editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('创建', function()
 	{
 		editorUi.hideDialog();
@@ -575,9 +569,7 @@ var LinkReportDialog = function(editorUi, defaultLink) {
  * 分享弹窗
  */
 var ShareDialog = function(editorUi) {
-	var saveContent = document.createElement('div')
-	saveContent.style.padding = "22px";
-	saveContent.className = 'geDialogInfo';
+	var saveContent = editorUi.createDiv('geDialogInfo');
 	// 链接
 	var nameTitle = document.createElement('p')
 	nameTitle.innerHTML = '分享之后，生成的页面将在平台展示。';
@@ -585,8 +577,7 @@ var ShareDialog = function(editorUi) {
 	saveContent.appendChild(nameTitle)
 
 	// 保存按钮
-	var btnContent = document.createElement('div');
-	btnContent.className = "btnContent";
+	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('分享', function()
 	{
 		editorUi.hideDialog();
@@ -617,8 +608,7 @@ var ShareDialog = function(editorUi) {
  * @param {string} info	提示信息
  */
 var tipDialog = function(editorUi, flag, info) {
-	var tipContent = document.createElement('div')
-	tipContent.className = 'tipDialogInfo';
+	var tipContent = editorUi.createDiv('tipDialogInfo');
 	// 图标
 	var img = document.createElement('img')
 	img.setAttribute('src', flag ? '/static/images/success.png' : '/static/images/error.png');
@@ -652,9 +642,7 @@ var ImageDialog = function (editorUi, cell) {
 		value = obj;
 	}
 
-	var saveContent = document.createElement('div')
-	saveContent.style.padding = "22px";
-	saveContent.className = 'geDialogInfo';
+	var saveContent = editorUi.createDiv('geDialogInfo');
 	var mockData = [
 		{
 			name: 'T1',
@@ -761,8 +749,7 @@ var ImageDialog = function (editorUi, cell) {
 		})
 	}
 	// 保存按钮
-	var btnContent = document.createElement('div');
-	btnContent.className = "btnContent";
+	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('应用', function()
 	{
 		editorUi.hideDialog();
@@ -833,9 +820,7 @@ var SelectPropDialog = function (editorUi, cell) {
 	var graph = editorUi.editor.graph;
 	var value = convertsToXml(graph, cell)
 
-	var saveContent = document.createElement('div')
-	saveContent.style.padding = "22px";
-	saveContent.className = 'geDialogInfo';
+	var saveContent = editorUi.createDiv('geDialogInfo')
 	var mockData = ['particle', 'hpcp', 'erp']
 	this.fillContent = function (data) {
 		
@@ -844,15 +829,15 @@ var SelectPropDialog = function (editorUi, cell) {
 	saveContent.innerHTML = `
 		<div id="innerPropsBox">
 			<div class="innerPropsOperate">
-				<img id="addProp" src="/static/images/checkmark.gif" />
-				<img id="moveUp" src="/static/images/checkmark.gif" />
-				<img id="moveDown" src="/static/images/checkmark.gif" />
-				<img id="delProp" src="/static/images/checkmark.gif" />
+				<img id="addProp" src="/static/images/checkmark.gif" title="增加" />
+				<img id="moveUp" src="/static/images/checkmark.gif" title="上移" />
+				<img id="moveDown" src="/static/images/checkmark.gif" title="下移" />
+				<img id="delProp" src="/static/images/checkmark.gif" title="删除" />
 			</div>
-			<ul class="innerPropsList">
+			<ul id="innerPropsList">
 			${
 				mockData.reduce((str, v) => str += `
-						<li class="innerPropsType expandedProps">
+						<li class="innerPropsType">
 							<input type="checkbox" />
 							<span>${v}</span>
 						</li>
@@ -861,11 +846,72 @@ var SelectPropDialog = function (editorUi, cell) {
 			</ul>
 		</div>
 	`
+
 	this.init = function () {
+		// 增加
+		$("#addProp").click(function () {
+			var _li = document.createElement('li')
+			_li.className = 'innerPropsType'
+			var _input = document.createElement('input')
+			_input.setAttribute('type', 'checkbox')
+			_li.appendChild(_input);
+			var _span = document.createElement('span')
+			_span.innerText = "新增属性"
+			_li.appendChild(_span);
+			$("#innerPropsList").append(_li)
+		})
+		// 上移
+		$("#moveUp").click(function () {
+			var node = 	$(".innerPropsType").children(':checked').parent();
+			if (!node) { return false };
+			node.insertBefore(node.prev());
+		})
+		// 下移
+		$("#moveDown").click(function () {
+			var node = 	$(".innerPropsType").children(':checked').parent();
+			if (!node) { return false };
+			node.insertAfter(node.next());
+		})
+		// 删除
+		$("#delProp").click(function () {
+			$(".innerPropsType").children(':checked').parent().remove()
+		})
+		// 单击选中
+		$("#innerPropsList").click(function (e) {
+			e = e || window.event;
+			var node = e.target;
+			if (node.nodeName === 'SPAN') {
+				node = node.parentNode;
+			} else if ( node.nodeName === 'INPUT' ) {
+				node = node.parentNode;
+				$(node).siblings().children(':checked').prop('checked', false)
+			} else if ( node.nodeName !== 'LI') {
+				return false;
+			}
+			$(node).siblings('.active')[0] ? $(node).siblings('.active')[0].className = 'innerPropsType' : '';
+			node.className += " active";
+		})
+		// 双击编辑
+		$("#innerPropsList").dblclick(function (e) {
+			e = e || window.event;
+			var target = e.target;
+			if (target.nodeName === 'SPAN') {
+				// 添加编辑框
+				var _input = document.createElement('input')
+				_input.className = 'editInput'
+				target.parentNode.appendChild(_input);
+				_input.focus();
+				$(_input).val(target.innerText)
+				// 失去焦点
+				_input.addEventListener('blur', function () {
+					$(this).prev().text($(this).val())
+					$(this).remove();
+				})
+			}
+		})
 	}
 	// 保存按钮
-	var btnContent = document.createElement('div');
-	btnContent.className = "btnContent";
+	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('应用', function()
 	{
 		editorUi.hideDialog();
@@ -920,9 +966,8 @@ var PaletteDataDialog = function(editorUi, cell) {
 	var graph = editorUi.editor.graph;
 	var value = convertsToXml(graph, cell)
 
-	var saveContent = document.createElement('div')
+	var saveContent = editorUi.createDiv('geDialogInfo')
 	saveContent.style.padding = "22px";
-	saveContent.className = 'geDialogInfo';
 	var mockData = [{
 		name: '氯气',
 		points: ['DOD_ASTK01_PT6', 'DOD_ASTK01_PT2']
@@ -1007,16 +1052,16 @@ var PaletteDataDialog = function(editorUi, cell) {
 	saveContent.appendChild(modelBtn)
 	
 	// 执行：
-	var activeTitle = document.createElement('p');
-	activeTitle.innerHTML = '执行：';
-	activeTitle.className = 'geDialogInfoTitle';
-	saveContent.appendChild(activeTitle)
+	var executeTitle = document.createElement('p');
+	executeTitle.innerHTML = '执行：';
+	executeTitle.className = 'geDialogInfoTitle';
+	saveContent.appendChild(executeTitle)
 
-	var activeBtn = document.createElement('button');
-	activeBtn.innerHTML = '+ 执行';
-	activeBtn.className = 'dialogBtn'
-	activeBtn.id = 'activeBtn'
-	saveContent.appendChild(activeBtn)
+	var executeBtn = document.createElement('button');
+	executeBtn.innerHTML = '+ 执行';
+	executeBtn.className = 'dialogBtn'
+	executeBtn.id = 'executeBtn'
+	saveContent.appendChild(executeBtn)
 	this.init = function () {
 	}
 	
@@ -1030,12 +1075,23 @@ var PaletteDataDialog = function(editorUi, cell) {
 	// 选择变量
 	variableBtn.addEventListener('click', function (e) {
 		var dlg = new chooseVariableDialog(editorUi, cell)
-		editorUi.showDialog(dlg.container, 410, 380, true, false, null, null, '选择变量');
+		editorUi.showDialog(dlg.container, 410, 350, true, false, null, null, '选择变量');
+	})
+		
+	// 选择模型
+	modelBtn.addEventListener('click', function (e) {
+		var dlg = new chooseModelDialog(editorUi, cell)
+		editorUi.showDialog(dlg.container, 410, 350, true, false, null, null, '选择模型');
+	})
+		
+	// 选择执行
+	executeBtn.addEventListener('click', function (e) {
+		var dlg = new chooseExecuteDialog(editorUi, cell)
+		editorUi.showDialog(dlg.container, 410, 350, true, false, null, null, '选择执行');
 	})
 
 	// 保存按钮
-	var btnContent = document.createElement('div');
-	btnContent.className = "btnContent";
+	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('应用', function()
 	{
 		editorUi.hideDialog();
@@ -1082,16 +1138,207 @@ var PaletteDataDialog = function(editorUi, cell) {
 }
 
 /**
+ * 生成列表
+ * @param {Array<string>} data 数据列表
+ * @param {string} classname class名称
+ */
+function createList (data, classname) {
+	classname = classname || '';
+	this.ulEle = document.createElement('ul');
+	this.ulEle.className = classname;
+	this.variables = [];
+	this.nodes = []; //选中的DOM节点
+	this.ulEle.setAttribute('data-variables', [])
+	for (var i = 0; i < data.length; i++) {
+		var liEle = document.createElement('li');
+		liEle.innerHTML = data[i];
+		liEle.setAttribute('title', data[i]);
+		this.ulEle.appendChild(liEle)
+	}
+	this.ulEle.addEventListener('click', function (e) {
+		e = e || window.event;
+		var target = e.target;
+		// 事件委托
+		if (target.nodeName === 'LI') {
+			if (target.className == 'active' ) {
+				target.className = '';
+				var index = this.variables.indexOf(target.innerText);
+				this.variables.splice( index , 1 );
+				this.nodes.splice( index , 1 );
+			} else {
+				target.className = 'active';
+				this.variables.push(target.innerText);
+				this.nodes.push(target);
+			}
+			// 锁定操作按钮
+			if (classname == 'sourceList variableList') {
+				if (!this.variables.length) {
+					document.getElementsByClassName('increment')[0].className = 'increment disabledCrement';
+				} else {
+					document.getElementsByClassName('increment')[0].className = 'increment';
+				}
+			} else if (classname == 'destList variableList') {
+				if (!this.variables.length) {
+					document.getElementsByClassName('decrement')[0].className = 'decrement disabledCrement';
+				} else {
+					document.getElementsByClassName('decrement')[0].className = 'decrement';
+				}
+			};
+			this.ulEle.setAttribute('data-variables', JSON.stringify(this.variables))
+		}
+	}.bind(this))
+	// return this.ulEle;
+	// return this
+}
+
+/**
+ * 填充列表
+ * @param {object} ele 
+ * @param {Array} data
+ */
+function fillList (ele, data) {
+	for (var i = 0; i < data.length; i++) {
+		var opt = document.createElement('li');
+		opt.innerText = data[i];
+		ele.appendChild(opt);
+	}
+}
+
+/**
  * 选择变量
  */
 var chooseVariableDialog = function (editorUi) {
-	var saveContent = document.createElement('div')
-	saveContent.style.padding = "22px";
-	saveContent.className = 'geDialogInfo';
+	// mockData
+	var data1 = ['变量变量变量变量变量变量变量1','变量2','变量3','变量4','变量5','变量6','变量7','变量8','变量9','变量10','变量11'];
+	var data2 = [];
+	var saveContent = editorUi.createDiv('geDialogInfo')
 	saveContent.setAttribute('data-dialog', 'chooseVariable');
+	// 搜索
+	var searchBox = editorUi.createDiv('searchBox')
+	var searchInput = document.createElement('input')
+	searchInput.className = "dialogSelect"
+	searchInput.setAttribute('placeholder', '搜索')
+	searchBox.appendChild(searchInput)
+	var searchBtn = document.createElement('button')
+	searchBtn.innerText = "搜索"
+	searchBox.appendChild(searchBtn)
+	saveContent.appendChild(searchBox)
+
+	// 源变量列表
+	var sourceList = new createList(data1, 'sourceList variableList');
+	saveContent.appendChild(sourceList.ulEle);
+	// 操作变量
+	// 右边增加变量
+	var operateList = editorUi.createDiv('operateList');
+	var increment = editorUi.createDiv('increment disabledCrement');
+	increment.innerText = '+';
+	operateList.appendChild(increment);
+	increment.addEventListener('click', function () {
+		// 删除节点
+		for (var i = 0; i < sourceList.nodes.length; i++) {
+			sourceList.ulEle.removeChild(sourceList.nodes[i])
+		}
+		sourceList.nodes = [];
+		// 修改数据
+		var sList = sourceList.variables;
+		// var sList = JSON.parse(sourceList.getAttribute('data-variables'));
+		// sourceList.removeChild(sourceList.children[0])
+		data2 = data2.concat(sList);
+		fillList(destList.ulEle, sList);
+		sourceList.variables = [];
+		document.getElementsByClassName('increment')[0].className = 'increment disabledCrement';
+	})
+	// 右边减少变量
+	var decrement = editorUi.createDiv('decrement disabledCrement');
+	decrement.innerText = '-';
+	operateList.appendChild(decrement);
+	saveContent.appendChild(operateList);
+	// 目标变量列表
+	var destList = new createList(data2, 'destList variableList');
+	saveContent.appendChild(destList.ulEle);
+	decrement.addEventListener('click', function () {
+		// 删除节点
+		for (var i = 0; i < destList.nodes.length; i++) {
+			destList.ulEle.removeChild(destList.nodes[i])
+		}
+		destList.nodes = [];
+		// 修改数据
+		var sList = destList.variables;
+		data1 = data1.concat(sList);
+		fillList(sourceList.ulEle, sList);
+		destList.variables = [];
+		document.getElementsByClassName('decrement')[0].className = 'decrement disabledCrement';
+	})
+
 	// 保存按钮
-	var btnContent = document.createElement('div');
-	btnContent.className = "btnContent";
+	var btnContent = editorUi.createDiv('btnContent');
+	var genericBtn = mxUtils.button('应用', function()
+	{
+		editorUi.hideDialog();
+	});
+	genericBtn.className = 'geBtn gePrimaryBtn';
+	// 取消按钮
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+	});
+	cancelBtn.className = 'geBtn';
+	btnContent.appendChild(cancelBtn);
+	btnContent.appendChild(genericBtn);
+	
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
+}
+
+/**
+ * 选择模型
+ */
+var chooseModelDialog = function (editorUi) {
+	var saveContent = editorUi.createDiv('geDialogInfo');
+	saveContent.setAttribute('data-dialog', 'chooseModel');
+	// 搜索
+	var searchBox = editorUi.createDiv('searchBox');
+	var searchInput = document.createElement('input')
+	searchInput.className = "dialogSelect"
+	searchInput.setAttribute('placeholder', '搜索')
+	searchBox.appendChild(searchInput)
+	var searchBtn = document.createElement('button')
+	searchBtn.innerText = "搜索"
+	searchBox.appendChild(searchBtn)
+	saveContent.appendChild(searchBox)
+	// 下拉
+	var modelList = document.createElement('select')
+	modelList.className = "dialogSelect"
+	saveContent.appendChild(modelList)
+	// 保存按钮
+	var btnContent = editorUi.createDiv('btnContent');;
+	var genericBtn = mxUtils.button('应用', function()
+	{
+		editorUi.hideDialog();
+	});
+	genericBtn.className = 'geBtn gePrimaryBtn';
+	// 取消按钮
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+	});
+	cancelBtn.className = 'geBtn';
+	btnContent.appendChild(cancelBtn);
+	btnContent.appendChild(genericBtn);
+	
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
+}
+
+
+/**
+ * 选择执行
+ */
+var chooseExecuteDialog = function (editorUi) {
+	var saveContent = editorUi.createDiv('geDialogInfo');
+	saveContent.setAttribute('data-dialog', 'chooseExecute');
+	// 保存按钮
+	var btnContent = editorUi.createDiv('btnContent');;
 	var genericBtn = mxUtils.button('应用', function()
 	{
 		editorUi.hideDialog();
