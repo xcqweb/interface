@@ -813,7 +813,7 @@ BaseFormatPanel.prototype.createOption = function(label, isCheckedFn, setChecked
 	div.style.whiteSpace = 'nowrap';
 	div.style.overflow = 'hidden';
 	div.style.width = '200px';
-	div.style.height = (mxClient.IS_QUIRKS) ? '27px' : '18px';
+	div.style.height = (mxClient.IS_QUIRKS) ? '27px' : '24px';
 	
 	var cb = document.createElement('input');
 	cb.setAttribute('type', 'checkbox');
@@ -977,7 +977,7 @@ BaseFormatPanel.prototype.createColorOption = function(label, getColorFn, setCol
 	div.style.whiteSpace = 'nowrap';
 	div.style.overflow = 'hidden';
 	div.style.width = '200px';
-	div.style.height = (mxClient.IS_QUIRKS) ? '27px' : '18px';
+	div.style.height = (mxClient.IS_QUIRKS) ? '27px' : '24px';
 	
 	var cb = document.createElement('input');
 	cb.setAttribute('type', 'checkbox');
@@ -1435,8 +1435,8 @@ BaseFormatPanel.prototype.styleButtons = function(elts)
 		elts[i].style.paddingTop = '3px';
 		elts[i].style.paddingRight = '1px';
 		elts[i].style.margin = '1px';
-		elts[i].style.width = '24px';
-		elts[i].style.height = '20px';
+		elts[i].style.width = '31px';
+		elts[i].style.height = '29px';
 		elts[i].className += ' geColorBtn';
 	}
 };
@@ -1499,7 +1499,7 @@ ArrangePanel.prototype.init = function()
 		this.container.appendChild(this.addDistribute(this.createPanel()));
 	}
 	
-	this.container.appendChild(this.addGroupOps(this.createPanel()));
+	// this.container.appendChild(this.addGroupOps(this.createPanel()));
 };
 
 /**

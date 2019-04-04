@@ -187,7 +187,7 @@ Menus.prototype.init = function()
 	{
 		menu.addItem(mxResources.get('flipH'), null, function() { graph.toggleCellStyles(mxConstants.STYLE_FLIPH, false); }, parent);
 		menu.addItem(mxResources.get('flipV'), null, function() { graph.toggleCellStyles(mxConstants.STYLE_FLIPV, false); }, parent);
-		this.addMenuItems(menu, ['-', 'rotation'], parent);
+		// this.addMenuItems(menu, ['-', 'rotation'], parent);
 	})));
 	this.put('align', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
@@ -421,16 +421,15 @@ Menus.prototype.init = function()
 	// 布局
 	this.put('arrange', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['toFront', 'toBack'], parent);
+		this.addMenuItems(menu, ['toFront', 'toBack', '-'], parent);
 		this.addSubmenu('direction', menu, parent);
 		this.addMenuItems(menu, ['turn'], parent);
 		this.addSubmenu('align', menu, parent);
 		// this.addSubmenu('distribute', menu, parent);
-		// menu.addSeparator(parent);
 		// this.addSubmenu('navigation', menu, parent);
 		// this.addSubmenu('insert', menu, parent);
 		// this.addSubmenu('layout', menu, parent);
-		this.addMenuItems(menu, ['group', 'ungroup', 'removeFromGroup', 'autosize'], parent);
+		this.addMenuItems(menu, ['-', 'group', 'ungroup', 'removeFromGroup', '-','autosize'], parent);
 	}))).isEnabled = isGraphEnabled;
 	// 插入
 	this.put('insert', new Menu(mxUtils.bind(this, function(menu, parent)
@@ -440,10 +439,7 @@ Menus.prototype.init = function()
 	// 视图
 	this.put('view', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ((this.editorUi.format != null) ? ['formatPanel'] : []).
-			concat(['pageView', 'scrollbars', 'tooltips',
-			        'grid', 'guides',
-			        'resetView', 'zoomIn', 'zoomOut'], parent));
+		this.addMenuItems(menu, ['pageView', '-' ,'scrollbars', 'grid', '-', 'zoomIn', 'zoomOut'], parent);
 	})));
 	// Two special dropdowns that are only used in the toolbar
 	this.put('viewPanels', new Menu(mxUtils.bind(this, function(menu, parent)
@@ -476,12 +472,12 @@ Menus.prototype.init = function()
 	// 文件
 	this.put('file', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['new', 'open', 'save', 'saveAs', 'pageSetup', 'print'], parent);
+		this.addMenuItems(menu, ['new', 'open', '-', 'save', 'saveAs', '-', 'pageSetup'], parent);
 	})));
 	// 编辑
 	this.put('edit', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['undo', 'redo', 'cut', 'copy', 'paste', 'delete', 'selectAll', 'selectNone']);
+		this.addMenuItems(menu, ['undo', 'redo', '-','cut', 'copy', 'paste', '-', 'selectAll', 'selectNone', 'delete']);
 	})));
 	// 其他
 	this.put('extras', new Menu(mxUtils.bind(this, function(menu, parent)
@@ -958,6 +954,7 @@ Menus.prototype.addMenuItem = function(menu, key, parent, trigger, sprite, label
 		// Adds checkmark image
 		if (action.toggleAction && action.isSelected())
 		{
+			console.log(item)
 			menu.addCheckmark(item, Editor.checkmarkImage);
 		}
 		// 右键菜单，快捷键提示
@@ -1011,64 +1008,38 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 	// 未选择节点
 	if (graph.isSelectionEmpty())
 	{
-		this.addMenuItems(menu, ['undo', 'redo', 'pasteHere'], null, evt);
-	}
-	else
-	{
-		this.addMenuItems(menu, ['cut', 'copy', 'delete','-'], null, evt);
-	}
-
-	// 选择节点
-	if (!graph.isSelectionEmpty())
-	{
+		this.addMenuItems(menu, ['undo', 'redo', 'paste'], null, evt);
+	} else {
 		cell = graph.getSelectionCell();
 		var state = graph.view.getState(cell);
+		var shapeName = state.style.shape;
+
+		if (shapeName == "pagemenu") {
+			this.addMenuItems(menu, ['delete', 'edit','-'], null, evt);
+		} else if (shapeName == "menulist") {
+			this.addMenuItems(menu, ['delete', '-'], null, evt);
+		} else {
+			this.addMenuItems(menu, ['cut', 'copy', 'delete','-'], null, evt);
+		}
+
 		if (state != null)
 		{
 			var hasWaypoints = false;
 			this.addMenuItems(menu, ['toFront', 'toBack', '-'], null, evt);
-
-			if (graph.getModel().isEdge(cell) && mxUtils.getValue(state.style, mxConstants.STYLE_EDGE, null) != 'entityRelationEdgeStyle' &&
-				mxUtils.getValue(state.style, mxConstants.STYLE_SHAPE, null) != 'arrow')
-			{
-				var handler = graph.selectionCellsHandler.getHandler(cell);
-				var isWaypoint = false;
-				
-				if (handler instanceof mxEdgeHandler && handler.bends != null && handler.bends.length > 2)
-				{
-					var index = handler.getHandleForEvent(graph.updateMouseEvent(new mxMouseEvent(evt)));
-					
-					// Configures removeWaypoint action before execution
-					// Using trigger parameter is cleaner but have to find waypoint here anyway.
-					var rmWaypointAction = this.editorUi.actions.get('removeWaypoint');
-					rmWaypointAction.handler = handler;
-					rmWaypointAction.index = index;
-
-					isWaypoint = index > 0 && index < handler.bends.length - 1;
-				}
-				
-				menu.addSeparator();
-				this.addMenuItem(menu, 'turn', null, evt, null, mxResources.get('reverse'));
-				this.addMenuItems(menu, [(isWaypoint) ? 'removeWaypoint' : 'addWaypoint'], null, evt);
-				
-				// Adds reset waypoints option if waypoints exist
-				var geo = graph.getModel().getGeometry(cell);
-				hasWaypoints = geo != null && geo.points != null && geo.points.length > 0;
-			}
-
+			
 			if (graph.getSelectionCount() == 1 && (hasWaypoints || (graph.getModel().isVertex(cell) &&
 				graph.getModel().getEdgeCount(cell) > 0)))
 			{
 				this.addMenuItems(menu, ['clearWaypoints'], null, evt);
 			}
 			// 选择多个节点，增加组合操作
-			if (graph.getSelectionCount() > 1)	
+			if (graph.getSelectionCount() > 1 && shapeName !== 'pagemenu' && shapeName !== 'menulist')	
 			{
 				menu.addSeparator();
 				this.addMenuItems(menu, ['group'], null, evt);
 			}
 			else if (graph.getSelectionCount() == 1 && !graph.getModel().isEdge(cell) && !graph.isSwimlane(cell) &&
-					graph.getModel().getChildCount(cell) > 0)
+					graph.getModel().getChildCount(cell) > 0 && shapeName !== 'menulist')
 			{
 				menu.addSeparator();
 				this.addMenuItems(menu, ['ungroup'], null, evt);
@@ -1086,25 +1057,23 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 				}
 				var palette = target.match(/class=\"(\S*)\"/)
 				palette = palette ? palette[1] : palette;
-				var shapeName = state.style.shape;
-				if(palette == 'linkTag') {
+				if(shapeName == 'linkTag') {
 					// 链接
-					this.addMenuItems(menu, ['configLink'], null, evt);
+					this.addMenuItem(menu, 'configLink', null, evt).firstChild.innerHTML = '配置...';
 				} else if (shapeName == 'rectangle') {
-					this.addMenuItem(menu, 'paletteData', null, evt).firstChild.nextSibling.innerHTML = '数据...';
+					this.addMenuItem(menu, 'paletteData', null, evt).firstChild.innerHTML = '数据...';
 				} else if (palette === 'selectTag') {
 					// 下拉列表
-					this.addMenuItem(menu, 'selectProp', null, evt).firstChild.nextSibling.innerHTML = '属性...';
+					this.addMenuItem(menu, 'selectProp', null, evt).firstChild.innerHTML = '属性...';
 				} else if (shapeName == 'image') {
 					// 编辑图片
-					this.addMenuItem(menu, 'image', null, evt).firstChild.nextSibling.innerHTML = '选择图片...';
-				}
+					this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = '选择图片...';
+				} else if (shapeName == 'pagemenu') {
+					this.addMenuItem(menu, 'insertMenuBefore', null, evt);
+					this.addMenuItem(menu, 'insertMenuAfter', null, evt);
+				} 
 			}
 		}
-	}
-	else
-	{
-		// this.addMenuItems(menu, ['-', 'selectVertices', 'selectEdges', 'selectAll', '-', 'clearDefaultStyle'], null, evt);
 	}
 };
 

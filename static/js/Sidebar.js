@@ -88,12 +88,13 @@ Sidebar.prototype.init = function()
 {
 	var dir = STENCIL_PATH;
 	// this.addSearchPalette(true);//搜索
+	this.addPagePalette(true);//页面管理
 	this.addGeneralPalette(true);//通用 自己写的svg
 	// this.addMiscPalette(false);//杂项
 	// this.addAdvancedPalette(false);//高级
   //   this.addUmlPalette(false);//UML
 
-	// //从路径下读取xml加载svg图像 dir basic.xml，bpmn.xml
+	//从路径下读取xml加载svg图像 dir basic.xml，bpmn.xml
 	// this.addBasicPalette(dir);//基本图形
 	// this.addBpmnPalette(dir, false);//BPMN通用
 
@@ -102,9 +103,8 @@ Sidebar.prototype.init = function()
 	// this.addStencilPalette('flowchart', 'Flowchart', dir + '/flowchart.xml',
 	// 	';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2');//flowchart
 
-	// //png IOT平台图片集
-	// this.addImagePalette('IOT', 'IOT', dir + '/IOT/','.png',
-		// ['t1_cl2_layout', 't2_cl2_layout', 'cl2_green', 'cl2_yellow', 'cl2_red', 't1_cl2_tooltip', 't2_cl2_tooltip'], ['t1_cl2_layout', 't2_cl2_layout', 'cl2_green', 'cl2_yellow', 'cl2_red', 't1_cl2_tooltip', 't2_cl2_tooltip'],null);//IOT
+	// png IOT平台图片集
+	// this.addImagePalette('IOT', 'IOT', dir + '/IOT/','.png', // ['t1_cl2_layout'], ['t1_cl2_layout'],null);//IOT
 };
 
 
@@ -112,12 +112,13 @@ Sidebar.prototype.init = function()
 /**
  * Sets the default font size.
  */
-Sidebar.prototype.collapsedImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/collapsed.gif' : 'data:image/gif;base64,R0lGODlhDQANAIABAJmZmf///yH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjAgNjEuMTM0Nzc3LCAyMDEwLzAyLzEyLTE3OjMyOjAwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozNUQyRTJFNjZGNUYxMUU1QjZEOThCNDYxMDQ2MzNCQiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozNUQyRTJFNzZGNUYxMUU1QjZEOThCNDYxMDQ2MzNCQiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjFERjc3MEUxNkY1RjExRTVCNkQ5OEI0NjEwNDYzM0JCIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjFERjc3MEUyNkY1RjExRTVCNkQ5OEI0NjEwNDYzM0JCIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAQAAAQAsAAAAAA0ADQAAAhSMj6lrwAjcC1GyahV+dcZJgeIIFgA7';
-
+// Sidebar.prototype.collapsedImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/collapsed.gif' : 'data:image/gif;base64,R0lGODlhDQANAIABAJmZmf///yH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjAgNjEuMTM0Nzc3LCAyMDEwLzAyLzEyLTE3OjMyOjAwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozNUQyRTJFNjZGNUYxMUU1QjZEOThCNDYxMDQ2MzNCQiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozNUQyRTJFNzZGNUYxMUU1QjZEOThCNDYxMDQ2MzNCQiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjFERjc3MEUxNkY1RjExRTVCNkQ5OEI0NjEwNDYzM0JCIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjFERjc3MEUyNkY1RjExRTVCNkQ5OEI0NjEwNDYzM0JCIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAQAAAQAsAAAAAA0ADQAAAhSMj6lrwAjcC1GyahV+dcZJgeIIFgA7';
+Sidebar.prototype.collapsedImage = '/static/images/icons/colspan.png'
 /**
  * Sets the default font size.
  */
-Sidebar.prototype.expandedImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/expanded.gif' : 'data:image/gif;base64,R0lGODlhDQANAIABAJmZmf///yH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjAgNjEuMTM0Nzc3LCAyMDEwLzAyLzEyLTE3OjMyOjAwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDoxREY3NzBERjZGNUYxMUU1QjZEOThCNDYxMDQ2MzNCQiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDoxREY3NzBFMDZGNUYxMUU1QjZEOThCNDYxMDQ2MzNCQiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjFERjc3MERENkY1RjExRTVCNkQ5OEI0NjEwNDYzM0JCIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjFERjc3MERFNkY1RjExRTVCNkQ5OEI0NjEwNDYzM0JCIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAQAAAQAsAAAAAA0ADQAAAhGMj6nL3QAjVHIu6azbvPtWAAA7';
+// Sidebar.prototype.expandedImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/expanded.gif' : 'data:image/gif;base64,R0lGODlhDQANAIABAJmZmf///yH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjAgNjEuMTM0Nzc3LCAyMDEwLzAyLzEyLTE3OjMyOjAwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDoxREY3NzBERjZGNUYxMUU1QjZEOThCNDYxMDQ2MzNCQiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDoxREY3NzBFMDZGNUYxMUU1QjZEOThCNDYxMDQ2MzNCQiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjFERjc3MERENkY1RjExRTVCNkQ5OEI0NjEwNDYzM0JCIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjFERjc3MERFNkY1RjExRTVCNkQ5OEI0NjEwNDYzM0JCIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAQAAAQAsAAAAAA0ADQAAAhGMj6nL3QAjVHIu6azbvPtWAAA7';
+Sidebar.prototype.expandedImage = '/static/images/icons/expand.png'
 
 /**
  * Sets the default font size.
@@ -925,12 +926,129 @@ Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, resu
 };
 
 /**
+ * 页面管理
+ */
+/**
+ * 创建页面类型标题
+ * @param {string} title 
+ */
+function createPageTypeTitle (title) {
+	var expandedImage = this.expandedImage;
+	var collapsedImage = this.collapsedImage;
+	var fn = function () {
+		var typeEle = document.createElement('p');
+		typeEle.innerText = title;
+		typeEle.addEventListener('click', function (e) {
+			e = e || window.event;
+			if (e.target.nextSibling.style.display == 'none') {
+				typeEle.style.backgroundImage = 'url(\'' + expandedImage + '\')';
+				e.target.nextSibling.style.display = ''
+			} else {
+				typeEle.style.backgroundImage = 'url(\'' + collapsedImage + '\')';
+				e.target.nextSibling.style.display = 'none'
+			}
+		})
+		return typeEle;
+	}
+	return fn;
+}
+
+/**
+ * 创建页面列表
+ * @param {object} editorUi
+ * @param {object} data 页面列表
+ * @param {string} id 列表id
+ */
+function createPageList (editorUi, data, id) {
+	var fn = function () {
+		// 页面列表
+		var pageListEle = document.createElement('ul');
+		pageListEle.className = "pageList";
+		pageListEle.id = id;
+		for (var i in data) {
+			var page = document.createElement('li')
+			page.innerHTML =  data[i].title;
+			pageListEle.appendChild(page)
+		}
+		// 切换页面
+		pageListEle.addEventListener('click', function (e) {
+			e = e || window.event;
+			var target = e.target;
+			if (target.nodeName === 'LI') {
+				// 点击保存上一个页面
+				var type = id.slice(0, id.length - 5);
+				// 目标页面名称
+				var nextTitle = target.innerText;
+				// 已选中节点
+				if (editorUi.editor.currentPage.title !== nextTitle) {
+					var xml = mxUtils.getXml(editorUi.editor.getGraphXml());
+					editorUi.editor.setXml(xml);
+				}
+				// 切换到新的页面
+				$(".currentPage").removeClass();
+				editorUi.editor.setCurrentPage(type, nextTitle);
+				target.className = "currentPage";
+				var doc = mxUtils.parseXml(editorUi.editor.pages[type][nextTitle].xml);
+				editorUi.editor.setGraphXml(doc.documentElement);
+			}
+		});
+		return pageListEle;
+	};
+	return fn;
+}
+Sidebar.prototype.addPagePalette = function (expand) {
+	var fns = [
+		// 普通页面标题
+		createPageTypeTitle.call(this, '普通页面'),
+		// 普通页面列表
+		createPageList(this.editorUi, this.editorUi.editor.pages.normal, 'normalPages'),
+		// 弹窗页面标题
+		createPageTypeTitle.call(this, '弹窗页面'),
+		// 弹窗页面列表
+		createPageList(this.editorUi, this.editorUi.editor.pages.dialog, 'dialogPages')
+	]
+	this.addPaletteFunctions('pageManage', '页面管理', (expand != null) ? expand : true, fns);
+}
+/**
  * 基本控件
  */
 Sidebar.prototype.addGeneralPalette = function(expand)
 {
+	var sb = this;
+	// Reusable cells
+	var field = new mxCell('List Item', new mxGeometry(0, 0, 60, 26), 'text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;');
+	field.vertex = true;
 	var fns = [
-	 	this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, '矩形'),
+		// 矩形
+		this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, '矩形'),
+		// button
+		this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag">BUTTON</button>', 'button'),
+		// 菜单
+		this.addEntry('page menu', function()
+		{
+			var cell = new mxCell('', new mxGeometry(0, 0, 360, 40), 'shape=menulist;group');
+			cell.vertex = true;
+				
+			var symbol = new mxCell('菜单1', new mxGeometry(0, 0, 120, 40), 'shape=pagemenu;html=1;whiteSpace=wrap;');
+			symbol.vertex = true;
+			cell.insert(symbol);
+
+			var symbol2 = new mxCell('菜单2', new mxGeometry(120, 0, 120, 40), 'shape=pagemenu;html=1;whiteSpace=wrap;');
+			symbol2.vertex = true;
+			cell.insert(symbol2);
+
+			var symbol3 = new mxCell('菜单3', new mxGeometry(240, 0, 120, 40), 'shape=pagemenu;html=1;whiteSpace=wrap;');
+			symbol3.vertex = true;
+			cell.insert(symbol3);
+			
+			return sb.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '菜单');
+		}),
+		// 复选
+		// // this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="checkbox" class="inputTag" />', '复选'),
+		// 单选
+		// // this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="radio" class="inputTag" />', '单选'),
+		// 图片
+		this.createVertexTemplateEntry('image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
 		//  this.createVertexTemplateEntry('line;strokeWidth=2;html=1;', 160, 10, '', '直线'),
 
 		//  this.addEntry('link hyperlink', mxUtils.bind(this, function()
@@ -946,8 +1064,6 @@ Sidebar.prototype.addGeneralPalette = function(expand)
  		// 	40, 20, 'text', '文本'),
 		// this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 80, 80, '', '圆', null, null, 'circle'),
 		this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 65, 40, '<div style="width:100%;height:100%;position: relative"><select class="selectTag"></select><div class="selectTagShade"></div></div>', '下拉列表'),
-		// 图片
-		this.createVertexTemplateEntry('image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
 		// 表格
 		this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
 		 	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
@@ -955,8 +1071,8 @@ Sidebar.prototype.addGeneralPalette = function(expand)
  			'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
  			'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
 			 '<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
-			//  链接
-		this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
+		//  链接
+		this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
 	];
 	//封装
 	this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
@@ -1062,7 +1178,7 @@ Sidebar.prototype.addMiscPalette = function(expand)
 				'html=1;whiteSpace=wrap;container=1;recursiveResize=0;collapsible=0;');
 		    cell.vertex = true;
 		    
-			var symbol = new mxCell('', new mxGeometry(20, 20, 20, 30), 'triangle;html=1;whiteSpace=wrap;');
+			var symbol = new mxCell('Label', new mxGeometry(0, 0, 20, 70), 'triangle;html=1;whiteSpace=wrap;');
 			symbol.vertex = true;
 			cell.insert(symbol);
 	    	
@@ -1764,15 +1880,33 @@ Sidebar.prototype.addBpmnPalette = function(dir, expand)
 };
 
 /**
- * Creates and returns the given title element.
+ * 左侧列表标题栏
  */
-Sidebar.prototype.createTitle = function(label)
+Sidebar.prototype.createTitle = function(label, id)
 {
 	var elt = document.createElement('a');
 	elt.setAttribute('href', 'javascript:void(0);');
 	elt.setAttribute('title', mxResources.get('sidebarTooltip'));
-	elt.className = 'geTitle';
+	elt.className = 'geTitle ' + id + 'Title';
 	mxUtils.write(elt, label);
+	// 页面管理一栏，增加添加页面管理的icon
+	if (id === 'pageManage') {
+		var img = document.createElement('img');
+		img.setAttribute('src', '/static/images/icons/addPage.png');
+		img.setAttribute('id', 'addPage');
+		img.addEventListener('click', function (e) {
+			w = e || window.event;
+			if (e.stopPropagation) {
+				e.stopPropagation();
+			} else {
+				e.cancelBubble = true;
+			}
+			// 触发事件
+			var action = this.editorUi.actions.get('addPage');
+			action.funct();
+		}.bind(this), true)
+		elt.appendChild(img);
+	};
 
 	return elt;
 };
@@ -3308,7 +3442,7 @@ Sidebar.prototype.addPaletteFunctions = function(id, title, expanded, fns)
  */
 Sidebar.prototype.addPalette = function(id, title, expanded, onInit)
 {
-	var elt = this.createTitle(title);
+	var elt = this.createTitle(title, id);
 	this.container.appendChild(elt);
 	
 	var div = document.createElement('div');
@@ -3340,8 +3474,8 @@ Sidebar.prototype.addPalette = function(id, title, expanded, onInit)
     if (id != null)
     {
     		this.palettes[id] = [elt, outer];
+				div.className += ' ' + id
     }
-    
     return div;
 };
 
@@ -3360,7 +3494,8 @@ Sidebar.prototype.addFoldingHandler = function(title, content, funct)
 	}
 	
 	title.style.backgroundRepeat = 'no-repeat';
-	title.style.backgroundPosition = '0% 50%';
+	title.style.backgroundPosition = '3px 50%';
+	title.style.backgroundSize = '16px 16px';
 
 	mxEvent.addListener(title, 'click', mxUtils.bind(this, function(evt)
 	{

@@ -78,12 +78,15 @@ Actions.prototype.init = function()
 	// 分享
 	this.addAction('share', function() {
 		var dlg = new ShareDialog(ui, '')
-		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '链接');
+		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '分享');
 	}, true)
-
 	// 配置链接
 	this.addAction('configLink', function () {
-		console.log('配置链接')
+		var dlg = new ConfigLinkDialog(ui, '', '应用', function (val, desc) {
+			console.log(val, desc)
+		});
+		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '链接');
+		dlg.init();
 	}, true)
 	// 文件操作
 	this.addAction('new...', function() { graph.openLink(ui.getUrl()); });
@@ -94,6 +97,72 @@ Actions.prototype.init = function()
 		
 		ui.openFile();
 	});
+
+	// 增加页面
+	this.addAction('addPage', function () {
+		var dlg = new addPageDialog(ui, '')
+		ui.showDialog(dlg.container, 400, 270, true, false, null, null, '新建页面');
+	})
+	/**
+	 * 插入菜单
+	 * @param {string} type 往前插入菜单：'before'，往后插入菜单：'after'
+	 */
+	function insertMenu (type) {
+		var cell = graph.getSelectionCell();
+		var idx = -1;
+		var cellW = cell.geometry.width;
+		var menuCell = cell.parent;
+		if (menuCell.children.length >= 10) {
+			mxUtils.alert('最多10个菜单');
+		}
+		if (type === 'before') {
+			var symbol = new mxCell('菜单', new mxGeometry(cell.geometry.x, 0, cellW, 40), 'shape=pagemenu;html=1;whiteSpace=wrap;');
+			for (var i = 0; i < menuCell.children.length; i++) {
+				if (cell.id === menuCell.children[i].id) {
+					idx = i;
+				}
+				if (idx !== -1) {
+					menuCell.children[i].geometry.x += cellW;
+				}
+				graph.getModel().setValue(menuCell.children[i], graph.getModel().getValue(menuCell.children[i]));
+			};
+		} else {
+			for (var i = 0; i < menuCell.children.length; i++) {
+				if (idx !== -1) {
+					menuCell.children[i].geometry.x += cellW - 1;
+				}
+				graph.getModel().setValue(menuCell.children[i], graph.getModel().getValue(menuCell.children[i]));
+				if (cell.id === menuCell.children[i].id) {
+					idx = i + 1;
+				}
+			};
+			var symbol = new mxCell('菜单', new mxGeometry(cell.geometry.x + cellW, 0, cellW, 40), 'shape=pagemenu;html=1;whiteSpace=wrap;');
+		}
+		symbol.vertex = true;
+		// 设置id
+		symbol.setId(graph.getModel().createId(symbol));
+		graph.getModel().beginUpdate();
+		try{
+			// menuCell.insert(symbol, idx);
+			var geo = graph.getModel().getGeometry(menuCell);
+			geo.width += cellW;
+			graph.getModel().add(menuCell, symbol, idx);
+			// graph.getModel().setGeometry(menuCell, geo);
+			// graph.getModel().setValue(menuCell, graph.getModel().getValue(menuCell));
+		} finally {
+			graph.getModel().endUpdate();
+		}
+	}
+
+	// 往前插入菜单
+	this.addAction('insertMenuBefore', function () {
+		insertMenu('before');
+	})
+	// 往后插入菜单
+	this.addAction('insertMenuAfter', function () {
+		insertMenu('after');
+	})
+
 	this.addAction('import...', function()
 	{
 		window.openNew = false;
@@ -133,7 +202,7 @@ Actions.prototype.init = function()
 		ui.showDialog(dlg.container, 620, 420, true, false);
 		dlg.init();
 	});
-	this.addAction('pageSetup...', function() { ui.showDialog(new PageSetupDialog(ui).container, 320, 220, true, true); }).isEnabled = isGraphEnabled;
+	this.addAction('pageSetup...', function() { ui.showDialog(new PageSetupDialog(ui).container, 340, 200, true, false, null, null, '页面设置'); }).isEnabled = isGraphEnabled;
 	this.addAction('print...', function() { ui.showDialog(new PrintDialog(ui).container, 300, 180, true, true); }, null, 'sprite-print', Editor.ctrlKey + '+P');
 	this.addAction('preview', function() { mxUtils.show(graph, null, 10, 10); });
 	
@@ -250,10 +319,13 @@ Actions.prototype.init = function()
 		}
 	}, null, null, 'Alt+Shit+V');
 	
-	
+	/**
+	 * 删除节点
+	 * @param {object} includeEdges 是否包含线条
+	 */
 	function deleteCells(includeEdges)
 	{
-		// Cancels interactive operations
+		// 取消互动操作
 		graph.escape();
 		var cells = graph.getDeletableCells(graph.getSelectionCells());
 		
@@ -262,13 +334,27 @@ Actions.prototype.init = function()
 			var parents = graph.model.getParents(cells);
 			graph.removeCells(cells, includeEdges);
 			
-			// Selects parents for easier editing of groups
+			// 群组删除节点时选中父节点
 			if (parents != null)
 			{
 				var select = [];
 				
 				for (var i = 0; i < parents.length; i++)
 				{
+					// 删除菜单时处理菜单长度和子菜单的定位
+					if (graph.view.getState(parents[i]).style.shape === 'menulist') {
+						var pos_x = 0;
+						for (var j = 0; j < parents[i].children.length; j++) {
+							var cell = parents[i].children[j];
+							var geo = graph.getModel().getGeometry(cell);
+							geo.x = pos_x;
+							pos_x += geo.width;
+							graph.getModel().setValue(cell, graph.getModel().getValue(cell));
+						}
+						parents[i].geometry.width = pos_x;
+						graph.getModel().setValue(parents[i], graph.getModel().getValue(parents[i]));
+					}
+					// 添加选中节点
 					if (graph.model.contains(parents[i]) &&
 						(graph.model.isVertex(parents[i]) ||
 						graph.model.isEdge(parents[i])))
@@ -276,7 +362,6 @@ Actions.prototype.init = function()
 						select.push(parents[i]);
 					}
 				}
-				
 				graph.setSelectionCells(select);
 			}
 		}
@@ -294,10 +379,10 @@ Actions.prototype.init = function()
 	{
 		graph.setSelectionCells(graph.duplicateCells());
 	}, null, null, Editor.ctrlKey + '+D');
-	this.put('turn', new Action(mxResources.get('turn') + ' / ' + mxResources.get('reverse'), function()
+	this.put('turn', new Action(mxResources.get('turn'), function()
 	{
 		graph.turnShapes(graph.getSelectionCells());
-	}, null, null, Editor.ctrlKey + '+R'));
+	}, null, null, null));
 	this.addAction('selectVertices', function() { graph.selectVertices(); }, null, null, Editor.ctrlKey + '+Shift+I');
 	this.addAction('selectEdges', function() { graph.selectEdges(); }, null, null, Editor.ctrlKey + '+Shift+E');
 	this.addAction('selectAll', function() { graph.selectAll(null, true); }, null, null, Editor.ctrlKey + '+A');

@@ -2758,7 +2758,7 @@ EditorUi.prototype.addUndoListener = function()
 };
 
 /**
-* Updates the states of the given toolbar items based on the selection.
+* 更新节点的状态
 */
 EditorUi.prototype.updateActionStates = function()
 {
@@ -2768,7 +2768,7 @@ EditorUi.prototype.updateActionStates = function()
 	var edgeSelected = false;
 
 	var cells = graph.getSelectionCells();
-	
+	// console.log(cells)
 	if (cells != null)
 	{
     	for (var i = 0; i < cells.length; i++)
@@ -2793,7 +2793,7 @@ EditorUi.prototype.updateActionStates = function()
 	}
 	
 	// 更新 action 状态
-	var actions = ['cut', 'copy', 'bold', 'italic', 'underline', 'delete', 'duplicate',
+	var actions = ['cut', 'copy', 'bold', 'italic', 'underline', 'delete', 'duplicate', 
 	               'editStyle', 'editTooltip', 'editLink', 'backgroundColor', 'borderColor',
 	               'edit', 'toFront', 'toBack', 'lockUnlock', 'solid', 'dashed', 'pasteSize',
 	               'dotted', 'fillColor', 'gradientColor', 'shadow', 'fontColor',
@@ -2801,9 +2801,10 @@ EditorUi.prototype.updateActionStates = function()
 	
 	for (var i = 0; i < actions.length; i++)
 	{
+		if (actions[i] === 'ungroup' && cells.length === 1 && cells[0]) {
+		}
 		this.actions.get(actions[i]).setEnabled(selected);
 	}
-	
 	this.actions.get('setAsDefaultStyle').setEnabled(graph.getSelectionCount() == 1);
 	this.actions.get('clearWaypoints').setEnabled(!graph.isSelectionEmpty());
 	this.actions.get('copySize').setEnabled(graph.getSelectionCount() == 1);
@@ -2817,7 +2818,7 @@ EditorUi.prototype.updateActionStates = function()
 		(oneVertexSelected && !graph.isContainer(graph.getSelectionCell())));
 	this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 &&
 		(graph.getModel().getChildCount(graph.getSelectionCell()) > 0 ||
-		(oneVertexSelected && graph.isContainer(graph.getSelectionCell()))));
+		(oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) &&  graph.view.getState(cells[0]).style.shape !== "menulist");
    	this.actions.get('removeFromGroup').setEnabled(oneVertexSelected &&
    		graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())));
 
@@ -3345,7 +3346,7 @@ EditorUi.prototype.pickColor = function(color, apply)
 	{
 		graph.cellEditor.restoreSelection(selState);
 	});
-	this.showDialog(dlg.container, 230, 430, true, false);
+	this.showDialog(dlg.container, 240, 430, true, false);
 	dlg.init();
 };
 
@@ -4107,7 +4108,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		keyHandler.bindAction(74, true, 'fitPage'); // Ctrl+J
 		keyHandler.bindAction(74, true, 'fitTwoPages', true); // Ctrl+Shift+J
 		// keyHandler.bindAction(48, true, 'customZoom'); // Ctrl+0
-		keyHandler.bindAction(82, true, 'turn'); // Ctrl+R
+		// keyHandler.bindAction(82, true, 'turn'); // Ctrl+R
 		keyHandler.bindAction(82, true, 'clearDefaultStyle', true); // Ctrl+Shift+R
 		keyHandler.bindAction(83, true, 'save'); // Ctrl+S
 		keyHandler.bindAction(83, true, 'saveAs', true); // Ctrl+Shift+S

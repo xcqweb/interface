@@ -33,7 +33,8 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
 	
 	var input = document.createElement('input');
 	input.style.marginBottom = '10px';
-	input.style.width = '216px';
+	input.style.margintop = '3px';
+	input.style.width = '194px';
 	
 	// Required for picker to render in IE
 	if (mxClient.IS_IE)
@@ -56,12 +57,13 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
 
 	var div = document.createElement('div');
 	jscolor.picker.box.style.position = 'relative';
-	jscolor.picker.box.style.width = '230px';
+	jscolor.picker.box.style.width = '194px';
 	jscolor.picker.box.style.height = '100px';
 	jscolor.picker.box.style.paddingBottom = '10px';
 	div.appendChild(jscolor.picker.box);
 
 	var center = document.createElement('center');
+	center.style.textAlign = "left";
 	
 	function createRecentColorTable()
 	{
@@ -180,6 +182,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
 	div.appendChild(center);
 
 	var buttons = document.createElement('div');
+	buttons.className = "btnContent";
 	buttons.style.textAlign = 'right';
 	buttons.style.whiteSpace = 'nowrap';
 	buttons.style.overflow = 'hidden';
@@ -258,6 +261,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
 	});
 	
 	this.container = div;
+	this.container.className = "geDialogInfo"
 };
 
 /**
@@ -374,10 +378,10 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 	desTitle.style.color = "#929292";
 	saveContent.appendChild(desTitle)
 	
-	var desInput = document.createElement('input');
-	desInput.setAttribute('value', editorUi.editor.getFiledes() || '');
-	desInput.className = 'saveFileInput'
-	saveContent.appendChild(desInput)
+	var descInput = document.createElement('input');
+	descInput.setAttribute('value', editorUi.editor.getFiledes() || '');
+	descInput.className = 'saveFileInput'
+	saveContent.appendChild(descInput)
 
 	// 按钮
 	var btnContent = editorUi.createDiv('btnContent');
@@ -390,7 +394,7 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 				editorUi.hideDialog();
 			}
 			
-			fn(nameInput.value, desInput.value);
+			fn(nameInput.value, descInput.value);
 		}
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
@@ -510,6 +514,71 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 	this.container = saveContent;
 };
 
+/**
+ * 链接设置弹窗
+ */
+var ConfigLinkDialog = function(editorUi, linkvalue, buttonText, fn)
+{
+	
+	var saveContent = editorUi.createDiv('geDialogInfo')
+	// 链接名称
+	var nameTitle = document.createElement('p')
+	nameTitle.innerHTML = '名称:'
+	nameTitle.className = 'geDialogInfoTitle';	
+	saveContent.appendChild(nameTitle)
+	
+	var nameInput = document.createElement('input');
+	nameInput.setAttribute('value', linkvalue || '');
+	nameInput.className = 'saveFileInput'
+	saveContent.appendChild(nameInput)
+
+	// 链接
+	var linkTitle = document.createElement('p');
+	linkTitle.innerHTML = 'link:';
+	linkTitle.style.margin = "9px 0 5px";
+	linkTitle.style.color = "#929292";
+	saveContent.appendChild(linkTitle)
+	
+	var linkInput = document.createElement('input');
+	linkInput.setAttribute('value', editorUi.editor.getFiledes() || '');
+	linkInput.className = 'saveFileInput'
+	saveContent.appendChild(linkInput)
+
+	// 按钮
+	var btnContent = editorUi.createDiv('btnContent');
+	var genericBtn = mxUtils.button(buttonText, function()
+	{
+		editorUi.hideDialog();
+		
+		fn(nameInput.value, linkInput.value);
+	});
+	genericBtn.className = 'geBtn gePrimaryBtn';
+	
+	this.init = function()
+	{
+		nameInput.focus();
+	};
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+	});
+	cancelBtn.className = 'geBtn';
+	
+	btnContent.appendChild(cancelBtn);
+
+	mxEvent.addListener(nameInput, 'keypress', function(e)
+	{
+		if (e.keyCode == 13)
+		{
+			genericBtn.click();
+		}
+	});
+	
+	btnContent.appendChild(genericBtn);
+	
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
+};
 /**
  * 链接弹窗
  */
@@ -795,6 +864,88 @@ var ImageDialog = function (editorUi, cell) {
 	this.container = saveContent;
 }
 
+
+/**
+ * 新建页面
+ */
+var addPageDialog = function (editorUi) {
+	var saveContent = editorUi.createDiv('geDialogInfo');
+	// 页面名称
+	var nameTitle = document.createElement('p')
+	nameTitle.innerHTML = '页面名称'
+	nameTitle.className = 'geDialogInfoTitle';	
+	saveContent.appendChild(nameTitle)
+	
+	var nameInput = document.createElement('input');
+	nameInput.setAttribute('value', '');
+	nameInput.setAttribute('placeholder', '请输入页面名称');
+	nameInput.className = 'saveFileInput'
+	saveContent.appendChild(nameInput)
+
+	// 页面描述
+	var desTitle = document.createElement('p');
+	desTitle.innerHTML = '页面描述';
+	desTitle.style.margin = "9px 0 5px";
+	desTitle.style.color = "#929292";
+	saveContent.appendChild(desTitle)
+	
+	var descInput = document.createElement('textarea');
+	descInput.setAttribute('value', '');
+	descInput.setAttribute('placeholder', '请输入页面描述');
+	descInput.className = 'saveFileInput'
+	saveContent.appendChild(descInput)
+
+	// 是否是弹窗
+	var isDialog = document.createElement('label');
+	isDialog.style.float = "left";
+	isDialog.style.fontSize = "14px";
+	isDialog.style.lineHeight = "16px";
+	isDialog.style.marginTop = "3px";
+	var isDialogFlag = document.createElement('input');
+	isDialogFlag.style.float = "left";
+	isDialogFlag.style.width = "16px";
+	isDialogFlag.style.height = "16px";
+	isDialogFlag.style.marginRight = "6px";
+	isDialogFlag.setAttribute('type', 'checkbox');
+	isDialog.appendChild(isDialogFlag);
+	isDialog.append('弹窗式')
+	saveContent.appendChild(isDialog);
+	// 保存按钮
+	var btnContent = editorUi.createDiv('btnContent');;
+	var genericBtn = mxUtils.button('应用', function()
+	{
+		if (!nameInput.value) {
+			mxUtils.alert('请输入页面名称');
+		} else {
+			var page = {
+				title: nameInput.value,
+				desc: descInput.value,
+				type: isDialogFlag.checked ? 'dialog' : 'normal'
+			};
+			var _li = document.createElement('li');
+			_li.innerHTML = nameInput.value;
+			if (isDialogFlag.checked) {
+				$("#dialogPages").append(_li);
+			} else {
+				$("#normalPages").append(_li);
+			};
+			editorUi.editor.addPage(page);
+			editorUi.hideDialog();
+		}
+	});
+	genericBtn.className = 'geBtn gePrimaryBtn';
+	// 取消按钮
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+	});
+	cancelBtn.className = 'geBtn';
+	btnContent.appendChild(cancelBtn);
+	btnContent.appendChild(genericBtn);
+	
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
+}
 /**
  * 下拉列表属性弹窗
  * @param {object} editorUi 
@@ -2759,6 +2910,7 @@ var EditPropDialog = function(ui, cell)
 			value = value.cloneNode(true);
 			value.setAttribute('getech', JSON.stringify(temp))
 			// Updates the value of the cell (undoable)
+			console.log(cell, value)
 			graph.getModel().setValue(cell, value);
 		}
 		catch (e)

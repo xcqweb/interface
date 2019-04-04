@@ -28,6 +28,9 @@
 	overflow-y: auto !important;
 	font-size:12px;
 }
+.geFormatContainer .geToolbarContainer {
+	display: block;
+}
 .geDiagramContainer {
 	background-color:#ffffff;
 	border: 1px solid #e5e5e5;
@@ -258,8 +261,6 @@
 .geToolbarContainer .geToolbar8 {
 	width: 80px;
 }
-
-
 .geToolbarContainer .geSeparator {
 	float:left;
 	width:1px;
@@ -317,14 +318,26 @@ div.mxWindow .geButton {
 	position:absolute;
 	border-top:1px solid #e5e5e5;
 	overflow:auto;
+	margin-top: -2px;
 }
 .geSidebar {
+	padding: 4px;
+	font-size: 12px;
 	background:whiteSmoke;
 	border-bottom:1px solid #e5e5e5;
-	padding:5px;
-	_padding:1px;
-	padding-bottom:12px;
 	overflow:hidden;
+}
+.geSidebarContainer .pageManage {
+	/* padding-left: 20px; */
+}
+.geSidebarContainer .pageManage p {
+	line-height: 24px;
+	padding-left: 30px;
+	background-image: url('/static/images/icons/expand.png');
+	background-repeat: no-repeat;
+	background-position: 13px 50%;
+	background-size: 16px 16px;
+	cursor: pointer;
 }
 .geSidebar .comInput {
 	width: 32px;
@@ -333,28 +346,46 @@ div.mxWindow .geButton {
 }
 .geSidebarContainer .geTitle {
 	display:block;
-	font-size:9pt;
-	border-bottom:1px solid #e5e5e5;
-	font-weight:normal;
-	padding:6px 0px 6px 14px;
+	font-size: 12px;
+	border-bottom:1px solid #cccccc;
+	border-top:1px solid #cccccc;
+	font-weight:bold;
+	padding-left: 20px;
 	margin:0px;
+	margin-top: -1px;
 	cursor:default;
-	background:#eeeeee;
+	background:#FAFAFA;
 	white-space:nowrap;
 	overflow:hidden;
 	text-overflow:ellipsis;
-	line-height:1.4em;
+	line-height: 30px;
+	position: relative;
 }
-.geSidebarContainer .geTitle:hover {
-	background:#e5e5e5;
+.geSidebarContainer .geTitle #addPage {
+	float: right;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+	padding: 8px 7px;
+}
+.geSidebarContainer .geSidebar .pageList{
+}
+.geSidebarContainer .geSidebar .pageList li{
+	line-height: 24px;
+	padding-left: 30px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+.geSidebarContainer .geSidebar .pageList .currentPage {
+	color: #fff;
+	background: #3D91F7;
 }
 .geTitle img {
 	opacity:0.5;
-	_filter:alpha(opacity=50);	
 }
 .geTitle img:hover {
 	opacity:1;
-	_filter:alpha(opacity=100);
 }
 .geTitle .geButton {
 	border:1px solid transparent;
@@ -578,6 +609,7 @@ div.mxWindow .geButton {
 .geDialog .geDialogInfo {
 	overflow: hidden;
 	padding: 22px;
+	font-size: 12px;
 }
 .geDialog .tipDialogInfo {
 	padding: 22px;
@@ -899,8 +931,6 @@ div.mxWindow .geButton {
 	content: '分享';
 	left: 6px;
 }
-
-
 .geSprite-actualsize { background-position: 0 0; }
 .geSprite-bold { background-position: 0 -46px; }
 .geSprite-bottom { background-position: 0 -92px; }
@@ -1042,14 +1072,14 @@ html div.mxPopupMenu {
 	position:absolute;
 	border:1px solid #CCCCCC;
 	border-radius: 2px;
-	padding-bottom: 6px;
+	padding: 6px 0;
 }
 html table.mxPopupMenu {
 	border-collapse:collapse;
 	margin:0px;
 }
 html td.mxPopupMenuItem {
-	padding: 5px 22px;
+	padding: 5px 5px 5px 15px;
 	font-size: 14px;
 	color: #252525;
 	line-height: 14px;
@@ -1101,6 +1131,8 @@ html td.mxWindowTitle {
 	border-radius:2px;
 	outline: none;
 	padding-left: 14px;
+	min-height: 32px;
+	resize: vertical;
 }
 .geDialog .geDialogInfo .dialogBtn {
 	margin: 0;
@@ -1184,6 +1216,13 @@ html td.mxWindowTitle {
 	width: 100%;
 	height: 100%;
 	border: none;
+}
+button.buttonTag, input.inputTag {
+	background: #fff;
+	border: none;
+	display: block;
+	width: 100%;
+	height: 100%;
 }
 .selectTagShade {
 	position: absolute;

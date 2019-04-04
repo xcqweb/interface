@@ -15294,24 +15294,24 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	parent.containsItems = true;
 	var tr = document.createElement('tr');
 	tr.className = 'mxPopupMenuItem';
-	var col1 = document.createElement('td');
-	col1.className = 'mxPopupMenuIcon';
+	// var col1 = document.createElement('td');
+	// col1.className = 'mxPopupMenuIcon';
 
-	// Adds the given image into the first column
-	if (image != null)
-	{
-		var img = document.createElement('img');
-		img.src = image;
-		col1.appendChild(img);
-	}
-	else if (iconCls != null)
-	{
-		var div = document.createElement('div');
-		div.className = iconCls;
-		col1.appendChild(div);
-	}
+	// // Adds the given image into the first column
+	// if (image != null)
+	// {
+	// 	var img = document.createElement('img');
+	// 	img.src = image;
+	// 	col1.appendChild(img);
+	// }
+	// else if (iconCls != null)
+	// {
+	// 	var div = document.createElement('div');
+	// 	div.className = iconCls;
+	// 	col1.appendChild(div);
+	// }
 	
-	tr.appendChild(col1);
+	// tr.appendChild(col1);
 	
 	if (this.labels)
 	{
@@ -15326,8 +15326,8 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 		var col3 = document.createElement('td');
 		col3.className = 'mxPopupMenuItem' +
 			((enabled != null && !enabled) ? ' mxDisabled' : '');
-		col3.style.paddingRight = '6px';
 		col3.style.textAlign = 'right';
+		col3.style.paddingRight = '15px';
 		
 		tr.appendChild(col3);
 		
@@ -15444,7 +15444,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
  */
 mxPopupMenu.prototype.addCheckmark = function(item, img)
 {
-	var td = item.firstChild.nextSibling;
+	var td = item.lastChild;
 	td.style.backgroundImage = 'url(\'static/images/menu/checked.png\')';
 	td.style.backgroundRepeat = 'no-repeat';
 	td.style.backgroundPosition = '2px 50%';
@@ -15483,7 +15483,7 @@ mxPopupMenu.prototype.createSubmenu = function(parent)
 	img.setAttribute('src', this.submenuImage);
 	
 	// Last column of the submenu item in the parent menu
-	td = parent.firstChild.nextSibling.nextSibling;
+	td = parent.lastChild;
 	td.appendChild(img);
 };
 
@@ -15544,11 +15544,11 @@ mxPopupMenu.prototype.addSeparator = function(parent, force)
 		parent.willAddSeparator = false;
 		var tr = document.createElement('tr');
 		
-		var col1 = document.createElement('td');
-		col1.className = 'mxPopupMenuIcon';
-		col1.style.padding = '0 0 0 0px';
+		// var col1 = document.createElement('td');
+		// col1.className = 'mxPopupMenuIcon';
+		// col1.style.padding = '0 0 0 0px';
 		
-		tr.appendChild(col1);
+		// tr.appendChild(col1);
 		
 		var col2 = document.createElement('td');
 		col2.style.padding = '0 0 0 0px';
@@ -21116,7 +21116,6 @@ mxVmlCanvas2D.prototype.ellipse = function(x, y, w, h)
 mxVmlCanvas2D.prototype.image = function(x, y, w, h, src, aspect, flipH, flipV)
 {
 	var node = null;
-	
 	if (!aspect)
 	{
 		node = this.createRect('image', x, y, w, h);
@@ -22593,7 +22592,6 @@ mxStencil.prototype.drawNode = function(canvas, shape, node, aspect, disableShad
 	var sx = aspect.width;
 	var sy = aspect.height;
 	var minScale = Math.min(sx, sy);
-	
 	if (name == 'save')
 	{
 		canvas.save();
