@@ -1049,26 +1049,19 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 			if (graph.getSelectionCount() == 1)
 			{
 				menu.addSeparator();
-				var target;
-				if (typeof(cell.value) === "string") {
-					target = cell.value;
-				} else {
-					target = cell.value.getAttribute('label')
-				}
-				var palette = target.match(/class=\"(\S*)\"/)
-				palette = palette ? palette[1] : palette;
 				if(shapeName == 'linkTag') {
 					// 链接
 					this.addMenuItem(menu, 'configLink', null, evt).firstChild.innerHTML = '配置...';
 				} else if (shapeName == 'rectangle') {
 					this.addMenuItem(menu, 'paletteData', null, evt).firstChild.innerHTML = '数据...';
-				} else if (palette === 'selectTag') {
+				} else if (shapeName === 'select') {
 					// 下拉列表
 					this.addMenuItem(menu, 'selectProp', null, evt).firstChild.innerHTML = '属性...';
 				} else if (shapeName == 'image') {
 					// 编辑图片
 					this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = '选择图片...';
 				} else if (shapeName == 'pagemenu') {
+					// 菜单
 					this.addMenuItem(menu, 'insertMenuBefore', null, evt);
 					this.addMenuItem(menu, 'insertMenuAfter', null, evt);
 				} 

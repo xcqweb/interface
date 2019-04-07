@@ -56578,14 +56578,16 @@ mxGraph.prototype.click = function(me)
  * evt - Mouseevent that represents the doubleclick.
  * cell - Optional <mxCell> under the mousepointer.
  */
+// 双击事件控制
 mxGraph.prototype.dblClick = function(evt, cell)
 {
 	var mxe = new mxEventObject(mxEvent.DOUBLE_CLICK, 'event', evt, 'cell', cell);
 	this.fireEvent(mxe);
-	
+	var shapeName = this.getCellStyle(cell).shape;
+	// console.log(shapeName)
 	// Handles the event if it has not been consumed
 	if (this.isEnabled() && !mxEvent.isConsumed(evt) && !mxe.isConsumed() &&
-		cell != null && this.isCellEditable(cell) && !this.isEditing(cell))
+		cell != null && this.isCellEditable(cell) && !this.isEditing(cell) && shapeName !== 'image' && shapeName !== 'select')
 	{
 		this.startEditingAtCell(cell, evt);
 		mxEvent.consume(evt);

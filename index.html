@@ -33,10 +33,13 @@
 		// 加载组件
 		(function () {
 			// 保存
-			EditorUi.prototype.save = function () {
+			EditorUi.prototype.save = function (name) {
+				console.log('name', name)
 				var xml = mxUtils.getXml(this.editor.getGraphXml());
 				this.editor.setXml(xml)
-				console.log(this.editor.pages)
+				console.log('pages', this.editor.pages)
+				this.editor.setFilename(name)
+				console.log('filename', this.editor.filename)
 			}
 
 			// 初始化工具

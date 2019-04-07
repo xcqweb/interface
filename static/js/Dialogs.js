@@ -583,6 +583,19 @@ var ConfigLinkDialog = function(editorUi, linkvalue, buttonText, fn)
  * 链接弹窗
  */
 var LinkReportDialog = function(editorUi, defaultLink) {
+	var graph = editorUi.editor.graph;
+	// 获取选中节点
+	var cell = graph.getSelectionCell();
+	var cellInfo = graph.getModel().getValue(cell);
+	if (cellInfo !== undefined && cellInfo !== null) {
+	}
+	if (!mxUtils.isNode(cellInfo))
+	{
+		var doc = mxUtils.createXmlDocument();
+		var obj = doc.createElement('object');
+		obj.setAttribute('label', cellInfo || '');
+		cellInfo = obj;
+	}
 	var saveContent = editorUi.createDiv('geDialogInfo');
 	// 链接
 	var nameTitle = document.createElement('p')
@@ -591,7 +604,7 @@ var LinkReportDialog = function(editorUi, defaultLink) {
 	saveContent.appendChild(nameTitle)
 	
 	var nameInput = document.createElement('input');
-	nameInput.setAttribute('value', defaultLink || '');
+	nameInput.setAttribute('value', cellInfo.getAttribute('linkReport') || '');
 	nameInput.setAttribute('placeholder', '请输入链接地址');
 	nameInput.className = 'saveFileInput'
 	saveContent.appendChild(nameInput)
@@ -600,7 +613,14 @@ var LinkReportDialog = function(editorUi, defaultLink) {
 	var btnContent =editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('创建', function()
 	{
-		editorUi.hideDialog();
+		if (!nameInput.value) {
+			mxUtils.alert('请输入链接名称')
+		} else {
+			cellInfo = cellInfo.cloneNode(true);
+			cellInfo.setAttribute('linkReport', nameInput.value)
+			graph.getModel().setValue(cell, cellInfo)
+			editorUi.hideDialog();
+		}
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	// 取消按钮
@@ -970,20 +990,28 @@ function convertsToXml (graph, cell) {
 var SelectPropDialog = function (editorUi, cell) {
 	var graph = editorUi.editor.graph;
 	var value = convertsToXml(graph, cell)
-
-	var saveContent = editorUi.createDiv('geDialogInfo')
-	var mockData = ['particle', 'hpcp', 'erp']
-	this.fillContent = function (data) {
-		
+	// 获取选中节点
+	var cellInfo = graph.getModel().getValue(cell);
+	if (!mxUtils.isNode(cellInfo))
+	{
+		var doc = mxUtils.createXmlDocument();
+		var obj = doc.createElement('object');
+		obj.setAttribute('label', cellInfo || '');
+		cellInfo = obj;
 	}
+	var mockData = []
+	if (cellInfo.attributes.selectProps) {
+		mockData = [].concat(cellInfo.attributes.selectProps.nodeValue.split(','))
+	}
+	var saveContent = editorUi.createDiv('geDialogInfo')
 	// 属性列表
 	saveContent.innerHTML = `
 		<div id="innerPropsBox">
 			<div class="innerPropsOperate">
-				<img id="addProp" src="/static/images/checkmark.gif" title="增加" />
-				<img id="moveUp" src="/static/images/checkmark.gif" title="上移" />
-				<img id="moveDown" src="/static/images/checkmark.gif" title="下移" />
-				<img id="delProp" src="/static/images/checkmark.gif" title="删除" />
+				<img id="addProp" src="/static/images/icons/addProp.png" title="增加" />
+				<img id="moveUp" src="/static/images/icons/moveupProp.png" title="上移" />
+				<img id="moveDown" src="/static/images/icons/movedownProp.png" title="下移" />
+				<img id="delProp" src="/static/images/icons/deleteProp.png" title="删除" />
 			</div>
 			<ul id="innerPropsList">
 			${
@@ -1001,15 +1029,15 @@ var SelectPropDialog = function (editorUi, cell) {
 	this.init = function () {
 		// 增加
 		$("#addProp").click(function () {
-			var _li = document.createElement('li')
-			_li.className = 'innerPropsType'
-			var _input = document.createElement('input')
-			_input.setAttribute('type', 'checkbox')
-			_li.appendChild(_input);
-			var _span = document.createElement('span')
-			_span.innerText = "新增属性"
-			_li.appendChild(_span);
-			$("#innerPropsList").append(_li)
+			var liEle = document.createElement('li')
+			liEle.className = 'innerPropsType'
+			var inputEle = document.createElement('input')
+			inputEle.setAttribute('type', 'checkbox')
+			liEle.appendChild(inputEle);
+			var spanEle = document.createElement('span')
+			spanEle.innerText = "新增属性"
+			liEle.appendChild(spanEle);
+			$("#innerPropsList").append(liEle)
 		})
 		// 上移
 		$("#moveUp").click(function () {
@@ -1065,34 +1093,16 @@ var SelectPropDialog = function (editorUi, cell) {
 	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('应用', function()
 	{
+		var list = $("#innerPropsList").children();
+		var data = [];
+		for (var i = 0; i < list.length; i++) {
+			data.push(list[i].children[1].innerText)
+		};
+		cellInfo.setAttribute('selectProps', data);
+		graph.getModel().setValue(cell, cellInfo)
 		editorUi.hideDialog();
 		// 绑定列表
-		var select = null;
-		var cells = graph.getSelectionCells();
 		// mock数据
-		var newValue;
-		var mockNum = Math.random()
-		if (mockNum < 0.3) {
-			newValue = "/static/stencils/IOT/t1_cl2_layout.png"
-		} else if (mockNum < 0.5) {
-			newValue = "/static/stencils/IOT/cl2_green.png"
-		} else if (mockNum < 0.8) {
-			newValue = "/static/stencils/IOT/cl2_red.png"
-		} else {
-			newValue = "/static/stencils/IOT/t2_cl2_layout.png"
-		}
-		graph.getModel().beginUpdate();
-		try {
-			graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
-		}
-		finally {
-			graph.getModel().endUpdate();
-		}
-
-		if (select != null) {
-			graph.setSelectionCells(select);
-			graph.scrollCellToVisible(select[0]);
-		}
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	// 取消按钮

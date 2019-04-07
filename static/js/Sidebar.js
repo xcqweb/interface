@@ -1015,14 +1015,13 @@ Sidebar.prototype.addPagePalette = function (expand) {
 Sidebar.prototype.addGeneralPalette = function(expand)
 {
 	var sb = this;
-	// Reusable cells
 	var field = new mxCell('List Item', new mxGeometry(0, 0, 60, 26), 'text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;');
 	field.vertex = true;
 	var fns = [
 		// 矩形
 		this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, '矩形'),
-		// button
-		this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag">BUTTON</button>', 'button'),
+		// 按钮
+		this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag">BUTTON</button>', '按钮'),
 		// 菜单
 		this.addEntry('page menu', function()
 		{
@@ -1044,24 +1043,16 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 			return sb.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '菜单');
 		}),
 		// 复选
-		// // this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="checkbox" class="inputTag" />', '复选'),
+		// this.createVertexTemplateEntry('shape=multipleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="checkbox" class="inputTag1" />', '复选'),
 		// 单选
 		// // this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="radio" class="inputTag" />', '单选'),
 		// 图片
 		this.createVertexTemplateEntry('image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
 		//  this.createVertexTemplateEntry('line;strokeWidth=2;html=1;', 160, 10, '', '直线'),
 
-		//  this.addEntry('link hyperlink', mxUtils.bind(this, function()
-	 	// {
-	 	// 	var cell = new mxCell('Link', new mxGeometry(0, 0, 60, 40), 'text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;align=center;verticalAlign=middle;fontColor=#0000EE;fontStyle=4;');
-	 	// 	cell.vertex = true;
-	 	// 	this.graph.setLinkForCell(cell, 'https://www.getech.cn');
-
-	 	// 	return this.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '链接');
-		//  })),
 	 	// this.createEdgeTemplateEntry('edgeStyle=isometricEdgeStyle;endArrow=none;html=1;', 50, 100, '', '曲线'),
-	 	// this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',
- 		// 	40, 20, 'text', '文本'),
+	 	this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',
+ 			40, 20, 'text', '文本'),
 		// this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 80, 80, '', '圆', null, null, 'circle'),
 		this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 65, 40, '<div style="width:100%;height:100%;position: relative"><select class="selectTag"></select><div class="selectTagShade"></div></div>', '下拉列表'),
 		// 表格

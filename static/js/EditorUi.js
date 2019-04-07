@@ -285,7 +285,7 @@ EditorUi = function(editor, container, lightbox)
 
 	var ui = this;
 	
-	// Overrides cell editor to update toolbar
+	// 编辑内容时
 	var cellEditorStartEditing = graph.cellEditor.startEditing;
 	graph.cellEditor.startEditing = function()
 	{
