@@ -2452,7 +2452,6 @@ Graph.prototype.getCellStyle = function(cell)
 			}
 		}
 	}
-	
 	return style;
 };
 
@@ -5426,7 +5425,7 @@ if (typeof mxVertexHandler != 'undefined')
 		};
 		
 		/**
-		 * Overrides double click handling to add the tolerance and inserting text.
+		 * 双击编辑
 		 */
 		Graph.prototype.dblClick = function(evt, cell)
 		{
@@ -5449,11 +5448,10 @@ if (typeof mxVertexHandler != 'undefined')
 							if ((state == null && !this.isCellLocked(this.getDefaultParent())) ||
 								(state != null && !this.isCellLocked(state.cell)))
 							{
-								// Avoids accidental inserts on background
 								if (state != null || (mxClient.IS_VML && src == this.view.getCanvas()) ||
 									(mxClient.IS_SVG && src == this.view.getCanvas().ownerSVGElement))
 								{
-									cell = this.addText(pt.x, pt.y, state);
+									// cell = this.addText(pt.x, pt.y, state);
 								}
 							}
 						}
@@ -7505,8 +7503,8 @@ if (typeof mxVertexHandler != 'undefined')
 			new Image().src = HoverIcons.prototype.roundDrop.src;
 		}
 		
-		// Adds rotation handle and live preview
-		mxVertexHandler.prototype.rotationEnabled = true;
+		// 旋转操作
+		mxVertexHandler.prototype.rotationEnabled = false;
 		mxVertexHandler.prototype.manageSizers = true;
 		mxVertexHandler.prototype.livePreview = true;
 	

@@ -28,9 +28,9 @@ Menus.prototype.defaultFont = 'Helvetica';
 Menus.prototype.defaultFontSize = '12';
 
 /**
- * Sets the default font size.
+ * 默认一级菜单栏
  */
-Menus.prototype.defaultMenuItems = ['file', 'edit', 'view', 'arrange', 'help'];
+Menus.prototype.defaultMenuItems = ['file', 'edit', 'view', 'arrange', 'publish', 'help'];
 
 /**
  * Adds the label menu items to the given menu and parent.
@@ -187,7 +187,8 @@ Menus.prototype.init = function()
 	{
 		menu.addItem(mxResources.get('flipH'), null, function() { graph.toggleCellStyles(mxConstants.STYLE_FLIPH, false); }, parent);
 		menu.addItem(mxResources.get('flipV'), null, function() { graph.toggleCellStyles(mxConstants.STYLE_FLIPV, false); }, parent);
-		// this.addMenuItems(menu, ['-', 'rotation'], parent);
+		this.addMenuItems(menu, ['turn'], parent);
+		this.addMenuItems(menu, ['rotation'], parent);
 	})));
 	this.put('align', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
@@ -423,7 +424,6 @@ Menus.prototype.init = function()
 	{
 		this.addMenuItems(menu, ['toFront', 'toBack', '-'], parent);
 		this.addSubmenu('direction', menu, parent);
-		this.addMenuItems(menu, ['turn'], parent);
 		this.addSubmenu('align', menu, parent);
 		// this.addSubmenu('distribute', menu, parent);
 		// this.addSubmenu('navigation', menu, parent);
@@ -431,6 +431,12 @@ Menus.prototype.init = function()
 		// this.addSubmenu('layout', menu, parent);
 		this.addMenuItems(menu, ['-', 'group', 'ungroup', 'removeFromGroup', '-','autosize'], parent);
 	}))).isEnabled = isGraphEnabled;
+	
+	// 文件
+	this.put('publish', new Menu(mxUtils.bind(this, function(menu, parent)
+	{
+		this.addMenuItems(menu, ['publish'], parent);
+	})));
 	// 插入
 	this.put('insert', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
@@ -439,7 +445,9 @@ Menus.prototype.init = function()
 	// 视图
 	this.put('view', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['pageView', '-' ,'scrollbars', 'grid', '-', 'zoomIn', 'zoomOut'], parent);
+		this.addMenuItem(menu, 'palette', parent);
+		this.addSubmenu('pageScale', menu, parent);
+		this.addMenuItems(menu, ['-','palette' ,'toolbar' ,'paletteManage' ,'pageList' ,'formatManage' ,'-' ,'scrollbars', 'grid', '-', 'zoomIn', 'zoomOut'], parent);
 	})));
 	// Two special dropdowns that are only used in the toolbar
 	this.put('viewPanels', new Menu(mxUtils.bind(this, function(menu, parent)
@@ -451,9 +459,9 @@ Menus.prototype.init = function()
 		
 		this.addMenuItems(menu, ['outline', 'layers'], parent);
 	})));
-	this.put('viewZoom', new Menu(mxUtils.bind(this, function(menu, parent)
+	this.put('pageScale', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['resetView'], parent);
+		// this.addMenuItems(menu, ['resetView'], parent);
 		var scales = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4];
 		
 		for (var i = 0; i < scales.length; i++)
@@ -954,11 +962,10 @@ Menus.prototype.addMenuItem = function(menu, key, parent, trigger, sprite, label
 		// Adds checkmark image
 		if (action.toggleAction && action.isSelected())
 		{
-			console.log(item)
 			menu.addCheckmark(item, Editor.checkmarkImage);
 		}
 		// 右键菜单，快捷键提示
-		// this.addShortcut(item, action);
+		this.addShortcut(item, action);
 		
 		return item;
 	}
@@ -973,7 +980,7 @@ Menus.prototype.addShortcut = function(item, action)
 {
 	if (action.shortcut != null)
 	{
-		var td = item.firstChild.nextSibling.nextSibling;
+		var td = item.lastChild;
 		var span = document.createElement('span');
 		mxUtils.write(span, action.shortcut);
 		td.appendChild(span);
@@ -1098,42 +1105,6 @@ Menus.prototype.createMenubar = function(container)
 		}))(this.get(menus[i]));
 	}
 
-	// //输入框保存
-  //   var input = document.createElement('input')
-  //   input.setAttribute('id', 'filenameInput')
-  //   input.setAttribute('placeholder', '你大爷的');
-  //   input.setAttribute('type', 'text');
-  //   input.style.fontSize = '12px';
-  //   input.style.overflow = 'hidden';
-  //   input.style.boxSizing = 'border-box';
-  //   input.style.border = 'solid 1px #d5d5d5';
-  //   input.style.borderRadius = '4px';
-  //   input.style.width = '30%';
-  //   input.style.outline = 'none';
-  //   input.style.padding = '6px';
-  //   container.appendChild(input)
-
-  //   // Workaround for blocked text selection in Editor
-  //   mxEvent.addListener(input, 'mousedown', function(evt)
-  //   {
-  //       if (evt.stopPropagation)
-  //       {
-  //           evt.stopPropagation();
-  //       }
-        
-  //       evt.cancelBubble = true;
-  //   });
-
-	// mxEvent.addListener(input, 'keydown', mxUtils.bind(this, function(evt)
-	// {
-	// 	if (evt.keyCode == 13 /* Enter */)
-	// 	{
-	// 		this.editorUi.save(input.value, this.editorUi.editor.getFiledes())
-	// 		mxEvent.consume(evt);
-	// 	}
-	// }));
-	// //
-
 	return menubar;
 };
 
@@ -1233,8 +1204,9 @@ Menubar.prototype.addMenuHandler = function(elt, funct)
 				menu.autoExpand = true;
 				
 				// Disables autoexpand and destroys menu when hidden
-				menu.hideMenu = mxUtils.bind(this, function()
+				menu.hideMenu = mxUtils.bind(this, function(e)
 				{
+					this.editorUi.currentMenuElt.className = 'geItem';
 					mxPopupMenu.prototype.hideMenu.apply(menu, arguments);
 					this.editorUi.resetCurrentMenu();
 					menu.destroy();
@@ -1248,19 +1220,23 @@ Menubar.prototype.addMenuHandler = function(elt, funct)
 			mxEvent.consume(evt);
 		});
 		
-		// Shows menu automatically while in expanded state
+		// 点击之后的鼠标移动
 		mxEvent.addListener(elt, 'mousemove', mxUtils.bind(this, function(evt)
 		{
 			if (this.editorUi.currentMenu != null && this.editorUi.currentMenuElt != elt)
 			{
+				this.editorUi.currentMenuElt.className = 'geItem';
+				elt.className += ' activeMenu';
+
 				this.editorUi.hideCurrentMenu();
 				clickHandler(evt);
 			}
 		}));
 
-		// Hides menu if already showing
+		// 隐藏菜单
 		mxEvent.addListener(elt, 'mousedown', mxUtils.bind(this, function()
 		{
+			elt.className += ' activeMenu';
 			show = this.currentElt != elt;
 		}));
 		

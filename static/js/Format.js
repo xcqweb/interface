@@ -356,11 +356,12 @@ Format.prototype.refresh = function()
 	label.style.border = '1px solid #c0c0c0';
 	label.style.borderWidth = '0px 0px 1px 0px';
 	label.style.textAlign = 'center';
+	label.className = "geTitle";
 	// label.style.fontWeight = 'bold';
 	label.style.overflow = 'hidden';
 	label.style.display = (mxClient.IS_QUIRKS) ? 'inline' : 'inline-block';
-	label.style.paddingTop = '8px';
-	label.style.height = (mxClient.IS_QUIRKS) ? '34px' : '25px';
+	label.style.height = '33px';
+	label.style.lineHeight = '32px';
 	label.style.width = '100%';
 	this.container.appendChild(div);
 	
@@ -475,7 +476,7 @@ Format.prototype.refresh = function()
 		this.panels.push(new ArrangePanel(this, ui, arrangePanel));
 		this.container.appendChild(arrangePanel);
 
-		// Properties
+		// 属性
 		mxUtils.write(label2, mxResources.get('interaction'));
 		div.appendChild(label2);
 
@@ -2888,7 +2889,7 @@ ArrangePanel.prototype.styleInit = function()
 		this.container.appendChild(this.addFill(this.createPanel()));
 	}
 
-	this.container.appendChild(this.addStroke(this.createPanel()));
+	// this.container.appendChild(this.addStroke(this.createPanel()));
 	this.container.appendChild(this.addLineJumps(this.createPanel()));
 	var opacityPanel = this.createRelativeOption(mxResources.get('opacity'), mxConstants.STYLE_OPACITY, 41);
 	opacityPanel.style.paddingTop = '8px';
@@ -4549,3 +4550,86 @@ PropertiesPanel.prototype.destroy = function()
 	// 	this.gridEnabledListener = null;
 	// }
 };
+
+/**
+ * 控件管理
+ * 
+ */
+var PaletteManage = function (editorUi, container)
+{
+	this.editorUi = editorUi;
+	this.container = container;
+	var title = this.createTitle('控件', 'paletteManageTitle');
+	this.container.appendChild(title)
+	var content = this.createContent();
+	this.container.appendChild(content)
+	this.addFoldingHandler(title, content)
+};
+
+/**
+ * 展开图标
+ */
+PaletteManage.prototype.expandImage = '/static/images/icons/expand.png';
+
+/**
+ * 收缩图标
+ */
+PaletteManage.prototype.colspanImage = '/static/images/icons/colspan.png';
+
+/**
+ * 生成标题
+ */
+ PaletteManage.prototype.createTitle = function(label, id)
+{
+	var elt = document.createElement('a');
+	elt.setAttribute('href', 'javascript:void(0);');
+	elt.className = 'geTitle';
+	elt.id = id + 'Title';
+	elt.style.backgroundRepeat = 'no-repeat';
+	elt.style.backgroundPosition = '3px 50%';
+	elt.style.backgroundSize = '16px 16px';
+	elt.style.backgroundImage = 'url(' + this.expandImage + ')';
+	mxUtils.write(elt, label);
+	// 页面管理一栏，增加添加页面管理的icon
+	var img = document.createElement('img');
+	img.setAttribute('src', '/static/images/icons/search.png');
+	img.setAttribute('id', 'addPage');
+	img.addEventListener('click', function (e) {
+		w = e || window.event;
+		if (e.stopPropagation) {
+			e.stopPropagation();
+		} else {
+			e.cancelBubble = true;
+		}
+		// 触发事件
+		var action = this.editorUi.actions.get('addPage');
+		// action.funct();
+	}.bind(this), true)
+	elt.appendChild(img);
+	return elt;
+};
+
+/**
+ * 生成控件列表
+ */
+PaletteManage.prototype.createContent = function () {
+	var ul = document.createElement('ul');
+	return ul;
+}
+/**
+ * 绑定折叠事件
+ */
+PaletteManage.prototype.addFoldingHandler = function(elt, content) {
+	mxEvent.addListener(elt, 'click', function () {
+		if (content.style.display !== 'none') {
+			content.style.display = 'none';
+			elt.style.backgroundImage = 'url(' + this.colspanImage + ')';
+			elt.parentNode.style.flex = 'unset';
+		} else {
+			content.style.display = '';
+			elt.style.backgroundImage = 'url(' + this.expandImage + ')';
+			elt.parentNode.style.flex = '';
+			elt.parentNode.style.height = '';
+		}
+	}.bind(this))
+}

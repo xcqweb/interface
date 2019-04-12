@@ -89,7 +89,8 @@ Sidebar.prototype.init = function()
 	var dir = STENCIL_PATH;
 	// this.addSearchPalette(true);//搜索
 	this.addPagePalette(true);//页面管理
-	this.addGeneralPalette(true);//通用 自己写的svg
+	this.addGeneralPalette(true);//基础控件
+	this.addPrimitive(true);//图元管理
 	// this.addMiscPalette(false);//杂项
 	// this.addAdvancedPalette(false);//高级
   //   this.addUmlPalette(false);//UML
@@ -1009,6 +1010,11 @@ Sidebar.prototype.addPagePalette = function (expand) {
 	]
 	this.addPaletteFunctions('pageManage', '页面管理', (expand != null) ? expand : true, fns);
 }
+Sidebar.prototype.addPrimitive = function (expand) {
+	var fns = [
+	]
+	this.addPaletteFunctions('primitiveManage', '图元管理', (expand != null) ? expand : true, fns);
+}
 /**
  * 基本控件
  */
@@ -1047,11 +1053,11 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		// 单选
 		// // this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="radio" class="inputTag" />', '单选'),
 		// 图片
-		this.createVertexTemplateEntry('image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
+		this.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
 		//  this.createVertexTemplateEntry('line;strokeWidth=2;html=1;', 160, 10, '', '直线'),
 
 	 	// this.createEdgeTemplateEntry('edgeStyle=isometricEdgeStyle;endArrow=none;html=1;', 50, 100, '', '曲线'),
-	 	this.createVertexTemplateEntry('text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',
+	 	this.createVertexTemplateEntry('shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',
  			40, 20, 'text', '文本'),
 		// this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 80, 80, '', '圆', null, null, 'circle'),
 		this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 65, 40, '<div style="width:100%;height:100%;position: relative"><select class="selectTag"></select><div class="selectTagShade"></div></div>', '下拉列表'),
@@ -1061,8 +1067,26 @@ Sidebar.prototype.addGeneralPalette = function(expand)
  			'<table border="1" style="width:100%;height:75%;border-collapse:collapse;">' +
  			'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
  			'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
-			 '<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
-		//  链接
+			'<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
+		// 图元
+		this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/images/icons/primitive.png', this.defaultImageWidth, this.defaultImageHeight, '', '图元'),
+		// 箭头
+		this.createEdgeTemplateEntry('shape=endarrow;html=1;', 50, 0, '', '箭头', false, false),
+		//直线
+		this.createVertexTemplateEntry('line;endArrow=none;startArrow=none;strokeWidth=1;html=1;', 160, 10, '', '直线'),
+		// 曲线
+		this.addEntry('curve', mxUtils.bind(this, function()
+	 	{
+			var cell = new mxCell('', new mxGeometry(0, 0, 50, 50), 'shape=curve;html=1;startArrow=none;endArrow=none;');
+			cell.geometry.setTerminalPoint(new mxPoint(0, 50), true);
+			cell.geometry.setTerminalPoint(new mxPoint(50, 0), false);
+			cell.geometry.points = [new mxPoint(50, 50), new mxPoint(0, 0)];
+			cell.geometry.relative = true;
+			cell.edge = true;
+			
+			return this.createEdgeTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '曲线');
+	 	})),
+		// 链接
 		this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
 	];
 	//封装
@@ -1878,7 +1902,8 @@ Sidebar.prototype.createTitle = function(label, id)
 	var elt = document.createElement('a');
 	elt.setAttribute('href', 'javascript:void(0);');
 	elt.setAttribute('title', mxResources.get('sidebarTooltip'));
-	elt.className = 'geTitle ' + id + 'Title';
+	elt.className = 'geTitle';
+	elt.id = id + 'Title';
 	mxUtils.write(elt, label);
 	// 页面管理一栏，增加添加页面管理的icon
 	if (id === 'pageManage') {
@@ -2003,26 +2028,32 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 		elt.style.border = 'none';
 	}
 	
-	// Blocks default click action
+	// 控件默认点击
 	mxEvent.addListener(elt, 'click', function(evt)
 	{
-		mxEvent.consume(evt);
+		if (!/primitive/.test(cells[0].style)) {
+			mxEvent.consume(evt);
+		} else {
+			// document.getElementsByClassName('primitiveManage')[0].style.display = 'block';
+			console.log('图元~~~~')
+		}
 	});
 
 	this.createThumb(cells, this.thumbWidth, this.thumbHeight, elt, title, showLabel, showTitle, width, height);
 	var bounds = new mxRectangle(0, 0, width, height);
-	
 	if (cells.length > 1 || cells[0].vertex)
 	{
-		var ds = this.createDragSource(elt, this.createDropHandler(cells, true, allowCellsInserted,
-			bounds), this.createDragPreview(width, height), cells, bounds);
-		this.addClickHandler(elt, ds, cells);
+		// 非图元绑定点击插入画布事件和拖拽事件
+		if (!/primitive/.test(cells[0].style)) {
+			var ds = this.createDragSource(elt, this.createDropHandler(cells, true, allowCellsInserted, bounds), this.createDragPreview(width, height), cells, bounds);
+			this.addClickHandler(elt, ds, cells);
+			// Uses guides for vertices only if enabled in graph
+			ds.isGuidesEnabled = mxUtils.bind(this, function()
+			{
+				return this.editorUi.editor.graph.graphHandler.guidesEnabled;
+			});
+		}
 	
-		// Uses guides for vertices only if enabled in graph
-		ds.isGuidesEnabled = mxUtils.bind(this, function()
-		{
-			return this.editorUi.editor.graph.graphHandler.guidesEnabled;
-		});
 	}
 	else if (cells[0] != null && cells[0].edge)
 	{
@@ -3349,7 +3380,6 @@ Sidebar.prototype.createVertexTemplate = function(style, width, height, value, t
 {
 	var cells = [new mxCell((value != null) ? value : '', new mxGeometry(0, 0, width, height), style)];
 	cells[0].vertex = true;
-	
 	return this.createVertexTemplateFromCells(cells, width, height, title, showLabel, showTitle, allowCellsInserted);
 };
 
@@ -3385,7 +3415,6 @@ Sidebar.prototype.createVertexTemplateFromCells = function(cells, width, height,
 Sidebar.prototype.createEdgeTemplateEntry = function(style, width, height, value, title, showLabel, tags, allowCellsInserted)
 {
 	tags = (tags != null && tags.length > 0) ? tags : title.toLowerCase();
-	
  	return this.addEntry(tags, mxUtils.bind(this, function()
  	{
  		return this.createEdgeTemplate(style, width, height, value, title, showLabel, allowCellsInserted);
@@ -3402,7 +3431,6 @@ Sidebar.prototype.createEdgeTemplate = function(style, width, height, value, tit
 	cell.geometry.setTerminalPoint(new mxPoint(width, 0), false);
 	cell.geometry.relative = true;
 	cell.edge = true;
-	
 	return this.createEdgeTemplateFromCells([cell], width, height, title, showLabel, allowCellsInserted);
 };
 
@@ -3435,7 +3463,7 @@ Sidebar.prototype.addPalette = function(id, title, expanded, onInit)
 {
 	var elt = this.createTitle(title, id);
 	this.container.appendChild(elt);
-	
+	console.log(id, title)
 	var div = document.createElement('div');
 	div.className = 'geSidebar';
 	
@@ -3458,14 +3486,19 @@ Sidebar.prototype.addPalette = function(id, title, expanded, onInit)
     this.addFoldingHandler(elt, div, onInit);
 	
 	var outer = document.createElement('div');
-    outer.appendChild(div);
+		outer.appendChild(div);
+	if (id === 'primitiveManage') {
+		document.body.appendChild(outer)
+	} else {
     this.container.appendChild(outer);
+	}
     
     // Keeps references to the DOM nodes
     if (id != null)
     {
     		this.palettes[id] = [elt, outer];
-				div.className += ' ' + id
+				// div.className += ' ' + id
+				div.id = id;
     }
     return div;
 };

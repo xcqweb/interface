@@ -351,7 +351,49 @@ var AboutDialog = function(editorUi)
 	
 	this.container = div;
 };
+/**
+ * 一个输入框的弹窗
+ */
+var valueDialog = function (editorUi, filename, titleText, buttonText, fn) {
+	var saveContent = editorUi.createDiv('geDialogInfo')
+	// 文件名称
+	var valTitle = document.createElement('p')
+	valTitle.innerHTML = titleText
+	valTitle.className = 'geDialogInfoTitle';	
+	saveContent.appendChild(valTitle)
+	
+	var valInput = document.createElement('input');
+	valInput.setAttribute('value', filename || '');
+	valInput.className = 'saveFileInput'
+	saveContent.appendChild(valInput)
 
+	// 按钮
+	var btnContent = editorUi.createDiv('btnContent');
+	var genericBtn = mxUtils.button(buttonText, function()
+	{
+		editorUi.hideDialog();
+		fn(parseFloat(valInput.value));
+	});
+	genericBtn.className = 'geBtn gePrimaryBtn';
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+	});
+	cancelBtn.className = 'geBtn';
+	
+	btnContent.appendChild(cancelBtn);
+	mxEvent.addListener(valInput, 'keypress', function(e)
+	{
+		if (e.keyCode == 13)
+		{
+			genericBtn.click();
+		}
+	});
+	
+	btnContent.appendChild(genericBtn);
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
+}
 /**
  * 保存文件弹窗
  */
@@ -655,25 +697,25 @@ var LinkReportDialog = function(editorUi, defaultLink) {
 }
 
 /**
- * 分享弹窗
+ * 发布弹窗
  */
 var ShareDialog = function(editorUi) {
 	var saveContent = editorUi.createDiv('geDialogInfo');
 	// 链接
 	var nameTitle = document.createElement('p')
-	nameTitle.innerHTML = '分享之后，生成的页面将在平台展示。';
+	nameTitle.innerHTML = '发布之后，生成的页面将在平台展示。';
 	nameTitle.className = 'geDialogInfoTitle';
 	saveContent.appendChild(nameTitle)
 
 	// 保存按钮
 	var btnContent = editorUi.createDiv('btnContent');
-	var genericBtn = mxUtils.button('分享', function()
+	var genericBtn = mxUtils.button('发布', function()
 	{
 		editorUi.hideDialog();
 		if (Math.random() > 0.5) {
-			editorUi.showDialog(tipDialog(editorUi, true, '分享'), 120, 90, true, false, null, null, '')
+			editorUi.showDialog(tipDialog(editorUi, true, '发布'), 120, 90, true, false, null, null, '')
 		} else {
-			editorUi.showDialog(tipDialog(editorUi, false, '分享'), 120, 90, true, false, null, null, '')
+			editorUi.showDialog(tipDialog(editorUi, false, '发布'), 120, 90, true, false, null, null, '')
 		}
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';

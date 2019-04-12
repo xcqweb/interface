@@ -59,7 +59,7 @@ Toolbar.prototype.init = function()
 	this.addItems(['new', 'save'], this.containerList[0]);
 	// 重置视图百分比
 	this.addItems(['zoomIn'], this.containerList[1]);
-	var viewMenu = this.addMenu('', mxResources.get('zoom') + ' (Alt+Mousewheel)', true, 'viewZoom', this.containerList[1], true);
+	var viewMenu = this.addMenu('', mxResources.get('zoom') + ' (Alt+Mousewheel)', true, 'pageScale', this.containerList[1], true);
 	viewMenu.showDisabled = true;
 	viewMenu.style.whiteSpace = 'nowrap';
 	viewMenu.style.position = 'relative';
@@ -75,6 +75,7 @@ Toolbar.prototype.init = function()
 	
 	// 放大缩小
 	this.addItems(['zoomOut'], this.containerList[1]);
+	this.addItems(['fullScreen'], this.containerList[1]);
 	// 如果缩放后，更新标签
 	this.updateZoom = mxUtils.bind(this, function()
 	{
@@ -100,8 +101,8 @@ Toolbar.prototype.init = function()
 	this.addItems([ 'group', 'ungroup'], this.containerList[5]);
 	// 旋转
 	this.addItems([ 'turn', 'flipV', 'flipH'], this.containerList[6]);
-	// 链接分享
-	this.addItems([ 'linkReport', 'share'], this.containerList[7]);
+	// 链接发布
+	this.addItems([ 'linkReport', 'publish'], this.containerList[7]);
 };
 
 

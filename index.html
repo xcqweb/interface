@@ -33,12 +33,13 @@
 		// 加载组件
 		(function () {
 			// 保存
-			EditorUi.prototype.save = function (name) {
-				console.log('name', name)
+			EditorUi.prototype.save = function (name, fields) {
+				console.log('name', fields)
 				var xml = mxUtils.getXml(this.editor.getGraphXml());
 				this.editor.setXml(xml)
 				console.log('pages', this.editor.pages)
 				this.editor.setFilename(name)
+				this.editor.setFiledes(fields)
 				console.log('filename', this.editor.filename)
 			}
 

@@ -6297,7 +6297,33 @@ var mxUtils =
 	{
 		alert(message);
 	},
-	
+	/**
+	 * 全屏操作
+	 */
+	fullScreen: function () {
+		// 判断是否全屏
+    var full = document.fullScreen||document.mozFullScreen||document.webkitIsFullScreen;
+		// 判断各种浏览器，找到正确的方法
+		var obj = document.body;
+		if(obj.requestFullscreen){
+				full ? document.exitFullscreen() : obj.requestFullscreen();
+		}else if(obj.mozRequestFullScreen){
+				full ? document.mozCancelFullScreen() : obj.mozRequestFullScreen();
+		}else if(obj.webkitRequestFullscreen){
+				full ? document.webkitExitFullscreen() : obj.webkitRequestFullscreen();
+		}else if(obj.msRequestFullscreen){
+				full ? document.msExitFullscreen() : obj.msRequestFullscreen();
+		}else{
+			console.log('该浏览器不支持全屏，请升级最新版本');
+		}
+
+	//启动全屏
+
+	// fullScreen($('html').get(0)); // 整个网页
+
+ //fullScreen(document.getElementById("videoElement")); //某个页面元素
+    console.log(full);
+	},
 	/**
 	 * Function: prompt
 	 * 
@@ -15447,7 +15473,7 @@ mxPopupMenu.prototype.addCheckmark = function(item, img)
 	var td = item.lastChild;
 	td.style.backgroundImage = 'url(\'static/images/menu/checked.png\')';
 	td.style.backgroundRepeat = 'no-repeat';
-	td.style.backgroundPosition = '2px 50%';
+	td.style.backgroundPosition = 'right 16px top 50%';
 	td.style.backgroundSize = '16px 16px';
 };
 
@@ -45553,7 +45579,6 @@ mxStylesheet.prototype.putCellStyle = function(name, style)
 mxStylesheet.prototype.getCellStyle = function(name, defaultStyle)
 {
 	var style = defaultStyle;
-	
 	if (name != null && name.length > 0)
 	{
 		var pairs = name.split(';');
@@ -45567,7 +45592,6 @@ mxStylesheet.prototype.getCellStyle = function(name, defaultStyle)
 		{
 			style = new Object();
 		}
-
 		// Parses each key, value pair into the existing style
 	 	for (var i = 0; i < pairs.length; i++)
 	 	{
@@ -47209,7 +47233,6 @@ mxCellEditor.prototype.isLegacyEditor = function()
 mxCellEditor.prototype.startEditing = function(cell, trigger)
 {
 	this.stopEditing(true);
-	
 	// Creates new textarea instance
 	if (this.textarea == null)
 	{
@@ -47758,7 +47781,7 @@ mxCellRenderer.registerShape = function(key, shape)
 	mxCellRenderer.defaultShapes[key] = shape;
 };
 
-// Adds default shapes into the default shapes array
+// 注册默认类型
 mxCellRenderer.registerShape(mxConstants.SHAPE_RECTANGLE, mxRectangleShape);
 mxCellRenderer.registerShape(mxConstants.SHAPE_ELLIPSE, mxEllipse);
 mxCellRenderer.registerShape(mxConstants.SHAPE_RHOMBUS, mxRhombus);
@@ -47774,6 +47797,7 @@ mxCellRenderer.registerShape(mxConstants.SHAPE_ARROW_CONNECTOR, mxArrowConnector
 mxCellRenderer.registerShape(mxConstants.SHAPE_DOUBLE_ELLIPSE, mxDoubleEllipse);
 mxCellRenderer.registerShape(mxConstants.SHAPE_SWIMLANE, mxSwimlane);
 mxCellRenderer.registerShape(mxConstants.SHAPE_IMAGE, mxImageShape);
+mxCellRenderer.registerShape('primitive', mxImageShape);
 mxCellRenderer.registerShape(mxConstants.SHAPE_LABEL, mxLabel);
 
 /**
@@ -54731,6 +54755,30 @@ mxGraph.prototype.gridSize = 10;
 mxGraph.prototype.gridEnabled = true;
 
 /**
+ * 是否显示控件栏
+ */
+mxGraph.prototype.paletteEnabled = true;
+
+/**
+ * 是否显示控件管理栏
+ */
+mxGraph.prototype.paletteManageEnabled = true;
+
+/**
+ * 是否显示页面管理栏
+ */
+mxGraph.prototype.pageManageEnabled = true;
+
+/**
+ * 是否显示交互、样式栏
+ */
+mxGraph.prototype.formatManageEnabled = true;
+
+/**
+ * 是否显示工具栏
+ */
+mxGraph.prototype.toolbarEnabled = true;
+/**
  * Variable: portsEnabled
  * 
  * Specifies if ports are enabled. This is used in <cellConnected> to update
@@ -56300,8 +56348,8 @@ mxGraph.prototype.startEditingAtCell = function(cell, evt)
 				cell = null;
 			}
 		}
-	
-		if (cell != null)
+		var shapeName = this.getCellStyle(cell).shape;
+		if (cell != null && shapeName !== 'image' && shapeName !== 'select' && shapeName !== 'endarrow')
 		{
 			this.fireEvent(new mxEventObject(mxEvent.START_EDITING,
 					'cell', cell, 'event', evt));
@@ -56578,16 +56626,16 @@ mxGraph.prototype.click = function(me)
  * evt - Mouseevent that represents the doubleclick.
  * cell - Optional <mxCell> under the mousepointer.
  */
-// 双击事件控制
+// 双击事件控制,编辑内容
 mxGraph.prototype.dblClick = function(evt, cell)
 {
 	var mxe = new mxEventObject(mxEvent.DOUBLE_CLICK, 'event', evt, 'cell', cell);
 	this.fireEvent(mxe);
 	var shapeName = this.getCellStyle(cell).shape;
-	// console.log(shapeName)
+	// console.log(this.getCellStyle(cell))
 	// Handles the event if it has not been consumed
 	if (this.isEnabled() && !mxEvent.isConsumed(evt) && !mxe.isConsumed() &&
-		cell != null && this.isCellEditable(cell) && !this.isEditing(cell) && shapeName !== 'image' && shapeName !== 'select')
+		cell != null && this.isCellEditable(cell) && !this.isEditing(cell) && shapeName !== 'image' && shapeName !== 'select' && shapeName !== 'endarrow')
 	{
 		this.startEditingAtCell(cell, evt);
 		mxEvent.consume(evt);
@@ -57150,7 +57198,6 @@ mxGraph.prototype.getCellStyle = function(cell)
 {
 	var stylename = this.model.getStyle(cell);
 	var style = null;
-	
 	// Gets the default style for the cell
 	if (this.model.isEdge(cell))
 	{
@@ -57172,7 +57219,6 @@ mxGraph.prototype.getCellStyle = function(cell)
 	{
 		style = mxGraph.prototype.EMPTY_ARRAY;
 	}
-	
 	return style;
 };
 
@@ -57683,6 +57729,7 @@ mxGraph.prototype.getImageFromBundles = function(key)
  */
 mxGraph.prototype.orderCells = function(back, cells)
 {
+	console.log(back)
 	if (cells == null)
 	{
 		cells = mxUtils.sortCells(this.getSelectionCells(), true);
@@ -57714,6 +57761,7 @@ mxGraph.prototype.orderCells = function(back, cells)
  * cells - Array of <mxCells> whose order should be changed.
  * back - Boolean that specifies if the cells should be moved to back.
  */
+
 mxGraph.prototype.cellsOrdered = function(cells, back)
 {
 	if (cells != null)
@@ -63557,7 +63605,76 @@ mxGraph.prototype.setGridEnabled = function(value)
 {
 	this.gridEnabled = value;
 };
-
+/**
+ * 获取是否显示控件栏
+ */
+mxGraph.prototype.isPaletteEnabled = function()
+{
+	return this.paletteEnabled;
+};
+/**
+ * 设置是否显示控件栏
+ */
+mxGraph.prototype.setPaletteEnabled = function(value)
+{
+	this.paletteEnabled = value;
+};
+/**
+ * 获取是否显示控件管理栏
+ */
+mxGraph.prototype.isPaletteManageEnabled = function()
+{
+	return this.paletteManageEnabled;
+};
+/**
+ * 设置是否显示控件管理栏
+ */
+mxGraph.prototype.setPaletteManageEnabled = function(value)
+{
+	this.paletteManageEnabled = value;
+};
+/**
+ * 获取是否显示页面管理栏
+ */
+mxGraph.prototype.isPageManageEnabled = function()
+{
+	return this.pageManageEnabled;
+};
+/**
+ * 设置是否显示页面管理栏
+ */
+mxGraph.prototype.setPageManageEnabled = function(value)
+{
+	this.pageManageEnabled = value;
+};
+/**
+ * 获取是否显示交互/样式栏
+ */
+mxGraph.prototype.isFormatManageEnabled = function()
+{
+	return this.formatManageEnabled;
+};
+/**
+ * 设置是否显示交互/样式栏
+ */
+mxGraph.prototype.seFormatManageeEnabled = function(value)
+{
+	this.formatManageEnabled = value;
+};
+/**
+ * 获取是否显示工具栏
+ */
+mxGraph.prototype.isToolbarEnabled = function()
+{
+	return this.toolbarEnabled;
+};
+/**
+ * 设置是否显示工具栏
+ */
+mxGraph.prototype.setToolbarEnabled = function(value)
+{
+	this.toolbarEnabled = value;
+};
 /**
  * Function: isPortsEnabled
  *
@@ -69392,7 +69509,7 @@ mxGraphHandler.prototype.scaleGrid = false;
  * 
  * Specifies if the bounding box should allow for rotation. Default is true.
  */
-mxGraphHandler.prototype.rotationEnabled = true;
+mxGraphHandler.prototype.rotationEnabled = false;
 
 /**
  * Function: isEnabled
@@ -75457,6 +75574,7 @@ mxVertexHandler.prototype.init = function()
 	// Adds the rotation handler
 	if (this.isRotationHandleVisible())
 	{
+
 		this.rotationShape = this.createSizer(this.rotationCursor, mxEvent.ROTATION_HANDLE,
 			mxConstants.HANDLE_SIZE + 3, mxConstants.HANDLE_FILLCOLOR);
 		this.sizers.push(this.rotationShape);

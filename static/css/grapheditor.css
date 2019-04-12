@@ -23,10 +23,21 @@
 	position:absolute;
 	cursor:default;
 }
-.geFormatContainer {
+.geRightBarContainer {
+	background: #F2F2F2;
+	display: flex;
+	flex-direction: column;
+}
+.geSidebarContainer.geFormatContainer {
 	overflow-x: hidden !important;
 	overflow-y: auto !important;
 	font-size:12px;
+	flex: 1;
+	position: relative;
+}
+.geSidebarContainer.gePaletteManageContainer {
+	position: relative;
+	flex: 1;
 }
 .geFormatContainer .geToolbarContainer {
 	display: block;
@@ -180,9 +191,12 @@
 .geMenubarContainer .geItem, .geToolbar .geItem {
 	cursor:default;
 	font-size: 14px;
+	display: inline-block;
+	line-height: 20px;
 	padding:6px 15px 6px 15px;
 }
-.geMenubarContainer .geItem:hover {
+
+.geMenubarContainer .geItem:hover, .geMenubarContainer .geItem.activeMenu {
 	color: #fff;
 	background:#3D91F7;
 }
@@ -237,7 +251,7 @@
 }
 
 .geToolbarContainer .geToolbar2 {
-	width: 120px;
+	width: 130px;
 }
 
 .geToolbarContainer .geToolbar3 {
@@ -313,12 +327,13 @@ div.mxWindow .geButton {
 	background-color: #ebebeb;
 }
 .geSidebarContainer {
-	background:#ffffff;
+	background:#F2F2F2;
 	overflow:hidden;
 	position:absolute;
-	border-top:1px solid #e5e5e5;
+	border-top:1px solid #CCCCCC;
+	border-bottom:1px solid #CCCCCC;
 	overflow:auto;
-	margin-top: -2px;
+	margin-top: -1px;
 }
 .geSidebar {
 	padding: 4px;
@@ -327,10 +342,10 @@ div.mxWindow .geButton {
 	border-bottom:1px solid #e5e5e5;
 	overflow:hidden;
 }
-.geSidebarContainer .pageManage {
+.geSidebarContainer #pageManage {
 	/* padding-left: 20px; */
 }
-.geSidebarContainer .pageManage p {
+.geSidebarContainer #pageManage p {
 	line-height: 24px;
 	padding-left: 30px;
 	background-image: url('/static/images/icons/expand.png');
@@ -368,7 +383,21 @@ div.mxWindow .geButton {
 	cursor: pointer;
 	padding: 8px 7px;
 }
-.geSidebarContainer .geSidebar .pageList{
+.geSidebarContainer #primitiveManageTitle {
+	display: none;
+}
+#primitiveManage {
+	position: absolute;
+	width: 400px;
+	height: 500px;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+	border: 1px solid #ccc;
+	z-index: 99999;
+	display: none;
 }
 .geSidebarContainer .geSidebar .pageList li{
 	line-height: 24px;
@@ -458,9 +487,9 @@ div.mxWindow .geButton {
 	background-color: #b3b3b3;
 }
 .geHsplit {
-	cursor:col-resize;
+	/* cursor:col-resize; */
 	background-color:#e5e5e5;
-	background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHBAMAAADdS/HjAAAAGFBMVEUzMzP///9tbW1QUFCKiopBQUF8fHxfX1/IXlmXAAAAHUlEQVQImWMQEGAQFWUQFmYQF2cQEmIQE2MQEQEACy4BF67hpEwAAAAASUVORK5CYII=);
+	/* background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHBAMAAADdS/HjAAAAGFBMVEUzMzP///9tbW1QUFCKiopBQUF8fHxfX1/IXlmXAAAAHUlEQVQImWMQEGAQFWUQFmYQF2cQEmIQE2MQEQEACy4BF67hpEwAAAAASUVORK5CYII=); */
 	background-repeat:no-repeat;
 	background-position:center center;
 }
@@ -789,6 +818,13 @@ div.mxWindow .geButton {
 	content: '缩放';
 	left: 37px;
 }
+.geSprite-fullscreen {
+	background-image: url(./../images/menu/fullscreen.png);	
+}
+.geSprite-fullscreen::after {
+	content: '全屏';
+	left: 0;
+}
 .geSprite-zoomout {
 	background-image: url(./../images/menu/zoomout.png);
 }
@@ -924,11 +960,11 @@ div.mxWindow .geButton {
 	content: '链接';
 	left: 6px;
 }
-.geSprite-share {
+.geSprite-publish {
 	background-image: url(./../images/menu/share.png);
 }
-.geSprite-share::after {
-	content: '分享';
+.geSprite-publish::after {
+	content: '发布';
 	left: 6px;
 }
 .geSprite-actualsize { background-position: 0 0; }

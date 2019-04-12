@@ -82,6 +82,8 @@ EditorUi = function(editor, container, lightbox)
 		this.sidebarContainer.onmousedown = textEditing;
 		this.formatContainer.onselectstart = textEditing;
 		this.formatContainer.onmousedown = textEditing;
+		this.rightBarContainer.onselectstart = textEditing;
+		this.rightBarContainer.onmousedown = textEditing;
 		this.footerContainer.onselectstart = textEditing;
 		this.footerContainer.onmousedown = textEditing;
 		
@@ -292,7 +294,6 @@ EditorUi = function(editor, container, lightbox)
 		cellEditorStartEditing.apply(this, arguments);
 		// 停止编辑内容时更新工具栏
 		// updateToolbar();
-		
 		if (graph.cellEditor.isContentEditing())
 		{
 			var updating = false;
@@ -954,13 +955,13 @@ EditorUi.compactUi = true;
 /**
  * Specifies the size of the split bar.
  */
-EditorUi.prototype.splitSize = (mxClient.IS_TOUCH || mxClient.IS_POINTER) ? 12 : 8;
+EditorUi.prototype.splitSize = (mxClient.IS_TOUCH || mxClient.IS_POINTER) ? 1 : 1;
 
 /**
  * Specifies the height of the menubar. Default is 34.
  */
 // 顶部操作栏高度
-EditorUi.prototype.menubarHeight = 30;
+EditorUi.prototype.menubarHeight = 32;
 
 /**
  * Specifies the width of the format panel should be enabled. Default is true.
@@ -1010,7 +1011,7 @@ EditorUi.prototype.lightboxVerticalDivider = 4;
 /**
  * Specifies if single click on horizontal split should collapse sidebar. Default is false.
  */
-EditorUi.prototype.hsplitClickEnabled = false;
+EditorUi.prototype.hsplitClickEnabled = true;
 
 /**
  * Installs the listeners to update the action states.
@@ -2103,7 +2104,7 @@ EditorUi.prototype.addChromelessClickHandler = function()
 };
 
 /**
- * 
+ * 关闭Format面板
  */
 EditorUi.prototype.toggleFormatPanel = function(forceHide)
 {
@@ -2556,8 +2557,8 @@ EditorUi.prototype.setPageVisible = function(value)
 		graph.container.scrollLeft = graph.view.translate.x * graph.view.scale - tx;
 		graph.container.scrollTop = graph.view.translate.y * graph.view.scale - ty;
 	}
-	
-	this.fireEvent(new mxEventObject('pageViewChanged'));
+	// 会二次触发pageView事件
+	// this.fireEvent(new mxEventObject('pageViewChanged'));
 };
 
 /**
@@ -2793,64 +2794,68 @@ EditorUi.prototype.updateActionStates = function()
 	}
 	
 	// 更新 action 状态
+	var state = graph.view.getState(graph.getSelectionCell());
+	var shapeName = state && state.style.shape;
 	var actions = ['cut', 'copy', 'bold', 'italic', 'underline', 'delete', 'duplicate', 
 	               'editStyle', 'editTooltip', 'editLink', 'backgroundColor', 'borderColor',
 	               'edit', 'toFront', 'toBack', 'lockUnlock', 'solid', 'dashed', 'pasteSize',
 	               'dotted', 'fillColor', 'gradientColor', 'shadow', 'fontColor',
-	               'formattedText', 'rounded', 'toggleRounded', 'sharp', 'strokeColor', 'flipH', 'flipV', 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'];
+	               'formattedText', 'rounded', 'toggleRounded', 'sharp', 'strokeColor', 'turn', 'flipH', 'flipV', 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'];
 	
+	var menuDisabled = ['toFront', 'toBack','flipH', 'flipV', 'turn', 'rotation']
 	for (var i = 0; i < actions.length; i++)
 	{
-		if (actions[i] === 'ungroup' && cells.length === 1 && cells[0]) {
+		if (menuDisabled.indexOf(actions[i]) != -1 && shapeName === 'pagemenu') {
+			this.actions.get(actions[i]).setEnabled(!selected);
+		} else {
+			this.actions.get(actions[i]).setEnabled(selected);
 		}
-		this.actions.get(actions[i]).setEnabled(selected);
 	}
 	this.actions.get('setAsDefaultStyle').setEnabled(graph.getSelectionCount() == 1);
 	this.actions.get('clearWaypoints').setEnabled(!graph.isSelectionEmpty());
 	this.actions.get('copySize').setEnabled(graph.getSelectionCount() == 1);
-	this.actions.get('turn').setEnabled(!graph.isSelectionEmpty());
 	this.actions.get('curved').setEnabled(edgeSelected);
-	this.actions.get('rotation').setEnabled(vertexSelected);
+	this.actions.get('rotation').setEnabled(vertexSelected && shapeName !== 'pagemenu');
 	this.actions.get('wordWrap').setEnabled(vertexSelected);
 	this.actions.get('autosize').setEnabled(vertexSelected);
-   	var oneVertexSelected = vertexSelected && graph.getSelectionCount() == 1;
-	this.actions.get('group').setEnabled(graph.getSelectionCount() > 1 ||
-		(oneVertexSelected && !graph.isContainer(graph.getSelectionCell())));
+	var oneVertexSelected = vertexSelected && graph.getSelectionCount() == 1;
+	this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && shapeName !== 'pagemenu');
 	this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 &&
 		(graph.getModel().getChildCount(graph.getSelectionCell()) > 0 ||
-		(oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) &&  graph.view.getState(cells[0]).style.shape !== "menulist");
-   	this.actions.get('removeFromGroup').setEnabled(oneVertexSelected &&
-   		graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())));
+		(oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) &&  shapeName !== "menulist");
 
-	// Updates menu states
-   	var state = graph.view.getState(graph.getSelectionCell());
-    this.menus.get('navigation').setEnabled(selected || graph.view.currentRoot != null);
-    this.actions.get('collapsible').setEnabled(vertexSelected &&
-    	(graph.isContainer(graph.getSelectionCell()) || graph.model.getChildCount(graph.getSelectionCell()) > 0));
-    this.actions.get('home').setEnabled(graph.view.currentRoot != null);
-    this.actions.get('exitGroup').setEnabled(graph.view.currentRoot != null);
-    this.actions.get('enterGroup').setEnabled(graph.getSelectionCount() == 1 && graph.isValidRoot(graph.getSelectionCell()));
-    var foldable = graph.getSelectionCount() == 1 && graph.isCellFoldable(graph.getSelectionCell());
-    this.actions.get('expand').setEnabled(foldable);
-    this.actions.get('collapse').setEnabled(foldable);
-    this.actions.get('editLink').setEnabled(graph.getSelectionCount() == 1);
-    this.actions.get('openLink').setEnabled(graph.getSelectionCount() == 1 &&
-    	graph.getLinkForCell(graph.getSelectionCell()) != null);
-    this.actions.get('guides').setEnabled(graph.isEnabled());
-    this.actions.get('grid').setEnabled(!this.editor.chromeless || this.editor.editable);
+	this.actions.get('linkReport').setEnabled(graph.getSelectionCount() == 1 && shapeName === "linkTag");
+	this.actions.get('removeFromGroup').setEnabled(oneVertexSelected && graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())));
 
-    var unlocked = graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent());
-    this.menus.get('layout').setEnabled(unlocked);
-    this.menus.get('insert').setEnabled(unlocked);
-    this.menus.get('direction').setEnabled(unlocked && vertexSelected);
-    this.menus.get('align').setEnabled(unlocked && vertexSelected && graph.getSelectionCount() > 1);
-    this.menus.get('distribute').setEnabled(unlocked && vertexSelected && graph.getSelectionCount() > 1);
-    this.actions.get('selectVertices').setEnabled(unlocked);
-    this.actions.get('selectEdges').setEnabled(unlocked);
-    this.actions.get('selectAll').setEnabled(unlocked);
-    this.actions.get('selectNone').setEnabled(unlocked);
-    
-    this.updatePasteActionStates();
+	// 更新菜单状态
+	
+	this.menus.get('navigation').setEnabled(selected || graph.view.currentRoot != null);
+	this.actions.get('collapsible').setEnabled(vertexSelected &&
+		(graph.isContainer(graph.getSelectionCell()) || graph.model.getChildCount(graph.getSelectionCell()) > 0));
+	this.actions.get('home').setEnabled(graph.view.currentRoot != null);
+	this.actions.get('exitGroup').setEnabled(graph.view.currentRoot != null);
+	this.actions.get('enterGroup').setEnabled(graph.getSelectionCount() == 1 && graph.isValidRoot(graph.getSelectionCell()));
+	var foldable = graph.getSelectionCount() == 1 && graph.isCellFoldable(graph.getSelectionCell());
+	this.actions.get('expand').setEnabled(foldable);
+	this.actions.get('collapse').setEnabled(foldable);
+	this.actions.get('editLink').setEnabled(graph.getSelectionCount() == 1);
+	this.actions.get('openLink').setEnabled(graph.getSelectionCount() == 1 &&
+		graph.getLinkForCell(graph.getSelectionCell()) != null);
+	this.actions.get('guides').setEnabled(graph.isEnabled());
+	this.actions.get('grid').setEnabled(!this.editor.chromeless || this.editor.editable);
+
+	var unlocked = graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent());
+	this.menus.get('layout').setEnabled(unlocked);
+	this.menus.get('insert').setEnabled(unlocked);
+	this.menus.get('direction').setEnabled(unlocked && vertexSelected);
+	this.menus.get('align').setEnabled(unlocked && vertexSelected && graph.getSelectionCount() > 1);
+	this.menus.get('distribute').setEnabled(unlocked && vertexSelected && graph.getSelectionCount() > 1);
+	this.actions.get('selectVertices').setEnabled(unlocked);
+	this.actions.get('selectEdges').setEnabled(unlocked);
+	this.actions.get('selectAll').setEnabled(unlocked);
+	this.actions.get('selectNone').setEnabled(unlocked);
+	
+	this.updatePasteActionStates();
 };
 
 /**
@@ -2859,7 +2864,6 @@ EditorUi.prototype.updateActionStates = function()
 EditorUi.prototype.refresh = function(sizeDidChange)
 {
 	sizeDidChange = (sizeDidChange != null) ? sizeDidChange : true;
-	
 	var quirks = mxClient.IS_IE && (document.documentMode == null || document.documentMode == 5);
 	var w = this.container.clientWidth;
 	var h = this.container.clientHeight;
@@ -2920,8 +2924,13 @@ EditorUi.prototype.refresh = function(sizeDidChange)
 	var fw = (this.format != null) ? this.formatWidth : 0;
 	this.sidebarContainer.style.top = tmp + 'px';
 	this.sidebarContainer.style.width = effHsplitPosition + 'px';
-	this.formatContainer.style.top = tmp + 'px';
+	this.rightBarContainer.style.top = tmp + 'px';
+	this.rightBarContainer.style.width = fw + 'px';
+	this.rightBarContainer.style.display = (this.format != null) ? '' : 'none';
+
+	this.formatContainer.style.top = '0px';
 	this.formatContainer.style.width = fw + 'px';
+	// this.formatContainer.style.height = '50%';
 	this.formatContainer.style.display = (this.format != null) ? '' : 'none';
 	
 	this.diagramContainer.style.left = (this.hsplit.parentNode != null) ? (effHsplitPosition + this.splitSize) + 'px' : '0px';
@@ -2935,14 +2944,15 @@ EditorUi.prototype.refresh = function(sizeDidChange)
 	{
 		this.tabContainer.style.left = this.diagramContainer.style.left;
 	}
-	
+	quirks = true;
 	if (quirks)
 	{
 		this.menubarContainer.style.width = w + 'px';
 		this.toolbarContainer.style.width = this.menubarContainer.style.width;
-		var sidebarHeight = Math.max(0, h - this.footerHeight - this.menubarHeight - this.toolbarHeight);
+		var sidebarHeight = Math.max(0, h - this.footerHeight - this.menubarHeight - this.toolbarHeight) + 3;
 		this.sidebarContainer.style.height = (sidebarHeight - sidebarFooterHeight) + 'px';
 		this.formatContainer.style.height = sidebarHeight + 'px';
+		this.rightBarContainer.style.height = sidebarHeight + 'px';
 		this.diagramContainer.style.width = (this.hsplit.parentNode != null) ? Math.max(0, w - effHsplitPosition - this.splitSize - fw) + 'px' : w + 'px';
 		this.footerContainer.style.width = this.menubarContainer.style.width;
 		var diagramHeight = Math.max(0, h - this.footerHeight - this.menubarHeight - this.toolbarHeight);
@@ -2975,6 +2985,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
 		}
 		
 		this.sidebarContainer.style.bottom = (this.footerHeight + sidebarFooterHeight + off) + 'px';
+		this.rightBarContainer.style.bottom = (this.footerHeight + off) + 'px';
 		this.formatContainer.style.bottom = (this.footerHeight + off) + 'px';
 		this.diagramContainer.style.bottom = (this.footerHeight + off + th) + 'px';
 	}
@@ -3002,6 +3013,8 @@ EditorUi.prototype.createDivs = function()
 	this.toolbarContainer = this.createDiv('geToolbarContainer');
 	this.sidebarContainer = this.createDiv('geSidebarContainer');
 	this.formatContainer = this.createDiv('geSidebarContainer geFormatContainer');
+	this.rightBarContainer = this.createDiv('geSidebarContainer geRightBarContainer');
+	this.paletteManageContainer = this.createDiv('geSidebarContainer gePaletteManageContainer');
 	this.diagramContainer = this.createDiv('geDiagramContainer');
 	this.footerContainer = this.createDiv('geFooterContainer');
 	this.hsplit = this.createDiv('geHsplit');
@@ -3016,6 +3029,10 @@ EditorUi.prototype.createDivs = function()
 	this.sidebarContainer.style.left = '0px';
 	this.formatContainer.style.right = '0px';
 	this.formatContainer.style.zIndex = '1';
+	this.rightBarContainer.style.right = '0px';
+	this.rightBarContainer.style.zIndex = '1';
+	this.paletteManageContainer.style.right = '0px';
+	this.paletteManageContainer.style.zIndex = '1';
 	this.diagramContainer.style.right = ((this.format != null) ? this.formatWidth : 0) + 'px';
 	this.footerContainer.style.left = '0px';
 	this.footerContainer.style.right = '0px';
@@ -3080,7 +3097,7 @@ EditorUi.prototype.createUi = function()
 		this.container.appendChild(this.menubarContainer);
 	}
 
-	// Creates the sidebar
+	// 生成左侧边栏
 	this.sidebar = (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer);
 	
 	if (this.sidebar != null)
@@ -3088,15 +3105,22 @@ EditorUi.prototype.createUi = function()
 		this.container.appendChild(this.sidebarContainer);
 	}
 	
-	// Creates the format sidebar
+	// 生成交互/样式侧边栏
 	this.format = (this.editor.chromeless || !this.formatEnabled) ? null : this.createFormat(this.formatContainer);
-	
 	if (this.format != null)
 	{
-		this.container.appendChild(this.formatContainer);
+		this.rightBarContainer.appendChild(this.formatContainer);
+	}
+
+	// 生成控件管理
+	this.paletteManage = (this.editor.chromeless || !this.formatEnabled) ? null : this.createPaletteManage(this.paletteManageContainer);
+	if (this.paletteManage != null)
+	{
+		this.rightBarContainer.appendChild(this.paletteManageContainer);
+		this.container.appendChild(this.rightBarContainer);
 	}
 	
-	// Creates the footer
+	// 生成底部
 	var footer = (this.editor.chromeless) ? null : this.createFooter();
 	
 	if (footer != null)
@@ -3196,6 +3220,14 @@ EditorUi.prototype.createFormat = function(container)
 };
 
 /**
+ * Creates a new sidebar for the given container.
+ */
+EditorUi.prototype.createPaletteManage = function(container)
+{
+	return new PaletteManage(this, container);
+};
+
+/**
  * Creates and returns a new footer.
  */
 EditorUi.prototype.createFooter = function()
@@ -3276,7 +3308,7 @@ EditorUi.prototype.addSplitHandler = function(elt, horizontal, dx, onChange)
 	
 	mxEvent.addListener(elt, 'click', mxUtils.bind(this, function(evt)
 	{
-		if (!ignoreClick && this.hsplitClickEnabled)
+		if (!ignoreClick && !this.hsplitClickEnabled)
 		{
 			var next = (last != null) ? last - dx : 0;
 			last = getValue();
@@ -4130,15 +4162,16 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		keyHandler.bindAction(71, true, 'group'); // Ctrl+G
 		keyHandler.bindAction(77, true, 'editData'); // Ctrl+M
 		keyHandler.bindAction(75, true, 'editProp'); // Ctrl+K
-		keyHandler.bindAction(71, true, 'grid', true); // Ctrl+Shift+G
+		// keyHandler.bindAction(71, true, 'grid', true); // Ctrl+Shift+G
 		keyHandler.bindAction(73, true, 'italic'); // Ctrl+I
 		keyHandler.bindAction(76, true, 'lockUnlock'); // Ctrl+L
-		keyHandler.bindAction(76, true, 'layers', true); // Ctrl+Shift+L
+		keyHandler.bindAction(76, true, 'pageView', true); // Ctrl+Shift+L
 		keyHandler.bindAction(80, true, 'formatPanel', true); // Ctrl+Shift+P
 		keyHandler.bindAction(85, true, 'underline'); // Ctrl+U
 		keyHandler.bindAction(85, true, 'ungroup', true); // Ctrl+Shift+U
 		keyHandler.bindAction(190, true, 'superscript'); // Ctrl+.
 		keyHandler.bindAction(188, true, 'subscript'); // Ctrl+,
+		keyHandler.bindAction(79, true, 'publish'); // Ctrl+O,
 		keyHandler.bindKey(13, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // Enter
 		keyHandler.bindKey(113, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // F2
 	}
@@ -4237,8 +4270,8 @@ EditorUi.prototype.destroy = function()
 	}
 	
 	var c = [this.menubarContainer, this.toolbarContainer, this.sidebarContainer,
-	         this.formatContainer, this.diagramContainer, this.footerContainer,
-	         this.chromelessToolbar, this.hsplit, this.sidebarFooterContainer,
+	         this.formatContainer, this.rightBarContainer, this.paletteManageContainer, this.diagramContainer, this.footerContainer,
+	         this.chromelessToolbar, /*this.hsplit,*/ this.sidebarFooterContainer,
 	         this.layersDialog];
 	
 	for (var i = 0; i < c.length; i++)

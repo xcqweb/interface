@@ -23,7 +23,73 @@ Actions.prototype.init = function()
 	{
 		return Action.prototype.isEnabled.apply(this, arguments) && graph.isEnabled();
 	};
+	// 是否展示左侧菜单
+	function toggleSidebar () {
+		if (ui.sidebarContainer.style.display == 'none' && (graph.isPaletteEnabled() || graph.isPageManageEnabled())) {
+			ui.diagramContainer.style.width = parseFloat(ui.diagramContainer.style.width) - 208 + 'px';
+			ui.diagramContainer.style.left = '209px';
+			ui.hsplit.style.left = '208px';
+		}
+		if (!graph.isPaletteEnabled() && !graph.isPageManageEnabled()) {
+			ui.sidebarContainer.style.display = 'none';
+			ui.diagramContainer.style.left = '0px';
+			ui.hsplit.style.left = '0px';
+			ui.diagramContainer.style.width = parseFloat(ui.diagramContainer.style.width) + 208 + 'px';
+		} else {
+			ui.sidebarContainer.style.display = '';
+		}
+	}
+	// 菜单操作
+	var field = null;
+	// 控件栏
+	field = this.addAction('palette', function () {
+		$("#general").toggle();
+		$("#generalTitle").toggle();
+		graph.setPaletteEnabled(!graph.isPaletteEnabled());
+		toggleSidebar();
+	}, true)		
+	// 设置是否显示状态切换
+	field.setToggleAction(true);
+	field.setSelectedCallback(function() { return graph.isPaletteEnabled(); });
 
+	// 页面列表栏
+	field = this.addAction('pageList', function () {
+		$("#pageManage").toggle();
+		$("#pageManageTitle").toggle();
+		graph.setPageManageEnabled(!graph.isPageManageEnabled());
+		toggleSidebar();
+	}, true)
+	field.setToggleAction(true);
+	field.setSelectedCallback(function() { return graph.isPageManageEnabled(); });
+	
+	// 控件管理栏
+	field = this.addAction('paletteManage', function () {
+		graph.setPaletteManageEnabled(!graph.isPaletteManageEnabled());
+	}, true)
+	field.setToggleAction(true);
+	field.setSelectedCallback(function() { return graph.isPaletteManageEnabled(); });
+
+	// 交互样式
+	field = this.addAction('formatManage', function () {
+		console.log('交互样式')
+		graph.setFormatManageEnabled(!graph.isPageManageEnabled());
+	}, true)
+	field.setToggleAction(true);
+	field.setSelectedCallback(function() { return graph.isFormatManageEnabled(); });
+	
+	// 工具栏
+	field = this.addAction('toolbar', function () {
+		console.log('工具栏')
+		graph.setToolbarEnabled(!graph.isToolbarEnabled());
+	}, true)
+	field.setToggleAction(true);
+	field.setSelectedCallback(function() { return graph.isToolbarEnabled(); });
+	
+	field = null;
+	// 全屏
+	this.addAction('fullScreen', function () {
+		mxUtils.fullScreen()
+	})
 	// 菜单部分排版操作
 	// 文本左对齐
 	this.addAction('leftalign', function () {
@@ -75,11 +141,11 @@ Actions.prototype.init = function()
 		var dlg = new LinkReportDialog(ui, '')
 		ui.showDialog(dlg.container, 410, 200, true, false, null, null, '链接');
 	}, true)
-	// 分享
-	this.addAction('share', function() {
+	// 发布
+	this.addAction('publish', function() {
 		var dlg = new ShareDialog(ui, '')
-		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '分享');
-	}, true)
+		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '发布');
+	}, true, null, 'Ctrl+O')
 	// 配置链接
 	this.addAction('configLink', function () {
 		var dlg = new ConfigLinkDialog(ui, '', '应用', function (val, desc) {
@@ -93,8 +159,7 @@ Actions.prototype.init = function()
 	this.addAction('open...', function()
 	{
 		window.openNew = true;
-		window.openKey = 'open';
-		
+		window.openKey = 'open';		
 		ui.openFile();
 	});
 
@@ -162,7 +227,6 @@ Actions.prototype.init = function()
 	this.addAction('insertMenuAfter', function () {
 		insertMenu('after');
 	})
-
 	this.addAction('import...', function()
 	{
 		window.openNew = false;
@@ -738,32 +802,31 @@ Actions.prototype.init = function()
 	this.addAction('rotation', function()
 	{
 		var value = '0';
-    	var state = graph.getView().getState(graph.getSelectionCell());
-    	
-    	if (state != null)
-    	{
-    		value = state.style[mxConstants.STYLE_ROTATION] || value;
-    	}
-
-		var dlg = new FilenameDialog(ui, value, mxResources.get('apply'), function(newValue)
+		var state = graph.getView().getState(graph.getSelectionCell());
+		
+		if (state != null)
 		{
-			if (newValue != null && newValue.length > 0)
+			value = state.style[mxConstants.STYLE_ROTATION] || value;
+		}
+
+		var dlg = new valueDialog(ui, value, '旋转角度（0-360）：', '应用', function(newValue)
+		{
+			if (newValue != null && !Number.isNaN(newValue))
 			{
 				graph.setCellStyles(mxConstants.STYLE_ROTATION, newValue);
 			}
-		}, mxResources.get('enterValue') + ' (' + mxResources.get('rotation') + ' 0-360)');
+		});
 		
 		ui.showDialog(dlg.container, 375, 80, true, true);
-		dlg.init();
 	});
-	// View actions
+	// 视图
 	this.addAction('resetView', function()
 	{
 		graph.zoomTo(1);
 		ui.resetScrollbars();
 	}, null, null, Editor.ctrlKey + '+H');
-	this.addAction('zoomIn', function(evt) { graph.zoomIn(); }, null, null, Editor.ctrlKey + ' + (Numpad) / Alt+Mousewheel');
-	this.addAction('zoomOut', function(evt) { graph.zoomOut(); }, null, null, Editor.ctrlKey + ' - (Numpad) / Alt+Mousewheel');
+	this.addAction('zoomIn', function(evt) { graph.zoomIn(); }, null, null, Editor.ctrlKey + '+');
+	this.addAction('zoomOut', function(evt) { graph.zoomOut(); }, null, null, Editor.ctrlKey + '-');
 	this.addAction('fitWindow', function() { graph.fit(); }, null, null, Editor.ctrlKey + '+Shift+H');
 	this.addAction('fitPage', mxUtils.bind(this, function()
 	{
@@ -864,7 +927,7 @@ Actions.prototype.init = function()
 	{
 		graph.setGridEnabled(!graph.isGridEnabled());
 		ui.fireEvent(new mxEventObject('gridEnabledChanged'));
-	}, null, null, Editor.ctrlKey + '+Shift+G');
+	}, null, null);
 	action.setToggleAction(true);
 	action.setSelectedCallback(function() { return graph.isGridEnabled(); });
 	action.setEnabled(false);
@@ -906,7 +969,7 @@ Actions.prototype.init = function()
 	action = this.addAction('pageView', mxUtils.bind(this, function()
 	{
 		ui.setPageVisible(!graph.pageVisible);
-	}));
+	}), true, null, 'Ctrl+Shift+L');
 	action.setToggleAction(true);
 	action.setSelectedCallback(function() { return graph.pageVisible; });
 	action = this.addAction('connectionArrows', function()
@@ -1446,6 +1509,7 @@ Actions.prototype.init = function()
 	}), null, null, Editor.ctrlKey + '+Shift+L');
 	action.setToggleAction(true);
 	action.setSelectedCallback(mxUtils.bind(this, function() { return this.layersWindow != null && this.layersWindow.window.isVisible(); }));
+	// 关闭format面板
 	action = this.addAction('formatPanel', mxUtils.bind(this, function()
 	{
 		ui.toggleFormatPanel();
