@@ -3415,6 +3415,7 @@ HoverIcons.prototype.isActive = function()
  */
 HoverIcons.prototype.drag = function(evt, x, y)
 {
+	this.sidebar.hidePageContextMenu();
 	this.graph.popupMenuHandler.hideMenu();
 	this.graph.stopEditing(false);
 
@@ -6579,6 +6580,7 @@ if (typeof mxVertexHandler != 'undefined')
 			// Hides menu when editing starts
 			this.addListener(mxEvent.START_EDITING, function(sender, evt)
 			{
+				this.sidebar.hidePageContextMenu();
 				this.popupMenuHandler.hideMenu();
 			});
 		

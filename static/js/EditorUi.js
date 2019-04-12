@@ -399,10 +399,11 @@ EditorUi = function(editor, container, lightbox)
 		});
 	}
 	
-	// Hides context menu
+	// 隐藏右键菜单
 	mxEvent.addGestureListeners(document, mxUtils.bind(this, function(evt)
 	{
 		graph.popupMenuHandler.hideMenu();
+		// this.sidebar.hidePageContextMenu();
 	}));
 
     // Create handler for key events

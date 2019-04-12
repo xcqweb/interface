@@ -1381,3 +1381,30 @@ button.buttonTag, input.inputTag {
 	background-position: right 9px top 4px;
 	border-top: 1px solid #78c3ef;
 }
+#pageContextMenu {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: none;
+	z-index: 999999;
+	color: #252525;
+	background: #F5F5F5;
+	border: 1px solid #CCCCCC;
+	border-radius: 2px;
+	box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.3);
+}
+#pageContextMenu li {
+	height: 24px;
+	font-size: 14px;
+	padding: 0 15px;
+	cursor: default;
+	line-height: 24px;
+}
+#pageContextMenu li:hover {
+	color: #fff;
+	background-color: #3D91F7;
+}
+#pageContextMenu li:nth-of-type(2), #pageContextMenu li:nth-of-type(4) {
+	margin-bottom: 6px;
+	border-bottom: 1px solid #cccccc;
+}

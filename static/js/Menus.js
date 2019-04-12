@@ -1194,6 +1194,7 @@ Menubar.prototype.addMenuHandler = function(elt, funct)
 		
 		var clickHandler = mxUtils.bind(this, function(evt)
 		{
+			this.editorUi.sidebar.hidePageContextMenu();
 			if (show && elt.enabled == null || elt.enabled)
 			{
 				this.editorUi.editor.graph.popupMenuHandler.hideMenu();
@@ -1202,7 +1203,6 @@ Menubar.prototype.addMenuHandler = function(elt, funct)
 				menu.smartSeparators = true;
 				menu.showDisabled = true;
 				menu.autoExpand = true;
-				
 				// Disables autoexpand and destroys menu when hidden
 				menu.hideMenu = mxUtils.bind(this, function(e)
 				{
@@ -1214,6 +1214,7 @@ Menubar.prototype.addMenuHandler = function(elt, funct)
 
 				var offset = mxUtils.getOffset(elt);
 				menu.popup(offset.x, offset.y + elt.offsetHeight, null, evt);
+				console.log(menu, elt)
 				this.editorUi.setCurrentMenu(menu, elt);
 			}
 			
