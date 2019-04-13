@@ -164,8 +164,9 @@ Actions.prototype.init = function()
 	});
 
 	// 增加页面
-	this.addAction('addPage', function () {
-		var dlg = new addPageDialog(ui, '')
+	this.addAction('addPage', function (type) {
+		type = type || 'add';
+		var dlg = new addPageDialog(ui, type)
 		ui.showDialog(dlg.container, 400, 270, true, false, null, null, '新建页面');
 	})
 	/**

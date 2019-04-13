@@ -1214,7 +1214,6 @@ Menubar.prototype.addMenuHandler = function(elt, funct)
 
 				var offset = mxUtils.getOffset(elt);
 				menu.popup(offset.x, offset.y + elt.offsetHeight, null, evt);
-				console.log(menu, elt)
 				this.editorUi.setCurrentMenu(menu, elt);
 			}
 			

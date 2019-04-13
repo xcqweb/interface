@@ -20,12 +20,12 @@ Format.prototype.currentIndex = 0;
 /**
  * Returns information about the current selection.
  */
-Format.prototype.showCloseButton = true;
+Format.prototype.showCloseButton = false;
 
 /**
  * Background color for inactive tabs.
  */
-Format.prototype.inactiveTabBackgroundColor = '#d7d7d7';
+Format.prototype.inactiveTabBackgroundColor = '#FFFFFF';
 
 /**
  * Background color for inactive tabs.
@@ -348,147 +348,98 @@ Format.prototype.refresh = function()
 	
 	var div = document.createElement('div');
 	div.style.whiteSpace = 'nowrap';
-	div.style.color = 'rgb(112, 112, 112)';
-	div.style.textAlign = 'left';
+	div.style.overflow = 'hidden';
 	div.style.cursor = 'default';
 	
 	var label = document.createElement('div');
-	label.style.border = '1px solid #c0c0c0';
-	label.style.borderWidth = '0px 0px 1px 0px';
+	label.style.border = '1px solid #CCCCCC';
+	label.style.borderWidth = '1px 0px 1px 0px';
 	label.style.textAlign = 'center';
 	label.className = "geTitle";
-	// label.style.fontWeight = 'bold';
+	label.style.padding = 0;
+	label.style.margin = 0;
 	label.style.overflow = 'hidden';
-	label.style.display = (mxClient.IS_QUIRKS) ? 'inline' : 'inline-block';
-	label.style.height = '33px';
+	label.style.float = 'left';
+	label.style.height = '34px';
 	label.style.lineHeight = '32px';
 	label.style.width = '100%';
 	this.container.appendChild(div);
-	
-	if (graph.isSelectionEmpty())
+
+	var containsLabel = this.getSelectionState().containsLabel;
+	var currentLabel = null;
+	var currentPanel = null;
+	var addClickHandler = mxUtils.bind(this, function(elt, panel, index)
 	{
-		mxUtils.write(label, mxResources.get('diagram'));
-		
-		// Adds button to hide the format panel since
-		// people don't seem to find the toolbar button
-		// and the menu item in the format menu
-		if (this.showCloseButton)
+		var clickHandler = mxUtils.bind(this, function(evt)
 		{
-			var img = document.createElement('img');
-			img.setAttribute('border', '0');
-			img.setAttribute('src', Dialog.prototype.closeImage);
-			img.setAttribute('title', mxResources.get('hide'));
-			img.style.position = 'absolute';
-			img.style.display = 'block';
-			img.style.right = '0px';
-			img.style.top = '8px';
-			img.style.cursor = 'pointer';
-			img.style.marginTop = '1px';
-			img.style.marginRight = '17px';
-			img.style.border = '1px solid transparent';
-			img.style.padding = '1px';
-			img.style.opacity = 0.5;
-			label.appendChild(img)
-			
-			mxEvent.addListener(img, 'click', function()
+			if (currentLabel != elt)
 			{
-				ui.actions.get('formatPanel').funct();
-			});
-		}
-		
-		div.appendChild(label);
-		this.panels.push(new DiagramFormatPanel(this, ui, div));
-	}
-	// else if (graph.isEditing())
-	// {
-	// 	mxUtils.write(label, mxResources.get('text'));
-	// 	div.appendChild(label);
-	// 	this.panels.push(new TextFormatPanel(this, ui, div));
-	// }
-	else
-	{
-		var containsLabel = this.getSelectionState().containsLabel;
-		var currentLabel = null;
-		var currentPanel = null;
-		var addClickHandler = mxUtils.bind(this, function(elt, panel, index)
-		{
-			var clickHandler = mxUtils.bind(this, function(evt)
-			{
-				if (currentLabel != elt)
+				if (containsLabel)
 				{
-					if (containsLabel)
-					{
-						this.labelIndex = index;
-					}
-					else
-					{
-						this.currentIndex = index;
-					}
-					
-					if (currentLabel != null)
-					{
-						currentLabel.style.backgroundColor = this.inactiveTabBackgroundColor;
-						currentLabel.style.borderBottomWidth = '1px';
-					}
-	
-					currentLabel = elt;
-					currentLabel.style.backgroundColor = '';
-					currentLabel.style.borderBottomWidth = '0px';
-					
-					if (currentPanel != panel)
-					{
-						if (currentPanel != null)
-						{
-							currentPanel.style.display = 'none';
-						}
-						
-						currentPanel = panel;
-						currentPanel.style.display = '';
-					}
+					this.labelIndex = index;
 				}
-			});
-			
-			mxEvent.addListener(elt, 'click', clickHandler);
-			
-			if (index == ((containsLabel) ? this.labelIndex : this.currentIndex))
-			{
-				// Invokes handler directly as a workaround for no click on DIV in KHTML.
-				clickHandler();
+				else
+				{
+					this.currentIndex = index;
+				}
+				
+				if (currentLabel != null)
+				{
+					currentLabel.style.backgroundColor = '#FAFAFA';	
+					currentLabel.style.color = '#000000';
+				}
+				
+				currentLabel = elt;
+				currentLabel.style.color = '#FFFFFF';
+				currentLabel.style.backgroundColor = '#3D91F7';
+				
+				if (currentPanel != panel)
+				{
+					if (currentPanel != null)
+					{
+						currentPanel.style.display = 'none';
+					}
+					
+					currentPanel = panel;
+					currentPanel.style.display = '';
+				}
 			}
 		});
 		
-		var idx = 0;
-
-		label.style.backgroundColor = this.inactiveTabBackgroundColor;
-		label.style.borderLeftWidth = '1px';
-		label.style.width = '50%';
-		var label2 = label.cloneNode(false);
-
-		// Workaround for ignored background in IE
-		label2.style.backgroundColor = this.inactiveTabBackgroundColor;
+		mxEvent.addListener(elt, 'click', clickHandler);
 		
-		// Arrange
-		mxUtils.write(label, mxResources.get('style'));
-		div.appendChild(label);
+		if (index == ((containsLabel) ? this.labelIndex : this.currentIndex))
+		{
+			// Invokes handler directly as a workaround for no click on DIV in KHTML.
+			clickHandler();
+		}
+	});
+	
+	var idx = 0;
+	label.style.width = '50%';
+	var label2 = label.cloneNode(false);
 
-		var arrangePanel = div.cloneNode(false);
-		arrangePanel.style.display = 'none';
-		this.panels.push(new ArrangePanel(this, ui, arrangePanel));
-		this.container.appendChild(arrangePanel);
+	mxUtils.write(label, mxResources.get('style'));
+	div.appendChild(label);
+	
+	// 样式
+	var arrangePanel = div.cloneNode(false);
+	arrangePanel.style.display = 'none';
+	this.panels.push(new ArrangePanel(this, ui, arrangePanel));
+	this.container.appendChild(arrangePanel);
 
-		// 属性
-		mxUtils.write(label2, mxResources.get('interaction'));
-		div.appendChild(label2);
+	// 属性
+	mxUtils.write(label2, mxResources.get('interaction'));
+	div.appendChild(label2);
 
-		var propertiesPanel = div.cloneNode(false);
-		propertiesPanel.style.display = 'none';
-		this.panels.push(new PropertiesPanel(this, ui, propertiesPanel));
-		this.container.appendChild(propertiesPanel);
-		
-		// addClickHandler(label2, textPanel, idx++);
-		addClickHandler(label, arrangePanel, idx++);
-		addClickHandler(label2, propertiesPanel, idx++);
-	}
+	var propertiesPanel = div.cloneNode(false);
+	propertiesPanel.style.display = 'none';
+	this.panels.push(new PropertiesPanel(this, ui, propertiesPanel));
+	this.container.appendChild(propertiesPanel);
+	
+	// addClickHandler(label2, textPanel, idx++);
+	addClickHandler(label, arrangePanel, idx++);
+	addClickHandler(label2, propertiesPanel, idx++);
 };
 
 /**
@@ -661,7 +612,6 @@ BaseFormatPanel.prototype.createPanel = function()
 {
 	var div = document.createElement('div');
 	div.style.padding = '12px 0px 12px 18px';
-	// div.style.borderBottom = '1px solid #c0c0c0';
 	
 	return div;
 };

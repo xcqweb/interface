@@ -929,8 +929,23 @@ var ImageDialog = function (editorUi, cell) {
 
 /**
  * 新建页面
+ * @param {object} editorUi
+ * @param {string} type 弹窗类型：add-新增；addPrev-上方添加；addNext-下方添加；rename：重命名；copy：复制
  */
-var addPageDialog = function (editorUi) {
+var addPageDialog = function (editorUi, type) {
+	type = type || 'add';
+	var desc = title = '';
+	var pageType = 'normal';
+	var currentPage = editorUi.editor.pages[editorUi.editor.currentPage]
+	console.log(editorUi.editor.pages)
+	// 编辑和复制默认有值
+	if (type == 'rename' || type == 'copy') {
+		title = currentPage.title;
+		desc = currentPage.desc;
+		pageType = currentPage.type;
+	} else if (type == 'addPrev' || type == 'addNext') {
+		pageType = currentPage.type;
+	}
 	var saveContent = editorUi.createDiv('geDialogInfo');
 	// 页面名称
 	var nameTitle = document.createElement('p')
@@ -939,7 +954,7 @@ var addPageDialog = function (editorUi) {
 	saveContent.appendChild(nameTitle)
 	
 	var nameInput = document.createElement('input');
-	nameInput.setAttribute('value', '');
+	nameInput.setAttribute('value', title);
 	nameInput.setAttribute('placeholder', '请输入页面名称');
 	nameInput.className = 'saveFileInput'
 	saveContent.appendChild(nameInput)
@@ -951,8 +966,8 @@ var addPageDialog = function (editorUi) {
 	desTitle.style.color = "#929292";
 	saveContent.appendChild(desTitle)
 	
-	var descInput = document.createElement('textarea');
-	descInput.setAttribute('value', '');
+	var descInput = document.createElement('input');
+	descInput.setAttribute('value', desc);
 	descInput.setAttribute('placeholder', '请输入页面描述');
 	descInput.className = 'saveFileInput'
 	saveContent.appendChild(descInput)
@@ -962,13 +977,17 @@ var addPageDialog = function (editorUi) {
 	isDialog.style.float = "left";
 	isDialog.style.fontSize = "14px";
 	isDialog.style.lineHeight = "16px";
-	isDialog.style.marginTop = "3px";
+	isDialog.style.marginTop = "12px";
+
 	var isDialogFlag = document.createElement('input');
 	isDialogFlag.style.float = "left";
 	isDialogFlag.style.width = "16px";
 	isDialogFlag.style.height = "16px";
 	isDialogFlag.style.marginRight = "6px";
 	isDialogFlag.setAttribute('type', 'checkbox');
+	// 是否是弹窗
+	pageType === 'dialog' && isDialogFlag.setAttribute('checked', true);
+	(['rename', 'addPrev', 'addNext'].indexOf(type) !== -1 ) && isDialogFlag.setAttribute('disabled', true);
 	isDialog.appendChild(isDialogFlag);
 	isDialog.append('弹窗式')
 	saveContent.appendChild(isDialog);
@@ -978,20 +997,36 @@ var addPageDialog = function (editorUi) {
 	{
 		if (!nameInput.value) {
 			mxUtils.alert('请输入页面名称');
+		} else if (editorUi.editor.pages[nameInput.value]) {
+			mxUtils.alert('存在相同名称页面');
 		} else {
 			var page = {
 				title: nameInput.value,
 				desc: descInput.value,
+				xml: currentPage.xml,
 				type: isDialogFlag.checked ? 'dialog' : 'normal'
 			};
-			var _li = document.createElement('li');
-			_li.innerHTML = nameInput.value;
-			if (isDialogFlag.checked) {
-				$("#dialogPages").append(_li);
+			if (type == 'rename') {
+				// 重命名
+				editorUi.editor.setCurrentPage(page.title)
+				delete editorUi.editor.pages[currentPage.title];
+				editorUi.editor.pages[page.title] = page;
+				$(".currentPage").text(page.title);
 			} else {
-				$("#normalPages").append(_li);
-			};
-			editorUi.editor.addPage(page);
+				var _li = document.createElement('li');
+				_li.innerHTML = nameInput.value;
+				// 根据类型插入列表
+				if (type === 'addPrev') {
+					$(_li).insertBefore($('.currentPage'));
+				} else if (type === 'addNext') {
+					$(_li).insertAfter($('.currentPage'));
+				} else if (isDialogFlag.checked) {
+					$("#dialogPages").append(_li);
+				} else {
+					$("#normalPages").append(_li);
+				};
+				editorUi.editor.addPage(page);
+			}
 			editorUi.hideDialog();
 		}
 	});

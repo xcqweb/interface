@@ -6316,13 +6316,6 @@ var mxUtils =
 		}else{
 			console.log('该浏览器不支持全屏，请升级最新版本');
 		}
-
-	//启动全屏
-
-	// fullScreen($('html').get(0)); // 整个网页
-
- //fullScreen(document.getElementById("videoElement")); //某个页面元素
-    console.log(full);
 	},
 	/**
 	 * Function: prompt

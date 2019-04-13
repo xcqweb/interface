@@ -256,32 +256,24 @@ Editor.prototype.filename = null;
 /**
  * 当前选中的页面 
  */
-Editor.prototype.currentPage = {
-	type: "noraml",
-	title: "默认页面"
-};
+Editor.prototype.currentPage = '默认页面';
 /**
  * 设置当前选中的页面类型和名称
  */
-Editor.prototype.setCurrentPage = function (type, title) {
-	this.currentPage = {
-		type: type,
-		title: title
-	}
+Editor.prototype.setCurrentPage = function (title) {
+	this.currentPage = title
 }
 /**
  * 编辑器页面数据
  */
 var defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
 Editor.prototype.pages = {
-	"normal": {
-		"默认页面": {
-			title: '默认页面',
-			desc: '描述内容',
-			xml: defaultXml
-		}
-	},
-	"dialog": { }
+	"默认页面": {
+		title: '默认页面',
+		desc: '描述内容',
+		xml: defaultXml,
+		type: 'normal'
+	}
 };
 
 /**
@@ -290,21 +282,23 @@ Editor.prototype.pages = {
  * @returns {boolean} 添加成功返回true，失败返回false
  */
 Editor.prototype.addPage = function (page) {
-	if (this.pages[page.type][page.title]) {
+	if (this.pages[page.title]) {
 		return false;
 	} else {
 		page.xml = defaultXml;
-		this.pages[page.type][page.title] = page;
+		this.pages[page.title] = page;
 		return true;
 	}
 }
-
+Editor.prototype.deletePage = function (title) {
+	delete this.pages[title]
+}
 /**
  * 更新xml内容
  * @param {string} val 新的页面内容
  */
 Editor.prototype.setXml = function (val) {
-	this.pages[this.currentPage.type][this.currentPage.title].xml = val;
+	this.pages[this.currentPage].xml = val;
 }
 
 Editor.prototype.filedes = null;
