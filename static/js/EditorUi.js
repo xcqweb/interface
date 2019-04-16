@@ -51,7 +51,7 @@ EditorUi = function(editor, container, lightbox)
 		};
 	}
 	
-    // Creates the user interface
+	// Creates the user interface
 	this.actions = new Actions(this);
 	this.menus = this.createMenus();
 	this.createDivs();
@@ -972,17 +972,20 @@ EditorUi.prototype.formatEnabled = true;
 /**
  * Specifies the width of the format panel. Default is 240.
  */
-EditorUi.prototype.formatWidth = 240;
-
+EditorUi.prototype.rightWidth = 247;
+/**
+ * 左侧栏位的宽度
+ */
+EditorUi.prototype.sidebarWidth = 208;
 /**
  * 工具栏的高度
  */
 EditorUi.prototype.toolbarHeight = 72;
 
 /**
- * Specifies the height of the footer. Default is 28.
+ * 底部栏的高度
  */
-EditorUi.prototype.footerHeight = 28;
+EditorUi.prototype.footerHeight = 0;
 
 /**
  * Specifies the height of the optional sidebarFooterContainer. Default is 34.
@@ -2103,14 +2106,33 @@ EditorUi.prototype.addChromelessClickHandler = function()
 
 	this.editor.graph.addClickHandler(hl);
 };
-
 /**
- * 关闭Format面板
+ * 关闭工具栏面板
  */
-EditorUi.prototype.toggleFormatPanel = function(forceHide)
+EditorUi.prototype.toggleToolbarPanel = function(forceHide)
 {
-	this.formatWidth = (forceHide || this.formatWidth > 0) ? 0 : 240;
-	this.formatContainer.style.display = (forceHide || this.formatWidth > 0) ? '' : 'none';
+	this.toolbarHeight = (forceHide || this.toolbarHeight > 0) ? 0 : 72;
+	this.toolbarContainer.style.display = (forceHide || this.toolbarHeight > 0) ? '' : 'none';
+	this.refresh();
+	this.fireEvent(new mxEventObject('toolbarHeightChanged'));
+};
+/**
+ * 关闭左侧边面板
+ */
+EditorUi.prototype.toggleSidebarPanel = function(forceHide)
+{
+	this.sidebarWidth = forceHide ? 0 : 208;
+	this.sidebarContainer.style.display = forceHide ? 'none' : '';
+	this.refresh();
+	this.fireEvent(new mxEventObject('sidebarWidthChanged'));
+};
+/**
+ * 关闭右侧面板
+ */
+EditorUi.prototype.toggleRightPanel = function(forceHide)
+{
+	this.rightWidth = forceHide ? 0 : 240;
+	this.formatContainer.style.display = forceHide ? 'none' : '';
 	this.refresh();
 	this.format.refresh();
 	this.fireEvent(new mxEventObject('formatWidthChanged'));
@@ -2860,7 +2882,7 @@ EditorUi.prototype.updateActionStates = function()
 };
 
 /**
- * Refreshes the viewport.
+ * 刷新视图.
  */
 EditorUi.prototype.refresh = function(sizeDidChange)
 {
@@ -2889,8 +2911,6 @@ EditorUi.prototype.refresh = function(sizeDidChange)
 		}
 	}
 	
-	var effHsplitPosition = Math.max(0, Math.min(this.hsplitPosition, w - this.splitSize - 20));
-
 	var tmp = 0;
 	
 	if (this.menubar != null)
@@ -2910,36 +2930,24 @@ EditorUi.prototype.refresh = function(sizeDidChange)
 	{
 		tmp += 0;
 	}
-	
-	var sidebarFooterHeight = 0;
-	
-	if (this.sidebarFooterContainer != null)
-	{
-		var bottom = this.footerHeight + off;
-		sidebarFooterHeight = Math.max(0, Math.min(h - tmp - bottom, this.sidebarFooterHeight));
-		this.sidebarFooterContainer.style.width = effHsplitPosition + 'px';
-		this.sidebarFooterContainer.style.height = sidebarFooterHeight + 'px';
-		this.sidebarFooterContainer.style.bottom = bottom + 'px';
-	}
-	
-	var fw = (this.format != null) ? this.formatWidth : 0;
+
+	var fw = (this.format != null) ? this.rightWidth : 0;
 	this.sidebarContainer.style.top = tmp + 'px';
-	this.sidebarContainer.style.width = effHsplitPosition + 'px';
+	this.sidebarContainer.style.width = this.sidebarWidth + 'px';
 	this.rightBarContainer.style.top = tmp + 'px';
 	this.rightBarContainer.style.width = fw + 'px';
-	this.rightBarContainer.style.display = (this.format != null) ? '' : 'none';
+	this.rightBarContainer.style.display = (this.rightWidth != 0) ? '' : 'none';
 
 	this.formatContainer.style.top = '0px';
 	this.formatContainer.style.width = fw + 'px';
 	// this.formatContainer.style.height = '50%';
 	this.formatContainer.style.display = (this.format != null) ? '' : 'none';
 	
-	this.diagramContainer.style.left = (this.hsplit.parentNode != null) ? (effHsplitPosition + this.splitSize) + 'px' : '0px';
+	this.diagramContainer.style.left = (this.hsplit.parentNode != null) ? (this.sidebarWidth + this.splitSize) + 'px' : '0px';
 	this.diagramContainer.style.top = this.sidebarContainer.style.top;
-	this.footerContainer.style.height = this.footerHeight + 'px';
 	this.hsplit.style.top = this.sidebarContainer.style.top;
 	this.hsplit.style.bottom = (this.footerHeight + off) + 'px';
-	this.hsplit.style.left = effHsplitPosition + 'px';
+	this.hsplit.style.left = this.sidebarWidth + 'px';
 	
 	if (this.tabContainer != null)
 	{
@@ -2951,11 +2959,10 @@ EditorUi.prototype.refresh = function(sizeDidChange)
 		this.menubarContainer.style.width = w + 'px';
 		this.toolbarContainer.style.width = this.menubarContainer.style.width;
 		var sidebarHeight = Math.max(0, h - this.footerHeight - this.menubarHeight - this.toolbarHeight) + 3;
-		this.sidebarContainer.style.height = (sidebarHeight - sidebarFooterHeight) + 'px';
+		this.sidebarContainer.style.height = sidebarHeight  + 'px';
 		this.formatContainer.style.height = sidebarHeight + 'px';
 		this.rightBarContainer.style.height = sidebarHeight + 'px';
-		this.diagramContainer.style.width = (this.hsplit.parentNode != null) ? Math.max(0, w - effHsplitPosition - this.splitSize - fw) + 'px' : w + 'px';
-		this.footerContainer.style.width = this.menubarContainer.style.width;
+		this.diagramContainer.style.width = (this.hsplit.parentNode != null) ? Math.max(0, w - this.sidebarWidth - this.splitSize - fw) + 'px' : w + 'px';
 		var diagramHeight = Math.max(0, h - this.footerHeight - this.menubarHeight - this.toolbarHeight);
 		
 		if (this.tabContainer != null)
@@ -2985,7 +2992,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
 			th = this.tabContainer.clientHeight;
 		}
 		
-		this.sidebarContainer.style.bottom = (this.footerHeight + sidebarFooterHeight + off) + 'px';
+		this.sidebarContainer.style.bottom = (this.footerHeight + off) + 'px';
 		this.rightBarContainer.style.bottom = (this.footerHeight + off) + 'px';
 		this.formatContainer.style.bottom = (this.footerHeight + off) + 'px';
 		this.diagramContainer.style.bottom = (this.footerHeight + off + th) + 'px';
@@ -3006,7 +3013,7 @@ EditorUi.prototype.createTabContainer = function()
 };
 
 /**
- * Creates the required containers.
+ * 生成需要的内容
  */
 EditorUi.prototype.createDivs = function()
 {
@@ -3021,7 +3028,7 @@ EditorUi.prototype.createDivs = function()
 	this.hsplit = this.createDiv('geHsplit');
 	this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));
 
-	// Sets static style for containers
+	// 设置样式
 	this.menubarContainer.style.top = '0px';
 	this.menubarContainer.style.left = '0px';
 	this.menubarContainer.style.right = '0px';
@@ -3034,7 +3041,7 @@ EditorUi.prototype.createDivs = function()
 	this.rightBarContainer.style.zIndex = '1';
 	this.paletteManageContainer.style.right = '0px';
 	this.paletteManageContainer.style.zIndex = '1';
-	this.diagramContainer.style.right = ((this.format != null) ? this.formatWidth : 0) + 'px';
+	this.diagramContainer.style.right = ((this.format != null) ? this.rightWidth : 0) + 'px';
 	this.footerContainer.style.left = '0px';
 	this.footerContainer.style.right = '0px';
 	this.footerContainer.style.bottom = '0px';
@@ -3126,8 +3133,8 @@ EditorUi.prototype.createUi = function()
 	
 	if (footer != null)
 	{
-		this.footerContainer.appendChild(footer);
-		this.container.appendChild(this.footerContainer);
+		// this.footerContainer.appendChild(footer);
+		// this.container.appendChild(this.footerContainer);
 	}
 
 	if (this.sidebar != null && this.sidebarFooterContainer)
@@ -4167,7 +4174,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		keyHandler.bindAction(73, true, 'italic'); // Ctrl+I
 		keyHandler.bindAction(76, true, 'lockUnlock'); // Ctrl+L
 		keyHandler.bindAction(76, true, 'pageView', true); // Ctrl+Shift+L
-		keyHandler.bindAction(80, true, 'formatPanel', true); // Ctrl+Shift+P
+		// keyHandler.bindAction(80, true, 'formatPanel', true); // Ctrl+Shift+P
 		keyHandler.bindAction(85, true, 'underline'); // Ctrl+U
 		keyHandler.bindAction(85, true, 'ungroup', true); // Ctrl+Shift+U
 		keyHandler.bindAction(190, true, 'superscript'); // Ctrl+.
@@ -4271,7 +4278,7 @@ EditorUi.prototype.destroy = function()
 	}
 	
 	var c = [this.menubarContainer, this.toolbarContainer, this.sidebarContainer,
-	         this.formatContainer, this.rightBarContainer, this.paletteManageContainer, this.diagramContainer, this.footerContainer,
+	         this.formatContainer, this.rightBarContainer, this.paletteManageContainer, this.diagramContainer, /*this.footerContainer*/,
 	         this.chromelessToolbar, /*this.hsplit,*/ this.sidebarFooterContainer,
 	         this.layersDialog];
 	

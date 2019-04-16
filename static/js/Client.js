@@ -63650,7 +63650,7 @@ mxGraph.prototype.isFormatManageEnabled = function()
 /**
  * 设置是否显示交互/样式栏
  */
-mxGraph.prototype.seFormatManageeEnabled = function(value)
+mxGraph.prototype.setFormatManageEnabled = function(value)
 {
 	this.formatManageEnabled = value;
 };

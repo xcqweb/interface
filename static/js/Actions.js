@@ -26,17 +26,21 @@ Actions.prototype.init = function()
 	// 是否展示左侧菜单
 	function toggleSidebar () {
 		if (ui.sidebarContainer.style.display == 'none' && (graph.isPaletteEnabled() || graph.isPageManageEnabled())) {
-			ui.diagramContainer.style.width = parseFloat(ui.diagramContainer.style.width) - 208 + 'px';
-			ui.diagramContainer.style.left = '209px';
-			ui.hsplit.style.left = '208px';
+			ui.toggleSidebarPanel(false);
 		}
 		if (!graph.isPaletteEnabled() && !graph.isPageManageEnabled()) {
-			ui.sidebarContainer.style.display = 'none';
-			ui.diagramContainer.style.left = '0px';
-			ui.hsplit.style.left = '0px';
-			ui.diagramContainer.style.width = parseFloat(ui.diagramContainer.style.width) + 208 + 'px';
+			ui.toggleSidebarPanel(true);
 		} else {
-			ui.sidebarContainer.style.display = '';
+			ui.toggleSidebarPanel(false);
+		}
+	}
+	// 是否展示右侧菜单
+	function toggleRightSide () {
+		console.log(ui.rightBarContainer.style.display)
+		if (!graph.isPaletteManageEnabled() && !graph.isFormatManageEnabled()) {
+			ui.toggleRightPanel(true);
+		} else if (ui.rightBarContainer.style.display == 'none') {
+			ui.toggleRightPanel(false);
 		}
 	}
 	// 菜单操作
@@ -64,23 +68,26 @@ Actions.prototype.init = function()
 	
 	// 控件管理栏
 	field = this.addAction('paletteManage', function () {
+		$(".gePaletteManageContainer").toggle();
 		graph.setPaletteManageEnabled(!graph.isPaletteManageEnabled());
+		toggleRightSide();
 	}, true)
 	field.setToggleAction(true);
 	field.setSelectedCallback(function() { return graph.isPaletteManageEnabled(); });
 
 	// 交互样式
 	field = this.addAction('formatManage', function () {
-		console.log('交互样式')
-		graph.setFormatManageEnabled(!graph.isPageManageEnabled());
+		$(".geFormatContainer").toggle();
+		graph.setFormatManageEnabled(!graph.isFormatManageEnabled());
+		toggleRightSide();
 	}, true)
 	field.setToggleAction(true);
 	field.setSelectedCallback(function() { return graph.isFormatManageEnabled(); });
 	
 	// 工具栏
 	field = this.addAction('toolbar', function () {
-		console.log('工具栏')
 		graph.setToolbarEnabled(!graph.isToolbarEnabled());
+		ui.toggleToolbarPanel(!graph.isToolbarEnabled())
 	}, true)
 	field.setToggleAction(true);
 	field.setSelectedCallback(function() { return graph.isToolbarEnabled(); });
@@ -1513,7 +1520,7 @@ Actions.prototype.init = function()
 	// 关闭format面板
 	action = this.addAction('formatPanel', mxUtils.bind(this, function()
 	{
-		ui.toggleFormatPanel();
+		ui.toggleRightPanel();
 	}), null, null, Editor.ctrlKey + '+Shift+P');
 	action.setToggleAction(true);
 	action.setSelectedCallback(mxUtils.bind(this, function() { return ui.formatWidth > 0; }));
