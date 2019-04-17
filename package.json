@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "babel src/ --out-dir dist/ --copy-files && babel src/static/js/ --out-dir dist/static/js/"
+    "build": "babel src/ --out-dir interface/ --copy-files && babel src/static/js/ --out-dir interface/static/js/"
   },
   "repository": {
     "type": "git",
