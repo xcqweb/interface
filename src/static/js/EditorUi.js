@@ -4073,7 +4073,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		return keyHandlerGetFunction.apply(this, arguments);
 	};
 
-	// Binds keystrokes to actions
+	// 给事件绑定keycode
 	keyHandler.bindAction = mxUtils.bind(this, function(code, control, key, shift)
 	{
 		var action = this.actions.get(key);

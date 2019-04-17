@@ -1,0 +1,71 @@
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=5,IE=9" ><![endif]-->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>格创东智页面工具</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<link rel="stylesheet" type="text/css" href="./static/css/grapheditor.css">
+	<!-- 初始化 -->
+	<script type="text/javascript" src="./static/js/Init.js"></script>
+	<!-- 外部库 -->
+	<script type="text/javascript" src="./lib/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="./lib/deflate/pako.min.js"></script>
+	<script type="text/javascript" src="./lib/deflate/base64.js"></script>
+	<script type="text/javascript" src="./lib/jscolor/jscolor.js"></script>
+	<script type="text/javascript" src="./lib/sanitizer/sanitizer.min.js"></script>
+	<!-- mxGraph的基础 -->
+	<script type="text/javascript" src="./static/js/Client.js"></script>
+	<script type="text/javascript" src="./static/js/EditorUi.js"></script>
+	<script type="text/javascript" src="./static/js/Editor.js"></script>
+	<script type="text/javascript" src="./static/js/Sidebar.js"></script>
+	<script type="text/javascript" src="./static/js/Graph.js"></script>
+	<script type="text/javascript" src="./static/js/Format.js"></script>
+	<script type="text/javascript" src="./static/js/Shapes.js"></script>
+	<script type="text/javascript" src="./static/js/Actions.js"></script>
+	<script type="text/javascript" src="./static/js/Menus.js"></script>
+	<script type="text/javascript" src="./static/js/Toolbar.js"></script>
+	<script type="text/javascript" src="./static/js/Dialogs.js"></script>
+</head>
+<body>
+	<div  class="geEditor"></div>
+	<script type="text/javascript">
+		// 加载组件
+		(function () {
+			// 保存
+			EditorUi.prototype.save = function (name, fields) {
+				console.log('name', fields)
+				var xml = mxUtils.getXml(this.editor.getGraphXml());
+				this.editor.setXml(xml)
+				console.log('pages', this.editor.pages)
+				this.editor.setFilename(name)
+				this.editor.setFiledes(fields)
+				console.log('filename', this.editor.filename)
+			}
+
+			// 初始化工具
+			mxUtils.getAll(['/static/resources/grapheditor.txt', '/static/default.xml'], function (xhr) {
+				mxResources.parse(xhr[0].getText());
+				// 默认配置
+				var themes = new Object();
+				themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement();
+
+				// 正常实例化
+				var editorUi = new EditorUi(new Editor(false, themes));
+				// 编辑
+				if (false) {
+					// 有内容
+					var xml = '<mxGraphModel dx="1315" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/><mxCell id="2" value="" style="shape=menulist;group" vertex="1" parent="1"><mxGeometry x="-60" y="10" width="360" height="40" as="geometry"/></mxCell><mxCell id="3" value="菜单1" style="shape=pagemenu;html=1;whiteSpace=wrap;" vertex="1" parent="2"><mxGeometry width="120" height="40" as="geometry"/></mxCell><mxCell id="4" value="菜单2" style="shape=pagemenu;html=1;whiteSpace=wrap;" vertex="1" parent="2"><mxGeometry x="120" width="120" height="40" as="geometry"/></mxCell><mxCell id="5" value="菜单3" style="shape=pagemenu;html=1;whiteSpace=wrap;" vertex="1" parent="2"><mxGeometry x="240" width="120" height="40" as="geometry"/></mxCell></root></mxGraphModel>'
+					// 默认
+					var xml1 = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>'
+					var doc = mxUtils.parseXml(xml1);
+					editorUi.editor.setGraphXml(doc.documentElement);
+				}
+				// 默认选中
+				$("#normalPages li").eq(0).click();
+			})
+		})();
+
+	</script>
+</body>
+</html>
