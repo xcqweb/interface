@@ -997,13 +997,14 @@ var addPageDialog = function (editorUi, type) {
 	var btnContent = editorUi.createDiv('btnContent');;
 	var genericBtn = mxUtils.button('应用', function()
 	{
-		if (!nameInput.value) {
+		var titleText = nameInput.value.trim();
+		if (!titleText) {
 			mxUtils.alert('请输入页面名称');
-		} else if (editorUi.editor.pages[nameInput.value]) {
+		} else if (editorUi.editor.pages[titleText]) {
 			mxUtils.alert('存在相同名称页面');
 		} else {
 			var page = {
-				title: nameInput.value,
+				title: titleText,
 				desc: descInput.value,
 				xml: currentPage.xml,
 				type: isDialogFlag.checked ? 'dialog' : 'normal'
@@ -1016,7 +1017,7 @@ var addPageDialog = function (editorUi, type) {
 				$(".currentPage").text(page.title);
 			} else {
 				var _li = document.createElement('li');
-				_li.innerHTML = nameInput.value;
+				_li.innerHTML = titleText;
 				// 根据类型插入列表
 				if (type === 'addPrev') {
 					$(_li).insertBefore($('.currentPage'));

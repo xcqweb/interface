@@ -219,11 +219,10 @@ td.mxPopupMenuIcon {
 	box-sizing:border-box ;	
 }
 .geUnitSelect {
-	height: 30px;
-	padding-bottom: 8px;
+	height: 24px;
 }
 .geUnitSelect select {
-	height: 30px;
+	height: 24px;
 	border: 1px solid #dce5e8;
 	border-radius: 4px;
 	outline: none;

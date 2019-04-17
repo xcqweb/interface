@@ -417,8 +417,6 @@ Format.prototype.refresh = function()
 	label.style.width = '50%';
 	var label2 = label.cloneNode(false);
 
-	mxUtils.write(label, mxResources.get('style'));
-	div.appendChild(label);
 	// tab标签页
 	// 交互
 	mxUtils.write(label2, mxResources.get('interaction'));
@@ -427,11 +425,13 @@ Format.prototype.refresh = function()
 	var propertiesPanel = div.cloneNode(false);
 	propertiesPanel.className = 'formatPannel'
 	propertiesPanel.style.display = 'none';
-	propertiesPanel.style.paddingLeft = '10px';
-	this.panels.push(new PropertiesPanel(this, ui, propertiesPanel));
+	this.panels.push(new ActionsPanel(this, ui, propertiesPanel));
 	this.container.appendChild(propertiesPanel);
-
+	
 	// 样式
+	mxUtils.write(label, mxResources.get('style'));
+	div.appendChild(label);
+	
 	var arrangePanel = div.cloneNode(false);
 	arrangePanel.className = 'formatPannel'
 	arrangePanel.style.display = 'none';
@@ -439,8 +439,8 @@ Format.prototype.refresh = function()
 	this.panels.push(new ArrangePanel(this, ui, arrangePanel));
 	this.container.appendChild(arrangePanel);
 
-	addClickHandler(label, arrangePanel, idx++);
 	addClickHandler(label2, propertiesPanel, idx++);
+	addClickHandler(label, arrangePanel, idx++);
 };
 
 /**
@@ -1195,7 +1195,7 @@ BaseFormatPanel.prototype.addUnitInput = function(container, unit, left, width, 
 };
 
 /**
- * 
+ * 添加文本输入框
  */
 BaseFormatPanel.prototype.addTextInput = function(container, unit, right, width, update, step, marginTop, disableFocus)
 {
@@ -1216,13 +1216,13 @@ BaseFormatPanel.prototype.addTextInput = function(container, unit, right, width,
  */
 BaseFormatPanel.prototype.addUnitSelect = function name(container, width, list, selectOp, desc) 
 {
-	var oDiv = document.createElement('div');
-	oDiv.className = "geUnitSelect";
-	var oSpan = document.createElement('span');
-	oSpan.style.paddingRight = "5px";
-	oSpan.innerHTML = desc + ':';
+	// 添加抬头
+	desc && container.appendChild(this.createTitle(desc));
+	// 下拉框
 	var dirSelect = document.createElement('select');
 	dirSelect.style.width = width + 'px';
+	dirSelect.style.float = 'unset';
+	dirSelect.className = "formatMiddleSelect";
 
 	var dirs = list;
 	for (var i = 0; i < dirs.length; i++)
@@ -1236,9 +1236,7 @@ BaseFormatPanel.prototype.addUnitSelect = function name(container, width, list, 
 		mxUtils.write(dirOption, dirs[i]);
 		dirSelect.appendChild(dirOption);
 	}
-	oDiv.appendChild(oSpan);
-	oDiv.appendChild(dirSelect);
-	container.appendChild(oDiv);
+	container.appendChild(dirSelect);
 	return dirSelect;
 }
 
@@ -3710,22 +3708,27 @@ DiagramFormatPanel.prototype.destroy = function()
 
 
 /**
- * Adds the label menu items to the given menu and parent.
+ * 交互面板
  */
-PropertiesPanel = function(format, editorUi, container)
+ActionsPanel = function(format, editorUi, container)
 {
 	BaseFormatPanel.call(this, format, editorUi, container);
-	this.init();
+	this.init(container);
 };
+/**
+ * 继承基础面板
+ */
+mxUtils.extend(ActionsPanel, BaseFormatPanel);
 
-mxUtils.extend(PropertiesPanel, BaseFormatPanel);
-
-PropertiesPanel.prototype.init = function () {
+ActionsPanel.prototype.init = function (container) {
 	var ui = this.editorUi;
 	var editor = ui.editor;
 	var graph = editor.graph;
 	var cell = graph.getSelectionCell();
 	this.modelInfo = graph.getModel().getValue(cell);
+	// 节点的信息
+	var state = this.editorUi.editor.graph.view.getState(cell);
+
 	if (!mxUtils.isNode(this.modelInfo))
 	{
 		var doc = mxUtils.createXmlDocument();
@@ -3734,45 +3737,60 @@ PropertiesPanel.prototype.init = function () {
 		this.modelInfo = obj;
 	}
 
-	this.addVariable(this.container);
 	// this.addConditions(this.container);
 	// this.addAlarm(this.container);
 	// 编辑数据
 	if (graph.getSelectionCount() == 1)
 	{
-		var btn;
-		var oDiv = document.createElement('div');
-		oDiv.style.textAlign = "center";
-		// 编辑数据
-		// btn = mxUtils.button(mxResources.get('editData'), mxUtils.bind(this, function(evt)
-		// {
-		// 	this.editorUi.actions.get('editData').funct();
-		// }));
+		console.log(state)
+		// 公共交互
+		var addAction = document.createElement('button')
+		addAction.className = 'formatSmallBtn';
+		addAction.innerText = '+ 交互';
+		this.container.appendChild(addAction);
+		// 默认一个交互操作
+		this.rectangleActions()
 		
-		// btn.setAttribute('title', mxResources.get('editData') + ' (' + this.editorUi.actions.get('editData').shortcut + ')');
-		// btn.style.width = '100px';
-		// oDiv.appendChild(btn);
-
-		// 编辑属性
-		btn = mxUtils.button(mxResources.get('editProp'), mxUtils.bind(this, function(evt)
-		{
-			this.editorUi.actions.get('editProp').funct();
-		}));
-		
-		btn.setAttribute('title', mxResources.get('editProp') + ' (' + this.editorUi.actions.get('editProp').shortcut + ')');
-		
-		btn.style.width = '100px';
-		// btn.style.marginLeft = "10px";
-		oDiv.appendChild(btn);
-		this.container.appendChild(oDiv);
+		mxEvent.addListener(addAction, 'click', function (evt) {
+			this.rectangleActions()
+		}.bind(this))
 	}
 }
 
+/**
+ * 矩形交互
+ */
+ActionsPanel.prototype.rectangleActions = function () {
+	this.createOperateBox(this.container);
+	this.createInfoBox(this.container, '• 点击菜单1首页--显示首页页面，首页字体白，蓝色填充')
+}
 
 /**
- * 设置选择事件、选择动作 
+ * 创建描述信息栏
  */
-PropertiesPanel.prototype.addVariable = function(container)
+ActionsPanel.prototype.createInfoBox = function (container, desc = '') {
+	// 描述内容
+	var infoTxt = document.createElement('p');
+	infoTxt.className = 'infoTxt';
+	infoTxt.innerHTML = desc;
+	container.appendChild(infoTxt);
+	// 编辑图标
+	var editIcon = this.editIcon();
+	infoTxt.appendChild(editIcon);
+}
+/**
+ * 编辑图标
+ */
+ActionsPanel.prototype.editIcon = function () {
+	var editIcon = document.createElement('img');
+	editIcon.className = 'editIcon';
+	editIcon.setAttribute('src', '/static/images/icons/edit.png')
+	return editIcon;
+}
+/**
+ * 创建选择事件、选择动作操作栏 
+ */
+ActionsPanel.prototype.createOperateBox = function(container)
 {
 	var ui = this.editorUi;
 	var graph = ui.editor.graph;
@@ -3796,12 +3814,51 @@ PropertiesPanel.prototype.addVariable = function(container)
 		var divpanel = this.createPanel();
 		divpanel.style.paddingBottom = '12px';
 		
+		var hr = document.createElement('hr')
+		divpanel.appendChild(hr)
 		// 新增下拉框
 		// 选择事件
-		var mouseEvent = this.addUnitSelect(divpanel, 150, ["请选择", "鼠标移入", "鼠标移出", "点击"], temp.mouseEvent, mxResources.get('chooseEvent'));
+		var mouseEvent = this.addUnitSelect(divpanel, 218, ["选择", "鼠标移入", "鼠标移出", "点击", "双击", "选中", "未选中"], temp.mouseEvent, mxResources.get('chooseEvent'));
 		// 选择动作
-		var effectAction = this.addUnitSelect(divpanel, 150, ["请选择", "打开", "显示浮窗"], temp.effectAction, mxResources.get('chooseAction'));
-	
+		var effectAction = this.addUnitSelect(divpanel, 218, ["选择", "显示", "隐藏", "打开", "关闭"], temp.effectAction, mxResources.get('chooseAction'));
+		// 内部页面、控件链接
+		var innerChoose = document.createElement('div');
+		innerChoose.style.margin = '12px 0';
+		// 单选按钮
+		var innerRadio = document.createElement('input');
+		innerRadio.setAttribute('type', 'radio');
+		innerRadio.setAttribute('checked', true);
+		innerRadio.setAttribute('name', 'radioType');
+		innerChoose.appendChild(innerRadio);
+		// 下拉列表
+		var innerType = this.addUnitSelect(innerChoose, 198, ["页面", '控件'], '', '');
+		innerType.style.marginLeft = '6px';
+		divpanel.appendChild(innerChoose);
+		// 页面或者控件列表
+		var pageList = document.createElement('ul');
+		pageList.className = 'pageList';
+		var mockData = ['首页', '设备列表', '曲线图', '告警中心', '浮窗']
+		pageList.innerHTML = `
+			${
+				mockData.map((val) => (`<li>${val}</li>`)).join('')
+			}
+		`
+		divpanel.appendChild(pageList);
+		// 外部链接
+		var outChoose = document.createElement('div');
+		outChoose.style.margin = '12px 0';
+		// 单选按钮
+		var outRadio = document.createElement('input');
+		outRadio.setAttribute('type', 'radio');
+		outRadio.setAttribute('name', 'radioType');
+		outChoose.appendChild(outRadio);
+		// 名称
+		var _title = document.createElement('span');
+		_title.innerText = '外部链接';
+		_title.style.marginLeft = '6px';
+		outChoose.appendChild(_title);
+
+		divpanel.appendChild(outChoose);
 		if (!mxUtils.isNode(modelInfo))
 		{
 			var doc = mxUtils.createXmlDocument();
@@ -3827,7 +3884,7 @@ PropertiesPanel.prototype.addVariable = function(container)
 /**
  * 设置条件
  */
-PropertiesPanel.prototype.addConditions = function (container) {
+ActionsPanel.prototype.addConditions = function (container) {
 	var ui = this.editorUi;
 	var graph = ui.editor.graph;
 	var rect = this.format.getSelectionState();
@@ -3904,7 +3961,7 @@ PropertiesPanel.prototype.addConditions = function (container) {
 /**
  * 设置提示信息
  */
-PropertiesPanel.prototype.addAlarm = function (container) {
+ActionsPanel.prototype.addAlarm = function (container) {
 	var ui = this.editorUi;
 	var graph = ui.editor.graph;
 	var cell = graph.getSelectionCell();
@@ -3956,14 +4013,14 @@ PropertiesPanel.prototype.addAlarm = function (container) {
 /**
  * 设置修改属性
  */
-PropertiesPanel.prototype.changValue = function (cell, value) {
+ActionsPanel.prototype.changValue = function (cell, value) {
 
 }
 
 /**
  * 添加单行文本
  */
-PropertiesPanel.prototype.addSingleInput = function (container, name, value ) {
+ActionsPanel.prototype.addSingleInput = function (container, name, value ) {
 	// 文本框
 	var ui = this.editorUi;
 	var graph = ui.editor.graph;
@@ -3989,7 +4046,7 @@ PropertiesPanel.prototype.addSingleInput = function (container, name, value ) {
 /**
  * Adds the label menu items to the given menu and parent.
  */
-PropertiesPanel.prototype.destroy = function()
+ActionsPanel.prototype.destroy = function()
 {
 	BaseFormatPanel.prototype.destroy.apply(this, arguments);
 	
