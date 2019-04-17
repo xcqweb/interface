@@ -989,7 +989,9 @@ var addPageDialog = function (editorUi, type) {
 	pageType === 'dialog' && isDialogFlag.setAttribute('checked', true);
 	(['rename', 'addPrev', 'addNext'].indexOf(type) !== -1 ) && isDialogFlag.setAttribute('disabled', true);
 	isDialog.appendChild(isDialogFlag);
-	isDialog.append('弹窗式')
+	var text = document.createElement('span');
+	text.innerText = '弹窗式';
+	isDialog.appendChild(text);
 	saveContent.appendChild(isDialog);
 	// 保存按钮
 	var btnContent = editorUi.createDiv('btnContent');;
