@@ -831,8 +831,13 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 		this.bg.style.height = dh + 'px';
 		this.bg.style.right = '0px';
 		this.bg.style.zIndex = this.zIndex - 2;
+		var timer = null;
 		this.bg.addEventListener('click', function () {
-			this.nextSibling.style.boxShadow = "0px 0px 10px 1px #bb9c6f"
+			clearTimeout(timer);
+			this.nextSibling.style.border = "1px solid #3D91F7";
+			timer = setTimeout(() => {
+				this.nextSibling.style.border = "";
+			}, 1500)
 		})
 		mxUtils.setOpacity(this.bg, this.bgOpacity);
 		

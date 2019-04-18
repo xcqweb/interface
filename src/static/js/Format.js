@@ -3742,7 +3742,6 @@ ActionsPanel.prototype.init = function (container) {
 	// 编辑数据
 	if (graph.getSelectionCount() == 1)
 	{
-		console.log(state)
 		// 公共交互
 		var addAction = document.createElement('button')
 		addAction.className = 'formatSmallBtn';
@@ -3761,8 +3760,8 @@ ActionsPanel.prototype.init = function (container) {
  * 矩形交互
  */
 ActionsPanel.prototype.rectangleActions = function () {
+	this.createInfoBox(this.container, '点击菜单1首页--显示首页页面，首页字体白，蓝色填充')
 	this.createOperateBox(this.container);
-	this.createInfoBox(this.container, '• 点击菜单1首页--显示首页页面，首页字体白，蓝色填充')
 }
 
 /**
@@ -3813,9 +3812,6 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		}
 		var divpanel = this.createPanel();
 		divpanel.style.paddingBottom = '12px';
-		
-		var hr = document.createElement('hr')
-		divpanel.appendChild(hr)
 		// 新增下拉框
 		// 选择事件
 		var mouseEvent = this.addUnitSelect(divpanel, 218, ["选择", "鼠标移入", "鼠标移出", "点击", "双击", "选中", "未选中"], temp.mouseEvent, mxResources.get('chooseEvent'));
@@ -3842,7 +3838,12 @@ ActionsPanel.prototype.createOperateBox = function(container)
 			${
 				mockData.map((val) => (`<li>${val}</li>`)).join('')
 			}
-		`
+		`;
+		// 选择页面
+		mxEvent.addListener(pageList, 'click', function (evt) {
+			$('.formatPageActive').removeClass();
+			evt.target.className = 'formatPageActive';
+		})
 		divpanel.appendChild(pageList);
 		// 外部链接
 		var outChoose = document.createElement('div');
@@ -3857,8 +3858,12 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		_title.innerText = '外部链接';
 		_title.style.marginLeft = '6px';
 		outChoose.appendChild(_title);
-
+		// 外部链接输入框
+		var outInput = document.createElement('input');
+		outInput.className = 'outLink'
 		divpanel.appendChild(outChoose);
+		
+		divpanel.appendChild(outInput);
 		if (!mxUtils.isNode(modelInfo))
 		{
 			var doc = mxUtils.createXmlDocument();
@@ -3867,12 +3872,28 @@ ActionsPanel.prototype.createOperateBox = function(container)
 			modelInfo = obj;
 		}
 			
-		// 事件监听	
+		// 事件监听
+		// 选择内部链接
+		mxEvent.addListener(innerRadio, 'click', function (evt) {
+			innerType.removeAttribute('disabled');
+			// 禁用外部选择
+			outInput.value = '';
+			outInput.setAttribute('disabled', true);
+		})
+		// 选择外部链接
+		mxEvent.addListener(outRadio, 'click', function (evt) {
+			outInput.removeAttribute('disabled');
+			// 禁用内部选择
+			innerType.setAttribute('disabled', true);
+			$('.formatPageActive').removeClass();
+		})
+		// 选择事件
 		mxEvent.addListener(mouseEvent, 'change', function () {
 			modelInfo = modelInfo.cloneNode(true);
 			modelInfo.setAttribute('mouseEvent', mouseEvent.value);
 			graph.getModel().setValue(cell, modelInfo);
 		});
+		// 选择动作
 		mxEvent.addListener(effectAction, 'change', function () {
 			modelInfo.setAttribute('effectAction', effectAction.value);
 			graph.getModel().setValue(cell, modelInfo);
@@ -4112,7 +4133,8 @@ PaletteManage.prototype.list = {
 	endarrow: '箭头',
 	line: '直线',
 	curve: '曲线',
-	linkTag: 'Link'
+	linkTag: 'Link',
+	primitive: '图元'
 }
 /**
  * 生成标题
@@ -4194,6 +4216,7 @@ PaletteManage.prototype.createSearchInput = function (container) {
  * 填充列表
  */
 PaletteManage.prototype.fillList = function (container, filter) {
+	var primitives = this.editorUi.sidebar.primitives;
 	var cells = [].concat(this.cells);
 	filter = filter.trim();
 	// 清除原先列表
@@ -4206,21 +4229,27 @@ PaletteManage.prototype.fillList = function (container, filter) {
 		// 节点的state信息
 		var state = this.editorUi.editor.graph.view.getState(cells[i]);
 		var info = state.style.shape;
+		info = primitives.indexOf(info) == -1 ? info : 'primitive';
 		var name = this.getCellInfo('palettename', cells[i]) || '';
-		if (forbiddenShape.indexOf(info) != -1 || name.indexOf(filter) == -1) continue;
+		if (forbiddenShape.indexOf(info) != -1 || (name.indexOf(filter) == -1 && this.list[info].indexOf(filter) == -1)) continue;
 		// 内容
 		var _li = document.createElement('li');
 		_li.innerText = name;
 		_li.innerText += '(' + this.list[info] + ')';
+		_li.setAttribute('data-defaultbg', 'url(/static/images/palettes/' + info + '.png)');
+		_li.setAttribute('data-activebg', 'url(/static/images/palettes/' + info + '_white.png)');
 		_li.style.backgroundImage = 'url(/static/images/palettes/' + info + '.png)';
 		ul.appendChild(_li)
 	};
 	// 绑定事件
 	mxEvent.addListener(ul, 'click', function (evt) {
 		if (evt.target.nodeName === 'LI') {
-			// 选中高亮
+			// 移除高亮，恢复默认背景
+			$('.paletteActive').css({backgroundImage: $('.paletteActive').data('defaultbg')});
 			$('.paletteActive').removeClass();
+			// 选中高亮
 			evt.target.className = 'paletteActive';
+			evt.target.style.backgroundImage = evt.target.getAttribute('data-activebg');
 			this.editorUi.editor.graph.setSelectionCell(cells[0]);
 		}
 	}.bind(this))

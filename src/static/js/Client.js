@@ -56626,6 +56626,7 @@ mxGraph.prototype.dblClick = function(evt, cell)
 	this.fireEvent(mxe);
 	var shapeName = this.getCellStyle(cell).shape;
 	// console.log(this.getCellStyle(cell))
+	console.log(shapeName)
 	// Handles the event if it has not been consumed
 	if (this.isEnabled() && !mxEvent.isConsumed(evt) && !mxe.isConsumed() &&
 		cell != null && this.isCellEditable(cell) && !this.isEditing(cell) && shapeName !== 'image' && shapeName !== 'select' && shapeName !== 'endarrow')

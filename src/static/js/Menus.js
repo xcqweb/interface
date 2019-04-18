@@ -425,10 +425,6 @@ Menus.prototype.init = function()
 		this.addMenuItems(menu, ['toFront', 'toBack', '-'], parent);
 		this.addSubmenu('direction', menu, parent);
 		this.addSubmenu('align', menu, parent);
-		// this.addSubmenu('distribute', menu, parent);
-		// this.addSubmenu('navigation', menu, parent);
-		// this.addSubmenu('insert', menu, parent);
-		// this.addSubmenu('layout', menu, parent);
 		this.addMenuItems(menu, ['-', 'group', 'ungroup', 'removeFromGroup', '-','autosize'], parent);
 	}))).isEnabled = isGraphEnabled;
 	
@@ -462,7 +458,7 @@ Menus.prototype.init = function()
 	this.put('pageScale', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		// this.addMenuItems(menu, ['resetView'], parent);
-		var scales = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4];
+		var scales = [0.25, 0.5, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4];
 		
 		for (var i = 0; i < scales.length; i++)
 		{
