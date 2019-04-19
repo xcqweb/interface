@@ -48,6 +48,9 @@
 	border: 1px solid #e5e5e5;
 	outline:none;
 }
+.geDiagramContainer div, .geDiagramContainer button, .geDiagramContainer a  {
+	color: inherit;
+}
 .geMenubar, .geToolbar {
 	white-space:nowrap;
 	display:block;
@@ -148,7 +151,8 @@
 	margin: 0px;
 	outline: 0;
 	padding: 0px;
-	cursor: pointer;		
+	cursor: pointer;
+	float: left;
 }
 .geColorBtn:disabled {
 	opacity: .5;
@@ -772,6 +776,11 @@ div.mxWindow .geButton {
 	height: 24px;
 	padding: 4px 22px;
 }
+.geSpriteBtn {
+	float: left;
+	width: 36px;
+	height: 24px;
+}
 .geSprite-new {
 	background-image: url(./../images/menu/new.png);
 }
@@ -953,24 +962,48 @@ div.mxWindow .geButton {
 	float: left;
 	margin-left: -10px;
 	background-size: 16px  16px;
-	background-image: url(/static//images//icons/link.png);
+	background-image: url(/static/images/icons/link.png);
+}
+.geSpriteBtn {
+	cursor: pointer;
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+	border: 1px solid #CAC9CA;
+	background-color: #fff;
+}
+.geSprite-left { 
+	background-image: url(/static/images/icons/left.png)
+}
+.geSprite-center { 
+	margin: 0 -1px;
+	background-image: url(/static/images/icons/center.png);
+}
+.geSprite-right { 
+	background-image: url(/static/images/icons/right.png)
+}
+.geSpriteBtn.geSprite-top {
+	margin-left: 5px;
+	background-position-y: 0;
+	background-image: url(/static/images/icons/vertical.png);
+}
+.geSprite-middle { 
+	margin: 0 -1px;
+	background-image: url(/static/images/icons/vertical.png);
+}
+.geSprite-bottom { 
+	background-position-y: 10px;
+	background-image: url(/static/images/icons/vertical.png);
 }
 .geSprite-actualsize { background-position: 0 0; }
 .geSprite-bold { background-position: 0 -46px; }
-.geSprite-bottom { background-position: 0 -92px; }
-.geSprite-center { background-position: 0 -138px; }
 .geSprite-fillcolor { background-position: 0 -229px; }
 .geSprite-fontcolor { background-position: 0 -322px; }
 .geSprite-gradientcolor { background-position: 0 -368px; }
 .geSprite-image { background-position: 0 -414px; }
 .geSprite-italic { background-position: 0 -460px; }
-.geSprite-left { background-position: 0 -505px; }
-.geSprite-middle { background-position: 0 -552px; }
 .geSprite-print { background-position: 0 -598px; }
-.geSprite-right { background-position: 0 -689px; }
 .geSprite-shadow { background-position: 0 -735px; }
 .geSprite-strokecolor { background-position: 0 -782px; }
-.geSprite-top { background-position: 0 -828px; }
 .geSprite-underline { background-position: 0 -874px; }
 .geSprite-arrow { background-position: 0 -1059px; }
 .geSprite-linkedge { background-position: 0 -1105px; }
@@ -1486,20 +1519,21 @@ button.buttonTag, input.inputTag {
 	margin-left: 20px;
 	border: 1px solid #D4D4D4;
 }
-@keyframes test {
-	0% {
-		box-shadow: #24cc59 0px 0px 10px 1px;
-	}
-	30% {
-		box-shadow: #9acc24 0px 0px 10px 1px;
-	}
-	70% {
-		box-shadow: #cc8a24 0px 0px 10px 1px;
-	}
-	100% {
-		box-shadow: #3D91F7 0px 0px 10px 1px;
-	}
+#loadingText {
+	font-size: 14px;
+	margin-bottom: 12px;
+	color: #333333;
+	font-weight: bold;
+	text-align: center;
 }
-.geLogo {
-	animation: test 3s ease-in .3s infinite;
+.geLoadingBar {
+	height: 4px;
+	border-radius: 2px;
+	background: #D4D4D4;
+}
+.geLoadingBarInner {
+	width: 0;
+	border-radius: 2px;
+	border: 2px solid #3D91F7;
+	transition: width .7s linear 0s;
 }

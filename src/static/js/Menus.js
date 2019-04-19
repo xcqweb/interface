@@ -441,7 +441,6 @@ Menus.prototype.init = function()
 	// 视图
 	this.put('view', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItem(menu, 'palette', parent);
 		this.addSubmenu('pageScale', menu, parent);
 		this.addMenuItems(menu, ['-','palette' ,'toolbar' ,'paletteManage' ,'pageList' ,'formatManage' ,'-' ,'scrollbars', 'grid', '-', 'zoomIn', 'zoomOut'], parent);
 	})));

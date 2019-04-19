@@ -1416,7 +1416,6 @@ ArrangePanel = function(format, editorUi, container)
 	BaseFormatPanel.call(this, format, editorUi, container);
 	if (format.getSelectionState().vertices.length === 1) {
 		this.baseInit();
-		// this.TextInit();
 		// this.styleInit();
 		// this.init();
 	}
@@ -2198,6 +2197,10 @@ ArrangePanel.prototype.addBase = function (container) {
 	}
 	// 名称
 	this.addName(container);
+	// 文字参数
+	this.addFont(container);
+	// 文字对齐
+	this.alignFont(container);
 	// 大小
 	this.addGeometry(container);
 	// 角度
@@ -2236,6 +2239,7 @@ ArrangePanel.prototype.addName = function (container) {
 	nameInput.className = 'formatLargeInput'
 	container.appendChild(nameInput);
 }
+
 /**
  * 显示还是隐藏
  */
@@ -2277,19 +2281,144 @@ ArrangePanel.prototype.addShowHide = function (container) {
 	div.appendChild(btnBox);
 	container.appendChild(div);
 }
-/**
- * 增加文本编辑样式内容
- */
-ArrangePanel.prototype.TextInit = function()
-{
-	this.container.style.borderBottom = 'none';
-	this.addFont(this.container);
-};
 
 /**
+ * 字体样式
+ */
+ArrangePanel.prototype.addFont = function (container) {
+	var ui = this.editorUi;
+	var editor = ui.editor;
+	var graph = editor.graph;
+	var ss = this.format.getSelectionState();
+	container.appendChild(this.createTitle('文字参数'));
+
+	var div = document.createElement('div');
+	div.style.overflow = 'hidden';
+	var update;
+	// 字体大小输入框
+	var input = this.addUnitInput(div, 'px', 20, 44, function()
+	{
+		update.apply(this, arguments);
+	});
+	input.className = 'formatMiddleInput';
+	update = this.installInputHandler(input, mxConstants.STYLE_FONTSIZE, 12, 1, 999, 'px', null, true);
+	
+	var listener = mxUtils.bind(this, function(sender, evt, force, num)
+	{
+		if (force || document.activeElement != input)
+		{
+			ss = this.format.getSelectionState();
+			var tmp = num || parseFloat(mxUtils.getValue(ss.style, mxConstants.STYLE_FONTSIZE, 0));
+			input.value = (isNaN(tmp)) ? '' : tmp  + 'px';
+		}
+	});
+
+	this.addKeyHandler(input, listener);
+	graph.getModel().addListener(mxEvent.CHANGE, listener);
+	this.listeners.push({destroy: function() { graph.getModel().removeListener(listener); }});
+	listener();
+	
+	// 选择颜色	
+	var state = graph.view.getState(graph.getSelectionCell());
+	var color = mxUtils.getValue(state.style, 'fontColor', null)
+	graph.setCellStyles('fontColor', color, graph.getSelectionCells());
+	ui.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontColor'],'values', [color], 'cells', graph.getSelectionCells()));
+
+	var label = (ss.style.shape == 'image') ? mxResources.get('border') : mxResources.get('line');
+	
+	var lineColor = this.createCellColorOption(label, 'fontColor', '#000000');
+	lineColor.className += " formatMiddleBtn";
+	lineColor.style.marginLeft = '-6px';
+	div.appendChild(lineColor);
+
+	container.appendChild(div);
+	return div;
+}
+/**
+ * 添加按钮
+ */
+ArrangePanel.prototype.addButton = function (container, classname, funct) {
+	var btn = document.createElement('div');
+	btn.className = 'geSpriteBtn geSprite ' + classname;
+	this.editorUi.toolbar.addClickHandler(btn, funct);
+	this.editorUi.toolbar.initElement(btn);
+	container.appendChild(btn);
+	return btn;
+}
+/**
+ * 字体对齐
+ */
+ArrangePanel.prototype.alignFont = function (container) {
+	var ui = this.editorUi;
+	var editor = ui.editor;
+	var graph = editor.graph;
+	container.appendChild(this.createTitle('对齐'));
+	var geSpriteBtnBox = document.createElement('div');
+	geSpriteBtnBox.style.overflow = 'hidden';
+	var callFn = function(fn)
+	{
+		return function()
+		{
+			return fn();
+		};
+	};
+	// 按钮
+	var left = this.addButton(geSpriteBtnBox, 'geSprite-left', callFn(ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_LEFT])));
+	var center = this.addButton(geSpriteBtnBox, 'geSprite-center', callFn(ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_CENTER])));
+	var right = this.addButton(geSpriteBtnBox, 'geSprite-right', callFn(ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_RIGHT])));
+	var top = this.addButton(geSpriteBtnBox, 'geSprite-top', callFn(ui.menus.createStyleChangeFunction([mxConstants.STYLE_VERTICAL_ALIGN], [mxConstants.ALIGN_TOP])));
+	var middle = this.addButton(geSpriteBtnBox, 'geSprite-middle', callFn(ui.menus.createStyleChangeFunction([mxConstants.STYLE_VERTICAL_ALIGN], [mxConstants.ALIGN_MIDDLE])));
+	var bottom = this.addButton(geSpriteBtnBox, 'geSprite-bottom', callFn(ui.menus.createStyleChangeFunction([mxConstants.STYLE_VERTICAL_ALIGN], [mxConstants.ALIGN_BOTTOM])));
+
+	container.appendChild(geSpriteBtnBox);
+
+	function setSelected(elt, selected)
+	{
+		var finalStyle = elt.currentStyle ? elt.currentStyle : document.defaultView.getComputedStyle(elt, null);
+		if (selected && finalStyle.backgroundImage) {
+			elt.style.backgroundColor = '#518EEC';
+			elt.style.backgroundImage = finalStyle.backgroundImage.replace(/.png/, '_white.png');
+		}
+	};
+	
+	var listener = mxUtils.bind(this, function(sender, evt, force)
+	{
+		ss = this.format.getSelectionState();
+		var fontStyle = mxUtils.getValue(ss.style, mxConstants.STYLE_FONTSTYLE, 0);
+		// setSelected(fontStyleItems[0], (fontStyle & mxConstants.FONT_BOLD) == mxConstants.FONT_BOLD);
+		// setSelected(fontStyleItems[1], (fontStyle & mxConstants.FONT_ITALIC) == mxConstants.FONT_ITALIC);
+		// setSelected(fontStyleItems[2], (fontStyle & mxConstants.FONT_UNDERLINE) == mxConstants.FONT_UNDERLINE);
+
+		// setSelected(verticalItem, mxUtils.getValue(ss.style, mxConstants.STYLE_HORIZONTAL, '1') == '0');
+		
+		// if (force || document.activeElement != input)
+		// {
+		// 	var tmp = parseFloat(mxUtils.getValue(ss.style, mxConstants.STYLE_FONTSIZE, Menus.prototype.defaultFontSize));
+		// 	input.value = (isNaN(tmp)) ? '' : tmp  + ' px';
+		// }
+		
+		var align = mxUtils.getValue(ss.style, mxConstants.STYLE_ALIGN, mxConstants.ALIGN_CENTER);
+		setSelected(left, align == mxConstants.ALIGN_LEFT);
+		setSelected(center, align == mxConstants.ALIGN_CENTER);
+		setSelected(right, align == mxConstants.ALIGN_RIGHT);
+		
+		var valign = mxUtils.getValue(ss.style, mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_MIDDLE);
+		setSelected(top, valign == mxConstants.ALIGN_TOP);
+		setSelected(middle, valign == mxConstants.ALIGN_MIDDLE);
+		setSelected(bottom, valign == mxConstants.ALIGN_BOTTOM);
+	});
+
+
+	// this.addKeyHandler(input, listener);
+
+	graph.getModel().addListener(mxEvent.CHANGE, listener);
+	this.listeners.push({destroy: function() { graph.getModel().removeListener(listener); }});
+	listener();
+}
+/**
  * 增加文本编辑样式内容
  */
-ArrangePanel.prototype.addFont = function(container)
+ArrangePanel.prototype.addFontss = function(container)
 {
 	var ui = this.editorUi;
 	var editor = ui.editor;
@@ -4134,7 +4263,9 @@ PaletteManage.prototype.list = {
 	line: '直线',
 	curve: '曲线',
 	linkTag: 'Link',
-	primitive: '图元'
+	primitive: '图元',
+	multipleCheck: '复选',
+	singleCheck: '单选'
 }
 /**
  * 生成标题
@@ -4234,6 +4365,7 @@ PaletteManage.prototype.fillList = function (container, filter) {
 		if (forbiddenShape.indexOf(info) != -1 || (name.indexOf(filter) == -1 && this.list[info].indexOf(filter) == -1)) continue;
 		// 内容
 		var _li = document.createElement('li');
+		_li.setAttribute('data-idx', i);
 		_li.innerText = name;
 		_li.innerText += '(' + this.list[info] + ')';
 		_li.setAttribute('data-defaultbg', 'url(/static/images/palettes/' + info + '.png)');
@@ -4250,7 +4382,8 @@ PaletteManage.prototype.fillList = function (container, filter) {
 			// 选中高亮
 			evt.target.className = 'paletteActive';
 			evt.target.style.backgroundImage = evt.target.getAttribute('data-activebg');
-			this.editorUi.editor.graph.setSelectionCell(cells[0]);
+			// 选中对应控件
+			this.editorUi.editor.graph.setSelectionCell(cells[evt.target.getAttribute('data-idx')]);
 		}
 	}.bind(this))
 	container.appendChild(ul);

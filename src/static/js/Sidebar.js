@@ -1110,8 +1110,6 @@ Sidebar.prototype.addPrimitive = function (expand) {
 		this.createVertexTemplateEntry('shape=drop;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/drop.png', this.defaultImageWidth, this.defaultImageHeight, '', ''),
 		this.createVertexTemplateEntry('shape=pentagram;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pentagram.png', this.defaultImageWidth, this.defaultImageHeight, '', ''),
 		this.createVertexTemplateEntry('shape=square;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/square.png', this.defaultImageWidth, this.defaultImageHeight, '', ''),
-		this.createVertexTemplateEntry('shape=square;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', this.defaultImageWidth, this.defaultImageHeight, '', '图元'),
-		this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', this.defaultImageWidth, this.defaultImageHeight, '', '图元'),
 	];
 	this.addPaletteFunctions('primitiveManage', '图元管理', (expand != null) ? expand : true, fns);
 }
@@ -1149,12 +1147,13 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 			return sb.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '菜单');
 		}),
 		// 复选
-		this.createVertexTemplateEntry('shape=multipleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="checkbox" class="inputTag1" />', '复选'),
+		// this.createVertexTemplateEntry('shape=multipleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="checkbox" class="inputTag1" />', '复选'),
+		this.createVertexTemplateEntry('shape=multipleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/multipleCheck.png', 40, 40, '', '复选'),
 		// 单选
-		this.createVertexTemplateEntry('shape=singleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="radio" class="inputTag" />', '单选'),
+		// this.createVertexTemplateEntry('shape=singleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="radio" class="inputTag" />', '单选'),
+		this.createVertexTemplateEntry('shape=singleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/singleCheck.png', 40, 40, '', '图片'),
 		// 图片
 		this.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
-		// this.createVertexTemplateEntry('ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 80, 80, '', '圆', null, null, 'circle'),
 		this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 65, 40, '<div style="width:100%;height:100%;position: relative"><select class="selectTag"></select><div class="selectTagShade"></div></div>', '下拉列表'),
 		// 表格
 		this.createVertexTemplateEntry('shape=table;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
@@ -1327,8 +1326,8 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 		elt.style.width = '33px';
 		elt.style.height = '33px';
 	} else {
+		elt.style.backgroundImage = 'url(/static/stencils/basic/'+shapeName+'.png)';
 	}
-	elt.style.backgroundImage = 'url(/static/stencils/basic/'+shapeName+'.png)';
 	
 	if (mxClient.IS_IE6)
 	{

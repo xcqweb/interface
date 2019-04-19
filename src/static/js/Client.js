@@ -47791,6 +47791,13 @@ mxCellRenderer.registerShape(mxConstants.SHAPE_DOUBLE_ELLIPSE, mxDoubleEllipse);
 mxCellRenderer.registerShape(mxConstants.SHAPE_SWIMLANE, mxSwimlane);
 mxCellRenderer.registerShape(mxConstants.SHAPE_IMAGE, mxImageShape);
 mxCellRenderer.registerShape('primitive', mxImageShape);
+mxCellRenderer.registerShape('circle', mxImageShape);
+mxCellRenderer.registerShape('diamond', mxImageShape);
+mxCellRenderer.registerShape('drop', mxImageShape);
+mxCellRenderer.registerShape('pentagram', mxImageShape);
+mxCellRenderer.registerShape('square', mxImageShape);
+mxCellRenderer.registerShape('multipleCheck', mxImageShape);
+mxCellRenderer.registerShape('singleCheck', mxImageShape);
 mxCellRenderer.registerShape(mxConstants.SHAPE_LABEL, mxLabel);
 
 /**
@@ -56619,17 +56626,17 @@ mxGraph.prototype.click = function(me)
  * evt - Mouseevent that represents the doubleclick.
  * cell - Optional <mxCell> under the mousepointer.
  */
-// 双击事件控制,编辑内容
+// 双击控件事件控制,编辑内容
 mxGraph.prototype.dblClick = function(evt, cell)
 {
+	var forbiddenList = ['image','select','endarrow','multipleCheck','singleCheck',];
 	var mxe = new mxEventObject(mxEvent.DOUBLE_CLICK, 'event', evt, 'cell', cell);
 	this.fireEvent(mxe);
 	var shapeName = this.getCellStyle(cell).shape;
-	// console.log(this.getCellStyle(cell))
-	console.log(shapeName)
+	// console.log(this.getCellStyle(cell).shape)
 	// Handles the event if it has not been consumed
 	if (this.isEnabled() && !mxEvent.isConsumed(evt) && !mxe.isConsumed() &&
-		cell != null && this.isCellEditable(cell) && !this.isEditing(cell) && shapeName !== 'image' && shapeName !== 'select' && shapeName !== 'endarrow')
+		cell != null && this.isCellEditable(cell) && !this.isEditing(cell) && forbiddenList.indexOf(shapeName) == -1 )
 	{
 		this.startEditingAtCell(cell, evt);
 		mxEvent.consume(evt);

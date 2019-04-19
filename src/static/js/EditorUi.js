@@ -972,7 +972,7 @@ EditorUi.prototype.formatEnabled = true;
 /**
  * Specifies the width of the format panel. Default is 240.
  */
-EditorUi.prototype.rightWidth = 247;
+EditorUi.prototype.rightWidth = 250;
 /**
  * 左侧栏位的宽度
  */
@@ -1097,7 +1097,7 @@ EditorUi.prototype.onKeyDown = function(evt)
 };
 
 /**
- * Returns true if the given event should start editing. This implementation returns true.
+ * 直接敲击键盘开始编辑.
  */
 EditorUi.prototype.onKeyPress = function(evt)
 {
@@ -1108,7 +1108,7 @@ EditorUi.prototype.onKeyPress = function(evt)
 		!mxEvent.isAltDown(evt) && !mxEvent.isControlDown(evt) && !mxEvent.isMetaDown(evt))
 	{
 		graph.escape();
-		graph.startEditing();
+		// graph.startEditing();
 
 		// Workaround for FF where char is lost if cursor is placed before char
 		if (mxClient.IS_FF)

@@ -23,6 +23,30 @@ Actions.prototype.init = function()
 	{
 		return Action.prototype.isEnabled.apply(this, arguments) && graph.isEnabled();
 	};
+	// loading···
+	this.addAction('loading', function (text) {
+		var content = ui.createDiv('geDialogInfo')
+		var loadingText = document.createElement('p');
+		loadingText.id = "loadingText";
+		loadingText.innerText = text;
+		content.appendChild(loadingText);
+		// 加载条
+		var loadingBar = document.createElement('p');
+		loadingBar.className = "geLoadingBar"
+		var loadingBarInner = document.createElement('p');
+		loadingBarInner.className = "geLoadingBarInner";
+		loadingBar.appendChild(loadingBarInner)
+		var len = 0, timer = null;
+		timer = setInterval(() => {
+			if (len >= 92) {
+				clearInterval(timer);
+			};
+			len += 4;
+			loadingBarInner.style.width = len + '%';
+		}, 700)
+		content.appendChild(loadingBar);
+		ui.showDialog(content, 410, 80, true, false, null, null, '');
+	})
 	// 是否展示左侧菜单
 	function toggleSidebar () {
 		if (ui.sidebarContainer.style.display == 'none' && (graph.isPaletteEnabled() || graph.isPageManageEnabled())) {
