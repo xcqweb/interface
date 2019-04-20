@@ -846,10 +846,11 @@ Actions.prototype.init = function()
 			if (newValue != null && !Number.isNaN(newValue))
 			{
 				graph.setCellStyles(mxConstants.STYLE_ROTATION, newValue);
+				ui.hideDialog()
 			}
-		});
+		}, null, null);
 		
-		ui.showDialog(dlg.container, 375, 80, true, true);
+		ui.showDialog(dlg.container, 375, 80, true, false, null);
 	});
 	// 视图
 	this.addAction('resetView', function()

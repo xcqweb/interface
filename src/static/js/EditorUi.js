@@ -3403,10 +3403,10 @@ EditorUi.prototype.openFile = function()
 
 	// Removes openFile if dialog is closed
 	this.showDialog(new OpenDialog(this).container, (Editor.useLocalStorage) ? 640 : 320,
-			(Editor.useLocalStorage) ? 480 : 220, true, true, function()
+			(Editor.useLocalStorage) ? 480 : 80, true, false, function()
 	{
 		window.openFile = null;
-	});
+	}, null, '打开', null);
 };
 
 /**
@@ -4130,23 +4130,23 @@ EditorUi.prototype.createKeyHandler = function(editor)
 	keyHandler.bindKey(35, function() { graph.refresh(); }); // End
 	keyHandler.bindAction(107, true, 'zoomIn'); // Ctrl+Plus
 	keyHandler.bindAction(109, true, 'zoomOut'); // Ctrl+Minus
-	keyHandler.bindAction(80, true, 'print'); // Ctrl+P
-	keyHandler.bindAction(79, true, 'outline', true); // Ctrl+Shift+O
-	keyHandler.bindAction(112, false, 'about'); // F1
+	// keyHandler.bindAction(80, true, 'print'); // Ctrl+P
+	// keyHandler.bindAction(79, true, 'outline', true); // Ctrl+Shift+O
+	// keyHandler.bindAction(112, false, 'about'); // F1
 
 	if (!this.editor.chromeless || this.editor.editable)
 	{
-		keyHandler.bindControlKey(36, function() { if (graph.isEnabled()) { graph.foldCells(true); }}); // Ctrl+Home
-		keyHandler.bindControlKey(35, function() { if (graph.isEnabled()) { graph.foldCells(false); }}); // Ctrl+End
+		// keyHandler.bindControlKey(36, function() { if (graph.isEnabled()) { graph.foldCells(true); }}); // Ctrl+Home
+		// keyHandler.bindControlKey(35, function() { if (graph.isEnabled()) { graph.foldCells(false); }}); // Ctrl+End
 		keyHandler.bindControlKey(13, function() { if (graph.isEnabled()) { graph.setSelectionCells(graph.duplicateCells(graph.getSelectionCells(), false)); }}); // Ctrl+Enter
 		keyHandler.bindAction(8, false, 'delete'); // Backspace
 		keyHandler.bindAction(8, true, 'deleteAll'); // Backspace
 		keyHandler.bindAction(46, false, 'delete'); // Delete
 		keyHandler.bindAction(46, true, 'deleteAll'); // Ctrl+Delete
 		keyHandler.bindAction(72, true, 'resetView'); // Ctrl+H
-		keyHandler.bindAction(72, true, 'fitWindow', true); // Ctrl+Shift+H
-		keyHandler.bindAction(74, true, 'fitPage'); // Ctrl+J
-		keyHandler.bindAction(74, true, 'fitTwoPages', true); // Ctrl+Shift+J
+		// keyHandler.bindAction(72, true, 'fitWindow', true); // Ctrl+Shift+H
+		// keyHandler.bindAction(74, true, 'fitPage'); // Ctrl+J
+		// keyHandler.bindAction(74, true, 'fitTwoPages', true); // Ctrl+Shift+J
 		// keyHandler.bindAction(48, true, 'customZoom'); // Ctrl+0
 		// keyHandler.bindAction(82, true, 'turn'); // Ctrl+R
 		keyHandler.bindAction(82, true, 'clearDefaultStyle', true); // Ctrl+Shift+R
@@ -4161,27 +4161,27 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		keyHandler.bindAction(66, true, 'toBack', true); // Ctrl+Shift+B
 		keyHandler.bindAction(70, true, 'toFront', true); // Ctrl+Shift+F
 		keyHandler.bindAction(68, true, 'duplicate'); // Ctrl+D
-		keyHandler.bindAction(68, true, 'setAsDefaultStyle', true); // Ctrl+Shift+D   
+		// keyHandler.bindAction(68, true, 'setAsDefaultStyle', true); // Ctrl+Shift+D   
 		keyHandler.bindAction(90, true, 'undo'); // Ctrl+Z
 		keyHandler.bindAction(89, true, 'autosize', true); // Ctrl+Shift+Y
 		keyHandler.bindAction(88, true, 'cut'); // Ctrl+X
 		keyHandler.bindAction(67, true, 'copy'); // Ctrl+C
 		keyHandler.bindAction(86, true, 'paste'); // Ctrl+V
 		keyHandler.bindAction(71, true, 'group'); // Ctrl+G
-		keyHandler.bindAction(77, true, 'editData'); // Ctrl+M
-		keyHandler.bindAction(75, true, 'editProp'); // Ctrl+K
+		// keyHandler.bindAction(77, true, 'editData'); // Ctrl+M
+		// keyHandler.bindAction(75, true, 'editProp'); // Ctrl+K
 		// keyHandler.bindAction(71, true, 'grid', true); // Ctrl+Shift+G
-		keyHandler.bindAction(73, true, 'italic'); // Ctrl+I
-		keyHandler.bindAction(76, true, 'lockUnlock'); // Ctrl+L
-		keyHandler.bindAction(76, true, 'pageView', true); // Ctrl+Shift+L
+		// keyHandler.bindAction(73, true, 'italic'); // Ctrl+I
+		// keyHandler.bindAction(76, true, 'lockUnlock'); // Ctrl+L
+		// keyHandler.bindAction(76, true, 'pageView', true); // Ctrl+Shift+L
 		// keyHandler.bindAction(80, true, 'formatPanel', true); // Ctrl+Shift+P
-		keyHandler.bindAction(85, true, 'underline'); // Ctrl+U
+		// keyHandler.bindAction(85, true, 'underline'); // Ctrl+U
 		keyHandler.bindAction(85, true, 'ungroup', true); // Ctrl+Shift+U
-		keyHandler.bindAction(190, true, 'superscript'); // Ctrl+.
-		keyHandler.bindAction(188, true, 'subscript'); // Ctrl+,
+		// keyHandler.bindAction(190, true, 'superscript'); // Ctrl+.
+		// keyHandler.bindAction(188, true, 'subscript'); // Ctrl+,
 		keyHandler.bindAction(79, true, 'publish'); // Ctrl+O,
 		keyHandler.bindKey(13, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // Enter
-		keyHandler.bindKey(113, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // F2
+		// keyHandler.bindKey(113, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // F2
 	}
 	
 	if (!mxClient.IS_WIN)

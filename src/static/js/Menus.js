@@ -441,8 +441,10 @@ Menus.prototype.init = function()
 	// 视图
 	this.put('view', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
+		this.addMenuItems(menu, ['resetView'], parent);
+		this.addMenuItems(menu, ['-','palette' ,'toolbar' ,'paletteManage' ,'pageList' ,'formatManage' ,'-' ,'scrollbars', 'grid', '-'], parent);
 		this.addSubmenu('pageScale', menu, parent);
-		this.addMenuItems(menu, ['-','palette' ,'toolbar' ,'paletteManage' ,'pageList' ,'formatManage' ,'-' ,'scrollbars', 'grid', '-', 'zoomIn', 'zoomOut'], parent);
+		this.addMenuItems(menu, ['zoomIn', 'zoomOut'], parent);
 	})));
 	// Two special dropdowns that are only used in the toolbar
 	this.put('viewPanels', new Menu(mxUtils.bind(this, function(menu, parent)
@@ -456,7 +458,6 @@ Menus.prototype.init = function()
 	})));
 	this.put('pageScale', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		// this.addMenuItems(menu, ['resetView'], parent);
 		var scales = [0.25, 0.5, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4];
 		
 		for (var i = 0; i < scales.length; i++)

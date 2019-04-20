@@ -2207,6 +2207,8 @@ ArrangePanel.prototype.addBase = function (container) {
 	this.addAngle(container);
 	// 边框
 	this.addStroke(container);
+	// 背景色
+	this.addBgColor(container);
 	// 隐藏
 	this.addShowHide(container);
 }
@@ -2375,6 +2377,17 @@ ArrangePanel.prototype.alignFont = function (container) {
 	function setSelected(elt, selected)
 	{
 		var finalStyle = elt.currentStyle ? elt.currentStyle : document.defaultView.getComputedStyle(elt, null);
+
+		// if (mxClient.IS_IE && (mxClient.IS_QUIRKS || document.documentMode < 10))
+		// {
+		// 	elt.style.filter = (selected) ? 'progid:DXImageTransform.Microsoft.Gradient('+
+    //         	'StartColorStr=\'#c5ecff\', EndColorStr=\'#87d4fb\', GradientType=0)' : '';
+		// }
+		// else
+		// {
+		// 	elt.style.backgroundImage = (selected) ? 'linear-gradient(#c5ecff 0px,#87d4fb 100%)' : '';
+		// }
+		console.log(selected, finalStyle.backgroundImage)
 		if (selected && finalStyle.backgroundImage) {
 			elt.style.backgroundColor = '#518EEC';
 			elt.style.backgroundImage = finalStyle.backgroundImage.replace(/.png/, '_white.png');
@@ -2415,613 +2428,6 @@ ArrangePanel.prototype.alignFont = function (container) {
 	this.listeners.push({destroy: function() { graph.getModel().removeListener(listener); }});
 	listener();
 }
-/**
- * 增加文本编辑样式内容
- */
-ArrangePanel.prototype.addFontss = function(container)
-{
-	var ui = this.editorUi;
-	var editor = ui.editor;
-	var graph = editor.graph;
-	var ss = this.format.getSelectionState();
-
-	var stylePanel = this.createPanel();
-	stylePanel.style.paddingTop = '2px';
-	stylePanel.style.paddingBottom = '2px';
-	stylePanel.style.position = 'relative';
-	stylePanel.style.marginLeft = '-2px';
-	stylePanel.style.borderWidth = '0px';
-	stylePanel.className = 'geToolbarContainer';
-	
-	if (mxClient.IS_QUIRKS)
-	{
-		stylePanel.style.display = 'block';
-	}
-	
-	container.appendChild(stylePanel);
-	
-	var colorPanel = this.createPanel();
-	colorPanel.style.marginTop = '8px';
-	colorPanel.style.borderTop = '1px solid #c0c0c0';
-	colorPanel.style.paddingTop = '6px';
-	colorPanel.style.paddingBottom = '6px';
-
-	var stylePanel2 = stylePanel.cloneNode(false);
-	stylePanel2.style.marginLeft = '-3px';
-	var fontStyleItems = this.editorUi.toolbar.addItems(['bold', 'italic', 'underline'], stylePanel2, true);
-	fontStyleItems[0].setAttribute('title', mxResources.get('bold') + ' (' + this.editorUi.actions.get('bold').shortcut + ')');
-	fontStyleItems[1].setAttribute('title', mxResources.get('italic') + ' (' + this.editorUi.actions.get('italic').shortcut + ')');
-	fontStyleItems[2].setAttribute('title', mxResources.get('underline') + ' (' + this.editorUi.actions.get('underline').shortcut + ')');
-	
-	var verticalItem = this.editorUi.toolbar.addItems(['vertical'], stylePanel2, true)[0];
-	
-	if (mxClient.IS_QUIRKS)
-	{
-		mxUtils.br(container);
-	}
-	
-	container.appendChild(stylePanel2);
-
-	this.styleButtons(fontStyleItems);
-	this.styleButtons([verticalItem]);
-	
-	var stylePanel3 = stylePanel.cloneNode(false);
-	stylePanel3.style.marginLeft = '-3px';
-	stylePanel3.style.paddingBottom = '0px';
-	
-	// Helper function to return a wrapper function does not pass any arguments
-	var callFn = function(fn)
-	{
-		return function()
-		{
-			return fn();
-		};
-	};
-	
-	var left = this.editorUi.toolbar.addButton('geSprite-left', mxResources.get('left'),
-			(graph.cellEditor.isContentEditing()) ?
-			function()
-			{
-				document.execCommand('justifyleft', false, null);
-			} : callFn(this.editorUi.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_LEFT])), stylePanel3);
-	var center = this.editorUi.toolbar.addButton('geSprite-center', mxResources.get('center'),
-			(graph.cellEditor.isContentEditing()) ?
-			function()
-			{
-				document.execCommand('justifycenter', false, null);
-			} : callFn(this.editorUi.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_CENTER])), stylePanel3);
-	var right = this.editorUi.toolbar.addButton('geSprite-right', mxResources.get('right'),
-			(graph.cellEditor.isContentEditing()) ?
-			function()
-			{
-				document.execCommand('justifyright', false, null);
-			} : callFn(this.editorUi.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_RIGHT])), stylePanel3);
-
-	this.styleButtons([left, center, right]);
-
-	if (graph.cellEditor.isContentEditing())
-	{
-		var clear = this.editorUi.toolbar.addButton('geSprite-removeformat', mxResources.get('removeFormat'),
-			function()
-			{
-				document.execCommand('removeformat', false, null);
-			}, stylePanel2);
-		this.styleButtons([clear]);
-	}
-	
-	var top = this.editorUi.toolbar.addButton('geSprite-top', mxResources.get('top'),
-		callFn(this.editorUi.menus.createStyleChangeFunction([mxConstants.STYLE_VERTICAL_ALIGN], [mxConstants.ALIGN_TOP])), stylePanel3);
-	var middle = this.editorUi.toolbar.addButton('geSprite-middle', mxResources.get('middle'),
-		callFn(this.editorUi.menus.createStyleChangeFunction([mxConstants.STYLE_VERTICAL_ALIGN], [mxConstants.ALIGN_MIDDLE])), stylePanel3);
-	var bottom = this.editorUi.toolbar.addButton('geSprite-bottom', mxResources.get('bottom'),
-		callFn(this.editorUi.menus.createStyleChangeFunction([mxConstants.STYLE_VERTICAL_ALIGN], [mxConstants.ALIGN_BOTTOM])), stylePanel3);
-	
-	this.styleButtons([top, middle, bottom]);
-	
-	if (mxClient.IS_QUIRKS)
-	{
-		mxUtils.br(container);
-	}
-	
-	container.appendChild(stylePanel3);
-	
-	// Hack for updating UI state below based on current text selection
-	// currentTable is the current selected DOM table updated below
-	var sub, sup, full;
-	
-	if (graph.cellEditor.isContentEditing())
-	{
-		top.style.display = 'none';
-		middle.style.display = 'none';
-		bottom.style.display = 'none';
-		verticalItem.style.display = 'none';
-		
-		full = this.editorUi.toolbar.addButton('geSprite-justifyfull', null,
-			function()
-			{
-				document.execCommand('justifyfull', false, null);
-			}, stylePanel3);
-		this.styleButtons([full,
-       		sub = this.editorUi.toolbar.addButton('geSprite-subscript',
-       			mxResources.get('subscript') + ' (' + Editor.ctrlKey + '+,)',
-			function()
-			{
-				document.execCommand('subscript', false, null);
-			}, stylePanel3), sup = this.editorUi.toolbar.addButton('geSprite-superscript',
-				mxResources.get('superscript') + ' (' + Editor.ctrlKey + '+.)',
-			function()
-			{
-				document.execCommand('superscript', false, null);
-			}, stylePanel3)]);
-		full.style.marginRight = '9px';
-		
-		var tmp = stylePanel3.cloneNode(false);
-		tmp.style.paddingTop = '4px';
-		var btns = [this.editorUi.toolbar.addButton('geSprite-orderedlist', mxResources.get('numberedList'),
-				function()
-				{
-					document.execCommand('insertorderedlist', false, null);
-				}, tmp),
-			this.editorUi.toolbar.addButton('geSprite-unorderedlist', mxResources.get('bulletedList'),
-				function()
-				{
-					document.execCommand('insertunorderedlist', false, null);
-				}, tmp),
-			this.editorUi.toolbar.addButton('geSprite-outdent', mxResources.get('decreaseIndent'),
-					function()
-					{
-						document.execCommand('outdent', false, null);
-					}, tmp),
-			this.editorUi.toolbar.addButton('geSprite-indent', mxResources.get('increaseIndent'),
-				function()
-				{
-					document.execCommand('indent', false, null);
-				}, tmp),
-			this.editorUi.toolbar.addButton('geSprite-code', mxResources.get('html'),
-				function()
-				{
-					graph.cellEditor.toggleViewMode();
-				}, tmp)];
-		this.styleButtons(btns);
-		btns[btns.length - 1].style.marginLeft = '9px';
-		
-		if (mxClient.IS_QUIRKS)
-		{
-			mxUtils.br(container);
-			tmp.style.height = '40';
-		}
-		
-		container.appendChild(tmp);
-	}
-	else
-	{
-		fontStyleItems[2].style.marginRight = '9px';
-		right.style.marginRight = '9px';
-	}
-
-	// Font size
-	var input = document.createElement('input');
-	input.style.textAlign = 'right';
-	input.style.marginTop = '4px';
-	
-	if (!mxClient.IS_QUIRKS)
-	{
-		input.style.position = 'absolute';
-		input.style.right = '32px';
-	}
-	
-	input.style.width = '46px';
-	input.style.height = (mxClient.IS_QUIRKS) ? '21px' : '17px';
-	stylePanel2.appendChild(input);
-	
-	// Workaround for font size 4 if no text is selected is update font size below
-	// after first character was entered (as the font element is lazy created)
-	var pendingFontSize = null;
-
-	var inputUpdate = this.installInputHandler(input, mxConstants.STYLE_FONTSIZE, Menus.prototype.defaultFontSize, 1, 999, ' px',
-	function(fontSize)
-	{
-		// IE does not support containsNode
-		// KNOWN: Fixes font size issues but bypasses undo
-		if (window.getSelection && !mxClient.IS_IE && !mxClient.IS_IE11)
-		{
-			var selection = window.getSelection();
-			var container = (selection.rangeCount > 0) ? selection.getRangeAt(0).commonAncestorContainer :
-				graph.cellEditor.textarea;
-
-			function updateSize(elt, ignoreContains)
-			{
-				if (elt != graph.cellEditor.textarea && graph.cellEditor.textarea.contains(elt) &&
-					(ignoreContains || selection.containsNode(elt, true)))
-				{
-					if (elt.nodeName == 'FONT')
-					{
-						elt.removeAttribute('size');
-						elt.style.fontSize = fontSize + 'px';
-					}
-					else
-					{
-						var css = mxUtils.getCurrentStyle(elt);
-						
-						if (css.fontSize != fontSize + 'px')
-						{
-							if (mxUtils.getCurrentStyle(elt.parentNode).fontSize != fontSize + 'px')
-							{
-								elt.style.fontSize = fontSize + 'px';
-							}
-							else
-							{
-								elt.style.fontSize = '';
-							}
-						}
-					}
-				}
-			};
-			
-			// Wraps text node or mixed selection with leading text in a font element
-			if (container == graph.cellEditor.textarea ||
-				container.nodeType != mxConstants.NODETYPE_ELEMENT)
-			{
-				document.execCommand('fontSize', false, '1');
-			}
-
-			if (container != graph.cellEditor.textarea)
-			{
-				container = container.parentNode;
-			}
-			
-			if (container.nodeType == mxConstants.NODETYPE_ELEMENT)
-			{
-				var elts = container.getElementsByTagName('*');
-				updateSize(container);
-				
-				for (var i = 0; i < elts.length; i++)
-				{
-					updateSize(elts[i]);
-				}
-			}
-
-			input.value = fontSize + ' px';
-		}
-		else if (window.getSelection || document.selection)
-		{
-			// Checks selection
-			var par = null;
-			
-			if (document.selection)
-			{
-				par = document.selection.createRange().parentElement();
-			}
-			else
-			{
-				var selection = window.getSelection();
-				
-				if (selection.rangeCount > 0)
-				{
-					par = selection.getRangeAt(0).commonAncestorContainer;
-				}
-			}
-			
-			// Node.contains does not work for text nodes in IE11
-			function isOrContains(container, node)
-			{
-			    while (node != null)
-			    {
-			        if (node === container)
-			        {
-			            return true;
-			        }
-			        
-			        node = node.parentNode;
-			    }
-			    
-			    return false;
-			};
-			
-			if (par != null && isOrContains(graph.cellEditor.textarea, par))
-			{
-				pendingFontSize = fontSize;
-				
-				// Workaround for can't set font size in px is to change font size afterwards
-				document.execCommand('fontSize', false, '4');
-				var elts = graph.cellEditor.textarea.getElementsByTagName('font');
-				
-				for (var i = 0; i < elts.length; i++)
-				{
-					if (elts[i].getAttribute('size') == '4')
-					{
-						elts[i].removeAttribute('size');
-						elts[i].style.fontSize = pendingFontSize + 'px';
-			
-						// Overrides fontSize in input with the one just assigned as a workaround
-						// for potential fontSize values of parent elements that don't match
-						window.setTimeout(function()
-						{
-							input.value = pendingFontSize + ' px';
-							pendingFontSize = null;
-						}, 0);
-						
-						break;
-					}
-				}
-			}
-		}
-	}, true);
-	
-	var stepper = this.createStepper(input, inputUpdate, 1, 10, true, Menus.prototype.defaultFontSize);
-	stepper.style.display = input.style.display;
-	stepper.style.marginTop = '4px';
-	
-	if (!mxClient.IS_QUIRKS)
-	{
-		stepper.style.right = '20px';
-	}
-	
-	stylePanel2.appendChild(stepper);
-	
-	
-	var bgColorApply = null;
-	var currentBgColor = '#ffffff';
-	
-	var fontColorApply = null;
-	var currentFontColor = '#000000';
-	
-	var panel = (graph.cellEditor.isContentEditing()) ? this.createColorOption(mxResources.get('fontColor'), function()
-	{
-		return currentFontColor;
-	}, function(color)
-	{
-		document.execCommand('forecolor', false, (color != mxConstants.NONE) ? color : 'transparent');
-	}, '#000000',
-	{
-		install: function(apply) { fontColorApply = apply; },
-		destroy: function() { fontColorApply = null; }
-	}, null, true) : this.createCellColorOption(mxResources.get('fontColor'), mxConstants.STYLE_FONTCOLOR, '#000000', function(color)
-	{
-	}, function(color)
-	{
-		if (color == null || color == mxConstants.NONE)
-		{
-			graph.setCellStyles(mxConstants.STYLE_NOLABEL, '1', graph.getSelectionCells());
-		}
-		else
-		{
-			graph.setCellStyles(mxConstants.STYLE_NOLABEL, null, graph.getSelectionCells());
-		}
-
-		graph.updateLabelElements(graph.getSelectionCells(), function(elt)
-		{
-			elt.removeAttribute('color');
-			elt.style.color = null;
-		});
-	});
-	
-	colorPanel.appendChild(panel);
-	
-	container.appendChild(colorPanel);
-	
-	function setSelected(elt, selected)
-	{
-		if (mxClient.IS_IE && (mxClient.IS_QUIRKS || document.documentMode < 10))
-		{
-			elt.style.filter = (selected) ? 'progid:DXImageTransform.Microsoft.Gradient('+
-            	'StartColorStr=\'#c5ecff\', EndColorStr=\'#87d4fb\', GradientType=0)' : '';
-		}
-		else
-		{
-			elt.style.backgroundImage = (selected) ? 'linear-gradient(#c5ecff 0px,#87d4fb 100%)' : '';
-		}
-	};
-	
-	var listener = mxUtils.bind(this, function(sender, evt, force)
-	{
-		ss = this.format.getSelectionState();
-		var fontStyle = mxUtils.getValue(ss.style, mxConstants.STYLE_FONTSTYLE, 0);
-		setSelected(fontStyleItems[0], (fontStyle & mxConstants.FONT_BOLD) == mxConstants.FONT_BOLD);
-		setSelected(fontStyleItems[1], (fontStyle & mxConstants.FONT_ITALIC) == mxConstants.FONT_ITALIC);
-		setSelected(fontStyleItems[2], (fontStyle & mxConstants.FONT_UNDERLINE) == mxConstants.FONT_UNDERLINE);
-
-		setSelected(verticalItem, mxUtils.getValue(ss.style, mxConstants.STYLE_HORIZONTAL, '1') == '0');
-		
-		if (force || document.activeElement != input)
-		{
-			var tmp = parseFloat(mxUtils.getValue(ss.style, mxConstants.STYLE_FONTSIZE, Menus.prototype.defaultFontSize));
-			input.value = (isNaN(tmp)) ? '' : tmp  + ' px';
-		}
-		
-		var align = mxUtils.getValue(ss.style, mxConstants.STYLE_ALIGN, mxConstants.ALIGN_CENTER);
-		setSelected(left, align == mxConstants.ALIGN_LEFT);
-		setSelected(center, align == mxConstants.ALIGN_CENTER);
-		setSelected(right, align == mxConstants.ALIGN_RIGHT);
-		
-		var valign = mxUtils.getValue(ss.style, mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_MIDDLE);
-		setSelected(top, valign == mxConstants.ALIGN_TOP);
-		setSelected(middle, valign == mxConstants.ALIGN_MIDDLE);
-		setSelected(bottom, valign == mxConstants.ALIGN_BOTTOM);
-	});
-
-
-	this.addKeyHandler(input, listener);
-
-	graph.getModel().addListener(mxEvent.CHANGE, listener);
-	this.listeners.push({destroy: function() { graph.getModel().removeListener(listener); }});
-	listener();
-	
-	if (graph.cellEditor.isContentEditing())
-	{
-		var updating = false;
-		
-		var updateCssHandler = function()
-		{
-			if (!updating)
-			{
-				updating = true;
-			
-				window.setTimeout(function()
-				{
-					var selectedElement = graph.getSelectedElement();
-					var node = selectedElement;
-
-					while (node != null && node.nodeType != mxConstants.NODETYPE_ELEMENT)
-					{
-						node = node.parentNode;
-					}
-
-					if (node != null)
-					{
-						// Workaround for commonAncestor on range in IE11 returning parent of common ancestor
-						if (node == graph.cellEditor.textarea && graph.cellEditor.textarea.children.length == 1 &&
-							graph.cellEditor.textarea.firstChild.nodeType == mxConstants.NODETYPE_ELEMENT)
-						{
-							node = graph.cellEditor.textarea.firstChild;
-						}
-						
-						function getRelativeLineHeight(fontSize, lineHeight, elt)
-						{
-							if (elt.style.lineHeight.substring(elt.style.lineHeight.length - 1) == '%')
-							{
-								return parseInt(elt.style.lineHeight) / 100;
-							}
-							else
-							{
-								return (lineHeight.substring(lineHeight.length - 2) == 'px') ?
-										parseFloat(lineHeight) / fontSize : parseInt(lineHeight);
-							}
-						};
-						
-						function getAbsoluteFontSize(fontSize)
-						{
-							if (fontSize.substring(fontSize.length - 2) == 'px')
-							{
-								return parseFloat(fontSize);
-							}
-							else
-							{
-								return mxConstants.DEFAULT_FONTSIZE;
-							}
-						}
-						
-						//var realCss = mxUtils.getCurrentStyle(selectedElement);
-						var css = mxUtils.getCurrentStyle(node);
-						var fontSize = getAbsoluteFontSize(css.fontSize);
-						var lineHeight = getRelativeLineHeight(fontSize, css.lineHeight, node);
-
-						// Finds common font size
-						var elts = node.getElementsByTagName('*');
-
-						// IE does not support containsNode
-						if (elts.length > 0 && window.getSelection && !mxClient.IS_IE && !mxClient.IS_IE11)
-						{
-							var selection = window.getSelection();
-
-							for (var i = 0; i < elts.length; i++)
-							{
-								if (selection.containsNode(elts[i], true))
-								{
-									temp = mxUtils.getCurrentStyle(elts[i]);
-									fontSize = Math.max(getAbsoluteFontSize(temp.fontSize), fontSize);
-									var lh = getRelativeLineHeight(fontSize, temp.lineHeight, elts[i]);
-									
-									if (lh != lineHeight || isNaN(lh))
-									{
-										lineHeight = '';
-									}
-								}
-							}
-						}
-						
-						if (css != null)
-						{
-							setSelected(fontStyleItems[0], css.fontWeight == 'bold' || graph.getParentByName(node, 'B', graph.cellEditor.textarea) != null);
-							setSelected(fontStyleItems[1], css.fontStyle == 'italic' || graph.getParentByName(node, 'I', graph.cellEditor.textarea) != null);
-							setSelected(fontStyleItems[2], graph.getParentByName(node, 'U', graph.cellEditor.textarea) != null);
-							setSelected(left, css.textAlign == 'left');
-							setSelected(center, css.textAlign == 'center');
-							setSelected(right, css.textAlign == 'right');
-							setSelected(full, css.textAlign == 'justify');
-							setSelected(sup, graph.getParentByName(node, 'SUP', graph.cellEditor.textarea) != null);
-							setSelected(sub, graph.getParentByName(node, 'SUB', graph.cellEditor.textarea) != null);
-							
-							if (document.activeElement != input)
-							{
-								if (node.nodeName == 'FONT' && node.getAttribute('size') == '4' &&
-									pendingFontSize != null)
-								{
-									node.removeAttribute('size');
-									node.style.fontSize = pendingFontSize + ' px';
-									pendingFontSize = null;
-								}
-								else
-								{
-									input.value = (isNaN(fontSize)) ? '' : fontSize + ' px';
-								}
-								
-							}
-							
-							// Converts rgb(r,g,b) values
-							var color = css.color.replace(
-								    /\brgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g,
-								    function($0, $1, $2, $3) {
-								        return "#" + ("0"+Number($1).toString(16)).substr(-2) + ("0"+Number($2).toString(16)).substr(-2) + ("0"+Number($3).toString(16)).substr(-2);
-								    });
-							var color2 = css.backgroundColor.replace(
-								    /\brgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g,
-								    function($0, $1, $2, $3) {
-								        return "#" + ("0"+Number($1).toString(16)).substr(-2) + ("0"+Number($2).toString(16)).substr(-2) + ("0"+Number($3).toString(16)).substr(-2);
-								    });
-							
-							// Updates the color picker for the current font
-							if (fontColorApply != null)
-							{
-								if (color.charAt(0) == '#')
-								{
-									currentFontColor = color;
-								}
-								else
-								{
-									currentFontColor = '#000000';
-								}
-								
-								fontColorApply(currentFontColor, true);
-							}
-							
-							if (bgColorApply != null)
-							{
-								if (color2.charAt(0) == '#')
-								{
-									currentBgColor = color2;
-								}
-								else
-								{
-									currentBgColor = null;
-								}
-								
-								bgColorApply(currentBgColor, true);
-							}
-							
-							// Workaround for firstChild is null or not an object
-							// in the log which seems to be IE8- only / 29.01.15
-						}
-					}
-					
-					updating = false;
-				}, 0);
-			}
-		};
-		
-		mxEvent.addListener(graph.cellEditor.textarea, 'input', updateCssHandler)
-		mxEvent.addListener(graph.cellEditor.textarea, 'touchend', updateCssHandler);
-		mxEvent.addListener(graph.cellEditor.textarea, 'mouseup', updateCssHandler);
-		mxEvent.addListener(graph.cellEditor.textarea, 'keyup', updateCssHandler);
-		this.listeners.push({destroy: function()
-		{
-			// No need to remove listener since textarea is destroyed after edit
-		}});
-		updateCssHandler();
-	}
-
-	return container;
-};
 
 /**
  * Adds the label menu items to the given menu and parent.
@@ -3341,9 +2747,71 @@ ArrangePanel.prototype.getCustomColors = function()
 	
 	return result;
 };
-
 /**
- * Adds the label menu items to the given menu and parent.
+ * 背景颜色
+ */
+
+ ArrangePanel.prototype.addBgColor = function(container)
+ {
+	var ui = this.editorUi;
+	var graph = ui.editor.graph;
+	var ss = this.format.getSelectionState();
+	container.appendChild(this.createTitle('填充'));
+	
+	var colorPanel = document.createElement('div');
+	colorPanel.style.overflow = 'hidden';
+	
+	// 增加下拉选项
+	var styleSelect = document.createElement('select');
+	styleSelect.className = 'formatMiddleSelect'
+	styleSelect.style.marginRight = '4px';
+	var styles = ['有', '无'];
+	for (var i = 0; i < styles.length; i++)
+	{
+		var styleOption = document.createElement('option');
+		styleOption.setAttribute('value', styles[i]);
+		styleOption.innerText = styles[i];
+		styleSelect.appendChild(styleOption);
+	}
+
+	var state = graph.view.getState(graph.getSelectionCell());
+	var color = mxUtils.getValue(state.style, 'fillColor', null)
+	color ? styleSelect.value = '有' : styleSelect.value = '无';
+	colorPanel.appendChild(styleSelect)
+	mxEvent.addListener(styleSelect, 'change', function(evt)
+	{
+		graph.getModel().beginUpdate();
+		try
+		{
+			// 无边框时 color设置为none
+			color = styleSelect.value == '无' ? 'none' : '#FFFFFF';
+			graph.setCellStyles('fillColor', color, graph.getSelectionCells());
+			ui.fireEvent(new mxEventObject('styleChanged', 'keys', ['fillColor'],'values', [color], 'cells', graph.getSelectionCells()));
+		}
+		finally
+		{
+			graph.getModel().endUpdate();
+		}
+		
+		mxEvent.consume(evt);
+	});
+	
+	mxEvent.addListener(styleSelect, 'click', function(evt)
+	{
+		mxEvent.consume(evt);
+	});
+	
+	var fillKey = (ss.style.shape == 'image') ? mxConstants.STYLE_IMAGE_BACKGROUND : mxConstants.STYLE_FILLCOLOR;
+	var label = (ss.style.shape == 'image') ? mxResources.get('background') : mxResources.get('fill');
+
+	var fillColor = this.createCellColorOption(label, fillKey, '#FFFFFF');
+	fillColor.className += " formatMiddleBtn";
+	colorPanel.appendChild(fillColor);
+	container.appendChild(colorPanel)
+	return container;
+};
+/**
+ * 边框颜色
  */
 ArrangePanel.prototype.addStroke = function(container)
 {

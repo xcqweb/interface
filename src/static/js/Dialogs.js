@@ -6,22 +6,27 @@
  */
 var OpenDialog = function()
 {
-	var iframe = document.createElement('iframe');
-	iframe.style.backgroundColor = 'transparent';
-	iframe.allowTransparency = 'true';
-	iframe.style.borderStyle = 'none';
-	iframe.style.borderWidth = '0px';
-	iframe.style.overflow = 'hidden';
-	iframe.frameBorder = '0';
+	// var iframe = document.createElement('iframe');
+	// iframe.style.backgroundColor = 'transparent';
+	// iframe.allowTransparency = 'true';
+	// iframe.style.borderStyle = 'none';
+	// iframe.style.borderWidth = '0px';
+	// iframe.style.overflow = 'hidden';
+	// iframe.frameBorder = '0';
 	
-	// Adds padding as a workaround for box model in older IE versions
-	var dx = (mxClient.IS_VML && (document.documentMode == null || document.documentMode < 8)) ? 20 : 0;
+	// // Adds padding as a workaround for box model in older IE versions
+	// var dx = (mxClient.IS_VML && (document.documentMode == null || document.documentMode < 8)) ? 20 : 0;
 	
-	iframe.setAttribute('width', (((Editor.useLocalStorage) ? 640 : 320) + dx) + 'px');
-	iframe.setAttribute('height', (((Editor.useLocalStorage) ? 480 : 220) + dx) + 'px');
-	iframe.setAttribute('src', OPEN_FORM);
+	// iframe.setAttribute('width', (((Editor.useLocalStorage) ? 640 : 320) + dx) + 'px');
+	// iframe.setAttribute('height', (((Editor.useLocalStorage) ? 480 : 220) + dx) + 'px');
+	// iframe.setAttribute('src', OPEN_FORM);
+	var p = document.createElement('p')
+	p.innerHTML = '此菜单将打开应用中心';
+	p.style.textAlign = "center"
+	p.style.fontSize = '14px';
+	p.style.lineHeight = '40px';
 	
-	this.container = iframe;
+	this.container = p;
 };
 
 /**
