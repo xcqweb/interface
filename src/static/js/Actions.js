@@ -176,7 +176,7 @@ Actions.prototype.init = function()
 	this.addAction('publish', function() {
 		var dlg = new ShareDialog(ui, '')
 		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '发布');
-	}, true, null, 'Ctrl+O')
+	}, true, null, 'Ctrl+Shift+O').isEnabled = isGraphEnabled;
 	// 配置链接
 	this.addAction('configLink', function () {
 		var dlg = new ConfigLinkDialog(ui, '', '应用', function (val, desc) {
@@ -186,8 +186,9 @@ Actions.prototype.init = function()
 		dlg.init();
 	}, true)
 	// 文件操作
-	this.addAction('new...', function() { graph.openLink(ui.getUrl()); });
-	this.addAction('open...', function()
+	// this.addAction('new', function() { graph.openLink(ui.getUrl()); });
+	this.addAction('new', function() { ui.actions.get('addPage').funct() });
+	this.addAction('open', function()
 	{
 		window.openNew = true;
 		window.openKey = 'open';		
@@ -289,6 +290,7 @@ Actions.prototype.init = function()
 			window.openFile = null;
 		});
 	}).isEnabled = isGraphEnabled;
+
 	this.addAction('save', function() { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+S').isEnabled = isGraphEnabled;
 	this.addAction('saveAs...', function() { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+Shift+S').isEnabled = isGraphEnabled;
 	this.addAction('export...', function() { ui.showDialog(new ExportDialog(ui).container, 300, 230, true, true); });
@@ -840,17 +842,16 @@ Actions.prototype.init = function()
 		{
 			value = state.style[mxConstants.STYLE_ROTATION] || value;
 		}
-
 		var dlg = new valueDialog(ui, value, '旋转角度（0-360）：', '应用', function(newValue)
 		{
-			if (newValue != null && !Number.isNaN(newValue))
+			if (newValue != null && !isNaN(newValue))
 			{
 				graph.setCellStyles(mxConstants.STYLE_ROTATION, newValue);
 				ui.hideDialog()
 			}
 		}, null, null);
 		
-		ui.showDialog(dlg.container, 375, 80, true, false, null);
+		ui.showDialog(dlg.container, 375, 80, true, false, null, null ,'任意旋转');
 	});
 	// 视图
 	this.addAction('resetView', function()
@@ -1002,7 +1003,7 @@ Actions.prototype.init = function()
 	action.setSelectedCallback(function() { return graph.scrollbars; });
 	action = this.addAction('pageView', mxUtils.bind(this, function()
 	{
-		ui.setPageVisible(!graph.pageVisible);
+		// ui.setPageVisible(!graph.pageVisible);
 	}), true, null, 'Ctrl+Shift+L');
 	action.setToggleAction(true);
 	action.setSelectedCallback(function() { return graph.pageVisible; });

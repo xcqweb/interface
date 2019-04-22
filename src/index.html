@@ -34,13 +34,35 @@
 		(function () {
 			// 保存
 			EditorUi.prototype.save = function (name, fields) {
-				console.log('name', fields)
 				var xml = mxUtils.getXml(this.editor.getGraphXml());
 				this.editor.setXml(xml)
-				console.log('pages', this.editor.pages)
 				this.editor.setFilename(name)
 				this.editor.setFiledes(fields)
-				console.log('filename', this.editor.filename)
+
+				var pages = this.editor.pages
+				var data = {
+					name: name,
+					describe: fields,
+					content: JSON.stringify(pages)
+				}
+				
+				$.ajax({
+					url: 'api/viewtool',
+					method: "POST",
+					"Content-Type": 'application/json;charset=UTF-8',
+					dataType: 'json',
+					headers: {
+						"Content-Type": 'application/json;charset=UTF-8',
+						"Authorization": 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsInNjb3BlcyI6WyJST0xFX0FETUlOIl0sInVzZXJOYW1lIjoiYWRtaW4iLCJleHAiOjE1NTU5ODU2NTgsInVzZXJJZCI6IjEiLCJpYXQiOjE1NTU5MTM2NTgsImVtYWlsIjoidGVzdEB0ZXN0LmNuIiwiZW5hYmxlZCI6dHJ1ZX0.O_4iS3LA3AGcg4OSpzcVUyAKcH7tBArPOCTx0_GR7LqbywFH8HYSi0SUKWhQD2qb5oST-12pQJOnNdT99dnwPw'
+					},
+					data: JSON.stringify(data),
+					success: function (res) {
+						mxUtils.alert('保存成功')
+					},
+					error: function (res) {
+						console.log('error', res)
+					}
+				})
 			}
 
 			// 初始化工具

@@ -1073,7 +1073,7 @@ PrintDialog.prototype.create = function(editorUi)
 	onePageCheckBox.setAttribute('type', 'checkbox');
 	td = document.createElement('td');
 	td.setAttribute('colspan', '2');
-	td.style.fontSize = '10pt';
+	td.style.fontSize = '12px';
 	td.appendChild(onePageCheckBox);
 	
 	var span = document.createElement('span');
@@ -1100,7 +1100,7 @@ PrintDialog.prototype.create = function(editorUi)
 	var pageCountCheckBox = document.createElement('input');
 	pageCountCheckBox.setAttribute('type', 'checkbox');
 	td = document.createElement('td');
-	td.style.fontSize = '10pt';
+	td.style.fontSize = '12px';
 	td.appendChild(pageCountCheckBox);
 	
 	var span = document.createElement('span');
@@ -1125,7 +1125,7 @@ PrintDialog.prototype.create = function(editorUi)
 	pageCountInput.style.width = '50px';
 
 	td = document.createElement('td');
-	td.style.fontSize = '10pt';
+	td.style.fontSize = '12px';
 	td.appendChild(pageCountInput);
 	mxUtils.write(td, ' ' + mxResources.get('pages') + ' (max)');
 	row.appendChild(td);
@@ -1355,41 +1355,44 @@ var PageSetupDialog = function(editorUi)
 	row = document.createElement('tr');
 	
 	td = document.createElement('td');
-	td.style.verticalAlign = 'top';
-	td.style.fontSize = '10pt';
+	td.className = "geDialogInfoTitle";
+	// 页面尺寸
 	mxUtils.write(td, mxResources.get('paperSize') + ':');
 	
 	row.appendChild(td);
+	tbody.appendChild(row);
+
+	row = document.createElement('tr');
 	
 	td = document.createElement('td');
 	td.style.verticalAlign = 'top';
-	td.style.fontSize = '10pt';
+	td.style.fontSize = '12px';
 	
 	var accessor = PageSetupDialog.addPageFormatPanel(td, 'pagesetupdialog', graph.pageFormat);
 
 	row.appendChild(td);
 	tbody.appendChild(row);
 	
+	// 背景颜色
 	row = document.createElement('tr');
-	
 	td = document.createElement('td');
-	mxUtils.write(td, mxResources.get('background') + ':');
-	
+	td.className = "geDialogInfoTitle";
+	mxUtils.write(td, '背景颜色:');
 	row.appendChild(td);
+	tbody.appendChild(row);
 	
+	row = document.createElement('tr');	
 	td = document.createElement('td');
 	td.style.whiteSpace = 'nowrap';
 	
 	var backgroundInput = document.createElement('input');
 	backgroundInput.setAttribute('type', 'text');
-	var backgroundButton = document.createElement('button');
+	var backgroundButton = document.createElement('span');
 	
-	backgroundButton.style.width = '18px';
-	backgroundButton.style.height = '18px';
-	backgroundButton.style.marginRight = '20px';
-	backgroundButton.style.backgroundPosition = 'center center';
-	backgroundButton.style.backgroundRepeat = 'no-repeat';
-	
+	backgroundButton.style.width = '120px';
+	backgroundButton.style.height = '32px';	
+	backgroundButton.style.display = 'block';	
+	backgroundButton.style.border = '1px solid #C5C5C5';	
 	var newBackgroundColor = graph.background;
 	
 	function updateBackgroundColor()
@@ -1419,14 +1422,25 @@ var PageSetupDialog = function(editorUi)
 	});
 	
 	td.appendChild(backgroundButton);
+	row.appendChild(td);
+	tbody.appendChild(row);
 	
+	// 网格大小
+	row = document.createElement('tr');	
+	td = document.createElement('td');
+	td.className = "geDialogInfoTitle";
 	mxUtils.write(td, mxResources.get('gridSize') + ':');
+	row.appendChild(td);
+	tbody.appendChild(row);
 	
+	row = document.createElement('tr');	
+	td = document.createElement('td');
 	var gridSizeInput = document.createElement('input');
 	gridSizeInput.setAttribute('type', 'number');
 	gridSizeInput.setAttribute('min', '0');
-	gridSizeInput.style.width = '40px';
-	gridSizeInput.style.marginLeft = '6px';
+	gridSizeInput.style.width = '100%';
+	gridSizeInput.style.height = '32px';
+	gridSizeInput.style.border = '1px solid #C5C5C5';
 	
 	gridSizeInput.value = graph.getGridSize();
 	td.appendChild(gridSizeInput);
@@ -1552,44 +1566,64 @@ var PageSetupDialog = function(editorUi)
  */
 PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, pageFormatListener)
 {
+	// 页面尺寸下拉框
+	var paperSizeSelect = document.createElement('select');
+	paperSizeSelect.style.width = '100%';
+	paperSizeSelect.style.height = '32px';
+	paperSizeSelect.style.border = '1px solid #C5C5C5';	
+
+	var formatDiv = document.createElement('div');
+	formatDiv.style.marginTop = '11px';
+	formatDiv.style.marginBottom = '11px';
+	formatDiv.style.width = '210px';
+	formatDiv.style.height = '24px';
+
+	// 页面方向
+	var pageDirection = document.createElement('p');
+	pageDirection.innerText = "页面方向：";
+	pageDirection.className = "geDialogInfoTitle";
+	formatDiv.appendChild(pageDirection);
+
+	// 单选按钮
 	var formatName = 'format-' + namePostfix;
 	
 	var portraitCheckBox = document.createElement('input');
 	portraitCheckBox.setAttribute('name', formatName);
 	portraitCheckBox.setAttribute('type', 'radio');
 	portraitCheckBox.setAttribute('value', 'portrait');
+	portraitCheckBox.style.display = 'none';
 	
 	var landscapeCheckBox = document.createElement('input');
 	landscapeCheckBox.setAttribute('name', formatName);
 	landscapeCheckBox.setAttribute('type', 'radio');
 	landscapeCheckBox.setAttribute('value', 'landscape');
+	landscapeCheckBox.style.display = 'none';
 	
-	var paperSizeSelect = document.createElement('select');
-	paperSizeSelect.style.marginBottom = '8px';
-	paperSizeSelect.style.width = '202px';
-
-	var formatDiv = document.createElement('div');
-	formatDiv.style.marginLeft = '4px';
-	formatDiv.style.width = '210px';
-	formatDiv.style.height = '24px';
-
+	// 竖屏
 	portraitCheckBox.style.marginRight = '6px';
 	formatDiv.appendChild(portraitCheckBox);
 	
 	var portraitSpan = document.createElement('span');
-	portraitSpan.style.maxWidth = '100px';
-	mxUtils.write(portraitSpan, mxResources.get('portrait'));
+	portraitSpan.style.float = "left";
+	portraitSpan.style.width = "24px";
+	portraitSpan.style.height = "32px";
+	portraitSpan.style.backgroundImage = 'url(/static/images/icons/portrait.png)';
 	formatDiv.appendChild(portraitSpan);
 
+	// 横屏
 	landscapeCheckBox.style.marginLeft = '10px';
 	landscapeCheckBox.style.marginRight = '6px';
 	formatDiv.appendChild(landscapeCheckBox);
 	
 	var landscapeSpan = document.createElement('span');
-	landscapeSpan.style.width = '100px';
-	mxUtils.write(landscapeSpan, mxResources.get('landscape'));
+	landscapeSpan.style.float = "left";
+	landscapeSpan.style.height = "24px";
+	landscapeSpan.style.width = "32px";
+	landscapeSpan.style.backgroundImage = 'url(/static/images/icons/landscape.png)';
+	landscapeSpan.style.margin = "4px 0 0 10px";
 	formatDiv.appendChild(landscapeSpan)
 
+	// 自定义
 	var customDiv = document.createElement('div');
 	customDiv.style.marginLeft = '4px';
 	customDiv.style.width = '210px';
@@ -1606,7 +1640,6 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 	heightInput.style.textAlign = 'right';
 	customDiv.appendChild(heightInput);
 	mxUtils.write(customDiv, ' in');
-
 	formatDiv.style.display = 'none';
 	customDiv.style.display = 'none';
 	
@@ -1677,6 +1710,7 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 					
 					if (pageFormat.width == f.format.width && pageFormat.height == f.format.height)
 					{
+						// 选择竖屏
 						paperSizeSelect.value = f.key;
 						portraitCheckBox.setAttribute('checked', 'checked');
 						portraitCheckBox.defaultChecked = true;
@@ -1684,10 +1718,15 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 						landscapeCheckBox.removeAttribute('checked');
 						landscapeCheckBox.defaultChecked = false;
 						landscapeCheckBox.checked = false;
+						landscapeSpan.style.backgroundImage = 'url(/static/images/icons/landscape.png)';
+						portraitSpan.style.backgroundImage = 'url(/static/images/icons/portrait_checked.png)';
+						portraitSpan.style.border = '1px solid #3D91F7';
+						landscapeSpan.style.border = '1px solid #C4C4C4';
 						detected = true;
 					}
 					else if (pageFormat.width == f.format.height && pageFormat.height == f.format.width)
 					{
+						// 选择横屏
 						paperSizeSelect.value = f.key;
 						portraitCheckBox.removeAttribute('checked');
 						portraitCheckBox.defaultChecked = false;
@@ -1695,6 +1734,10 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 						landscapeCheckBox.setAttribute('checked', 'checked');
 						landscapeCheckBox.defaultChecked = true;
 						landscapeCheckBox.checked = true;
+						portraitSpan.style.backgroundImage = 'url(/static/images/icons/portrait.png)';
+						landscapeSpan.style.backgroundImage = 'url(/static/images/icons/landscape_checked.png)';
+						portraitSpan.style.border = '1px solid #C4C4C4';
+						landscapeSpan.style.border = '1px solid #3D91F7';
 						detected = true;
 					}
 				}
@@ -1721,7 +1764,6 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 	listener();
 
 	div.appendChild(paperSizeSelect);
-	mxUtils.br(div);
 
 	div.appendChild(formatDiv);
 	div.appendChild(customDiv);
@@ -1769,7 +1811,6 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 			newPageFormat.height != currentPageFormat.height))
 		{
 			currentPageFormat = newPageFormat;
-			
 			// Updates page format and reloads format panel
 			if (pageFormatListener != null)
 			{
@@ -1778,16 +1819,26 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 		}
 	};
 
+	// 选择竖屏
 	mxEvent.addListener(portraitSpan, 'click', function(evt)
 	{
 		portraitCheckBox.checked = true;
+		landscapeSpan.style.backgroundImage = 'url(/static/images/icons/landscape.png)';
+		portraitSpan.style.backgroundImage = 'url(/static/images/icons/portrait_checked.png)';
+		portraitSpan.style.border = '1px solid #3D91F7';
+		landscapeSpan.style.border = '1px solid #C4C4C4';
 		update(evt);
 		mxEvent.consume(evt);
 	});
 	
+	// 选择横屏
 	mxEvent.addListener(landscapeSpan, 'click', function(evt)
 	{
 		landscapeCheckBox.checked = true;
+		portraitSpan.style.backgroundImage = 'url(/static/images/icons/portrait.png)';
+		landscapeSpan.style.backgroundImage = 'url(/static/images/icons/landscape_checked.png)';
+		portraitSpan.style.border = '1px solid #C4C4C4';
+		landscapeSpan.style.border = '1px solid #3D91F7';
 		update(evt);
 		mxEvent.consume(evt);
 	});
@@ -1823,18 +1874,20 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
  */
 PageSetupDialog.getFormats = function()
 {
-	return [{key: 'letter', title: 'US-Letter (8,5" x 11")', format: mxConstants.PAGE_FORMAT_LETTER_PORTRAIT},
-	        {key: 'legal', title: 'US-Legal (8,5" x 14")', format: new mxRectangle(0, 0, 850, 1400)},
-	        {key: 'tabloid', title: 'US-Tabloid (279 mm x 432 mm)', format: new mxRectangle(0, 0, 1100, 1700)},
-	        {key: 'a0', title: 'A0 (841 mm x 1189 mm)', format: new mxRectangle(0, 0, 3300, 4681)},
-	        {key: 'a1', title: 'A1 (594 mm x 841 mm)', format: new mxRectangle(0, 0, 2339, 3300)},
-	        {key: 'a2', title: 'A2 (420 mm x 594 mm)', format: new mxRectangle(0, 0, 1654, 2336)},
-	        {key: 'a3', title: 'A3 (297 mm x 420 mm)', format: new mxRectangle(0, 0, 1169, 1654)},
-	        {key: 'a4', title: 'A4 (210 mm x 297 mm)', format: mxConstants.PAGE_FORMAT_A4_PORTRAIT},
-	        {key: 'a5', title: 'A5 (148 mm x 210 mm)', format: new mxRectangle(0, 0, 583, 827)},
-	        {key: 'a6', title: 'A6 (105 mm x 148 mm)', format: new mxRectangle(0, 0, 413, 583)},
-	        {key: 'a7', title: 'A7 (74 mm x 105 mm)', format: new mxRectangle(0, 0, 291, 413)},
-	        {key: 'custom', title: mxResources.get('custom'), format: null}];
+	return [
+		// {key: 'letter', title: 'US-Letter (8,5" x 11")', format: mxConstants.PAGE_FORMAT_LETTER_PORTRAIT},
+		// {key: 'legal', title: 'US-Legal (8,5" x 14")', format: new mxRectangle(0, 0, 850, 1400)},
+		// {key: 'tabloid', title: 'US-Tabloid (279 mm x 432 mm)', format: new mxRectangle(0, 0, 1100, 1700)},
+		{key: 'a0', title: 'A0 (841 mm x 1189 mm)', format: new mxRectangle(0, 0, 3300, 4681)},
+		{key: 'a1', title: 'A1 (594 mm x 841 mm)', format: new mxRectangle(0, 0, 2339, 3300)},
+		{key: 'a2', title: 'A2 (420 mm x 594 mm)', format: new mxRectangle(0, 0, 1654, 2336)},
+		{key: 'a3', title: 'A3 (297 mm x 420 mm)', format: new mxRectangle(0, 0, 1169, 1654)},
+		{key: 'a4', title: 'A4 (210 mm x 297 mm)', format: mxConstants.PAGE_FORMAT_A4_PORTRAIT},
+		{key: 'a5', title: 'A5 (148 mm x 210 mm)', format: new mxRectangle(0, 0, 583, 827)},
+		{key: 'a6', title: 'A6 (105 mm x 148 mm)', format: new mxRectangle(0, 0, 413, 583)},
+		{key: 'a7', title: 'A7 (74 mm x 105 mm)', format: new mxRectangle(0, 0, 291, 413)},
+		// {key: 'custom', title: mxResources.get('custom'), format: null}
+	];
 };
 
 /**

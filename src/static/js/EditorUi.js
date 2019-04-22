@@ -3585,7 +3585,6 @@ EditorUi.prototype.save = function(name, des)
 		}
 		catch (e)
 		{
-			console.log(e)
 			this.editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
 		}
 	}
@@ -3973,13 +3972,14 @@ EditorUi.prototype.createKeyHandler = function(editor)
 	var keyHandlerGetFunction = keyHandler.getFunction;
 
 	// Alt+Shift+Keycode mapping to action
-	var altShiftActions = {67: this.actions.get('clearWaypoints'), // Alt+Shift+C
-						  // 65: this.actions.get('connectionArrows'), // Alt+Shift+A
-						  76: this.actions.get('editLink'), // Alt+Shift+L
-						  // 80: this.actions.get('connectionPoints'), // Alt+Shift+P
-						  84: this.actions.get('editTooltip'), // Alt+Shift+T
-						  86: this.actions.get('pasteSize'), // Alt+Shift+V
-						  88: this.actions.get('copySize') // Alt+Shift+X
+	var altShiftActions = {
+		// 67: this.actions.get('clearWaypoints'), // Alt+Shift+C
+		// 65: this.actions.get('connectionArrows'), // Alt+Shift+A
+		// 76: this.actions.get('editLink'), // Alt+Shift+L
+		// 80: this.actions.get('connectionPoints'), // Alt+Shift+P
+		// 84: this.actions.get('editTooltip'), // Alt+Shift+T
+		// 86: this.actions.get('pasteSize'), // Alt+Shift+V
+		// 88: this.actions.get('copySize') // Alt+Shift+X
 	};
 	
 	mxKeyHandler.prototype.getFunction = function(evt)
@@ -4152,6 +4152,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		keyHandler.bindAction(82, true, 'clearDefaultStyle', true); // Ctrl+Shift+R
 		keyHandler.bindAction(83, true, 'save'); // Ctrl+S
 		keyHandler.bindAction(83, true, 'saveAs', true); // Ctrl+Shift+S
+		keyHandler.bindAction(79, true, 'publish', true); // Ctrl+Shift+O,
 		keyHandler.bindAction(65, true, 'selectAll'); // Ctrl+A
 		keyHandler.bindAction(65, true, 'selectNone', true); // Ctrl+A
 		keyHandler.bindAction(73, true, 'selectVertices', true); // Ctrl+Shift+I
@@ -4179,7 +4180,6 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		keyHandler.bindAction(85, true, 'ungroup', true); // Ctrl+Shift+U
 		// keyHandler.bindAction(190, true, 'superscript'); // Ctrl+.
 		// keyHandler.bindAction(188, true, 'subscript'); // Ctrl+,
-		keyHandler.bindAction(79, true, 'publish'); // Ctrl+O,
 		keyHandler.bindKey(13, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // Enter
 		// keyHandler.bindKey(113, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // F2
 	}

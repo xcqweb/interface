@@ -1221,7 +1221,7 @@ BaseFormatPanel.prototype.addUnitSelect = function name(container, width, list, 
 	// 下拉框
 	var dirSelect = document.createElement('select');
 	dirSelect.style.width = width + 'px';
-	dirSelect.style.float = 'unset';
+	dirSelect.style.float = 'none';
 	dirSelect.className = "formatMiddleSelect";
 
 	var dirs = list;
@@ -2397,19 +2397,6 @@ ArrangePanel.prototype.alignFont = function (container) {
 	var listener = mxUtils.bind(this, function(sender, evt, force)
 	{
 		ss = this.format.getSelectionState();
-		var fontStyle = mxUtils.getValue(ss.style, mxConstants.STYLE_FONTSTYLE, 0);
-		// setSelected(fontStyleItems[0], (fontStyle & mxConstants.FONT_BOLD) == mxConstants.FONT_BOLD);
-		// setSelected(fontStyleItems[1], (fontStyle & mxConstants.FONT_ITALIC) == mxConstants.FONT_ITALIC);
-		// setSelected(fontStyleItems[2], (fontStyle & mxConstants.FONT_UNDERLINE) == mxConstants.FONT_UNDERLINE);
-
-		// setSelected(verticalItem, mxUtils.getValue(ss.style, mxConstants.STYLE_HORIZONTAL, '1') == '0');
-		
-		// if (force || document.activeElement != input)
-		// {
-		// 	var tmp = parseFloat(mxUtils.getValue(ss.style, mxConstants.STYLE_FONTSIZE, Menus.prototype.defaultFontSize));
-		// 	input.value = (isNaN(tmp)) ? '' : tmp  + ' px';
-		// }
-		
 		var align = mxUtils.getValue(ss.style, mxConstants.STYLE_ALIGN, mxConstants.ALIGN_CENTER);
 		setSelected(left, align == mxConstants.ALIGN_LEFT);
 		setSelected(center, align == mxConstants.ALIGN_CENTER);
@@ -3346,7 +3333,7 @@ ActionsPanel.prototype.init = function (container) {
 		this.container.appendChild(addAction);
 		// 默认一个交互操作
 		this.rectangleActions()
-		
+		// 添加交互
 		mxEvent.addListener(addAction, 'click', function (evt) {
 			this.rectangleActions()
 		}.bind(this))
@@ -3875,7 +3862,7 @@ PaletteManage.prototype.addFoldingHandler = function(elt, content) {
 		if (content.style.display !== 'none') {
 			content.style.display = 'none';
 			elt.style.backgroundImage = 'url(' + this.colspanImage + ')';
-			elt.parentNode.style.flex = 'unset';
+			elt.parentNode.style.flex = 'none';
 		} else {
 			content.style.display = '';
 			elt.style.backgroundImage = 'url(' + this.expandImage + ')';
