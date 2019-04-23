@@ -1061,7 +1061,8 @@ function createPageList (editorUi, data, id) {
 		mxEvent.addListener(pageListEle, 'contextmenu', function (evt) {
 			evt.preventDefault();
 			changePage(evt);
-
+			var xml = mxUtils.getXml(editorUi.editor.getGraphXml());
+			editorUi.editor.setXml(xml);
 			// 右键菜单展示
 			var menulist = document.getElementById('pageContextMenu');
 			menulist.style.display = 'block';
@@ -1151,7 +1152,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		this.createVertexTemplateEntry('shape=multipleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/multipleCheck.png', 40, 40, '', '复选'),
 		// 单选
 		// this.createVertexTemplateEntry('shape=singleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="radio" class="inputTag" />', '单选'),
-		this.createVertexTemplateEntry('shape=singleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/singleCheck.png', 40, 40, '', '图片'),
+		this.createVertexTemplateEntry('shape=singleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/singleCheck.png', 40, 40, '', '单选'),
 		// 图片
 		this.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
 		this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 65, 40, '<div style="width:100%;height:100%;position: relative"><select class="selectTag"></select><div class="selectTagShade"></div></div>', '下拉列表'),

@@ -285,7 +285,7 @@ Editor.prototype.addPage = function (page) {
 	if (this.pages[page.title]) {
 		return false;
 	} else {
-		page.xml = defaultXml;
+		page.xml = page.xml || defaultXml;
 		this.pages[page.title] = page;
 		return true;
 	}

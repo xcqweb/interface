@@ -7128,7 +7128,7 @@ var mxUtils =
 	 * Change this to "break-word" to allow long words to be able to be broken
 	 * and wrap onto the next line.
 	 */
-	WORD_WRAP: 'normal',
+	WORD_WRAP: 'break-word',
 
 	/**
 	 * Variable: ABSOLUTE_LINE_HEIGHT
@@ -19639,7 +19639,7 @@ mxSvgCanvas2D.prototype.createDiv = function(str, align, valign, style, overflow
 		if (overflow != 'fill' && overflow != 'width')
 		{
 			// Inner div always needed to measure wrapped text
-			val = '<div xmlns="http://www.w3.org/1999/xhtml" style="display:inline-block;text-align:inherit;text-decoration:inherit;' + css + '">' + val + '</div>';
+			val = '<div xmlns="http://www.w3.org/1999/xhtml" style="display:inline-block;text-align:inherit;text-decoration:inherit;word-wrap: break-word;' + css + '">' + val + '</div>';
 		}
 		else
 		{
@@ -19924,7 +19924,6 @@ mxSvgCanvas2D.prototype.text = function(x, y, w, h, str, align, valign, wrap, fo
 			fo.setAttribute('pointer-events', 'all');
 			
 			var div = this.createDiv(str, align, valign, style, overflow);
-			
 			// Ignores invalid XHTML labels
 			if (div == null)
 			{
@@ -46762,9 +46761,8 @@ mxCellEditor.prototype.init = function ()
 	// Workaround for selection outside of DIV if height is 0
 	if (mxClient.IS_GC)
 	{
-		this.textarea.style.minHeight = '1em';
+		this.textarea.style.minHeight = '12px';
 	}
-
 	this.textarea.style.position = ((this.isLegacyEditor())) ? 'absolute' : 'relative';
 	this.installListeners(this.textarea);
 };
@@ -47265,6 +47263,7 @@ mxCellEditor.prototype.startEditing = function(cell, trigger)
 		this.textarea.style.textAlign = align;
 		this.textarea.style.outline = 'none';
 		this.textarea.style.color = color;
+		this.textarea.style.wordBreak = 'break-all';
 		
 		var dir = this.textDirection = mxUtils.getValue(state.style, mxConstants.STYLE_TEXT_DIRECTION, mxConstants.DEFAULT_TEXT_DIRECTION);
 		

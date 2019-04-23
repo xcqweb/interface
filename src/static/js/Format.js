@@ -2378,17 +2378,7 @@ ArrangePanel.prototype.alignFont = function (container) {
 	{
 		var finalStyle = elt.currentStyle ? elt.currentStyle : document.defaultView.getComputedStyle(elt, null);
 
-		// if (mxClient.IS_IE && (mxClient.IS_QUIRKS || document.documentMode < 10))
-		// {
-		// 	elt.style.filter = (selected) ? 'progid:DXImageTransform.Microsoft.Gradient('+
-    //         	'StartColorStr=\'#c5ecff\', EndColorStr=\'#87d4fb\', GradientType=0)' : '';
-		// }
-		// else
-		// {
-		// 	elt.style.backgroundImage = (selected) ? 'linear-gradient(#c5ecff 0px,#87d4fb 100%)' : '';
-		// }
-		console.log(selected, finalStyle.backgroundImage)
-		if (selected && finalStyle.backgroundImage) {
+		if (selected && finalStyle.backgroundImage != 'none') {
 			elt.style.backgroundColor = '#518EEC';
 			elt.style.backgroundImage = finalStyle.backgroundImage.replace(/.png/, '_white.png');
 		}
@@ -2977,7 +2967,7 @@ ArrangePanel.prototype.addEffects = function(div)
 
 	if (mxClient.IS_QUIRKS)
 	{
-		table.style.fontSize = '1em';
+		table.style.fontSize = '12px';
 	}
 
 	table.style.width = '100%';
@@ -3320,22 +3310,38 @@ ActionsPanel.prototype.init = function (container) {
 		obj.setAttribute('label', this.modelInfo || '');
 		this.modelInfo = obj;
 	}
-
-	// this.addConditions(this.container);
-	// this.addAlarm(this.container);
+	
 	// 编辑数据
 	if (graph.getSelectionCount() == 1)
 	{
+		let actionsInfo = JSON.parse(this.modelInfo.getAttribute('actionsInfo')) || [{
+			type: 'in',
+			link: '',
+			innerType: '页面',
+			mouseEvent: '选择',
+			effectAction: '选择'
+		}]
 		// 公共交互
 		var addAction = document.createElement('button')
 		addAction.className = 'formatSmallBtn';
 		addAction.innerText = '+ 交互';
 		this.container.appendChild(addAction);
+		for (let i = 0; i < actionsInfo.length - 1; i++) {
+			this.createInfoBox(this.container, actionsInfo[i])
+		}
 		// 默认一个交互操作
 		this.rectangleActions()
 		// 添加交互
 		mxEvent.addListener(addAction, 'click', function (evt) {
-			this.rectangleActions()
+			actionsInfo.push({
+				type: 'in',
+				link: '',
+				innerType: '页面',
+				mouseEvent: '选择',
+				effectAction: '选择'
+			})
+			this.modelInfo.setAttribute('actionsInfo', JSON.stringify(actionsInfo));
+			graph.getModel().setValue(cell, this.modelInfo);
 		}.bind(this))
 	}
 }
@@ -3344,17 +3350,17 @@ ActionsPanel.prototype.init = function (container) {
  * 矩形交互
  */
 ActionsPanel.prototype.rectangleActions = function () {
-	this.createInfoBox(this.container, '点击菜单1首页--显示首页页面，首页字体白，蓝色填充')
 	this.createOperateBox(this.container);
 }
 
 /**
  * 创建描述信息栏
  */
-ActionsPanel.prototype.createInfoBox = function (container, desc = '') {
+ActionsPanel.prototype.createInfoBox = function (container, info = {}) {
 	// 描述内容
 	var infoTxt = document.createElement('p');
 	infoTxt.className = 'infoTxt';
+	var desc = `${info.mouseEvent == '选择' ? '' : info.mouseEvent + ','}${info.effectAction == '选择' ? '' : info.effectAction + ','}${info.type == 'out' ? '' : info.innerType + ','}${info.link}`
 	infoTxt.innerHTML = desc;
 	container.appendChild(infoTxt);
 	// 编辑图标
@@ -3384,17 +3390,26 @@ ActionsPanel.prototype.createOperateBox = function(container)
 	if (modelInfo !== undefined && modelInfo !== null) {
 		var attrs = modelInfo.attributes;
 		var isLayer = graph.getModel().getParent(cell) == graph.getModel().getRoot();
-		var temp = {};
+		var temp = {
+			type: 'in',
+			link: '',
+			innerType: '页面',
+			mouseEvent: '选择',
+			effectAction: '选择'
+		};
+		var actions = [];
 		if (attrs) {
 			for (var i = 0; i < attrs.length; i++)
 			{
 				if ((isLayer || attrs[i].nodeName != 'label') && attrs[i].nodeName != 'placeholders')
 				{
-					temp[attrs[i].nodeName] =  attrs[i].nodeValue;
+					attrs[i].nodeName == "actionsInfo" && (actions =JSON.parse( attrs[i].nodeValue));
 				}
 			}
 		}
+		!actions.length ? actions.push(temp) : temp = actions[actions.length - 1];
 		var divpanel = this.createPanel();
+		divpanel.id = 'actionPanel';
 		divpanel.style.paddingBottom = '12px';
 		// 新增下拉框
 		// 选择事件
@@ -3407,27 +3422,29 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		// 单选按钮
 		var innerRadio = document.createElement('input');
 		innerRadio.setAttribute('type', 'radio');
-		innerRadio.setAttribute('checked', true);
 		innerRadio.setAttribute('name', 'radioType');
 		innerChoose.appendChild(innerRadio);
 		// 下拉列表
 		var innerType = this.addUnitSelect(innerChoose, 198, ["页面", '控件'], '', '');
 		innerType.style.marginLeft = '6px';
+		innerType.value = temp.innerType;
 		divpanel.appendChild(innerChoose);
 		// 页面或者控件列表
 		var pageList = document.createElement('ul');
 		pageList.className = 'pageList';
-		var mockData = ['首页', '设备列表', '曲线图', '告警中心', '浮窗']
+		var mockData1 = ['首页', '设备列表', '曲线图', '告警中心', '浮窗']
+		// 控件列表
+		var paletteList = [];
+		var list = $("#paletteManageList li");
+		for (let i = 0; i < list.length; i++) {
+			paletteList.push(list[i].innerText)
+		}
+		var mockData = temp.innerType == "页面" ? mockData1 : paletteList;
 		pageList.innerHTML = `
 			${
-				mockData.map((val) => (`<li>${val}</li>`)).join('')
+				mockData.map((val) => (`<li class="${ temp.type == 'in' && val == temp.link ? 'formatPageActive' : ''}">${val}</li>`)).join('')
 			}
 		`;
-		// 选择页面
-		mxEvent.addListener(pageList, 'click', function (evt) {
-			$('.formatPageActive').removeClass();
-			evt.target.className = 'formatPageActive';
-		})
 		divpanel.appendChild(pageList);
 		// 外部链接
 		var outChoose = document.createElement('div');
@@ -3455,37 +3472,80 @@ ActionsPanel.prototype.createOperateBox = function(container)
 			obj.setAttribute('label', modelInfo || '');
 			modelInfo = obj;
 		}
+		if (temp.type == 'out') {
+			// 选择外部链接
+			outRadio.setAttribute('checked', true);
+			// 禁用内部选择
+			innerType.setAttribute('disabled', true);
+			$('.formatPageActive').removeClass();
+			pageList.style.color = "#999999";
+			outInput.value = temp.link || '';
+			// 事件监听
+			mxEvent.addListener(container, 'mousedown', function () {
+				outInput.blur()
+			});
+			mxEvent.addListener(outInput, 'mousedown', function(evt)
+			{
+				if (evt.stopPropagation)
+				{
+					evt.stopPropagation();
+				}
+				
+				evt.cancelBubble = true;
+			});
+			mxEvent.addListener(outInput, 'blur', function (evt) {
+				this.setActions(graph, modelInfo, cell, actions, 'link', outInput.value);
+			}.bind(this))
+		} else {
+			// 选择内部链接
+			innerRadio.setAttribute('checked', true);
+			// 禁用外部选择
+			outInput.setAttribute('disabled', true);
+			// 选择页面
+			mxEvent.addListener(pageList, 'click', function (evt) {
+				$('.formatPageActive').removeClass();
+				evt.target.className = 'formatPageActive';
+				this.setActions(graph, modelInfo, cell, actions, 'link', evt.target.innerText);
+			}.bind(this));
+			mxEvent.addListener(innerType, 'change', function (evt) {
+				this.setActions(graph, modelInfo, cell, actions, 'innerType', innerType.value);
+			}.bind(this))
+		}
 			
 		// 事件监听
 		// 选择内部链接
 		mxEvent.addListener(innerRadio, 'click', function (evt) {
-			innerType.removeAttribute('disabled');
-			// 禁用外部选择
-			outInput.value = '';
-			outInput.setAttribute('disabled', true);
-		})
+			this.setActions(graph, modelInfo, cell, actions, 'type', 'in');
+			this.setActions(graph, modelInfo, cell, actions, 'link', '');
+		}.bind(this))
+
 		// 选择外部链接
 		mxEvent.addListener(outRadio, 'click', function (evt) {
-			outInput.removeAttribute('disabled');
-			// 禁用内部选择
-			innerType.setAttribute('disabled', true);
-			$('.formatPageActive').removeClass();
-		})
+			this.setActions(graph, modelInfo, cell, actions, 'type', 'out');
+			this.setActions(graph, modelInfo, cell, actions, 'link', '');
+		}.bind(this))
+
 		// 选择事件
 		mxEvent.addListener(mouseEvent, 'change', function () {
-			modelInfo = modelInfo.cloneNode(true);
-			modelInfo.setAttribute('mouseEvent', mouseEvent.value);
-			graph.getModel().setValue(cell, modelInfo);
-		});
+			this.setActions(graph, modelInfo, cell, actions, 'mouseEvent', mouseEvent.value);
+		}.bind(this));
+
 		// 选择动作
 		mxEvent.addListener(effectAction, 'change', function () {
-			modelInfo.setAttribute('effectAction', effectAction.value);
-			graph.getModel().setValue(cell, modelInfo);
-		});
+			this.setActions(graph, modelInfo, cell, actions, "effectAction", effectAction.value);
+		}.bind(this));
 		
 		container.appendChild(divpanel);	
 	}
 };
+/**
+ * 设置交互信息
+ */
+ActionsPanel.prototype.setActions = function (graph, modelInfo, cell, actions, key, val) {
+	actions[actions.length - 1][key] = val;
+	modelInfo.setAttribute('actionsInfo', JSON.stringify(actions));
+	graph.getModel().setValue(cell, modelInfo);
+}
 /**
  * 设置条件
  */
@@ -3564,65 +3624,6 @@ ActionsPanel.prototype.addConditions = function (container) {
 }
 
 /**
- * 设置提示信息
- */
-ActionsPanel.prototype.addAlarm = function (container) {
-	var ui = this.editorUi;
-	var graph = ui.editor.graph;
-	var cell = graph.getSelectionCell();
-	var modelInfo = graph.getModel().getValue(cell);
-	if (modelInfo !== undefined && modelInfo !== null) {
-		// 初始化属性
-		var attrs = modelInfo.attributes;
-		var isLayer = graph.getModel().getParent(cell) == graph.getModel().getRoot();
-		var temp = {};
-		if (attrs) {
-			for (var i = 0; i < attrs.length; i++)
-			{
-				if ((isLayer || attrs[i].nodeName != 'label') && attrs[i].nodeName != 'placeholders')
-				{
-					temp[attrs[i].nodeName] =  attrs[i].nodeValue;
-				}
-			}
-		}
-		// 告警标题
-		var title = this.createTitle(mxResources.get('alarm'));
-		title.style.paddingLeft = '18px';
-		title.style.paddingTop = '10px';
-		title.style.paddingBottom = '6px';
-		container.appendChild(title);	
-	
-		var divpanel = this.createPanel();
-		divpanel.style.paddingBottom = '12px';	
-		
-		// 文本框
-		let alarm1 = this.addSingleInput(divpanel, 'param1', temp);
-	
-		// 监听事件`
-		mxEvent.addListener(container, 'mousedown', function (e) {
-			alarm1.blur()
-		});
-	
-		if (!mxUtils.isNode(modelInfo))
-		{
-			var doc = mxUtils.createXmlDocument();
-			var obj = doc.createElement('object');
-			obj.setAttribute('label', modelInfo || '');
-			modelInfo = obj;
-		}
-		
-		container.appendChild(divpanel);
-		
-	}
-}
-/**
- * 设置修改属性
- */
-ActionsPanel.prototype.changValue = function (cell, value) {
-
-}
-
-/**
  * 添加单行文本
  */
 ActionsPanel.prototype.addSingleInput = function (container, name, value ) {
@@ -3655,11 +3656,11 @@ ActionsPanel.prototype.destroy = function()
 {
 	BaseFormatPanel.prototype.destroy.apply(this, arguments);
 	
-	// if (this.gridEnabledListener)
-	// {
-	// 	this.editorUi.removeListener(this.gridEnabledListener);
-	// 	this.gridEnabledListener = null;
-	// }
+	if (this.gridEnabledListener)
+	{
+		this.editorUi.removeListener(this.gridEnabledListener);
+		this.gridEnabledListener = null;
+	}
 };
 
 /**

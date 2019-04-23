@@ -6,7 +6,6 @@ dt,
 dd,
 ul,
 ol,
-li,
 h1,
 h2,
 h3,
@@ -66,7 +65,7 @@ div.mxRubberband {
 	display: inline-block;
 	position: absolute;
 	overflow: visible;
-	word-wrap: normal;
+	word-wrap: break-word;
 	border-width: 0;
 	min-width: 1px;
 	resize: none;
@@ -168,6 +167,7 @@ div.mxTooltip {
 	cursor: default;
 	padding: 4px;
 	color: black;
+	display: none;
 }
 div.mxPopupMenu {
 	-webkit-box-shadow: 3px 3px 12px #C0C0C0;

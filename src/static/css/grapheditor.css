@@ -1492,6 +1492,7 @@ button.buttonTag, input.inputTag {
 	white-space: pre-wrap;
 	padding: 6px 6px 28px;
 	border: 1px solid #D4D4D4;
+	margin-bottom: 6px;
 }
 .formatPannel .infoTxt .editIcon {
 	float: right;
@@ -1506,11 +1507,15 @@ button.buttonTag, input.inputTag {
 	height: 127px;
 	margin-left: 20px;
 	border: 1px solid #D4D4D4;
+	overflow-y: auto;
 }
 .formatPannel .pageList li{
 	height: 24px;
 	line-height: 24px;
 	padding-left: 6px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 .formatPannel .pageList li.formatPageActive {
 	color: #fff;

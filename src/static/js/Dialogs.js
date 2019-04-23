@@ -942,7 +942,6 @@ var addPageDialog = function (editorUi, type) {
 	var desc = title = '';
 	var pageType = 'normal';
 	var currentPage = editorUi.editor.pages[editorUi.editor.currentPage]
-	console.log(editorUi.editor.pages)
 	// 编辑和复制默认有值
 	if (type == 'rename' || type == 'copy') {
 		title = currentPage.title;
