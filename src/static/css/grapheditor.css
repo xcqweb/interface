@@ -610,7 +610,7 @@ div.mxWindow .geButton {
 }
 .geDialog .geDialogTitle::after {
 	content: '';
-	background: url(./../images/closeDialog.png);
+	background: url(./../images/default/closeDialog.png);
 	background-size: 16px 16px;
 	width: 16px;
 	height: 16px;
@@ -1348,7 +1348,7 @@ button.buttonTag, input.inputTag {
 	float: left;
 	padding-left: 34px;
 	margin-bottom: 12px;
-	background: url(./../images/search.png) no-repeat 12px 8px #fff;
+	background: url(./../images/default/search.png) no-repeat 12px 8px #fff;
 	background-size: 16px 16px;
 }
 .geDialog .geDialogInfo .searchBox button {
@@ -1398,7 +1398,7 @@ button.buttonTag, input.inputTag {
 .geDialog .geDialogInfo .variableList li.active {
 	color: #fff;
 	background-color: #3D91F7;
-	background-image: url(./../images/checked.png);
+	background-image: url(./../images/default/checked.png);
 	background-repeat: no-repeat;
 	background-size: 16px 16px;
 	background-position: right 9px top 4px;

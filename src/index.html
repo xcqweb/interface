@@ -30,6 +30,16 @@
 <body>
 	<div  class="geEditor"></div>
 	<script type="text/javascript">
+		// 获取cookie
+		const getCookie = (cname) => {
+			const name = cname + '=';
+			const ca = document.cookie.split(';');
+			for (let c of ca) {
+				while (c.charAt(0) === ' ') {c = c.substring(1); }
+				if (c.indexOf(name) !== -1) {return c.substring(name.length, c.length); }
+			}
+			return '';
+		};
 		// 加载组件
 		(function () {
 			// 保存
@@ -45,7 +55,7 @@
 					describe: fields,
 					content: JSON.stringify(pages)
 				}
-				
+				var token = getCookie('token');
 				$.ajax({
 					url: 'api/viewtool',
 					method: "POST",
@@ -53,7 +63,7 @@
 					dataType: 'json',
 					headers: {
 						"Content-Type": 'application/json;charset=UTF-8',
-						"Authorization": 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsInNjb3BlcyI6WyJST0xFX0FETUlOIl0sInVzZXJOYW1lIjoiYWRtaW4iLCJleHAiOjE1NTU5ODU2NTgsInVzZXJJZCI6IjEiLCJpYXQiOjE1NTU5MTM2NTgsImVtYWlsIjoidGVzdEB0ZXN0LmNuIiwiZW5hYmxlZCI6dHJ1ZX0.O_4iS3LA3AGcg4OSpzcVUyAKcH7tBArPOCTx0_GR7LqbywFH8HYSi0SUKWhQD2qb5oST-12pQJOnNdT99dnwPw'
+						"Authorization": 'Bearer ' + token
 					},
 					data: JSON.stringify(data),
 					success: function (res) {
@@ -87,7 +97,7 @@
 				$("#normalPages li").eq(0).click();
 			})
 		})();
-
+		
 	</script>
 </body>
 </html>

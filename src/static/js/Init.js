@@ -12,7 +12,7 @@ window.OPEN_URL = window.OPEN_URL || '/open';
 window.RESOURCES_PATH = window.RESOURCES_PATH || '/static/resources';
 window.RESOURCE_BASE = window.RESOURCE_BASE || window.RESOURCES_PATH + '/grapheditor';
 window.STENCIL_PATH = window.STENCIL_PATH || '/static/stencils';
-window.IMAGE_PATH = window.IMAGE_PATH || 'static/images';
+window.IMAGE_PATH = window.IMAGE_PATH || 'static/images/default';
 window.STYLE_PATH = window.STYLE_PATH || 'static';
 window.OPEN_FORM = window.OPEN_FORM || 'open.html';
 

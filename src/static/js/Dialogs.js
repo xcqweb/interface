@@ -717,11 +717,23 @@ var ShareDialog = function(editorUi) {
 	var genericBtn = mxUtils.button('发布', function()
 	{
 		editorUi.hideDialog();
-		if (Math.random() > 0.5) {
-			editorUi.showDialog(tipDialog(editorUi, true, '发布'), 120, 90, true, false, null, null, '')
-		} else {
-			editorUi.showDialog(tipDialog(editorUi, false, '发布'), 120, 90, true, false, null, null, '')
-		}
+		var token = getCookie('token');
+		$.ajax({
+			url: 'api/viewtool/publish/1e964cb38542c908c2c59c9447069a2/1',
+			method: "PUT",
+			"Content-Type": 'application/json;charset=UTF-8',
+			dataType: 'json',
+			headers: {
+				"Content-Type": 'application/json;charset=UTF-8',
+				"Authorization": 'Bearer ' + token
+			},
+			success: function (res) {
+				editorUi.showDialog(tipDialog(editorUi, true, '发布'), 120, 90, true, false, null, null, '')
+			},
+			error: function (res) {
+				editorUi.showDialog(tipDialog(editorUi, false, '发布'), 120, 90, true, false, null, null, '')
+			}
+		})
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	// 取消按钮

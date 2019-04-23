@@ -199,7 +199,7 @@ Actions.prototype.init = function()
 	this.addAction('addPage', function (type) {
 		type = type || 'add';
 		var dlg = new addPageDialog(ui, type)
-		ui.showDialog(dlg.container, 400, 270, true, false, null, null, '新建页面');
+		ui.showDialog(dlg.container, 400, 270, true, false, null, null, type == 'rename' ? '编辑页面' : '新建页面');
 	})
 	/**
 	 * 插入菜单

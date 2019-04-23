@@ -1084,7 +1084,7 @@ Menus.prototype.createMenubar = function(container)
 	// logo
 	var logoImg = document.createElement('img');
 	logoImg.className = 'geLogo'
-	logoImg.setAttribute('src', '/static/images/logo.png');
+	logoImg.setAttribute('src', '/static/images/icons/logo.png');
 	container.appendChild(logoImg);
 
 	for (var i = 0; i < menus.length; i++)

@@ -2792,7 +2792,8 @@ EditorUi.prototype.updateActionStates = function()
 	var edgeSelected = false;
 
 	var cells = graph.getSelectionCells();
-	// console.log(cells)
+	// 选择全部的控件的shapeName总和
+	var shapeNameStr = '';
 	if (cells != null)
 	{
     	for (var i = 0; i < cells.length; i++)
@@ -2806,19 +2807,21 @@ EditorUi.prototype.updateActionStates = function()
     		
     		if (graph.getModel().isVertex(cell))
     		{
-    			vertexSelected = true;
+					vertexSelected = true;
+					shapeNameStr += ',' + graph.view.getState(cell).style.shape
     		}
     		
-    		if (edgeSelected && vertexSelected)
-			{
-				break;
-			}
+    	// 	if (edgeSelected && vertexSelected)
+			// {
+			// 	break;
+			// }
 		}
 	}
 	
 	// 更新 action 状态
 	var state = graph.view.getState(graph.getSelectionCell());
 	var shapeName = state && state.style.shape;
+	// console.log(shapeName)
 	var actions = ['cut', 'copy', 'bold', 'italic', 'underline', 'delete', 'duplicate', 
 	               'editStyle', 'editTooltip', 'editLink', 'backgroundColor', 'borderColor',
 	               'edit', 'toFront', 'toBack', 'lockUnlock', 'solid', 'dashed', 'pasteSize',
@@ -2828,7 +2831,7 @@ EditorUi.prototype.updateActionStates = function()
 	var menuDisabled = ['toFront', 'toBack','flipH', 'flipV', 'turn', 'rotation']
 	for (var i = 0; i < actions.length; i++)
 	{
-		if (menuDisabled.indexOf(actions[i]) != -1 && shapeName === 'pagemenu') {
+		if (menuDisabled.indexOf(actions[i]) != -1 && (shapeNameStr.indexOf('pagemenu') != -1 || shapeNameStr.indexOf('menulist') != -1)) {
 			this.actions.get(actions[i]).setEnabled(!selected);
 		} else {
 			this.actions.get(actions[i]).setEnabled(selected);
@@ -2842,7 +2845,7 @@ EditorUi.prototype.updateActionStates = function()
 	this.actions.get('wordWrap').setEnabled(vertexSelected);
 	this.actions.get('autosize').setEnabled(vertexSelected);
 	var oneVertexSelected = vertexSelected && graph.getSelectionCount() == 1;
-	this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && shapeName !== 'pagemenu');
+	this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && shapeName !== 'pagemenu' && shapeName !== 'menulist');
 	this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 &&
 		(graph.getModel().getChildCount(graph.getSelectionCell()) > 0 ||
 		(oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) &&  shapeName !== "menulist");
@@ -2850,8 +2853,7 @@ EditorUi.prototype.updateActionStates = function()
 	this.actions.get('linkReport').setEnabled(graph.getSelectionCount() == 1 && shapeName === "linkTag");
 	this.actions.get('removeFromGroup').setEnabled(oneVertexSelected && graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())));
 
-	// 更新菜单状态
-	
+	// 更新菜单状态	
 	this.menus.get('navigation').setEnabled(selected || graph.view.currentRoot != null);
 	this.actions.get('collapsible').setEnabled(vertexSelected &&
 		(graph.isContainer(graph.getSelectionCell()) || graph.model.getChildCount(graph.getSelectionCell()) > 0));
