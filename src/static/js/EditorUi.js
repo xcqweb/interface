@@ -525,7 +525,7 @@ EditorUi = function(editor, container, lightbox)
 	var insertHandler = function(cells, asText)
 	{
 		var model = graph.getModel();
-		
+		console.log(cells)
 		model.beginUpdate();
 		try
 		{
@@ -2829,9 +2829,11 @@ EditorUi.prototype.updateActionStates = function()
 	               'formattedText', 'rounded', 'toggleRounded', 'sharp', 'strokeColor', 'turn', 'flipH', 'flipV', 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'];
 	
 	var menuDisabled = ['toFront', 'toBack','flipH', 'flipV', 'turn', 'rotation']
+	// 判断当前是否是菜单
+	var notMenu = shapeNameStr.indexOf('pagemenu') == -1 && shapeNameStr.indexOf('menulist') == -1;
 	for (var i = 0; i < actions.length; i++)
 	{
-		if (menuDisabled.indexOf(actions[i]) != -1 && (shapeNameStr.indexOf('pagemenu') != -1 || shapeNameStr.indexOf('menulist') != -1)) {
+		if (menuDisabled.indexOf(actions[i]) != -1 && !notMenu) {
 			this.actions.get(actions[i]).setEnabled(!selected);
 		} else {
 			this.actions.get(actions[i]).setEnabled(selected);
@@ -2851,15 +2853,15 @@ EditorUi.prototype.updateActionStates = function()
 		(oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) &&  shapeName !== "menulist");
 
 	this.actions.get('linkReport').setEnabled(graph.getSelectionCount() == 1 && shapeName === "linkTag");
-	this.actions.get('removeFromGroup').setEnabled(oneVertexSelected && graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())));
+	this.actions.get('removeFromGroup').setEnabled(oneVertexSelected && graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())) && notMenu);
 
 	// 更新菜单状态	
 	this.menus.get('navigation').setEnabled(selected || graph.view.currentRoot != null);
 	this.actions.get('collapsible').setEnabled(vertexSelected &&
 		(graph.isContainer(graph.getSelectionCell()) || graph.model.getChildCount(graph.getSelectionCell()) > 0));
 	this.actions.get('home').setEnabled(graph.view.currentRoot != null);
-	this.actions.get('exitGroup').setEnabled(graph.view.currentRoot != null);
-	this.actions.get('enterGroup').setEnabled(graph.getSelectionCount() == 1 && graph.isValidRoot(graph.getSelectionCell()));
+	this.actions.get('exitGroup').setEnabled(graph.view.currentRoot != null && notMenu);
+	this.actions.get('enterGroup').setEnabled(graph.getSelectionCount() == 1 && graph.isValidRoot(graph.getSelectionCell())  && notMenu);
 	var foldable = graph.getSelectionCount() == 1 && graph.isCellFoldable(graph.getSelectionCell());
 	this.actions.get('expand').setEnabled(foldable);
 	this.actions.get('collapse').setEnabled(foldable);
@@ -2872,8 +2874,8 @@ EditorUi.prototype.updateActionStates = function()
 	var unlocked = graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent());
 	this.menus.get('layout').setEnabled(unlocked);
 	this.menus.get('insert').setEnabled(unlocked);
-	this.menus.get('direction').setEnabled(unlocked && vertexSelected);
-	this.menus.get('align').setEnabled(unlocked && vertexSelected && graph.getSelectionCount() > 1);
+	this.menus.get('direction').setEnabled(unlocked && vertexSelected && notMenu);
+	this.menus.get('align').setEnabled(unlocked && vertexSelected && graph.getSelectionCount() > 1 && shapeNameStr.indexOf('pagemenu') == -1);
 	this.menus.get('distribute').setEnabled(unlocked && vertexSelected && graph.getSelectionCount() > 1);
 	this.actions.get('selectVertices').setEnabled(unlocked);
 	this.actions.get('selectEdges').setEnabled(unlocked);
@@ -3234,7 +3236,7 @@ EditorUi.prototype.createFormat = function(container)
  */
 EditorUi.prototype.createPaletteManage = function(container)
 {
-	return new PaletteManage(this, container);
+	return new PaletteManagePanel(this, container);
 };
 
 /**
@@ -4153,7 +4155,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		// keyHandler.bindAction(82, true, 'turn'); // Ctrl+R
 		keyHandler.bindAction(82, true, 'clearDefaultStyle', true); // Ctrl+Shift+R
 		keyHandler.bindAction(83, true, 'save'); // Ctrl+S
-		keyHandler.bindAction(83, true, 'saveAs', true); // Ctrl+Shift+S
+		// keyHandler.bindAction(83, true, 'saveAs', true); // Ctrl+Shift+S
 		keyHandler.bindAction(79, true, 'publish', true); // Ctrl+Shift+O,
 		keyHandler.bindAction(65, true, 'selectAll'); // Ctrl+A
 		keyHandler.bindAction(65, true, 'selectNone', true); // Ctrl+A

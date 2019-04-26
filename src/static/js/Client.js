@@ -13321,6 +13321,7 @@ mxDragSource.prototype.reset = function()
  *   }
  * };
  * (end)
+ * 控件栏往画布拖拽操作
  */
 mxDragSource.prototype.mouseDown = function(evt)
 {
@@ -69665,27 +69666,29 @@ mxGraphHandler.prototype.consumeMouseEvent = function(evtName, me)
  * Handles the event by selecing the given cell and creating a handle for
  * it. By consuming the event all subsequent events of the gesture are
  * redirected to this handler.
+ * 控件拖拽句柄，鼠标按下操作
  */
 mxGraphHandler.prototype.mouseDown = function(sender, me)
 {
+	//  && me.getState().style.shape != 'pagemenu'
 	if (!me.isConsumed() && this.isEnabled() && this.graph.isEnabled() &&
 		me.getState() != null && !mxEvent.isMultiTouchEvent(me.getEvent()))
 	{
 		var cell = this.getInitialCellForEvent(me);
 		this.delayedSelection = this.isDelayedSelection(cell, me);
 		this.cell = null;
-		
 		if (this.isSelectEnabled() && !this.delayedSelection)
 		{
 			this.graph.selectCellForEvent(cell, me.getEvent());
 		}
+		var selectCell = this.graph.getSelectionCell();
 
 		if (this.isMoveEnabled())
 		{
 			var model = this.graph.model;
 			var geo = model.getGeometry(cell);
-
-			if (this.graph.isCellMovable(cell) && ((!model.isEdge(cell) || this.graph.getSelectionCount() > 1 ||
+			// 菜单不允许拖拽
+			if (this.graph.view.getState(selectCell).style.shape != 'pagemenu' && this.graph.isCellMovable(cell) && ((!model.isEdge(cell) || this.graph.getSelectionCount() > 1 ||
 				(geo.points != null && geo.points.length > 0) || model.getTerminal(cell, true) == null ||
 				model.getTerminal(cell, false) == null) || this.graph.allowDanglingEdges || 
 				(this.graph.isCloneEvent(me.getEvent()) && this.graph.isCellsCloneable())))
@@ -75905,7 +75908,6 @@ mxVertexHandler.prototype.isCustomHandleEvent = function(me)
 mxVertexHandler.prototype.mouseDown = function(sender, me)
 {
 	var tol = (!mxEvent.isMouseEvent(me.getEvent())) ? this.tolerance : 0;
-	
 	if (!me.isConsumed() && this.graph.isEnabled() && (tol > 0 || me.getState() == this.state))
 	{
 		var handle = this.getHandleForEvent(me);
@@ -75932,7 +75934,7 @@ mxVertexHandler.prototype.isLivePreviewBorder = function()
 /**
  * Function: start
  * 
- * Starts the handling of the mouse gesture.
+ * 开始拖拽尺寸
  */
 mxVertexHandler.prototype.start = function(x, y, index)
 {
@@ -76438,7 +76440,7 @@ mxVertexHandler.prototype.updateLivePreview = function(me)
 /**
  * Function: mouseUp
  * 
- * Handles the event by applying the changes to the geometry.
+ * 移动控件句柄，鼠标抬起操作.
  */
 mxVertexHandler.prototype.mouseUp = function(sender, me)
 {
@@ -76539,7 +76541,7 @@ mxVertexHandler.prototype.rotateCell = function(cell, angle, parent)
 {
 	if (angle != 0)
 	{
-		var model = this.graph.getModel();
+	console.log(122222222)
 
 		if (model.isVertex(cell) || model.isEdge(cell))
 		{
@@ -76586,7 +76588,7 @@ mxVertexHandler.prototype.rotateCell = function(cell, angle, parent)
 /**
  * Function: reset
  * 
- * Resets the state of this handler.
+ * 重置绑定的事件.
  */
 mxVertexHandler.prototype.reset = function()
 {
@@ -76654,7 +76656,7 @@ mxVertexHandler.prototype.reset = function()
  * Function: resizeCell
  * 
  * Uses the given vector to change the bounds of the given cell
- * in the graph using <mxGraph.resizeCell>.
+ * 控件拖拽更新尺寸
  */
 mxVertexHandler.prototype.resizeCell = function(cell, dx, dy, index, gridEnabled, constrained, recurse)
 {
@@ -78215,7 +78217,6 @@ mxEdgeHandler.prototype.start = function(x, y, index)
 {
 	this.startX = x;
 	this.startY = y;
-
 	this.isSource = (this.bends == null) ? false : index == 0;
 	this.isTarget = (this.bends == null) ? false : index == this.bends.length - 1;
 	this.isLabel = index == mxEvent.LABEL_HANDLE;

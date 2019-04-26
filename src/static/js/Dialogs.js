@@ -1587,7 +1587,6 @@ var chooseModelDialog = function (editorUi) {
 	this.container = saveContent;
 }
 
-
 /**
  * 选择执行
  */
@@ -1611,6 +1610,42 @@ var chooseExecuteDialog = function (editorUi) {
 	btnContent.appendChild(genericBtn);
 	
 	saveContent.appendChild(btnContent)
+	this.container = saveContent;
+}
+
+
+/**
+ * 更换图元
+ */
+var ChangePrimitiveDialog = function (editorUi) {
+	var saveContent = editorUi.createDiv('geDialogInfo');
+	saveContent.setAttribute('data-dialog', 'changePrimitive');
+	// 图元列表
+	var primitiveList = document.createElement('ul');
+	var graph = editorUi.editor.graph;
+	var cells = graph.getSelectionCells();
+	// var mockData = []
+	saveContent.innerHTML = `
+	${
+		editorUi.sidebar.primitives.map(val => `
+			<img class="primitiveIcon" src="/static/stencils/basic/${val}.png" />
+		`).join('')
+	}
+	`
+	// 点击更换图元
+	mxEvent.addListener(saveContent, 'click', function (evt) {
+		if (evt.target.nodeName === 'IMG') {
+			graph.getModel().beginUpdate();
+			try {
+				graph.setCellStyles(mxConstants.STYLE_IMAGE, evt.target.getAttribute('src'), cells);
+				editorUi.hideDialog();
+			}
+			finally {
+				graph.getModel().endUpdate();
+			}
+		}
+	})
+	// saveContent.appendChild(primitiveList);
 	this.container = saveContent;
 }
 /**

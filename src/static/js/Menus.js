@@ -476,7 +476,7 @@ Menus.prototype.init = function()
 	// 文件
 	this.put('file', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['new', 'open', '-', 'save', 'saveAs', '-', 'pageSetup'], parent);
+		this.addMenuItems(menu, ['new', 'open', '-', 'save', 'pageSetup'], parent);
 	})));
 	// 编辑
 	this.put('edit', new Menu(mxUtils.bind(this, function(menu, parent)
@@ -1056,6 +1056,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 					// 链接
 					this.addMenuItem(menu, 'configLink', null, evt).firstChild.innerHTML = '配置...';
 				} else if (shapeName == 'rectangle') {
+					// 矩形
 					this.addMenuItem(menu, 'paletteData', null, evt).firstChild.innerHTML = '数据...';
 				} else if (shapeName === 'select') {
 					// 下拉列表
@@ -1067,7 +1068,20 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 					// 菜单
 					this.addMenuItem(menu, 'insertMenuBefore', null, evt);
 					this.addMenuItem(menu, 'insertMenuAfter', null, evt);
-				} 
+				} else if (this.editorUi.sidebar.primitives.indexOf(shapeName) != -1) {
+					// 图元
+					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '选择图元...';
+					this.addMenuItem(menu, 'paletteData', null, evt).firstChild.innerHTML = '数据...';
+				} else if (shapeName == 'table') {
+					// 表格
+					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '向上插入一行';
+					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '向下插入一行';
+					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '删除行';
+					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '向左插入一列';
+					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '向右插入一列';
+					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '删除列';
+					this.addMenuItem(menu, 'paletteData', null, evt).firstChild.innerHTML = '数据...';
+				}
 			}
 		}
 	}

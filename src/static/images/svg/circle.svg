@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #7d7d7d;
+        stroke-width: 1px;
+      }
+    </style>
+  </defs>
+  <circle id="椭圆_" data-name="椭圆 " class="cls-1" cx="12.5" cy="12.5" r="12"/>
+</svg>

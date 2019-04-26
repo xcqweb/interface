@@ -197,12 +197,12 @@ Sidebar.prototype.addStencilsToIndex = true;
 /**
  * Specifies the width for clipart images. Default is 80.
  */
-Sidebar.prototype.defaultImageWidth = 80;
+Sidebar.prototype.defaultImageWidth = 300;
 
 /**
  * Specifies the height for clipart images. Default is 80.
  */
-Sidebar.prototype.defaultImageHeight = 80;
+Sidebar.prototype.defaultImageHeight = 170;
 
 /**
  * Adds all palettes to the sidebar.
@@ -1106,11 +1106,11 @@ Sidebar.prototype.addPagePalette = function (expand) {
 Sidebar.prototype.primitives = ['circle', 'diamond', 'drop', 'pentagram', 'square'];
 Sidebar.prototype.addPrimitive = function (expand) {
 	var fns = [
-		this.createVertexTemplateEntry('shape=circle;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/circle.png', this.defaultImageWidth, this.defaultImageHeight, '', ''),
-		this.createVertexTemplateEntry('shape=diamond;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/diamond.png', this.defaultImageWidth, this.defaultImageHeight, '', ''),
-		this.createVertexTemplateEntry('shape=drop;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/drop.png', this.defaultImageWidth, this.defaultImageHeight, '', ''),
-		this.createVertexTemplateEntry('shape=pentagram;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pentagram.png', this.defaultImageWidth, this.defaultImageHeight, '', ''),
-		this.createVertexTemplateEntry('shape=square;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/square.png', this.defaultImageWidth, this.defaultImageHeight, '', ''),
+		this.createVertexTemplateEntry('shape=circle;html=1;labelBackgroundColor=#ffffff;image=/static/images/svg/circle.svg', 50, 50, '', ''),
+		this.createVertexTemplateEntry('shape=diamond;html=1;labelBackgroundColor=#ffffff;image=/static/images/svg/diamond.svg', 50, 50, '', ''),
+		this.createVertexTemplateEntry('shape=drop;html=1;labelBackgroundColor=#ffffff;image=/static/images/svg/drop.svg', 50, 50, '', ''),
+		this.createVertexTemplateEntry('shape=pentagram;html=1;labelBackgroundColor=#ffffff;image=/static/images/svg/pentagram.svg', 50, 50, '', ''),
+		this.createVertexTemplateEntry('shape=square;html=1;labelBackgroundColor=#ffffff;image=/static/images/svg/square.svg', 50, 50, '', ''),
 	];
 	this.addPaletteFunctions('primitiveManage', '图元管理', (expand != null) ? expand : true, fns);
 }
@@ -1164,7 +1164,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
  			'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
 			'<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
 		// 图元
-		this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', this.defaultImageWidth, this.defaultImageHeight, '', '图元'),
+		this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', 50, 50, '', '图元'),
 		// 箭头
 		this.createEdgeTemplateEntry('shape=endarrow;html=1;', 50, 0, '', '箭头', false, false),
 		//直线

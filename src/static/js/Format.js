@@ -453,7 +453,32 @@ BaseFormatPanel = function(format, editorUi, container)
 	this.container = container;
 	this.listeners = [];
 };
-
+/**
+ * 控件名称
+ */
+BaseFormatPanel.prototype.list = {
+	rectangle: '矩形',
+	button: '按钮',
+	menulist: '菜单',
+	pagemenu: '菜单',
+	image: '图片',
+	text: '文本',
+	select: '下拉列表',
+	table: '表格',
+	endarrow: '箭头',
+	line: '直线',
+	curve: '曲线',
+	linkTag: 'Link',
+	primitive: '图元',
+	multipleCheck: '复选',
+	singleCheck: '单选'
+}
+/**
+ * 获取对应控件的名称
+ */
+BaseFormatPanel.prototype.getPaletteName = function (name) {
+	return this.list[name]
+}
 /**
  * 
  */
@@ -1746,24 +1771,28 @@ ArrangePanel.prototype.addGeometry = function(container)
 	});
 	width.className = 'formatMiddleInput';
 
+	// 限制比例
+	var state = graph.view.getState(graph.getSelectionCell());
+	var fixed = mxUtils.getValue(state.style, mxConstants.STYLE_ASPECT, true);
+	// 限制比例按钮
 	var autosizeBtn = document.createElement('div');
-	autosizeBtn.className = 'geSprite geSprite-fit';
-	autosizeBtn.setAttribute('title', mxResources.get('autosize') + ' (' + this.editorUi.actions.get('autosize').shortcut + ')');
-	mxUtils.setOpacity(autosizeBtn, 50);
-	
-	mxEvent.addListener(autosizeBtn, 'mouseenter', function()
-	{
-		mxUtils.setOpacity(autosizeBtn, 100);
-	});
-	
-	mxEvent.addListener(autosizeBtn, 'mouseleave', function()
-	{
-		mxUtils.setOpacity(autosizeBtn, 50);
-	});
-
+	autosizeBtn.className = fixed == "fixed" ? 'geSprite geSprite-limit' : 'geSprite geSprite-limit geSprite-unlimit';
+	autosizeBtn.setAttribute('title', '限制比例');
+	// 点击限制比例
 	mxEvent.addListener(autosizeBtn, 'click', function()
 	{
-		ui.actions.get('autosize').funct();
+		fixed = fixed == "fixed" ? '' : 'fixed';
+		graph.getModel().beginUpdate();
+		try
+		{
+			graph.setCellStyles(mxConstants.STYLE_ASPECT, fixed, graph.getSelectionCells());
+			ui.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],
+				'values', [fixed], 'cells', graph.getSelectionCells()));
+		}
+		finally
+		{
+			graph.getModel().endUpdate();
+		}
 	});
 	
 	div.appendChild(autosizeBtn);
@@ -1781,17 +1810,15 @@ ArrangePanel.prototype.addGeometry = function(container)
 	wrapper.style.textAlign = 'right';
 	
 	// div.appendChild(wrapper);
-	
 	this.addKeyHandler(width, listener);
 	this.addKeyHandler(height, listener);
 	
-	var constrainCheckbox = {checked: true};
 	widthUpdate = this.addGeometryHandler(width, function(geo, value)
 	{
 		if (geo.width > 0)
 		{
 			var value = Math.max(1, value);
-			if (constrainCheckbox.checked)
+			if (fixed == 'fixed')
 			{
 				geo.height = Math.round((geo.height  * value * 100) / geo.width) / 100;
 			}
@@ -1803,7 +1830,7 @@ ArrangePanel.prototype.addGeometry = function(container)
 		if (geo.height > 0)
 		{
 			var value = Math.max(1, value);
-			if (constrainCheckbox.checked)
+			if (fixed == 'fixed')
 			{
 				geo.width = Math.round((geo.width  * value * 100) / geo.height) / 100;
 			}
@@ -1812,9 +1839,7 @@ ArrangePanel.prototype.addGeometry = function(container)
 	});
 	
 	container.appendChild(div);
-	// console.log(graph.getSelectionCell())
-	// console.log( graph.getModel().getValue(graph.getSelectionCell()).attributes)
-	// console.log(this.format.getSelectionState())
+	
 	var listener = mxUtils.bind(this, function(sender, evt, force)
 	{
 		rect = this.format.getSelectionState();
@@ -2195,16 +2220,19 @@ ArrangePanel.prototype.addBase = function (container) {
 			}
 		}
 	}
+	var shapeName = rect.style.shape;
 	// 名称
-	this.addName(container);
+	this.addName(container, this.getPaletteName(shapeName));
 	// 文字参数
 	this.addFont(container);
 	// 文字对齐
 	this.alignFont(container);
 	// 大小
 	this.addGeometry(container);
-	// 角度
-	this.addAngle(container);
+	if (['pagemenu', 'menulist'].indexOf(shapeName) == -1) {
+		// 角度
+		this.addAngle(container);
+	}
 	// 边框
 	this.addStroke(container);
 	// 背景色
@@ -2215,9 +2243,9 @@ ArrangePanel.prototype.addBase = function (container) {
 /**
  * 名称
  */
-ArrangePanel.prototype.addName = function (container) {
+ArrangePanel.prototype.addName = function (container, defaultName) {
 	container.appendChild(this.createTitle('名称'));
-	var defaultValue = this.getCellAttrs('palettename');
+	var defaultValue = this.getCellAttrs('palettename') || defaultName;
 	var nameInput = document.createElement('input');
 	nameInput.setAttribute('value', defaultValue)
 	// 监听事件`
@@ -2374,13 +2402,13 @@ ArrangePanel.prototype.alignFont = function (container) {
 
 	container.appendChild(geSpriteBtnBox);
 
-	function setSelected(elt, selected)
+	function setSelected(elt, selected, type)
 	{
-		var finalStyle = elt.currentStyle ? elt.currentStyle : document.defaultView.getComputedStyle(elt, null);
-
-		if (selected && finalStyle.backgroundImage != 'none') {
+		if (selected) {
 			elt.style.backgroundColor = '#518EEC';
-			elt.style.backgroundImage = finalStyle.backgroundImage.replace(/.png/, '_white.png');
+			elt.style.backgroundImage = 'url("http://localhost:10010/static/images/icons/' + type + '_white.png")';
+		} else {
+			elt.style.backgroundImage = 'url("http://localhost:10010/static/images/icons/' + type + '.png")';
 		}
 	};
 	
@@ -2388,16 +2416,15 @@ ArrangePanel.prototype.alignFont = function (container) {
 	{
 		ss = this.format.getSelectionState();
 		var align = mxUtils.getValue(ss.style, mxConstants.STYLE_ALIGN, mxConstants.ALIGN_CENTER);
-		setSelected(left, align == mxConstants.ALIGN_LEFT);
-		setSelected(center, align == mxConstants.ALIGN_CENTER);
-		setSelected(right, align == mxConstants.ALIGN_RIGHT);
+		setSelected(left, align == mxConstants.ALIGN_LEFT, mxConstants.ALIGN_LEFT);
+		setSelected(center, align == mxConstants.ALIGN_CENTER, mxConstants.ALIGN_CENTER);
+		setSelected(right, align == mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_RIGHT);
 		
 		var valign = mxUtils.getValue(ss.style, mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_MIDDLE);
-		setSelected(top, valign == mxConstants.ALIGN_TOP);
-		setSelected(middle, valign == mxConstants.ALIGN_MIDDLE);
-		setSelected(bottom, valign == mxConstants.ALIGN_BOTTOM);
+		setSelected(top, valign == mxConstants.ALIGN_TOP, 'vertical');
+		setSelected(middle, valign == mxConstants.ALIGN_MIDDLE, 'vertical');
+		setSelected(bottom, valign == mxConstants.ALIGN_BOTTOM, 'vertical');
 	});
-
 
 	// this.addKeyHandler(input, listener);
 
@@ -3068,220 +3095,6 @@ ArrangePanel.prototype.addStyleOps = function(div)
 };
 
 /**
- * Adds the label menu items to the given menu and parent.
- */
-DiagramFormatPanel = function(format, editorUi, container)
-{
-	BaseFormatPanel.call(this, format, editorUi, container);
-	this.init();
-};
-
-mxUtils.extend(DiagramFormatPanel, BaseFormatPanel);
-
-/**
- * Switch to disable page view.
- */
-DiagramFormatPanel.showPageView = true;
-
-/**
- * Specifies if the background image option should be shown. Default is true.
- */
-DiagramFormatPanel.prototype.showBackgroundImageOption = true;
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-DiagramFormatPanel.prototype.init = function()
-{
-	var ui = this.editorUi;
-	var editor = ui.editor;
-	var graph = editor.graph;
-
-	this.container.appendChild(this.addView(this.createPanel()));
-
-	if (graph.isEnabled())
-	{
-		this.container.appendChild(this.addStyleOps(this.createPanel()));
-	}
-};
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-DiagramFormatPanel.prototype.addView = function(div)
-{
-	var ui = this.editorUi;
-	var editor = ui.editor;
-	var graph = editor.graph;
-	
-	div.appendChild(this.createTitle(mxResources.get('view')));
-
-	if (graph.isEnabled())
-	{
-		// Page View
-		if (DiagramFormatPanel.showPageView)
-		{
-			div.appendChild(this.createOption(mxResources.get('pageView'), function()
-			{
-				return !graph.pageVisible;
-			}, function(checked)
-			{
-				ui.actions.get('pageView').funct();
-			},
-			{
-				install: function(apply)
-				{
-					this.listener = function()
-					{
-						apply(graph.pageVisible);
-					};
-					
-					ui.addListener('pageViewChanged', this.listener);
-				},
-				destroy: function()
-				{
-					ui.removeListener(this.listener);
-				}
-			}));
-		}
-		
-		// Background
-		var bg = this.createColorOption(mxResources.get('background'), function()
-		{
-			return graph.background;
-		}, function(color)
-		{
-			var change = new ChangePageSetup(ui, color);
-			change.ignoreImage = true;
-			
-			graph.model.execute(change);
-		}, '#ffffff',
-		{
-			install: function(apply)
-			{
-				this.listener = function()
-				{
-					apply(graph.background);
-				};
-				
-				ui.addListener('backgroundColorChanged', this.listener);
-			},
-			destroy: function()
-			{
-				ui.removeListener(this.listener);
-			}
-		});
-		
-		if (this.showBackgroundImageOption)
-		{
-			var btn = mxUtils.button(mxResources.get('image'), function(evt)
-			{
-				ui.showBackgroundImageDialog();
-				mxEvent.consume(evt);
-			})
-		
-			btn.style.position = 'absolute';
-			btn.className = 'geColorBtn';
-			btn.style.marginTop = '-4px';
-			btn.style.paddingBottom = (document.documentMode == 11 || mxClient.IS_MT) ? '0px' : '2px';
-			btn.style.height = '22px';
-			btn.style.right = (mxClient.IS_QUIRKS) ? '44px' : '72px';
-			btn.style.width = '56px';
-		
-			bg.appendChild(btn);
-		}
-		
-		div.appendChild(bg);
-	}
-	
-	return div;
-};
-
-/**
- * 
- */
-DiagramFormatPanel.prototype.addGridOption = function(container)
-{
-	var ui = this.editorUi;
-	var graph = ui.editor.graph;
-	
-	var input = document.createElement('input');
-	input.style.position = 'absolute';
-	input.style.textAlign = 'right';
-	input.style.width = '38px';
-	input.value = graph.getGridSize() + ' px';
-	
-	var stepper = this.createStepper(input, update);
-	input.style.display = (graph.isGridEnabled()) ? '' : 'none';
-	stepper.style.display = input.style.display;
-
-	mxEvent.addListener(input, 'keydown', function(e)
-	{
-		if (e.keyCode == 13)
-		{
-			graph.container.focus();
-			mxEvent.consume(e);
-		}
-		else if (e.keyCode == 27)
-		{
-			input.value = graph.getGridSize();
-			graph.container.focus();
-			mxEvent.consume(e);
-		}
-	});
-	
-	function update(evt)
-	{
-		var value = parseInt(input.value);
-		value = Math.max(1, (isNaN(value)) ? 10 : value);
-		
-		if (value != graph.getGridSize())
-		{
-			graph.setGridSize(value)
-		}
-
-		input.value = value + ' px';
-		mxEvent.consume(evt);
-	};
-
-	mxEvent.addListener(input, 'blur', update);
-	mxEvent.addListener(input, 'change', update);
-
-};
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-DiagramFormatPanel.prototype.addStyleOps = function(div)
-{
-	var btn = mxUtils.button(mxResources.get('editData'), mxUtils.bind(this, function(evt)
-	{
-		this.editorUi.actions.get('editData').funct();
-	}));
-	
-	btn.setAttribute('title', mxResources.get('editData') + ' (' + this.editorUi.actions.get('editData').shortcut + ')');
-	btn.style.width = '202px';
-	div.appendChild(btn);
-
-	return div;
-};
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-DiagramFormatPanel.prototype.destroy = function()
-{
-	BaseFormatPanel.prototype.destroy.apply(this, arguments);
-	
-	if (this.gridEnabledListener)
-	{
-		this.editorUi.removeListener(this.gridEnabledListener);
-		this.gridEnabledListener = null;
-	}
-};
-
-
-/**
  * 交互面板
  */
 ActionsPanel = function(format, editorUi, container)
@@ -3666,7 +3479,7 @@ ActionsPanel.prototype.destroy = function()
 /**
  * 控件管理列表
  */
-var PaletteManage = function (editorUi, container)
+var PaletteManagePanel = function (editorUi, container)
 {
 	this.editorUi = editorUi;
 	this.container = container;
@@ -3695,38 +3508,41 @@ var PaletteManage = function (editorUi, container)
 	// this.refresh();
 };
 
+mxUtils.extend(PaletteManagePanel, BaseFormatPanel);
+
 /**
  * 展开图标
  */
-PaletteManage.prototype.expandImage = '/static/images/icons/expand.png';
+PaletteManagePanel.prototype.expandImage = '/static/images/icons/expand.png';
 
 /**
  * 收缩图标
  */
-PaletteManage.prototype.colspanImage = '/static/images/icons/colspan.png';
+PaletteManagePanel.prototype.colspanImage = '/static/images/icons/colspan.png';
 /**
  * 控件名称和缩略图
  */
-PaletteManage.prototype.list = {
-	rectangle: '矩形',
-	button: '按钮',
-	menulist: '菜单',
-	image: '图片',
-	text: '文本',
-	select: '下拉列表',
-	table: '表格',
-	endarrow: '箭头',
-	line: '直线',
-	curve: '曲线',
-	linkTag: 'Link',
-	primitive: '图元',
-	multipleCheck: '复选',
-	singleCheck: '单选'
-}
+// PaletteManagePanel.prototype.list = {
+// 	rectangle: '矩形',
+// 	button: '按钮',
+// 	menulist: '菜单',
+// 	pagemenu: '菜单',
+// 	image: '图片',
+// 	text: '文本',
+// 	select: '下拉列表',
+// 	table: '表格',
+// 	endarrow: '箭头',
+// 	line: '直线',
+// 	curve: '曲线',
+// 	linkTag: 'Link',
+// 	primitive: '图元',
+// 	multipleCheck: '复选',
+// 	singleCheck: '单选'
+// }
 /**
  * 生成标题
  */
- PaletteManage.prototype.createTitle = function(label, id)
+ PaletteManagePanel.prototype.createTitle = function(label, id)
 {
 	var elt = document.createElement('a');
 	elt.setAttribute('href', 'javascript:void(0);');
@@ -3759,7 +3575,7 @@ PaletteManage.prototype.list = {
 /**
  * 生成搜索框
  */
-PaletteManage.prototype.createSearchInput = function (container) {
+PaletteManagePanel.prototype.createSearchInput = function (container) {
 	// 搜索框
 	var input = document.createElement('input');
 	input.style.display = 'none';
@@ -3802,7 +3618,7 @@ PaletteManage.prototype.createSearchInput = function (container) {
 /**
  * 填充列表
  */
-PaletteManage.prototype.fillList = function (container, filter) {
+PaletteManagePanel.prototype.fillList = function (container, filter) {
 	var primitives = this.editorUi.sidebar.primitives;
 	var cells = [].concat(this.cells);
 	filter = filter.trim();
@@ -3847,7 +3663,7 @@ PaletteManage.prototype.fillList = function (container, filter) {
 /**
  * 生成控件列表
  */
-PaletteManage.prototype.createContent = function (container) {
+PaletteManagePanel.prototype.createContent = function (container) {
 	var div = document.createElement('div');
 	this.createSearchInput(div);
 	this.fillList(div, '');
@@ -3858,7 +3674,7 @@ PaletteManage.prototype.createContent = function (container) {
 /**
  * 绑定折叠事件
  */
-PaletteManage.prototype.addFoldingHandler = function(elt, content) {
+PaletteManagePanel.prototype.addFoldingHandler = function(elt, content) {
 	mxEvent.addListener(elt, 'click', function () {
 		if (content.style.display !== 'none') {
 			content.style.display = 'none';
@@ -3876,7 +3692,7 @@ PaletteManage.prototype.addFoldingHandler = function(elt, content) {
 /**
  * 刷新列表内容
  */
-PaletteManage.prototype.refresh = function () {
+PaletteManagePanel.prototype.refresh = function () {
 	this.clear();	
 	// 获取全部节点
 	this.cells = this.getCells();
@@ -3890,14 +3706,14 @@ PaletteManage.prototype.refresh = function () {
 /**
  * 清除控件列表内容
  */
-PaletteManage.prototype.clear = function()
+PaletteManagePanel.prototype.clear = function()
 {
 	this.container.innerHTML = '';
 };
 /**
  * 获取全部控件
  */
-PaletteManage.prototype.getCells = function () {
+PaletteManagePanel.prototype.getCells = function () {
 	var cells = this.editorUi.editor.graph.getModel().cells;
 	var res = [];
 	for (var key in cells) {
@@ -3912,7 +3728,7 @@ PaletteManage.prototype.getCells = function () {
 /**
  * 获取控件名称
  */
-PaletteManage.prototype.getCellInfo = function (key, cell) {
+PaletteManagePanel.prototype.getCellInfo = function (key, cell) {
 	var ui = this.editorUi;
 	var editor = ui.editor;
 	var graph = editor.graph;

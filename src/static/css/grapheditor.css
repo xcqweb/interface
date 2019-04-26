@@ -380,7 +380,7 @@ div.mxWindow .geButton {
 	border: none;
 }
 #primitiveManage .geItem {
-	margin: 0 8px;
+	margin: 0 10px;
 }
 .geSidebarContainer .geSidebar .pageList li{
 	line-height: 24px;
@@ -667,6 +667,15 @@ div.mxWindow .geButton {
 	background: #e8edee;
 	border-color: #d6dee1;
 	color: #999999;
+}
+.geDialog .geDialogInfo .primitiveIcon {
+	width: 24px;
+	height: 24px;
+	padding: 5px;
+	margin-right: 24px;
+}
+.geDialog .geDialogInfo .primitiveIcon:hover {
+	background-color: #D9E6F6;
 }
 .geDialog .geDialogInfo select, .geDialog .geDialogInfo input[type="text"] {
 	width: 200px;
@@ -957,12 +966,15 @@ div.mxWindow .geButton {
 	content: '发布';
 	left: 6px;
 }
-.geSprite-fit {
+.geSprite-limit {
 	cursor: pointer;
 	float: left;
 	margin-left: -10px;
 	background-size: 16px  16px;
-	background-image: url(/static/images/icons/link.png);
+	background-image: url(/static/images/icons/limit.png);
+}
+.geSprite-unlimit {
+	background-image: url(/static/images/icons/unlimit.png);
 }
 .geSpriteBtn {
 	cursor: pointer;

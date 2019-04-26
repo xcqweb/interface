@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #7d7d7d;
+        stroke-width: 1px;
+      }
+    </style>
+  </defs>
+  <rect id="矩形" class="cls-1" x="0.5" y="0.5" width="20" height="20"/>
+</svg>

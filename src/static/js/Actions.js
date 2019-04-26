@@ -260,6 +260,19 @@ Actions.prototype.init = function()
 	this.addAction('insertMenuAfter', function () {
 		insertMenu('after');
 	})
+	// 更换图元
+	this.addAction('changePrimitive', function () {
+		var dlg = new ChangePrimitiveDialog(ui, '')
+		ui.showDialog(dlg.container, 410, 110, true, false, null, null, '更换图元');
+	})
+	// 向上插入一行
+	this.addAction('addUpRow', function () {
+		console.log('向上插入一行')
+	})
+	// 向下插入一行
+	this.addAction('addLowerRow', function () {
+		console.log('向下插入一行')
+	})
 	this.addAction('import...', function()
 	{
 		window.openNew = false;

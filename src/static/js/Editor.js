@@ -16,7 +16,7 @@ Editor = function(chromeless, themes, model, graph, editable)
 
 	this.getOrCreateFilename = function()
 	{
-		return this.filename || mxResources.get('drawing', [Editor.pageCounter]);
+		return this.filename || mxResources.get('app', [Editor.pageCounter]);
 	};
 	
 	this.getFilename = function()
@@ -252,11 +252,14 @@ Editor.prototype.enabled = true;
  * Contains the name which was used for the last save. Default value is null.
  */
 Editor.prototype.filename = null;
+Editor.prototype.paletteNum =  {
+	
+};
 
 /**
  * 当前选中的页面 
  */
-Editor.prototype.currentPage = '默认页面';
+Editor.prototype.currentPage = '页面1';
 /**
  * 设置当前选中的页面类型和名称
  */
@@ -268,11 +271,17 @@ Editor.prototype.setCurrentPage = function (title) {
  */
 var defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
 Editor.prototype.pages = {
-	"默认页面": {
-		title: '默认页面',
-		desc: '描述内容',
+	"页面1": {
+		title: '页面1',
+		desc: '',
 		xml: defaultXml,
 		type: 'normal'
+	},
+	"页面2": {
+		title: '页面2',
+		desc: '',
+		xml: defaultXml,
+		type: 'dialog'
 	}
 };
 
