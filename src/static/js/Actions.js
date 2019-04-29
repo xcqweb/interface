@@ -214,7 +214,7 @@ Actions.prototype.init = function()
 			mxUtils.alert('最多10个菜单');
 		}
 		if (type === 'before') {
-			var symbol = new mxCell('菜单', new mxGeometry(cell.geometry.x, 0, cellW, 40), 'shape=pagemenu;html=1;whiteSpace=wrap;');
+			var symbol = new mxCell('菜单', new mxGeometry(cell.geometry.x, 0, cellW, 40), 'shape=menuCell;html=1;whiteSpace=wrap;');
 			for (var i = 0; i < menuCell.children.length; i++) {
 				if (cell.id === menuCell.children[i].id) {
 					idx = i;
@@ -234,7 +234,7 @@ Actions.prototype.init = function()
 					idx = i + 1;
 				}
 			};
-			var symbol = new mxCell('菜单', new mxGeometry(cell.geometry.x + cellW, 0, cellW, 40), 'shape=pagemenu;html=1;whiteSpace=wrap;');
+			var symbol = new mxCell('菜单', new mxGeometry(cell.geometry.x + cellW, 0, cellW, 40), 'shape=menuCell;html=1;whiteSpace=wrap;');
 		}
 		symbol.vertex = true;
 		// 设置id
@@ -272,6 +272,22 @@ Actions.prototype.init = function()
 	// 向下插入一行
 	this.addAction('addLowerRow', function () {
 		console.log('向下插入一行')
+	})
+	// 删除行
+	this.addAction('deleteRow', function () {
+		console.log('删除行')
+	})
+	// 向左插入一列
+	this.addAction('addLeftCol', function () {
+		console.log('向左插入一列')
+	})
+	// 向右插入一列
+	this.addAction('addRightCol', function () {
+		console.log('向右插入一列')
+	})
+	// 删除列
+	this.addAction('deleteCol', function () {
+		console.log('删除列')
 	})
 	this.addAction('import...', function()
 	{
@@ -316,8 +332,7 @@ Actions.prototype.init = function()
 	this.addAction('pageSetup...', function() { ui.showDialog(new PageSetupDialog(ui).container, 340, 200, true, false, null, null, '页面设置'); }).isEnabled = isGraphEnabled;
 	this.addAction('print...', function() { ui.showDialog(new PrintDialog(ui).container, 300, 180, true, true); }, null, 'sprite-print', Editor.ctrlKey + '+P');
 	this.addAction('preview', function() { mxUtils.show(graph, null, 10, 10); });
-	
-	// Edit actions
+	// 编辑操作
 	this.addAction('undo', function() { ui.undo(); }, null, 'sprite-undo', Editor.ctrlKey + '+Z');
 	this.addAction('redo', function() { ui.redo(); }, null, 'sprite-redo', (!mxClient.IS_WIN) ? Editor.ctrlKey + '+Shift+Z' : Editor.ctrlKey + '+Y');
 	this.addAction('cut', function() { mxClipboard.cut(graph); }, null, 'sprite-cut', Editor.ctrlKey + '+X');
@@ -955,7 +970,6 @@ Actions.prototype.init = function()
 	}), null, null, Editor.ctrlKey + '+0'));
 	this.addAction('pageScale...', mxUtils.bind(this, function()
 	{
-		console.log(graph.pageScale)
 		var dlg = new FilenameDialog(this.editorUi, parseInt(graph.pageScale * 100), mxResources.get('apply'), mxUtils.bind(this, function(newValue)
 		{
 			var val = parseInt(newValue);

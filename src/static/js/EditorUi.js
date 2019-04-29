@@ -521,11 +521,11 @@ EditorUi = function(editor, container, lightbox)
 		}
 	}
 
-	// Implements a global current style for edges and vertices that is applied to new cells
+	// 从控件栏插入新的控件
 	var insertHandler = function(cells, asText)
 	{
 		var model = graph.getModel();
-		console.log(cells)
+		console.log(cells, asText)
 		model.beginUpdate();
 		try
 		{
@@ -645,6 +645,7 @@ EditorUi = function(editor, container, lightbox)
 		insertHandler(cells);
 	});
 
+	// 样式改变监听
 	this.addListener('styleChanged', mxUtils.bind(this, function(sender, evt)
 	{
 		// Checks if edges and/or vertices were modified
@@ -854,7 +855,6 @@ EditorUi = function(editor, container, lightbox)
 	{
 		var cells = evt.getProperty('cells');
 		var parent = evt.getProperty('parent');
-		
 		if (graph.getModel().isLayer(parent) && !graph.isCellVisible(parent) && cells != null && cells.length > 0)
 		{
 			graph.getModel().setVisible(parent, true);
@@ -886,17 +886,15 @@ EditorUi = function(editor, container, lightbox)
    		}), 0);
    	});
 	
-   	mxEvent.addListener(window, 'resize', this.resizeHandler);
+	mxEvent.addListener(window, 'resize', this.resizeHandler);
+	
+	this.orientationChangeHandler = mxUtils.bind(this, function()
+	{
+		this.refresh();
+	});
+	
+	mxEvent.addListener(window, 'orientationchange', this.orientationChangeHandler);
    	
-   	this.orientationChangeHandler = mxUtils.bind(this, function()
-   	{
-   		this.refresh();
-   	});
-   	
-   	mxEvent.addListener(window, 'orientationchange', this.orientationChangeHandler);
-   	
-	// Workaround for bug on iOS see
-	// http://stackoverflow.com/questions/19012135/ios-7-ipad-safari-landscape-innerheight-outerheight-layout-issue
 	if (mxClient.IS_IOS && !window.navigator.standalone)
 	{
 		this.scrollHandler = mxUtils.bind(this, function()
@@ -2830,30 +2828,34 @@ EditorUi.prototype.updateActionStates = function()
 	
 	var menuDisabled = ['toFront', 'toBack','flipH', 'flipV', 'turn', 'rotation']
 	// 判断当前是否是菜单
-	var notMenu = shapeNameStr.indexOf('pagemenu') == -1 && shapeNameStr.indexOf('menulist') == -1;
+	var notMenu = shapeNameStr.indexOf('menuCell') == -1 && shapeNameStr.indexOf('menulist') == -1;
+	// 判断当前是否是表格
+	var isTable = shapeNameStr.indexOf('tableBox') != -1 || shapeNameStr.indexOf('tableCell') != -1;
 	for (var i = 0; i < actions.length; i++)
 	{
-		if (menuDisabled.indexOf(actions[i]) != -1 && !notMenu) {
+		if (menuDisabled.indexOf(actions[i]) != -1 && (!notMenu || isTable)) {
+			// 菜单和表格不操作
 			this.actions.get(actions[i]).setEnabled(!selected);
 		} else {
 			this.actions.get(actions[i]).setEnabled(selected);
 		}
 	}
+
 	this.actions.get('setAsDefaultStyle').setEnabled(graph.getSelectionCount() == 1);
 	this.actions.get('clearWaypoints').setEnabled(!graph.isSelectionEmpty());
 	this.actions.get('copySize').setEnabled(graph.getSelectionCount() == 1);
 	this.actions.get('curved').setEnabled(edgeSelected);
-	this.actions.get('rotation').setEnabled(vertexSelected && shapeName !== 'pagemenu');
+	this.actions.get('rotation').setEnabled(vertexSelected && shapeName !== 'menuCell');
 	this.actions.get('wordWrap').setEnabled(vertexSelected);
-	this.actions.get('autosize').setEnabled(vertexSelected);
+	this.actions.get('autosize').setEnabled(vertexSelected && !isTable && notMenu);
 	var oneVertexSelected = vertexSelected && graph.getSelectionCount() == 1;
-	this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && shapeName !== 'pagemenu' && shapeName !== 'menulist');
+	this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && (shapeName !== 'menuCell' && shapeName !== 'menulist'&& !isTable));
 	this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 &&
 		(graph.getModel().getChildCount(graph.getSelectionCell()) > 0 ||
-		(oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) &&  shapeName !== "menulist");
+		(oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) &&  shapeName !== "menulist" && !isTable);
 
 	this.actions.get('linkReport').setEnabled(graph.getSelectionCount() == 1 && shapeName === "linkTag");
-	this.actions.get('removeFromGroup').setEnabled(oneVertexSelected && graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())) && notMenu);
+	this.actions.get('removeFromGroup').setEnabled(oneVertexSelected && graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())) && notMenu && !isTable);
 
 	// 更新菜单状态	
 	this.menus.get('navigation').setEnabled(selected || graph.view.currentRoot != null);
@@ -2874,14 +2876,30 @@ EditorUi.prototype.updateActionStates = function()
 	var unlocked = graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent());
 	this.menus.get('layout').setEnabled(unlocked);
 	this.menus.get('insert').setEnabled(unlocked);
-	this.menus.get('direction').setEnabled(unlocked && vertexSelected && notMenu);
-	this.menus.get('align').setEnabled(unlocked && vertexSelected && graph.getSelectionCount() > 1 && shapeNameStr.indexOf('pagemenu') == -1);
+	this.menus.get('direction').setEnabled(unlocked && vertexSelected && notMenu && !isTable);
+	this.menus.get('align').setEnabled(unlocked && vertexSelected && graph.getSelectionCount() > 1 && shapeNameStr.indexOf('menuCell') == -1);
 	this.menus.get('distribute').setEnabled(unlocked && vertexSelected && graph.getSelectionCount() > 1);
 	this.actions.get('selectVertices').setEnabled(unlocked);
 	this.actions.get('selectEdges').setEnabled(unlocked);
 	this.actions.get('selectAll').setEnabled(unlocked);
 	this.actions.get('selectNone').setEnabled(unlocked);
 	
+	// 菜单单元格禁用
+	var menuCellDisabled = ['copy', 'cut', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
+	if (shapeName == 'menuCell') {
+		for (let i = 0; i < menuCellDisabled.length; i++) {
+			this.actions.get(menuCellDisabled[i]).setEnabled(false);
+		}
+	}
+
+	// 表格单元格禁用
+	var tableCellDisabled = ['copy', 'cut', 'delete', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
+	if (shapeName == 'tableCell') {
+		for (let i = 0; i < tableCellDisabled.length; i++) {
+			this.actions.get(tableCellDisabled[i]).setEnabled(false);
+		}
+	}
+
 	this.updatePasteActionStates();
 };
 

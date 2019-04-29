@@ -45,7 +45,6 @@ Format.prototype.init = function()
 	var ui = this.editorUi;
 	var editor = ui.editor;
 	var graph = editor.graph;
-	
 	this.update = mxUtils.bind(this, function(sender, evt)
 	{
 		this.clearSelectionState();
@@ -53,20 +52,20 @@ Format.prototype.init = function()
 	});
 	
 	graph.getSelectionModel().addListener(mxEvent.CHANGE, this.update);
-	graph.addListener(mxEvent.EDITING_STARTED, this.update);
-	graph.addListener(mxEvent.EDITING_STOPPED, this.update);
+	// graph.addListener(mxEvent.EDITING_STARTED, this.update);
+	// graph.addListener(mxEvent.EDITING_STOPPED, this.update);
 	graph.getModel().addListener(mxEvent.CHANGE, this.update);
-	graph.addListener(mxEvent.ROOT, mxUtils.bind(this, function()
-	{
-		this.refresh();
-	}));
+	// graph.addListener(mxEvent.ROOT, mxUtils.bind(this, function()
+	// {
+	// 	this.refresh();
+	// }));
 	
-	editor.addListener('autosaveChanged', mxUtils.bind(this, function()
-	{
-		this.refresh();
-	}));
+	// editor.addListener('autosaveChanged', mxUtils.bind(this, function()
+	// {
+	// 	this.refresh();
+	// }));
 	
-	this.refresh();
+	// this.refresh();
 };
 
 /**
@@ -340,11 +339,28 @@ Format.prototype.refresh = function()
 	{
 		return;
 	}
-	
 	this.clear();
 	var ui = this.editorUi;
 	var graph = ui.editor.graph;
 	
+	if (this.getSelectionState().vertices.length === 1) {
+		var cell = graph.getSelectionCell();
+		var cellInfo = graph.getModel().getValue(cell);
+		var rect = this.getSelectionState();
+		var shapeName = rect.style.shape;
+		// 转换类型
+		if (!mxUtils.isNode(cellInfo))
+		{
+			var doc = mxUtils.createXmlDocument();
+			var obj = doc.createElement('object');
+			obj.setAttribute('label', cellInfo || '');
+			cellInfo = obj;
+		};
+		// 设置默认名称
+		cellInfo.getAttribute('palettename') == null && cellInfo.setAttribute('palettename', BaseFormatPanel.prototype.getPaletteName(shapeName))		
+		graph.getModel().setValue(cell, cellInfo);
+	}
+
 	var div = document.createElement('div');
 	div.style.whiteSpace = 'nowrap';
 	div.style.cursor = 'default';
@@ -460,11 +476,13 @@ BaseFormatPanel.prototype.list = {
 	rectangle: '矩形',
 	button: '按钮',
 	menulist: '菜单',
-	pagemenu: '菜单',
+	menuCell: '菜单',
 	image: '图片',
 	text: '文本',
 	select: '下拉列表',
 	table: '表格',
+	tableBox: '表格',
+	tableCell: '表格',
 	endarrow: '箭头',
 	line: '直线',
 	curve: '曲线',
@@ -480,7 +498,7 @@ BaseFormatPanel.prototype.getPaletteName = function (name) {
 	return this.list[name]
 }
 /**
- * 
+ * 按钮背景颜色
  */
 BaseFormatPanel.prototype.buttonBackgroundColor = 'white';
 /**
@@ -492,6 +510,7 @@ BaseFormatPanel.prototype.setCellAttrs = function (key, value) {
 	var graph = editor.graph;
 	var cell = graph.getSelectionCell();
 	var cellInfo = graph.getModel().getValue(cell);
+	console.log(11122, mxUtils.isNode(cellInfo))
 	// 转换类型
 	if (!mxUtils.isNode(cellInfo))
 	{
@@ -1009,7 +1028,6 @@ BaseFormatPanel.prototype.createColorOption = function(label, getColorFn, setCol
 	var value = getColorFn();
 
 	var btn = null;
-
 	var apply = function(color, disableUpdate, forceUpdate)
 	{
 		if (!applying)
@@ -1041,6 +1059,7 @@ BaseFormatPanel.prototype.createColorOption = function(label, getColorFn, setCol
 
 	btn = mxUtils.button('', mxUtils.bind(this, function(evt)
 	{
+		// 点击应用颜色
 		this.editorUi.pickColor(value, function(color)
 		{
 			apply(color, null, true);
@@ -1105,16 +1124,17 @@ BaseFormatPanel.prototype.createCellColorOption = function(label, colorKey, defa
 		return null;
 	}, function(color)
 	{
+		console.log(999, color)
 		graph.getModel().beginUpdate();
 		try
 		{
 			if (setStyleFn != null)
 			{
-				setStyleFn(color);
+				// setStyleFn(color);
 			}
 			graph.setCellStyles(colorKey, color, graph.getSelectionCells());
-			ui.fireEvent(new mxEventObject('styleChanged', 'keys', [colorKey],
-				'values', [color], 'cells', graph.getSelectionCells()));
+			// ui.fireEvent(new mxEventObject('styleChanged', 'keys', [colorKey],
+			// 	'values', [color], 'cells', graph.getSelectionCells()));
 		}
 		finally
 		{
@@ -1124,7 +1144,7 @@ BaseFormatPanel.prototype.createCellColorOption = function(label, colorKey, defa
 	{
 		install: function(apply)
 		{
-			this.listener = function()
+		this.listener = function()
 			{
 				// Seems to be null sometimes, not sure why...
 				var state = graph.view.getState(graph.getSelectionCell());
@@ -1750,7 +1770,7 @@ ArrangePanel.prototype.addAngle = function(container)
 };
 
 /**
- * 
+ * 大小
  */
 ArrangePanel.prototype.addGeometry = function(container)
 {
@@ -2222,14 +2242,14 @@ ArrangePanel.prototype.addBase = function (container) {
 	}
 	var shapeName = rect.style.shape;
 	// 名称
-	this.addName(container, this.getPaletteName(shapeName));
+	this.addName(container);
 	// 文字参数
 	this.addFont(container);
 	// 文字对齐
 	this.alignFont(container);
 	// 大小
 	this.addGeometry(container);
-	if (['pagemenu', 'menulist'].indexOf(shapeName) == -1) {
+	if (['menuCell', 'menulist', 'tableBox', 'tableCell'].indexOf(shapeName) == -1) {
 		// 角度
 		this.addAngle(container);
 	}
@@ -2243,9 +2263,9 @@ ArrangePanel.prototype.addBase = function (container) {
 /**
  * 名称
  */
-ArrangePanel.prototype.addName = function (container, defaultName) {
+ArrangePanel.prototype.addName = function (container) {
 	container.appendChild(this.createTitle('名称'));
-	var defaultValue = this.getCellAttrs('palettename') || defaultName;
+	var defaultValue = this.getCellAttrs('palettename');
 	var nameInput = document.createElement('input');
 	nameInput.setAttribute('value', defaultValue)
 	// 监听事件`
@@ -2777,7 +2797,6 @@ ArrangePanel.prototype.getCustomColors = function()
 		styleOption.innerText = styles[i];
 		styleSelect.appendChild(styleOption);
 	}
-
 	var state = graph.view.getState(graph.getSelectionCell());
 	var color = mxUtils.getValue(state.style, 'fillColor', null)
 	color ? styleSelect.value = '有' : styleSelect.value = '无';
@@ -3526,7 +3545,7 @@ PaletteManagePanel.prototype.colspanImage = '/static/images/icons/colspan.png';
 // 	rectangle: '矩形',
 // 	button: '按钮',
 // 	menulist: '菜单',
-// 	pagemenu: '菜单',
+// 	menuCell: '菜单',
 // 	image: '图片',
 // 	text: '文本',
 // 	select: '下拉列表',
@@ -3627,7 +3646,7 @@ PaletteManagePanel.prototype.fillList = function (container, filter) {
 	var ul = document.createElement('ul');
 	ul.id = 'paletteManageList';
 	// 不显示节点的名称
-	var forbiddenShape = ['pagemenu'];
+	var forbiddenShape = ['menuCell', 'tableCell'];
 	for (var i = 0; i < cells.length; i++) {
 		// 节点的state信息
 		var state = this.editorUi.editor.graph.view.getState(cells[i]);

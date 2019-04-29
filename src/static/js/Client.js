@@ -69670,7 +69670,7 @@ mxGraphHandler.prototype.consumeMouseEvent = function(evtName, me)
  */
 mxGraphHandler.prototype.mouseDown = function(sender, me)
 {
-	//  && me.getState().style.shape != 'pagemenu'
+	//  && me.getState().style.shape != 'menuCell'
 	if (!me.isConsumed() && this.isEnabled() && this.graph.isEnabled() &&
 		me.getState() != null && !mxEvent.isMultiTouchEvent(me.getEvent()))
 	{
@@ -69687,8 +69687,9 @@ mxGraphHandler.prototype.mouseDown = function(sender, me)
 		{
 			var model = this.graph.model;
 			var geo = model.getGeometry(cell);
-			// 菜单不允许拖拽
-			if (this.graph.view.getState(selectCell).style.shape != 'pagemenu' && this.graph.isCellMovable(cell) && ((!model.isEdge(cell) || this.graph.getSelectionCount() > 1 ||
+			var shapeName = this.graph.view.getState(selectCell).style.shape;
+			// 菜单不允许拖拽、表格不允许拖拽
+			if ( shapeName != 'menuCell' && shapeName != 'tableCell'  && this.graph.isCellMovable(cell) && ((!model.isEdge(cell) || this.graph.getSelectionCount() > 1 ||
 				(geo.points != null && geo.points.length > 0) || model.getTerminal(cell, true) == null ||
 				model.getTerminal(cell, false) == null) || this.graph.allowDanglingEdges || 
 				(this.graph.isCloneEvent(me.getEvent()) && this.graph.isCellsCloneable())))

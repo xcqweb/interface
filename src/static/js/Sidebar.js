@@ -1119,7 +1119,7 @@ Sidebar.prototype.addPrimitive = function (expand) {
  */
 Sidebar.prototype.addGeneralPalette = function(expand)
 {
-	var sb = this;
+	var that = this;
 	var field = new mxCell('List Item', new mxGeometry(0, 0, 60, 26), 'text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;');
 	field.vertex = true;
 	var fns = [
@@ -1127,25 +1127,21 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, '矩形'),
 		// 按钮
 		this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box">BUTTON</button>', '按钮'),
-		// 菜单
+		// 横向菜单
 		this.addEntry('page menu', function()
 		{
 			var cell = new mxCell('', new mxGeometry(0, 0, 360, 40), 'shape=menulist;group');
 			cell.vertex = true;
-				
-			var symbol = new mxCell('菜单1', new mxGeometry(0, 0, 120, 40), 'shape=pagemenu;html=1;whiteSpace=wrap;');
-			symbol.vertex = true;
-			cell.insert(symbol);
-
-			var symbol2 = new mxCell('菜单2', new mxGeometry(120, 0, 120, 40), 'shape=pagemenu;html=1;whiteSpace=wrap;');
-			symbol2.vertex = true;
-			cell.insert(symbol2);
-
-			var symbol3 = new mxCell('菜单3', new mxGeometry(240, 0, 120, 40), 'shape=pagemenu;html=1;whiteSpace=wrap;');
-			symbol3.vertex = true;
-			cell.insert(symbol3);
 			
-			return sb.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '菜单');
+			for (let i = 0; i < 3; i++) {
+				let line = parseInt(i/3);
+				let xNum = i % 3;
+				let symbol = new mxCell('菜单' + (i + 1), new mxGeometry(xNum * 120, 40 * line, 120, 40), 'shape=menuCell;html=1;whiteSpace=wrap;');
+				symbol.vertex = true;
+				cell.insert(symbol);
+			}
+			
+			return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '菜单');
 		}),
 		// 复选
 		// this.createVertexTemplateEntry('shape=multipleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="checkbox" class="inputTag1" />', '复选'),
@@ -1156,13 +1152,28 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		// 图片
 		this.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
 		this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 65, 40, '<div style="width:100%;height:100%;position: relative"><select class="selectTag"></select><div class="selectTagShade"></div></div>', '下拉列表'),
-		// 表格
-		this.createVertexTemplateEntry('shape=table;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
-		 	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
- 			'<table border="1" style="width:100%;height:75%;border-collapse:collapse;">' +
- 			'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
- 			'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
-			'<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
+		// // 表格
+		// this.createVertexTemplateEntry('shape=table;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
+		//  	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
+ 		// 	'<table border="1" style="width:100%;height:75%;border-collapse:collapse;">' +
+ 		// 	'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
+ 		// 	'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
+		// 	'<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
+		//表格2
+		this.addEntry('tableBox', function()
+		{
+			var cell = new mxCell('', new mxGeometry(0, 0, 300, 90), 'shape=tableBox;group');
+			cell.vertex = true;
+			
+			for (let i = 0; i < 9; i++) {
+				let line = parseInt(i/3);
+				let xNum = i % 3;
+				let symbol = new mxCell('Value' + (i + 1), new mxGeometry(xNum * 100, 30 * line, 100, 30), 'shape=tableCell;html=1;whiteSpace=wrap;');
+				symbol.vertex = true;
+				cell.insert(symbol);
+			}
+			return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '表格');
+		}),
 		// 图元
 		this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', 50, 50, '', '图元'),
 		// 箭头
@@ -2627,7 +2638,7 @@ Sidebar.prototype.addClickHandler = function(elt, ds, cells)
 	var oldMouseUp = ds.mouseUp;
 	var tol = graph.tolerance;
 	var first = null;
-	var sb = this;
+	var that = this;
 	
 	ds.mouseDown =function(evt)
 	{
@@ -2659,7 +2670,7 @@ Sidebar.prototype.addClickHandler = function(elt, ds, cells)
 		if (!mxEvent.isPopupTrigger(evt) && this.currentGraph == null &&
 			this.dragElement != null && this.dragElement.style.display == 'none')
 		{
-			sb.itemClicked(cells, ds, evt, elt);
+			that.itemClicked(cells, ds, evt, elt);
 		}
 
 		oldMouseUp.apply(ds, arguments);
@@ -2667,7 +2678,7 @@ Sidebar.prototype.addClickHandler = function(elt, ds, cells)
 		first = null;
 		
 		// Blocks tooltips on this element after single click
-		sb.currentElt = elt;
+		that.currentElt = elt;
 	};
 };
 

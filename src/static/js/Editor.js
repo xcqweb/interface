@@ -874,7 +874,7 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 	switch (dialogType) {
 		case 'chooseVariable':
 			left += 90;
-			top += 197;
+			top -= 30;
 			break;
 		case 'chooseModel':
 			left += 90;

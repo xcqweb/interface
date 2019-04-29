@@ -1017,7 +1017,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 		var state = graph.view.getState(cell);
 		var shapeName = state.style.shape;
 
-		if (shapeName == "pagemenu") {
+		if (shapeName == "menuCell") {
 			this.addMenuItems(menu, ['delete', 'edit','-'], null, evt);
 		} else if (shapeName == "menulist") {
 			this.addMenuItems(menu, ['delete', '-'], null, evt);
@@ -1027,23 +1027,17 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 
 		if (state != null)
 		{
-			var hasWaypoints = false;
 			this.addMenuItems(menu, ['toFront', 'toBack', '-'], null, evt);
-			
-			if (graph.getSelectionCount() == 1 && (hasWaypoints || (graph.getModel().isVertex(cell) &&
-				graph.getModel().getEdgeCount(cell) > 0)))
+			if (graph.getSelectionCount() > 1 && shapeName !== 'menuCell' && shapeName !== 'menulist')	
 			{
-				this.addMenuItems(menu, ['clearWaypoints'], null, evt);
-			}
-			// 选择多个节点，增加组合操作
-			if (graph.getSelectionCount() > 1 && shapeName !== 'pagemenu' && shapeName !== 'menulist')	
-			{
+				// 选择多个节点，增加组合操作
 				menu.addSeparator();
 				this.addMenuItems(menu, ['group'], null, evt);
 			}
 			else if (graph.getSelectionCount() == 1 && !graph.getModel().isEdge(cell) && !graph.isSwimlane(cell) &&
 					graph.getModel().getChildCount(cell) > 0 && shapeName !== 'menulist')
 			{
+				// 选择组合内的节点，增加取消组合操作
 				menu.addSeparator();
 				this.addMenuItems(menu, ['ungroup'], null, evt);
 			}
@@ -1057,30 +1051,22 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
 					this.addMenuItem(menu, 'configLink', null, evt).firstChild.innerHTML = '配置...';
 				} else if (shapeName == 'rectangle') {
 					// 矩形
-					this.addMenuItem(menu, 'paletteData', null, evt).firstChild.innerHTML = '数据...';
+					this.addMenuItem(menu, 'paletteData', null, evt);
 				} else if (shapeName === 'select') {
 					// 下拉列表
 					this.addMenuItem(menu, 'selectProp', null, evt).firstChild.innerHTML = '属性...';
 				} else if (shapeName == 'image') {
 					// 编辑图片
 					this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = '选择图片...';
-				} else if (shapeName == 'pagemenu') {
+				} else if (shapeName == 'menuCell') {
 					// 菜单
-					this.addMenuItem(menu, 'insertMenuBefore', null, evt);
-					this.addMenuItem(menu, 'insertMenuAfter', null, evt);
+					this.addMenuItems(menu, ['insertMenuBefore', 'insertMenuAfter'], null, evt);
 				} else if (this.editorUi.sidebar.primitives.indexOf(shapeName) != -1) {
 					// 图元
-					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '选择图元...';
-					this.addMenuItem(menu, 'paletteData', null, evt).firstChild.innerHTML = '数据...';
-				} else if (shapeName == 'table') {
-					// 表格
-					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '向上插入一行';
-					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '向下插入一行';
-					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '删除行';
-					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '向左插入一列';
-					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '向右插入一列';
-					this.addMenuItem(menu, 'changePrimitive', null, evt).firstChild.innerHTML = '删除列';
-					this.addMenuItem(menu, 'paletteData', null, evt).firstChild.innerHTML = '数据...';
+					this.addMenuItems(menu, ['changePrimitive', 'paletteData'], null, evt);
+				} else if (shapeName == 'tableCell') {
+					// 单元格
+					this.addMenuItems(menu, ['addUpRow', 'addLowerRow', 'deleteRow','-', 'addLeftCol', 'addRightCol', 'deleteCol','-', 'paletteData'], null, evt);
 				}
 			}
 		}

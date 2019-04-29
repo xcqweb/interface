@@ -1,3 +1,378 @@
+const MOCKPOINTTYPEDATA = [
+	{
+			"id": "1909749721078046720",
+			"name": "33443",
+			"alias": "33443",
+			"category": "thirdParty",
+			"isThirdParty": "true",
+			"params": [
+					{
+							"id": "1909750976752001024",
+							"name": "ffgg",
+							"dataType": "TINYINT",
+							"createTime": "2019-04-11 14:09:35",
+							"updateTime": "2019-04-11 14:09:35",
+							"createBy": "admin",
+							"pointTypeDTO": null,
+							"status": "3"
+					}
+			],
+			"points": [],
+			"keywords": null,
+			"status": "1",
+			"pointsSize": null,
+			"paramsSize": null,
+			"createTime": "2019-04-11 14:09:35",
+			"updateTime": "2019-04-11 14:09:35",
+			"createBy": "admin"
+	},
+	{
+			"id": "1e96955b60bbcf0854ab3e44ac19fc4",
+			"name": "xintianjia",
+			"alias": "xintianjia",
+			"category": "thirdParty",
+			"isThirdParty": "true",
+			"params": [],
+			"points": [
+					{
+							"id": "1e96a582842bf00b7e889be599980de",
+							"name": "cjdex1",
+							"uploadType": null,
+							"gateway": null,
+							"uploadProto": "MQTT",
+							"topic": "v1/t1/xintianjia/cjdex1/telemetry",
+							"host": "http://locahost",
+							"tbRvInterface": null,
+							"subnetMask": "",
+							"connectString": "",
+							"location": "1e96954c94c4920854ab3e44ac19fc4",
+							"sensor": null,
+							"createTime": "2019-04-29 16:24:05",
+							"createBy": "admin",
+							"status": "1",
+							"sort": 0,
+							"pointTypeDTO": null,
+							"keyWord": null,
+							"updateTime": "2019-04-29 16:24:05"
+					},
+					{
+							"id": "1e96a582a933eb0b7e889be599980de",
+							"name": "cjdex3",
+							"uploadType": null,
+							"gateway": null,
+							"uploadProto": "TibcoRV",
+							"topic": "1",
+							"host": "1",
+							"tbRvInterface": null,
+							"subnetMask": "1",
+							"connectString": "1",
+							"location": "1e96954c94c4920854ab3e44ac19fc4",
+							"sensor": null,
+							"createTime": "2019-04-29 16:24:12",
+							"createBy": "admin",
+							"status": "1",
+							"sort": 0,
+							"pointTypeDTO": null,
+							"keyWord": null,
+							"updateTime": "2019-04-29 16:24:12"
+					},
+					{
+							"id": "1e96a582a9ba320b7e889be599980de",
+							"name": "cjdex7",
+							"uploadType": null,
+							"gateway": null,
+							"uploadProto": "MQTT",
+							"topic": "v1/t1/xintianjia/cjdex7/telemetry",
+							"host": "http://locahost",
+							"tbRvInterface": null,
+							"subnetMask": "1",
+							"connectString": "1",
+							"location": "1e96954c94c4920854ab3e44ac19fc4",
+							"sensor": null,
+							"createTime": "2019-04-29 16:24:12",
+							"createBy": "admin",
+							"status": "1",
+							"sort": 0,
+							"pointTypeDTO": null,
+							"keyWord": null,
+							"updateTime": "2019-04-29 16:24:12"
+					}
+			],
+			"keywords": null,
+			"status": "1",
+			"pointsSize": null,
+			"paramsSize": null,
+			"createTime": "2019-04-28 09:34:06",
+			"updateTime": "2019-04-28 09:34:06",
+			"createBy": "admin"
+	},
+	{
+			"id": "2163115051521810432",
+			"name": "adasd",
+			"alias": "adasd",
+			"category": "thirdParty",
+			"isThirdParty": "true",
+			"params": [
+					{
+							"id": "2163127200742776832",
+							"name": "asd",
+							"dataType": "TINYINT",
+							"createTime": "2019-04-11 14:34:08",
+							"updateTime": "2019-04-11 14:34:08",
+							"createBy": "admin",
+							"pointTypeDTO": null,
+							"status": "3"
+					}
+			],
+			"points": [],
+			"keywords": null,
+			"status": "1",
+			"pointsSize": null,
+			"paramsSize": null,
+			"createTime": "2019-04-11 14:34:08",
+			"updateTime": "2019-04-11 14:34:08",
+			"createBy": "admin"
+	},
+	{
+			"id": "2287885461949128704",
+			"name": "32",
+			"alias": "32",
+			"category": "thirdParty",
+			"isThirdParty": "true",
+			"params": [
+					{
+							"id": "2287886543915982848",
+							"name": "13",
+							"dataType": "TINYINT",
+							"createTime": "2019-04-11 14:11:06",
+							"updateTime": "2019-04-11 14:11:06",
+							"createBy": "admin",
+							"pointTypeDTO": null,
+							"status": "3"
+					}
+			],
+			"points": [],
+			"keywords": null,
+			"status": "1",
+			"pointsSize": null,
+			"paramsSize": null,
+			"createTime": "2019-04-11 14:11:06",
+			"updateTime": "2019-04-11 14:11:06",
+			"createBy": "admin"
+	},
+	{
+			"id": "319113846423953408",
+			"name": "pump",
+			"alias": "pump",
+			"category": "collector",
+			"isThirdParty": "false",
+			"params": [
+					{
+							"id": "319113846423953408",
+							"name": "dp_temp",
+							"dataType": "FLOAT",
+							"createTime": "2019-04-26 11:25:35",
+							"updateTime": "2019-04-26 11:25:35",
+							"createBy": "admin",
+							"pointTypeDTO": null,
+							"status": "1"
+					}
+			],
+			"points": [
+					{
+							"id": "1e969baaf564190b7e889be599980de",
+							"name": "point1",
+							"uploadType": "direct",
+							"gateway": null,
+							"uploadProto": "MQTT",
+							"topic": "v1/t1/pump/point1/telemetry",
+							"host": "http://locahost",
+							"tbRvInterface": null,
+							"subnetMask": null,
+							"connectString": null,
+							"location": "1e969ba930f2e70b7e889be599980de",
+							"sensor": null,
+							"createTime": "2019-04-28 21:36:54",
+							"createBy": "admin",
+							"status": "1",
+							"sort": 0,
+							"pointTypeDTO": null,
+							"keyWord": null,
+							"updateTime": "2019-04-28 21:36:54"
+					},
+					{
+							"id": "1e96a5281ea4fb0b7e889be599980de",
+							"name": "p2",
+							"uploadType": "direct",
+							"gateway": null,
+							"uploadProto": "MQTT",
+							"topic": "v1/t1/pump/p2/telemetry",
+							"host": "http://locahost",
+							"tbRvInterface": null,
+							"subnetMask": null,
+							"connectString": null,
+							"location": "1e969ba930f2e70b7e889be599980de",
+							"sensor": null,
+							"createTime": "2019-04-29 15:43:41",
+							"createBy": "admin",
+							"status": "1",
+							"sort": 0,
+							"pointTypeDTO": null,
+							"keyWord": null,
+							"updateTime": "2019-04-29 15:43:41"
+					},
+					{
+							"id": "1e96a5369ac2530b7e889be599980de",
+							"name": "p3",
+							"uploadType": "gateway",
+							"gateway": null,
+							"uploadProto": "MQTT",
+							"topic": "v1/t1/pump/p3/telemetry",
+							"host": "http://locahost",
+							"tbRvInterface": null,
+							"subnetMask": null,
+							"connectString": null,
+							"location": "1e96a535ec1a690b7e889be599980de",
+							"sensor": null,
+							"createTime": "2019-04-29 15:50:10",
+							"createBy": "admin",
+							"status": "1",
+							"sort": 0,
+							"pointTypeDTO": null,
+							"keyWord": null,
+							"updateTime": "2019-04-29 15:50:10"
+					}
+			],
+			"keywords": null,
+			"status": "1",
+			"pointsSize": null,
+			"paramsSize": null,
+			"createTime": "2019-04-26 11:25:35",
+			"updateTime": "2019-04-26 11:25:35",
+			"createBy": "admin"
+	},
+	{
+			"id": "319180380865437696",
+			"name": "seg",
+			"alias": "seg",
+			"category": "thirdParty",
+			"isThirdParty": "true",
+			"params": [
+					{
+							"id": "319180380865437696",
+							"name": "g",
+							"dataType": "TINYINT",
+							"createTime": "2019-04-26 15:49:59",
+							"updateTime": "2019-04-26 15:49:59",
+							"createBy": "admin",
+							"pointTypeDTO": null,
+							"status": "1"
+					}
+			],
+			"points": [],
+			"keywords": null,
+			"status": "1",
+			"pointsSize": null,
+			"paramsSize": null,
+			"createTime": "2019-04-26 15:49:59",
+			"updateTime": "2019-04-26 15:49:59",
+			"createBy": "admin"
+	},
+	{
+			"id": "319180743953752064",
+			"name": "fffe",
+			"alias": "fffe",
+			"category": "thirdParty",
+			"isThirdParty": "true",
+			"params": [
+					{
+							"id": "319180743953752064",
+							"name": "ff",
+							"dataType": "TINYINT",
+							"createTime": "2019-04-26 15:51:25",
+							"updateTime": "2019-04-26 15:51:25",
+							"createBy": "admin",
+							"pointTypeDTO": null,
+							"status": "1"
+					}
+			],
+			"points": [],
+			"keywords": null,
+			"status": "1",
+			"pointsSize": null,
+			"paramsSize": null,
+			"createTime": "2019-04-26 15:51:25",
+			"updateTime": "2019-04-26 15:51:25",
+			"createBy": "admin"
+	},
+	{
+			"id": "3817771263192080384",
+			"name": "dfg",
+			"alias": "dfg",
+			"category": "thirdParty",
+			"isThirdParty": "true",
+			"params": [
+					{
+							"id": "3817771929159475200",
+							"name": "ffffg",
+							"dataType": "TINYINT",
+							"createTime": "2019-04-11 11:50:34",
+							"updateTime": "2019-04-11 11:50:34",
+							"createBy": "admin",
+							"pointTypeDTO": null,
+							"status": "3"
+					},
+					{
+							"id": "3817772319783395328",
+							"name": "33",
+							"dataType": "TINYINT",
+							"createTime": "2019-04-11 11:50:34",
+							"updateTime": "2019-04-11 11:50:34",
+							"createBy": "admin",
+							"pointTypeDTO": null,
+							"status": "3"
+					},
+					{
+							"id": "3817772508669681664",
+							"name": "444",
+							"dataType": "TINYINT",
+							"createTime": "2019-04-11 11:50:34",
+							"updateTime": "2019-04-11 11:50:34",
+							"createBy": "admin",
+							"pointTypeDTO": null,
+							"status": "3"
+					},
+					{
+							"id": "3817772682401947648",
+							"name": "4442",
+							"dataType": "TINYINT",
+							"createTime": "2019-04-11 11:50:34",
+							"updateTime": "2019-04-11 11:50:34",
+							"createBy": "admin",
+							"pointTypeDTO": null,
+							"status": "3"
+					},
+					{
+							"id": "3817772860034916352",
+							"name": "353",
+							"dataType": "TINYINT",
+							"createTime": "2019-04-11 11:50:34",
+							"updateTime": "2019-04-11 11:50:34",
+							"createBy": "admin",
+							"pointTypeDTO": null,
+							"status": "3"
+					}
+			],
+			"points": [],
+			"keywords": null,
+			"status": "1",
+			"pointsSize": null,
+			"paramsSize": null,
+			"createTime": "2019-04-11 11:50:34",
+			"updateTime": "2019-04-11 11:50:34",
+			"createBy": "admin"
+	}
+]
 /**
  * Copyright (c) 2006-2012, JGraph Ltd
  */
@@ -1214,6 +1589,16 @@ var SelectPropDialog = function (editorUi, cell) {
 	this.container = saveContent;
 }
 
+function fillParams (elt, data) {
+	elt.innerHTML = '';
+	elt.innerHTML = `
+		${
+			data.map(param => `
+				<span>${param}</span>
+			`).join(';')
+		}
+	`;
+}
 /**
  * 控件数据弹窗
  * @param {object} editorUi 
@@ -1221,25 +1606,33 @@ var SelectPropDialog = function (editorUi, cell) {
  */
 var PaletteDataDialog = function(editorUi, cell) {
 	var graph = editorUi.editor.graph;
-	var value = convertsToXml(graph, cell)
-
+	// 弹窗内容
 	var saveContent = editorUi.createDiv('geDialogInfo')
 	saveContent.style.padding = "22px";
-	var mockData = [{
-		name: '氯气',
-		points: ['DOD_ASTK01_PT6', 'DOD_ASTK01_PT2']
-	}, {
-		name: 'particle',
-		points: ['CBBPC121_Particle', 'CBBPC144_Particle', 'CBBPC140_Particle']
-	}]
+	// 点位类型数据
+	var pointTypes = MOCKPOINTTYPEDATA;
+	pointTypes.unshift({
+		name: '请选择',
+		id: '',
+		points: [],
+		params: []
+	})
+	// 点位列表
+	var pointsData = pointTypes[0].points;
+	// 参数列表
+	var paramsData = pointTypes[0].params;
+	// 已选择参数列表
+	var choosedParam = [];
 	// 填充列表
 	this.fillContent = function (ele, data) {
 		ele.innerHTML = '';
 		for (var i = 0; i < data.length; i++) {
 			var opt = document.createElement('option')
-			opt.innerText = data[i].name || data[i]
+			opt.innerText = data[i].name
+			opt.setAttribute('value', data[i].id)
 			if (data[i].points) {
-				opt.setAttribute('data-points', data[i].points)
+				opt.setAttribute('data-points', JSON.stringify(data[i].points))
+				opt.setAttribute('data-params', JSON.stringify(data[i].params))
 			}
 			ele.appendChild(opt)
 		}
@@ -1256,7 +1649,7 @@ var PaletteDataDialog = function(editorUi, cell) {
 	typeSelect.className = 'dialogSelect'
 	typeSelect.id = 'typeSelect'
 	saveContent.appendChild(typeSelect)
-	this.fillContent(typeSelect, mockData)
+	this.fillContent(typeSelect, pointTypes)
 	
 	// 采集点：
 	var pointTitle = document.createElement('p');
@@ -1269,107 +1662,126 @@ var PaletteDataDialog = function(editorUi, cell) {
 	pointSelect.className = 'dialogSelect'
 	pointSelect.id = 'pointSelect'
 	saveContent.appendChild(pointSelect)
-	this.fillContent(pointSelect, mockData[0].points)
+	this.fillContent(pointSelect, pointsData)
 
 	// 变量：
 	var variableTitle = document.createElement('p');
-	variableTitle.innerHTML = '变量：';
 	variableTitle.className = 'geDialogInfoTitle';
+	var variableTitleSpan = document.createElement('span');
+	variableTitleSpan.innerHTML = '变量：';
+	variableTitle.appendChild(variableTitleSpan);
+	// 添加变量
+	var addVariableBtn = document.createElement('span');
+	addVariableBtn.innerHTML = '变量';
+	addVariableBtn.className = 'addVariableBtn';
+	variableTitle.appendChild(addVariableBtn);
 	saveContent.appendChild(variableTitle)
-
-	var variableBtn = document.createElement('button');
-	variableBtn.innerHTML = '点击勾选多个变量';
-	variableBtn.className = 'dialogBtn'
-	variableBtn.id = 'variableBtn'
-	saveContent.appendChild(variableBtn)
-	
-	// 展示变量
-	var showVariable = document.createElement('label')
-	showVariable.innerText = '显示变量值'
-	showVariable.style.display = 'inline-block'
-	showVariable.style.paddingLeft = '12px'
-
-	var showVariableCheck = document.createElement('input')
-	showVariableCheck.setAttribute('type', 'checkbox')
-	showVariableCheck.id = "showVariableCheck"
-	showVariableCheck.style.float = 'left'
-	showVariable.appendChild(showVariableCheck)
-	saveContent.appendChild(showVariable)
+	// 变量列表
+	var variableList = document.createElement('div');
+	variableList.className = 'dataDialogList variablesList'
+	fillParams(variableList, choosedParam);
+	saveContent.appendChild(variableList);
 	
 	// 选择模型：
 	var modelTitle = document.createElement('p');
 	modelTitle.innerHTML = '选择模型：';
 	modelTitle.className = 'geDialogInfoTitle';
 	saveContent.appendChild(modelTitle)
-
-	var modelBtn = document.createElement('button');
-	modelBtn.innerHTML = '+ 模型';
-	modelBtn.className = 'dialogBtn'
-	modelBtn.id = 'modelBtn'
-	saveContent.appendChild(modelBtn)
+	// 模型列表
+	var modelList = document.createElement('ul');
+	modelList.className = 'dataDialogList modelList'
+	var modelData = [{name: '模型1: ', desc:' C12_DOD-02-STK200-01.C12 >10***C12_DOD-02-STK200-01.C12 >10'},{name: '模型1: ', desc:' C12_DOD-02-STK200-01.C12 >10'},{name: '模型1: ', desc:' C12_DOD-02-STK200-01.C12 >10'},{name: '模型1: ', desc:' C12_DOD-02-STK200-01.C12 >10'},{name: '模型1: ', desc:' C12_DOD-02-STK200-01.C12 >10'},{name: '模型1: ', desc:' C12_DOD-02-STK200-01.C12 >10'}]
+	modelList.innerHTML = `
+		${
+			modelData.map(model => `
+				<li>
+					<span style="color: #767676">${model.name}</span>
+					<span title="${model.desc}">${model.desc}</span>
+				</li>
+			`).join('')
+		}
+	`;
+	saveContent.appendChild(modelList);
 	
 	// 执行：
 	var executeTitle = document.createElement('p');
-	executeTitle.innerHTML = '执行：';
+	executeTitle.innerHTML = '执行(改变状态)：';
 	executeTitle.className = 'geDialogInfoTitle';
 	saveContent.appendChild(executeTitle)
-
-	var executeBtn = document.createElement('button');
-	executeBtn.innerHTML = '+ 执行';
-	executeBtn.className = 'dialogBtn'
-	executeBtn.id = 'executeBtn'
-	saveContent.appendChild(executeBtn)
+	// 执行列表
+	var executeList = document.createElement('ul');
+	executeList.className = 'dataDialogList executeList';
+	const statusList = [{
+		status: 1,
+		title: '不作任何变化'
+	}, {
+		status: 2,
+		title: '预警黄'
+	}, {
+		status: 3,
+		title: '告警红'
+	}, {
+		status: 4,
+		title: '异常灰'
+	}]
+	executeList.innerHTML = `
+		${
+			modelData.map(model => `
+				<li>
+					<input type="checkbox" name="models" style="float: left;margin: 6px 2px 0 0;" />
+					<span style="color: #767676;float: left;width: 240px;overflow: hidden;text-overflow: ellipsis;" title="${model.name}${model.desc}">${model.name}${model.desc}</span>
+					<select style="float: left;width: 65px;border-color: #C5C5C5;">
+					${
+						statusList.map(status => `
+							<option value="${status.status}">${status.title}</option>
+						`).join('')
+					}
+					</select>
+				</li>
+			`).join('')
+		}
+	`;
+	saveContent.appendChild(executeList);
+	
 	this.init = function () {
 	}
 	
 	// 绑定事件
 	// 选择采集点类型
 	typeSelect.addEventListener('change', function (e) {
-		var data = e.target.selectedOptions[0].getAttribute('data-points').split(',')
-		this.fillContent(pointSelect, data)
+		var data = JSON.parse(e.target.selectedOptions[0].getAttribute('data-points'));
+		paramsData = JSON.parse(e.target.selectedOptions[0].getAttribute('data-params'));
+		this.fillContent(pointSelect, data);
+		choosedParam = [];
+		fillParams(variableList, choosedParam);
 	}.bind(this))
 	
 	// 选择变量
-	variableBtn.addEventListener('click', function (e) {
-		var dlg = new chooseVariableDialog(editorUi, cell)
+	function chooseVariable(data) {
+		choosedParam = data;
+		fillParams(variableList, choosedParam);
+	}
+	// 选择变量
+	addVariableBtn.addEventListener('click', function (e) {
+		var dlg = new chooseVariableDialog(editorUi, paramsData, [], chooseVariable)
 		editorUi.showDialog(dlg.container, 410, 350, true, false, null, null, '选择变量');
 	})
-		
-	// 选择模型
-	modelBtn.addEventListener('click', function (e) {
-		var dlg = new chooseModelDialog(editorUi, cell)
-		editorUi.showDialog(dlg.container, 410, 350, true, false, null, null, '选择模型');
-	})
-		
-	// 选择执行
-	executeBtn.addEventListener('click', function (e) {
-		var dlg = new chooseExecuteDialog(editorUi, cell)
-		editorUi.showDialog(dlg.container, 410, 350, true, false, null, null, '选择执行');
-	})
-
+	
 	// 保存按钮
 	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('应用', function()
 	{
+		console.log('选择的参数', choosedParam)
+		console.log('采集点类型', typeSelect.value)
+		console.log('采集点', pointSelect.value)
 		editorUi.hideDialog();
 		// 绑定列表
 		var select = null;
 		var cells = graph.getSelectionCells();
-		// mock数据
-		var newValue;
-		var mockNum = Math.random()
-		if (mockNum < 0.3) {
-			newValue = "/static/stencils/IOT/t1_cl2_layout.png"
-		} else if (mockNum < 0.5) {
-			newValue = "/static/stencils/IOT/cl2_green.png"
-		} else if (mockNum < 0.8) {
-			newValue = "/static/stencils/IOT/cl2_red.png"
-		} else {
-			newValue = "/static/stencils/IOT/t2_cl2_layout.png"
-		}
+		
 		graph.getModel().beginUpdate();
 		try {
-			graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
+			graph.setCellStyles(mxConstants.STYLE_IMAGE, 'newValue', cells);
 		}
 		finally {
 			graph.getModel().endUpdate();
@@ -1408,8 +1820,8 @@ function createList (data, classname) {
 	this.ulEle.setAttribute('data-variables', [])
 	for (var i = 0; i < data.length; i++) {
 		var liEle = document.createElement('li');
-		liEle.innerHTML = data[i];
-		liEle.setAttribute('title', data[i]);
+		liEle.innerHTML = data[i].name;
+		liEle.setAttribute('title', data[i].name);
 		this.ulEle.appendChild(liEle)
 	}
 	this.ulEle.addEventListener('click', function (e) {
@@ -1463,11 +1875,10 @@ function fillList (ele, data) {
 
 /**
  * 选择变量
+ * @param {Array} data 全部参数列表
+ * @param {Array} chooseData 以选择参数列表
  */
-var chooseVariableDialog = function (editorUi) {
-	// mockData
-	var data1 = ['变量变量变量变量变量变量变量1','变量2','变量3','变量4','变量5','变量6','变量7','变量8','变量9','变量10','变量11'];
-	var data2 = [];
+var chooseVariableDialog = function (editorUi, data = [], chooseData = [], fn) {
 	var saveContent = editorUi.createDiv('geDialogInfo')
 	saveContent.setAttribute('data-dialog', 'chooseVariable');
 	// 搜索
@@ -1482,7 +1893,7 @@ var chooseVariableDialog = function (editorUi) {
 	saveContent.appendChild(searchBox)
 
 	// 源变量列表
-	var sourceList = new createList(data1, 'sourceList variableList');
+	var sourceList = new createList(data, 'sourceList variableList');
 	saveContent.appendChild(sourceList.ulEle);
 	// 操作变量
 	// 右边增加变量
@@ -1500,7 +1911,7 @@ var chooseVariableDialog = function (editorUi) {
 		var sList = sourceList.variables;
 		// var sList = JSON.parse(sourceList.getAttribute('data-variables'));
 		// sourceList.removeChild(sourceList.children[0])
-		data2 = data2.concat(sList);
+		chooseData = chooseData.concat(sList);
 		fillList(destList.ulEle, sList);
 		sourceList.variables = [];
 		document.getElementsByClassName('increment')[0].className = 'increment disabledCrement';
@@ -1511,7 +1922,7 @@ var chooseVariableDialog = function (editorUi) {
 	operateList.appendChild(decrement);
 	saveContent.appendChild(operateList);
 	// 目标变量列表
-	var destList = new createList(data2, 'destList variableList');
+	var destList = new createList(chooseData, 'destList variableList');
 	saveContent.appendChild(destList.ulEle);
 	decrement.addEventListener('click', function () {
 		// 删除节点
@@ -1521,7 +1932,7 @@ var chooseVariableDialog = function (editorUi) {
 		destList.nodes = [];
 		// 修改数据
 		var sList = destList.variables;
-		data1 = data1.concat(sList);
+		data = data.concat(sList);
 		fillList(sourceList.ulEle, sList);
 		destList.variables = [];
 		document.getElementsByClassName('decrement')[0].className = 'decrement disabledCrement';
@@ -1531,6 +1942,7 @@ var chooseVariableDialog = function (editorUi) {
 	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('应用', function()
 	{
+		fn(chooseData);
 		editorUi.hideDialog();
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
