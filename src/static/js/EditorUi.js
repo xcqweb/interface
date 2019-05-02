@@ -525,7 +525,6 @@ EditorUi = function(editor, container, lightbox)
 	var insertHandler = function(cells, asText)
 	{
 		var model = graph.getModel();
-		console.log(cells, asText)
 		model.beginUpdate();
 		try
 		{
@@ -534,6 +533,7 @@ EditorUi = function(editor, container, lightbox)
 			{
 				var edge = model.isEdge(cell);
 				var current = (edge) ? graph.currentEdgeStyle : graph.currentVertexStyle;
+				console.log(current)
 				var textStyles = ['fontSize', 'fontFamily', 'fontColor'];
 				
 				for (var j = 0; j < textStyles.length; j++)

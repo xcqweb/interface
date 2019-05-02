@@ -69688,7 +69688,7 @@ mxGraphHandler.prototype.mouseDown = function(sender, me)
 			var model = this.graph.model;
 			var geo = model.getGeometry(cell);
 			var shapeName = this.graph.view.getState(selectCell).style.shape;
-			// 菜单不允许拖拽、表格不允许拖拽
+			// 菜单单元格不允许拖拽、表格单元格不允许拖拽
 			if ( shapeName != 'menuCell' && shapeName != 'tableCell'  && this.graph.isCellMovable(cell) && ((!model.isEdge(cell) || this.graph.getSelectionCount() > 1 ||
 				(geo.points != null && geo.points.length > 0) || model.getTerminal(cell, true) == null ||
 				model.getTerminal(cell, false) == null) || this.graph.allowDanglingEdges || 
@@ -71747,7 +71747,7 @@ mxSelectionCellsHandler.prototype.updateHandler = function(state)
 /**
  * Function: mouseDown
  * 
- * Redirects the given event to the handlers.
+ * 选中节点鼠标按下事件句柄.
  */
 mxSelectionCellsHandler.prototype.mouseDown = function(sender, me)
 {
@@ -75939,6 +75939,9 @@ mxVertexHandler.prototype.isLivePreviewBorder = function()
  */
 mxVertexHandler.prototype.start = function(x, y, index)
 {
+	if (this.state.style.shape === 'tableCell' || this.state.style.shape === 'menuCell') {
+		return;
+	}
 	this.inTolerance = true;
 	this.childOffsetX = 0;
 	this.childOffsetY = 0;
@@ -76116,7 +76119,7 @@ mxVertexHandler.prototype.mouseMove = function(sender, me)
 	{
 		// Checks tolerance for ignoring single clicks
 		this.checkTolerance(me);
-
+		
 		if (!this.inTolerance)
 		{
 			if (this.index <= mxEvent.CUSTOM_HANDLE)
@@ -76139,8 +76142,8 @@ mxVertexHandler.prototype.mouseMove = function(sender, me)
 			{
 				this.resizeVertex(me);
 			}
-
-			this.updateHint(me);
+			// 更新显示浮窗
+			// this.updateHint(me);
 		}
 		
 		me.consume();
@@ -76972,7 +76975,6 @@ mxVertexHandler.prototype.redrawHandles = function()
 	this.horizontalOffset = 0;
 	this.verticalOffset = 0;
 	var s = this.bounds;
-
 	if (this.sizers != null && this.sizers.length > 0 && this.sizers[0] != null)
 	{
 		if (this.index == null && this.manageSizers && this.sizers.length >= 8)
@@ -77026,7 +77028,8 @@ mxVertexHandler.prototype.redrawHandles = function()
 			
 			if (this.sizers.length >= 8)
 			{
-				var crs = ['nw-resize', 'n-resize', 'ne-resize', 'e-resize', 'se-resize', 's-resize', 'sw-resize', 'w-resize'];
+				// 菜单单元格和表格单元格，不展示伸缩图标
+				var crs = this.state.style.shape !== 'tableCell' && this.state.style.shape !== 'menuCell' ? ['nw-resize', 'n-resize', 'ne-resize', 'e-resize', 'se-resize', 's-resize', 'sw-resize', 'w-resize'] : ['default','default','default','default','default','default','default','default'];
 				
 				var alpha = mxUtils.toRadians(this.state.style[mxConstants.STYLE_ROTATION] || '0');
 				var cos = Math.cos(alpha);

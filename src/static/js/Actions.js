@@ -265,31 +265,38 @@ Actions.prototype.init = function()
 		var dlg = new ChangePrimitiveDialog(ui, '')
 		ui.showDialog(dlg.container, 410, 110, true, false, null, null, '更换图元');
 	})
+	
 	// 向上插入一行
-	this.addAction('addUpRow', function () {
-		console.log('向上插入一行')
+	this.addAction('addUpRow', () => {
+		console.log('向上插入一行');
+		this.insertTableCell('up');
 	})
 	// 向下插入一行
-	this.addAction('addLowerRow', function () {
+	this.addAction('addLowerRow', () => {
 		console.log('向下插入一行')
+		this.insertTableCell('lower');
 	})
 	// 删除行
-	this.addAction('deleteRow', function () {
+	this.addAction('deleteRow', () => {
 		console.log('删除行')
+		this.deleteTableCell('row');
 	})
 	// 向左插入一列
-	this.addAction('addLeftCol', function () {
+	this.addAction('addLeftCol', () => {
 		console.log('向左插入一列')
+		this.insertTableCell('left');
 	})
 	// 向右插入一列
-	this.addAction('addRightCol', function () {
+	this.addAction('addRightCol', () => {
 		console.log('向右插入一列')
+		this.insertTableCell('right');
 	})
 	// 删除列
-	this.addAction('deleteCol', function () {
+	this.addAction('deleteCol', () => {
 		console.log('删除列')
+		this.deleteTableCell('col');
 	})
-	this.addAction('import...', function()
+	this.addAction('import...', () =>
 	{
 		window.openNew = false;
 		window.openKey = 'import';
@@ -1604,7 +1611,137 @@ Actions.prototype.init = function()
 	action.setToggleAction(true);
 	action.setSelectedCallback(mxUtils.bind(this, function() { return this.outlineWindow != null && this.outlineWindow.window.isVisible(); }));
 };
+/**
+ * 获取当前表格的行数
+ */
+Actions.prototype.getRowNum = function (cell) {
+	return parseInt(cell.geometry.y/cell.geometry.height);
+};
+/**
+ * 获取当前表格的列数
+ */
+Actions.prototype.getColNum = function (cell) {
+	return parseInt(cell.geometry.x/cell.geometry.width);
+};
 
+/**
+ * 向表格插入单元格
+ * @param {string} type 
+ */
+Actions.prototype.insertTableCell = function (type) {
+	var ui = this.editorUi;
+	var editor = ui.editor;
+	var graph = editor.graph;
+	let cell = graph.getSelectionCell();
+	let cellW = cell.geometry.width;
+	let cellH = cell.geometry.height;
+	let cellX = cell.geometry.x;
+	let cellY = cell.geometry.y;
+	let table = cell.parent;
+	let tableCells = table.children;
+	// 当前行和列
+	let row = this.getRowNum(cell);
+	let col = this.getColNum(cell);
+	// 插入行还是列
+	let insertRow = type == 'up' || type == 'lower';
+	// 插入的单元格数量
+	let insertNum = insertRow ? table.geometry.width/cellW : table.geometry.height/cellH;
+	for (let tableCell of tableCells) {
+		if ( insertRow ) {
+			// 插入行
+			if ( this.getRowNum(tableCell) > row) {
+				// 当前行之后
+				tableCell.geometry.y += cellH;
+			} else if (this.getRowNum(tableCell) == row) {
+				// 当前行
+				type == 'up' ? tableCell.geometry.y += cellH : null;
+			}			
+		} else {
+			// 插入列
+			if ( this.getColNum(tableCell) > col) {
+				// 当前列之后
+				tableCell.geometry.x += cellW;
+			} else if (this.getColNum(tableCell) == col) {
+				// 当前列
+				type == 'left' ? tableCell.geometry.x += cellW : null;
+			}
+		}
+		graph.getModel().setValue(tableCell, graph.getModel().getValue(tableCell));
+	}
+	graph.getModel().beginUpdate();
+	let insertX, insertY;
+	if (insertRow) {
+		insertX = 0;
+		insertY = type == 'up' ? cellY : cellY + cellH;
+	} else {
+		insertY = 0;
+		insertX = type == 'left' ? cellX : cellX + cellW;
+	};
+	// 插入新节点
+	for (let i = 0; i < insertNum; i++) {
+		var symbol = new mxCell('', new mxGeometry(insertRow ? insertX + cellW * i : insertX, insertRow ? insertY : insertY + cellH * i, cellW, cellH), 'shape=tableCell;html=1;whiteSpace=wrap;');
+		symbol.vertex = true;
+		// 设置id
+		symbol.setId(graph.getModel().createId(symbol));
+		graph.getModel().add(table, symbol);
+	}
+	// 更新样式
+	try{
+		var geo = graph.getModel().getGeometry(table);
+		insertRow ? geo.height += cellH : geo.width += cellW;
+	} finally {
+		graph.getModel().endUpdate();
+	}
+};
+/**
+ * 删除单元格
+ * @param {string} type: row删除行，col删除列
+ */
+Actions.prototype.deleteTableCell = function (type) {
+	var ui = this.editorUi;
+	var editor = ui.editor;
+	var graph = editor.graph;
+	let cell = graph.getSelectionCell();
+	let cellW = cell.geometry.width;
+	let cellH = cell.geometry.height;
+	let table = cell.parent;
+	let tableCells = table.children;
+	// 当前行和列
+	let row = this.getRowNum(cell);
+	let col = this.getColNum(cell);
+	// 需要删除的节点
+	let delCells = []
+	for (let tableCell of tableCells) {
+		if ( type == 'row' ) {
+			// 插入行
+			if (this.getRowNum(tableCell) > row) {
+				tableCell.geometry.y -= cellH;
+			} else if (this.getRowNum(tableCell) == row) {
+				// 当前行
+				delCells.push(tableCell);
+			}
+		} else {
+			// 插入列
+			if (this.getColNum(tableCell) > col) {
+				tableCell.geometry.x -= cellW;
+			}else if (this.getColNum(tableCell) == col) {
+				// 当前列
+				delCells.push(tableCell);;
+			}
+		}
+		graph.getModel().setValue(tableCell, graph.getModel().getValue(tableCell));
+	}
+	graph.removeCells(delCells, true);
+
+	// 更新样式
+	graph.getModel().beginUpdate();
+	try{
+		var geo = graph.getModel().getGeometry(table);
+		type == 'row' ? geo.height -= cellH : geo.width -= cellW;
+	} finally {
+		graph.getModel().endUpdate();
+	}
+}
 /**
  * Registers the given action under the given name.
  */

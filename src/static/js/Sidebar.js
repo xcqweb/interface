@@ -954,11 +954,12 @@ Sidebar.prototype.createPageContextMenu = function  () {
 	}
 	document.body.appendChild(menulist);
 	// 隐藏菜单
-	mxEvent.addGestureListeners(document, function (evt) {
+	mxEvent.addGestureListeners(document, (evt) => {
 		if (evt.target.parentNode.id !== 'pageContextMenu') {
 			this.hidePageContextMenu();
 		}
-	}.bind(this));
+	});
+	// }.bind(this));
 
 	mxEvent.addListener(menulist, 'click', function (evt) {
 		var target = evt.target;
@@ -1152,23 +1153,22 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		// 图片
 		this.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
 		this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 65, 40, '<div style="width:100%;height:100%;position: relative"><select class="selectTag"></select><div class="selectTagShade"></div></div>', '下拉列表'),
-		// // 表格
+		// 表格，通过html生成
 		// this.createVertexTemplateEntry('shape=table;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
 		//  	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
  		// 	'<table border="1" style="width:100%;height:75%;border-collapse:collapse;">' +
  		// 	'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
  		// 	'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
 		// 	'<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
-		//表格2
+		//表格,通过矩形拼接
 		this.addEntry('tableBox', function()
 		{
 			var cell = new mxCell('', new mxGeometry(0, 0, 300, 90), 'shape=tableBox;group');
 			cell.vertex = true;
-			
 			for (let i = 0; i < 9; i++) {
 				let line = parseInt(i/3);
 				let xNum = i % 3;
-				let symbol = new mxCell('Value' + (i + 1), new mxGeometry(xNum * 100, 30 * line, 100, 30), 'shape=tableCell;html=1;whiteSpace=wrap;');
+				let symbol = new mxCell(i < 3 ? 'Column ' + (i + 1) : '', new mxGeometry(xNum * 100, 30 * line, 100, 30), 'shape=tableCell;html=1;whiteSpace=wrap;');
 				symbol.vertex = true;
 				cell.insert(symbol);
 			}
@@ -1178,8 +1178,10 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', 50, 50, '', '图元'),
 		// 箭头
 		this.createEdgeTemplateEntry('shape=endarrow;html=1;', 50, 0, '', '箭头', false, false),
+		this.createEdgeTemplateEntry('shape=endarrow;html=1;', 50, 0, '', '直线11', false, false),
 		//直线
 		this.createVertexTemplateEntry('shape=line;endArrow=none;startArrow=none;strokeWidth=1;html=1;', 160, 10, '', '直线'),
+		// this.createEdgeTemplateEntry('shape=simpleline;endArrow=none;html=1;', 50, 50, '', '直线', null, '直线'),
 		// 曲线
 		this.addEntry('curve', mxUtils.bind(this, function()
 	 	{
@@ -1195,7 +1197,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
 		// 文字 
 		this.createVertexTemplateEntry('shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',
- 			40, 20, 'text', '文字')
+			 40, 20, 'text', '文字'),
 	];
 	//封装
 	this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);

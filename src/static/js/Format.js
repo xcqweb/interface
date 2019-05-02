@@ -120,8 +120,8 @@ Format.prototype.initSelectionState = function()
 Format.prototype.updateSelectionStateForCell = function(result, cell, cells)
 {
 	var graph = this.editorUi.editor.graph;
-	
-	if (graph.getModel().isVertex(cell))
+	var state = graph.view.getState(cell);
+	if (graph.getModel().isVertex(cell) || state.style.shape === 'curve')
 	{
 		result.vertices.push(cell);
 		var geo = graph.getCellGeometry(cell);
@@ -190,7 +190,6 @@ Format.prototype.updateSelectionStateForCell = function(result, cell, cells)
 		result.edges.push(cell);
 	}
 
-	var state = graph.view.getState(cell);
 	
 	if (state != null)
 	{
@@ -495,6 +494,7 @@ BaseFormatPanel.prototype.list = {
  * 获取对应控件的名称
  */
 BaseFormatPanel.prototype.getPaletteName = function (name) {
+	console.log(name)
 	return this.list[name]
 }
 /**
