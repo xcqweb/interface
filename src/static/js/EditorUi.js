@@ -528,12 +528,10 @@ EditorUi = function(editor, container, lightbox)
 		model.beginUpdate();
 		try
 		{
-			// Applies only basic text styles
 			if (asText)
 			{
 				var edge = model.isEdge(cell);
 				var current = (edge) ? graph.currentEdgeStyle : graph.currentVertexStyle;
-				console.log(current)
 				var textStyles = ['fontSize', 'fontFamily', 'fontColor'];
 				
 				for (var j = 0; j < textStyles.length; j++)
@@ -850,16 +848,31 @@ EditorUi = function(editor, container, lightbox)
 	    graph.getModel().addListener(mxEvent.CHANGE, update);
 	}
 	
-	// Makes sure the current layer is visible when cells are added
+	// 添加节点控件
 	graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt)
 	{
 		var cells = evt.getProperty('cells');
+		// 转换类型
+		for (let cell of cells) {
+			let cellInfo = graph.getModel().getValue(cell);
+			let shapeName = /shape=(.+?);/.exec(cell.style)[1];
+			if (!mxUtils.isNode(cellInfo))
+			{
+				let doc = mxUtils.createXmlDocument();
+				let obj = doc.createElement('object');
+				obj.setAttribute('label', cellInfo || '');
+				cellInfo = obj;
+			};
+			this.editor.palettesInfo[shapeName].num++;
+			cellInfo.setAttribute('palettename', this.editor.palettesInfo[shapeName].name + this.editor.palettesInfo[shapeName].num);
+			graph.getModel().setValue(cell, cellInfo);
+		}
 		var parent = evt.getProperty('parent');
 		if (graph.getModel().isLayer(parent) && !graph.isCellVisible(parent) && cells != null && cells.length > 0)
 		{
 			graph.getModel().setVisible(parent, true);
 		}
-	});
+	}.bind(this));
 	
 	// Global handler to hide the current menu
 	this.gestureHandler = mxUtils.bind(this, function(evt)
@@ -945,7 +958,6 @@ EditorUi = function(editor, container, lightbox)
 
 // Extends mxEventSource
 mxUtils.extend(EditorUi, mxEventSource);
-
 /**
  * Global config that specifies if the compact UI elements should be used.
  */

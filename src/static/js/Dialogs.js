@@ -1167,64 +1167,14 @@ var ImageDialog = function (editorUi, cell) {
 
 	// 本地图片
 	var localImage;
-	var saveContent = editorUi.createDiv('geDialogInfo');
-	var mockData = [
-		{
-			name: 'T1',
-			data: [
-				{
-					name: 't1_AC_L20',
-					url: 't1_AC_L20 url'
-				},{
-					name: 't1_AC_L40',
-					url: 't1_AC_L40 url'
-				},{
-					name: 't1_Cl2',
-					url: 't1_Cl2 url'
-				},{
-					name: 't1_HPCP',
-					url: 't1_HPCP url'
-				}
-			]
-		},{
-			name: 'T2',
-			data: [
-				{
-					name: 't2_AC_L20',
-					url: 't2_AC_L20 url'
-				},{
-					name: 't2_AC_L40',
-					url: 't2_AC_L40 url'
-				},{
-					name: 't2_Cl2',
-					url: 't2_Cl2 url'
-				},{
-					name: 't2_HPCP',
-					url: 't2_HPCP url'
-				}
-			]
-		}
-	]
 	// 内部图片
+	var saveContent = editorUi.createDiv('geDialogInfo');
 	saveContent.innerHTML = `
 		<label class="imageRadio">
 			<input class="imageTypeRadio" id="innerTypeRadio" type="radio" name="image" checked/>
 			内部图片
 		</label>
 		<div id="innerImageBox">
-			${
-				mockData.reduce((str, v) => str += `
-					<ul>
-						<li class="innerImageType expandedImage">${v.name}</li>
-						<ul class="innerImageList">
-							${
-								v.data.reduce((s, item) => s += `
-								<li>${item.name}</li>
-								`, '')
-							}
-						</ul>
-					</ul>`, '')
-			}
 		</div>
 		<label class="imageRadio">
 			<input class="imageTypeRadio" id="localTypeRadio" type="radio" name="image" />
@@ -1234,8 +1184,25 @@ var ImageDialog = function (editorUi, cell) {
 		<p id="choosedImgPath"></p>
 	`
 	this.init = function () {
+		editorUi.editor.ajax(editorUi, '/api/layoutTypes', 'POST', {page: 0, size: 9999999}, function (res) {
+			document.getElementById('innerImageBox').innerHTML = `
+				${
+					res.content.map(val => `
+						<ul>
+							<li class="innerImageType collapsedImage" data-typeid="${val.id}">${val.descript}</li>
+							<ul class="innerImageList">
+							</ul>
+						</ul>
+					`).join('')
+				}
+			`
+		}, function () {
+
+		})
 		// 选择图片方式
 		document.getElementById('innerTypeRadio').addEventListener('click', function (e) {
+			console.log(1111)
+			localImage = null;
 			e.stopImmediatePropagation()
 		})
 		document.getElementsByClassName('imageRadio')[1].addEventListener('click', function (e) {
@@ -1248,10 +1215,10 @@ var ImageDialog = function (editorUi, cell) {
 			var fr = new FileReader();
 			// 获取图片信息
 			localImage = e.target.files[0];
+			console.log(localImage)
 			//将图片读取为DataURL
 			// fr.readAsDataURL(localImage);
 			// fr.onload = function() {}
-			console.log(localImage)
 			document.getElementById('choosedImgPath').innerHTML = document.getElementById('chooseImage').value;
 		})
 		// 内部图片点击事件
@@ -1262,9 +1229,22 @@ var ImageDialog = function (editorUi, cell) {
 				if (/expandedImage$/.test(className)) {
 					// 展开状态点击
 					e.target.className = 'innerImageType collapsedImage';
-					e.target.nextElementSibling.style.height = '0px'
+					e.target.nextElementSibling.style.height = '0px';
 				} else {
 					// 收缩状态点击
+					if (e.target.nextElementSibling.children.length === 0) {
+						editorUi.editor.ajax(editorUi, '/api/layoutType/' + e.target.getAttribute('data-typeid'), 'GET', null, function (res) {
+							e.target.nextElementSibling.innerHTML = `
+								${
+									res.layouts.map(val => `
+										<li data-layout="${val.layout}">${val.layoutName}</li>
+									`).join('')
+								}
+							`
+						}, function () {
+				
+						})
+					}
 					e.target.className = 'innerImageType expandedImage';
 					e.target.nextElementSibling.style.height = ''
 				}
@@ -1280,60 +1260,42 @@ var ImageDialog = function (editorUi, cell) {
 	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('应用', function()
 	{
-		editorUi.hideDialog();
 		// 更换图片
 		var select = null;
 		var cells = graph.getSelectionCells();
-		// mock数据
-		var newValue;
-		var mockNum = Math.random()
-		if (mockNum < 0.3) {
-			newValue = "/static/stencils/IOT/t1_cl2_layout.png"
-		} else if (mockNum < 0.5) {
-			newValue = "/static/stencils/IOT/cl2_green.png"
-		} else if (mockNum < 0.8) {
-			newValue = "/static/stencils/IOT/cl2_red.png"
-		} else {
-			newValue = "/static/stencils/IOT/t2_cl2_layout.png"
+		var updateImg = function (newValue) {
+			newValue = 'getechFileSystem/' + newValue
+			graph.getModel().beginUpdate();
+			try {
+				graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
+			}
+			finally {
+				graph.getModel().endUpdate();
+			}
+	
+			if (select != null) {
+				graph.setSelectionCells(select);
+				graph.scrollCellToVisible(select[0]);
+			}
+			editorUi.hideDialog();
 		}
+		var newValue;
 		// 选择的是本地文件，上传文件
 		if (localImage) {
-			var token = getCookie('token');
 			var formData = new FormData();
 			formData.append('file', localImage);
-			formData.append('layoutTypeId', '1e96a207d7750e081a34da4a01d67da');
-			
-			console.log(formData)
-			// $.ajax({
-			// 	url: '/api/layout',
-			// 	method: "POST",
-			// 	headers: {
-			// 		"Content-Type": 'multipart/form-data; boundary=----WebKitFormBoundaryyZCSjNSNBBa8iDt1',
-			// 		"Authorization": 'Bearer ' + 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsInNjb3BlcyI6WyJST0xFX0FETUlOIl0sInVzZXJOYW1lIjoiYWRtaW4iLCJleHAiOjE1NTcyNDYzMDAsInVzZXJJZCI6IjEiLCJpYXQiOjE1NTY1MjYzMDAsImVtYWlsIjoidGVzdEB0ZXN0LmNuIiwiZW5hYmxlZCI6dHJ1ZX0._SVWt_FAWTUpawHKnv9SHjPIeK_Py_TgAzlgAWSlBAtTdx5qnoGFXB_wc4QQnfLyvNGbbz_XbL40vcHKXIwJdw'
-			// 	},
-			// 	data: formData,
-			// 	contentType: false,
-      //   processData: false,
-			// 	success: function (res) {
-			// 		console.log(res)
-			// 	},
-			// 	error: function (res) {
-			// 		console.log('error', res)
-			// 	}
-			// })
-		}
-
-		graph.getModel().beginUpdate();
-		try {
-			graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
-		}
-		finally {
-			graph.getModel().endUpdate();
-		}
-
-		if (select != null) {
-			graph.setSelectionCells(select);
-			graph.scrollCellToVisible(select[0]);
+			formData.append('layoutTypeId', '1e96ee3dede1a409e05e5b4ec8451cc');
+			editorUi.editor.uploadFile(editorUi, '/api/layout', 'POST', formData, function (res) {
+				newValue = res.layout;
+				updateImg(newValue)
+			})
+		} else if (document.getElementById('checkedImage') && document.getElementById('checkedImage').getAttribute('data-layout')) {
+			let layout = document.getElementById('checkedImage').getAttribute('data-layout');
+			newValue = layout;
+			updateImg(newValue)
+		} else {
+			editorUi.hideDialog();
+			return;
 		}
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
@@ -1637,11 +1599,20 @@ function fillParams (elt, data) {
  */
 var PaletteDataDialog = function(editorUi, cell) {
 	var graph = editorUi.editor.graph;
+	var modelInfo = graph.getModel().getValue(cell);
+	// 绑定数据信息
+	var bindData = JSON.parse(modelInfo.getAttribute('bindData')) || {
+		pointType: '',
+		point: '',
+		params: [],
+		changeStatus: []
+	}
+	console.log(bindData)
 	// 弹窗内容
 	var saveContent = editorUi.createDiv('geDialogInfo')
 	saveContent.style.padding = "22px";
 	// 点位类型数据
-	var pointTypes = MOCKPOINTTYPEDATA;
+	var pointTypes = [].concat(MOCKPOINTTYPEDATA);
 	pointTypes.unshift({
 		name: '请选择',
 		id: '',
@@ -1649,18 +1620,22 @@ var PaletteDataDialog = function(editorUi, cell) {
 		params: []
 	})
 	// 点位列表
-	var pointsData = pointTypes[0].points;
+	const currentPointType = pointTypes.filter(val => {
+		return val.id == bindData.pointType
+	})[0];
+	var pointsData = currentPointType.points;
 	// 参数列表
-	var paramsData = pointTypes[0].params;
+	var paramsData = currentPointType.params;
 	// 已选择参数列表
-	var choosedParam = [];
+	var choosedParam = bindData.params;
 	// 填充列表
 	this.fillContent = function (ele, data) {
 		ele.innerHTML = '';
 		for (var i = 0; i < data.length; i++) {
-			var opt = document.createElement('option')
-			opt.innerText = data[i].name
-			opt.setAttribute('value', data[i].id)
+			var opt = document.createElement('option');
+			opt.innerText = data[i].name;
+			opt.setAttribute('value', data[i].id);
+			( ele.id == 'pointSelect' ? bindData.point : bindData.pointType) === data[i].id ? opt.setAttribute('selected',  true) : null;
 			if (data[i].points) {
 				opt.setAttribute('data-points', JSON.stringify(data[i].points))
 				opt.setAttribute('data-params', JSON.stringify(data[i].params))
@@ -1677,8 +1652,9 @@ var PaletteDataDialog = function(editorUi, cell) {
 	
 	var typeSelect = document.createElement('select');
 	typeSelect.setAttribute('value', '');
-	typeSelect.className = 'dialogSelect'
-	typeSelect.id = 'typeSelect'
+	typeSelect.className = 'dialogSelect';
+	typeSelect.id = 'typeSelect';
+	typeSelect.setAttribute('value', bindData.pointType)
 	saveContent.appendChild(typeSelect)
 	this.fillContent(typeSelect, pointTypes)
 	
@@ -1721,19 +1697,7 @@ var PaletteDataDialog = function(editorUi, cell) {
 	// 模型列表
 	var modelList = document.createElement('ul');
 	modelList.className = 'dataDialogList modelList'
-	var modelData = [{name: '模型1: ', id: '111',formula:' C12_DOD-02-STK200-01.C12 >10***C12_DOD-02-STK200-01.C12 >10'},{name: '模型2: ', id: '222',formula:' C12_DOD-02-STK200-01.C12 >10'},{name: '模型3: ', id: '333',formula:' C12_DOD-02-STK200-01.C12 >10'},{name: '模型4: ', id: '444',formula:' C12_DOD-02-STK200-01.C12 >10'},{name: '模型5: ', id: '555',formula:' C12_DOD-02-STK200-01.C12 >10'},{name: '模型6: ', id: '666',formula:' C12_DOD-02-STK200-01.C12 >10'}]
-	modelList.innerHTML = `
-		${
-			modelData.map(model => `
-				<li>
-					<span style="color: #767676">${model.name}</span>
-					<span title="${model.formula}">${model.formula}</span>
-				</li>
-			`).join('')
-		}
-	`;
 	saveContent.appendChild(modelList);
-	
 	// 执行：
 	var executeTitle = document.createElement('p');
 	executeTitle.innerHTML = '执行(改变状态)：';
@@ -1742,40 +1706,10 @@ var PaletteDataDialog = function(editorUi, cell) {
 	// 执行列表
 	var executeList = document.createElement('ul');
 	executeList.className = 'dataDialogList executeList';
-	const statusList = [{
-		status: 1,
-		title: '不作任何变化'
-	}, {
-		status: 2,
-		title: '预警黄'
-	}, {
-		status: 3,
-		title: '告警红'
-	}, {
-		status: 4,
-		title: '异常灰'
-	}]
-	executeList.innerHTML = `
-		${
-			modelData.map(model => `
-				<li data-modelId="${model.id}">
-					<input type="checkbox" name="models" style="float: left;margin: 6px 2px 0 0;" />
-					<span style="color: #767676;float: left;width: 240px;overflow: hidden;text-overflow: ellipsis;" title="${model.name}${model.formula}">${model.name}${model.formula}</span>
-					<select style="float: left;width: 65px;border-color: #C5C5C5;">
-					${
-						statusList.map(status => `
-							<option value="${status.status}">${status.title}</option>
-						`).join('')
-					}
-					</select>
-				</li>
-			`).join('')
-		}
-	`;
+	// 填充执行列表
 	saveContent.appendChild(executeList);
-	this.init = function () {
-		
-	}
+	// 查询模型列表
+	getModels(editorUi, modelList, executeList, bindData.point, bindData.params.map(val => val.id).join())
 	
 	// 绑定事件
 	// 选择采集点类型
@@ -1785,11 +1719,18 @@ var PaletteDataDialog = function(editorUi, cell) {
 		this.fillContent(pointSelect, data);
 		choosedParam = [];
 		fillParams(variableList, choosedParam);
-	})	
-	// 选择变量
+	})
+	// 切换采集点
+	mxEvent.addListener(pointSelect, 'change', (e) => {
+		choosedParam = [];
+		fillParams(variableList, choosedParam);		
+		getModels(editorUi, modelList, executeList, pointSelect.value, choosedParam.map(val => val.id).join())
+	});
+	// 选择变量应用回调函数
 	function chooseVariable(data) {
 		choosedParam = data;
 		fillParams(variableList, choosedParam);
+		getModels(editorUi, modelList, executeList, pointSelect.value, data.map(val => val.id).join())
 	}
 	// 选择变量
 	addVariableBtn.addEventListener('click', function (e) {
@@ -1800,38 +1741,53 @@ var PaletteDataDialog = function(editorUi, cell) {
 	// 保存按钮
 	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('应用', function()
-	{
-		console.log('采集点类型', typeSelect.value)
-		console.log('采集点', pointSelect.value)
-		console.log('已选中的参数', choosedParam)
-		console.log('应用的模型列表', modelData)
-		
+	{		
 		const modelList = $('.executeList li');
-		let applyModel = {}
+		let applyModel = []
 		// 获取选中的模型
 		for (let item of modelList) {
 			if ($(item).children('input:checked')[0]) {
-				applyModel[item.getAttribute('data-modelId')] = $(item).children('select')[0].value;
+				applyModel.push({
+					modelViewToolId: item.getAttribute('data-modelId'),
+					warn: $(item).children('select')[0].value
+				})
+			} else {
+				applyModel.push({
+					modelViewToolId: item.getAttribute('data-modelId'),
+					warn: 0
+				})
 			}
-			// console.log($(item).children('select')[0])
-		}
-		editorUi.hideDialog();
-		// 绑定列表
-		var select = null;
-		var cells = graph.getSelectionCells();
-		
-		graph.getModel().beginUpdate();
-		try {
-			graph.setCellStyles(mxConstants.STYLE_IMAGE, 'newValue', cells);
-		}
-		finally {
-			graph.getModel().endUpdate();
 		}
 
-		if (select != null) {
-			graph.setSelectionCells(select);
-			graph.scrollCellToVisible(select[0]);
-		}
+		// 配置模型应用报警方式ajax
+		editorUi.editor.ajax(editorUi, '/api/model/viewTool/warn', 'PUT', applyModel, function () {
+			// 请求成功回调函数
+			bindData = {
+				pointType: typeSelect.value,
+				point: pointSelect.value,
+				params: choosedParam
+			}
+			console.log(bindData)
+			// 绑定列表
+			var select = null;
+			
+			graph.getModel().beginUpdate();
+			try {
+				modelInfo.setAttribute('bindData', JSON.stringify(bindData));
+				graph.getModel().setValue(cell, modelInfo);
+			}
+			finally {
+				graph.getModel().endUpdate();
+			}
+	
+			if (select != null) {
+				graph.setSelectionCells(select);
+				graph.scrollCellToVisible(select[0]);
+			}
+		}, function () {
+			editorUi.hideDialog();
+			console.log('请求失败')
+		})
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	// 取消按钮
@@ -1856,7 +1812,6 @@ function createList (data, classname) {
 	classname = classname || '';
 	this.ulEle = document.createElement('ul');
 	this.ulEle.className = classname;
-	this.variables = [];
 	this.params = {};
 	this.nodes = []; //选中的DOM节点
 	this.ulEle.setAttribute('data-variables', []);
@@ -1869,27 +1824,15 @@ function createList (data, classname) {
 			if (target.className == 'active' ) {
 				target.className = '';
 				let index = 0;
-				for (let i = 0; i < this.variables.length; i++) {
-					if (this.variables[i].id == target.getAttribute('data-paramId')) {
-						index = i;
-					}
-				}
-				this.variables.splice( index , 1 );
 				this.nodes.splice( index , 1 );
 				if (this.params[target.getAttribute('data-paramId')]) {
 					delete this.params[target.getAttribute('data-paramId')]
 				} 
 			} else {
 				target.className = 'active';
-				this.variables.push({
-					name: target.innerText,
-					id: target.getAttribute('data-paramId')
-				});
-
 				this.params[target.getAttribute('data-paramId')] = {
 					name: target.innerHTML,
-					id: target.getAttribute('data-paramId'),
-					node: target
+					id: target.getAttribute('data-paramId')
 				};
 				this.nodes.push(target);
 			}
@@ -1907,7 +1850,6 @@ function createList (data, classname) {
 					document.getElementsByClassName('decrement')[0].className = 'decrement';
 				}
 			};
-			this.ulEle.setAttribute('data-variables', JSON.stringify(this.variables))
 		}
 	}.bind(this))
 }
@@ -1951,7 +1893,10 @@ var chooseVariableDialog = function (editorUi, sourcedata = [], chooseData = [],
 		let filterList = sourcedata.filter(val => {
 			return val.name.indexOf(searchInput.value) != -1
 		})
+		sourceList.nodes = [];
+		sourceList.params = {};
 		sourceList.ulEle.innerHTML = '';
+		document.getElementsByClassName('increment')[0].className = 'increment disabledCrement';
 		fillList(sourceList.ulEle, filterList);
 	})
 	// 源变量列表，过滤已选中的
@@ -2025,7 +1970,6 @@ var chooseVariableDialog = function (editorUi, sourcedata = [], chooseData = [],
 	var genericBtn = mxUtils.button('应用', function()
 	{
 		fn(chooseData);
-		editorUi.hideDialog();
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	// 取消按钮
@@ -2041,6 +1985,97 @@ var chooseVariableDialog = function (editorUi, sourcedata = [], chooseData = [],
 	this.container = saveContent;
 }
 
+/**
+ * 根据采集点和参数查询应用
+ * @param {object} editorUi
+ * @param {string} pointId 采集点id
+ * @param {string} paramId 变量id，逗号隔开
+ */
+function getModels (editorUi, modelEle, executeEle, pointId, paramId) {
+	var modelData = [];
+	if (pointId && paramId) {
+		editorUi.editor.ajax(editorUi, '/api/viewTool/model/serach', 'GET', {pointId, paramId}, function (res) {
+			console.log('获取模型列表成功');
+			
+		}, function () {
+			// editorUi.hideDialog();
+			console.log(122333)
+		})
+		modelData = [
+			{ name: '模型1: ', id: '111', formula: ' C12_DOD-02-STK200-01.C12 >10***C12_DOD-02-STK200-01.C12 >10', warn: 0 }, 
+			{ name: '模型2: ', id: '222', formula: ' C12_DOD-02-STK200-01.C12 >10', warn: 2 }, 
+			{ name: '模型3: ', id: '333', formula: ' C12_DOD-02-STK200-01.C12 >10', warn: 3 }, 
+			{ name: '模型4: ', id: '444', formula: ' C12_DOD-02-STK200-01.C12 >10', warn: 0 }, 
+			{ name: '模型5: ', id: '555', formula: ' C12_DOD-02-STK200-01.C12 >10', warn: 4 }, 
+			{ name: '模型6: ', id: '666', formula: ' C12_DOD-02-STK200-01.C12 >10', warn: 0 }
+		]
+	} else {
+		editorUi.hideDialog();
+	}
+	fillModelList(modelEle, modelData);
+	fillExecuteList(executeEle, modelData);
+	return modelData;
+}
+
+/**
+ * 填充执行列表
+ * @param {object} ele 执行列表的DOM节点
+ * @param {Array} data 数据列表
+ */
+function fillModelList (ele, data) {
+	ele.innerHTML = `
+		${
+			data.map(model => `
+				<li>
+					<span style="color: #767676">${model.name}</span>
+					<span title="${model.formula}">${model.formula}</span>
+				</li>
+			`).join('')
+		}
+	`;
+}
+
+/**
+ * 填充执行列表
+ * @param {object} ele 执行列表的DOM节点
+ * @param {Array} data 数据列表
+ */
+function fillExecuteList (ele, data) {
+	// 状态列表
+	const statusList = [
+		{
+			status: 1,
+			title: '不作任何变化'
+		}, {
+			status: 2,
+			title: '预警黄'
+		}, {
+			status: 3,
+			title: '告警红'
+		}, {
+			status: 4,
+			title: '异常灰'
+		}
+	];
+
+	ele.innerHTML = `
+		${
+			data.map(model => `
+				<li data-modelId="${model.id}">
+					<input type="checkbox" name="models" style="float: left;margin: 6px 2px 0 0;" ${model.warn != 0 ? "checked" : ""}/>
+					<span style="color: #767676;float: left;width: 240px;overflow: hidden;text-overflow: ellipsis;" title="${model.name}${model.formula}">${model.name}${model.formula}</span>
+					<select style="float: left;width: 65px;border-color: #C5C5C5;" value='3'>
+					${
+						statusList.map(status => `
+							<option ${status.status == model.warn ? "selected" : ""} value="${status.status}">${status.title}</option>
+						`).join('')
+					}
+					</select>
+				</li>
+			`).join('')
+		}
+	`;
+}
 /**
  * 更换图元
  */

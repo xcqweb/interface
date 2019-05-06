@@ -24,7 +24,7 @@ Actions.prototype.init = function()
 		return Action.prototype.isEnabled.apply(this, arguments) && graph.isEnabled();
 	};
 	// loading···
-	this.addAction('loading', function (text) {
+	this.addAction('loading', function (text = '加载中···') {
 		var content = ui.createDiv('geDialogInfo')
 		var loadingText = document.createElement('p');
 		loadingText.id = "loadingText";
@@ -38,14 +38,21 @@ Actions.prototype.init = function()
 		loadingBar.appendChild(loadingBarInner)
 		var len = 0, timer = null;
 		timer = setInterval(() => {
-			if (len >= 92) {
+			len = parseFloat(loadingBarInner.style.width);
+			if ( len >= 92 && len < 99) {
+				len += 0.3;
+				loadingBarInner.style.width = len + '%';
+			} else if ( len >= 99 ) {
 				clearInterval(timer);
+				ui.hideDialog();
+			} else {
+				len += 4;
+				loadingBarInner.style.width = len + '%';
 			};
-			len += 4;
-			loadingBarInner.style.width = len + '%';
 		}, 700)
 		content.appendChild(loadingBar);
 		ui.showDialog(content, 410, 80, true, false, null, null, '');
+		return loadingBarInner;
 	})
 	// 是否展示左侧菜单
 	function toggleSidebar () {
@@ -1452,7 +1459,6 @@ Actions.prototype.init = function()
 		var cell = graph.getSelectionCell();
 		var dlg = new PaletteDataDialog(ui, cell)
 		ui.showDialog(dlg.container, 410, 450, true, false, null, null, '绑定数据源');
-		dlg.init()
 	})
 	
 	this.addAction('images', function()

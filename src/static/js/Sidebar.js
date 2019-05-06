@@ -1152,7 +1152,8 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		this.createVertexTemplateEntry('shape=singleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/singleCheck.png', 40, 40, '', '单选'),
 		// 图片
 		this.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
-		this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 65, 40, '<div style="width:100%;height:100%;position: relative"><select class="selectTag"></select><div class="selectTagShade"></div></div>', '下拉列表'),
+		// 下拉列表
+		this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 100, 16, '<div style="width:100%;height:100%;position: relative"><select class="selectTag"></select><div class="selectTagShade"></div></div>', '下拉列表'),
 		// 表格，通过html生成
 		// this.createVertexTemplateEntry('shape=table;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
 		//  	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
@@ -1178,7 +1179,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', 50, 50, '', '图元'),
 		// 箭头
 		this.createEdgeTemplateEntry('shape=endarrow;html=1;', 50, 0, '', '箭头', false, false),
-		this.createEdgeTemplateEntry('shape=endarrow;html=1;', 50, 0, '', '直线11', false, false),
+		// this.createEdgeTemplateEntry('shape=endarrow;html=1;', 50, 0, '', '直线11', false, false),
 		//直线
 		this.createVertexTemplateEntry('shape=line;endArrow=none;startArrow=none;strokeWidth=1;html=1;', 160, 10, '', '直线'),
 		// this.createEdgeTemplateEntry('shape=simpleline;endArrow=none;html=1;', 50, 50, '', '直线', null, '直线'),

@@ -52,20 +52,6 @@ Format.prototype.init = function()
 	});
 	
 	graph.getSelectionModel().addListener(mxEvent.CHANGE, this.update);
-	// graph.addListener(mxEvent.EDITING_STARTED, this.update);
-	// graph.addListener(mxEvent.EDITING_STOPPED, this.update);
-	graph.getModel().addListener(mxEvent.CHANGE, this.update);
-	// graph.addListener(mxEvent.ROOT, mxUtils.bind(this, function()
-	// {
-	// 	this.refresh();
-	// }));
-	
-	// editor.addListener('autosaveChanged', mxUtils.bind(this, function()
-	// {
-	// 	this.refresh();
-	// }));
-	
-	// this.refresh();
 };
 
 /**
@@ -355,8 +341,6 @@ Format.prototype.refresh = function()
 			obj.setAttribute('label', cellInfo || '');
 			cellInfo = obj;
 		};
-		// 设置默认名称
-		cellInfo.getAttribute('palettename') == null && cellInfo.setAttribute('palettename', BaseFormatPanel.prototype.getPaletteName(shapeName))		
 		graph.getModel().setValue(cell, cellInfo);
 	}
 
@@ -461,7 +445,7 @@ Format.prototype.refresh = function()
 /**
  * Base class for format panels.
  */
-BaseFormatPanel = function(format, editorUi, container)
+var BaseFormatPanel = function(format, editorUi, container)
 {
 	this.format = format;
 	this.editorUi = editorUi;
@@ -491,11 +475,17 @@ BaseFormatPanel.prototype.list = {
 	singleCheck: '单选'
 }
 /**
- * 获取对应控件的名称
+ * 获取全部控件
  */
-BaseFormatPanel.prototype.getPaletteName = function (name) {
-	console.log(name)
-	return this.list[name]
+BaseFormatPanel.prototype.getCells = function (graph) {
+	var cells = graph.getModel().cells;
+	var res = [];
+	for (var key in cells) {
+		if (cells[key].id != '0' && cells[key].id != '1') {
+			res.push(cells[key])
+		}
+	}
+	return res;
 }
 /**
  * 按钮背景颜色
@@ -1124,7 +1114,6 @@ BaseFormatPanel.prototype.createCellColorOption = function(label, colorKey, defa
 		return null;
 	}, function(color)
 	{
-		console.log(999, color)
 		graph.getModel().beginUpdate();
 		try
 		{
@@ -3159,7 +3148,7 @@ ActionsPanel.prototype.init = function (container) {
 		addAction.innerText = '+ 交互';
 		this.container.appendChild(addAction);
 		for (let i = 0; i < actionsInfo.length - 1; i++) {
-			this.createInfoBox(this.container, actionsInfo[i])
+			this.createInfoBox(this.container, actionsInfo, i)
 		}
 		// 默认一个交互操作
 		this.rectangleActions()
@@ -3188,8 +3177,13 @@ ActionsPanel.prototype.rectangleActions = function () {
 /**
  * 创建描述信息栏
  */
-ActionsPanel.prototype.createInfoBox = function (container, info = {}) {
+ActionsPanel.prototype.createInfoBox = function (container, actionsInfo, i) {
+	var ui = this.editorUi;
+	var editor = ui.editor;
+	var graph = editor.graph;
+	var cell = graph.getSelectionCell();
 	// 描述内容
+	var info = actionsInfo[i]
 	var infoTxt = document.createElement('p');
 	infoTxt.className = 'infoTxt';
 	var desc = `${info.mouseEvent == '选择' ? '' : info.mouseEvent + ','}${info.effectAction == '选择' ? '' : info.effectAction + ','}${info.type == 'out' ? '' : info.innerType + ','}${info.link}`
@@ -3198,6 +3192,19 @@ ActionsPanel.prototype.createInfoBox = function (container, info = {}) {
 	// 编辑图标
 	var editIcon = this.editIcon();
 	infoTxt.appendChild(editIcon);
+	mxEvent.addListener(editIcon, 'click', (evt) => {
+		actionsInfo.push(actionsInfo.splice(i ,1)[0]);
+		this.modelInfo.setAttribute('actionsInfo', JSON.stringify(actionsInfo));
+		graph.getModel().setValue(cell, this.modelInfo);
+	})
+	// 删除图标
+	var delIcon = this.delIcon();
+	infoTxt.appendChild(delIcon);
+	mxEvent.addListener(delIcon, 'click', (evt) => {
+		actionsInfo.splice(i ,1);
+		this.modelInfo.setAttribute('actionsInfo', JSON.stringify(actionsInfo));
+		graph.getModel().setValue(cell, this.modelInfo);
+	})
 }
 /**
  * 编辑图标
@@ -3207,6 +3214,15 @@ ActionsPanel.prototype.editIcon = function () {
 	editIcon.className = 'editIcon';
 	editIcon.setAttribute('src', '/static/images/icons/edit.png')
 	return editIcon;
+}
+/**
+ * 删除图标
+ */
+ActionsPanel.prototype.delIcon = function () {
+	var delIcon = document.createElement('img');
+	delIcon.className = 'delIcon';
+	delIcon.setAttribute('src', '/static/images/icons/delete.png')
+	return delIcon;
 }
 /**
  * 创建选择事件、选择动作操作栏 
@@ -3509,22 +3525,8 @@ var PaletteManagePanel = function (editorUi, container)
 	{
 		this.refresh();
 	});
-	
-	// graph.getSelectionModel().addListener(mxEvent.CHANGE, this.update);
-	// graph.addListener(mxEvent.EDITING_STARTED, this.update);
-	// graph.addListener(mxEvent.EDITING_STOPPED, this.update);
 	graph.getModel().addListener(mxEvent.CHANGE, this.update);
-	// graph.addListener(mxEvent.ROOT, mxUtils.bind(this, function()
-	// {
-	// 	this.refresh();
-	// }));
-	
-	editor.addListener('autosaveChanged', mxUtils.bind(this, function()
-	{
-		// this.refresh();
-	}));
-	
-	// this.refresh();
+	graph.getSelectionModel().addListener(mxEvent.CHANGE, this.update);
 };
 
 mxUtils.extend(PaletteManagePanel, BaseFormatPanel);
@@ -3538,26 +3540,6 @@ PaletteManagePanel.prototype.expandImage = '/static/images/icons/expand.png';
  * 收缩图标
  */
 PaletteManagePanel.prototype.colspanImage = '/static/images/icons/colspan.png';
-/**
- * 控件名称和缩略图
- */
-// PaletteManagePanel.prototype.list = {
-// 	rectangle: '矩形',
-// 	button: '按钮',
-// 	menulist: '菜单',
-// 	menuCell: '菜单',
-// 	image: '图片',
-// 	text: '文本',
-// 	select: '下拉列表',
-// 	table: '表格',
-// 	endarrow: '箭头',
-// 	line: '直线',
-// 	curve: '曲线',
-// 	linkTag: 'Link',
-// 	primitive: '图元',
-// 	multipleCheck: '复选',
-// 	singleCheck: '单选'
-// }
 /**
  * 生成标题
  */
@@ -3640,6 +3622,9 @@ PaletteManagePanel.prototype.createSearchInput = function (container) {
 PaletteManagePanel.prototype.fillList = function (container, filter) {
 	var primitives = this.editorUi.sidebar.primitives;
 	var cells = [].concat(this.cells);
+	var graph =  this.editorUi.editor.graph
+	var currentCell = graph.getSelectionCell();
+	let currentId = currentCell ? currentCell.getId() : null;
 	filter = filter.trim();
 	// 清除原先列表
 	$("#paletteManageList").remove();
@@ -3649,32 +3634,28 @@ PaletteManagePanel.prototype.fillList = function (container, filter) {
 	var forbiddenShape = ['menuCell', 'tableCell'];
 	for (var i = 0; i < cells.length; i++) {
 		// 节点的state信息
-		var state = this.editorUi.editor.graph.view.getState(cells[i]);
+		var state = graph.view.getState(cells[i]);
 		var info = state.style.shape;
 		info = primitives.indexOf(info) == -1 ? info : 'primitive';
 		var name = this.getCellInfo('palettename', cells[i]) || '';
-		if (forbiddenShape.indexOf(info) != -1 || (name.indexOf(filter) == -1 && this.list[info].indexOf(filter) == -1)) continue;
+		if (forbiddenShape.indexOf(info) != -1 || (name.indexOf(filter) == -1 && this.editorUi.editor.palettesInfo[info].name.indexOf(filter) == -1)) continue;
 		// 内容
 		var _li = document.createElement('li');
 		_li.setAttribute('data-idx', i);
 		_li.innerText = name;
-		_li.innerText += '(' + this.list[info] + ')';
-		_li.setAttribute('data-defaultbg', 'url(/static/images/palettes/' + info + '.png)');
-		_li.setAttribute('data-activebg', 'url(/static/images/palettes/' + info + '_white.png)');
-		_li.style.backgroundImage = 'url(/static/images/palettes/' + info + '.png)';
+		_li.innerText += '(' + this.editorUi.editor.palettesInfo[info].name + ')';
+		if (cells[i].getId() === currentId) {
+			_li.className = 'paletteActive';
+			_li.style.backgroundImage = 'url(/static/images/palettes/' + info + '_white' +'.png)';
+		} else {
+			_li.style.backgroundImage = 'url(/static/images/palettes/' + info +'.png)';
+		}
 		ul.appendChild(_li)
 	};
 	// 绑定事件
 	mxEvent.addListener(ul, 'click', function (evt) {
 		if (evt.target.nodeName === 'LI') {
-			// 移除高亮，恢复默认背景
-			$('.paletteActive').css({backgroundImage: $('.paletteActive').data('defaultbg')});
-			$('.paletteActive').removeClass();
-			// 选中高亮
-			evt.target.className = 'paletteActive';
-			evt.target.style.backgroundImage = evt.target.getAttribute('data-activebg');
-			// 选中对应控件
-			this.editorUi.editor.graph.setSelectionCell(cells[evt.target.getAttribute('data-idx')]);
+			graph.setSelectionCell(cells[evt.target.getAttribute('data-idx')]);
 		}
 	}.bind(this))
 	container.appendChild(ul);
@@ -3714,7 +3695,8 @@ PaletteManagePanel.prototype.addFoldingHandler = function(elt, content) {
 PaletteManagePanel.prototype.refresh = function () {
 	this.clear();	
 	// 获取全部节点
-	this.cells = this.getCells();
+	var graph =  this.editorUi.editor.graph
+	this.cells = this.getCells(graph);
 
 	var title = this.createTitle('控件', 'paletteManageTitle');
 	this.container.appendChild(title);
@@ -3729,21 +3711,6 @@ PaletteManagePanel.prototype.clear = function()
 {
 	this.container.innerHTML = '';
 };
-/**
- * 获取全部控件
- */
-PaletteManagePanel.prototype.getCells = function () {
-	var cells = this.editorUi.editor.graph.getModel().cells;
-	var res = [];
-	for (var key in cells) {
-		if (cells[key].id != '0' && cells[key].id != '1') {
-			// console.log(this.getCellInfo('palettename', cells[key]))
-			
-			res.push(cells[key])
-		}
-	}
-	return res;
-}
 /**
  * 获取控件名称
  */

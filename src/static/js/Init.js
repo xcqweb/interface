@@ -15,14 +15,21 @@ window.STENCIL_PATH = window.STENCIL_PATH || '/static/stencils';
 window.IMAGE_PATH = window.IMAGE_PATH || 'static/images/default';
 window.STYLE_PATH = window.STYLE_PATH || 'static';
 window.OPEN_FORM = window.OPEN_FORM || 'open.html';
-
-// Sets the base path, the UI language via URL param and configures the
-// supported languages to avoid 404s. The loading of all core language
-// resources is disabled as all required resources are in grapheditor.
-// properties. Note that in this example the loading of two resource
-// files (the special bundle and the default bundle) is disabled to
-// save a GET request. This requires that all resources be present in
-// each properties file since only one file is loaded.
+// 设置默认地址
 window.mxBasePath = window.mxBasePath || '/static/';
 window.mxLanguage = window.mxLanguage || urlParams['lang'];
 window.mxLanguages = window.mxLanguages || ['de'];
+// 文件服务器地址
+window.fileSystem = null;
+
+// 获取cookie
+window.getCookie = function(cname) {
+  var name = cname + '=';
+  var ca = document.cookie.split(';');
+  for (var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) === ' ') {c = c.substring(1); }
+    if (c.indexOf(name) !== -1) {return c.substring(name.length, c.length); }
+  }
+  return '';
+};

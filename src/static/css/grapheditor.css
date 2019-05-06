@@ -1008,7 +1008,7 @@ div.mxWindow .geButton {
 	background-position-y: 10px;
 	background-image: url(/static/images/icons/vertical.png);
 }
-.geSprite-actualsize { background-position: 0 0; }
+/* .geSprite-actualsize { background-position: 0 0; }
 .geSprite-bold { background-position: 0 -46px; }
 .geSprite-fillcolor { background-position: 0 -229px; }
 .geSprite-fontcolor { background-position: 0 -322px; }
@@ -1125,7 +1125,7 @@ div.mxWindow .geButton {
 .geSprite-verticalelbow { background-position: 0 -5857px; }
 .geSprite-horizontalelbow { background-position: 0 -5903px; }
 .geSprite-horizontalisometric { background-position: 0 -5949px; }
-.geSprite-verticalisometric { background-position: 0 -5995px; }
+.geSprite-verticalisometric { background-position: 0 -5995px; } */
 html div.mxRubberband {
 	border-color:#0000DD;
 	background:#99ccff;
@@ -1247,7 +1247,7 @@ html td.mxWindowTitle {
 	height: 60px;
 }
 .geDialog .geDialogInfo .modelList, .geDialog .geDialogInfo .executeList {
-	max-height: 120px;
+	height: 120px;
 }
 .geDialog .geDialogInfo .dataDialogList li {
 	width: 100%;
@@ -1299,6 +1299,10 @@ html td.mxWindowTitle {
 	color: #252525;
 	line-height: 24px;
 	padding-left: 16px;
+	padding-right: 30px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 #innerImageBox .innerImageType {
 	padding-left: 16px;
@@ -1312,7 +1316,11 @@ html td.mxWindowTitle {
 #innerImageBox .innerImageList #checkedImage {
 	color: #ffffff;
 	border-radius: 2px;
-	background: #3D91F7;
+	background-color: #3D91F7;
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+	background-position: right 10px top 50%;
+	background-image: url(/static/images/icons/checked_white.png);
 }
 .expandedImage {
 	background-image: url(/static/images/menu/expandedImage.png)
@@ -1547,6 +1555,14 @@ button.buttonTag, input.inputTag {
 	margin-bottom: 6px;
 }
 .formatPannel .infoTxt .editIcon {
+	float: right;
+	width: 16px;
+	height: 16px;
+	position: absolute;
+	right: 24px;
+	bottom: 6px;
+}
+.formatPannel .infoTxt .delIcon {
 	float: right;
 	width: 16px;
 	height: 16px;

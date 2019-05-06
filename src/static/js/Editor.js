@@ -255,7 +255,164 @@ Editor.prototype.filename = null;
 Editor.prototype.paletteNum =  {
 	
 };
-
+// 获取cookie
+Editor.prototype.getCookie = function(cname) {
+	var name = cname + '=';
+	var ca = document.cookie.split(';');
+	for (var i = 0; i < ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0) === ' ') {c = c.substring(1); }
+		if (c.indexOf(name) !== -1) {return c.substring(name.length, c.length); }
+	}
+	return '';
+};
+/**
+ * 二次封装ajax请求
+ * @param {object} editorUi
+ * @param {string} url
+ * @param {string} method
+ * @param {object} data
+ * @param {Function} fn
+ * @param {Function} errorfn
+ */
+Editor.prototype.ajax = function (editorUi, url, method, data, fn = function() {}, errorfn = function() {}) {
+	var loadingBarInner = editorUi.actions.get('loading').funct();
+	var token = getCookie('token');
+	$.ajax({
+		method,
+		headers: {
+			"Content-Type": 'application/json;charset=utf-8',
+			"Authorization": 'Bearer ' + token
+		},
+		beforeSend: function () {
+			loadingBarInner.style.width = '20%';
+		},
+		data: data ? JSON.stringify(data) : '',
+		// dataType: 'JSON',
+		url,
+		success: function (res) {
+			loadingBarInner.style.width = '100%';
+			setTimeout(() => {
+				fn && fn(res);
+			}, 500)
+		},
+		error: function (res) {
+			loadingBarInner.style.width = '100%';
+			errorfn && errorfn()
+		}
+	})
+}
+/**
+ * 上传文件请求
+ * @param {object} editorUi
+ * @param {string} url
+ * @param {string} method
+ * @param {object} data
+ * @param {Function} fn
+ * @param {Function} errorfn
+ */
+Editor.prototype.uploadFile = function (editorUi, url, method, data, fn = function() {}, errorfn = function() {}) {
+	var loadingBarInner = editorUi.actions.get('loading').funct();
+	var token = getCookie('token');
+	$.ajax({
+		method,
+		headers: {
+			"Authorization": 'Bearer ' + token
+		},
+		processData: false,
+		contentType: false,
+		cache:false,
+		beforeSend: function () {
+			loadingBarInner.style.width = '20%';
+		},
+		data: data,
+		url,
+		success: function (res) {
+			loadingBarInner.style.width = '100%';
+			setTimeout(() => {
+				fn && fn(res);
+			}, 500)
+		},
+		error: function (res) {
+			loadingBarInner.style.width = '100%';
+			errorfn && errorfn()
+		}
+	})
+}
+Editor.prototype.palettesInfo = {
+	rectangle: {
+		name: '矩形',
+		num: 0
+	},
+	button: {
+		name: '按钮',
+		num: 0
+	},
+	menulist: {
+		name: '菜单',
+		num: 0
+	},
+	menuCell: {
+		name: '菜单',
+		num: 0
+	},
+	image: {
+		name: '图片',
+		num: 0
+	},
+	text: {
+		name: '文本',
+		num: 0
+	},
+	select: {
+		name: '下拉列表',
+		num: 0
+	},
+	table: {
+		name: '表格',
+		num: 0
+	},
+	tableBox: {
+		name: '表格',
+		num: 0
+	},
+	tableCell: {
+		name: '表格',
+		num: 0
+	},
+	endarrow: {
+		name: '箭头',
+		num: 0
+	},
+	line: {
+		name: '直线',
+		num: 0
+	},
+	curve: {
+		name: '曲线',
+		num: 0
+	},
+	linkTag: {
+		name: 'Link',
+		num: 0
+	},
+	primitive: {
+		name: '图元',
+		num: 0
+	},
+	multipleCheck: {
+		name: '复选',
+		num: 0
+	},
+	singleCheck: {
+		name: '单选',
+		num: 0
+	},
+}
+/**
+ * 文件服务器的地址
+ */
+Editor.prototype.fileSystem = '';
 /**
  * 当前选中的页面 
  */
@@ -855,7 +1012,6 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 			new mxDivResizer(this.bg);
 		}
 	}
-	
 	var origin = mxUtils.getDocumentScrollOrigin(document);
 	this.bg.style.left = origin.x + 'px';
 	this.bg.style.top = origin.y + 'px';
@@ -973,7 +1129,7 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 		}
 	});
 	
-	mxEvent.addListener(window, 'resize', this.resizeListener);
+	// mxEvent.addListener(window, 'resize', this.resizeListener);
 
 	this.onDialogClose = onClose;
 	this.container = div;
