@@ -13,7 +13,8 @@ module.exports = function (api) {
           "safari": "11.1"
         },
         "modules": false,
-        "debug": true
+        "debug": true,
+        "useBuiltIns": false 
       }
     ]
   ]

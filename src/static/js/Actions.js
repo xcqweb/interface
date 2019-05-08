@@ -39,13 +39,13 @@ Actions.prototype.init = function()
 		var len = 0, timer = null;
 		timer = setInterval(() => {
 			len = parseFloat(loadingBarInner.style.width);
-			if ( len >= 92 && len < 99) {
+			if ( len >= 80 && len < 99) {
 				len += 0.3;
 				loadingBarInner.style.width = len + '%';
-			} else if ( len >= 99 ) {
+			} else if ( len >= 100 ) {
 				clearInterval(timer);
 				ui.hideDialog();
-			} else {
+			} else if (len < 80) {
 				len += 4;
 				loadingBarInner.style.width = len + '%';
 			};
@@ -181,9 +181,9 @@ Actions.prototype.init = function()
 	}, true)
 	// 发布
 	this.addAction('publish', function() {
-		var dlg = new ShareDialog(ui, '')
+		var dlg = new PublishDialog(ui, '')
 		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '发布');
-	}, true, null, 'Ctrl+Shift+O').isEnabled = isGraphEnabled;
+	}, true, null, 'Ctrl+Shift+O');
 	// 配置链接
 	this.addAction('configLink', function () {
 		var dlg = new ConfigLinkDialog(ui, '', '应用', function (val, desc) {
@@ -336,11 +336,10 @@ Actions.prototype.init = function()
 
 	this.addAction('save', function() { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+S').isEnabled = isGraphEnabled;
 	this.addAction('saveAs...', function() { ui.saveFile(true); }, null, null, Editor.ctrlKey + '+Shift+S').isEnabled = isGraphEnabled;
-	this.addAction('export...', function() { ui.showDialog(new ExportDialog(ui).container, 300, 230, true, true); });
 	this.addAction('editDiagram...', function()
 	{
 		var dlg = new EditDiagramDialog(ui);
-		ui.showDialog(dlg.container, 620, 420, true, false);
+		ui.showDialog(dlg.container, 620, 420, true, false, null, null, '编辑图表');
 		dlg.init();
 	});
 	this.addAction('pageSetup...', function() { ui.showDialog(new PageSetupDialog(ui).container, 340, 200, true, false, null, null, '页面设置'); }).isEnabled = isGraphEnabled;
@@ -410,55 +409,6 @@ Actions.prototype.init = function()
 		}
 	});
 	
-	this.addAction('copySize', function(evt)
-	{
-		var cell = graph.getSelectionCell();
-		
-		if (graph.isEnabled() && cell != null && graph.getModel().isVertex(cell))
-		{
-			var geo = graph.getCellGeometry(cell);
-			
-			if (geo != null)
-			{
-				ui.copiedSize = new mxRectangle(geo.x, geo.y, geo.width, geo.height);
-			}
-		}
-	}, null, null, 'Alt+Shit+X');
-
-	this.addAction('pasteSize', function(evt)
-	{
-		if (graph.isEnabled() && !graph.isSelectionEmpty() && ui.copiedSize != null)
-		{
-			graph.getModel().beginUpdate();
-			
-			try
-			{
-				var cells = graph.getSelectionCells();
-				
-				for (var i = 0; i < cells.length; i++)
-				{
-					if (graph.getModel().isVertex(cells[i]))
-					{
-						var geo = graph.getCellGeometry(cells[i]);
-						
-						if (geo != null)
-						{
-							geo = geo.clone();
-							geo.width = ui.copiedSize.width;
-							geo.height = ui.copiedSize.height;
-							
-							graph.getModel().setGeometry(cells[i], geo);
-						}
-					}
-				}
-			}
-			finally
-			{
-				graph.getModel().endUpdate();
-			}
-		}
-	}, null, null, 'Alt+Shit+V');
-	
 	/**
 	 * 删除节点
 	 * @param {object} includeEdges 是否包含线条
@@ -482,7 +432,7 @@ Actions.prototype.init = function()
 				for (var i = 0; i < parents.length; i++)
 				{
 					// 删除菜单时处理菜单长度和子菜单的定位
-					if (graph.view.getState(parents[i]).style.shape === 'menulist') {
+					if (graph.view.getState(parents[i]) && graph.view.getState(parents[i]).style.shape === 'menulist') {
 						var pos_x = 0;
 						for (var j = 0; j < parents[i].children.length; j++) {
 							var cell = parents[i].children[j];
@@ -590,44 +540,6 @@ Actions.prototype.init = function()
 			graph.startEditingAtCell();
 		}
 	}, null, null, 'F2/Enter');
-	this.addAction('editData...', function()
-	{
-		var cell = graph.getSelectionCell() || graph.getModel().getRoot();
-		ui.showDataDialog(cell);
-	}, null, null, Editor.ctrlKey + '+M');
-	// 编辑属性
-	this.addAction('editProp...', function()
-	{
-		var cell = graph.getSelectionCell();
-		ui.showPropDialog(cell);
-	}, null, null, Editor.ctrlKey + '+K');
-	this.addAction('editTooltip...', function()
-	{
-		var graph = ui.editor.graph;
-		
-		if (graph.isEnabled() && !graph.isSelectionEmpty())
-		{
-			var cell = graph.getSelectionCell();
-			var tooltip = '';
-			
-			if (mxUtils.isNode(cell.value))
-			{
-				var tmp = cell.value.getAttribute('tooltip');
-				
-				if (tmp != null)
-				{
-					tooltip = tmp;
-				}
-			}
-			
-	    	var dlg = new TextareaDialog(ui, mxResources.get('editTooltip') + ':', tooltip, function(newValue)
-			{
-				graph.setTooltipForCell(cell, newValue);
-			});
-			ui.showDialog(dlg.container, 320, 200, true, true);
-			dlg.init();
-		}
-	}, null, null, 'Alt+Shift+T');
 	this.addAction('openLink', function()
 	{
 		var link = graph.getLinkForCell(graph.getSelectionCell());
@@ -860,20 +772,6 @@ Actions.prototype.init = function()
 				graph.getModel().endUpdate();
 			}
     	}
-	});
-	this.addAction('wordWrap', function()
-	{
-    	var state = graph.getView().getState(graph.getSelectionCell());
-    	var value = 'wrap';
-    	
-		graph.stopEditing();
-    	
-    	if (state != null && state.style[mxConstants.STYLE_WHITE_SPACE] == 'wrap')
-    	{
-    		value = null;
-    	}
-
-       	graph.setCellStyles(mxConstants.STYLE_WHITE_SPACE, value);
 	});
 	this.addAction('rotation', function()
 	{
@@ -1183,263 +1081,7 @@ Actions.prototype.init = function()
 	this.addAction('backgroundColor...', function() { ui.menus.pickColor(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, 'backcolor'); });
 	this.addAction('borderColor...', function() { ui.menus.pickColor(mxConstants.STYLE_LABEL_BORDERCOLOR); });
 	
-	// Format actions
-	this.addAction('vertical', function() { ui.menus.toggleStyle(mxConstants.STYLE_HORIZONTAL, true); }, false);
-	this.addAction('shadow', function() { ui.menus.toggleStyle(mxConstants.STYLE_SHADOW); });
-	this.addAction('solid', function()
-	{
-		graph.getModel().beginUpdate();
-		try
-		{
-			graph.setCellStyles(mxConstants.STYLE_DASHED, null);
-			graph.setCellStyles(mxConstants.STYLE_DASH_PATTERN, null);
-			ui.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_DASHED, mxConstants.STYLE_DASH_PATTERN],
-				'values', [null, null], 'cells', graph.getSelectionCells()));
-		}
-		finally
-		{
-			graph.getModel().endUpdate();
-		}
-	});
-	this.addAction('dashed', function()
-	{
-		graph.getModel().beginUpdate();
-		try
-		{
-			graph.setCellStyles(mxConstants.STYLE_DASHED, '1');
-			graph.setCellStyles(mxConstants.STYLE_DASH_PATTERN, null);
-			ui.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_DASHED, mxConstants.STYLE_DASH_PATTERN],
-				'values', ['1', null], 'cells', graph.getSelectionCells()));
-		}
-		finally
-		{
-			graph.getModel().endUpdate();
-		}
-	});
-	this.addAction('dotted', function()
-	{
-		graph.getModel().beginUpdate();
-		try
-		{
-			graph.setCellStyles(mxConstants.STYLE_DASHED, '1');
-			graph.setCellStyles(mxConstants.STYLE_DASH_PATTERN, '1 4');
-			ui.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_DASHED, mxConstants.STYLE_DASH_PATTERN],
-				'values', ['1', '1 4'], 'cells', graph.getSelectionCells()));
-		}
-		finally
-		{
-			graph.getModel().endUpdate();
-		}
-	});
-	this.addAction('sharp', function()
-	{
-		graph.getModel().beginUpdate();
-		try
-		{
-			graph.setCellStyles(mxConstants.STYLE_ROUNDED, '0');
-			graph.setCellStyles(mxConstants.STYLE_CURVED, '0');
-			ui.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ROUNDED, mxConstants.STYLE_CURVED],
-					'values', ['0', '0'], 'cells', graph.getSelectionCells()));
-		}
-		finally
-		{
-			graph.getModel().endUpdate();
-		}
-	});
-	this.addAction('rounded', function()
-	{
-		graph.getModel().beginUpdate();
-		try
-		{
-			graph.setCellStyles(mxConstants.STYLE_ROUNDED, '1');
-			graph.setCellStyles(mxConstants.STYLE_CURVED, '0');
-			ui.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ROUNDED, mxConstants.STYLE_CURVED],
-					'values', ['1', '0'], 'cells', graph.getSelectionCells()));
-		}
-		finally
-		{
-			graph.getModel().endUpdate();
-		}
-	});
-	this.addAction('toggleRounded', function()
-	{
-		if (!graph.isSelectionEmpty() && graph.isEnabled())
-		{
-			graph.getModel().beginUpdate();
-			try
-			{
-				var cells = graph.getSelectionCells();
-	    		var state = graph.view.getState(cells[0]);
-	    		var style = (state != null) ? state.style : graph.getCellStyle(cells[0]);
-	    		var value = (mxUtils.getValue(style, mxConstants.STYLE_ROUNDED, '0') == '1') ? '0' : '1';
-	    		
-				graph.setCellStyles(mxConstants.STYLE_ROUNDED, value);
-				graph.setCellStyles(mxConstants.STYLE_CURVED, null);
-				ui.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ROUNDED, mxConstants.STYLE_CURVED],
-						'values', [value, '0'], 'cells', graph.getSelectionCells()));
-			}
-			finally
-			{
-				graph.getModel().endUpdate();
-			}
-		}
-	});
-	this.addAction('curved', function()
-	{
-		graph.getModel().beginUpdate();
-		try
-		{
-			graph.setCellStyles(mxConstants.STYLE_ROUNDED, '0');
-			graph.setCellStyles(mxConstants.STYLE_CURVED, '1');
-			ui.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ROUNDED, mxConstants.STYLE_CURVED],
-					'values', ['0', '1'], 'cells', graph.getSelectionCells()));
-		}
-		finally
-		{
-			graph.getModel().endUpdate();
-		}
-	});
-	this.addAction('collapsible', function()
-	{
-		var state = graph.view.getState(graph.getSelectionCell());
-		var value = '1';
-		
-		if (state != null && graph.getFoldingImage(state) != null)
-		{
-			value = '0';	
-		}
-		
-		graph.setCellStyles('collapsible', value);
-		ui.fireEvent(new mxEventObject('styleChanged', 'keys', ['collapsible'],
-				'values', [value], 'cells', graph.getSelectionCells()));
-	});
-	this.addAction('editStyle...', mxUtils.bind(this, function()
-	{
-		var cells = graph.getSelectionCells();
-		
-		if (cells != null && cells.length > 0)
-		{
-			var model = graph.getModel();
-			
-	    	var dlg = new TextareaDialog(this.editorUi, mxResources.get('editStyle') + ':',
-	    			model.getStyle(cells[0]) || '', function(newValue)
-			{
-	    		if (newValue != null)
-				{
-					graph.setCellStyle(mxUtils.trim(newValue), cells);
-				}
-			}, null, null, 400, 220);
-			this.editorUi.showDialog(dlg.container, 420, 300, true, true);
-			dlg.init();
-		}
-	}), null, null, Editor.ctrlKey + '+E');
-	this.addAction('setAsDefaultStyle', function()
-	{
-		if (graph.isEnabled() && !graph.isSelectionEmpty())
-		{
-			ui.setDefaultStyle(graph.getSelectionCell());
-		}
-	}, null, null, Editor.ctrlKey + '+Shift+D');
-	this.addAction('clearDefaultStyle', function()
-	{
-		if (graph.isEnabled())
-		{
-			ui.clearDefaultStyle();
-		}
-	}, null, null, Editor.ctrlKey + '+Shift+R');
-	this.addAction('addWaypoint', function()
-	{
-		var cell = graph.getSelectionCell();
-		
-		if (cell != null && graph.getModel().isEdge(cell))
-		{
-			var handler = editor.graph.selectionCellsHandler.getHandler(cell);
-			
-			if (handler instanceof mxEdgeHandler)
-			{
-				var t = graph.view.translate;
-				var s = graph.view.scale;
-				var dx = t.x;
-				var dy = t.y;
-				
-				var parent = graph.getModel().getParent(cell);
-				var pgeo = graph.getCellGeometry(parent);
-				
-				while (graph.getModel().isVertex(parent) && pgeo != null)
-				{
-					dx += pgeo.x;
-					dy += pgeo.y;
-					
-					parent = graph.getModel().getParent(parent);
-					pgeo = graph.getCellGeometry(parent);
-				}
-				
-				var x = Math.round(graph.snap(graph.popupMenuHandler.triggerX / s - dx));
-				var y = Math.round(graph.snap(graph.popupMenuHandler.triggerY / s - dy));
-				
-				handler.addPointAt(handler.state, x, y);
-			}
-		}
-	});
-	this.addAction('removeWaypoint', function()
-	{
-		// TODO: Action should run with "this" set to action
-		var rmWaypointAction = ui.actions.get('removeWaypoint');
-		
-		if (rmWaypointAction.handler != null)
-		{
-			// NOTE: Popupevent handled and action updated in Menus.createPopupMenu
-			rmWaypointAction.handler.removePoint(rmWaypointAction.handler.state, rmWaypointAction.index);
-		}
-	});
-	this.addAction('clearWaypoints', function()
-	{
-		var cells = graph.getSelectionCells();
-		
-		if (cells != null)
-		{
-			cells = graph.addAllEdges(cells);
-			
-			graph.getModel().beginUpdate();
-			try
-			{
-				for (var i = 0; i < cells.length; i++)
-				{
-					var cell = cells[i];
-					
-					if (graph.getModel().isEdge(cell))
-					{
-						var geo = graph.getCellGeometry(cell);
-			
-						if (geo != null)
-						{
-							geo = geo.clone();
-							geo.points = null;
-							graph.getModel().setGeometry(cell, geo);
-						}
-					}
-				}
-			}
-			finally
-			{
-				graph.getModel().endUpdate();
-			}
-		}
-	}, null, null, 'Alt+Shift+C');
-	action = this.addAction('subscript', mxUtils.bind(this, function()
-	{
-	    if (graph.cellEditor.isContentEditing())
-	    {
-			document.execCommand('subscript', false, null);
-		}
-	}), null, null, Editor.ctrlKey + '+,');
-	action = this.addAction('superscript', mxUtils.bind(this, function()
-	{
-	    if (graph.cellEditor.isContentEditing())
-	    {
-			document.execCommand('superscript', false, null);
-		}
-	}), null, null, Editor.ctrlKey + '+.');
+	
 	// 编辑图片
 	this.addAction('image', function () {
 		var cell = graph.getSelectionCell();
@@ -1459,6 +1101,7 @@ Actions.prototype.init = function()
 		var cell = graph.getSelectionCell();
 		var dlg = new PaletteDataDialog(ui, cell)
 		ui.showDialog(dlg.container, 410, 450, true, false, null, null, '绑定数据源');
+		dlg.init()
 	})
 	
 	this.addAction('images', function()
@@ -1552,38 +1195,6 @@ Actions.prototype.init = function()
 			}, graph.cellEditor.isContentEditing(), !graph.cellEditor.isContentEditing());
 		}
 	}).isEnabled = isGraphEnabled;
-	this.addAction('insertImage...', function()
-	{
-		if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent()))
-		{
-			graph.clearSelection();
-			ui.actions.get('image').funct();
-		}
-	}).isEnabled = isGraphEnabled;
-	action = this.addAction('layers', mxUtils.bind(this, function()
-	{
-		if (this.layersWindow == null)
-		{
-			// LATER: Check outline window for initial placement
-			this.layersWindow = new LayersWindow(ui, document.body.offsetWidth - 280, 120, 220, 180);
-			this.layersWindow.window.addListener('show', function()
-			{
-				ui.fireEvent(new mxEventObject('layers'));
-			});
-			this.layersWindow.window.addListener('hide', function()
-			{
-				ui.fireEvent(new mxEventObject('layers'));
-			});
-			this.layersWindow.window.setVisible(true);
-			ui.fireEvent(new mxEventObject('layers'));
-		}
-		else
-		{
-			this.layersWindow.window.setVisible(!this.layersWindow.window.isVisible());
-		}
-	}), null, null, Editor.ctrlKey + '+Shift+L');
-	action.setToggleAction(true);
-	action.setSelectedCallback(mxUtils.bind(this, function() { return this.layersWindow != null && this.layersWindow.window.isVisible(); }));
 	// 关闭format面板
 	action = this.addAction('formatPanel', mxUtils.bind(this, function()
 	{

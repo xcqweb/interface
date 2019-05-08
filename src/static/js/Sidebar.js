@@ -1032,7 +1032,7 @@ function createPageList (editorUi, data, id) {
 			page.innerHTML =  data[i].title;
 			pageListEle.appendChild(page)
 		}
-		// 页面切换
+		// 切换选中
 		function changePage (e) {
 			var target = e.target;
 			if (target.nodeName === 'LI' && target.className !== 'currentPage') {
@@ -1042,8 +1042,7 @@ function createPageList (editorUi, data, id) {
 				var nextTitle = target.innerText;
 				// 已选中节点
 				if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {
-					var xml = mxUtils.getXml(editorUi.editor.getGraphXml());
-					editorUi.editor.setXml(xml);
+					editorUi.editor.setXml();
 				}
 				// 切换到新的页面
 				$(".currentPage").removeClass();
@@ -1062,8 +1061,7 @@ function createPageList (editorUi, data, id) {
 		mxEvent.addListener(pageListEle, 'contextmenu', function (evt) {
 			evt.preventDefault();
 			changePage(evt);
-			var xml = mxUtils.getXml(editorUi.editor.getGraphXml());
-			editorUi.editor.setXml(xml);
+			editorUi.editor.setXml();
 			// 右键菜单展示
 			var menulist = document.getElementById('pageContextMenu');
 			menulist.style.display = 'block';

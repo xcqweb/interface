@@ -455,25 +455,25 @@ var BaseFormatPanel = function(format, editorUi, container)
 /**
  * 控件名称
  */
-BaseFormatPanel.prototype.list = {
-	rectangle: '矩形',
-	button: '按钮',
-	menulist: '菜单',
-	menuCell: '菜单',
-	image: '图片',
-	text: '文本',
-	select: '下拉列表',
-	table: '表格',
-	tableBox: '表格',
-	tableCell: '表格',
-	endarrow: '箭头',
-	line: '直线',
-	curve: '曲线',
-	linkTag: 'Link',
-	primitive: '图元',
-	multipleCheck: '复选',
-	singleCheck: '单选'
-}
+// BaseFormatPanel.prototype.list = {
+// 	rectangle: '矩形',
+// 	button: '按钮',
+// 	menulist: '菜单',
+// 	menuCell: '菜单',
+// 	image: '图片',
+// 	text: '文本',
+// 	select: '下拉列表',
+// 	table: '表格',
+// 	tableBox: '表格',
+// 	tableCell: '表格',
+// 	endarrow: '箭头',
+// 	line: '直线',
+// 	curve: '曲线',
+// 	linkTag: 'Link',
+// 	primitive: '图元',
+// 	multipleCheck: '复选',
+// 	singleCheck: '单选'
+// }
 /**
  * 获取全部控件
  */
@@ -1450,8 +1450,6 @@ ArrangePanel = function(format, editorUi, container)
 	BaseFormatPanel.call(this, format, editorUi, container);
 	if (format.getSelectionState().vertices.length === 1) {
 		this.baseInit();
-		// this.styleInit();
-		// this.init();
 	}
 };
 
@@ -1791,6 +1789,7 @@ ArrangePanel.prototype.addGeometry = function(container)
 	mxEvent.addListener(autosizeBtn, 'click', function()
 	{
 		fixed = fixed == "fixed" ? '' : 'fixed';
+		autosizeBtn.className = fixed == "fixed" ? 'geSprite geSprite-limit' : 'geSprite geSprite-limit geSprite-unlimit';
 		graph.getModel().beginUpdate();
 		try
 		{
@@ -2402,7 +2401,9 @@ ArrangePanel.prototype.alignFont = function (container) {
 		};
 	};
 	// 按钮
-	var left = this.addButton(geSpriteBtnBox, 'geSprite-left', callFn(ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_LEFT])));
+	var left = this.addButton(geSpriteBtnBox, 'geSprite-left', callFn(
+		ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_LEFT])
+	));
 	var center = this.addButton(geSpriteBtnBox, 'geSprite-center', callFn(ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_CENTER])));
 	var right = this.addButton(geSpriteBtnBox, 'geSprite-right', callFn(ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_RIGHT])));
 	var top = this.addButton(geSpriteBtnBox, 'geSprite-top', callFn(ui.menus.createStyleChangeFunction([mxConstants.STYLE_VERTICAL_ALIGN], [mxConstants.ALIGN_TOP])));
@@ -2417,25 +2418,25 @@ ArrangePanel.prototype.alignFont = function (container) {
 			elt.style.backgroundColor = '#518EEC';
 			elt.style.backgroundImage = 'url("http://localhost:10010/static/images/icons/' + type + '_white.png")';
 		} else {
+			elt.style.backgroundColor = '';
 			elt.style.backgroundImage = 'url("http://localhost:10010/static/images/icons/' + type + '.png")';
 		}
 	};
-	
+	// 监听选中状态
 	var listener = mxUtils.bind(this, function(sender, evt, force)
 	{
-		ss = this.format.getSelectionState();
+		ss = graph.getView().getState(graph.getSelectionCell());
+		// 水平对齐
 		var align = mxUtils.getValue(ss.style, mxConstants.STYLE_ALIGN, mxConstants.ALIGN_CENTER);
 		setSelected(left, align == mxConstants.ALIGN_LEFT, mxConstants.ALIGN_LEFT);
 		setSelected(center, align == mxConstants.ALIGN_CENTER, mxConstants.ALIGN_CENTER);
 		setSelected(right, align == mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_RIGHT);
-		
+		// 垂直对齐
 		var valign = mxUtils.getValue(ss.style, mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_MIDDLE);
 		setSelected(top, valign == mxConstants.ALIGN_TOP, 'vertical');
 		setSelected(middle, valign == mxConstants.ALIGN_MIDDLE, 'vertical');
 		setSelected(bottom, valign == mxConstants.ALIGN_BOTTOM, 'vertical');
 	});
-
-	// this.addKeyHandler(input, listener);
 
 	graph.getModel().addListener(mxEvent.CHANGE, listener);
 	this.listeners.push({destroy: function() { graph.getModel().removeListener(listener); }});
@@ -3109,28 +3110,37 @@ ActionsPanel = function(format, editorUi, container)
 {
 	BaseFormatPanel.call(this, format, editorUi, container);
 	this.init(container);
+	
+	this.update = mxUtils.bind(this, function(sender, evt)
+	{
+		this.refresh();
+	});
+	// editorUi.editor.graph.getModel().addListener(mxEvent.CHANGE, this.update);
 };
 /**
  * 继承基础面板
  */
 mxUtils.extend(ActionsPanel, BaseFormatPanel);
-
+/**
+ * 刷新列表内容
+ */
+ActionsPanel.prototype.refresh = function () {
+	this.clear();	
+	this.init(this.container)
+}
+/**
+ * 清除控件列表内容
+ */
+ActionsPanel.prototype.clear = function()
+{
+	this.container.innerHTML = '';
+};
 ActionsPanel.prototype.init = function (container) {
 	var ui = this.editorUi;
 	var editor = ui.editor;
 	var graph = editor.graph;
 	var cell = graph.getSelectionCell();
 	this.modelInfo = graph.getModel().getValue(cell);
-	// 节点的信息
-	var state = this.editorUi.editor.graph.view.getState(cell);
-
-	if (!mxUtils.isNode(this.modelInfo))
-	{
-		var doc = mxUtils.createXmlDocument();
-		var obj = doc.createElement('object');
-		obj.setAttribute('label', this.modelInfo || '');
-		this.modelInfo = obj;
-	}
 	
 	// 编辑数据
 	if (graph.getSelectionCount() == 1)
@@ -3154,6 +3164,7 @@ ActionsPanel.prototype.init = function (container) {
 		this.rectangleActions()
 		// 添加交互
 		mxEvent.addListener(addAction, 'click', function (evt) {
+			actionsInfo = editor.getActionsInfo();
 			actionsInfo.push({
 				type: 'in',
 				link: '',
@@ -3163,6 +3174,7 @@ ActionsPanel.prototype.init = function (container) {
 			})
 			this.modelInfo.setAttribute('actionsInfo', JSON.stringify(actionsInfo));
 			graph.getModel().setValue(cell, this.modelInfo);
+			this.refresh();
 		}.bind(this))
 	}
 }
@@ -3193,17 +3205,22 @@ ActionsPanel.prototype.createInfoBox = function (container, actionsInfo, i) {
 	var editIcon = this.editIcon();
 	infoTxt.appendChild(editIcon);
 	mxEvent.addListener(editIcon, 'click', (evt) => {
+		actionsInfo = editor.getActionsInfo();
 		actionsInfo.push(actionsInfo.splice(i ,1)[0]);
 		this.modelInfo.setAttribute('actionsInfo', JSON.stringify(actionsInfo));
 		graph.getModel().setValue(cell, this.modelInfo);
+		this.refresh();
 	})
 	// 删除图标
 	var delIcon = this.delIcon();
 	infoTxt.appendChild(delIcon);
 	mxEvent.addListener(delIcon, 'click', (evt) => {
+		actionsInfo = editor.getActionsInfo();
+		cell = graph.getSelectionCell();
 		actionsInfo.splice(i ,1);
 		this.modelInfo.setAttribute('actionsInfo', JSON.stringify(actionsInfo));
 		graph.getModel().setValue(cell, this.modelInfo);
+		this.refresh();
 	})
 }
 /**
@@ -3230,7 +3247,8 @@ ActionsPanel.prototype.delIcon = function () {
 ActionsPanel.prototype.createOperateBox = function(container)
 {
 	var ui = this.editorUi;
-	var graph = ui.editor.graph;
+	var editor = ui.editor;
+	var graph = editor.graph;
 	var rect = this.format.getSelectionState();
 	var cell = graph.getSelectionCell();
 	var modelInfo = graph.getModel().getValue(cell);
@@ -3267,7 +3285,7 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		// 内部页面、控件链接
 		var innerChoose = document.createElement('div');
 		innerChoose.style.margin = '12px 0';
-		// 单选按钮
+		// 内部链接单选按钮
 		var innerRadio = document.createElement('input');
 		innerRadio.setAttribute('type', 'radio');
 		innerRadio.setAttribute('name', 'radioType');
@@ -3287,17 +3305,20 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		for (let i = 0; i < list.length; i++) {
 			paletteList.push(list[i].innerText)
 		}
-		var mockData = temp.innerType == "页面" ? mockData1 : paletteList;
-		pageList.innerHTML = `
-			${
-				mockData.map((val) => (`<li class="${ temp.type == 'in' && val == temp.link ? 'formatPageActive' : ''}">${val}</li>`)).join('')
-			}
-		`;
+		var innerListData = mxUtils.bind(this, function (evt) {
+			let data = temp.innerType == "页面" ? mockData1 : paletteList;
+			pageList.innerHTML = `
+				${
+					data.map((val) => (`<li class="${ temp.type == 'in' && val == temp.link ? 'formatPageActive' : ''}">${val}</li>`)).join('')
+				}
+			`;
+		});
+		innerListData();
 		divpanel.appendChild(pageList);
 		// 外部链接
 		var outChoose = document.createElement('div');
 		outChoose.style.margin = '12px 0';
-		// 单选按钮
+		// 外部链接单选按钮
 		var outRadio = document.createElement('input');
 		outRadio.setAttribute('type', 'radio');
 		outRadio.setAttribute('name', 'radioType');
@@ -3313,75 +3334,81 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		divpanel.appendChild(outChoose);
 		
 		divpanel.appendChild(outInput);
-		if (!mxUtils.isNode(modelInfo))
-		{
-			var doc = mxUtils.createXmlDocument();
-			var obj = doc.createElement('object');
-			obj.setAttribute('label', modelInfo || '');
-			modelInfo = obj;
-		}
-		if (temp.type == 'out') {
-			// 选择外部链接
-			outRadio.setAttribute('checked', true);
-			// 禁用内部选择
-			innerType.setAttribute('disabled', true);
+		var selectPage = mxUtils.bind(this, function (evt) {
 			$('.formatPageActive').removeClass();
-			pageList.style.color = "#999999";
-			outInput.value = temp.link || '';
-			// 事件监听
-			mxEvent.addListener(container, 'mousedown', function () {
-				outInput.blur()
-			});
-			mxEvent.addListener(outInput, 'mousedown', function(evt)
-			{
-				if (evt.stopPropagation)
-				{
-					evt.stopPropagation();
-				}
-				
-				evt.cancelBubble = true;
-			});
-			mxEvent.addListener(outInput, 'blur', function (evt) {
-				this.setActions(graph, modelInfo, cell, actions, 'link', outInput.value);
-			}.bind(this))
-		} else {
-			// 选择内部链接
-			innerRadio.setAttribute('checked', true);
-			// 禁用外部选择
-			outInput.setAttribute('disabled', true);
-			// 选择页面
-			mxEvent.addListener(pageList, 'click', function (evt) {
+			evt.target.className = 'formatPageActive';
+			this.setActions(graph, 'link', evt.target.innerText);
+		})
+		var listener =mxUtils.bind(this, function () {
+			actions = editor.getActionsInfo();
+			temp = actions[actions.length - 1];
+			if (temp.type == 'out') {
+				// 选择外部链接
+				outRadio.setAttribute('checked', true);
+				outInput.removeAttribute('disabled');
+				// 禁用内部选择
+				innerType.setAttribute('disabled', true);
 				$('.formatPageActive').removeClass();
-				evt.target.className = 'formatPageActive';
-				this.setActions(graph, modelInfo, cell, actions, 'link', evt.target.innerText);
-			}.bind(this));
-			mxEvent.addListener(innerType, 'change', function (evt) {
-				this.setActions(graph, modelInfo, cell, actions, 'innerType', innerType.value);
-			}.bind(this))
-		}
-			
+				pageList.style.color = "#999999";
+				outInput.value = temp.link || '';
+				// 事件监听
+				mxEvent.addListener(container, 'mousedown', function () {
+					outInput.blur()
+				});
+				mxEvent.addListener(outInput, 'mousedown', function(evt)
+				{
+					if (evt.stopPropagation)
+					{
+						evt.stopPropagation();
+					}
+					evt.cancelBubble = true;
+				});
+				mxEvent.removeListener(pageList, 'click', selectPage)
+				mxEvent.addListener(outInput, 'blur', function (evt) {
+					this.setActions(graph, 'link', outInput.value);
+				}.bind(this))
+			} else {
+				// 选择内部链接
+				innerRadio.setAttribute('checked', true);
+				// 禁用外部选择
+				outInput.setAttribute('disabled', true);
+				outInput.value = '';
+				pageList.style.color = "";
+				innerType.removeAttribute('disabled');
+				// 选择页面或者控件
+				mxEvent.addListener(pageList, 'click', selectPage);
+				// 切换是控件还是页面
+				mxEvent.addListener(innerType, 'change', function (evt) {
+					this.setActions(graph, 'link', '');
+					this.setActions(graph, 'innerType', innerType.value);
+					this.refresh();
+				}.bind(this))
+			}
+		})
+		listener();
 		// 事件监听
 		// 选择内部链接
-		mxEvent.addListener(innerRadio, 'click', function (evt) {
-			this.setActions(graph, modelInfo, cell, actions, 'type', 'in');
-			this.setActions(graph, modelInfo, cell, actions, 'link', '');
-		}.bind(this))
-
+		mxEvent.addListener(innerRadio, 'click', () => {
+			this.setActions(graph, 'type', 'in');
+			this.setActions(graph, 'link', '');
+			listener();
+		})
 		// 选择外部链接
-		mxEvent.addListener(outRadio, 'click', function (evt) {
-			this.setActions(graph, modelInfo, cell, actions, 'type', 'out');
-			this.setActions(graph, modelInfo, cell, actions, 'link', '');
-		}.bind(this))
+		mxEvent.addListener(outRadio, 'click', (evt) => {
+			this.setActions(graph, 'type', 'out');
+			this.setActions(graph, 'link', '');
+			listener();
+		})
 
 		// 选择事件
-		mxEvent.addListener(mouseEvent, 'change', function () {
-			this.setActions(graph, modelInfo, cell, actions, 'mouseEvent', mouseEvent.value);
-		}.bind(this));
+		mxEvent.addListener(mouseEvent, 'change', () => {
+			this.setActions(graph, 'mouseEvent', mouseEvent.value);
+		});
 
 		// 选择动作
-		mxEvent.addListener(effectAction, 'change', function () {
-			this.setActions(graph, modelInfo, cell, actions, "effectAction", effectAction.value);
-		}.bind(this));
+		mxEvent.addListener(effectAction, 'change', () => {
+			this.setActions(graph, "effectAction", effectAction.value);
+		});
 		
 		container.appendChild(divpanel);	
 	}
@@ -3389,113 +3416,14 @@ ActionsPanel.prototype.createOperateBox = function(container)
 /**
  * 设置交互信息
  */
-ActionsPanel.prototype.setActions = function (graph, modelInfo, cell, actions, key, val) {
+ActionsPanel.prototype.setActions = function (graph, key, val) {
+	let cell = graph.getSelectionCell();
+	let modelInfo = graph.getModel().getValue(cell);
+	let actions = JSON.parse(modelInfo.getAttribute('actionsInfo'));
 	actions[actions.length - 1][key] = val;
 	modelInfo.setAttribute('actionsInfo', JSON.stringify(actions));
 	graph.getModel().setValue(cell, modelInfo);
 }
-/**
- * 设置条件
- */
-ActionsPanel.prototype.addConditions = function (container) {
-	var ui = this.editorUi;
-	var graph = ui.editor.graph;
-	var rect = this.format.getSelectionState();
-	var cell = graph.getSelectionCell();
-	var modelInfo = graph.getModel().getValue(cell);
-	if (modelInfo !== undefined && modelInfo !== null) {
-		// 初始化属性
-		var attrs = modelInfo.attributes;
-		var isLayer = graph.getModel().getParent(cell) == graph.getModel().getRoot();
-		var temp = {};
-		if (attrs) {
-			for (var i = 0; i < attrs.length; i++)
-			{
-				if ((isLayer || attrs[i].nodeName != 'label') && attrs[i].nodeName != 'placeholders')
-				{
-					temp[attrs[i].nodeName] =  attrs[i].nodeValue;
-				}
-			}
-		}
-	
-		var title = this.createTitle(mxResources.get('condition'));
-		title.style.paddingLeft = '18px';
-		title.style.paddingTop = '10px';
-		title.style.paddingBottom = '6px';
-		container.appendChild(title);	
-	
-		var divpanel = this.createPanel();
-		divpanel.style.paddingBottom = '12px';
-		
-		
-		// 文本框
-		var codeArea = document.createElement('textarea');
-		codeArea.style.width = "97%";
-		codeArea.style.height = "60px";
-		codeArea.style.resize = "vertical";
-		codeArea.value = temp.condition || '';
-		// 监听事件`
-		mxEvent.addListener(container, 'mousedown', function () {
-			codeArea.blur()
-		});
-		mxEvent.addListener(codeArea, 'mousedown', function(evt)
-		{
-			if (evt.stopPropagation)
-			{
-				evt.stopPropagation();
-			}
-			
-			evt.cancelBubble = true;
-		});
-		// 失去焦点
-		mxEvent.addListener(codeArea, 'blur', function(evt)
-		{
-			modelInfo.setAttribute('condition', evt.target.value);
-			graph.getModel().setValue(cell, modelInfo);
-		});
-		// mxUtils.write(codeArea, mxResources.get('angle'));
-		divpanel.appendChild(codeArea)
-	
-		if (!mxUtils.isNode(modelInfo))
-		{
-			var doc = mxUtils.createXmlDocument();
-			var obj = doc.createElement('object');
-			obj.setAttribute('label', modelInfo || '');
-			modelInfo = obj;
-		}
-			
-		// 事件监听
-		
-		container.appendChild(divpanel);
-		
-	}
-}
-
-/**
- * 添加单行文本
- */
-ActionsPanel.prototype.addSingleInput = function (container, name, value ) {
-	// 文本框
-	var ui = this.editorUi;
-	var graph = ui.editor.graph;
-	var cell = graph.getSelectionCell();
-	var modelInfo = this.modelInfo;
-	// 创建节点
-	var box = document.createElement('div');
-	var input = document.createElement('input');
-	input.value = value[name] || '';
-	input.className = input.className + ' u-prop-cell';
-	mxUtils.write(box, mxResources.get(name) + ': ');
-	box.appendChild(input);
-	// 监听事件、失去焦点进行赋值操作
-	mxEvent.addListener(input, 'blur', function(evt)
-    {
-		modelInfo.setAttribute(name, evt.target.value);
-		graph.getModel().setValue(cell, modelInfo);
-	});
-	container.appendChild(box);
-	return input;
-};
 
 /**
  * Adds the label menu items to the given menu and parent.
@@ -3632,25 +3560,28 @@ PaletteManagePanel.prototype.fillList = function (container, filter) {
 	ul.id = 'paletteManageList';
 	// 不显示节点的名称
 	var forbiddenShape = ['menuCell', 'tableCell'];
+
 	for (var i = 0; i < cells.length; i++) {
 		// 节点的state信息
 		var state = graph.view.getState(cells[i]);
-		var info = state.style.shape;
-		info = primitives.indexOf(info) == -1 ? info : 'primitive';
-		var name = this.getCellInfo('palettename', cells[i]) || '';
-		if (forbiddenShape.indexOf(info) != -1 || (name.indexOf(filter) == -1 && this.editorUi.editor.palettesInfo[info].name.indexOf(filter) == -1)) continue;
-		// 内容
-		var _li = document.createElement('li');
-		_li.setAttribute('data-idx', i);
-		_li.innerText = name;
-		_li.innerText += '(' + this.editorUi.editor.palettesInfo[info].name + ')';
-		if (cells[i].getId() === currentId) {
-			_li.className = 'paletteActive';
-			_li.style.backgroundImage = 'url(/static/images/palettes/' + info + '_white' +'.png)';
-		} else {
-			_li.style.backgroundImage = 'url(/static/images/palettes/' + info +'.png)';
+		if (state) {
+			var info = state.style.shape;
+			info = primitives.indexOf(info) == -1 ? info : 'primitive';
+			var name = this.getCellInfo('palettename', cells[i]) || '';
+			if (forbiddenShape.indexOf(info) != -1 || (name.indexOf(filter) == -1 && this.editorUi.editor.palettesInfo[info].name.indexOf(filter) == -1)) continue;
+			// 内容
+			var _li = document.createElement('li');
+			_li.setAttribute('data-idx', i);
+			_li.innerText = name;
+			_li.innerText += '(' + this.editorUi.editor.palettesInfo[info].name + ')';
+			if (cells[i].getId() === currentId) {
+				_li.className = 'paletteActive';
+				_li.style.backgroundImage = 'url(/static/images/palettes/' + info + '_white' +'.png)';
+			} else {
+				_li.style.backgroundImage = 'url(/static/images/palettes/' + info +'.png)';
+			}
+			ul.appendChild(_li)
 		}
-		ul.appendChild(_li)
 	};
 	// 绑定事件
 	mxEvent.addListener(ul, 'click', function (evt) {
@@ -3667,7 +3598,6 @@ PaletteManagePanel.prototype.createContent = function (container) {
 	var div = document.createElement('div');
 	this.createSearchInput(div);
 	this.fillList(div, '');
-
 	container.appendChild(div);
 	return div;
 }

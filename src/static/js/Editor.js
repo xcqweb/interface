@@ -24,11 +24,15 @@ Editor = function(chromeless, themes, model, graph, editable)
 		return this.filename;
 	};
 
-	this.getFiledes = function()
+	this.getDescribe = function()
 	{
-		return this.filedes;
+		return this.describe;
 	};
 	
+	this.getApplyId = function()
+	{
+		return this.applyId;
+	};
 	// Sets the status and fires a statusChanged event
 	this.setStatus = function(value)
 	{
@@ -252,9 +256,27 @@ Editor.prototype.enabled = true;
  * Contains the name which was used for the last save. Default value is null.
  */
 Editor.prototype.filename = null;
+Editor.prototype.applyId = null;
 Editor.prototype.paletteNum =  {
-	
 };
+/**
+ * 获取节点的属性信息
+ * @param {string}	属性名称
+ */
+
+Editor.prototype.getNodeInfo = function (key) {
+	let graph = this.graph;
+	let cell = graph.getSelectionCell();
+	let modelInfo = graph.getModel().getValue(cell);
+	return JSON.parse(modelInfo.getAttribute(key))
+}	
+/**
+ * 获取当前节点的交互信息
+ */
+Editor.prototype.getActionsInfo = function () {
+	let info = this.getNodeInfo('actionsInfo');
+	return info;
+}	
 // 获取cookie
 Editor.prototype.getCookie = function(cname) {
 	var name = cname + '=';
@@ -275,8 +297,8 @@ Editor.prototype.getCookie = function(cname) {
  * @param {Function} fn
  * @param {Function} errorfn
  */
-Editor.prototype.ajax = function (editorUi, url, method, data, fn = function() {}, errorfn = function() {}) {
-	var loadingBarInner = editorUi.actions.get('loading').funct();
+Editor.prototype.ajax = function (editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title='加载中···') {
+	var loadingBarInner = editorUi.actions.get('loading').funct(title);
 	var token = getCookie('token');
 	$.ajax({
 		method,
@@ -287,19 +309,57 @@ Editor.prototype.ajax = function (editorUi, url, method, data, fn = function() {
 		beforeSend: function () {
 			loadingBarInner.style.width = '20%';
 		},
-		data: data ? JSON.stringify(data) : '',
+		data: method == 'GET' ? data : data ? JSON.stringify(data) : '',
 		// dataType: 'JSON',
 		url,
 		success: function (res) {
 			loadingBarInner.style.width = '100%';
+			console.log('http success')
 			setTimeout(() => {
 				fn && fn(res);
 			}, 500)
 		},
 		error: function (res) {
 			loadingBarInner.style.width = '100%';
+			console.log('http error')
 			errorfn && errorfn()
 		}
+	})
+}
+/**
+ * 初始化进入
+ */
+Editor.prototype.InitEditor = function (editorUi) {
+	let getFileSystem = new Promise((resolve, reject) => {
+		this.ajax(editorUi, '/api/image/host', 'GET', null, function (res) {
+			// 文件服务器地址
+			window.fileSystem = res;
+			resolve(res)
+		}, null)
+	})
+	let editPromise = null;
+	if (/id=(.+?)$/.exec(location.search)) {
+		editPromise = new Promise((resolve, reject) => {
+			this.ajax(editorUi, '/api/viewtool/' + /id=(.+?)$/.exec(location.search)[1], 'GET', null, function (res) {
+				resolve(res)
+			}, null)
+		})
+	}
+	
+	Promise.all([getFileSystem, editPromise]).then(res => {
+			// 编辑
+		if (res[1]) {
+			var editData = res[1]
+			// var doc = mxUtils.parseXml(xml1);
+			// editorUi.editor.setGraphXml(doc.documentElement);
+			editorUi.editor.pages = JSON.parse(editData.content);
+			editorUi.editor.setFilename(editData.name)
+			editorUi.editor.setApplyId(editData.id)
+			editorUi.editor.setDescribe(editData.describe)
+		}
+		// 默认选中
+		$("#normalPages li").eq(0).click();
+		return res;
 	})
 }
 /**
@@ -339,6 +399,9 @@ Editor.prototype.uploadFile = function (editorUi, url, method, data, fn = functi
 		}
 	})
 }
+/**
+ * 控件信息
+ */
 Editor.prototype.palettesInfo = {
 	rectangle: {
 		name: '矩形',
@@ -441,7 +504,12 @@ Editor.prototype.pages = {
 		type: 'dialog'
 	}
 };
-
+/**
+ * 获取页面名称列表
+ */
+Editor.prototype.pagesNameList = function () {
+	return Object.keys(this.pages)
+}
 /**
  * 添加页面
  * @param {object} page 新增的页面
@@ -461,13 +529,13 @@ Editor.prototype.deletePage = function (title) {
 }
 /**
  * 更新xml内容
- * @param {string} val 新的页面内容
  */
-Editor.prototype.setXml = function (val) {
-	this.pages[this.currentPage].xml = val;
+Editor.prototype.setXml = function () {
+	var val1 = mxUtils.getXml(this.getGraphXml());
+	this.pages[this.currentPage].xml = val1;
 }
 
-Editor.prototype.filedes = null;
+Editor.prototype.describe = null;
 
 /**
  * Contains the current modified state of the diagram. This is false for
@@ -692,7 +760,13 @@ Editor.prototype.setGraphXml = function(node)
 	if (node != null)
 	{
 		var dec = new mxCodec(node.ownerDocument);
-	
+		var palettesInfo = JSON.parse(node.getAttribute('palettesInfo'));
+		// 保留控件数量
+		if (palettesInfo) {
+			for (let palette in palettesInfo) {
+				this.palettesInfo[palette].num = palettesInfo[palette].num;
+			}
+		}
 		if (node.nodeName == 'mxGraphModel')
 		{
 			this.graph.model.beginUpdate();
@@ -748,7 +822,6 @@ Editor.prototype.getGraphXml = function(ignoreSelection)
 {
 	ignoreSelection = (ignoreSelection != null) ? ignoreSelection : true;
 	var node = null;
-	
 	if (ignoreSelection)
 	{
 		var enc = new mxCodec(mxUtils.createXmlDocument());
@@ -765,9 +838,9 @@ Editor.prototype.getGraphXml = function(ignoreSelection)
 		node.setAttribute('dx', Math.round(this.graph.view.translate.x * 100) / 100);
 		node.setAttribute('dy', Math.round(this.graph.view.translate.y * 100) / 100);
 	}
-	
 	node.setAttribute('grid', (this.graph.isGridEnabled()) ? '1' : '0');
 	node.setAttribute('gridSize', this.graph.gridSize);
+	node.setAttribute('palettesInfo', JSON.stringify(this.palettesInfo));
 	node.setAttribute('guides', (this.graph.graphHandler.guidesEnabled) ? '1' : '0');
 	node.setAttribute('tooltips', (this.graph.tooltipHandler.isEnabled()) ? '1' : '0');
 	node.setAttribute('connect', (this.graph.connectionHandler.isEnabled()) ? '1' : '0');
@@ -818,11 +891,17 @@ Editor.prototype.setFilename = function(value)
 	this.filename = value;
 };
 
-Editor.prototype.setFiledes = function(value)
+Editor.prototype.setDescribe = function(value)
 {
-	this.filedes = value;
+	this.describe = value;
 };
-
+/**
+ * 设置应用id
+ */
+Editor.prototype.setApplyId = function(value)
+{
+	this.applyId = value;
+};
 /**
  * Creates and returns a new undo manager.
  */
@@ -1002,7 +1081,7 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 			clearTimeout(timer);
 			this.nextSibling.style.border = "1px solid #3D91F7";
 			timer = setTimeout(() => {
-				this.nextSibling.style.border = "";
+				this.nextSibling && (this.nextSibling.style.border = "");
 			}, 1500)
 		})
 		mxUtils.setOpacity(this.bg, this.bgOpacity);

@@ -801,7 +801,7 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 	saveContent.appendChild(desTitle)
 	
 	var descInput = document.createElement('input');
-	descInput.setAttribute('value', editorUi.editor.getFiledes() || '');
+	descInput.setAttribute('value', editorUi.editor.getDescribe() || '');
 	descInput.className = 'saveFileInput'
 	saveContent.appendChild(descInput)
 
@@ -810,12 +810,7 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
 	var genericBtn = mxUtils.button(buttonText, function()
 	{
 		if (validateFn == null || validateFn(nameInput.value))
-		{
-			if (closeOnBtn)
-			{
-				editorUi.hideDialog();
-			}
-			
+		{			
 			fn(nameInput.value, descInput.value);
 		}
 	});
@@ -962,7 +957,7 @@ var ConfigLinkDialog = function(editorUi, linkvalue, buttonText, fn)
 	saveContent.appendChild(linkTitle)
 	
 	var linkInput = document.createElement('input');
-	linkInput.setAttribute('value', editorUi.editor.getFiledes() || '');
+	linkInput.setAttribute('value', editorUi.editor.getDescribe() || '');
 	linkInput.className = 'saveFileInput'
 	saveContent.appendChild(linkInput)
 
@@ -1079,11 +1074,11 @@ var LinkReportDialog = function(editorUi, defaultLink) {
 /**
  * 发布弹窗
  */
-var ShareDialog = function(editorUi) {
+var PublishDialog = function(editorUi) {
 	var saveContent = editorUi.createDiv('geDialogInfo');
 	// 链接
 	var nameTitle = document.createElement('p')
-	nameTitle.innerHTML = '发布之后，生成的页面将在平台展示。';
+	nameTitle.innerHTML = '发布之后，生成的应用将在平台展示。';
 	nameTitle.className = 'geDialogInfoTitle';
 	saveContent.appendChild(nameTitle)
 
@@ -1093,22 +1088,11 @@ var ShareDialog = function(editorUi) {
 	{
 		editorUi.hideDialog();
 		var token = getCookie('token');
-		$.ajax({
-			url: 'api/viewtool/publish/1e964cb38542c908c2c59c9447069a2/1',
-			method: "PUT",
-			"Content-Type": 'application/json;charset=UTF-8',
-			dataType: 'json',
-			headers: {
-				"Content-Type": 'application/json;charset=UTF-8',
-				"Authorization": 'Bearer ' + token
-			},
-			success: function (res) {
-				editorUi.showDialog(tipDialog(editorUi, true, '发布'), 120, 90, true, false, null, null, '')
-			},
-			error: function (res) {
-				editorUi.showDialog(tipDialog(editorUi, false, '发布'), 120, 90, true, false, null, null, '')
-			}
-		})
+		editorUi.editor.ajax(editorUi, '/api/viewtool/publish/1e964cb38542c908c2c59c9447069a2/1', 'PUT', null, function () {
+			editorUi.showDialog(tipDialog(editorUi, true, '发布'), 120, 90, true, false, null, null, '');
+		}, function () {
+			editorUi.showDialog(tipDialog(editorUi, false, '发布'), 120, 90, true, false, null, null, '');
+		});
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	// 取消按钮
@@ -1134,7 +1118,7 @@ var tipDialog = function(editorUi, flag, info) {
 	var tipContent = editorUi.createDiv('tipDialogInfo');
 	// 图标
 	var img = document.createElement('img')
-	img.setAttribute('src', flag ? '/static/images/success.png' : '/static/images/error.png');
+	img.setAttribute('src', flag ? '/static/images/default/success.png' : '/static/images/default/error.png');
 	tipContent.appendChild(img)
 	// 内容
 	var infoText = document.createElement('p')
@@ -1284,9 +1268,8 @@ var ImageDialog = function (editorUi, cell) {
 		if (localImage) {
 			var formData = new FormData();
 			formData.append('file', localImage);
-			formData.append('layoutTypeId', '1e96ee3dede1a409e05e5b4ec8451cc');
-			editorUi.editor.uploadFile(editorUi, '/api/layout', 'POST', formData, function (res) {
-				newValue = res.layout;
+			editorUi.editor.uploadFile(editorUi, '/api/upload/file', 'POST', formData, function (res) {
+				newValue = res.filePath;
 				updateImg(newValue)
 			})
 		} else if (document.getElementById('checkedImage') && document.getElementById('checkedImage').getAttribute('data-layout')) {
@@ -1600,6 +1583,7 @@ function fillParams (elt, data) {
 var PaletteDataDialog = function(editorUi, cell) {
 	var graph = editorUi.editor.graph;
 	var modelInfo = graph.getModel().getValue(cell);
+	var paramsData = '';
 	// 绑定数据信息
 	var bindData = JSON.parse(modelInfo.getAttribute('bindData')) || {
 		pointType: '',
@@ -1611,21 +1595,6 @@ var PaletteDataDialog = function(editorUi, cell) {
 	// 弹窗内容
 	var saveContent = editorUi.createDiv('geDialogInfo')
 	saveContent.style.padding = "22px";
-	// 点位类型数据
-	var pointTypes = [].concat(MOCKPOINTTYPEDATA);
-	pointTypes.unshift({
-		name: '请选择',
-		id: '',
-		points: [],
-		params: []
-	})
-	// 点位列表
-	const currentPointType = pointTypes.filter(val => {
-		return val.id == bindData.pointType
-	})[0];
-	var pointsData = currentPointType.points;
-	// 参数列表
-	var paramsData = currentPointType.params;
 	// 已选择参数列表
 	var choosedParam = bindData.params;
 	// 填充列表
@@ -1656,7 +1625,6 @@ var PaletteDataDialog = function(editorUi, cell) {
 	typeSelect.id = 'typeSelect';
 	typeSelect.setAttribute('value', bindData.pointType)
 	saveContent.appendChild(typeSelect)
-	this.fillContent(typeSelect, pointTypes)
 	
 	// 采集点：
 	var pointTitle = document.createElement('p');
@@ -1669,7 +1637,6 @@ var PaletteDataDialog = function(editorUi, cell) {
 	pointSelect.className = 'dialogSelect'
 	pointSelect.id = 'pointSelect'
 	saveContent.appendChild(pointSelect)
-	this.fillContent(pointSelect, pointsData)
 
 	// 变量：
 	var variableTitle = document.createElement('p');
@@ -1708,8 +1675,6 @@ var PaletteDataDialog = function(editorUi, cell) {
 	executeList.className = 'dataDialogList executeList';
 	// 填充执行列表
 	saveContent.appendChild(executeList);
-	// 查询模型列表
-	getModels(editorUi, modelList, executeList, bindData.point, bindData.params.map(val => val.id).join())
 	
 	// 绑定事件
 	// 选择采集点类型
@@ -1723,8 +1688,9 @@ var PaletteDataDialog = function(editorUi, cell) {
 	// 切换采集点
 	mxEvent.addListener(pointSelect, 'change', (e) => {
 		choosedParam = [];
-		fillParams(variableList, choosedParam);		
-		getModels(editorUi, modelList, executeList, pointSelect.value, choosedParam.map(val => val.id).join())
+		fillParams(variableList, choosedParam);
+		fillModelList(modelList, []);
+		fillExecuteList(executeList, []);
 	});
 	// 选择变量应用回调函数
 	function chooseVariable(data) {
@@ -1760,32 +1726,31 @@ var PaletteDataDialog = function(editorUi, cell) {
 		}
 
 		// 配置模型应用报警方式ajax
+		bindData = {
+			pointType: typeSelect.value,
+			point: pointSelect.value,
+			params: choosedParam
+		}
+		console.log(bindData)
+		// 绑定列表
+		var select = null;
+		
+		graph.getModel().beginUpdate();
+		try {
+			modelInfo.setAttribute('bindData', JSON.stringify(bindData));
+			graph.getModel().setValue(cell, modelInfo);
+		}
+		finally {
+			graph.getModel().endUpdate();
+		}
+
+		if (select != null) {
+			graph.setSelectionCells(select);
+			graph.scrollCellToVisible(select[0]);
+		}
 		editorUi.editor.ajax(editorUi, '/api/model/viewTool/warn', 'PUT', applyModel, function () {
 			// 请求成功回调函数
-			bindData = {
-				pointType: typeSelect.value,
-				point: pointSelect.value,
-				params: choosedParam
-			}
-			console.log(bindData)
-			// 绑定列表
-			var select = null;
-			
-			graph.getModel().beginUpdate();
-			try {
-				modelInfo.setAttribute('bindData', JSON.stringify(bindData));
-				graph.getModel().setValue(cell, modelInfo);
-			}
-			finally {
-				graph.getModel().endUpdate();
-			}
-	
-			if (select != null) {
-				graph.setSelectionCells(select);
-				graph.scrollCellToVisible(select[0]);
-			}
 		}, function () {
-			editorUi.hideDialog();
 			console.log('请求失败')
 		})
 	});
@@ -1795,6 +1760,31 @@ var PaletteDataDialog = function(editorUi, cell) {
 	{
 		editorUi.hideDialog();
 	});
+	this.init = () => {
+		editorUi.editor.ajax(editorUi, '/api/pointTypes', 'GET', '', (res) => {
+			// 点位类型数据
+			var pointTypes = [].concat(res);
+			pointTypes.unshift({
+				name: '请选择',
+				id: '',
+				points: [],
+				params: []
+			})
+			// 点位列表
+			const currentPointType = pointTypes.filter(val => {
+				return val.id == bindData.pointType
+			})[0];
+			var pointsData = currentPointType.points;
+			// 参数列表
+			paramsData = currentPointType.params;
+			
+			this.fillContent(typeSelect, pointTypes)
+			this.fillContent(pointSelect, pointsData)
+			
+			// 查询模型列表
+			getModels(editorUi, modelList, executeList, bindData.point, bindData.params.map(val => val.id).join())
+		})
+	}
 	cancelBtn.className = 'geBtn';
 	btnContent.appendChild(cancelBtn);
 	btnContent.appendChild(genericBtn);
@@ -1994,13 +1984,10 @@ var chooseVariableDialog = function (editorUi, sourcedata = [], chooseData = [],
 function getModels (editorUi, modelEle, executeEle, pointId, paramId) {
 	var modelData = [];
 	if (pointId && paramId) {
-		editorUi.editor.ajax(editorUi, '/api/viewTool/model/serach', 'GET', {pointId, paramId}, function (res) {
-			console.log('获取模型列表成功');
-			
-		}, function () {
-			// editorUi.hideDialog();
-			console.log(122333)
-		})
+		editorUi.editor.ajax(editorUi, '/api/viewTool/model/serach', 'POST', {pointId, paramId}, function (res) {
+			fillModelList(modelEle, modelData);
+			fillExecuteList(executeEle, modelData);
+		}, null, '获取应用模型中···')
 		modelData = [
 			{ name: '模型1: ', id: '111', formula: ' C12_DOD-02-STK200-01.C12 >10***C12_DOD-02-STK200-01.C12 >10', warn: 0 }, 
 			{ name: '模型2: ', id: '222', formula: ' C12_DOD-02-STK200-01.C12 >10', warn: 2 }, 
@@ -2010,10 +1997,8 @@ function getModels (editorUi, modelEle, executeEle, pointId, paramId) {
 			{ name: '模型6: ', id: '666', formula: ' C12_DOD-02-STK200-01.C12 >10', warn: 0 }
 		]
 	} else {
-		editorUi.hideDialog();
+		// editorUi.hideDialog();
 	}
-	fillModelList(modelEle, modelData);
-	fillExecuteList(executeEle, modelData);
 	return modelData;
 }
 
@@ -2110,115 +2095,6 @@ var ChangePrimitiveDialog = function (editorUi) {
 	// saveContent.appendChild(primitiveList);
 	this.container = saveContent;
 }
-/**
- * Constructs a new textarea dialog.
- */
-var TextareaDialog = function(editorUi, title, url, fn, cancelFn, cancelTitle, w, h, addButtons, noHide, noWrap, applyTitle)
-{
-	w = (w != null) ? w : 300;
-	h = (h != null) ? h : 120;
-	noHide = (noHide != null) ? noHide : false;
-	var row, td;
-	
-	var table = document.createElement('table');
-	var tbody = document.createElement('tbody');
-	
-	row = document.createElement('tr');
-	
-	td = document.createElement('td');
-	td.style.fontSize = '10pt';
-	td.style.width = '100px';
-	mxUtils.write(td, title);
-	
-	row.appendChild(td);
-	tbody.appendChild(row);
-
-	row = document.createElement('tr');
-	td = document.createElement('td');
-
-	var nameInput = document.createElement('textarea');
-	
-	if (noWrap)
-	{
-		nameInput.setAttribute('wrap', 'off');
-	}
-	
-	nameInput.setAttribute('spellcheck', 'false');
-	nameInput.setAttribute('autocorrect', 'off');
-	nameInput.setAttribute('autocomplete', 'off');
-	nameInput.setAttribute('autocapitalize', 'off');
-	
-	mxUtils.write(nameInput, url || '');
-	nameInput.style.resize = 'none';
-	nameInput.style.width = w + 'px';
-	nameInput.style.height = h + 'px';
-	
-	this.textarea = nameInput;
-
-	this.init = function()
-	{
-		nameInput.focus();
-		nameInput.scrollTop = 0;
-	};
-
-	td.appendChild(nameInput);
-	row.appendChild(td);
-	
-	tbody.appendChild(row);
-
-	row = document.createElement('tr');
-	td = document.createElement('td');
-	td.style.paddingTop = '14px';
-	td.style.whiteSpace = 'nowrap';
-	td.setAttribute('align', 'right');
-	
-	var cancelBtn = mxUtils.button(cancelTitle || mxResources.get('cancel'), function()
-	{
-		editorUi.hideDialog();
-		
-		if (cancelFn != null)
-		{
-			cancelFn();
-		}
-	});
-	cancelBtn.className = 'geBtn';
-	
-	if (editorUi.editor.cancelFirst)
-	{
-		td.appendChild(cancelBtn);
-	}
-	
-	if (addButtons != null)
-	{
-		addButtons(td);
-	}
-	
-	if (fn != null)
-	{
-		var genericBtn = mxUtils.button(applyTitle || mxResources.get('apply'), function()
-		{
-			if (!noHide)
-			{
-				editorUi.hideDialog();
-			}
-			
-			fn(nameInput.value);
-		});
-		
-		genericBtn.className = 'geBtn gePrimaryBtn';	
-		td.appendChild(genericBtn);
-	}
-	
-	if (!editorUi.editor.cancelFirst)
-	{
-		td.appendChild(cancelBtn);
-	}
-
-	row.appendChild(td);
-	tbody.appendChild(row);
-	table.appendChild(tbody);
-	this.container = table;
-};
 
 /**
  * Constructs a new edit file dialog.
@@ -2407,1335 +2283,6 @@ var EditDiagramDialog = function(editorUi)
  * 
  */
 EditDiagramDialog.showNewWindowOption = true;
-
-/**
- * Constructs a new export dialog.
- */
-var ExportDialog = function(editorUi)
-{
-	var graph = editorUi.editor.graph;
-	var bounds = graph.getGraphBounds();
-	var scale = graph.view.scale;
-	
-	var width = Math.ceil(bounds.width / scale);
-	var height = Math.ceil(bounds.height / scale);
-
-	var row, td;
-	
-	var table = document.createElement('table');
-	var tbody = document.createElement('tbody');
-	table.setAttribute('cellpadding', (mxClient.IS_SF) ? '0' : '2');
-	
-	row = document.createElement('tr');
-	
-	td = document.createElement('td');
-	td.style.fontSize = '10pt';
-	td.style.width = '100px';
-	mxUtils.write(td, mxResources.get('filename') + ':');
-	
-	row.appendChild(td);
-	
-	var nameInput = document.createElement('input');
-	nameInput.setAttribute('value', editorUi.editor.getOrCreateFilename());
-	nameInput.style.width = '180px';
-
-	td = document.createElement('td');
-	td.appendChild(nameInput);
-	row.appendChild(td);
-	
-	tbody.appendChild(row);
-		
-	row = document.createElement('tr');
-	
-	td = document.createElement('td');
-	td.style.fontSize = '10pt';
-	mxUtils.write(td, mxResources.get('format') + ':');
-	
-	row.appendChild(td);
-	
-	var imageFormatSelect = document.createElement('select');
-	imageFormatSelect.style.width = '180px';
-
-	var pngOption = document.createElement('option');
-	pngOption.setAttribute('value', 'png');
-	mxUtils.write(pngOption, mxResources.get('formatPng'));
-	imageFormatSelect.appendChild(pngOption);
-
-	var gifOption = document.createElement('option');
-	
-	if (ExportDialog.showGifOption)
-	{
-		gifOption.setAttribute('value', 'gif');
-		mxUtils.write(gifOption, mxResources.get('formatGif'));
-		imageFormatSelect.appendChild(gifOption);
-	}
-	
-	var jpgOption = document.createElement('option');
-	jpgOption.setAttribute('value', 'jpg');
-	mxUtils.write(jpgOption, mxResources.get('formatJpg'));
-	imageFormatSelect.appendChild(jpgOption);
-
-	var pdfOption = document.createElement('option');
-	pdfOption.setAttribute('value', 'pdf');
-	mxUtils.write(pdfOption, mxResources.get('formatPdf'));
-	imageFormatSelect.appendChild(pdfOption);
-	
-	var svgOption = document.createElement('option');
-	svgOption.setAttribute('value', 'svg');
-	mxUtils.write(svgOption, mxResources.get('formatSvg'));
-	imageFormatSelect.appendChild(svgOption);
-	
-	if (ExportDialog.showXmlOption)
-	{
-		var xmlOption = document.createElement('option');
-		xmlOption.setAttribute('value', 'xml');
-		mxUtils.write(xmlOption, mxResources.get('formatXml'));
-		imageFormatSelect.appendChild(xmlOption);
-	}
-
-	td = document.createElement('td');
-	td.appendChild(imageFormatSelect);
-	row.appendChild(td);
-	
-	tbody.appendChild(row);
-	
-	row = document.createElement('tr');
-
-	td = document.createElement('td');
-	td.style.fontSize = '10pt';
-	mxUtils.write(td, mxResources.get('zoom') + ' (%):');
-	
-	row.appendChild(td);
-	
-	var zoomInput = document.createElement('input');
-	zoomInput.setAttribute('type', 'number');
-	zoomInput.setAttribute('value', '100');
-	zoomInput.style.width = '180px';
-
-	td = document.createElement('td');
-	td.appendChild(zoomInput);
-	row.appendChild(td);
-
-	tbody.appendChild(row);
-
-	row = document.createElement('tr');
-
-	td = document.createElement('td');
-	td.style.fontSize = '10pt';
-	mxUtils.write(td, mxResources.get('width') + ':');
-	
-	row.appendChild(td);
-	
-	var widthInput = document.createElement('input');
-	widthInput.setAttribute('value', width);
-	widthInput.style.width = '180px';
-
-	td = document.createElement('td');
-	td.appendChild(widthInput);
-	row.appendChild(td);
-
-	tbody.appendChild(row);
-	
-	row = document.createElement('tr');
-	
-	td = document.createElement('td');
-	td.style.fontSize = '10pt';
-	mxUtils.write(td, mxResources.get('height') + ':');
-	
-	row.appendChild(td);
-	
-	var heightInput = document.createElement('input');
-	heightInput.setAttribute('value', height);
-	heightInput.style.width = '180px';
-
-	td = document.createElement('td');
-	td.appendChild(heightInput);
-	row.appendChild(td);
-
-	tbody.appendChild(row);
-	
-	row = document.createElement('tr');
-	
-	td = document.createElement('td');
-	td.style.fontSize = '10pt';
-	mxUtils.write(td, mxResources.get('background') + ':');
-	
-	row.appendChild(td);
-	
-	var transparentCheckbox = document.createElement('input');
-	transparentCheckbox.setAttribute('type', 'checkbox');
-	transparentCheckbox.checked = graph.background == null || graph.background == mxConstants.NONE;
-
-	td = document.createElement('td');
-	td.appendChild(transparentCheckbox);
-	mxUtils.write(td, mxResources.get('transparent'));
-	
-	row.appendChild(td);
-	
-	tbody.appendChild(row);
-	
-	row = document.createElement('tr');
-
-	td = document.createElement('td');
-	td.style.fontSize = '10pt';
-	mxUtils.write(td, mxResources.get('borderWidth') + ':');
-	
-	row.appendChild(td);
-	
-	var borderInput = document.createElement('input');
-	borderInput.setAttribute('type', 'number');
-	borderInput.setAttribute('value', ExportDialog.lastBorderValue);
-	borderInput.style.width = '180px';
-
-	td = document.createElement('td');
-	td.appendChild(borderInput);
-	row.appendChild(td);
-
-	tbody.appendChild(row);
-	table.appendChild(tbody);
-	
-	// Handles changes in the export format
-	function formatChanged()
-	{
-		var name = nameInput.value;
-		var dot = name.lastIndexOf('.');
-		
-		if (dot > 0)
-		{
-			nameInput.value = name.substring(0, dot + 1) + imageFormatSelect.value;
-		}
-		else
-		{
-			nameInput.value = name + '.' + imageFormatSelect.value;
-		}
-		
-		if (imageFormatSelect.value === 'xml')
-		{
-			zoomInput.setAttribute('disabled', 'true');
-			widthInput.setAttribute('disabled', 'true');
-			heightInput.setAttribute('disabled', 'true');
-			borderInput.setAttribute('disabled', 'true');
-		}
-		else
-		{
-			zoomInput.removeAttribute('disabled');
-			widthInput.removeAttribute('disabled');
-			heightInput.removeAttribute('disabled');
-			borderInput.removeAttribute('disabled');
-		}
-		
-		if (imageFormatSelect.value === 'png' || imageFormatSelect.value === 'svg')
-		{
-			transparentCheckbox.removeAttribute('disabled');
-		}
-		else
-		{
-			transparentCheckbox.setAttribute('disabled', 'disabled');
-		}
-	};
-	
-	mxEvent.addListener(imageFormatSelect, 'change', formatChanged);
-	formatChanged();
-
-	function checkValues()
-	{
-		if (widthInput.value * heightInput.value > MAX_AREA || widthInput.value <= 0)
-		{
-			widthInput.style.backgroundColor = 'red';
-		}
-		else
-		{
-			widthInput.style.backgroundColor = '';
-		}
-		
-		if (widthInput.value * heightInput.value > MAX_AREA || heightInput.value <= 0)
-		{
-			heightInput.style.backgroundColor = 'red';
-		}
-		else
-		{
-			heightInput.style.backgroundColor = '';
-		}
-	};
-
-	mxEvent.addListener(zoomInput, 'change', function()
-	{
-		var s = Math.max(0, parseFloat(zoomInput.value) || 100) / 100;
-		zoomInput.value = parseFloat((s * 100).toFixed(2));
-		
-		if (width > 0)
-		{
-			widthInput.value = Math.floor(width * s);
-			heightInput.value = Math.floor(height * s);
-		}
-		else
-		{
-			zoomInput.value = '100';
-			widthInput.value = width;
-			heightInput.value = height;
-		}
-		
-		checkValues();
-	});
-
-	mxEvent.addListener(widthInput, 'change', function()
-	{
-		var s = parseInt(widthInput.value) / width;
-		
-		if (s > 0)
-		{
-			zoomInput.value = parseFloat((s * 100).toFixed(2));
-			heightInput.value = Math.floor(height * s);
-		}
-		else
-		{
-			zoomInput.value = '100';
-			widthInput.value = width;
-			heightInput.value = height;
-		}
-		
-		checkValues();
-	});
-
-	mxEvent.addListener(heightInput, 'change', function()
-	{
-		var s = parseInt(heightInput.value) / height;
-		
-		if (s > 0)
-		{
-			zoomInput.value = parseFloat((s * 100).toFixed(2));
-			widthInput.value = Math.floor(width * s);
-		}
-		else
-		{
-			zoomInput.value = '100';
-			widthInput.value = width;
-			heightInput.value = height;
-		}
-		
-		checkValues();
-	});
-	
-	row = document.createElement('tr');
-	td = document.createElement('td');
-	td.setAttribute('align', 'right');
-	td.style.paddingTop = '22px';
-	td.colSpan = 2;
-	
-	var saveBtn = mxUtils.button(mxResources.get('export'), mxUtils.bind(this, function()
-	{
-		if (parseInt(zoomInput.value) <= 0)
-		{
-			mxUtils.alert(mxResources.get('drawingEmpty'));
-		}
-		else
-		{
-	    	var name = nameInput.value;
-			var format = imageFormatSelect.value;
-	    	var s = Math.max(0, parseFloat(zoomInput.value) || 100) / 100;
-			var b = Math.max(0, parseInt(borderInput.value));
-			var bg = graph.background;
-			
-			if ((format == 'svg' || format == 'png') && transparentCheckbox.checked)
-			{
-				bg = null;
-			}
-			else if (bg == null || bg == mxConstants.NONE)
-			{
-				bg = '#ffffff';
-			}
-			
-			ExportDialog.lastBorderValue = b;
-			ExportDialog.exportFile(editorUi, name, format, bg, s, b);
-		}
-	}));
-	saveBtn.className = 'geBtn gePrimaryBtn';
-	
-	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
-	{
-		editorUi.hideDialog();
-	});
-	cancelBtn.className = 'geBtn';
-	
-	if (editorUi.editor.cancelFirst)
-	{
-		td.appendChild(cancelBtn);
-		td.appendChild(saveBtn);
-	}
-	else
-	{
-		td.appendChild(saveBtn);
-		td.appendChild(cancelBtn);
-	}
-
-	row.appendChild(td);
-	tbody.appendChild(row);
-	table.appendChild(tbody);
-	this.container = table;
-};
-
-/**
- * Remembers last value for border.
- */
-ExportDialog.lastBorderValue = 0;
-
-/**
- * Global switches for the export dialog.
- */
-ExportDialog.showGifOption = true;
-
-/**
- * Global switches for the export dialog.
- */
-ExportDialog.showXmlOption = true;
-
-/**
- * Hook for getting the export format. Returns null for the default
- * intermediate XML export format or a function that returns the
- * parameter and value to be used in the request in the form
- * key=value, where value should be URL encoded.
- */
-ExportDialog.exportFile = function(editorUi, name, format, bg, s, b)
-{
-	var graph = editorUi.editor.graph;
-	
-	if (format == 'xml')
-	{
-    	ExportDialog.saveLocalFile(editorUi, mxUtils.getXml(editorUi.editor.getGraphXml()), name, format);
-	}
-    else if (format == 'svg')
-	{
-		ExportDialog.saveLocalFile(editorUi, mxUtils.getXml(graph.getSvg(bg, s, b)), name, format);
-	}
-    else
-    {
-    	var bounds = graph.getGraphBounds();
-    	
-		// New image export
-		var xmlDoc = mxUtils.createXmlDocument();
-		var root = xmlDoc.createElement('output');
-		xmlDoc.appendChild(root);
-		
-	    // Renders graph. Offset will be multiplied with state's scale when painting state.
-		var xmlCanvas = new mxXmlCanvas2D(root);
-		xmlCanvas.translate(Math.floor((b / s - bounds.x) / graph.view.scale),
-			Math.floor((b / s - bounds.y) / graph.view.scale));
-		xmlCanvas.scale(s / graph.view.scale);
-		
-		var imgExport = new mxImageExport()
-	    imgExport.drawState(graph.getView().getState(graph.model.root), xmlCanvas);
-	    
-		// Puts request data together
-		var param = 'xml=' + encodeURIComponent(mxUtils.getXml(root));
-		var w = Math.ceil(bounds.width * s / graph.view.scale + 2 * b);
-		var h = Math.ceil(bounds.height * s / graph.view.scale + 2 * b);
-		
-		// Requests image if request is valid
-		if (param.length <= MAX_REQUEST_SIZE && w * h < MAX_AREA)
-		{
-			editorUi.hideDialog();
-			var req = new mxXmlRequest(EXPORT_URL, 'format=' + format +
-				'&filename=' + encodeURIComponent(name) +
-				'&bg=' + ((bg != null) ? bg : 'none') +
-				'&w=' + w + '&h=' + h + '&' + param);
-			req.simulate(document, '_blank');
-		}
-		else
-		{
-			mxUtils.alert(mxResources.get('drawingTooLarge'));
-		}
-	}
-};
-
-/**
- * Hook for getting the export format. Returns null for the default
- * intermediate XML export format or a function that returns the
- * parameter and value to be used in the request in the form
- * key=value, where value should be URL encoded.
- */
-ExportDialog.saveLocalFile = function(editorUi, data, filename, format)
-{
-	if (data.length < MAX_REQUEST_SIZE)
-	{
-		editorUi.hideDialog();
-		var req = new mxXmlRequest(SAVE_URL, 'xml=' + encodeURIComponent(data) + '&filename=' +
-			encodeURIComponent(filename) + '&format=' + format);
-		req.simulate(document, '_blank');
-	}
-	else
-	{
-		mxUtils.alert(mxResources.get('drawingTooLarge'));
-		mxUtils.popup(xml);
-	}
-};
-
-/**
- * Constructs a new metadata dialog.
- */
-var EditDataDialog = function(ui, cell)
-{
-	var div = document.createElement('div');
-	var graph = ui.editor.graph;
-	
-	var value = graph.getModel().getValue(cell);
-	// Converts the value to an XML node
-	if (!mxUtils.isNode(value))
-	{
-		var doc = mxUtils.createXmlDocument();
-		var obj = doc.createElement('object');
-		obj.setAttribute('label', value || '');
-		value = obj;
-	}
-
-	// Creates the dialog contents
-	var form = new mxForm('properties');
-	form.table.style.width = '100%';
-
-	var attrs = value.attributes;
-	var names = [];
-	var texts = [];
-	var count = 0;
-
-	var id = EditDataDialog.getDisplayIdForCell(ui, cell);
-	
-	// FIXME: Fix remove button for quirks mode
-	var addRemoveButton = function(text, name)
-	{
-		var wrapper = document.createElement('div');
-		wrapper.style.position = 'relative';
-		wrapper.style.paddingRight = '20px';
-		wrapper.style.boxSizing = 'border-box';
-		wrapper.style.width = '100%';
-		
-		var removeAttr = document.createElement('a');
-		var img = mxUtils.createImage(Dialog.prototype.closeImage);
-		img.style.height = '9px';
-		img.style.fontSize = '9px';
-		img.style.marginBottom = (mxClient.IS_IE11) ? '-1px' : '5px';
-		
-		removeAttr.className = 'geButton';
-		removeAttr.setAttribute('title', mxResources.get('delete'));
-		removeAttr.style.position = 'absolute';
-		removeAttr.style.top = '4px';
-		removeAttr.style.right = '0px';
-		removeAttr.style.margin = '0px';
-		removeAttr.style.width = '9px';
-		removeAttr.style.height = '9px';
-		removeAttr.style.cursor = 'pointer';
-		removeAttr.appendChild(img);
-		
-		var removeAttrFn = (function(name)
-		{
-			return function()
-			{
-				var count = 0;
-				
-				for (var j = 0; j < names.length; j++)
-				{
-					if (names[j] == name)
-					{
-						texts[j] = null;
-						form.table.deleteRow(count + ((id != null) ? 1 : 0));
-						
-						break;
-					}
-					
-					if (texts[j] != null)
-					{
-						count++;
-					}
-				}
-			};
-		})(name);
-		
-		mxEvent.addListener(removeAttr, 'click', removeAttrFn);
-		
-		var parent = text.parentNode;
-		wrapper.appendChild(text);
-		wrapper.appendChild(removeAttr);
-		parent.appendChild(wrapper);
-	};
-	
-	var addTextArea = function(index, name, value)
-	{
-		names[index] = name;
-		texts[index] = form.addTextarea(names[count] + ':', value, 2);
-		texts[index].style.width = '100%';
-		
-		addRemoveButton(texts[index], name);
-	};
-	
-	var temp = [];
-	var isLayer = graph.getModel().getParent(cell) == graph.getModel().getRoot();
-
-	for (var i = 0; i < attrs.length; i++)
-	{
-		if ((isLayer || attrs[i].nodeName != 'label') && attrs[i].nodeName != 'placeholders')
-		{
-			temp.push({name: attrs[i].nodeName, value: attrs[i].nodeValue});
-		}
-	}
-	
-	// Sorts by name
-	temp.sort(function(a, b)
-	{
-	    if (a.name < b.name)
-	    {
-	    		return -1;
-	    }
-	    else if (a.name > b.name)
-	    {
-	    		return 1;
-	    }
-	    else
-	    {
-	    		return 0;
-	    }
-	});
-	
-	for (var i = 0; i < temp.length; i++)
-	{
-		addTextArea(count, temp[i].name, temp[i].value);
-		count++;
-	}
-	
-	var top = document.createElement('div');
-	top.style.cssText = 'position:absolute;left:30px;right:30px;overflow-y:auto;top:30px;bottom:80px;';
-	top.appendChild(form.table);
-
-	var newProp = document.createElement('div');
-	newProp.style.whiteSpace = 'nowrap';
-	newProp.style.marginTop = '6px';
-
-	var nameInput = document.createElement('input');
-	nameInput.setAttribute('placeholder', mxResources.get('enterPropertyName'));
-	nameInput.setAttribute('type', 'text');
-	nameInput.setAttribute('size', (mxClient.IS_IE || mxClient.IS_IE11) ? '18' : '22');
-	nameInput.style.marginLeft = '2px';
-
-	newProp.appendChild(nameInput);
-	top.appendChild(newProp);
-	div.appendChild(top);
-	
-	var addBtn = mxUtils.button(mxResources.get('addProperty'), function()
-	{
-		var name = nameInput.value;
-
-		// Avoid ':' in attribute names which seems to be valid in Chrome
-		if (name.length > 0 && name != 'label' && name != 'placeholders' && name.indexOf(':') < 0)
-		{
-			try
-			{
-				var idx = mxUtils.indexOf(names, name);
-				
-				if (idx >= 0 && texts[idx] != null)
-				{
-					texts[idx].focus();
-				}
-				else
-				{
-					// Checks if the name is valid
-					var clone = value.cloneNode(false);
-					clone.setAttribute(name, '');
-					
-					if (idx >= 0)
-					{
-						names.splice(idx, 1);
-						texts.splice(idx, 1);
-					}
-
-					names.push(name);
-					var text = form.addTextarea(name + ':', '', 2);
-					text.style.width = '100%';
-					texts.push(text);
-					addRemoveButton(text, name);
-
-					text.focus();
-				}
-
-				nameInput.value = '';
-			}
-			catch (e)
-			{
-				mxUtils.alert(e);
-			}
-		}
-		else
-		{
-			mxUtils.alert(mxResources.get('invalidName'));
-		}
-	});
-	
-	this.init = function()
-	{
-		if (texts.length > 0)
-		{
-			texts[0].focus();
-		}
-		else
-		{
-			nameInput.focus();
-		}
-	};
-	
-	addBtn.setAttribute('disabled', 'disabled');
-	addBtn.style.marginLeft = '10px';
-	addBtn.style.width = '144px';
-	newProp.appendChild(addBtn);
-
-	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
-	{
-		ui.hideDialog.apply(ui, arguments);
-	});
-	
-	cancelBtn.className = 'geBtn';
-	
-	var applyBtn = mxUtils.button(mxResources.get('apply'), function()
-	{
-		try
-		{
-			ui.hideDialog.apply(ui, arguments);
-			
-			// Clones and updates the value
-			value = value.cloneNode(true);
-			var removeLabel = false;
-			
-			for (var i = 0; i < names.length; i++)
-			{
-				if (texts[i] == null)
-				{
-					value.removeAttribute(names[i]);
-				}
-				else
-				{
-					value.setAttribute(names[i], texts[i].value);
-					removeLabel = removeLabel || (names[i] == 'placeholder' &&
-						value.getAttribute('placeholders') == '1');
-				}
-			}
-			
-			// Removes label if placeholder is assigned
-			if (removeLabel)
-			{
-				value.removeAttribute('label');
-			}
-			
-			// Updates the value of the cell (undoable)
-			graph.getModel().setValue(cell, value);
-		}
-		catch (e)
-		{
-			mxUtils.alert(e);
-		}
-	});
-	applyBtn.className = 'geBtn gePrimaryBtn';
-	
-	function updateAddBtn()
-	{
-		if (nameInput.value.length > 0)
-		{
-			addBtn.removeAttribute('disabled');
-		}
-		else
-		{
-			addBtn.setAttribute('disabled', 'disabled');
-		}
-	};
-
-	mxEvent.addListener(nameInput, 'keyup', updateAddBtn);
-	
-	// Catches all changes that don't fire a keyup (such as paste via mouse)
-	mxEvent.addListener(nameInput, 'change', updateAddBtn);
-	
-	var buttons = document.createElement('div');
-	buttons.style.cssText = 'position:absolute;left:30px;right:30px;text-align:right;bottom:30px;height:40px;'
-	
-	if (ui.editor.graph.getModel().isVertex(cell) || ui.editor.graph.getModel().isEdge(cell))
-	{
-		var replace = document.createElement('span');
-		replace.style.marginRight = '10px';
-		var input = document.createElement('input');
-		input.setAttribute('type', 'checkbox');
-		input.style.marginRight = '6px';
-		
-		if (value.getAttribute('placeholders') == '1')
-		{
-			input.setAttribute('checked', 'checked');
-			input.defaultChecked = true;
-		}
-	
-		mxEvent.addListener(input, 'click', function()
-		{
-			if (value.getAttribute('placeholders') == '1')
-			{
-				value.removeAttribute('placeholders');
-			}
-			else
-			{
-				value.setAttribute('placeholders', '1');
-			}
-		});
-		
-		replace.appendChild(input);
-		mxUtils.write(replace, mxResources.get('placeholders'));
-		
-		if (EditDataDialog.placeholderHelpLink != null)
-		{
-			var link = document.createElement('a');
-			link.setAttribute('href', EditDataDialog.placeholderHelpLink);
-			link.setAttribute('title', mxResources.get('help'));
-			link.setAttribute('target', '_blank');
-			link.style.marginLeft = '10px';
-			link.style.cursor = 'help';
-			
-			var icon = document.createElement('img');
-			icon.setAttribute('border', '0');
-			icon.setAttribute('valign', 'middle');
-			icon.style.marginTop = (mxClient.IS_IE11) ? '0px' : '-4px';
-			icon.setAttribute('src', Editor.helpImage);
-			link.appendChild(icon);
-			
-			replace.appendChild(link);
-		}
-		
-		buttons.appendChild(replace);
-	}
-	
-	if (ui.editor.cancelFirst)
-	{
-		buttons.appendChild(cancelBtn);
-		buttons.appendChild(applyBtn);
-	}
-	else
-	{
-		buttons.appendChild(applyBtn);
-		buttons.appendChild(cancelBtn);
-	}
-
-	div.appendChild(buttons);
-	this.container = div;
-};
-/**
- * Optional help link.
- */
-EditDataDialog.getDisplayIdForCell = function(ui, cell)
-{
-	var id = null;
-	
-	if (ui.editor.graph.getModel().getParent(cell) != null)
-	{
-		id = cell.getId();
-	}
-	
-	return id;
-};
-
-/**
- * Optional help link.
- */
-EditDataDialog.placeholderHelpLink = null;
-
-/**
- * Constructs a new metadata dialog.
- */
-var EditPropDialog = function(ui, cell)
-{
-	var div = document.createElement('div');
-
-	var graph = ui.editor.graph;
-	
-	var value = graph.getModel().getValue(cell);
-	// Converts the value to an XML node
-	if (!mxUtils.isNode(value))
-	{
-		var doc = mxUtils.createXmlDocument();
-		var obj = doc.createElement('object');
-		obj.setAttribute('label', value || '');
-		value = obj;
-	}
-
-	// Creates the dialog contents
-	var form = new mxForm('properties');
-	form.table.style.width = '100%';
-
-	var attrs = value.attributes;
-	var names = [];
-	var texts = [];
-	var count = 0;
-
-	var id = EditPropDialog.getDisplayIdForCell(ui, cell);
-	
-	// FIXME: Fix remove button for quirks mode
-	var addRemoveButton = function(text, name)
-	{
-		var wrapper = document.createElement('div');
-		wrapper.style.position = 'relative';
-		wrapper.style.paddingRight = '20px';
-		wrapper.style.boxSizing = 'border-box';
-		wrapper.style.width = '100%';
-		
-		var removeAttr = document.createElement('a');
-		var img = mxUtils.createImage(Dialog.prototype.closeImage);
-		img.style.height = '9px';
-		img.style.fontSize = '9px';
-		img.style.marginBottom = (mxClient.IS_IE11) ? '-1px' : '5px';
-		
-		removeAttr.className = 'geButton';
-		removeAttr.setAttribute('title', mxResources.get('delete'));
-		removeAttr.style.position = 'absolute';
-		removeAttr.style.top = '4px';
-		removeAttr.style.right = '0px';
-		removeAttr.style.margin = '0px';
-		removeAttr.style.width = '9px';
-		removeAttr.style.height = '9px';
-		removeAttr.style.cursor = 'pointer';
-		removeAttr.appendChild(img);
-		
-		var removeAttrFn = (function(name)
-		{
-			return function()
-			{
-				var count = 0;
-				
-				for (var j = 0; j < names.length; j++)
-				{
-					if (names[j] == name)
-					{
-						texts[j] = null;
-						form.table.deleteRow(count + ((id != null) ? 1 : 0));
-						
-						break;
-					}
-					
-					if (texts[j] != null)
-					{
-						count++;
-					}
-				}
-			};
-		})(name);
-		
-		mxEvent.addListener(removeAttr, 'click', removeAttrFn);
-		
-		var parent = text.parentNode;
-		wrapper.appendChild(text);
-		wrapper.appendChild(removeAttr);
-		parent.appendChild(wrapper);
-	};
-	var addTextArea = function(index, name, value)
-	{
-		names[index] = name;
-		texts[index] = form.addTextarea(names[count] + ':', value, 2);
-		texts[index].style.width = '100%';
-		
-		addRemoveButton(texts[index], name);
-	};
-	
-	var temp = {
-		device: '',
-		singleVariable: true,
-		variables: []
-	};
-	var isLayer = graph.getModel().getParent(cell) == graph.getModel().getRoot();
-	for (var i = 0; i < attrs.length; i++)
-	{
-		if ((isLayer || attrs[i].nodeName != 'label') && attrs[i].nodeName != 'placeholders')
-		{
-			// temp[attrs[i].nodeName] = attrs[i].nodeValue;
-		}
-		if (attrs[i].nodeName == 'getech') {
-			temp = JSON.parse(attrs[i].nodeValue)
-		}
-	}
-	for (var i = 0; i < temp.length; i++)
-	{
-		addTextArea(count, temp[i].name, temp[i].value);
-		count++;
-	}
-	
-	var top = document.createElement('div');
-	top.style.cssText = 'position:absolute;left:30px;right:30px;overflow-y:auto;top:30px;bottom:80px;';
-	top.appendChild(form.table);
-	
-	// jevin
-	let pointList = [
-		{
-			id: '',
-			name: '请选择'
-		},{
-			id: 1,
-			name: '点位1',
-		}, {
-			id: 2,
-			name: '点位2'
-		}
-	]
-
-	let statusList = ["正常", "预警", "告警", "异常"]
-	// ====================================
-	top.innerHTML = `
-		<div class="geDialogInfo">
-			<span class="geDialogLeft">点位:</span>
-			<select class="geDialogRight" id="pointName">
-			${
-				pointList.map(val => `
-					<option value=${val.id} ${val.id == temp.device ? 'selected' : ''}>${val.name}</option>
-				`)
-			}
-			</select>
-		</div>
-		<div class="geDialogInfo">
-			<span class="geDialogLeft">数据:</span>
-			<div class="geDialogRight">
-				<div>
-					<label>
-						<input name="dialogVariable" type="radio" id="singleVariable" ${temp.singleVariable ? "checked" : ''}/>
-						单个变量
-					</label>
-					<button style="margin-left:8px" ${!temp.singleVariable ? 'disabled' : ""} id="selectSingleVariable">点击勾选变量</button>
-				</div>
-				<div style="padding: 5px 0;">
-					<label>
-						<input name="dialogVariable" type="radio" id="multipleVariable" ${!temp.singleVariable ? "checked" : ''}/>
-						多个变量
-					</label>
-					<button style="margin-left:8px" ${temp.singleVariable ? 'disabled' : ""} id="selectMultipleVariable">点击勾选多个变量</button>
-				</div>
-			</div>
-		</div>
-		<div class="geDialogInfo">
-			<span class="geDialogLeft">状态:</span>
-			<select class="geDialogRight">
-			${
-				statusList.map(val => `
-					<option value=${val}>${val}</option>
-				`)
-			}
-			</select>
-		</div>
-	`
-	div.appendChild(top);	
-	// jevin
-	var addBtn = mxUtils.button(mxResources.get('addProperty'), function()
-	{
-		// Avoid ':' in attribute names which seems to be valid in Chrome
-		if (true )
-		{
-			try
-			{
-				var idx = mxUtils.indexOf(names, name);
-				
-				if (idx >= 0 && texts[idx] != null)
-				{
-					texts[idx].focus();
-				}
-				else
-				{
-					// Checks if the name is valid
-					var clone = value.cloneNode(false);
-					clone.setAttribute(name, '');
-					
-					if (idx >= 0)
-					{
-						names.splice(idx, 1);
-						texts.splice(idx, 1);
-					}
-
-					names.push(name);
-					var text = form.addTextarea(name + ':', '', 2);
-					text.style.width = '100%';
-					texts.push(text);
-					addRemoveButton(text, name);
-
-					text.focus();
-				}
-
-				nameInput.value = '';
-			}
-			catch (e)
-			{
-				mxUtils.alert(e);
-			}
-		}
-		else
-		{
-			mxUtils.alert(mxResources.get('propTooLong'));
-		}
-	});
-
-	// 弹窗弹出，初始化之后的操作
-	this.init = function()
-	{
-		// 选择点位
-		document.getElementById('pointName').addEventListener('change', function (e) {
-			temp.device = e.target.value;
-		})
-		// 单个变量
-		document.getElementById('singleVariable').addEventListener('click', function () {
-			temp.singleVariable = true;
-			document.getElementById('selectSingleVariable').removeAttribute('disabled')
-			document.getElementById('selectMultipleVariable').setAttribute('disabled', true)
-		})
-		// 选择单个变量
-		document.getElementById('selectSingleVariable').addEventListener('click', function () {
-			selectVariableDialog();
-		})
-		// 多个变量
-		document.getElementById('multipleVariable').addEventListener('click', function () {
-			temp.singleVariable = false;
-			document.getElementById('selectSingleVariable').setAttribute('disabled', true)
-			document.getElementById('selectMultipleVariable').removeAttribute('disabled')
-		})
-		// 选择多个变量
-		document.getElementById('selectMultipleVariable').addEventListener('click', function () {
-			selectMultipleVariableDialog();
-		})
-	};
-	
-	addBtn.setAttribute('disabled', 'disabled');
-	addBtn.style.marginLeft = '10px';
-	addBtn.style.width = '76px';
-
-	// 取消按钮
-	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
-	{
-		ui.hideDialog.apply(ui, arguments);
-	});
-	cancelBtn.className = 'geBtn';
-	
-	// 应用按钮
-	var applyBtn = mxUtils.button(mxResources.get('apply'), function()
-	{
-		try
-		{
-			ui.hideDialog.apply(ui, arguments);
-			// Clones and updates the value
-			value = value.cloneNode(true);
-			value.setAttribute('getech', JSON.stringify(temp))
-			// Updates the value of the cell (undoable)
-			graph.getModel().setValue(cell, value);
-		}
-		catch (e)
-		{
-			mxUtils.alert(e);
-		}
-	});
-	applyBtn.className = 'geBtn gePrimaryBtn';
-	
-	// 底部按钮
-	var buttons = document.createElement('div');
-	buttons.style.cssText = 'position:absolute;left:30px;right:30px;text-align:center;bottom:30px;height:40px;'
-	
-	if (ui.editor.graph.getModel().isVertex(cell) || ui.editor.graph.getModel().isEdge(cell))
-	{
-		var replace = document.createElement('span');
-		replace.style.marginRight = '10px';
-		
-		if (EditDataDialog.placeholderHelpLink != null)
-		{
-			var link = document.createElement('a');
-			link.setAttribute('href', EditDataDialog.placeholderHelpLink);
-			link.setAttribute('title', mxResources.get('help'));
-			link.setAttribute('target', '_blank');
-			link.style.marginLeft = '10px';
-			link.style.cursor = 'help';
-			
-			var icon = document.createElement('img');
-			icon.setAttribute('border', '0');
-			icon.setAttribute('valign', 'middle');
-			icon.style.marginTop = (mxClient.IS_IE11) ? '0px' : '-4px';
-			icon.setAttribute('src', Editor.helpImage);
-			link.appendChild(icon);
-			
-			replace.appendChild(link);
-		}
-		
-		buttons.appendChild(replace);
-	}
-	
-	if (ui.editor.cancelFirst)
-	{
-		buttons.appendChild(cancelBtn);
-		buttons.appendChild(applyBtn);
-	}
-	else
-	{
-		buttons.appendChild(applyBtn);
-		buttons.appendChild(cancelBtn);
-	}
-
-	div.appendChild(buttons);
-	this.container = div;
-
-	// 单选变量窗口
-	function selectVariableDialog() {
-		// 存储临时变量
-		let tempVariable = temp.variables;
-		let oDiv = document.createElement('div');
-		oDiv.className = "selectVariableDialog";
-		oDiv.innerHTML = `
-			<p class="dialogTitle">选择单个变量</p>
-			<div class="searchBox">
-				<input />
-				<button id="searchVariable">搜索</button>
-			</div>
-			<div class="variablesList">
-			</div>
-			<div class="dialogBtns">
-				<button class="geBtn" id="variableDialogCancel">取消</button>
-				<button class="geBtn gePrimaryBtn" id="variableDialogEnsure">应用</button>
-			</div>
-		`
-		document.body.append(oDiv);searchVariable;
-		// 通过请求获取变量列表
-		function getVariables() {
-			let list1 = [
-				'cl', 'header2', 'sn', 'dp_power', 'dp_speed'
-			];
-			let list2 = [
-				'hpcp', 'cda', 'mdp', 'heater', 'particle'
-			];
-			let list = Math.random() > 0.5 ? list1 : list2;
-			let str = list.reduce((item, val) => {
-				item += `<p>${val}</p>`
-				return item;
-			}, '')
-			document.getElementsByClassName('variablesList')[0].innerHTML = str
-		};
-		getVariables();
-		// 选择变量
-		document.getElementById('searchVariable').addEventListener("click", function () {
-			getVariables()
-		});
-		// 选择变量
-		document.getElementsByClassName('variablesList')[0].addEventListener("click", function (e) {
-			let _target = e.target;
-			if (_target.nodeName == 'DIV') return false;
-			tempVariable = _target.innerHTML;
-			// 清空其他选中样式
-			let p_children = document.getElementsByClassName('variablesList')[0].children;
-			for (let i = 0; i < p_children.length; i++) {
-				p_children[i].style = "";
-			}
-			// 设置选中状态
-			_target.style.color = "#fff";
-			_target.style.backgroundColor = "#3B72A8";
-		});
-	
-		// 取消
-		document.getElementById('variableDialogCancel').addEventListener("click", function () {
-			document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
-		})
-		// 确定
-		document.getElementById('variableDialogEnsure').addEventListener("click", function () {
-			temp.variables = [tempVariable];
-			document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
-		})
-	}
-
-	// 多选变量窗口
-	function selectMultipleVariableDialog () {
-		let tempVariables = temp.variables;
-		let oDiv = document.createElement('div');
-		oDiv.className = "selectVariableDialog selectMultipleVariableDialog";
-		oDiv.innerHTML = `
-			<p class="dialogTitle">选择多个变量</p>
-			<div class="searchBox">
-				<input />
-				<button id="searchVariable">搜索</button>
-			</div>
-			<div class="selectedVariables">
-			</div>
-			<div class="variablesList">
-			</div>
-			<div class="dialogBtns">
-				<button class="geBtn" id="variableDialogCancel">取消</button>
-				<button class="geBtn gePrimaryBtn" id="variableDialogEnsure">应用</button>
-			</div>
-		`
-		document.body.append(oDiv);searchVariable;
-		// 通过请求获取变量列表
-		function getVariables() {
-			let list1 = [
-				'cl', 'header2', 'sn', 'dp_power', 'dp_speed'
-			];
-			let list2 = [
-				'hpcp', 'cda', 'mdp', 'heater', 'particle'
-			];
-			let list = Math.random() > 0.5 ? list1 : list2;
-			let str = list.reduce((item, val) => {
-				item += `<p>${val}</p>`
-				return item;
-			}, '')
-			document.getElementsByClassName('variablesList')[0].innerHTML = str
-		};
-		// 渲染选中列表
-		function setSelecteds() {
-			let str = tempVariables.reduce((item, val) => {
-				item += `<span class="variableDetail">${val}<a v_name="${val}" class="variableDetailDel">x</a></span>`
-				return item;
-			}, '')
-			document.getElementsByClassName('selectedVariables')[0].innerHTML = str
-		}
-		getVariables();
-		setSelecteds();
-		// 选择变量
-		document.getElementById('searchVariable').addEventListener("click", function () {
-			getVariables()
-		});
-		// 选择变量
-		document.getElementsByClassName('variablesList')[0].addEventListener("click", function (e) {
-			let _target = e.target;
-			if (_target.nodeName == 'DIV') return false; 
-			if (tempVariables.indexOf(_target.innerHTML) == -1) {
-				tempVariables.push(_target.innerHTML);
-				setSelecteds();
-			}
-			let p_children = document.getElementsByClassName('variablesList')[0].children;
-			for (let i = 0; i < p_children.length; i++) {
-				p_children[i].style = "";
-			}
-			_target.style.color = "#fff";
-			_target.style.backgroundColor = "#3B72A8";
-		});
-		// 删除选中
-		document.getElementsByClassName('selectedVariables')[0].addEventListener("click", function (e) {
-			if (e.target.className == "variableDetailDel") {
-				let idx = tempVariables.indexOf(e.target.getAttribute('v_name'));
-				tempVariables.splice(idx, 1);
-				setSelecteds();
-			}
-		})
-		// 取消
-		document.getElementById('variableDialogCancel').addEventListener("click", function () {
-			document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
-		})
-		// 确定
-		document.getElementById('variableDialogEnsure').addEventListener("click", function () {
-			temp.variables = tempVariables;
-			document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
-		})
-	}
-};
-/**
- * Optional help link.
- */
-EditPropDialog.getDisplayIdForCell = function(ui, cell)
-{
-	var id = null;
-	
-	if (ui.editor.graph.getModel().getParent(cell) != null)
-	{
-		id = cell.getId();
-	}
-	return id;
-};
-
-/**
- * Optional help link.
- */
-EditPropDialog.placeholderHelpLink = null;
-
 
 /**
  * Constructs a new link dialog.
@@ -4152,28 +2699,7 @@ var LayersWindow = function(editorUi, x, y, w, h)
 	});
 
 	ldiv.appendChild(insertLink);
-	
-	var dataLink = link.cloneNode();
-	dataLink.innerHTML = '<div class="geSprite geSprite-dots" style="display:inline-block;"></div>';
-	dataLink.setAttribute('title', mxResources.get('rename'));
-
-	mxEvent.addListener(dataLink, 'click', function(evt)
-	{
-		if (graph.isEnabled())
-		{
-			editorUi.showDataDialog(selectionLayer);
-		}
 		
-		mxEvent.consume(evt);
-	});
-	
-	if (!graph.isEnabled())
-	{
-		dataLink.className = 'geButton mxDisabled';
-	}
-
-	ldiv.appendChild(dataLink);
-	
 	function renameLayer(layer)
 	{
 		if (graph.isEnabled() && layer != null)
@@ -4522,7 +3048,6 @@ var LayersWindow = function(editorUi, x, y, w, h)
 		removeLink.setAttribute('title', mxResources.get('removeIt', [label]));
 		insertLink.setAttribute('title', mxResources.get('moveSelectionTo', [label]));
 		duplicateLink.setAttribute('title', mxResources.get('duplicateIt', [label]));
-		dataLink.setAttribute('title', mxResources.get('editData'));
 		
 		if (graph.isSelectionEmpty())
 		{
@@ -4548,44 +3073,5 @@ var LayersWindow = function(editorUi, x, y, w, h)
 		}
 	});
 
-	this.window = new mxWindow(mxResources.get('layers'), div, x, y, w, h, true, true);
-	this.window.minimumSize = new mxRectangle(0, 0, 120, 120);
-	this.window.destroyOnClose = false;
-	this.window.setMaximizable(false);
-	this.window.setResizable(true);
-	this.window.setClosable(true);
-	this.window.setVisible(true);
-	
-	// Make refresh available via instance
-	this.refreshLayers = refresh;
-	
-	this.window.setLocation = function(x, y)
-	{
-		var iw = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-		var ih = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-		
-		x = Math.max(0, Math.min(x, iw - this.table.clientWidth));
-		y = Math.max(0, Math.min(y, ih - this.table.clientHeight - 48));
 
-		if (this.getX() != x || this.getY() != y)
-		{
-			mxWindow.prototype.setLocation.apply(this, arguments);
-		}
-	};
-	
-	var resizeListener = mxUtils.bind(this, function()
-	{
-		var x = this.window.getX();
-		var y = this.window.getY();
-		
-		this.window.setLocation(x, y);
-	});
-	
-	mxEvent.addListener(window, 'resize', resizeListener);
-
-	this.destroy = function()
-	{
-		mxEvent.removeListener(window, 'resize', resizeListener);
-		this.window.destroy();
-	}
 };

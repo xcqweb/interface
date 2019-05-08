@@ -799,7 +799,7 @@ div.mxWindow .geButton {
 	position: absolute;
 	font-family: 'MicrosoftYaHei';
 	bottom: -20px;
-	font-size: 12px;
+	font-size: 11px;
 }
 .geSprite-new::after {
 	content: '新建';
@@ -1058,8 +1058,6 @@ div.mxWindow .geButton {
 .geSprite-code { background-position: 0 -2714px; }
 .geSprite-fontbackground { background-position: 0 -2760px; }
 .geSprite-removeformat { background-position: 0 -2806px; }
-.geSprite-superscript { background-position: 0 -2852px; }
-.geSprite-subscript { background-position: 0 -2898px; }
 .geSprite-table { background-position: 0 -2944px; }
 .geSprite-deletecolumn { background-position: 0 -2990px; }
 .geSprite-deleterow { background-position: 0 -3036px; }
@@ -1611,5 +1609,5 @@ button.buttonTag, input.inputTag {
 	width: 0;
 	border-radius: 2px;
 	border: 2px solid #3D91F7;
-	transition: width .7s linear 0s;
+	transition: width .4s linear 0s;
 }

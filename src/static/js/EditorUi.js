@@ -191,11 +191,11 @@ EditorUi = function(editor, container, lightbox)
 		}
 		else if (!mxEvent.isConsumed(evt) && evt.keyCode == 27 /* Escape */)
 		{
-			if (document.getElementsByClassName('selectVariableDialog')[0]) {
-				document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
-			} else {
-				this.hideDialog();
-			}
+			// if (document.getElementsByClassName('selectVariableDialog')[0]) {
+			// 	document.body.removeChild(document.getElementsByClassName('selectVariableDialog')[0])
+			// } else {
+			// 	this.hideDialog();
+			// }
 		}
 	});
    	
@@ -261,10 +261,9 @@ EditorUi = function(editor, container, lightbox)
 			// Saves references to special items
 			var tmp1 = this.toolbar.fontMenu;
 			var tmp2 = this.toolbar.sizeMenu;
+			// 输入文字时
 			if (nodes == null)
 			{
-				// 输入文字时
-				this.toolbar.createTextToolbar();
 			}
 			else
 			{
@@ -293,7 +292,6 @@ EditorUi = function(editor, container, lightbox)
 	{
 		cellEditorStartEditing.apply(this, arguments);
 		// 停止编辑内容时更新工具栏
-		// updateToolbar();
 		if (graph.cellEditor.isContentEditing())
 		{
 			var updating = false;
@@ -355,7 +353,6 @@ EditorUi = function(editor, container, lightbox)
 	graph.cellEditor.stopEditing = function(cell, trigger)
 	{
 		cellEditorStopEditing.apply(this, arguments);
-		updateToolbar();
 	};
 	
     // Enables scrollbars and sets cursor style for the container
@@ -672,7 +669,6 @@ EditorUi = function(editor, container, lightbox)
 		
 		var keys = evt.getProperty('keys');
 		var values = evt.getProperty('values');
-
 		for (var i = 0; i < keys.length; i++)
 		{
 			var common = mxUtils.indexOf(valueStyles, keys[i]) >= 0;
@@ -703,7 +699,7 @@ EditorUi = function(editor, container, lightbox)
 						}
 						else
 						{
-							graph.currentVertexStyle[keys[i]] = values[i];
+							// graph.currentVertexStyle[keys[i]] = values[i];
 						}
 					}
 				}
@@ -717,7 +713,7 @@ EditorUi = function(editor, container, lightbox)
 						}
 						else
 						{
-							graph.currentVertexStyle[keys[i]] = values[i];
+							// graph.currentVertexStyle[keys[i]] = values[i];
 						}
 					}
 					
@@ -847,7 +843,7 @@ EditorUi = function(editor, container, lightbox)
 	    graph.getSelectionModel().addListener(mxEvent.CHANGE, update);
 	    graph.getModel().addListener(mxEvent.CHANGE, update);
 	}
-	
+	console.log()
 	// 添加节点控件
 	graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt)
 	{
@@ -856,6 +852,7 @@ EditorUi = function(editor, container, lightbox)
 		for (let cell of cells) {
 			let cellInfo = graph.getModel().getValue(cell);
 			let shapeName = /shape=(.+?);/.exec(cell.style)[1];
+			shapeName = this.sidebar.primitives.includes(shapeName) ? 'primitive' : shapeName;
 			if (!mxUtils.isNode(cellInfo))
 			{
 				let doc = mxUtils.createXmlDocument();
@@ -1683,59 +1680,6 @@ EditorUi.prototype.initCanvas = function()
 				mxUtils.setOpacity(this.chromelessToolbar, opacity || 30);
 			});
 	
-			if (urlParams['layers'] == '1')
-			{
-				this.layersDialog = null;
-				
-				var layersButton = addButton(mxUtils.bind(this, function(evt)
-				{
-					if (this.layersDialog != null)
-					{
-						this.layersDialog.parentNode.removeChild(this.layersDialog);
-						this.layersDialog = null;
-					}
-					else
-					{
-						this.layersDialog = graph.createLayersDialog();
-						
-						mxEvent.addListener(this.layersDialog, 'mouseleave', mxUtils.bind(this, function()
-						{
-							this.layersDialog.parentNode.removeChild(this.layersDialog);
-							this.layersDialog = null;
-						}));
-						
-						var r = layersButton.getBoundingClientRect();
-						
-						mxUtils.setPrefixedStyle(this.layersDialog.style, 'borderRadius', '5px');
-						this.layersDialog.style.position = 'fixed';
-						this.layersDialog.style.fontFamily = 'Helvetica,Arial';
-						this.layersDialog.style.backgroundColor = '#000000';
-						this.layersDialog.style.width = '160px';
-						this.layersDialog.style.padding = '4px 2px 4px 2px';
-						this.layersDialog.style.color = '#ffffff';
-						mxUtils.setOpacity(this.layersDialog, 70);
-						this.layersDialog.style.left = r.left + 'px';
-						this.layersDialog.style.bottom = parseInt(this.chromelessToolbar.style.bottom) +
-							this.chromelessToolbar.offsetHeight + 4 + 'px';
-						
-						// Puts the dialog on top of the container z-index
-						var style = mxUtils.getCurrentStyle(this.editor.graph.container);
-						this.layersDialog.style.zIndex = style.zIndex;
-						
-						document.body.appendChild(this.layersDialog);
-					}
-					
-					mxEvent.consume(evt);
-				}), Editor.layersLargeImage, mxResources.get('layers'));
-				
-				// Shows/hides layers button depending on content
-				var model = graph.getModel();
-	
-				model.addListener(mxEvent.CHANGE, function()
-				{
-					 layersButton.style.display = (model.getChildCount(model.root) > 1) ? '' : 'none';
-				});
-			}
 	
 			this.addChromelessToolbarItems(addButton);
 	
@@ -2832,11 +2776,11 @@ EditorUi.prototype.updateActionStates = function()
 	var state = graph.view.getState(graph.getSelectionCell());
 	var shapeName = state && state.style.shape;
 	// console.log(shapeName)
-	var actions = ['cut', 'copy', 'bold', 'italic', 'underline', 'delete', 'duplicate', 
-	               'editStyle', 'editTooltip', 'editLink', 'backgroundColor', 'borderColor',
-	               'edit', 'toFront', 'toBack', 'lockUnlock', 'solid', 'dashed', 'pasteSize',
-	               'dotted', 'fillColor', 'gradientColor', 'shadow', 'fontColor',
-	               'formattedText', 'rounded', 'toggleRounded', 'sharp', 'strokeColor', 'turn', 'flipH', 'flipV', 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'];
+	var actions = ['cut', 'copy', 'bold', 'underline', 'delete', 'duplicate', 
+	            		'editLink', 'backgroundColor', 'borderColor',
+	               'edit', 'toFront', 'toBack', 'lockUnlock',
+	               'fillColor', 'gradientColor', 'fontColor',
+	               'formattedText', 'strokeColor', 'turn', 'flipH', 'flipV', 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'];
 	
 	var menuDisabled = ['toFront', 'toBack','flipH', 'flipV', 'turn', 'rotation']
 	// 判断当前是否是菜单
@@ -2853,12 +2797,7 @@ EditorUi.prototype.updateActionStates = function()
 		}
 	}
 
-	this.actions.get('setAsDefaultStyle').setEnabled(graph.getSelectionCount() == 1);
-	this.actions.get('clearWaypoints').setEnabled(!graph.isSelectionEmpty());
-	this.actions.get('copySize').setEnabled(graph.getSelectionCount() == 1);
-	this.actions.get('curved').setEnabled(edgeSelected);
 	this.actions.get('rotation').setEnabled(vertexSelected && shapeName !== 'menuCell');
-	this.actions.get('wordWrap').setEnabled(vertexSelected);
 	this.actions.get('autosize').setEnabled(vertexSelected && !isTable && notMenu);
 	var oneVertexSelected = vertexSelected && graph.getSelectionCount() == 1;
 	this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && (shapeName !== 'menuCell' && shapeName !== 'menulist'&& !isTable));
@@ -2870,9 +2809,6 @@ EditorUi.prototype.updateActionStates = function()
 	this.actions.get('removeFromGroup').setEnabled(oneVertexSelected && graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())) && notMenu && !isTable);
 
 	// 更新菜单状态	
-	this.menus.get('navigation').setEnabled(selected || graph.view.currentRoot != null);
-	this.actions.get('collapsible').setEnabled(vertexSelected &&
-		(graph.isContainer(graph.getSelectionCell()) || graph.model.getChildCount(graph.getSelectionCell()) > 0));
 	this.actions.get('home').setEnabled(graph.view.currentRoot != null);
 	this.actions.get('exitGroup').setEnabled(graph.view.currentRoot != null && notMenu);
 	this.actions.get('enterGroup').setEnabled(graph.getSelectionCount() == 1 && graph.isValidRoot(graph.getSelectionCell())  && notMenu);
@@ -2886,11 +2822,6 @@ EditorUi.prototype.updateActionStates = function()
 	this.actions.get('grid').setEnabled(!this.editor.chromeless || this.editor.editable);
 
 	var unlocked = graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent());
-	this.menus.get('layout').setEnabled(unlocked);
-	this.menus.get('insert').setEnabled(unlocked);
-	this.menus.get('direction').setEnabled(unlocked && vertexSelected && notMenu && !isTable);
-	this.menus.get('align').setEnabled(unlocked && vertexSelected && graph.getSelectionCount() > 1 && shapeNameStr.indexOf('menuCell') == -1);
-	this.menus.get('distribute').setEnabled(unlocked && vertexSelected && graph.getSelectionCount() > 1);
 	this.actions.get('selectVertices').setEnabled(unlocked);
 	this.actions.get('selectEdges').setEnabled(unlocked);
 	this.actions.get('selectAll').setEnabled(unlocked);
@@ -3541,7 +3472,7 @@ EditorUi.prototype.saveFile = function(forceDialog)
 	if (!forceDialog && this.editor.filename != null)
 	{
 		// 新建保存
-		this.save(this.editor.getOrCreateFilename(), this.editor.getFiledes());
+		this.save(this.editor.getOrCreateFilename(), this.editor.getDescribe());
 	}
 	else
 	{
@@ -3567,7 +3498,29 @@ EditorUi.prototype.saveFile = function(forceDialog)
 };
 
 /**
- * Saves the current graph under the given filename.
+ * 保存成功
+ */
+EditorUi.prototype.saveSuccess = function (res) {
+	// 设置名称和描述
+	this.editor.setFilename(res.name)
+	this.editor.setDescribe(res.describe)
+	this.editor.setApplyId(res.id)
+	setTimeout(() => {
+		this.hideDialog();
+		this.showDialog(tipDialog(this, true, '保存'), 120, 90, true, false, null, null, '');
+	}, 350);
+}
+/**
+ * 保存失败
+ */
+EditorUi.prototype.saveError = function (res) {
+	setTimeout(() => {
+		this.hideDialog();
+		this.showDialog(tipDialog(this, false, '保存'), 120, 90, true, false, null, null, '');
+	}, 350);
+}
+/**
+ * 保存当前应用
  */
 EditorUi.prototype.save = function(name, des)
 {
@@ -3577,49 +3530,41 @@ EditorUi.prototype.save = function(name, des)
 		{
 			this.editor.graph.stopEditing();
 		}
-		
-		var xml = mxUtils.getXml(this.editor.getGraphXml());
 		try
 		{
-			if (Editor.useLocalStorage)
-			{
-				if (localStorage.getItem(name) != null &&
-					!mxUtils.confirm(mxResources.get('replaceIt', [name])))
-				{
-					return;
-				}
-
-				localStorage.setItem(name, xml);
-				this.editor.setStatus(mxUtils.htmlEntities(mxResources.get('saved')) + ' ' + new Date());
+			var ui = this;
+			var editor = ui.editor;
+			editor.setXml()
+			// 页面信息
+			var pages = editor.pages;
+			var data = {
+				name: name,
+				describe: des,
+				content: JSON.stringify(pages),
 			}
-			else
-			{
-				if (xml.length < MAX_REQUEST_SIZE)
-				{
-					var filename = name
-					var filedes = des
-					var filecontent = xml
-				}
-				else
-				{
-					mxUtils.alert(mxResources.get('drawingTooLarge'));
-					mxUtils.popup(xml);
-					
-					return;
-				}
+			var id = editor.getApplyId();
+			if (id) {
+				// 编辑保存
+				data.id = id;
+				editor.ajax(ui, '/api/viewtool', 'PUT', data, (res) => {
+					this.saveSuccess(res);					
+				}, () => {
+					this.saveError();
+				})
+			} else {
+				// 新增保存
+				editor.ajax(ui, '/api/viewtool', 'POST', data, (res) => {
+					this.saveSuccess(res);
+				}, () => {
+					this.saveError();
+				})
 			}
-			
-			this.editor.setModified(false);
-			// 设置名称和描述
-			this.editor.setFilename(name);
-			this.editor.setFiledes(des);
-			console.log('保存文件', name, des, xml)
 			// 更新标题
-			this.updateDocumentTitle();
+			// this.updateDocumentTitle();
 		}
 		catch (e)
 		{
-			this.editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
+			editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
 		}
 	}
 };
@@ -3717,30 +3662,6 @@ EditorUi.prototype.showLinkDialog = function(value, btnLabel, fn)
 	dlg.init();
 };
 
-/**
- * Hides the current menu.
- */
-EditorUi.prototype.showDataDialog = function(cell)
-{
-	if (cell != null)
-	{
-		var dlg = new EditDataDialog(this, cell);
-		this.showDialog(dlg.container, 350, 340, true, false, null, false);
-		dlg.init();
-	}
-};
-/**
- * edit prop function
- */
-EditorUi.prototype.showPropDialog = function(cell)
-{
-	if (cell != null)
-	{
-		var dlg = new EditPropDialog(this, cell);
-		this.showDialog(dlg.container, 350, 340, true, false, null, false);
-		dlg.init();
-	}
-};
 /**
  * Hides the current menu.
  */
@@ -4006,15 +3927,6 @@ EditorUi.prototype.createKeyHandler = function(editor)
 	var keyHandlerGetFunction = keyHandler.getFunction;
 
 	// Alt+Shift+Keycode mapping to action
-	var altShiftActions = {
-		// 67: this.actions.get('clearWaypoints'), // Alt+Shift+C
-		// 65: this.actions.get('connectionArrows'), // Alt+Shift+A
-		// 76: this.actions.get('editLink'), // Alt+Shift+L
-		// 80: this.actions.get('connectionPoints'), // Alt+Shift+P
-		// 84: this.actions.get('editTooltip'), // Alt+Shift+T
-		// 86: this.actions.get('pasteSize'), // Alt+Shift+V
-		// 88: this.actions.get('copySize') // Alt+Shift+X
-	};
 	
 	mxKeyHandler.prototype.getFunction = function(evt)
 	{
@@ -4212,8 +4124,6 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		// keyHandler.bindAction(80, true, 'formatPanel', true); // Ctrl+Shift+P
 		// keyHandler.bindAction(85, true, 'underline'); // Ctrl+U
 		keyHandler.bindAction(85, true, 'ungroup', true); // Ctrl+Shift+U
-		// keyHandler.bindAction(190, true, 'superscript'); // Ctrl+.
-		// keyHandler.bindAction(188, true, 'subscript'); // Ctrl+,
 		keyHandler.bindKey(13, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // Enter
 		// keyHandler.bindKey(113, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // F2
 	}
