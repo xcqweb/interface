@@ -694,10 +694,12 @@ BaseFormatPanel.prototype.createPanel = function()
 BaseFormatPanel.prototype.createTitle = function(title)
 {
 	var div = document.createElement('p');
-	div.style.margin = '12px 0px 3px';
+	div.style.padding = '12px 0px 3px';
 	div.style.whiteSpace = 'nowrap';
 	div.style.overflow = 'hidden';
 	div.style.lineHeight = '12px';
+	div.style.width = '100%';
+	// div.style.float = 'left';
 	mxUtils.write(div, title);	
 	return div;
 };
@@ -1023,9 +1025,8 @@ BaseFormatPanel.prototype.createColorOption = function(label, getColorFn, setCol
 		if (!applying)
 		{
 			applying = true;
-			btn.innerHTML = '<div style="width: 110px;height: 16px;margin: 3px;background-color:' +
+			btn.innerHTML = '<div style="width: 100%;height: 16px;background-color:' +
 				((color != null && color != mxConstants.NONE) ? color : defaultColor) + ';"></div>';
-			
 			btn.style.display = color ? '' : 'none';
 
 			if (callbackFn != null)
@@ -2247,6 +2248,10 @@ ArrangePanel.prototype.addBase = function (container) {
 	this.addBgColor(container);
 	// 隐藏
 	this.addShowHide(container);
+
+	if (shapeName == 'menulist') {
+		this.menuConfig(container);
+	}
 }
 /**
  * 名称
@@ -2284,6 +2289,7 @@ ArrangePanel.prototype.addName = function (container) {
 ArrangePanel.prototype.addShowHide = function (container) {
 	var div = document.createElement('div');
 	div.style.marginTop = '12px';
+	div.style.overflow = 'hidden';
 	var span = document.createElement('span');
 	span.innerText = '显示/隐藏';
 	span.style.float = 'left';
@@ -2764,7 +2770,6 @@ ArrangePanel.prototype.getCustomColors = function()
 /**
  * 背景颜色
  */
-
  ArrangePanel.prototype.addBgColor = function(container)
  {
 	var ui = this.editorUi;
@@ -2822,6 +2827,35 @@ ArrangePanel.prototype.getCustomColors = function()
 	colorPanel.appendChild(fillColor);
 	container.appendChild(colorPanel)
 	return container;
+};
+/**
+ * 菜单配置
+ */
+ ArrangePanel.prototype.menuConfig = function(container)
+ {
+	var ui = this.editorUi;
+	var graph = ui.editor.graph;
+	var ss = this.format.getSelectionState();
+	var menuConfigBox = document.createElement('div');
+	menuConfigBox.style.borderTop = '1px solid #CCCCCC';
+	menuConfigBox.style.marginTop = '15px';
+	menuConfigBox.style.overflow = 'hidden';
+	// 选中文字颜色
+	menuConfigBox.appendChild(this.createTitle('选中文字颜色'));
+	// var state = graph.view.getState(graph.getSelectionCell());
+	var fillColor = this.createCellColorOption('selectedFontColor', 'selectedFontColor', '#3B72A8');
+	fillColor.className += " formatLargeInput";
+	fillColor.style.display = 'block';
+	menuConfigBox.appendChild(fillColor)
+	// 选中背景颜色
+	menuConfigBox.appendChild(this.createTitle('选中背景颜色'));
+	var bgColor = this.createCellColorOption('selectBackgroundColor', 'selectBackgroundColor', '#3B72A8');
+	bgColor.className += " formatLargeInput";
+	bgColor.style.display = 'block';
+	menuConfigBox.appendChild(bgColor)
+
+	container.appendChild(menuConfigBox);
+	return menuConfigBox;
 };
 /**
  * 边框颜色
@@ -3273,7 +3307,6 @@ ActionsPanel.prototype.createOperateBox = function(container)
 				}
 			}
 		}
-		!actions.length ? actions.push(temp) : temp = actions[actions.length - 1];
 		var divpanel = this.createPanel();
 		divpanel.id = 'actionPanel';
 		divpanel.style.paddingBottom = '12px';
@@ -3340,8 +3373,14 @@ ActionsPanel.prototype.createOperateBox = function(container)
 			this.setActions(graph, 'link', evt.target.innerText);
 		})
 		var listener =mxUtils.bind(this, function () {
-			actions = editor.getActionsInfo();
-			temp = actions[actions.length - 1];
+			actions = editor.getActionsInfo() || [];
+			if (actions.length) {
+				temp = actions[actions.length - 1];
+			} else {
+				actions.push(temp);
+				modelInfo.setAttribute('actionsInfo', JSON.stringify(actions));
+				graph.getModel().setValue(cell, modelInfo);
+			}
 			if (temp.type == 'out') {
 				// 选择外部链接
 				outRadio.setAttribute('checked', true);

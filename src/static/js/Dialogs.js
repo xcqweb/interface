@@ -1087,11 +1087,10 @@ var PublishDialog = function(editorUi) {
 	var genericBtn = mxUtils.button('发布', function()
 	{
 		editorUi.hideDialog();
-		var token = getCookie('token');
 		editorUi.editor.ajax(editorUi, '/api/viewtool/publish/1e964cb38542c908c2c59c9447069a2/1', 'PUT', null, function () {
-			editorUi.showDialog(tipDialog(editorUi, true, '发布'), 120, 90, true, false, null, null, '');
+			editorUi.editor.tipInfo(editorUi, true, '发布');
 		}, function () {
-			editorUi.showDialog(tipDialog(editorUi, false, '发布'), 120, 90, true, false, null, null, '');
+			editorUi.editor.tipInfo(editorUi, false, '发布');
 		});
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
@@ -1591,7 +1590,6 @@ var PaletteDataDialog = function(editorUi, cell) {
 		params: [],
 		changeStatus: []
 	}
-	console.log(bindData)
 	// 弹窗内容
 	var saveContent = editorUi.createDiv('geDialogInfo')
 	saveContent.style.padding = "22px";
@@ -1696,7 +1694,8 @@ var PaletteDataDialog = function(editorUi, cell) {
 	function chooseVariable(data) {
 		choosedParam = data;
 		fillParams(variableList, choosedParam);
-		getModels(editorUi, modelList, executeList, pointSelect.value, data.map(val => val.id).join())
+		editorUi.hideDialog();
+		getModels(editorUi, modelList, executeList, pointSelect.value, data.map(val => val.id).join(), true)
 	}
 	// 选择变量
 	addVariableBtn.addEventListener('click', function (e) {
@@ -1731,7 +1730,6 @@ var PaletteDataDialog = function(editorUi, cell) {
 			point: pointSelect.value,
 			params: choosedParam
 		}
-		console.log(bindData)
 		// 绑定列表
 		var select = null;
 		
@@ -1748,10 +1746,13 @@ var PaletteDataDialog = function(editorUi, cell) {
 			graph.setSelectionCells(select);
 			graph.scrollCellToVisible(select[0]);
 		}
-		editorUi.editor.ajax(editorUi, '/api/model/viewTool/warn', 'PUT', applyModel, function () {
+		editorUi.editor.ajax(editorUi, '/api/model/viewTool/warn', 'PUT', applyModel[0], function () {
 			// 请求成功回调函数
+			editorUi.hideDialog();
+			// editorUi.editor.tipInfo(editorUi, true, '保存')
 		}, function () {
-			console.log('请求失败')
+			editorUi.hideDialog();
+			editorUi.editor.tipInfo(editorUi, false, '保存')
 		})
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
@@ -1980,24 +1981,21 @@ var chooseVariableDialog = function (editorUi, sourcedata = [], chooseData = [],
  * @param {object} editorUi
  * @param {string} pointId 采集点id
  * @param {string} paramId 变量id，逗号隔开
+ * @param {boolean} closeDialog 是否需要关闭弹窗
  */
-function getModels (editorUi, modelEle, executeEle, pointId, paramId) {
+function getModels (editorUi, modelEle, executeEle, pointId, paramId, closeDialog = false) {
 	var modelData = [];
 	if (pointId && paramId) {
 		editorUi.editor.ajax(editorUi, '/api/viewTool/model/serach', 'POST', {pointId, paramId}, function (res) {
+			modelData = [].concat(res);
 			fillModelList(modelEle, modelData);
 			fillExecuteList(executeEle, modelData);
+			// editorUi.editor.tipInfo(editorUi, true, '请求')
 		}, null, '获取应用模型中···')
-		modelData = [
-			{ name: '模型1: ', id: '111', formula: ' C12_DOD-02-STK200-01.C12 >10***C12_DOD-02-STK200-01.C12 >10', warn: 0 }, 
-			{ name: '模型2: ', id: '222', formula: ' C12_DOD-02-STK200-01.C12 >10', warn: 2 }, 
-			{ name: '模型3: ', id: '333', formula: ' C12_DOD-02-STK200-01.C12 >10', warn: 3 }, 
-			{ name: '模型4: ', id: '444', formula: ' C12_DOD-02-STK200-01.C12 >10', warn: 0 }, 
-			{ name: '模型5: ', id: '555', formula: ' C12_DOD-02-STK200-01.C12 >10', warn: 4 }, 
-			{ name: '模型6: ', id: '666', formula: ' C12_DOD-02-STK200-01.C12 >10', warn: 0 }
-		]
 	} else {
-		// editorUi.hideDialog();
+		fillModelList(modelEle, modelData);
+		fillExecuteList(executeEle, modelData);
+		// editorUi.editor.tipInfo(editorUi, false, '请求')
 	}
 	return modelData;
 }
@@ -2008,16 +2006,22 @@ function getModels (editorUi, modelEle, executeEle, pointId, paramId) {
  * @param {Array} data 数据列表
  */
 function fillModelList (ele, data) {
-	ele.innerHTML = `
-		${
-			data.map(model => `
-				<li>
-					<span style="color: #767676">${model.name}</span>
-					<span title="${model.formula}">${model.formula}</span>
-				</li>
-			`).join('')
-		}
-	`;
+	if (data.length) {
+		ele.innerHTML = `
+			${
+				data.map(model => `
+					<li>
+						<span style="color: #767676">${model.modelName}</span>
+						<span title="${model.modelRule}">${model.modelRule}</span>
+					</li>
+				`).join('')
+			}
+		`;
+	} else {
+		ele.innerHTML = `
+			<span>当前采集点参数未独立应用模型</span><a class="addModelBtn" style="height: 24px;line-height: 22px;">去添加模型</a>
+		`
+	}
 }
 
 /**
@@ -2029,16 +2033,16 @@ function fillExecuteList (ele, data) {
 	// 状态列表
 	const statusList = [
 		{
-			status: 1,
+			status: 0,
 			title: '不作任何变化'
 		}, {
-			status: 2,
+			status: 1,
 			title: '预警黄'
 		}, {
-			status: 3,
+			status: 2,
 			title: '告警红'
 		}, {
-			status: 4,
+			status: 3,
 			title: '异常灰'
 		}
 	];
@@ -2048,7 +2052,7 @@ function fillExecuteList (ele, data) {
 			data.map(model => `
 				<li data-modelId="${model.id}">
 					<input type="checkbox" name="models" style="float: left;margin: 6px 2px 0 0;" ${model.warn != 0 ? "checked" : ""}/>
-					<span style="color: #767676;float: left;width: 240px;overflow: hidden;text-overflow: ellipsis;" title="${model.name}${model.formula}">${model.name}${model.formula}</span>
+					<span style="color: #767676;float: left;width: 240px;overflow: hidden;text-overflow: ellipsis;" title="${model.modelName}${model.modelRule}">${model.modelName}${model.modelRule}</span>
 					<select style="float: left;width: 65px;border-color: #C5C5C5;" value='3'>
 					${
 						statusList.map(status => `
@@ -2068,7 +2072,6 @@ var ChangePrimitiveDialog = function (editorUi) {
 	var saveContent = editorUi.createDiv('geDialogInfo');
 	saveContent.setAttribute('data-dialog', 'changePrimitive');
 	// 图元列表
-	var primitiveList = document.createElement('ul');
 	var graph = editorUi.editor.graph;
 	var cells = graph.getSelectionCells();
 	// var mockData = []

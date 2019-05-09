@@ -37,6 +37,10 @@ html {
 }
 input {
 	border-width: 1px;
+	font-size: 12px;
+}
+select {
+	font-size: 12px;
 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

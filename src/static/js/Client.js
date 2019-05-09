@@ -573,13 +573,6 @@ else
 {
 	mxClient.defaultLanguage = 'en';
 }
-
-// Adds all required stylesheets and namespaces
-if (mxLoadStylesheets)
-{
-	mxClient.link('stylesheet', mxClient.basePath + '/css/common.css');
-}
-
 /**
  * Variable: languages
  *
@@ -54617,20 +54610,6 @@ function mxGraph(container, model, renderHint, stylesheet)
 	
 	this.view.revalidate();
 };
-
-/**
- * Installs the required language resources at class
- * loading time.
- */
-if (mxLoadResources)
-{
-	mxResources.add('/static/resources/graph');
-}
-else
-{
-	mxClient.defaultBundles.push('/static/resources/graph');
-}
-
 /**
  * Extends mxEventSource.
  */
@@ -83013,19 +82992,6 @@ function mxEditor(config)
 		}
 	}
 };
-
-/**
- * Installs the required language resources at class
- * loading time.
- */
-if (mxLoadResources)
-{
-	mxResources.add('/static/resources/editor');
-}
-else
-{
-	mxClient.defaultBundles.push('/static/resources/editor');
-}
 
 /**
  * Extends mxEventSource.

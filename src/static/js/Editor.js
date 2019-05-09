@@ -257,19 +257,32 @@ Editor.prototype.enabled = true;
  */
 Editor.prototype.filename = null;
 Editor.prototype.applyId = null;
-Editor.prototype.paletteNum =  {
-};
+Editor.prototype.paletteNum =  {};
+/**
+ * 提示信息
+ */
+Editor.prototype.tipInfo = function (editorUi, flag, title) {
+	let tips = tipDialog(editorUi, flag, title);
+	tips.className += ' geDialog';
+	let bg = document.createElement('div');
+	bg.className = 'background';
+	document.body.append(bg)
+	document.body.append(tips)
+	setTimeout(() => {
+		document.body.removeChild(bg)
+		document.body.removeChild(tips)
+	}, 2500)
+}
 /**
  * 获取节点的属性信息
  * @param {string}	属性名称
  */
-
 Editor.prototype.getNodeInfo = function (key) {
 	let graph = this.graph;
 	let cell = graph.getSelectionCell();
 	let modelInfo = graph.getModel().getValue(cell);
 	return JSON.parse(modelInfo.getAttribute(key))
-}	
+}
 /**
  * 获取当前节点的交互信息
  */
@@ -310,19 +323,18 @@ Editor.prototype.ajax = function (editorUi, url, method, data, fn = function() {
 			loadingBarInner.style.width = '20%';
 		},
 		data: method == 'GET' ? data : data ? JSON.stringify(data) : '',
-		// dataType: 'JSON',
 		url,
 		success: function (res) {
 			loadingBarInner.style.width = '100%';
-			console.log('http success')
 			setTimeout(() => {
 				fn && fn(res);
-			}, 500)
+			}, 550)
 		},
 		error: function (res) {
 			loadingBarInner.style.width = '100%';
-			console.log('http error')
-			errorfn && errorfn()
+			setTimeout(() => {
+				errorfn && errorfn();
+			}, 550)
 		}
 	})
 }

@@ -523,6 +523,8 @@ EditorUi = function(editor, container, lightbox)
 	{
 		var model = graph.getModel();
 		model.beginUpdate();
+		console.log(asText, cells)
+
 		try
 		{
 			if (asText)
@@ -530,7 +532,6 @@ EditorUi = function(editor, container, lightbox)
 				var edge = model.isEdge(cell);
 				var current = (edge) ? graph.currentEdgeStyle : graph.currentVertexStyle;
 				var textStyles = ['fontSize', 'fontFamily', 'fontColor'];
-				
 				for (var j = 0; j < textStyles.length; j++)
 				{
 					var value = current[textStyles[j]];
@@ -843,7 +844,6 @@ EditorUi = function(editor, container, lightbox)
 	    graph.getSelectionModel().addListener(mxEvent.CHANGE, update);
 	    graph.getModel().addListener(mxEvent.CHANGE, update);
 	}
-	console.log()
 	// 添加节点控件
 	graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt)
 	{
@@ -3507,7 +3507,7 @@ EditorUi.prototype.saveSuccess = function (res) {
 	this.editor.setApplyId(res.id)
 	setTimeout(() => {
 		this.hideDialog();
-		this.showDialog(tipDialog(this, true, '保存'), 120, 90, true, false, null, null, '');
+		this.editor.tipInfo(this, true, '保存');
 	}, 350);
 }
 /**
@@ -3516,7 +3516,7 @@ EditorUi.prototype.saveSuccess = function (res) {
 EditorUi.prototype.saveError = function (res) {
 	setTimeout(() => {
 		this.hideDialog();
-		this.showDialog(tipDialog(this, false, '保存'), 120, 90, true, false, null, null, '');
+		this.editor.tipInfo(this, false, '保存');
 	}, 350);
 }
 /**

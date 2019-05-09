@@ -1086,7 +1086,6 @@ Sidebar.prototype.addPagePalette = function (expand) {
 			dialogPages[title] = pages[title]
 		}
 	}
-	console.log(pages)
 	var fns = [
 		// 普通页面标题
 		createPageTypeTitle.call(this, '普通页面'),
@@ -1129,7 +1128,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		// 横向菜单
 		this.addEntry('page menu', function()
 		{
-			var cell = new mxCell('', new mxGeometry(0, 0, 360, 40), 'shape=menulist;group');
+			var cell = new mxCell('', new mxGeometry(0, 0, 360, 40), 'shape=menulist;group;selectBackgroundColor=#3B72A8;selectedFontColor=#3B72A8;');
 			cell.vertex = true;
 			
 			for (let i = 0; i < 3; i++) {
