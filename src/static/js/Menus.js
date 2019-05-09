@@ -90,7 +90,7 @@ Menus.prototype.init = function()
 	// 文件
 	this.put('file', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
-		this.addMenuItems(menu, ['new', 'open', '-', 'save', 'pageSetup', 'editDiagram'], parent);
+		this.addMenuItems(menu, ['new', 'open', '-', 'save', 'pageSetup'], parent);
 	})));
 	// 编辑
 	this.put('edit', new Menu(mxUtils.bind(this, function(menu, parent)
