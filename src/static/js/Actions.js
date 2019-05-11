@@ -190,7 +190,6 @@ Actions.prototype.init = function()
 			console.log(val, desc)
 		});
 		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '链接');
-		dlg.init();
 	}, true)
 	// 文件操作
 	// this.addAction('new', function() { graph.openLink(ui.getUrl()); });

@@ -1,378 +1,3 @@
-const MOCKPOINTTYPEDATA = [
-	{
-			"id": "1909749721078046720",
-			"name": "33443",
-			"alias": "33443",
-			"category": "thirdParty",
-			"isThirdParty": "true",
-			"params": [
-					{
-							"id": "1909750976752001024",
-							"name": "ffgg",
-							"dataType": "TINYINT",
-							"createTime": "2019-04-11 14:09:35",
-							"updateTime": "2019-04-11 14:09:35",
-							"createBy": "admin",
-							"pointTypeDTO": null,
-							"status": "3"
-					}
-			],
-			"points": [],
-			"keywords": null,
-			"status": "1",
-			"pointsSize": null,
-			"paramsSize": null,
-			"createTime": "2019-04-11 14:09:35",
-			"updateTime": "2019-04-11 14:09:35",
-			"createBy": "admin"
-	},
-	{
-			"id": "1e96955b60bbcf0854ab3e44ac19fc4",
-			"name": "xintianjia",
-			"alias": "xintianjia",
-			"category": "thirdParty",
-			"isThirdParty": "true",
-			"params": [],
-			"points": [
-					{
-							"id": "1e96a582842bf00b7e889be599980de",
-							"name": "cjdex1",
-							"uploadType": null,
-							"gateway": null,
-							"uploadProto": "MQTT",
-							"topic": "v1/t1/xintianjia/cjdex1/telemetry",
-							"host": "http://locahost",
-							"tbRvInterface": null,
-							"subnetMask": "",
-							"connectString": "",
-							"location": "1e96954c94c4920854ab3e44ac19fc4",
-							"sensor": null,
-							"createTime": "2019-04-29 16:24:05",
-							"createBy": "admin",
-							"status": "1",
-							"sort": 0,
-							"pointTypeDTO": null,
-							"keyWord": null,
-							"updateTime": "2019-04-29 16:24:05"
-					},
-					{
-							"id": "1e96a582a933eb0b7e889be599980de",
-							"name": "cjdex3",
-							"uploadType": null,
-							"gateway": null,
-							"uploadProto": "TibcoRV",
-							"topic": "1",
-							"host": "1",
-							"tbRvInterface": null,
-							"subnetMask": "1",
-							"connectString": "1",
-							"location": "1e96954c94c4920854ab3e44ac19fc4",
-							"sensor": null,
-							"createTime": "2019-04-29 16:24:12",
-							"createBy": "admin",
-							"status": "1",
-							"sort": 0,
-							"pointTypeDTO": null,
-							"keyWord": null,
-							"updateTime": "2019-04-29 16:24:12"
-					},
-					{
-							"id": "1e96a582a9ba320b7e889be599980de",
-							"name": "cjdex7",
-							"uploadType": null,
-							"gateway": null,
-							"uploadProto": "MQTT",
-							"topic": "v1/t1/xintianjia/cjdex7/telemetry",
-							"host": "http://locahost",
-							"tbRvInterface": null,
-							"subnetMask": "1",
-							"connectString": "1",
-							"location": "1e96954c94c4920854ab3e44ac19fc4",
-							"sensor": null,
-							"createTime": "2019-04-29 16:24:12",
-							"createBy": "admin",
-							"status": "1",
-							"sort": 0,
-							"pointTypeDTO": null,
-							"keyWord": null,
-							"updateTime": "2019-04-29 16:24:12"
-					}
-			],
-			"keywords": null,
-			"status": "1",
-			"pointsSize": null,
-			"paramsSize": null,
-			"createTime": "2019-04-28 09:34:06",
-			"updateTime": "2019-04-28 09:34:06",
-			"createBy": "admin"
-	},
-	{
-			"id": "2163115051521810432",
-			"name": "adasd",
-			"alias": "adasd",
-			"category": "thirdParty",
-			"isThirdParty": "true",
-			"params": [
-					{
-							"id": "2163127200742776832",
-							"name": "asd",
-							"dataType": "TINYINT",
-							"createTime": "2019-04-11 14:34:08",
-							"updateTime": "2019-04-11 14:34:08",
-							"createBy": "admin",
-							"pointTypeDTO": null,
-							"status": "3"
-					}
-			],
-			"points": [],
-			"keywords": null,
-			"status": "1",
-			"pointsSize": null,
-			"paramsSize": null,
-			"createTime": "2019-04-11 14:34:08",
-			"updateTime": "2019-04-11 14:34:08",
-			"createBy": "admin"
-	},
-	{
-			"id": "2287885461949128704",
-			"name": "32",
-			"alias": "32",
-			"category": "thirdParty",
-			"isThirdParty": "true",
-			"params": [
-					{
-							"id": "2287886543915982848",
-							"name": "13",
-							"dataType": "TINYINT",
-							"createTime": "2019-04-11 14:11:06",
-							"updateTime": "2019-04-11 14:11:06",
-							"createBy": "admin",
-							"pointTypeDTO": null,
-							"status": "3"
-					}
-			],
-			"points": [],
-			"keywords": null,
-			"status": "1",
-			"pointsSize": null,
-			"paramsSize": null,
-			"createTime": "2019-04-11 14:11:06",
-			"updateTime": "2019-04-11 14:11:06",
-			"createBy": "admin"
-	},
-	{
-			"id": "319113846423953408",
-			"name": "pump",
-			"alias": "pump",
-			"category": "collector",
-			"isThirdParty": "false",
-			"params": [
-					{
-							"id": "319113846423953408",
-							"name": "dp_temp",
-							"dataType": "FLOAT",
-							"createTime": "2019-04-26 11:25:35",
-							"updateTime": "2019-04-26 11:25:35",
-							"createBy": "admin",
-							"pointTypeDTO": null,
-							"status": "1"
-					}
-			],
-			"points": [
-					{
-							"id": "1e969baaf564190b7e889be599980de",
-							"name": "point1",
-							"uploadType": "direct",
-							"gateway": null,
-							"uploadProto": "MQTT",
-							"topic": "v1/t1/pump/point1/telemetry",
-							"host": "http://locahost",
-							"tbRvInterface": null,
-							"subnetMask": null,
-							"connectString": null,
-							"location": "1e969ba930f2e70b7e889be599980de",
-							"sensor": null,
-							"createTime": "2019-04-28 21:36:54",
-							"createBy": "admin",
-							"status": "1",
-							"sort": 0,
-							"pointTypeDTO": null,
-							"keyWord": null,
-							"updateTime": "2019-04-28 21:36:54"
-					},
-					{
-							"id": "1e96a5281ea4fb0b7e889be599980de",
-							"name": "p2",
-							"uploadType": "direct",
-							"gateway": null,
-							"uploadProto": "MQTT",
-							"topic": "v1/t1/pump/p2/telemetry",
-							"host": "http://locahost",
-							"tbRvInterface": null,
-							"subnetMask": null,
-							"connectString": null,
-							"location": "1e969ba930f2e70b7e889be599980de",
-							"sensor": null,
-							"createTime": "2019-04-29 15:43:41",
-							"createBy": "admin",
-							"status": "1",
-							"sort": 0,
-							"pointTypeDTO": null,
-							"keyWord": null,
-							"updateTime": "2019-04-29 15:43:41"
-					},
-					{
-							"id": "1e96a5369ac2530b7e889be599980de",
-							"name": "p3",
-							"uploadType": "gateway",
-							"gateway": null,
-							"uploadProto": "MQTT",
-							"topic": "v1/t1/pump/p3/telemetry",
-							"host": "http://locahost",
-							"tbRvInterface": null,
-							"subnetMask": null,
-							"connectString": null,
-							"location": "1e96a535ec1a690b7e889be599980de",
-							"sensor": null,
-							"createTime": "2019-04-29 15:50:10",
-							"createBy": "admin",
-							"status": "1",
-							"sort": 0,
-							"pointTypeDTO": null,
-							"keyWord": null,
-							"updateTime": "2019-04-29 15:50:10"
-					}
-			],
-			"keywords": null,
-			"status": "1",
-			"pointsSize": null,
-			"paramsSize": null,
-			"createTime": "2019-04-26 11:25:35",
-			"updateTime": "2019-04-26 11:25:35",
-			"createBy": "admin"
-	},
-	{
-			"id": "319180380865437696",
-			"name": "seg",
-			"alias": "seg",
-			"category": "thirdParty",
-			"isThirdParty": "true",
-			"params": [
-					{
-							"id": "319180380865437696",
-							"name": "g",
-							"dataType": "TINYINT",
-							"createTime": "2019-04-26 15:49:59",
-							"updateTime": "2019-04-26 15:49:59",
-							"createBy": "admin",
-							"pointTypeDTO": null,
-							"status": "1"
-					}
-			],
-			"points": [],
-			"keywords": null,
-			"status": "1",
-			"pointsSize": null,
-			"paramsSize": null,
-			"createTime": "2019-04-26 15:49:59",
-			"updateTime": "2019-04-26 15:49:59",
-			"createBy": "admin"
-	},
-	{
-			"id": "319180743953752064",
-			"name": "fffe",
-			"alias": "fffe",
-			"category": "thirdParty",
-			"isThirdParty": "true",
-			"params": [
-					{
-							"id": "319180743953752064",
-							"name": "ff",
-							"dataType": "TINYINT",
-							"createTime": "2019-04-26 15:51:25",
-							"updateTime": "2019-04-26 15:51:25",
-							"createBy": "admin",
-							"pointTypeDTO": null,
-							"status": "1"
-					}
-			],
-			"points": [],
-			"keywords": null,
-			"status": "1",
-			"pointsSize": null,
-			"paramsSize": null,
-			"createTime": "2019-04-26 15:51:25",
-			"updateTime": "2019-04-26 15:51:25",
-			"createBy": "admin"
-	},
-	{
-			"id": "3817771263192080384",
-			"name": "dfg",
-			"alias": "dfg",
-			"category": "thirdParty",
-			"isThirdParty": "true",
-			"params": [
-					{
-							"id": "3817771929159475200",
-							"name": "ffffg",
-							"dataType": "TINYINT",
-							"createTime": "2019-04-11 11:50:34",
-							"updateTime": "2019-04-11 11:50:34",
-							"createBy": "admin",
-							"pointTypeDTO": null,
-							"status": "3"
-					},
-					{
-							"id": "3817772319783395328",
-							"name": "33",
-							"dataType": "TINYINT",
-							"createTime": "2019-04-11 11:50:34",
-							"updateTime": "2019-04-11 11:50:34",
-							"createBy": "admin",
-							"pointTypeDTO": null,
-							"status": "3"
-					},
-					{
-							"id": "3817772508669681664",
-							"name": "444",
-							"dataType": "TINYINT",
-							"createTime": "2019-04-11 11:50:34",
-							"updateTime": "2019-04-11 11:50:34",
-							"createBy": "admin",
-							"pointTypeDTO": null,
-							"status": "3"
-					},
-					{
-							"id": "3817772682401947648",
-							"name": "4442",
-							"dataType": "TINYINT",
-							"createTime": "2019-04-11 11:50:34",
-							"updateTime": "2019-04-11 11:50:34",
-							"createBy": "admin",
-							"pointTypeDTO": null,
-							"status": "3"
-					},
-					{
-							"id": "3817772860034916352",
-							"name": "353",
-							"dataType": "TINYINT",
-							"createTime": "2019-04-11 11:50:34",
-							"updateTime": "2019-04-11 11:50:34",
-							"createBy": "admin",
-							"pointTypeDTO": null,
-							"status": "3"
-					}
-			],
-			"points": [],
-			"keywords": null,
-			"status": "1",
-			"pointsSize": null,
-			"paramsSize": null,
-			"createTime": "2019-04-11 11:50:34",
-			"updateTime": "2019-04-11 11:50:34",
-			"createBy": "admin"
-	}
-]
 /**
  * Copyright (c) 2006-2012, JGraph Ltd
  */
@@ -936,28 +561,20 @@ var FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
  */
 var ConfigLinkDialog = function(editorUi, linkvalue, buttonText, fn)
 {
-	
+	var graph = editorUi.editor.graph;
+	// 获取选中节点
+	var cell = graph.getSelectionCell();
+	var cellInfo = graph.getModel().getValue(cell);
 	var saveContent = editorUi.createDiv('geDialogInfo')
-	// 链接名称
-	var nameTitle = document.createElement('p')
-	nameTitle.innerHTML = '名称:'
-	nameTitle.className = 'geDialogInfoTitle';	
-	saveContent.appendChild(nameTitle)
-	
-	var nameInput = document.createElement('input');
-	nameInput.setAttribute('value', linkvalue || '');
-	nameInput.className = 'saveFileInput'
-	saveContent.appendChild(nameInput)
-
 	// 链接
 	var linkTitle = document.createElement('p');
-	linkTitle.innerHTML = 'link:';
+	linkTitle.innerHTML = '链接：';
 	linkTitle.style.margin = "9px 0 5px";
 	linkTitle.style.color = "#929292";
 	saveContent.appendChild(linkTitle)
 	
 	var linkInput = document.createElement('input');
-	linkInput.setAttribute('value', editorUi.editor.getDescribe() || '');
+	linkInput.setAttribute('value', cellInfo.getAttribute('smartBiLink') || '');
 	linkInput.className = 'saveFileInput'
 	saveContent.appendChild(linkInput)
 
@@ -966,14 +583,14 @@ var ConfigLinkDialog = function(editorUi, linkvalue, buttonText, fn)
 	var genericBtn = mxUtils.button(buttonText, function()
 	{
 		editorUi.hideDialog();
-		
-		fn(nameInput.value, linkInput.value);
+		cellInfo.setAttribute('smartBiLink', linkInput.value);
+		graph.getModel().setValue(cell, cellInfo);
+		// fn(linkInput.value);
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	
 	this.init = function()
 	{
-		nameInput.focus();
 	};
 	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
 	{
@@ -983,7 +600,7 @@ var ConfigLinkDialog = function(editorUi, linkvalue, buttonText, fn)
 	
 	btnContent.appendChild(cancelBtn);
 
-	mxEvent.addListener(nameInput, 'keypress', function(e)
+	mxEvent.addListener(linkInput, 'keypress', function(e)
 	{
 		if (e.keyCode == 13)
 		{
@@ -1004,15 +621,6 @@ var LinkReportDialog = function(editorUi, defaultLink) {
 	// 获取选中节点
 	var cell = graph.getSelectionCell();
 	var cellInfo = graph.getModel().getValue(cell);
-	if (cellInfo !== undefined && cellInfo !== null) {
-	}
-	if (!mxUtils.isNode(cellInfo))
-	{
-		var doc = mxUtils.createXmlDocument();
-		var obj = doc.createElement('object');
-		obj.setAttribute('label', cellInfo || '');
-		cellInfo = obj;
-	}
 	var saveContent = editorUi.createDiv('geDialogInfo');
 	// 链接
 	var nameTitle = document.createElement('p')
@@ -1184,7 +792,6 @@ var ImageDialog = function (editorUi, cell) {
 		})
 		// 选择图片方式
 		document.getElementById('innerTypeRadio').addEventListener('click', function (e) {
-			console.log(1111)
 			localImage = null;
 			e.stopImmediatePropagation()
 		})
@@ -1198,7 +805,6 @@ var ImageDialog = function (editorUi, cell) {
 			var fr = new FileReader();
 			// 获取图片信息
 			localImage = e.target.files[0];
-			console.log(localImage)
 			//将图片读取为DataURL
 			// fr.readAsDataURL(localImage);
 			// fr.onload = function() {}
@@ -1677,8 +1283,8 @@ var PaletteDataDialog = function(editorUi, cell) {
 	// 绑定事件
 	// 选择采集点类型
 	mxEvent.addListener(typeSelect, 'change', (e) => {
-		var data = JSON.parse(e.target.selectedOptions[0].getAttribute('data-points'));
-		paramsData = JSON.parse(e.target.selectedOptions[0].getAttribute('data-params'));
+		var data = $(typeSelect).find("option:selected").data('points');
+		paramsData = $(typeSelect).find("option:selected").data('params');
 		this.fillContent(pointSelect, data);
 		choosedParam = [];
 		fillParams(variableList, choosedParam);
@@ -1746,7 +1352,7 @@ var PaletteDataDialog = function(editorUi, cell) {
 			graph.setSelectionCells(select);
 			graph.scrollCellToVisible(select[0]);
 		}
-		editorUi.editor.ajax(editorUi, '/api/model/viewTool/warn', 'PUT', applyModel[0], function () {
+		editorUi.editor.ajax(editorUi, '/api/model/viewTool/warn', 'PUT', applyModel, function () {
 			// 请求成功回调函数
 			editorUi.hideDialog();
 			// editorUi.editor.tipInfo(editorUi, true, '保存')

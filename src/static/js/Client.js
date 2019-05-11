@@ -19350,6 +19350,7 @@ mxSvgCanvas2D.prototype.rotate = function(theta, flipH, flipV, cx, cy)
 mxSvgCanvas2D.prototype.begin = function()
 {
 	mxAbstractCanvas2D.prototype.begin.apply(this, arguments);
+	
 	this.node = this.createElement('path');
 };
 
@@ -47828,7 +47829,6 @@ mxCellRenderer.prototype.createShape = function(state)
 		// Checks if there is a stencil for the name and creates
 		// a shape instance for the stencil if one exists
 		var stencil = mxStencilRegistry.getStencil(state.style[mxConstants.STYLE_SHAPE]);
-		
 		if (stencil != null)
 		{
 			shape = new mxShape(stencil);
@@ -47838,8 +47838,7 @@ mxCellRenderer.prototype.createShape = function(state)
 			var ctor = this.getShapeConstructor(state);
 			shape = new ctor();
 		}
-	}
-	
+	}	
 	return shape;
 };
 
@@ -57709,7 +57708,6 @@ mxGraph.prototype.getImageFromBundles = function(key)
  */
 mxGraph.prototype.orderCells = function(back, cells)
 {
-	console.log(back)
 	if (cells == null)
 	{
 		cells = mxUtils.sortCells(this.getSelectionCells(), true);
@@ -76524,8 +76522,6 @@ mxVertexHandler.prototype.rotateCell = function(cell, angle, parent)
 {
 	if (angle != 0)
 	{
-	console.log(122222222)
-
 		if (model.isVertex(cell) || model.isEdge(cell))
 		{
 			if (!model.isEdge(cell))

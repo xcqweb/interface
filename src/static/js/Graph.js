@@ -4325,7 +4325,6 @@ mxStencilRegistry.packages = [];
 mxStencilRegistry.getStencil = function(name)
 {
 	var result = mxStencilRegistry.stencils[name];
-	
 	if (result == null && mxCellRenderer.defaultShapes[name] == null && mxStencilRegistry.dynamicLoading)
 	{
 		var basename = mxStencilRegistry.getBasenameForStencil(name);
@@ -4426,7 +4425,6 @@ mxStencilRegistry.loadStencilSet = function(stencilFile, postStencilLoad, force,
 	
 	// Uses additional cache for detecting previous load attempts
 	var xmlDoc = mxStencilRegistry.packages[stencilFile];
-	
 	if (force || xmlDoc == null)
 	{
 		var install = false;

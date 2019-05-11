@@ -345,7 +345,7 @@ Editor.prototype.InitEditor = function (editorUi) {
 	let getFileSystem = new Promise((resolve, reject) => {
 		this.ajax(editorUi, '/api/image/host', 'GET', null, function (res) {
 			// 文件服务器地址
-			window.fileSystem = res;
+			window.fileSystem = res.host;
 			resolve(res)
 		}, null)
 	})
@@ -415,6 +415,14 @@ Editor.prototype.uploadFile = function (editorUi, url, method, data, fn = functi
  * 控件信息
  */
 Editor.prototype.palettesInfo = {
+	'jevin.jevin1': {
+		name: 'jevin1',
+		num: 0
+	},
+	'jevin.jevin2': {
+		name: 'jevin2',
+		num: 0
+	},
 	rectangle: {
 		name: '矩形',
 		num: 0

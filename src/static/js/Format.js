@@ -3604,6 +3604,7 @@ PaletteManagePanel.prototype.fillList = function (container, filter) {
 		// 节点的state信息
 		var state = graph.view.getState(cells[i]);
 		if (state) {
+			// console.log(state)
 			var info = state.style.shape;
 			info = primitives.indexOf(info) == -1 ? info : 'primitive';
 			var name = this.getCellInfo('palettename', cells[i]) || '';

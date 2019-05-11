@@ -1,23 +1,56 @@
-let xmlstr = `<mxGraphModel dx="1426" dy="810" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff">
-  <root>
-    <mxCell id="0"/>
-    <mxCell id="1" parent="0"/>
-    <mxCell id="3" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-      <mxGeometry x="90" y="140" width="120" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="4" value="" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
-      <mxGeometry x="440" y="100" width="80" height="80" as="geometry"/>
-    </mxCell>
-    <mxCell id="5" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-      <mxGeometry x="370" y="230" width="120" height="60" as="geometry"/>
-    </mxCell>
-  </root>
-</mxGraphModel>
-`
-var model = new mxGraphModel();
-// 解析为xml格式
-var xmlDoc = mxUtils.parseXml(xmlstr).documentElement;
-console.log(xmlDoc)
+// 编辑model
+const model = new mxGraphModel();
+// 控件xml解析信息
+let shapeXmls,applyInfo,fileSystem;
+// 正常页面渲染地方
+let gePreview = document.getElementById('gePreview');
+// 正常的最小x、y偏移量
+let minX = minY = 0;
+// 页面宽度和高度
+let pageWidth = pageHeight = 0;
+// -----------------------------
+/**
+ * 插入svg
+ * @param {string} key 
+ * @param {number} w 
+ * @param {number} h 
+ * @param {string} fillColor 
+ * @param {string} strokeColor 
+ */
+function insertSvg(key, w, h, fillColor = 'none', strokeColor='#333') {
+  let inner = shapeXmls[key]
+  let svgContent = document.createElement('div');
+  inner.setAttribute('fill', fillColor)
+  inner.setAttribute('stroke', strokeColor)
+  
+  let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('viewBox', '0 0 24 24')
+  svg.setAttribute('width', w);
+  svg.setAttribute('height', h);
+  svg.innerHTML = inner.outerHTML;
+  svgContent.appendChild(svg)
+  document.body.appendChild(svgContent)
+}
+
+/**
+ * 加载控件的xml配置文档
+ */
+function loadShapeXml () {
+  return new Promise((resolve, reject) => {
+    mxUtils.get('/static/stencils/preview.xml', function (res) {
+      let root = res.getXml();
+      let obj = {};
+      let shape = root.documentElement.firstChild;
+      while (shape != null) {
+        if (shape.nodeType == 1) {
+          obj[shape.getAttribute('name')] = shape.children[0];
+        }
+        shape = shape.nextSibling
+      }
+      resolve(obj)
+    })    
+  })
+}
 
 /**
  * 获取cookie信息
@@ -54,7 +87,7 @@ function geAjax (url, method = 'GET', data = null) {
       xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4 &&xmlhttp.status ==200){
           // 服务器响应正确数据
-          resolve(xmlhttp.responseText)
+          resolve(JSON.parse(xmlhttp.responseText))
         } else if (xmlhttp.readyState == 4) {
           // 服务器响应错误数据
           reject(xmlhttp.responseText)
@@ -71,31 +104,10 @@ function geAjax (url, method = 'GET', data = null) {
   })
 }
 
-/**
- * 执行渲染
- */
-async function main () {
-  let id = /id=(.+?)$/.exec(location.search)
-  if ( id ) {
-    id = id[1]
-  } else {
-    console.log('id不存在');
-    return;
-  }
-  let fileSystem = await geAjax('/api/image/host', 'GET');
-  let applyInfo = await geAjax(`/api/viewtool/${id}`, 'GET')
-  if (!applyInfo) {
-    console.log('未查到对应数据')
-    return;
-  }
-  applyInfo = JSON.parse(applyInfo)
-  let previewPage = new PreviewPage(applyInfo)
-  previewPage.pageCounts();
+function showDialog() {
+  let bg = document.createElement('div');
 }
 
-// 根节点列表
-let root = xmlDoc.getElementsByTagName('root')[0].children;
-console.log(root)
 /**
  * 渲染页面
  */
@@ -113,26 +125,215 @@ class PreviewPage {
     this.name = name;
   }
 
+  // 页面数量
   pageCounts() {
-    console.log(Object.keys(this.content))
+    return Object.keys(this.content);
+  }
+  // 生成弹窗
+  createDialog() {
+    let bg = document.createElement('div')
+    bg.className = 'bg';
+    document.body.appendChild(bg)
+    let dialog = document.createElement('div');
+    dialog.className = 'geDialog';
+    // 标题
+    let title = document.createElement('p');
+    title.className = 'geDialogTitle';
+    title.innerHTML = '弹窗';
+    dialog.appendChild(title);
+    // 点击关闭弹窗
+    title.addEventListener('click', () => {
+      dialog.remove();
+      bg.remove();
+    })
+    // 弹窗正文
+    let content = document.createElement('div');
+    dialog.appendChild(content);
+    document.body.append(dialog);
+    return content;
+  }
+  // 解析所有控件节点
+  parseCells (root) {
+    // 递归获取节点
+    minX = minY = 0;
+    console.log(root)
+    let getNode = (t_id = 1) => {
+      let list = [];
+      for (let item of root) {
+          // console.log(item)
+          // 节点类型：object有属性，mxcell无属性
+          let node,value,tagName = item.tagName;
+          // 节点id
+          let id = item.getAttribute('id');
+          // 节点交互
+          let actionsInfo = item.getAttribute('actionsInfo');
+          // 链接
+          let smartBiLink = item.getAttribute('smartBiLink');
+          // mxcell节点
+          if (tagName == 'object') {
+            node = item.children[0];
+            value = item.getAttribute('label');
+          } else {
+            node = item;
+            value = node.getAttribute('value');
+          };
+          // 节点父节点
+          let parentId = node.getAttribute('parent');
+          // 节点存在id，递归
+          if (parentId == t_id && id) {
+              console.log(item)
+              // 节点参数信息
+              let getNodeInfo = new GetNodeInfo(node);
+              // console.log(getNodeInfo)
+              let x,y,width,height,fillColor,strokeColor,fontColor,fontSize,styles, isGroup, image;
+              // console.log(node)
+              styles = node.getAttribute('style');
+              isGroup = styles.indexOf('group') != -1;
+              fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF';
+              fontColor = getNodeInfo.getStyles('fontColor') || '#FFFFFF';
+              fontSize = getNodeInfo.getStyles('fontSize') || '12';
+              strokeColor = getNodeInfo.getStyles('strokeColor') || 'none';
+              image = getNodeInfo.getStyles('image') || null;
+              x = parseFloat(node.children[0].getAttribute('x')) || 0;
+              y = parseFloat(node.children[0].getAttribute('y')) || 0;
+              width = parseFloat(node.children[0].getAttribute('width'));
+              height = parseFloat(node.children[0].getAttribute('height'));
+              x < minX && (minX = x);
+              y < minY && (minY = y);
+              // 节点类型
+              let shapeName = getNodeInfo.getStyles('shape');
+              let obj = {
+                  id,
+                  shapeName,
+                  x,
+                  y,
+                  width,
+                  height,
+                  fillColor,
+                  strokeColor,
+                  value,
+                  isGroup,
+                  fontColor,
+                  fontSize,
+                  image,
+                  smartBiLink,
+                  actionsInfo
+              };
+              // 组合节点
+              obj.children = getNode(id);
+              list.push(obj);
+          };
+      };
+
+      return list;
+    };
+    let cells = getNode();
+    cells.map(cell => {
+      pageWidth = (cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth;
+      pageHeight = (cell.y + cell.height) > pageHeight ? cell.x + cell.width : pageHeight;
+      cell.x += Math.abs(minX);
+      cell.y += Math.abs(minY);
+    })
+    return cells;
+  }
+  // 清空页面内容
+  clearPage () {
+    gePreview.innerHTML = ''
+  }
+  // 解析页面
+  parsePage (page) {
+    const xmlDoc = mxUtils.parseXml(page.xml).documentElement;
+    const root = xmlDoc.getElementsByTagName('root')[0].children;
+    let cells = this.parseCells(root);
+    if (page.type === 'normal') {
+      // 正常页面
+      this.clearPage();
+      this.renderPage(cells);
+    } else {
+      // 弹窗页面
+      let layerContent = this.createDialog();
+      layerContent.innerHTML = ``
+    }
+    return cells
+  }
+  // 获取节点的style内的某个属性
+  // 渲染页面
+  renderPage (cells, ele = gePreview) {
+    for (let cell of cells) {
+      // cell.x += Math.abs(minX);
+      // cell.y += Math.abs(minY);
+      let cellHtml = this.renderCell(cell);
+      ele.appendChild(cellHtml);
+      // 组内资源
+      if (cell.children.length) {
+        this.renderPage(cell.children, cellHtml);
+      }
+    }
+  }
+  
+  // 渲染控件节点
+  renderCell (cell) {
+    const shapeName = cell.shapeName;
+    let cellHtml;
+    if (shapeName === 'image') {
+      cellHtml = document.createElement('img');
+      cellHtml.id = 'iddddddddddddddddd'
+      cellHtml.setAttribute('src', cell.image.replace(/getechFileSystem/, fileSystem))
+    } else if (shapeName === 'linkTag') {
+      cellHtml = document.createElement('a');
+    } else if (shapeName === 'menuCell' || shapeName === 'menulist') {
+      cellHtml = document.createElement('div');
+      cellHtml.innerHTML = cell.shapeName;
+    } else if (shapeName === 'select') {
+      cellHtml = document.createElement('select');
+    } else if (shapeName === 'singleCheck') {
+      cellHtml = document.createElement('input');
+      cellHtml.setAttribute('type', 'radio');
+    } else if (shapeName === 'multipleCheck') {
+      cellHtml = document.createElement('input');
+      cellHtml.setAttribute('type', 'checkbox');
+    } else if (shapeName === 'text') {
+      cellHtml = document.createElement('span');
+      cellHtml.innerHTML = cell.value;
+    } else if (shapeName === 'button') {
+      cellHtml = document.createElement('div');
+      cellHtml.innerHTML = cell.value;
+      // cellHtml.setAttribute('type', 'checkbox');
+    } else {
+      cellHtml = document.createElement('p');
+      cellHtml.innerHTML = cell.value;
+    }
+    cellHtml.style.left = cell.x + 'px';
+    cellHtml.style.top = cell.y + 'px';
+    cellHtml.style.width = cell.width + 'px';
+    cellHtml.style.height = cell.height + 'px';
+    cellHtml.style.backgroundColor = cell.fillColor;
+    cellHtml.style.border = '1px solid '  + cell.strokeColor;
+    cellHtml.className = 'gePalette'
+    return cellHtml;
   }
 }
 
 /**
  * 获取控件样式
  */
-class GetStyle {
-  constructor (name) {
-    this.name = name
+class GetNodeInfo {
+  constructor (node) {
+    this.node = node
+    this.styles = this.node.getAttribute('style')
   }
 
-  
-  getStyles () {
-
+  getStyles (key) {
+    let reg = new RegExp(key + '=(.+?);')
+    let execStr = reg.exec(this.styles);
+    return execStr ? execStr[1] : '';
   }
 }
 
-class CreateRectangle extends GetStyle {
+/**
+ * 创建矩形
+ */
+class CreateRectangle extends GetNodeInfo {
   constructor (name) {
     super(name);
   }
@@ -141,13 +342,33 @@ class CreateRectangle extends GetStyle {
     this.getStyles()
   }
 }
-// let mockdata = {"id":"1e9713e63b7ed20968cc5b1e5d5f3ca","serialNumber":"10000042","name":"test apply4","content":"{\"页面1\":{\"title\":\"页面1\",\"desc\":\"\",\"xml\":\"<mxGraphModel dx=\\\"1189\\\" dy=\\\"799\\\" grid=\\\"1\\\" gridSize=\\\"10\\\" palettesInfo=\\\"{&quot;rectangle&quot;:{&quot;name&quot;:&quot;矩形&quot;,&quot;num&quot;:5},&quot;button&quot;:{&quot;name&quot;:&quot;按钮&quot;,&quot;num&quot;:1},&quot;menulist&quot;:{&quot;name&quot;:&quot;菜单&quot;,&quot;num&quot;:2},&quot;menuCell&quot;:{&quot;name&quot;:&quot;菜单&quot;,&quot;num&quot;:0},&quot;image&quot;:{&quot;name&quot;:&quot;图片&quot;,&quot;num&quot;:0},&quot;text&quot;:{&quot;name&quot;:&quot;文本&quot;,&quot;num&quot;:0},&quot;select&quot;:{&quot;name&quot;:&quot;下拉列表&quot;,&quot;num&quot;:1},&quot;table&quot;:{&quot;name&quot;:&quot;表格&quot;,&quot;num&quot;:0},&quot;tableBox&quot;:{&quot;name&quot;:&quot;表格&quot;,&quot;num&quot;:2},&quot;tableCell&quot;:{&quot;name&quot;:&quot;表格&quot;,&quot;num&quot;:0},&quot;endarrow&quot;:{&quot;name&quot;:&quot;箭头&quot;,&quot;num&quot;:0},&quot;line&quot;:{&quot;name&quot;:&quot;直线&quot;,&quot;num&quot;:1},&quot;curve&quot;:{&quot;name&quot;:&quot;曲线&quot;,&quot;num&quot;:0},&quot;linkTag&quot;:{&quot;name&quot;:&quot;Link&quot;,&quot;num&quot;:2},&quot;primitive&quot;:{&quot;name&quot;:&quot;图元&quot;,&quot;num&quot;:0},&quot;multipleCheck&quot;:{&quot;name&quot;:&quot;复选&quot;,&quot;num&quot;:0},&quot;singleCheck&quot;:{&quot;name&quot;:&quot;单选&quot;,&quot;num&quot;:0}}\\\" guides=\\\"1\\\" tooltips=\\\"1\\\" connect=\\\"0\\\" arrows=\\\"0\\\" fold=\\\"1\\\" page=\\\"0\\\" pageScale=\\\"1\\\" pageWidth=\\\"827\\\" pageHeight=\\\"1169\\\" background=\\\"#ffffff\\\"><root><mxCell id=\\\"0\\\"/><mxCell id=\\\"1\\\" parent=\\\"0\\\"/><object label=\\\"\\\" palettename=\\\"菜单2\\\" id=\\\"21\\\"><mxCell style=\\\"shape=menulist;group;selectBackgroundColor=#3B72A8;selectedFontColor=#3333FF;fontColor=#000000;fillColor=#FFFFFF;\\\" parent=\\\"1\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"-260\\\" y=\\\"100\\\" width=\\\"360\\\" height=\\\"40\\\" as=\\\"geometry\\\"/></mxCell></object><mxCell id=\\\"22\\\" value=\\\"菜单1\\\" style=\\\"shape=menuCell;html=1;whiteSpace=wrap;\\\" parent=\\\"21\\\" vertex=\\\"1\\\"><mxGeometry width=\\\"120\\\" height=\\\"40\\\" as=\\\"geometry\\\"/></mxCell><mxCell id=\\\"23\\\" value=\\\"菜单2\\\" style=\\\"shape=menuCell;html=1;whiteSpace=wrap;\\\" parent=\\\"21\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"120\\\" width=\\\"120\\\" height=\\\"40\\\" as=\\\"geometry\\\"/></mxCell><mxCell id=\\\"24\\\" value=\\\"菜单3\\\" style=\\\"shape=menuCell;html=1;whiteSpace=wrap;\\\" parent=\\\"21\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"240\\\" width=\\\"120\\\" height=\\\"40\\\" as=\\\"geometry\\\"/></mxCell><object label=\\\"&lt;a style=&quot;width: 100% ; height: 100% ; color: #3d91f7 ; display: table-cell ; vertical-align: bottom ; text-decoration: underline&quot; class=&quot;linkTag&quot;&gt;link&lt;br&gt;&lt;/a&gt;\\\" palettename=\\\"Link1\\\" id=\\\"26\\\"><mxCell style=\\\"shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center;fontColor=#000000;\\\" parent=\\\"1\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"-260\\\" y=\\\"190\\\" width=\\\"70\\\" height=\\\"40\\\" as=\\\"geometry\\\"/></mxCell></object><object label=\\\"&lt;a style=&quot;width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline&quot; class=&quot;linkTag&quot;&gt;Link&lt;/a&gt;\\\" palettename=\\\"Link2\\\" id=\\\"27\\\"><mxCell style=\\\"shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center;fontColor=#000000;\\\" parent=\\\"1\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"-175\\\" y=\\\"190\\\" width=\\\"70\\\" height=\\\"40\\\" as=\\\"geometry\\\"/></mxCell></object><object label=\\\"\\\" palettename=\\\"矩形5\\\" bindData=\\\"{&quot;pointType&quot;:&quot;1e97096c7d793308d043f792111face&quot;,&quot;point&quot;:&quot;1e9713862b2e7f0b0abb56374f156db&quot;,&quot;params&quot;:[{&quot;name&quot;:&quot;5u&quot;,&quot;id&quot;:&quot;1e97138c8085f90b0abb56374f156db&quot;},{&quot;name&quot;:&quot;P1&quot;,&quot;id&quot;:&quot;1e97096c7d793318d043f792111face&quot;}]}\\\" id=\\\"46\\\"><mxCell style=\\\"rounded=0;shape=rectangle;whiteSpace=wrap;html=1;fontColor=#000000;\\\" parent=\\\"1\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"-10\\\" y=\\\"190\\\" width=\\\"120\\\" height=\\\"60\\\" as=\\\"geometry\\\"/></mxCell></object></root></mxGraphModel>\",\"type\":\"normal\"},\"页面2\":{\"title\":\"页面2\",\"desc\":\"\",\"xml\":\"<mxGraphModel dx=\\\"1083\\\" dy=\\\"799\\\" grid=\\\"1\\\" gridSize=\\\"10\\\" palettesInfo=\\\"{&quot;rectangle&quot;:{&quot;name&quot;:&quot;矩形&quot;,&quot;num&quot;:4},&quot;button&quot;:{&quot;name&quot;:&quot;按钮&quot;,&quot;num&quot;:1},&quot;menulist&quot;:{&quot;name&quot;:&quot;菜单&quot;,&quot;num&quot;:2},&quot;menuCell&quot;:{&quot;name&quot;:&quot;菜单&quot;,&quot;num&quot;:0},&quot;image&quot;:{&quot;name&quot;:&quot;图片&quot;,&quot;num&quot;:1},&quot;text&quot;:{&quot;name&quot;:&quot;文本&quot;,&quot;num&quot;:0},&quot;select&quot;:{&quot;name&quot;:&quot;下拉列表&quot;,&quot;num&quot;:0},&quot;table&quot;:{&quot;name&quot;:&quot;表格&quot;,&quot;num&quot;:0},&quot;tableBox&quot;:{&quot;name&quot;:&quot;表格&quot;,&quot;num&quot;:0},&quot;tableCell&quot;:{&quot;name&quot;:&quot;表格&quot;,&quot;num&quot;:0},&quot;endarrow&quot;:{&quot;name&quot;:&quot;箭头&quot;,&quot;num&quot;:0},&quot;line&quot;:{&quot;name&quot;:&quot;直线&quot;,&quot;num&quot;:0},&quot;curve&quot;:{&quot;name&quot;:&quot;曲线&quot;,&quot;num&quot;:0},&quot;linkTag&quot;:{&quot;name&quot;:&quot;Link&quot;,&quot;num&quot;:0},&quot;primitive&quot;:{&quot;name&quot;:&quot;图元&quot;,&quot;num&quot;:0},&quot;multipleCheck&quot;:{&quot;name&quot;:&quot;复选&quot;,&quot;num&quot;:0},&quot;singleCheck&quot;:{&quot;name&quot;:&quot;单选&quot;,&quot;num&quot;:0}}\\\" guides=\\\"1\\\" tooltips=\\\"1\\\" connect=\\\"0\\\" arrows=\\\"0\\\" fold=\\\"1\\\" page=\\\"0\\\" pageScale=\\\"1\\\" pageWidth=\\\"827\\\" pageHeight=\\\"1169\\\" background=\\\"#ffffff\\\"><root><mxCell id=\\\"0\\\"/><mxCell id=\\\"1\\\" parent=\\\"0\\\"/><object label=\\\"\\\" palettename=\\\"矩形1\\\" id=\\\"2\\\"><mxCell style=\\\"rounded=0;shape=rectangle;whiteSpace=wrap;html=1;fontColor=#000000;\\\" parent=\\\"1\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"10\\\" y=\\\"120\\\" width=\\\"120\\\" height=\\\"60\\\" as=\\\"geometry\\\"/></mxCell></object><object label=\\\"\\\" palettename=\\\"菜单2\\\" id=\\\"3\\\"><mxCell style=\\\"shape=menulist;group;fontColor=#000000;\\\" parent=\\\"1\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"60\\\" y=\\\"310\\\" width=\\\"360\\\" height=\\\"40\\\" as=\\\"geometry\\\"/></mxCell></object><mxCell id=\\\"4\\\" value=\\\"菜单1\\\" style=\\\"shape=menuCell;html=1;whiteSpace=wrap;\\\" parent=\\\"3\\\" vertex=\\\"1\\\"><mxGeometry width=\\\"120\\\" height=\\\"40\\\" as=\\\"geometry\\\"/></mxCell><mxCell id=\\\"5\\\" value=\\\"菜单2\\\" style=\\\"shape=menuCell;html=1;whiteSpace=wrap;\\\" parent=\\\"3\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"120\\\" width=\\\"120\\\" height=\\\"40\\\" as=\\\"geometry\\\"/></mxCell><mxCell id=\\\"6\\\" value=\\\"菜单3\\\" style=\\\"shape=menuCell;html=1;whiteSpace=wrap;\\\" parent=\\\"3\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"240\\\" width=\\\"120\\\" height=\\\"40\\\" as=\\\"geometry\\\"/></mxCell><object label=\\\"\\\" palettename=\\\"图片1\\\" id=\\\"7\\\"><mxCell style=\\\"shape=image;image;html=1;labelBackgroundColor=#ffffff;image=getechFileSystem/group1/M00/00/01/wKgDTlzGjwqAS5Z-ABR6K7HTkgo756.jpg;fontColor=#000000;\\\" parent=\\\"1\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"-40\\\" y=\\\"400\\\" width=\\\"300\\\" height=\\\"170\\\" as=\\\"geometry\\\"/></mxCell></object><object label=\\\"\\\" palettename=\\\"矩形2\\\" actionsInfo=\\\"[{&quot;type&quot;:&quot;out&quot;,&quot;link&quot;:&quot;&quot;,&quot;innerType&quot;:&quot;页面&quot;,&quot;mouseEvent&quot;:&quot;鼠标移入&quot;,&quot;effectAction&quot;:&quot;隐藏&quot;}]\\\" id=\\\"8\\\"><mxCell style=\\\"rounded=0;shape=rectangle;whiteSpace=wrap;html=1;fontColor=#000000;\\\" parent=\\\"1\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"60\\\" y=\\\"10\\\" width=\\\"120\\\" height=\\\"60\\\" as=\\\"geometry\\\"/></mxCell></object><object label=\\\"\\\" palettename=\\\"矩形3\\\" id=\\\"9\\\"><mxCell style=\\\"rounded=0;shape=rectangle;whiteSpace=wrap;html=1;fontColor=#000000;\\\" parent=\\\"1\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"190\\\" y=\\\"80\\\" width=\\\"120\\\" height=\\\"60\\\" as=\\\"geometry\\\"/></mxCell></object><object label=\\\"\\\" palettename=\\\"矩形4\\\" id=\\\"10\\\"><mxCell style=\\\"rounded=0;shape=rectangle;whiteSpace=wrap;html=1;fontColor=#000000;\\\" parent=\\\"1\\\" vertex=\\\"1\\\"><mxGeometry x=\\\"130\\\" y=\\\"200\\\" width=\\\"120\\\" height=\\\"60\\\" as=\\\"geometry\\\"/></mxCell></object></root></mxGraphModel>\",\"type\":\"dialog\"}}","describe":"test apply4 describe","applyCon":null,"status":0,"applieNum":0,"models":null};
 
-// let preview = new PreviewPage(mockdata);
-// preview.getName()
-
-// console.log(document.getElementById('gePreview'))
-
-let createRectangle = new CreateRectangle('矩形')
-createRectangle.render()
+/**
+ * 执行渲染主函数
+ */
+async function main () {
+  let id = /id=(.+?)$/.exec(location.search)
+  if ( id ) {
+    id = id[1]
+  } else {
+    console.log('id不存在');
+    return;
+  }
+  const host = await geAjax('/api/image/host', 'GET');
+  fileSystem = host.host;
+  applyInfo = await geAjax(`/api/viewtool/${id}`, 'GET');
+  shapeXmls = await loadShapeXml();
+  if (!applyInfo) {
+    console.log('未查到对应数据')
+    return;
+  }
+  applyInfo = applyInfo;
+  let previewPage = new PreviewPage(applyInfo);
+  for (let key in previewPage.content) {
+    if (previewPage.content[key].type === 'normal') {
+      console.log(previewPage.parsePage(previewPage.content[key]))
+    }
+  }
+}
 main();
+
