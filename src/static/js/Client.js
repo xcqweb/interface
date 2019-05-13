@@ -2781,8 +2781,9 @@ var mxUtils =
 				return parser.parseFromString(xml, 'text/xml');
 			};
 		}
-		else // IE<=9
+		else
 		{
+			// IE<=9
 			return function(xml)
 			{
 				var result = mxUtils.createXmlDocument();

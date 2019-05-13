@@ -420,7 +420,6 @@ EditorUi = function(editor, container, lightbox)
 	this.setDefaultStyle = function(cell)
 	{
 		var state = graph.view.getState(cell);
-		
 		if (state != null)
 		{
 			// Ignores default styles
@@ -523,8 +522,6 @@ EditorUi = function(editor, container, lightbox)
 	{
 		var model = graph.getModel();
 		model.beginUpdate();
-		console.log(asText, cells)
-
 		try
 		{
 			if (asText)
@@ -550,6 +547,7 @@ EditorUi = function(editor, container, lightbox)
 
 					// Removes styles defined in the cell style from the styles to be applied
 					var cellStyle = model.getStyle(cell);
+
 					var tokens = (cellStyle != null) ? cellStyle.split(';') : [];
 					var appliedStyles = styles.slice();
 					
@@ -589,10 +587,17 @@ EditorUi = function(editor, container, lightbox)
 				 		}
 					}
 	
-					// Applies the current style to the cell
+					// 设置默认样式
 					var edge = model.isEdge(cell);
 					var current = (edge) ? graph.currentEdgeStyle : graph.currentVertexStyle;
 					var newStyle = model.getStyle(cell);
+					current = {
+						strokeColor: '#000000',
+						align: 'center',
+						verticalAlign: 'middle',
+						fillColor: '#FFFFFF',
+
+					}
 					
 					for (var j = 0; j < appliedStyles.length; j++)
 					{
@@ -608,7 +613,8 @@ EditorUi = function(editor, container, lightbox)
 							}
 						}
 					}
-					
+					console.log(newStyle)
+
 					model.setStyle(cell, newStyle);
 				}
 			}
@@ -850,19 +856,21 @@ EditorUi = function(editor, container, lightbox)
 		var cells = evt.getProperty('cells');
 		// 转换类型
 		for (let cell of cells) {
-			let cellInfo = graph.getModel().getValue(cell);
-			let shapeName = /shape=(.+?);/.exec(cell.style)[1];
-			shapeName = this.sidebar.primitives.includes(shapeName) ? 'primitive' : shapeName;
-			if (!mxUtils.isNode(cellInfo))
-			{
-				let doc = mxUtils.createXmlDocument();
-				let obj = doc.createElement('object');
-				obj.setAttribute('label', cellInfo || '');
-				cellInfo = obj;
-			};
-			this.editor.palettesInfo[shapeName].num++;
-			cellInfo.setAttribute('palettename', this.editor.palettesInfo[shapeName].name + this.editor.palettesInfo[shapeName].num);
-			graph.getModel().setValue(cell, cellInfo);
+			if (cell.style !== 'group') {
+				let cellInfo = graph.getModel().getValue(cell);
+				let shapeName = /shape=(.+?);/.exec(cell.style)[1];
+				shapeName = this.sidebar.primitives.includes(shapeName) ? 'primitive' : shapeName;
+				if (!mxUtils.isNode(cellInfo))
+				{
+					let doc = mxUtils.createXmlDocument();
+					let obj = doc.createElement('object');
+					obj.setAttribute('label', cellInfo || '');
+					cellInfo = obj;
+				};
+				this.editor.palettesInfo[shapeName].num++;
+				cellInfo.setAttribute('palettename', this.editor.palettesInfo[shapeName].name + this.editor.palettesInfo[shapeName].num);
+				graph.getModel().setValue(cell, cellInfo);
+			}
 		}
 		var parent = evt.getProperty('parent');
 		if (graph.getModel().isLayer(parent) && !graph.isCellVisible(parent) && cells != null && cells.length > 0)

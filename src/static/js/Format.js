@@ -500,7 +500,6 @@ BaseFormatPanel.prototype.setCellAttrs = function (key, value) {
 	var graph = editor.graph;
 	var cell = graph.getSelectionCell();
 	var cellInfo = graph.getModel().getValue(cell);
-	console.log(11122, mxUtils.isNode(cellInfo))
 	// 转换类型
 	if (!mxUtils.isNode(cellInfo))
 	{
@@ -2320,6 +2319,7 @@ ArrangePanel.prototype.addShowHide = function (container) {
 	// 点击事件
 	mxEvent.addListener(btnBox, 'click', function (evt) {
 		this.setCellAttrs('hide', btn.style.float === 'left');
+		btn.style.float === 'left' ? btn.style.float = 'right' : btn.style.float = 'left';
 	}.bind(this))
 
 	div.appendChild(btnBox);
@@ -2884,7 +2884,8 @@ ArrangePanel.prototype.addStroke = function(container)
 	}
 
 	var state = graph.view.getState(graph.getSelectionCell());
-	var color = mxUtils.getValue(state.style, 'strokeColor', null)
+	var strokeKey = (ss.style.shape == 'image') ? mxConstants.STYLE_IMAGE_BORDER : mxConstants.STYLE_STROKECOLOR;
+	var color = mxUtils.getValue(state.style, strokeKey, null)
 	color ? styleSelect.value = '有' : styleSelect.value = '无';
 	colorPanel.appendChild(styleSelect)
 	mxEvent.addListener(styleSelect, 'change', function(evt)
@@ -2894,8 +2895,8 @@ ArrangePanel.prototype.addStroke = function(container)
 		{
 			// 无边框时 color设置为none
 			color = styleSelect.value == '无' ? 'none' : '#000000';
-			graph.setCellStyles('strokeColor', color, graph.getSelectionCells());
-			ui.fireEvent(new mxEventObject('styleChanged', 'keys', ['strokeColor'],'values', [color], 'cells', graph.getSelectionCells()));
+			graph.setCellStyles(strokeKey, color, graph.getSelectionCells());
+			ui.fireEvent(new mxEventObject('styleChanged', 'keys', [strokeKey],'values', [color], 'cells', graph.getSelectionCells()));
 		}
 		finally
 		{
@@ -2910,7 +2911,6 @@ ArrangePanel.prototype.addStroke = function(container)
 		mxEvent.consume(evt);
 	});
 
-	var strokeKey = (ss.style.shape == 'image') ? mxConstants.STYLE_IMAGE_BORDER : mxConstants.STYLE_STROKECOLOR;
 	var label = (ss.style.shape == 'image') ? mxResources.get('border') : mxResources.get('line');
 	
 	var lineColor = this.createCellColorOption(label, strokeKey, '#000000');
@@ -3307,6 +3307,7 @@ ActionsPanel.prototype.createOperateBox = function(container)
 				}
 			}
 		}
+		actions.length && (temp = actions[actions.length - 1]);
 		var divpanel = this.createPanel();
 		divpanel.id = 'actionPanel';
 		divpanel.style.paddingBottom = '12px';
@@ -3331,7 +3332,7 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		// 页面或者控件列表
 		var pageList = document.createElement('ul');
 		pageList.className = 'pageList';
-		var mockData1 = ['首页', '设备列表', '曲线图', '告警中心', '浮窗']
+		var pagesNameList = Object.keys(editor.pages);
 		// 控件列表
 		var paletteList = [];
 		var list = $("#paletteManageList li");
@@ -3339,7 +3340,7 @@ ActionsPanel.prototype.createOperateBox = function(container)
 			paletteList.push(list[i].innerText)
 		}
 		var innerListData = mxUtils.bind(this, function (evt) {
-			let data = temp.innerType == "页面" ? mockData1 : paletteList;
+			let data = temp.innerType == "页面" ? pagesNameList : paletteList;
 			pageList.innerHTML = `
 				${
 					data.map((val) => (`<li class="${ temp.type == 'in' && val == temp.link ? 'formatPageActive' : ''}">${val}</li>`)).join('')
@@ -3367,10 +3368,13 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		divpanel.appendChild(outChoose);
 		
 		divpanel.appendChild(outInput);
+		// 点击选择页面、控件
 		var selectPage = mxUtils.bind(this, function (evt) {
-			$('.formatPageActive').removeClass();
-			evt.target.className = 'formatPageActive';
-			this.setActions(graph, 'link', evt.target.innerText);
+			if (evt.target.nodeName === 'LI') {
+				$('.formatPageActive').removeClass();
+				evt.target.className = 'formatPageActive';
+				this.setActions(graph, 'link', evt.target.innerText);
+			}
 		})
 		var listener =mxUtils.bind(this, function () {
 			actions = editor.getActionsInfo() || [];
@@ -3603,8 +3607,7 @@ PaletteManagePanel.prototype.fillList = function (container, filter) {
 	for (var i = 0; i < cells.length; i++) {
 		// 节点的state信息
 		var state = graph.view.getState(cells[i]);
-		if (state) {
-			// console.log(state)
+		if (state && state.cell.style.indexOf('group') == -1) {
 			var info = state.style.shape;
 			info = primitives.indexOf(info) == -1 ? info : 'primitive';
 			var name = this.getCellInfo('palettename', cells[i]) || '';

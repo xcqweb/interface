@@ -359,16 +359,16 @@ Editor.prototype.InitEditor = function (editorUi) {
 	}
 	
 	Promise.all([getFileSystem, editPromise]).then(res => {
-			// 编辑
+		// 编辑
 		if (res[1]) {
 			var editData = res[1]
-			// var doc = mxUtils.parseXml(xml1);
-			// editorUi.editor.setGraphXml(doc.documentElement);
 			editorUi.editor.pages = JSON.parse(editData.content);
 			editorUi.editor.setFilename(editData.name)
 			editorUi.editor.setApplyId(editData.id)
 			editorUi.editor.setDescribe(editData.describe)
 		}
+		editorUi.sidebar.container.innerHTML = ''
+		editorUi.sidebar.init()
 		// 默认选中
 		$("#normalPages li").eq(0).click();
 		return res;
@@ -509,18 +509,18 @@ Editor.prototype.setCurrentPage = function (title) {
 /**
  * 编辑器页面数据
  */
-var defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
+Editor.prototype.defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
 Editor.prototype.pages = {
 	"页面1": {
 		title: '页面1',
 		desc: '',
-		xml: defaultXml,
+		xml: this.defaultXml,
 		type: 'normal'
 	},
 	"页面2": {
 		title: '页面2',
 		desc: '',
-		xml: defaultXml,
+		xml: this.defaultXml,
 		type: 'dialog'
 	}
 };
@@ -539,7 +539,7 @@ Editor.prototype.addPage = function (page) {
 	if (this.pages[page.title]) {
 		return false;
 	} else {
-		page.xml = page.xml || defaultXml;
+		page.xml = page.xml || this.defaultXml;
 		this.pages[page.title] = page;
 		return true;
 	}

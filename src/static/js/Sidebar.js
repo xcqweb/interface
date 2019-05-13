@@ -1179,11 +1179,11 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 			for (let i = 0; i < 3; i++) {
 				let line = parseInt(i/3);
 				let xNum = i % 3;
-				let symbol = new mxCell('菜单' + (i + 1), new mxGeometry(xNum * 120, 40 * line, 120, 40), 'shape=menuCell;html=1;whiteSpace=wrap;');
+				let symbol = new mxCell('菜单' + (i + 1), new mxGeometry(xNum * 120, 40 * line, 120, 40), 'shape=menuCell;strokeColor=#000000;html=1;whiteSpace=wrap;');
 				symbol.vertex = true;
 				cell.insert(symbol);
 			}
-			
+			// 
 			return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '菜单');
 		}),
 		// 复选

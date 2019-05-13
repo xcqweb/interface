@@ -1,5 +1,10 @@
+html, body {
+  height: 100%;
+  overflow: auto;
+}
 #gePreview {
   position: relative;
+  margin:  0 auto;
 }
 #gePreview .gePalette {
   position: absolute;

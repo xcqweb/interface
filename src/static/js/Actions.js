@@ -192,7 +192,6 @@ Actions.prototype.init = function()
 		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '链接');
 	}, true)
 	// 文件操作
-	// this.addAction('new', function() { graph.openLink(ui.getUrl()); });
 	this.addAction('new', function() { ui.actions.get('addPage').funct() });
 	this.addAction('open', function()
 	{

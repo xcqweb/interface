@@ -566,6 +566,19 @@ var ConfigLinkDialog = function(editorUi, linkvalue, buttonText, fn)
 	var cell = graph.getSelectionCell();
 	var cellInfo = graph.getModel().getValue(cell);
 	var saveContent = editorUi.createDiv('geDialogInfo')
+
+	// 名称
+	var linkNameTitle = document.createElement('p');
+	linkNameTitle.innerHTML = '名称：';
+	linkNameTitle.style.margin = "9px 0 5px";
+	linkNameTitle.style.color = "#929292";
+	saveContent.appendChild(linkNameTitle)
+	
+	var linkNameInput = document.createElement('input');
+	linkNameInput.setAttribute('value', cellInfo.getAttribute('smartBiName') || '');
+	linkNameInput.className = 'saveFileInput'
+	saveContent.appendChild(linkNameInput)
+
 	// 链接
 	var linkTitle = document.createElement('p');
 	linkTitle.innerHTML = '链接：';
@@ -583,9 +596,9 @@ var ConfigLinkDialog = function(editorUi, linkvalue, buttonText, fn)
 	var genericBtn = mxUtils.button(buttonText, function()
 	{
 		editorUi.hideDialog();
+		cellInfo.setAttribute('smartBiName', linkNameInput.value);
 		cellInfo.setAttribute('smartBiLink', linkInput.value);
 		graph.getModel().setValue(cell, cellInfo);
-		// fn(linkInput.value);
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	
@@ -910,11 +923,13 @@ var addPageDialog = function (editorUi, type) {
 	var desc = title = '';
 	var pageType = 'normal';
 	var currentPage = editorUi.editor.pages[editorUi.editor.currentPage]
+	var xml = editorUi.editor.defaultXml;
 	// 编辑和复制默认有值
 	if (type == 'rename' || type == 'copy') {
 		title = currentPage.title;
 		desc = currentPage.desc;
 		pageType = currentPage.type;
+		xml = currentPage.xml;
 	} else if (type == 'addPrev' || type == 'addNext') {
 		pageType = currentPage.type;
 	}
@@ -978,7 +993,7 @@ var addPageDialog = function (editorUi, type) {
 			var page = {
 				title: titleText,
 				desc: descInput.value,
-				xml: currentPage.xml,
+				xml,
 				type: isDialogFlag.checked ? 'dialog' : 'normal'
 			};
 			if (type == 'rename') {
