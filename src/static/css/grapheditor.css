@@ -1400,7 +1400,7 @@ button.buttonTag, input.inputTag {
 	height: 24px;
 	width: 118px;
 	text-align: center;
-	line-height: 22px;
+	line-height: 16px;
 	box-sizing: border-box;
 	padding: 3px;
 	background-color: #fff;

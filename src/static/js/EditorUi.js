@@ -403,6 +403,14 @@ EditorUi = function(editor, container, lightbox)
 		// this.sidebar.hidePageContextMenu();
 	}));
 
+	let dblClickFn = graph.dblClick;
+	graph.dblClick = (evt, cell) => {
+		let state = graph.view.getState(cell);
+		if (state.style.shape === 'image') {
+			this.actions.get('image').funct()
+		}
+		dblClickFn.call(graph,evt, cell)
+	}
     // Create handler for key events
 	this.keyHandler = this.createKeyHandler(editor);
     
@@ -613,8 +621,6 @@ EditorUi = function(editor, container, lightbox)
 							}
 						}
 					}
-					console.log(newStyle)
-
 					model.setStyle(cell, newStyle);
 				}
 			}

@@ -56328,7 +56328,7 @@ mxGraph.prototype.startEditingAtCell = function(cell, evt)
 			}
 		}
 		var shapeName = this.getCellStyle(cell).shape;
-		if (cell != null && shapeName !== 'image' && shapeName !== 'select' && shapeName !== 'endarrow')
+		if (cell != null && shapeName !== 'image' && shapeName !== 'select' && shapeName !== 'endarrow' && shapeName !== 'beeline')
 		{
 			this.fireEvent(new mxEventObject(mxEvent.START_EDITING,
 					'cell', cell, 'event', evt));
@@ -56612,8 +56612,6 @@ mxGraph.prototype.dblClick = function(evt, cell)
 	var mxe = new mxEventObject(mxEvent.DOUBLE_CLICK, 'event', evt, 'cell', cell);
 	this.fireEvent(mxe);
 	var shapeName = this.getCellStyle(cell).shape;
-	// console.log(this.getCellStyle(cell).shape)
-	// Handles the event if it has not been consumed
 	if (this.isEnabled() && !mxEvent.isConsumed(evt) && !mxe.isConsumed() &&
 		cell != null && this.isCellEditable(cell) && !this.isEditing(cell) && forbiddenList.indexOf(shapeName) == -1 )
 	{
@@ -59594,7 +59592,7 @@ mxGraph.prototype.cellsResized = function(cells, bounds, recurse)
 mxGraph.prototype.cellResized = function(cell, bounds, ignoreRelative, recurse)
 {
 	var geo = this.model.getGeometry(cell);
-
+	console.log(geo, bounds, recurse)
 	if (geo != null && (geo.x != bounds.x || geo.y != bounds.y ||
 		geo.width != bounds.width || geo.height != bounds.height))
 	{
@@ -77898,27 +77896,11 @@ mxEdgeHandler.prototype.validateConnection = function(source, target)
  * 
  * Creates and returns the bends used for modifying the edge. This is
  * typically an array of <mxRectangleShapes>.
+ * 线条中间节点
  */
  mxEdgeHandler.prototype.createVirtualBends = function()
  {
-	var cell = this.state.cell;
-	var last = this.abspoints[0];
-	var bends = [];
-
-	if (this.graph.isCellBendable(cell))
-	{
-		for (var i = 1; i < this.abspoints.length; i++)
-		{
-			(mxUtils.bind(this, function(bend)
-			{
-				this.initBend(bend);
-				bend.setCursor(mxConstants.CURSOR_VIRTUAL_BEND_HANDLE);
-				bends.push(bend);
-			}))(this.createHandleShape());
-		}
-	}
-
-	return bends;
+	return null;
 };
 
 /**

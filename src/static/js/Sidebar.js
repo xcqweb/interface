@@ -1222,11 +1222,12 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		// 箭头
 		this.createEdgeTemplateEntry('shape=endarrow;html=1;', 50, 0, '', '箭头', false, false),
 		//直线
-		this.createVertexTemplateEntry('shape=line;endArrow=none;startArrow=none;strokeWidth=1;html=1;', 160, 10, '', '直线'),
+		this.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 0, '', '直线', null,''),
+
 		// 曲线
 		this.addEntry('curve', mxUtils.bind(this, function()
 	 	{
-			var cell = new mxCell('', new mxGeometry(0, 0, 50, 50), 'shape=curve;html=1;startArrow=none;endArrow=none;');
+			var cell = new mxCell('', new mxGeometry(0, 0, 50, 50), 'shape=curve;curved=1;endArrow=none;html=1;');
 			cell.geometry.setTerminalPoint(new mxPoint(0, 50), true);
 			cell.geometry.setTerminalPoint(new mxPoint(50, 0), false);
 			cell.geometry.points = [new mxPoint(50, 50), new mxPoint(0, 0)];
@@ -2050,7 +2051,7 @@ Sidebar.prototype.createDragSource = function(elt, dropHandler, preview, cells, 
 		
 		mxUtils.setOpacity(arrow, (img == this.refreshTarget) ? 30 : 20);
 		arrow.style.position = 'absolute';
-		arrow.style.cursor = 'crosshair';
+		// arrow.style.cursor = 'crosshair';
 		
 		return arrow;
 	};

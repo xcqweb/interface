@@ -586,7 +586,6 @@ BaseFormatPanel.prototype.installInputHandler = function(input, key, defaultValu
 	var update = mxUtils.bind(this, function(evt)
 	{
 		var value = (isFloat) ? parseFloat(input.value) : parseInt(input.value);
-
 		// Special case: angle mod 360
 		if (!isNaN(value) && key == mxConstants.STYLE_ROTATION)
 		{
@@ -616,7 +615,7 @@ BaseFormatPanel.prototype.installInputHandler = function(input, key, defaultValu
 				updating = false;
 			}
 		}
-		else if (value != mxUtils.getValue(this.format.getSelectionState().style, key, defaultValue))
+		else if (!isNaN(value))
 		{
 			if (graph.isEditing())
 			{
@@ -637,7 +636,6 @@ BaseFormatPanel.prototype.installInputHandler = function(input, key, defaultValu
 						elt.removeAttribute('size');
 					});
 				}
-				
 				ui.fireEvent(new mxEventObject('styleChanged', 'keys', [key],
 						'values', [value], 'cells', graph.getSelectionCells()));
 			}
@@ -1744,7 +1742,7 @@ ArrangePanel.prototype.addAngle = function(container)
 	});
 
 	mxEvent.addListener(trunBtn, 'click', function (e) {
-		input.value = '90°';
+		input.value = (parseFloat(input.value) + 90) % 360 + '°';
 		update(input, mxConstants.STYLE_ROTATION, 90, 0, 360, '°', null, true);
 	}.bind(this))
 
@@ -2319,7 +2317,13 @@ ArrangePanel.prototype.addShowHide = function (container) {
 	// 点击事件
 	mxEvent.addListener(btnBox, 'click', function (evt) {
 		this.setCellAttrs('hide', btn.style.float === 'left');
-		btn.style.float === 'left' ? btn.style.float = 'right' : btn.style.float = 'left';
+		if (btn.style.float === 'left') {
+			btn.style.float = 'right';
+			btnBox.style.backgroundColor = '#A7A9AD';
+		} else {
+			btn.style.float = 'left';
+			btnBox.style.backgroundColor = '#3D91F7';
+		}
 	}.bind(this))
 
 	div.appendChild(btnBox);

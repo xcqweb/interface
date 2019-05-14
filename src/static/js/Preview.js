@@ -8,6 +8,8 @@ let gePreview = document.getElementById('gePreview');
 let minX = minY = 0;
 // 页面宽度和高度
 let pageWidth = pageHeight = 0;
+// 配置好的svg图
+let configSvg = ['drop', 'circle', 'diamond', 'square', 'pentagram'];
 // 默认样式
 const defaultStyle= {
   align: 'center',
@@ -22,22 +24,26 @@ const defaultStyle= {
  * @param {string} key 
  * @param {number} w 
  * @param {number} h 
+ * @param {number} x 
+ * @param {number} y 
  * @param {string} fillColor 
  * @param {string} strokeColor 
  */
-function insertSvg(key, w, h, fillColor = 'none', strokeColor='#333') {
-  let inner = shapeXmls[key]
+function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor='#333') {
+  let inner = shapeXmls[key].path;
   let svgContent = document.createElement('div');
   inner.setAttribute('fill', fillColor)
   inner.setAttribute('stroke', strokeColor)
   
   let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-  svg.setAttribute('viewBox', `0 0 ${w} ${h}`)
+  svg.setAttribute('viewBox', shapeXmls[key].viewBox)
   svg.setAttribute('width', w);
   svg.setAttribute('height', h);
+  // svg.setAttribute('transform', `translate(${x}, ${y})`)
   svg.innerHTML = inner.outerHTML;
-  svgContent.appendChild(svg)
-  document.body.appendChild(svgContent)
+  svgContent.appendChild(svg);
+  return svgContent;
+  // document.body.appendChild(svgContent)
 }
 
 /**
@@ -46,40 +52,47 @@ function insertSvg(key, w, h, fillColor = 'none', strokeColor='#333') {
  * @param {Array<Array>} points 中间点 
  * @param {Array} target 结束点
  */
-function inserEndArrow (source, points, target) {
+function inserEdge (cell) {
+  let { source, points, target } = cell.points;
+  let svgContent = document.createElement('div');
   let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-  svg.setAttribute('viewBox', `0 0 200 300`)
-  svg.setAttribute('width', '200');
-  svg.setAttribute('height', 300);
+  svg.setAttribute('width', cell.width);
+  svg.setAttribute('height', cell.height);
   svg.innerHTML = `
-    <defs>
-    <marker id="arrow" 
+    <defs>      
+        <marker id="arrow" 
         markerUnits="strokeWidth" 
-        markerWidth="8" 
-        markerHeight="8" 
-        viewBox="0 0 8 8" 
-        refX="6" 
+        markerWidth="10" 
+        markerHeight="10" 
+        refX="8" 
         refY="5" 
         orient="auto">
-          <path d="M2,2 L8,5 L2,8 L5,5 L2,2" style="fill: #ddd;" />
+          <path d="M2,2 L8,5 L2,8 L5,5 L2,2" style="fill:${cell.strokeColor};" />
     </marker>
     </defs>
   `
   let path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-  let direct = `M${source.join()} ${points.map(point => `T${point.join()} `).join('')} T${target.join()}`
+  let direct;
+  if (cell.shapeName === 'curve') {
+    direct = `M${source.join(' ')} C ${points.map(point => `${point.join()} `).join('')} ${target.join()}`
+  } else {
+    direct = `M${source.join(' ')} ${points.map(point => `T${point.join(' ')} `).join('')} T${target.join(' ')}`
+  }
   const attrs = {
-    'd': direct,
+    d: direct,
     fill: 'white',
-    stroke: '#ccc',
+    stroke: cell.strokeColor,
     'stroke-width': 2,
-    'marker-end':"url(#arrow)"
   };
+  if (cell.shapeName === 'endarrow') {
+    attrs['marker-end'] = "url(#arrow)";
+  }
   for (let item in attrs) {
     path.setAttribute(item, attrs[item])
   }
   svg.appendChild(path);
-  // document.body.appendChild(svg)
-  return svg
+  svgContent.appendChild(svg);
+  return svgContent;
 }
 
 /**
@@ -93,7 +106,10 @@ function loadShapeXml () {
       let shape = root.documentElement.firstChild;
       while (shape != null) {
         if (shape.nodeType == 1) {
-          obj[shape.getAttribute('name')] = shape.children[0];
+          obj[shape.getAttribute('name')] = {
+            viewBox: shape.getAttribute('viewBox'),
+            path: shape.children[0]
+          };
         }
         shape = shape.nextSibling
       }
@@ -104,7 +120,7 @@ function loadShapeXml () {
 
 /**
  * 提示信息
- * @param {*} flag 失败提示还是成功提示 
+ * @param {boolean} flag 失败提示还是成功提示 
  */
 function showTips (flag=true, title='请求') {
   let dialog = document.createElement('div');
@@ -222,7 +238,6 @@ class PreviewPage {
   }
   // 解析所有控件节点
   parseCells (root) {
-    console.log(1111111111111, root)
     // 递归获取节点
     minX = minY = 0;
     let getNode = (t_id = 1) => {
@@ -248,17 +263,18 @@ class PreviewPage {
           let parentId = node.getAttribute('parent');
           // 节点存在id，递归
           if (parentId == t_id && id) {
-              // console.log(item)
-              // 节点参数信息
-              let getNodeInfo = new GetNodeInfo(node);
-              // 节点类型
-              let shapeName = getNodeInfo.getStyles('shape');
-              let x,y,width,height,fillColor,strokeColor,fontColor,fontSize,styles, isGroup, image, hide, align, verticalAlign, selectProps, points;
+            // 节点参数信息
+            let getNodeInfo = new GetNodeInfo(node);
+            // 节点类型
+            let shapeName = getNodeInfo.getStyles('shape');
+              let x,y,width,height,fillColor,strokeColor,fontColor,fontSize,styles, isGroup, image, hide, align, verticalAlign, selectProps, points,rotation;
               styles = node.getAttribute('style');
+              // console.log(styles)
               isGroup = styles.indexOf('group') != -1;
               fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF';
               fontColor = getNodeInfo.getStyles('fontColor') || '#FFFFFF';
               verticalAlign = getNodeInfo.getStyles('verticalAlign') || 'middle';
+              rotation = getNodeInfo.getStyles('rotation') || 0;
               align = getNodeInfo.getStyles('align') || 'center';
               fontSize = getNodeInfo.getStyles('fontSize') || '12';
               strokeColor = (shapeName == 'image' ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
@@ -270,8 +286,8 @@ class PreviewPage {
               hide = item.getAttribute('hide');
               height = parseFloat(node.children[0].getAttribute('height'));
               selectProps = item.getAttribute('selectProps') || '';
-              if (shapeName == 'endarrow') {
-                console.log(node)
+              // edge获取路径节点
+              if (shapeName === 'endarrow' || shapeName === 'beeline' || shapeName === 'curve') {
                 const childNodes = node.getElementsByTagName('mxGeometry')[0].children;
                 points = {
                   points: []
@@ -280,18 +296,60 @@ class PreviewPage {
                   let asText = childNode.getAttribute('as')
                   if (asText === 'sourcePoint') {
                     // 起点
-                    points.source = [parseFloat(childNode.getAttribute('x')), parseFloat(childNode.getAttribute('y'))];
+                    points.source = [parseFloat(childNode.getAttribute('x')) || 0, parseFloat(childNode.getAttribute('y')) || 0];
                   } else if (asText === 'targetPoint') {
                     // 终点
-                    points.target = [parseFloat(childNode.getAttribute('x')), parseFloat(childNode.getAttribute('y'))];
+                    points.target = [parseFloat(childNode.getAttribute('x')) || 0, parseFloat(childNode.getAttribute('y')) || 0];
                   } else if (asText === 'points') {
                     // 节点
                     for (let point of childNode.children) {
-                      points.points.push([parseFloat(point.getAttribute('x')), parseFloat(point.getAttribute('y'))])
+                      points.points.push([parseFloat(point.getAttribute('x')) || 0, parseFloat(point.getAttribute('y')) || 0])
                     }
                   }
                 }
-                console.log(points)
+                let reviseX, reviseY = 0;
+                // 最小左侧
+                let leftList = [].concat(points.source[0], points.target[0])
+                leftList = points.points.reduce((item, val) => {
+                  item.push(val[0])
+                  return item
+                }, leftList);
+                reviseX = Math.min.apply(null, leftList);
+                let maxX = Math.max.apply(null, leftList);
+                // // 最小顶部
+                let topList = [].concat(points.source[1], points.target[1])
+                topList = points.points.reduce((item, val) => {
+                  item.push(val[1])
+                  return item
+                }, topList);
+                reviseY = Math.min.apply(null, topList);
+                let maxY = Math.max.apply(null, topList);
+                // 修正定位
+                points.source[0] -= reviseX;
+                points.source[1] -= reviseY;
+                points.target[0] -= reviseX;
+                points.target[1] -= reviseY;
+                
+                points.points.map(val => {
+                  val[0] -= reviseX;
+                  val[1] -= reviseY;
+                })
+                x = reviseX;
+                y = reviseY;
+                width = Math.abs(maxX - reviseX);
+                width = width < 10 ? 10 : width;
+                height = Math.abs(maxY - reviseY);
+                height = height < 10 ? 10 : height;
+                if (shapeName !== 'curve') {
+                  if (points.target[0] == 0 && points.source[0] == 0) {
+                    points.target[0] = 4;
+                    points.source[0] = 4;
+                  }
+                  if (points.target[1] == 0 && points.source[1] == 0) {
+                    points.target[1] = 4;
+                    points.source[1] = 4;
+                  }
+                }
               }
               x < minX && (minX = x);
               y < minY && (minY = y);
@@ -314,14 +372,15 @@ class PreviewPage {
                   hide,
                   verticalAlign,
                   align,
-                  selectProps
+                  selectProps,
+                  points,
+                  rotation
               };
               // 组合节点
               obj.children = getNode(id);
               list.push(obj);
           };
       };
-
       return list;
     };
     let cells = getNode();
@@ -344,7 +403,6 @@ class PreviewPage {
     const xmlDoc = mxUtils.parseXml(page.xml).documentElement;
     const root = xmlDoc.getElementsByTagName('root')[0].children;
     let cells = this.parseCells(root);
-    console.log(cells)
     if (page.type === 'normal') {
       // 正常页面
       this.clearPage();
@@ -362,8 +420,6 @@ class PreviewPage {
   // 渲染页面
   renderPage (cells, ele = gePreview) {
     for (let cell of cells) {
-      // cell.x += Math.abs(minX);
-      // cell.y += Math.abs(minY);
       let cellHtml = this.renderCell(cell);
       ele.appendChild(cellHtml);
       // 组内资源
@@ -375,6 +431,7 @@ class PreviewPage {
   
   // 渲染控件节点
   renderCell (cell) {
+    console.log(cell)
     const shapeName = cell.shapeName;
     let cellHtml;
     if (shapeName === 'image') {
@@ -415,26 +472,49 @@ class PreviewPage {
       // 按钮
       cellHtml = document.createElement('div');
       cellHtml.innerHTML = cell.value;
-    } else if (shapeName === 'endarrow') {
-      // 箭头
-      cellHtml = inserEndArrow([20,70], [[80,100], [160, 80]], [200, 90], cell.width, cell.height)
-      console.log(cell)
+    } else if (shapeName === 'endarrow' || shapeName === 'beeline' || shapeName === 'curve') {
+      // 箭头、直线，曲线
+      cellHtml = inserEdge(cell)
+    } else if (configSvg.includes(shapeName)) {
+      cellHtml = insertSvg(shapeName, cell.width, cell.height, cell.x, cell.y, "#FFFFFF", cell.strokeColor)
     } else {
       // 其他
       cellHtml = document.createElement('p');
       cellHtml.innerHTML = cell.value;
     }
-    if (shapeName !== 'endarrow') {
-      cellHtml.style.lineHeight = cell.height + 'px';
+    if (!['endarrow', 'beeline', 'curve'].includes(shapeName)) {
+      if (cell.verticalAlign === 'top') {
+        cellHtml.style.lineHeight = cell.fontSize + 'px';
+      } else if (cell.verticalAlign === 'bottom') {
+        cellHtml.style.lineHeight = (cell.height * 2 - cell.fontSize) + 'px';
+      } else {
+        cellHtml.style.lineHeight = cell.height + 'px';
+      }
       cellHtml.style.textAlign = cell.align;
       cellHtml.style.backgroundColor = cell.fillColor;
-      cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `1px solid ${cell.strokeColor || defaultStyle.strokeColor}`}`;
-      cellHtml.className = 'gePalette'
+    } else {
+      cellHtml.style.lineHeight = 0;
     }
+    // 非Edge和svg控件
+    if (!['endarrow', 'beeline', 'curve'].includes(shapeName) && !configSvg.includes(shapeName)) {
+      cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `1px solid ${cell.strokeColor || defaultStyle.strokeColor}`}`;
+      cellHtml.style.width = cell.width + 'px';
+      cellHtml.style.height = cell.height + 'px';
+    }
+    cellHtml.className = 'gePalette';
+    // 隐藏
+    if (cell.hide == 'true') {
+      cellHtml.style.display = 'none';
+    }
+    // 旋转
+    cellHtml.style.transform = `rotate(${cell.rotation}deg)`;
+    // 字体大小
+    cellHtml.style.fontSize = `${cell.fontSize}px`;
+    // 字体颜色
+    cellHtml.style.color = `${cell.fontColor}`;
+    // 定位
     cellHtml.style.left = cell.x + 'px';
     cellHtml.style.top = cell.y + 'px';
-    cellHtml.style.width = cell.width + 'px';
-    cellHtml.style.height = cell.height + 'px';
     return cellHtml;
   }
 }

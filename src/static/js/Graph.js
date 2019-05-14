@@ -341,7 +341,7 @@ Graph = function(container, model, renderHint, stylesheet, themes)
 			    					{
 		    							// Moving is not allowed for entity relation but still indicate hover state
 			    						var tmp = this.view.getEdgeStyle(state);
-			    						cursor = 'crosshair';
+			    						// cursor = 'crosshair';
 			    						
 			    						if (tmp != mxEdgeStyle.EntityRelation && this.isOrthogonal(state))
 						    			{
@@ -4614,7 +4614,7 @@ if (typeof mxVertexHandler != 'undefined')
 		
 		// Overrides edge preview to use current edge shape and default style
 		mxConnectionHandler.prototype.livePreview = true;
-		mxConnectionHandler.prototype.cursor = 'crosshair';
+		// mxConnectionHandler.prototype.cursor = 'crosshair';
 		
 		// Uses current edge style for connect preview
 		mxConnectionHandler.prototype.createEdgeState = function(me)

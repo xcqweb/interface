@@ -471,6 +471,10 @@ Editor.prototype.palettesInfo = {
 		name: '直线',
 		num: 0
 	},
+	beeline: {
+		name: '直线',
+		num: 0
+	},
 	curve: {
 		name: '曲线',
 		num: 0
@@ -509,18 +513,19 @@ Editor.prototype.setCurrentPage = function (title) {
 /**
  * 编辑器页面数据
  */
+const defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
 Editor.prototype.defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
 Editor.prototype.pages = {
 	"页面1": {
 		title: '页面1',
 		desc: '',
-		xml: this.defaultXml,
+		xml: defaultXml,
 		type: 'normal'
 	},
 	"页面2": {
 		title: '页面2',
 		desc: '',
-		xml: this.defaultXml,
+		xml: defaultXml,
 		type: 'dialog'
 	}
 };

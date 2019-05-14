@@ -1168,8 +1168,6 @@ var SelectPropDialog = function (editorUi, cell) {
 		cellInfo.setAttribute('selectProps', data);
 		graph.getModel().setValue(cell, cellInfo)
 		editorUi.hideDialog();
-		// 绑定列表
-		// mock数据
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	// 取消按钮
@@ -1361,20 +1359,19 @@ var PaletteDataDialog = function(editorUi, cell) {
 		}
 		finally {
 			graph.getModel().endUpdate();
+			// if (select != null) {
+			// 	graph.setSelectionCells(select);
+			// 	graph.scrollCellToVisible(select[0]);
+			// }
+			// editorUi.editor.ajax(editorUi, '/api/model/viewTool/warn', 'PUT', applyModel, function () {
+			// 	// 请求成功回调函数
+			// 	editorUi.hideDialog();
+			// }, function () {
+			// 	editorUi.hideDialog();
+			// 	editorUi.editor.tipInfo(editorUi, false, '保存')
+			// })
 		}
 
-		if (select != null) {
-			graph.setSelectionCells(select);
-			graph.scrollCellToVisible(select[0]);
-		}
-		editorUi.editor.ajax(editorUi, '/api/model/viewTool/warn', 'PUT', applyModel, function () {
-			// 请求成功回调函数
-			editorUi.hideDialog();
-			// editorUi.editor.tipInfo(editorUi, true, '保存')
-		}, function () {
-			editorUi.hideDialog();
-			editorUi.editor.tipInfo(editorUi, false, '保存')
-		})
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	// 取消按钮
