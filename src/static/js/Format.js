@@ -453,28 +453,6 @@ var BaseFormatPanel = function(format, editorUi, container)
 	this.listeners = [];
 };
 /**
- * 控件名称
- */
-// BaseFormatPanel.prototype.list = {
-// 	rectangle: '矩形',
-// 	button: '按钮',
-// 	menulist: '菜单',
-// 	menuCell: '菜单',
-// 	image: '图片',
-// 	text: '文本',
-// 	select: '下拉列表',
-// 	table: '表格',
-// 	tableBox: '表格',
-// 	tableCell: '表格',
-// 	endarrow: '箭头',
-// 	line: '直线',
-// 	curve: '曲线',
-// 	linkTag: 'Link',
-// 	primitive: '图元',
-// 	multipleCheck: '复选',
-// 	singleCheck: '单选'
-// }
-/**
  * 获取全部控件
  */
 BaseFormatPanel.prototype.getCells = function (graph) {
@@ -1257,12 +1235,10 @@ BaseFormatPanel.prototype.addUnitSelect = function name(container, width, list, 
 	dirSelect.className = "formatMiddleSelect";
 
 	var dirs = list;
-	for (var i = 0; i < dirs.length; i++)
-	{
+	for (let i in dirs) {
 		var dirOption = document.createElement('option');
-		dirOption.setAttribute('value', dirs[i]);
-		// mxUtils.write(dirOption, mxResources.get(dirs[i]));
-		if (selectOp == dirs[i]) {
+		dirOption.setAttribute('value', i);
+		if (selectOp == i) {
 			dirOption.setAttribute('selected', 'selected')
 		}
 		mxUtils.write(dirOption, dirs[i]);
@@ -2720,7 +2696,6 @@ ArrangePanel.prototype.addFill = function(container)
 		ss = this.format.getSelectionState();
 		var value = mxUtils.getValue(ss.style, mxConstants.STYLE_GRADIENT_DIRECTION, mxConstants.DIRECTION_SOUTH);
 		
-		// Handles empty string which is not allowed as a value
 		if (value == '')
 		{
 			value = mxConstants.DIRECTION_SOUTH;
@@ -3155,6 +3130,30 @@ ActionsPanel = function(format, editorUi, container)
 	});
 	// editorUi.editor.graph.getModel().addListener(mxEvent.CHANGE, this.update);
 };
+
+// 选择事件
+const eventContrast = {
+	'unset': '选择',
+	'mousein': '鼠标移入',
+	'mouseout': '鼠标移出',
+	'click': '点击',
+	'dblclick': '双击',
+	'select': '选中',
+	'unselect': '未选中',
+}
+// 选择动作
+const actionContrast = {
+	'unset': '选择',
+	'show': '显示',
+	'hide': '隐藏',
+	'open': '打开',
+	'close': '关闭'
+}
+// 选择类型
+const typeContrast = {
+	'page': '页面',
+	'palette': '控件'
+}
 /**
  * 继承基础面板
  */
@@ -3186,9 +3185,9 @@ ActionsPanel.prototype.init = function (container) {
 		let actionsInfo = JSON.parse(this.modelInfo.getAttribute('actionsInfo')) || [{
 			type: 'in',
 			link: '',
-			innerType: '页面',
-			mouseEvent: '选择',
-			effectAction: '选择'
+			innerType: 'page',
+			mouseEvent: 'unset',
+			effectAction: 'unset'
 		}]
 		// 公共交互
 		var addAction = document.createElement('button')
@@ -3206,9 +3205,9 @@ ActionsPanel.prototype.init = function (container) {
 			actionsInfo.push({
 				type: 'in',
 				link: '',
-				innerType: '页面',
-				mouseEvent: '选择',
-				effectAction: '选择'
+				innerType: 'page',
+				mouseEvent: 'unset',
+				effectAction: 'unset'
 			})
 			this.modelInfo.setAttribute('actionsInfo', JSON.stringify(actionsInfo));
 			graph.getModel().setValue(cell, this.modelInfo);
@@ -3236,7 +3235,7 @@ ActionsPanel.prototype.createInfoBox = function (container, actionsInfo, i) {
 	var info = actionsInfo[i]
 	var infoTxt = document.createElement('p');
 	infoTxt.className = 'infoTxt';
-	var desc = `${info.mouseEvent == '选择' ? '' : info.mouseEvent + ','}${info.effectAction == '选择' ? '' : info.effectAction + ','}${info.type == 'out' ? '' : info.innerType + ','}${info.link}`
+	var desc = `${info.mouseEvent == 'unset' ? '' : eventContrast[info.mouseEvent] + ','}${info.effectAction == 'unset' ? '' : actionContrast[info.effectAction] + ','}${info.type == 'out' ? '' : typeContrast[info.innerType] + ','}${info.link}`
 	infoTxt.innerHTML = desc;
 	container.appendChild(infoTxt);
 	// 编辑图标
@@ -3297,9 +3296,9 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		var temp = {
 			type: 'in',
 			link: '',
-			innerType: '页面',
-			mouseEvent: '选择',
-			effectAction: '选择'
+			innerType: 'page',
+			mouseEvent: 'unset',
+			effectAction: 'unset'
 		};
 		var actions = [];
 		if (attrs) {
@@ -3316,10 +3315,9 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		divpanel.id = 'actionPanel';
 		divpanel.style.paddingBottom = '12px';
 		// 新增下拉框
-		// 选择事件
-		var mouseEvent = this.addUnitSelect(divpanel, 218, ["选择", "鼠标移入", "鼠标移出", "点击", "双击", "选中", "未选中"], temp.mouseEvent, mxResources.get('chooseEvent'));
+		var mouseEvent = this.addUnitSelect(divpanel, 218, eventContrast, temp.mouseEvent, mxResources.get('chooseEvent'));
 		// 选择动作
-		var effectAction = this.addUnitSelect(divpanel, 218, ["选择", "显示", "隐藏", "打开", "关闭"], temp.effectAction, mxResources.get('chooseAction'));
+		var effectAction = this.addUnitSelect(divpanel, 218, actionContrast, temp.effectAction, mxResources.get('chooseAction'));
 		// 内部页面、控件链接
 		var innerChoose = document.createElement('div');
 		innerChoose.style.margin = '12px 0';
@@ -3329,25 +3327,34 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		innerRadio.setAttribute('name', 'radioType');
 		innerChoose.appendChild(innerRadio);
 		// 下拉列表
-		var innerType = this.addUnitSelect(innerChoose, 198, ["页面", '控件'], '', '');
+		var innerType = this.addUnitSelect(innerChoose, 198, typeContrast, '', '');
 		innerType.style.marginLeft = '6px';
 		innerType.value = temp.innerType;
 		divpanel.appendChild(innerChoose);
 		// 页面或者控件列表
 		var pageList = document.createElement('ul');
 		pageList.className = 'pageList';
-		var pagesNameList = Object.keys(editor.pages);
+		var pagesNameList = Object.keys(editor.pages).reduce((item, val) => {
+			item.push({
+				id: val,
+				name: val
+			})
+			return item
+		}, []);
 		// 控件列表
 		var paletteList = [];
 		var list = $("#paletteManageList li");
 		for (let i = 0; i < list.length; i++) {
-			paletteList.push(list[i].innerText)
+			paletteList.push({
+				id: list[i].getAttribute('data-paletteid'),
+				name: list[i].innerText
+			})
 		}
 		var innerListData = mxUtils.bind(this, function (evt) {
-			let data = temp.innerType == "页面" ? pagesNameList : paletteList;
+			let data = temp.innerType == "page" ? pagesNameList : paletteList;
 			pageList.innerHTML = `
 				${
-					data.map((val) => (`<li class="${ temp.type == 'in' && val == temp.link ? 'formatPageActive' : ''}">${val}</li>`)).join('')
+					data.map((val) => (`<li data-paletteid=${val.id} class="${ temp.type == 'in' && val.id == temp.link ? 'formatPageActive' : ''}">${val.name}</li>`)).join('')
 				}
 			`;
 		});
@@ -3377,7 +3384,7 @@ ActionsPanel.prototype.createOperateBox = function(container)
 			if (evt.target.nodeName === 'LI') {
 				$('.formatPageActive').removeClass();
 				evt.target.className = 'formatPageActive';
-				this.setActions(graph, 'link', evt.target.innerText);
+				this.setActions(graph, 'link',evt.target.getAttribute('data-paletteid'));
 			}
 		})
 		var listener =mxUtils.bind(this, function () {
@@ -3606,12 +3613,11 @@ PaletteManagePanel.prototype.fillList = function (container, filter) {
 	var ul = document.createElement('ul');
 	ul.id = 'paletteManageList';
 	// 不显示节点的名称
-	var forbiddenShape = ['menuCell', 'tableCell'];
-
+	var forbiddenShape = ['menuCell', 'tableCell', 'label'];
 	for (var i = 0; i < cells.length; i++) {
 		// 节点的state信息
 		var state = graph.view.getState(cells[i]);
-		if (state && state.cell.style.indexOf('group') == -1) {
+		if (state) {
 			var info = state.style.shape;
 			info = primitives.indexOf(info) == -1 ? info : 'primitive';
 			var name = this.getCellInfo('palettename', cells[i]) || '';
@@ -3619,6 +3625,7 @@ PaletteManagePanel.prototype.fillList = function (container, filter) {
 			// 内容
 			var _li = document.createElement('li');
 			_li.setAttribute('data-idx', i);
+			_li.setAttribute('data-paletteid', cells[i].getId());
 			_li.innerText = name;
 			_li.innerText += '(' + this.editorUi.editor.palettesInfo[info].name + ')';
 			if (cells[i].getId() === currentId) {

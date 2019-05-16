@@ -959,7 +959,6 @@ Sidebar.prototype.createPageContextMenu = function  () {
 			this.hidePageContextMenu();
 		}
 	});
-	// }.bind(this));
 
 	mxEvent.addListener(menulist, 'click', function (evt) {
 		var target = evt.target;
@@ -968,11 +967,15 @@ Sidebar.prototype.createPageContextMenu = function  () {
 		var actionType = target.getAttribute('data-type');
 		// 添加页面
 		var addPage = this.editorUi.actions.get('addPage').funct;
+		const pageType = this.editorUi.editor.currentType;
+		let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.text())
 		switch (actionType) {
 			case 'movePrev':
+				 this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems( this.editorUi.editor.pagesRank[pageType], index - 1, index);
 				ele.insertBefore(ele.prev())
 				break;
 			case 'moveNext':
+				 this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems( this.editorUi.editor.pagesRank[pageType], index, index - 1);
 				ele.insertAfter(ele.next())
 				break;
 			case 'delete':
@@ -1046,6 +1049,7 @@ function createPageList (editorUi, data, id) {
 				}
 				// 切换到新的页面
 				$(".currentPage").removeClass();
+				editorUi.editor.setCurrentType(id == 'normalPages' ? 'normal' : 'dialog');
 				editorUi.editor.setCurrentPage(nextTitle);
 				target.className = "currentPage";
 				var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml);
@@ -1076,15 +1080,23 @@ Sidebar.prototype.hidePageContextMenu = function () {
 	document.getElementById('pageContextMenu') ?  document.getElementById('pageContextMenu').style.display = 'none' : null;
 }
 Sidebar.prototype.addPagePalette = function (expand) {
-	var normalPages = {}
-	var dialogPages = {};
+	var normalPages = []
+	var dialogPages = [];
 	var pages = this.editorUi.editor.pages;
-	for (var title in pages) {
-		if (pages[title].type == 'normal') {
-			normalPages[title] = pages[title]
-		} else {
-			dialogPages[title] = pages[title]
-		}
+	// for (var title in pages) {
+	// 	if (pages[title].type == 'normal') {
+	// 		normalPages[title] = pages[title]
+	// 	} else {
+	// 		dialogPages[title] = pages[title]
+	// 	}
+	// }
+	// 普通页面
+	for (let key of this.editorUi.editor.pagesRank.normal) {
+		normalPages.push(pages[key])
+	}
+	// 弹窗页面
+	for (let key of this.editorUi.editor.pagesRank.dialog) {
+		dialogPages.push(pages[key])
 	}
 	var fns = [
 		// 普通页面标题

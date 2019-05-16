@@ -361,8 +361,26 @@ Editor.prototype.InitEditor = function (editorUi) {
 	Promise.all([getFileSystem, editPromise]).then(res => {
 		// 编辑
 		if (res[1]) {
-			var editData = res[1]
-			editorUi.editor.pages = JSON.parse(editData.content);
+			var editData = res[1];
+			var content = JSON.parse(editData.content);
+			console.log(content)
+			if (content.rank) {
+				editorUi.editor.pages = content.pages;
+				editorUi.editor.pagesRank = content.rank;
+			} else {
+				editorUi.editor.pages = content;
+				editorUi.editor.pagesRank = {
+					normal: [],
+					dialog: []
+				};
+				for (let key in content) {
+					if (content[key].type == 'dialog') {
+						editorUi.editor.pagesRank.dialog.push(key)
+					} else {
+						editorUi.editor.pagesRank.normal.push(key)
+					}
+				}
+			}
 			editorUi.editor.setFilename(editData.name)
 			editorUi.editor.setApplyId(editData.id)
 			editorUi.editor.setDescribe(editData.describe)
@@ -505,7 +523,17 @@ Editor.prototype.fileSystem = '';
  */
 Editor.prototype.currentPage = '页面1';
 /**
- * 设置当前选中的页面类型和名称
+ * 当前选中的页面 
+ */
+Editor.prototype.currentType = 'normal';
+/**
+ * 设置当前选中的页面类型
+ */
+Editor.prototype.setCurrentType = function (type) {
+	this.currentType = type
+}
+/**
+ * 设置当前选中的页面名称
  */
 Editor.prototype.setCurrentPage = function (title) {
 	this.currentPage = title
@@ -515,6 +543,10 @@ Editor.prototype.setCurrentPage = function (title) {
  */
 const defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
 Editor.prototype.defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
+Editor.prototype.pagesRank = {
+	normal: ['页面1'],
+	dialog: ['页面2']
+};
 Editor.prototype.pages = {
 	"页面1": {
 		title: '页面1',
@@ -541,16 +573,25 @@ Editor.prototype.pagesNameList = function () {
  * @returns {boolean} 添加成功返回true，失败返回false
  */
 Editor.prototype.addPage = function (page) {
-	if (this.pages[page.title]) {
-		return false;
-	} else {
-		page.xml = page.xml || this.defaultXml;
-		this.pages[page.title] = page;
-		return true;
-	}
+	page.xml = page.xml || this.defaultXml;
+	this.pages[page.title] = page;
+	this.pagesRank[page.type].push(page.title);
 }
+/**
+ * 删除页面
+ */
 Editor.prototype.deletePage = function (title) {
 	delete this.pages[title]
+}
+/**
+ * 设置页面顺序
+ */
+Editor.prototype.pagesRankReset = function (arr) {
+	let obj = {};
+	for (let key of arr) {
+		obj[key] = this.pages[key]
+	}
+	this.pages = Object.assign(obj)
 }
 /**
  * 更新xml内容

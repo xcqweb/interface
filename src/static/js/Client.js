@@ -6312,6 +6312,20 @@ var mxUtils =
 		}
 	},
 	/**
+	 * 调整数组内两个元素的顺序
+	 * @param {Array} arr 
+	 * @param {number} index1 
+	 * @param {number} index2 
+	 */
+	swapItems: function (arr, index1, index2) {
+		if (index1 >= 0 && index2 < arr.length) {
+			arr[index1] = arr.splice(index2, 1, arr[index1])[0]
+			return arr;
+		} else {
+			return arr
+		}
+	},
+	/**
 	 * Function: prompt
 	 * 
 	 * Displays the given message in a prompt dialog. This implementation uses
@@ -59592,7 +59606,6 @@ mxGraph.prototype.cellsResized = function(cells, bounds, recurse)
 mxGraph.prototype.cellResized = function(cell, bounds, ignoreRelative, recurse)
 {
 	var geo = this.model.getGeometry(cell);
-	console.log(geo, bounds, recurse)
 	if (geo != null && (geo.x != bounds.x || geo.y != bounds.y ||
 		geo.width != bounds.width || geo.height != bounds.height))
 	{

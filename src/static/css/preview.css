@@ -11,6 +11,13 @@ html, body {
   display: block;
   box-sizing: content-box;
 }
+#gePreview .gePalette .flipH {
+  -moz-transform:scaleX(-1);
+  -webkit-transform:scaleX(-1);
+  -o-transform:scaleX(-1);
+  transform:scaleX(-1);
+  filter: FlipH;
+}
 .bg {
   position: absolute;
 	top: 0px;
@@ -69,3 +76,4 @@ html, body {
   border: none;
   background-color: inherit;
 }
+            

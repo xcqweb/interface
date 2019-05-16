@@ -53,6 +53,9 @@ input[type="number"] {
 ul li {
 	list-style: none;
 }
+a {
+	text-decoration: none;
+}
 div.mxRubberband {
 	position: absolute;
 	overflow: hidden;

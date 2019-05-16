@@ -18,7 +18,15 @@ const defaultStyle= {
   fillColor: '#FFFFFF',
   fontSize: '12px'
 }
-
+// 事件对应js
+const eventContrast = {
+  '双击': 'dbclick',
+  '单击': 'click',
+  '鼠标移入': 'mousein',
+  '鼠标移出': '',
+  '': '',
+  '': '',
+}
 /**
  * 插入系统自带svg
  * @param {string} key 
@@ -35,7 +43,7 @@ function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor='#333') {
   inner.setAttribute('fill', fillColor)
   inner.setAttribute('stroke', strokeColor)
   
-  let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', shapeXmls[key].viewBox)
   svg.setAttribute('width', w);
   svg.setAttribute('height', h);
@@ -44,6 +52,27 @@ function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor='#333') {
   svgContent.appendChild(svg);
   return svgContent;
   // document.body.appendChild(svgContent)
+}
+
+/**
+ * 插入图片
+ * @param {object} cell 
+ */
+function insertImage (cell) {
+  let svgContent = document.createElement('div');
+  
+  let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('width', cell.width);
+  svg.setAttribute('height', cell.height);
+
+  let image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+  image.setAttribute('href', cell.image.replace(/getechFileSystem/, fileSystem));
+  image.setAttribute('width', cell.width);
+  image.setAttribute('height', cell.height);
+
+  svg.appendChild(image);
+  svgContent.appendChild(svg);
+  return svgContent;
 }
 
 /**
@@ -193,6 +222,86 @@ function showDialog() {
 }
 
 /**
+ * 绑定事件
+ * @param {object} ele DOM节点
+ * @param {Array} ele DOM节点
+ */
+function BindEvent(ele, actionsInfo) {
+  if (actionsInfo) {
+    for(let action of actionsInfo) {
+      if (action.mouseEvent !== 'unset' && action.effectAction !== 'unset' && action.mouseEvent !== '选择' && action.effectAction !== '选择') {
+        ele.addEventListener(action.mouseEvent, function (e) {
+          e = e || window.event;
+          if (e.stopPropagation) {
+            e.stopPropagation();
+          } else {
+            e.cancelBubble = true;
+          }
+          console.log(action)
+          // 触发事件
+          switch (action.effectAction) {
+            case 'show':
+              actionShow(action);
+              break;
+            case 'hide':
+              actionHide(action);
+              break;
+            case 'open':
+              actionOpen(action);
+              break;
+            case 'close':
+              actionClose(action);
+              break;
+            default:
+              break;
+          }
+        })
+      }
+    }
+  }
+}
+
+/**
+ * 显示事件
+ */
+function actionShow (action) {
+  if (action.innerType === 'palette') {
+    document.getElementById('palette_' + action.link).style.display = '';
+  } else {
+    document.getElementById('page_' + action.link).style.display = '';
+  }
+}
+/**
+ * 隐藏事件
+ */
+function actionHide (action) {
+  if (action.innerType === 'palette') {
+    document.getElementById('palette_' + action.link).style.display = 'none';
+  } else {
+    document.getElementById('page_' + action.link).style.display = 'none';
+  }
+}
+/**
+ * 打开事件
+ */
+function actionOpen (action) {
+  console.log('打开')
+  if (action.type === 'out') {
+    window.location.href = 'http://' + action.link;
+  } else if (action.innerType === 'palette') {
+
+  }
+}
+/**
+ * 关闭事件
+ */
+function actionClose (action) {
+  if (action.innerType === 'page' && action.type === 'in') {
+    let target = document.getElementById('page_' + action.link);
+    target && (target.style.display = 'none');
+  }
+}
+/**
  * 渲染页面
  */
 class PreviewPage {
@@ -203,7 +312,9 @@ class PreviewPage {
       id,
       name
     } = data;
-    this.content = JSON.parse(content);
+    let parseContent = JSON.parse(content)
+    this.content = parseContent.pages;
+    this.pagesRank = parseContent.rank;
     this.describe = describe;
     this.id = id;
     this.name = name;
@@ -248,7 +359,7 @@ class PreviewPage {
           // 节点id
           let id = item.getAttribute('id');
           // 节点交互
-          let actionsInfo = item.getAttribute('actionsInfo');
+          let actionsInfo = JSON.parse(item.getAttribute('actionsInfo'));
           // 链接
           let smartBiLink = item.getAttribute('smartBiLink');
           // mxcell节点
@@ -267,118 +378,121 @@ class PreviewPage {
             let getNodeInfo = new GetNodeInfo(node);
             // 节点类型
             let shapeName = getNodeInfo.getStyles('shape');
-              let x,y,width,height,fillColor,strokeColor,fontColor,fontSize,styles, isGroup, image, hide, align, verticalAlign, selectProps, points,rotation;
-              styles = node.getAttribute('style');
-              // console.log(styles)
-              isGroup = styles.indexOf('group') != -1;
-              fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF';
-              fontColor = getNodeInfo.getStyles('fontColor') || '#FFFFFF';
-              verticalAlign = getNodeInfo.getStyles('verticalAlign') || 'middle';
-              rotation = getNodeInfo.getStyles('rotation') || 0;
-              align = getNodeInfo.getStyles('align') || 'center';
-              fontSize = getNodeInfo.getStyles('fontSize') || '12';
-              strokeColor = (shapeName == 'image' ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
-              // 图片地址
-              image = getNodeInfo.getStyles('image') || null;
-              x = parseFloat(node.children[0].getAttribute('x')) || 0;
-              y = parseFloat(node.children[0].getAttribute('y')) || 0;
-              width = parseFloat(node.children[0].getAttribute('width'));
-              hide = item.getAttribute('hide');
-              height = parseFloat(node.children[0].getAttribute('height'));
-              selectProps = item.getAttribute('selectProps') || '';
-              // edge获取路径节点
-              if (shapeName === 'endarrow' || shapeName === 'beeline' || shapeName === 'curve') {
-                const childNodes = node.getElementsByTagName('mxGeometry')[0].children;
-                points = {
-                  points: []
-                };
-                for (let childNode of childNodes) {
-                  let asText = childNode.getAttribute('as')
-                  if (asText === 'sourcePoint') {
-                    // 起点
-                    points.source = [parseFloat(childNode.getAttribute('x')) || 0, parseFloat(childNode.getAttribute('y')) || 0];
-                  } else if (asText === 'targetPoint') {
-                    // 终点
-                    points.target = [parseFloat(childNode.getAttribute('x')) || 0, parseFloat(childNode.getAttribute('y')) || 0];
-                  } else if (asText === 'points') {
-                    // 节点
-                    for (let point of childNode.children) {
-                      points.points.push([parseFloat(point.getAttribute('x')) || 0, parseFloat(point.getAttribute('y')) || 0])
-                    }
-                  }
-                }
-                let reviseX, reviseY = 0;
-                // 最小左侧
-                let leftList = [].concat(points.source[0], points.target[0])
-                leftList = points.points.reduce((item, val) => {
-                  item.push(val[0])
-                  return item
-                }, leftList);
-                reviseX = Math.min.apply(null, leftList);
-                let maxX = Math.max.apply(null, leftList);
-                // // 最小顶部
-                let topList = [].concat(points.source[1], points.target[1])
-                topList = points.points.reduce((item, val) => {
-                  item.push(val[1])
-                  return item
-                }, topList);
-                reviseY = Math.min.apply(null, topList);
-                let maxY = Math.max.apply(null, topList);
-                // 修正定位
-                points.source[0] -= reviseX;
-                points.source[1] -= reviseY;
-                points.target[0] -= reviseX;
-                points.target[1] -= reviseY;
-                
-                points.points.map(val => {
-                  val[0] -= reviseX;
-                  val[1] -= reviseY;
-                })
-                x = reviseX;
-                y = reviseY;
-                width = Math.abs(maxX - reviseX);
-                width = width < 10 ? 10 : width;
-                height = Math.abs(maxY - reviseY);
-                height = height < 10 ? 10 : height;
-                if (shapeName !== 'curve') {
-                  if (points.target[0] == 0 && points.source[0] == 0) {
-                    points.target[0] = 4;
-                    points.source[0] = 4;
-                  }
-                  if (points.target[1] == 0 && points.source[1] == 0) {
-                    points.target[1] = 4;
-                    points.source[1] = 4;
+            let x,y,width,height,fillColor,strokeColor,fontColor,fontSize,styles, isGroup, image, hide, align, verticalAlign, selectProps, points,rotation,flipH,flipV;
+            styles = node.getAttribute('style');
+            isGroup = styles.indexOf('group') != -1;
+            fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF';
+            fontColor = getNodeInfo.getStyles('fontColor') || '#FFFFFF';
+            verticalAlign = getNodeInfo.getStyles('verticalAlign') || 'middle';
+            rotation = getNodeInfo.getStyles('rotation') || 0;
+            flipH = getNodeInfo.getStyles('flipH') || 0;
+            flipV = getNodeInfo.getStyles('flipV') || 0;
+            align = getNodeInfo.getStyles('align') || 'center';
+            fontSize = getNodeInfo.getStyles('fontSize') || '12';
+            strokeColor = (shapeName == 'image' ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
+            // 图片地址
+            image = getNodeInfo.getStyles('image') || null;
+            x = parseFloat(node.children[0].getAttribute('x')) || 0;
+            y = parseFloat(node.children[0].getAttribute('y')) || 0;
+            width = parseFloat(node.children[0].getAttribute('width'));
+            hide = item.getAttribute('hide');
+            height = parseFloat(node.children[0].getAttribute('height'));
+            selectProps = item.getAttribute('selectProps') || '';
+            // edge获取路径节点
+            if (shapeName === 'endarrow' || shapeName === 'beeline' || shapeName === 'curve') {
+              const childNodes = node.getElementsByTagName('mxGeometry')[0].children;
+              points = {
+                points: []
+              };
+              for (let childNode of childNodes) {
+                let asText = childNode.getAttribute('as')
+                if (asText === 'sourcePoint') {
+                  // 起点
+                  points.source = [parseFloat(childNode.getAttribute('x')) || 0, parseFloat(childNode.getAttribute('y')) || 0];
+                } else if (asText === 'targetPoint') {
+                  // 终点
+                  points.target = [parseFloat(childNode.getAttribute('x')) || 0, parseFloat(childNode.getAttribute('y')) || 0];
+                } else if (asText === 'points') {
+                  // 节点
+                  for (let point of childNode.children) {
+                    points.points.push([parseFloat(point.getAttribute('x')) || 0, parseFloat(point.getAttribute('y')) || 0])
                   }
                 }
               }
-              x < minX && (minX = x);
-              y < minY && (minY = y);
-              let obj = {
-                  id,
-                  shapeName,
-                  x,
-                  y,
-                  width,
-                  height,
-                  fillColor,
-                  strokeColor,
-                  value,
-                  isGroup,
-                  fontColor,
-                  fontSize,
-                  image,
-                  smartBiLink,
-                  actionsInfo,
-                  hide,
-                  verticalAlign,
-                  align,
-                  selectProps,
-                  points,
-                  rotation
-              };
-              // 组合节点
-              obj.children = getNode(id);
-              list.push(obj);
+              let reviseX, reviseY = 0;
+              // 最小左侧
+              let leftList = [].concat(points.source[0], points.target[0])
+              leftList = points.points.reduce((item, val) => {
+                item.push(val[0])
+                return item
+              }, leftList);
+              reviseX = Math.min.apply(null, leftList);
+              let maxX = Math.max.apply(null, leftList);
+              // // 最小顶部
+              let topList = [].concat(points.source[1], points.target[1])
+              topList = points.points.reduce((item, val) => {
+                item.push(val[1])
+                return item
+              }, topList);
+              reviseY = Math.min.apply(null, topList);
+              let maxY = Math.max.apply(null, topList);
+              // 修正定位
+              points.source[0] -= reviseX;
+              points.source[1] -= reviseY;
+              points.target[0] -= reviseX;
+              points.target[1] -= reviseY;
+              
+              points.points.map(val => {
+                val[0] -= reviseX;
+                val[1] -= reviseY;
+              })
+              x = reviseX;
+              y = reviseY;
+              width = Math.abs(maxX - reviseX);
+              width = width < 10 ? 10 : width;
+              height = Math.abs(maxY - reviseY);
+              height = height < 10 ? 10 : height;
+              if (shapeName !== 'curve') {
+                if (points.target[0] == 0 && points.source[0] == 0) {
+                  points.target[0] = 4;
+                  points.source[0] = 4;
+                }
+                if (points.target[1] == 0 && points.source[1] == 0) {
+                  points.target[1] = 4;
+                  points.source[1] = 4;
+                }
+              }
+            }
+            x < minX && (minX = x);
+            y < minY && (minY = y);
+            let obj = {
+                id,
+                shapeName,
+                x,
+                y,
+                width,
+                height,
+                fillColor,
+                strokeColor,
+                value,
+                isGroup,
+                fontColor,
+                fontSize,
+                image,
+                smartBiLink,
+                actionsInfo,
+                hide,
+                verticalAlign,
+                align,
+                selectProps,
+                points,
+                rotation,
+                flipH,
+                flipV
+            };
+            // 组合节点
+            obj.children = getNode(id);
+            list.push(obj);
           };
       };
       return list;
@@ -431,13 +545,11 @@ class PreviewPage {
   
   // 渲染控件节点
   renderCell (cell) {
-    console.log(cell)
     const shapeName = cell.shapeName;
     let cellHtml;
     if (shapeName === 'image') {
       // 图片
-      cellHtml = document.createElement('img');
-      cellHtml.setAttribute('src', cell.image.replace(/getechFileSystem/, fileSystem))
+      cellHtml = insertImage(cell)
     } else if (shapeName === 'linkTag') {
       // smartBi链接iframe
       cellHtml = document.createElement('iframe');
@@ -495,6 +607,10 @@ class PreviewPage {
     } else {
       cellHtml.style.lineHeight = 0;
     }
+    // svg列表背景透明
+    if (['endarrow', 'beeline', 'curve'].includes(shapeName) || configSvg.includes(shapeName)) {
+      cellHtml.style.backgroundColor = 'transparent';
+    }
     // 非Edge和svg控件
     if (!['endarrow', 'beeline', 'curve'].includes(shapeName) && !configSvg.includes(shapeName)) {
       cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `1px solid ${cell.strokeColor || defaultStyle.strokeColor}`}`;
@@ -507,7 +623,7 @@ class PreviewPage {
       cellHtml.style.display = 'none';
     }
     // 旋转
-    cellHtml.style.transform = `rotate(${cell.rotation}deg)`;
+    cellHtml.style.transform = `rotate(${cell.rotation}deg) ${cell.flipV == 1 ? ' scaleY(-1)' : ''} ${cell.flipH == 1 ? ' scaleX(-1)' : ''}`;
     // 字体大小
     cellHtml.style.fontSize = `${cell.fontSize}px`;
     // 字体颜色
@@ -515,6 +631,9 @@ class PreviewPage {
     // 定位
     cellHtml.style.left = cell.x + 'px';
     cellHtml.style.top = cell.y + 'px';
+    cellHtml.id = `palette_${cell.id}`
+    // 绑定事件
+    BindEvent(cellHtml, cell.actionsInfo)
     return cellHtml;
   }
 }
@@ -551,31 +670,42 @@ class CreateRectangle extends GetNodeInfo {
 /**
  * 执行渲染主函数
  */
-async function main () {
-  let id = /id=(.+?)$/.exec(location.search)
-  if ( id ) {
-    id = id[1]
-  } else {
-    console.log('id不存在');
-    return;
+class Main {
+  constructor () {
+    this.previewPage = null;
+    this.pageName = null;
   }
-  const host = await geAjax('/api/image/host', 'GET');
-  fileSystem = host.host;
-  applyInfo = await geAjax(`/api/viewtool/${id}`, 'GET');
-  shapeXmls = await loadShapeXml();
-  if (!applyInfo) {
-    console.log('未查到对应数据')
-    return;
-  }
-  applyInfo = applyInfo;
-  let previewPage = new PreviewPage(applyInfo);
-  previewPage.parsePage(previewPage.content.sddaa);
-  // for (let key in previewPage.content) {
-  //   if (previewPage.content[key].type === 'normal') {
-  //     console.log(key)
-  //     // console.log(previewPage.parsePage(previewPage.content[key]))
-  //   }
-  // }
-}
-main();
 
+  // 初始化
+  async init () {
+    let id = /id=(.+?)$/.exec(location.search)
+    if ( id ) {
+      id = id[1]
+    } else {
+      console.log('id不存在');
+      return;
+    }
+    const host = await geAjax('/api/image/host', 'GET');
+    fileSystem = host.host;
+    applyInfo = await geAjax(`/api/viewtool/${id}`, 'GET');
+    shapeXmls = await loadShapeXml();
+    if (!applyInfo) {
+      console.log('未查到对应数据')
+      return;
+    }
+    applyInfo = applyInfo;
+    this.previewPage = new PreviewPage(applyInfo);
+    this.pageName = this.previewPage.pagesRank.normal[0];
+    this.renderPage();
+  }
+
+  // 渲染页面
+  renderPage() {
+    let pageContent = this.previewPage.content[this.pageName];
+    console.log(this.previewPage.content)
+    this.previewPage.parsePage(pageContent);
+  }
+}
+
+let main = new Main();
+main.init()

@@ -990,18 +990,22 @@ var addPageDialog = function (editorUi, type) {
 		} else if (editorUi.editor.pages[titleText]) {
 			mxUtils.alert('存在相同名称页面');
 		} else {
+			const pageType = isDialogFlag.checked ? 'dialog' : 'normal';
 			var page = {
 				title: titleText,
 				desc: descInput.value,
 				xml,
-				type: isDialogFlag.checked ? 'dialog' : 'normal'
+				type: pageType
 			};
+
 			if (type == 'rename') {
 				// 重命名
 				editorUi.editor.setCurrentPage(page.title)
 				delete editorUi.editor.pages[currentPage.title];
 				editorUi.editor.pages[page.title] = page;
 				$(".currentPage").text(page.title);
+				// 更新排序
+				editorUi.editor.pagesRank[pageType].splice(editorUi.editor.pagesRank[pageType].indexOf(currentPage.title), 1, page.title)
 			} else {
 				var _li = document.createElement('li');
 				_li.innerHTML = titleText;
@@ -1267,6 +1271,24 @@ var PaletteDataDialog = function(editorUi, cell) {
 	addVariableBtn.className = 'addVariableBtn';
 	variableTitle.appendChild(addVariableBtn);
 	saveContent.appendChild(variableTitle)
+	// 填充内容的变量
+	var insertVariable = document.createElement('div');
+	insertVariable.className = 'geDialogInfoTitle';
+	const flag = true;
+	insertVariable.innerHTML = `
+		<span>填充数据：</span>
+		<span>
+			<label>
+				<input type='radio' style="transform: translateY(2px)" name='insert' ${flag && 'checked'} />
+				是(默认填充第一个参数)
+			</label>
+			<label>
+				<input type='radio' style="transform: translateY(2px)" name='insert' ${!flag && 'checked'} />
+				否
+			</label>
+		</span>
+	`
+	saveContent.appendChild(insertVariable)
 	// 变量列表
 	var variableList = document.createElement('div');
 	variableList.className = 'dataDialogList variablesList'
@@ -1282,17 +1304,7 @@ var PaletteDataDialog = function(editorUi, cell) {
 	var modelList = document.createElement('ul');
 	modelList.className = 'dataDialogList modelList'
 	saveContent.appendChild(modelList);
-	// 执行：
-	var executeTitle = document.createElement('p');
-	executeTitle.innerHTML = '执行(改变状态)：';
-	executeTitle.className = 'geDialogInfoTitle';
-	saveContent.appendChild(executeTitle);
-	// 执行列表
-	var executeList = document.createElement('ul');
-	executeList.className = 'dataDialogList executeList';
-	// 填充执行列表
-	saveContent.appendChild(executeList);
-	
+		
 	// 绑定事件
 	// 选择采集点类型
 	mxEvent.addListener(typeSelect, 'change', (e) => {
@@ -1307,14 +1319,13 @@ var PaletteDataDialog = function(editorUi, cell) {
 		choosedParam = [];
 		fillParams(variableList, choosedParam);
 		fillModelList(modelList, []);
-		fillExecuteList(executeList, []);
 	});
 	// 选择变量应用回调函数
 	function chooseVariable(data) {
 		choosedParam = data;
 		fillParams(variableList, choosedParam);
 		editorUi.hideDialog();
-		getModels(editorUi, modelList, executeList, pointSelect.value, data.map(val => val.id).join(), true)
+		getModels(editorUi, modelList, pointSelect.value, data.map(val => val.id).join(), true)
 	}
 	// 选择变量
 	addVariableBtn.addEventListener('click', function (e) {
@@ -1325,32 +1336,13 @@ var PaletteDataDialog = function(editorUi, cell) {
 	// 保存按钮
 	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('应用', function()
-	{		
-		const modelList = $('.executeList li');
-		let applyModel = []
-		// 获取选中的模型
-		for (let item of modelList) {
-			if ($(item).children('input:checked')[0]) {
-				applyModel.push({
-					modelViewToolId: item.getAttribute('data-modelId'),
-					warn: $(item).children('select')[0].value
-				})
-			} else {
-				applyModel.push({
-					modelViewToolId: item.getAttribute('data-modelId'),
-					warn: 0
-				})
-			}
-		}
-
+	{
 		// 配置模型应用报警方式ajax
 		bindData = {
 			pointType: typeSelect.value,
 			point: pointSelect.value,
 			params: choosedParam
 		}
-		// 绑定列表
-		var select = null;
 		
 		graph.getModel().beginUpdate();
 		try {
@@ -1359,19 +1351,7 @@ var PaletteDataDialog = function(editorUi, cell) {
 		}
 		finally {
 			graph.getModel().endUpdate();
-			// if (select != null) {
-			// 	graph.setSelectionCells(select);
-			// 	graph.scrollCellToVisible(select[0]);
-			// }
-			// editorUi.editor.ajax(editorUi, '/api/model/viewTool/warn', 'PUT', applyModel, function () {
-			// 	// 请求成功回调函数
-			// 	editorUi.hideDialog();
-			// }, function () {
-			// 	editorUi.hideDialog();
-			// 	editorUi.editor.tipInfo(editorUi, false, '保存')
-			// })
 		}
-
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	// 取消按钮
@@ -1401,7 +1381,7 @@ var PaletteDataDialog = function(editorUi, cell) {
 			this.fillContent(pointSelect, pointsData)
 			
 			// 查询模型列表
-			getModels(editorUi, modelList, executeList, bindData.point, bindData.params.map(val => val.id).join())
+			getModels(editorUi, modelList, bindData.point, bindData.params.map(val => val.id).join())
 		})
 	}
 	cancelBtn.className = 'geBtn';
@@ -1601,26 +1581,22 @@ var chooseVariableDialog = function (editorUi, sourcedata = [], chooseData = [],
  * @param {string} paramId 变量id，逗号隔开
  * @param {boolean} closeDialog 是否需要关闭弹窗
  */
-function getModels (editorUi, modelEle, executeEle, pointId, paramId, closeDialog = false) {
+function getModels (editorUi, modelEle, pointId, paramId, closeDialog = false) {
 	var modelData = [];
 	if (pointId && paramId) {
 		editorUi.editor.ajax(editorUi, '/api/viewTool/model/serach', 'POST', {pointId, paramId}, function (res) {
 			modelData = [].concat(res);
 			fillModelList(modelEle, modelData);
-			fillExecuteList(executeEle, modelData);
-			// editorUi.editor.tipInfo(editorUi, true, '请求')
 		}, null, '获取应用模型中···')
 	} else {
 		fillModelList(modelEle, modelData);
-		fillExecuteList(executeEle, modelData);
-		// editorUi.editor.tipInfo(editorUi, false, '请求')
 	}
 	return modelData;
 }
 
 /**
- * 填充执行列表
- * @param {object} ele 执行列表的DOM节点
+ * 填充模型列表
+ * @param {object} ele 模型列表的DOM节点
  * @param {Array} data 数据列表
  */
 function fillModelList (ele, data) {
@@ -1637,7 +1613,7 @@ function fillModelList (ele, data) {
 		`;
 	} else {
 		ele.innerHTML = `
-			<span>当前采集点参数未独立应用模型</span><a class="addModelBtn" style="height: 24px;line-height: 22px;">去添加模型</a>
+			<span>当前采集点参数未独立应用模型</span><a class="addModelBtn" target="_blank" href="/modelManage">去添加模型</a>
 		`
 	}
 }

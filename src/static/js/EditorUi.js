@@ -406,6 +406,7 @@ EditorUi = function(editor, container, lightbox)
 	let dblClickFn = graph.dblClick;
 	graph.dblClick = (evt, cell) => {
 		let state = graph.view.getState(cell);
+		if (!state) return false;
 		if (state.style.shape === 'image') {
 			this.actions.get('image').funct()
 		}
@@ -3554,7 +3555,8 @@ EditorUi.prototype.save = function(name, des)
 			var data = {
 				name: name,
 				describe: des,
-				content: JSON.stringify(pages),
+				applyCon: Object.keys(pages).join(),
+				content: JSON.stringify({pages, rank: editor.pagesRank}),
 			}
 			var id = editor.getApplyId();
 			if (id) {
@@ -3573,11 +3575,10 @@ EditorUi.prototype.save = function(name, des)
 					this.saveError();
 				})
 			}
-			// 更新标题
-			// this.updateDocumentTitle();
 		}
 		catch (e)
 		{
+			console.log(e)
 			editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
 		}
 	}
