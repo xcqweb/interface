@@ -266,8 +266,8 @@ Editor.prototype.tipInfo = function (editorUi, flag, title) {
 	tips.className += ' geDialog';
 	let bg = document.createElement('div');
 	bg.className = 'background';
-	document.body.append(bg)
-	document.body.append(tips)
+	document.body.appendChild(bg)
+	document.body.appendChild(tips)
 	setTimeout(() => {
 		document.body.removeChild(bg)
 		document.body.removeChild(tips)
@@ -333,7 +333,7 @@ Editor.prototype.ajax = function (editorUi, url, method, data, fn = function() {
 		error: function (res) {
 			loadingBarInner.style.width = '100%';
 			setTimeout(() => {
-				errorfn && errorfn();
+				errorfn && errorfn(res);
 			}, 550)
 		}
 	})
@@ -363,7 +363,6 @@ Editor.prototype.InitEditor = function (editorUi) {
 		if (res[1]) {
 			var editData = res[1];
 			var content = JSON.parse(editData.content);
-			console.log(content)
 			if (content.rank) {
 				editorUi.editor.pages = content.pages;
 				editorUi.editor.pagesRank = content.rank;
@@ -535,8 +534,8 @@ Editor.prototype.setCurrentType = function (type) {
 /**
  * 设置当前选中的页面名称
  */
-Editor.prototype.setCurrentPage = function (title) {
-	this.currentPage = title
+Editor.prototype.setCurrentPage = function (id) {
+	this.currentPage = id
 }
 /**
  * 编辑器页面数据
@@ -544,17 +543,19 @@ Editor.prototype.setCurrentPage = function (title) {
 const defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
 Editor.prototype.defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
 Editor.prototype.pagesRank = {
-	normal: ['页面1'],
-	dialog: ['页面2']
+	normal: ['pageid_1'],
+	dialog: ['pageid_2']
 };
 Editor.prototype.pages = {
-	"页面1": {
+	"pageid_1": {
+		id: 'pageid_1',
 		title: '页面1',
 		desc: '',
 		xml: defaultXml,
 		type: 'normal'
 	},
-	"页面2": {
+	"pageid_2": {
+		id: 'pageid_2',
 		title: '页面2',
 		desc: '',
 		xml: defaultXml,
@@ -565,7 +566,11 @@ Editor.prototype.pages = {
  * 获取页面名称列表
  */
 Editor.prototype.pagesNameList = function () {
-	return Object.keys(this.pages)
+	let pages = [];
+	for (let key in this.pages) {
+		pages.push(this.pages[key].title)
+	}
+	return pages
 }
 /**
  * 添加页面
@@ -574,14 +579,17 @@ Editor.prototype.pagesNameList = function () {
  */
 Editor.prototype.addPage = function (page) {
 	page.xml = page.xml || this.defaultXml;
-	this.pages[page.title] = page;
-	this.pagesRank[page.type].push(page.title);
+	let id = `pageid_${this.pagesRank.normal.length + this.pagesRank.normal.length + 1}`;
+	page.id = id;
+	this.pages[id] = page;
+	this.pagesRank[page.type].push(page.id);
+	return page;
 }
 /**
  * 删除页面
  */
-Editor.prototype.deletePage = function (title) {
-	delete this.pages[title]
+Editor.prototype.deletePage = function (id) {
+	delete this.pages[id]
 }
 /**
  * 设置页面顺序

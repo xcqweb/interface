@@ -1,3 +1,5 @@
+// 主函数
+let mainProcess;
 // 编辑model
 const model = new mxGraphModel();
 // 控件xml解析信息
@@ -47,11 +49,9 @@ function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor='#333') {
   svg.setAttribute('viewBox', shapeXmls[key].viewBox)
   svg.setAttribute('width', w);
   svg.setAttribute('height', h);
-  // svg.setAttribute('transform', `translate(${x}, ${y})`)
   svg.innerHTML = inner.outerHTML;
   svgContent.appendChild(svg);
   return svgContent;
-  // document.body.appendChild(svgContent)
 }
 
 /**
@@ -217,10 +217,6 @@ function geAjax (url, method = 'GET', data = null) {
   })
 }
 
-function showDialog() {
-  let bg = document.createElement('div');
-}
-
 /**
  * 绑定事件
  * @param {object} ele DOM节点
@@ -229,7 +225,8 @@ function showDialog() {
 function BindEvent(ele, actionsInfo) {
   if (actionsInfo) {
     for(let action of actionsInfo) {
-      if (action.mouseEvent !== 'unset' && action.effectAction !== 'unset' && action.mouseEvent !== '选择' && action.effectAction !== '选择') {
+      console.log(action)
+      if (action.mouseEvent !== 'unset' && action.effectAction !== 'unset' && action.link) {
         ele.addEventListener(action.mouseEvent, function (e) {
           e = e || window.event;
           if (e.stopPropagation) {
@@ -237,7 +234,6 @@ function BindEvent(ele, actionsInfo) {
           } else {
             e.cancelBubble = true;
           }
-          console.log(action)
           // 触发事件
           switch (action.effectAction) {
             case 'show':
@@ -268,7 +264,7 @@ function actionShow (action) {
   if (action.innerType === 'palette') {
     document.getElementById('palette_' + action.link).style.display = '';
   } else {
-    document.getElementById('page_' + action.link).style.display = '';
+    mainProcess.renderDialog(action.link)
   }
 }
 /**
@@ -278,18 +274,26 @@ function actionHide (action) {
   if (action.innerType === 'palette') {
     document.getElementById('palette_' + action.link).style.display = 'none';
   } else {
-    document.getElementById('page_' + action.link).style.display = 'none';
+    document.getElementById(action.link).remove();
+    document.getElementById('bg_' + action.link).remove();
   }
 }
 /**
  * 打开事件
  */
 function actionOpen (action) {
-  console.log('打开')
   if (action.type === 'out') {
+    // 打开外部链接
     window.location.href = 'http://' + action.link;
-  } else if (action.innerType === 'palette') {
-
+  } else if (action.innerType === 'page') {
+    // 打开页面
+    const pageType = mainProcess.getPageType(action.link);
+    if (pageType === 'normal' && mainProcess.pageId !== action.link) {
+      mainProcess.pageId = action.link;
+      mainProcess.renderNormal();
+    } else if (pageType === 'dialog') {
+      mainProcess.renderDialog(action.link)
+    }
   }
 }
 /**
@@ -297,8 +301,8 @@ function actionOpen (action) {
  */
 function actionClose (action) {
   if (action.innerType === 'page' && action.type === 'in') {
-    let target = document.getElementById('page_' + action.link);
-    target && (target.style.display = 'none');
+    document.getElementById(action.link).remove();
+    document.getElementById('bg_' + action.link).remove();
   }
 }
 /**
@@ -325,12 +329,14 @@ class PreviewPage {
     return Object.keys(this.content);
   }
   // 生成弹窗
-  createDialog() {
+  createDialog(id) {
     let bg = document.createElement('div')
     bg.className = 'bg';
+    bg.id = 'bg_' + id;
     document.body.appendChild(bg)
     let dialog = document.createElement('div');
     dialog.className = 'geDialog';
+    dialog.id = id;
     // 标题
     let title = document.createElement('p');
     title.className = 'geDialogTitle';
@@ -344,7 +350,7 @@ class PreviewPage {
     // 弹窗正文
     let content = document.createElement('div');
     dialog.appendChild(content);
-    document.body.append(dialog);
+    document.body.appendChild(dialog);
     return content;
   }
   // 解析所有控件节点
@@ -499,12 +505,12 @@ class PreviewPage {
     };
     let cells = getNode();
     cells.map(cell => {
-      // 计算页面高度
-      pageWidth = ((cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth) + 20;
-      pageHeight = ((cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight) + 20;
       // 修正最外层节点的定位信息
       cell.x += Math.abs(minX) + 20;
       cell.y += Math.abs(minY) + 20;
+      // 计算页面高度
+      pageWidth = ((cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth) + 20;
+      pageHeight = ((cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight) + 20;
     })
     return cells;
   }
@@ -518,27 +524,32 @@ class PreviewPage {
     const root = xmlDoc.getElementsByTagName('root')[0].children;
     let cells = this.parseCells(root);
     if (page.type === 'normal') {
-      // 正常页面
+      // 正常的最小x、y偏移量
+      minX = minY = 0;
+      // 页面宽度和高度
+      pageWidth = pageHeight = 0;
+      // 清空页面内容
       this.clearPage();
-      this.renderPage(cells);
+      // 正常页面      
+      this.renderPages(cells);
       gePreview.style.width = pageWidth + 'px';
       gePreview.style.height = pageHeight + 'px';
     } else {
       // 弹窗页面
-      let layerContent = this.createDialog();
-      layerContent.innerHTML = ``
+      let layerContent = this.createDialog(page.id);
+      layerContent.innerHTML = ``;
+      this.renderPages(cells, layerContent);
     }
     return cells
   }
-  // 获取节点的style内的某个属性
   // 渲染页面
-  renderPage (cells, ele = gePreview) {
+  renderPages (cells, ele = gePreview) {
     for (let cell of cells) {
       let cellHtml = this.renderCell(cell);
       ele.appendChild(cellHtml);
       // 组内资源
       if (cell.children.length) {
-        this.renderPage(cell.children, cellHtml);
+        this.renderPages(cell.children, cellHtml);
       }
     }
   }
@@ -553,7 +564,8 @@ class PreviewPage {
     } else if (shapeName === 'linkTag') {
       // smartBi链接iframe
       cellHtml = document.createElement('iframe');
-      cellHtml.setAttribute('src', `${cell.smartBiLink}&user=admin&password=123456`);
+      // &user=admin&password=123456
+      cellHtml.setAttribute('src', `${cell.smartBiLink}`);
     } else if (shapeName === 'menuCell' || shapeName === 'menulist') {
       // 菜单
       cellHtml = document.createElement('div');
@@ -655,25 +667,14 @@ class GetNodeInfo {
 }
 
 /**
- * 创建矩形
- */
-class CreateRectangle extends GetNodeInfo {
-  constructor (name) {
-    super(name);
-  }
-
-  render () {
-    this.getStyles()
-  }
-}
-
-/**
  * 执行渲染主函数
  */
 class Main {
   constructor () {
+    // 应用的页面信息
     this.previewPage = null;
-    this.pageName = null;
+    // 当前页面
+    this.pageId = null;
   }
 
   // 初始化
@@ -695,17 +696,31 @@ class Main {
     }
     applyInfo = applyInfo;
     this.previewPage = new PreviewPage(applyInfo);
-    this.pageName = this.previewPage.pagesRank.normal[0];
-    this.renderPage();
+    this.pageId = this.previewPage.pagesRank.normal[0];
+    this.renderNormal();
+  }
+  // 判断页面类型
+  getPageType(id) {
+    if (this.previewPage.pagesRank.normal.indexOf(id) !== -1) {
+      return 'normal';
+    } else if (this.previewPage.pagesRank.dialog.indexOf(id) !== -1) {
+      return 'dialog';
+    } else {
+      return null;
+    }
+  }
+  // 渲染普通页面
+  renderNormal() {
+    let pageContent = this.previewPage.content[this.pageId];
+    this.previewPage.parsePage(pageContent);
   }
 
-  // 渲染页面
-  renderPage() {
-    let pageContent = this.previewPage.content[this.pageName];
-    console.log(this.previewPage.content)
+  // 渲染弹窗
+  renderDialog(id) {
+    let pageContent = this.previewPage.content[id];
     this.previewPage.parsePage(pageContent);
   }
 }
 
-let main = new Main();
-main.init()
+mainProcess = new Main();
+mainProcess.init()

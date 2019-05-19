@@ -85,12 +85,10 @@ function Sidebar(editorUi, container)
  */
 Sidebar.prototype.init = function()
 {
-	var dir = STENCIL_PATH;
-
 	this.createPageContextMenu();
 	this.addPagePalette(true);//页面管理
 	this.addGeneralPalette(true);//基础控件
-	this.addBasicPalette(dir);//基本图形
+	// this.addBasicPalette(dir);//基本图形
 };
 
 /**
@@ -925,7 +923,7 @@ Sidebar.prototype.deletePage = function (ele) {
 		target = $("#dialogPages li").first();
 	}
 	// 删除页面数据
-	this.editorUi.editor.deletePage(ele.text())
+	this.editorUi.editor.deletePage(ele.data('pageid'))
 	target.click();
 	// 移除节点
 	ele.remove()
@@ -955,7 +953,7 @@ Sidebar.prototype.createPageContextMenu = function  () {
 	document.body.appendChild(menulist);
 	// 隐藏菜单
 	mxEvent.addGestureListeners(document, (evt) => {
-		if (evt.target.parentNode.id !== 'pageContextMenu') {
+		if (evt.target.parentNode && evt.target.parentNode.id !== 'pageContextMenu') {
 			this.hidePageContextMenu();
 		}
 	});
@@ -968,10 +966,11 @@ Sidebar.prototype.createPageContextMenu = function  () {
 		// 添加页面
 		var addPage = this.editorUi.actions.get('addPage').funct;
 		const pageType = this.editorUi.editor.currentType;
-		let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.text())
+		console.log(ele.data('pageid'))
+		let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.data('pageid'))
 		switch (actionType) {
 			case 'movePrev':
-				 this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems( this.editorUi.editor.pagesRank[pageType], index - 1, index);
+				this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems( this.editorUi.editor.pagesRank[pageType], index - 1, index);
 				ele.insertBefore(ele.prev())
 				break;
 			case 'moveNext':
@@ -1032,6 +1031,7 @@ function createPageList (editorUi, data, id) {
 		pageListEle.id = id;
 		for (var i in data) {
 			var page = document.createElement('li')
+			page.setAttribute('data-pageid', data[i].id);
 			page.innerHTML =  data[i].title;
 			pageListEle.appendChild(page)
 		}
@@ -1042,7 +1042,7 @@ function createPageList (editorUi, data, id) {
 				// 点击保存上一个页面
 				var type = id.slice(0, id.length - 5);
 				// 目标页面名称
-				var nextTitle = target.innerText;
+				var nextTitle = target.getAttribute('data-pageid');
 				// 已选中节点
 				if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {
 					editorUi.editor.setXml();
@@ -1059,18 +1059,65 @@ function createPageList (editorUi, data, id) {
 		// 鼠标左键点击
 		mxEvent.addListener(pageListEle, 'click', function (evt) {
 			changePage(evt)
-		});
+		}, true);
 
+		// 鼠标双击编辑
+		mxEvent.addListener(pageListEle, 'dblclick', function (evt) {
+			if (evt.target.nodeName === 'LI') {
+				evt.stopPropagation()
+				let editInput = document.createElement('input');
+				editInput.id = 'editPageInput';
+				let oldVal = evt.target.innerHTML
+				editInput.value = oldVal;
+				evt.target.innerHTML = '';
+				evt.target.appendChild(editInput);
+
+				editInput.focus();
+				
+				let saveFn = () => {
+					let name = '' + editInput.value;
+					if (!name) {
+						mxUtils.alert('页面名称不能为空');
+						evt.target.innerHTML = oldVal;
+					} else if (name.length > 20) {
+						mxUtils.alert('页面名称不能超过20个字符');
+						evt.target.innerHTML = oldVal;
+					} else {
+						editorUi.editor.pages[evt.target.getAttribute('data-pageid')].title = name;
+						evt.target.innerHTML = name;
+					}
+					mxEvent.removeListener(document.body, 'click', saveFn);
+				}
+				
+				mxEvent.addListener(document.body, 'click', saveFn);
+				// 回车
+				mxEvent.addListener(editInput, 'click', function (e) {
+					if (e.stopPropagation) {
+						e.stopPropagation();
+					} else {
+						e.cancelBubble = true;
+					}
+				}, true);
+				// 回车
+				mxEvent.addListener(editInput, 'keydown', function (e) {
+					if (e.keyCode === 13) {
+						saveFn();
+					}
+				});
+			}
+		})
 		// 鼠标右键点击
 		mxEvent.addListener(pageListEle, 'contextmenu', function (evt) {
 			evt.preventDefault();
-			changePage(evt);
-			editorUi.editor.setXml();
-			// 右键菜单展示
-			var menulist = document.getElementById('pageContextMenu');
-			menulist.style.display = 'block';
-			menulist.style.left = mxEvent.getClientX(evt) + 'px';
-			menulist.style.top = mxEvent.getClientY(evt) + 'px';
+			if (evt.target.nodeName === 'LI') {
+				changePage(evt);
+				editorUi.editor.setXml();
+				// 右键菜单展示
+				var menulist = document.getElementById('pageContextMenu');
+				menulist.style.display = 'block';
+				menulist.style.left = mxEvent.getClientX(evt) + 'px';
+				menulist.style.top = mxEvent.getClientY(evt) + 'px';
+			}
 		})
 		return pageListEle;
 	};
@@ -1181,7 +1228,8 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		// 矩形
 		this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, '矩形'),
 		// 按钮
-		this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box">BUTTON</button>', '按钮'),
+		// this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box">BUTTON</button>', '按钮'),
+		this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box;background:transparent;">BUTTON</button>', '按钮'),
 		// 横向菜单
 		this.addEntry('page menu', function()
 		{
@@ -1274,7 +1322,7 @@ Sidebar.prototype.createTitle = function(label, id)
 		img.setAttribute('src', '/static/images/icons/addPage.png');
 		img.setAttribute('id', 'addPage');
 		img.addEventListener('click', function (e) {
-			w = e || window.event;
+			e = e || window.event;
 			if (e.stopPropagation) {
 				e.stopPropagation();
 			} else {
@@ -2061,8 +2109,11 @@ Sidebar.prototype.createDragSource = function(elt, dropHandler, preview, cells, 
 			arrow.setAttribute('title', tooltip);
 		}
 		
-		mxUtils.setOpacity(arrow, (img == this.refreshTarget) ? 30 : 20);
-		arrow.style.position = 'absolute';
+		// mxUtils.setOpacity(arrow, (img == this.refreshTarget) ? 30 : 20);
+		// arrow.style.position = 'absolute';
+		arrow.style.display = 'none';
+		arrow.style.width = '0';
+		arrow.style.height = '0';
 		// arrow.style.cursor = 'crosshair';
 		
 		return arrow;
@@ -2397,16 +2448,16 @@ Sidebar.prototype.createDragSource = function(elt, dropHandler, preview, cells, 
 					}
 				}
 				
-				bbox.add(checkArrow(x, y, new mxRectangle(currentTargetState.getCenterX() - this.triangleUp.width / 2,
-					bds.y - this.triangleUp.height, this.triangleUp.width, this.triangleUp.height), arrowUp));
-				bbox.add(checkArrow(x, y, new mxRectangle(bds.x + bds.width,
-					currentTargetState.getCenterY() - this.triangleRight.height / 2,
-					this.triangleRight.width, this.triangleRight.height), arrowRight));
-				bbox.add(checkArrow(x, y, new mxRectangle(currentTargetState.getCenterX() - this.triangleDown.width / 2,
-						bds.y + bds.height, this.triangleDown.width, this.triangleDown.height), arrowDown));
-				bbox.add(checkArrow(x, y, new mxRectangle(bds.x - this.triangleLeft.width,
-						currentTargetState.getCenterY() - this.triangleLeft.height / 2,
-						this.triangleLeft.width, this.triangleLeft.height), arrowLeft));
+				// bbox.add(checkArrow(x, y, new mxRectangle(currentTargetState.getCenterX() - this.triangleUp.width / 2,
+				// 	bds.y - this.triangleUp.height, this.triangleUp.width, this.triangleUp.height), arrowUp));
+				// bbox.add(checkArrow(x, y, new mxRectangle(bds.x + bds.width,
+				// 	currentTargetState.getCenterY() - this.triangleRight.height / 2,
+				// 	this.triangleRight.width, this.triangleRight.height), arrowRight));
+				// bbox.add(checkArrow(x, y, new mxRectangle(currentTargetState.getCenterX() - this.triangleDown.width / 2,
+				// 		bds.y + bds.height, this.triangleDown.width, this.triangleDown.height), arrowDown));
+				// bbox.add(checkArrow(x, y, new mxRectangle(bds.x - this.triangleLeft.width,
+				// 		currentTargetState.getCenterY() - this.triangleLeft.height / 2,
+				// 		this.triangleLeft.width, this.triangleLeft.height), arrowLeft));
 			}
 			
 			// Adds tolerance

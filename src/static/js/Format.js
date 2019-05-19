@@ -52,6 +52,7 @@ Format.prototype.init = function()
 	});
 	
 	graph.getSelectionModel().addListener(mxEvent.CHANGE, this.update);
+	this.refresh();
 };
 
 /**
@@ -327,22 +328,6 @@ Format.prototype.refresh = function()
 	this.clear();
 	var ui = this.editorUi;
 	var graph = ui.editor.graph;
-	
-	if (this.getSelectionState().vertices.length === 1) {
-		var cell = graph.getSelectionCell();
-		var cellInfo = graph.getModel().getValue(cell);
-		var rect = this.getSelectionState();
-		var shapeName = rect.style.shape;
-		// 转换类型
-		if (!mxUtils.isNode(cellInfo))
-		{
-			var doc = mxUtils.createXmlDocument();
-			var obj = doc.createElement('object');
-			obj.setAttribute('label', cellInfo || '');
-			cellInfo = obj;
-		};
-		graph.getModel().setValue(cell, cellInfo);
-	}
 
 	var div = document.createElement('div');
 	div.style.whiteSpace = 'nowrap';
@@ -361,85 +346,94 @@ Format.prototype.refresh = function()
 	label.style.lineHeight = '32px';
 	label.style.width = '100%';
 	this.container.appendChild(div);
-
-	var containsLabel = this.getSelectionState().containsLabel;
-	var currentLabel = null;
-	var currentPanel = null;
-	var addClickHandler = mxUtils.bind(this, function(elt, panel, index)
-	{
-		var clickHandler = mxUtils.bind(this, function(evt)
+	if (graph.isSelectionEmpty()) {
+		// 不选择控件时
+		mxUtils.write(label, mxResources.get('style'));
+		div.appendChild(label);
+		// let container = new PageSetupDialog(ui).container;
+		// this.container.appendChild(container);
+	} else {
+		// 选择控件时
+		var containsLabel = this.getSelectionState().containsLabel;
+		var currentLabel = null;
+		var currentPanel = null;
+		var addClickHandler = mxUtils.bind(this, function(elt, panel, index)
 		{
-			if (currentLabel != elt)
+			var clickHandler = mxUtils.bind(this, function(evt)
 			{
-				if (containsLabel)
+				if (currentLabel != elt)
 				{
-					this.labelIndex = index;
-				}
-				else
-				{
-					this.currentIndex = index;
-				}
-				
-				if (currentLabel != null)
-				{
-					currentLabel.style.backgroundColor = '#FAFAFA';	
-					currentLabel.style.color = '#000000';
-				}
-				
-				currentLabel = elt;
-				currentLabel.style.color = '#FFFFFF';
-				currentLabel.style.backgroundColor = '#3D91F7';
-				
-				if (currentPanel != panel)
-				{
-					if (currentPanel != null)
+					if (containsLabel)
 					{
-						currentPanel.style.display = 'none';
+						this.labelIndex = index;
+					}
+					else
+					{
+						this.currentIndex = index;
 					}
 					
-					currentPanel = panel;
-					currentPanel.style.display = '';
+					if (currentLabel != null)
+					{
+						currentLabel.style.backgroundColor = '#FAFAFA';	
+						currentLabel.style.color = '#000000';
+					}
+					
+					currentLabel = elt;
+					currentLabel.style.color = '#FFFFFF';
+					currentLabel.style.backgroundColor = '#3D91F7';
+					
+					if (currentPanel != panel)
+					{
+						if (currentPanel != null)
+						{
+							currentPanel.style.display = 'none';
+						}
+						
+						currentPanel = panel;
+						currentPanel.style.display = '';
+					}
 				}
+			});
+			
+			mxEvent.addListener(elt, 'click', clickHandler);
+			
+			if (index == ((containsLabel) ? this.labelIndex : this.currentIndex))
+			{
+				// Invokes handler directly as a workaround for no click on DIV in KHTML.
+				clickHandler();
 			}
 		});
 		
-		mxEvent.addListener(elt, 'click', clickHandler);
+		var idx = 0;
+		label.style.width = '50%';
+		var label2 = label.cloneNode(false);
+	
+		// tab标签页
+		// 交互
+		mxUtils.write(label2, mxResources.get('interaction'));
+		div.appendChild(label2);
+	
+		var propertiesPanel = div.cloneNode(false);
+		propertiesPanel.className = 'formatPannel'
+		propertiesPanel.style.display = 'none';
+		this.panels.push(new ActionsPanel(this, ui, propertiesPanel));
+		this.container.appendChild(propertiesPanel);
 		
-		if (index == ((containsLabel) ? this.labelIndex : this.currentIndex))
-		{
-			// Invokes handler directly as a workaround for no click on DIV in KHTML.
-			clickHandler();
-		}
-	});
+		// 样式
+		mxUtils.write(label, mxResources.get('style'));
+		div.appendChild(label);
+		
+		var arrangePanel = div.cloneNode(false);
+		arrangePanel.className = 'formatPannel'
+		arrangePanel.style.display = 'none';
+		arrangePanel.style.paddingLeft = '10px';
+		this.panels.push(new ArrangePanel(this, ui, arrangePanel));
+		this.container.appendChild(arrangePanel);
 	
-	var idx = 0;
-	label.style.width = '50%';
-	var label2 = label.cloneNode(false);
-
-	// tab标签页
-	// 交互
-	mxUtils.write(label2, mxResources.get('interaction'));
-	div.appendChild(label2);
-
-	var propertiesPanel = div.cloneNode(false);
-	propertiesPanel.className = 'formatPannel'
-	propertiesPanel.style.display = 'none';
-	this.panels.push(new ActionsPanel(this, ui, propertiesPanel));
-	this.container.appendChild(propertiesPanel);
+		addClickHandler(label2, propertiesPanel, idx++);
+		addClickHandler(label, arrangePanel, idx++);
+	}
 	
-	// 样式
-	mxUtils.write(label, mxResources.get('style'));
-	div.appendChild(label);
-	
-	var arrangePanel = div.cloneNode(false);
-	arrangePanel.className = 'formatPannel'
-	arrangePanel.style.display = 'none';
-	arrangePanel.style.paddingLeft = '10px';
-	this.panels.push(new ArrangePanel(this, ui, arrangePanel));
-	this.container.appendChild(arrangePanel);
-
-	addClickHandler(label2, propertiesPanel, idx++);
-	addClickHandler(label, arrangePanel, idx++);
 };
 
 /**
@@ -1037,29 +1031,6 @@ BaseFormatPanel.prototype.createColorOption = function(label, getColorFn, setCol
 	btn.className = 'geColorBtn';
 	btn.style.display = (!value || value == 'none') ? 'none' : '';
 
-	// mxEvent.addListener(btn, 'click', function(evt)
-	// {
-	// 	var source = mxEvent.getSource(evt);
-	// 	if (source == cb || source.nodeName != 'INPUT')
-	// 	{		
-	// 		// Toggles checkbox state for click on label
-	// 		if (source != cb)
-	// 		{
-	// 			cb.checked = !cb.checked;
-	// 		}
-	
-	// 		// Overrides default value with current value to make it easier
-	// 		// to restore previous value if the checkbox is clicked twice
-	// 		if (!cb.checked && value != null && value != mxConstants.NONE &&
-	// 			defaultColor != mxConstants.NONE)
-	// 		{
-	// 			defaultColor = value;
-	// 		}
-			
-	// 		apply((cb.checked) ? defaultColor : mxConstants.NONE);
-	// 	}
-	// });
-
 	apply(value, true);
 	if (listener != null)
 	{
@@ -1381,26 +1352,6 @@ BaseFormatPanel.prototype.addKeyHandler = function(input, listener)
 };
 
 /**
- * 
- */
-BaseFormatPanel.prototype.styleButtons = function(elts)
-{
-	for (var i = 0; i < elts.length; i++)
-	{
-		mxUtils.setPrefixedStyle(elts[i].style, 'borderRadius', '3px');
-		mxUtils.setOpacity(elts[i], 100);
-		elts[i].style.border = '1px solid #a0a0a0';
-		elts[i].style.padding = '4px';
-		elts[i].style.paddingTop = '3px';
-		elts[i].style.paddingRight = '1px';
-		elts[i].style.margin = '1px';
-		elts[i].style.width = '31px';
-		elts[i].style.height = '29px';
-		elts[i].className += ' geColorBtn';
-	}
-};
-
-/**
  * Adds the label menu items to the given menu and parent.
  */
 BaseFormatPanel.prototype.destroy = function()
@@ -1417,7 +1368,7 @@ BaseFormatPanel.prototype.destroy = function()
 };
 
 /**
- * Adds the label menu items to the given menu and parent.
+ * 样式操作面板
  */
 ArrangePanel = function(format, editorUi, container)
 {
@@ -1428,257 +1379,6 @@ ArrangePanel = function(format, editorUi, container)
 };
 
 mxUtils.extend(ArrangePanel, BaseFormatPanel);
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-ArrangePanel.prototype.init = function()
-{
-	var graph = this.editorUi.editor.graph;
-	var ss = this.format.getSelectionState();
-
-	// this.container.appendChild(this.addLayerOps(this.createPanel()));
-	// Special case that adds two panels
-	this.addGeometry(this.container);
-	this.addEdgeGeometry(this.container);
-
-	if (!ss.containsLabel || ss.edges.length == 0)
-	{
-		this.container.appendChild(this.addAngle(this.createPanel()));
-	}
-	
-	if (!ss.containsLabel && ss.edges.length == 0)
-	{
-		// this.container.appendChild(this.addFlip(this.createPanel()));
-	}
-
-	if (ss.vertices.length > 1)
-	{
-		this.container.appendChild(this.addAlign(this.createPanel()));
-		this.container.appendChild(this.addDistribute(this.createPanel()));
-	}
-	
-	// this.container.appendChild(this.addGroupOps(this.createPanel()));
-};
-
-/**
- * 
- */
-ArrangePanel.prototype.addLayerOps = function(div)
-{
-	var ui = this.editorUi;
-	
-	var btn = mxUtils.button(mxResources.get('toFront'), function(evt)
-	{
-		ui.actions.get('toFront').funct();
-	})
-	
-	btn.setAttribute('title', mxResources.get('toFront') + ' (' + this.editorUi.actions.get('toFront').shortcut + ')');
-	btn.style.width = '100px';
-	btn.style.marginRight = '2px';
-	div.appendChild(btn);
-	
-	var btn = mxUtils.button(mxResources.get('toBack'), function(evt)
-	{
-		ui.actions.get('toBack').funct();
-	})
-	
-	btn.setAttribute('title', mxResources.get('toBack') + ' (' + this.editorUi.actions.get('toBack').shortcut + ')');
-	btn.style.width = '100px';
-	div.appendChild(btn);
-	
-	return div;
-};
-
-/**
- * 
- */
-ArrangePanel.prototype.addGroupOps = function(div)
-{
-	var ui = this.editorUi;
-	var graph = ui.editor.graph;
-	var cell = graph.getSelectionCell();
-	var ss = this.format.getSelectionState();
-	var count = 0;
-	var btn = null;
-	
-	div.style.paddingTop = '8px';
-	div.style.paddingBottom = '6px';
-
-	if (graph.getSelectionCount() > 1)
-	{
-		btn = mxUtils.button(mxResources.get('group'), function(evt)
-		{
-			ui.actions.get('group').funct();
-		})
-		
-		btn.setAttribute('title', mxResources.get('group') + ' (' + this.editorUi.actions.get('group').shortcut + ')');
-		btn.style.width = '202px';
-		btn.style.marginBottom = '2px';
-		div.appendChild(btn);
-		count++;
-	}
-	else if (graph.getSelectionCount() == 1 && !graph.getModel().isEdge(cell) && !graph.isSwimlane(cell) &&
-			graph.getModel().getChildCount(cell) > 0)
-	{
-		btn = mxUtils.button(mxResources.get('ungroup'), function(evt)
-		{
-			ui.actions.get('ungroup').funct();
-		})
-		
-		btn.setAttribute('title', mxResources.get('ungroup') + ' (' +
-			this.editorUi.actions.get('ungroup').shortcut + ')');
-		btn.style.width = '202px';
-		btn.style.marginBottom = '2px';
-		div.appendChild(btn);
-		count++;
-	}
-	
-	if (ss.vertices.length > 0)
-	{
-		
-	}
-	
-	if (graph.getSelectionCount() == 1 && graph.getModel().isVertex(cell) &&
-   		graph.getModel().isVertex(graph.getModel().getParent(cell)))
-	{		
-		btn = mxUtils.button(mxResources.get('removeFromGroup'), function(evt)
-		{
-			ui.actions.get('removeFromGroup').funct();
-		})
-		
-		btn.setAttribute('title', mxResources.get('removeFromGroup'));
-		btn.style.width = '202px';
-		btn.style.marginBottom = '2px';
-		div.appendChild(btn);
-		count++;
-	}
-	
-	
-	if (count == 0)
-	{
-		div.style.display = 'none';
-	}
-	
-	return div;
-};
-
-/**
- * 
- */
-ArrangePanel.prototype.addAlign = function(div)
-{
-	var graph = this.editorUi.editor.graph;
-	div.style.paddingTop = '6px';
-	div.style.paddingBottom = '12px';
-	div.appendChild(this.createTitle(mxResources.get('align')));
-	
-	var stylePanel = document.createElement('div');
-	stylePanel.style.position = 'relative';
-	stylePanel.style.paddingLeft = '0px';
-	stylePanel.style.borderWidth = '0px';
-	stylePanel.className = 'geToolbarContainer';
-	
-	if (mxClient.IS_QUIRKS)
-	{
-		div.style.height = '60px';
-	}
-	
-	var left = this.editorUi.toolbar.addButton('geSprite-alignleft', mxResources.get('left'),
-		function() { graph.alignCells(mxConstants.ALIGN_LEFT); }, stylePanel);
-	var center = this.editorUi.toolbar.addButton('geSprite-aligncenter', mxResources.get('center'),
-		function() { graph.alignCells(mxConstants.ALIGN_CENTER); }, stylePanel);
-	var right = this.editorUi.toolbar.addButton('geSprite-alignright', mxResources.get('right'),
-		function() { graph.alignCells(mxConstants.ALIGN_RIGHT); }, stylePanel);
-
-	var top = this.editorUi.toolbar.addButton('geSprite-aligntop', mxResources.get('top'),
-		function() { graph.alignCells(mxConstants.ALIGN_TOP); }, stylePanel);
-	var middle = this.editorUi.toolbar.addButton('geSprite-alignmiddle', mxResources.get('middle'),
-		function() { graph.alignCells(mxConstants.ALIGN_MIDDLE); }, stylePanel);
-	var bottom = this.editorUi.toolbar.addButton('geSprite-alignbottom', mxResources.get('bottom'),
-		function() { graph.alignCells(mxConstants.ALIGN_BOTTOM); }, stylePanel);
-	
-	this.styleButtons([left, center, right, top, middle, bottom]);
-	right.style.marginRight = '6px';
-	div.appendChild(stylePanel);
-	
-	return div;
-};
-
-/**
- * 
- */
-ArrangePanel.prototype.addFlip = function(div)
-{
-	var ui = this.editorUi;
-	var editor = ui.editor;
-	var graph = editor.graph;
-	div.style.paddingTop = '6px';
-	div.style.paddingBottom = '10px';
-
-	var span = document.createElement('div');
-	span.style.marginTop = '2px';
-	span.style.marginBottom = '8px';
-	mxUtils.write(span, mxResources.get('flip'));
-	div.appendChild(span);
-	
-	var btn = mxUtils.button(mxResources.get('horizontal'), function(evt)
-	{
-		graph.toggleCellStyles(mxConstants.STYLE_FLIPH, false);
-	})
-	
-	btn.setAttribute('title', mxResources.get('horizontal'));
-	btn.style.width = '100px';
-	btn.style.marginRight = '2px';
-	div.appendChild(btn);
-	
-	var btn = mxUtils.button(mxResources.get('vertical'), function(evt)
-	{
-		graph.toggleCellStyles(mxConstants.STYLE_FLIPV, false);
-	})
-	
-	btn.setAttribute('title', mxResources.get('vertical'));
-	btn.style.width = '100px';
-	div.appendChild(btn);
-	
-	return div;
-};
-
-/**
- * 
- */
-ArrangePanel.prototype.addDistribute = function(div)
-{
-	var ui = this.editorUi;
-	var editor = ui.editor;
-	var graph = editor.graph;
-	div.style.paddingTop = '6px';
-	div.style.paddingBottom = '12px';
-	
-	div.appendChild(this.createTitle(mxResources.get('distribute')));
-
-	var btn = mxUtils.button(mxResources.get('horizontal'), function(evt)
-	{
-		graph.distributeCells(true);
-	})
-	
-	btn.setAttribute('title', mxResources.get('horizontal'));
-	btn.style.width = '100px';
-	btn.style.marginRight = '2px';
-	div.appendChild(btn);
-	
-	var btn = mxUtils.button(mxResources.get('vertical'), function(evt)
-	{
-		graph.distributeCells(false);
-	})
-	
-	btn.setAttribute('title', mxResources.get('vertical'));
-	btn.style.width = '100px';
-	div.appendChild(btn);
-	
-	return div;
-};
-
 /**
  * 增加角度操作框
  */
@@ -1825,7 +1525,7 @@ ArrangePanel.prototype.addGeometry = function(container)
 	var listener = mxUtils.bind(this, function(sender, evt, force)
 	{
 		rect = this.format.getSelectionState();
-
+		let state = graph.view.getState(graph.getSelectionCell());
 		if (!rect.containsLabel && rect.vertices.length == graph.getSelectionCount() &&
 			rect.width != null && rect.height != null)
 		{
@@ -1833,12 +1533,12 @@ ArrangePanel.prototype.addGeometry = function(container)
 			
 			if (force || document.activeElement != width)
 			{
-				width.value = rect.width + ((rect.width == '') ? '' : ' px');
+				width.value = state.width + ((state.width == '') ? '' : ' px');
 			}
 			
 			if (force || document.activeElement != height)
 			{
-				height.value = rect.height + ((rect.height == '') ? '' : ' px');
+				height.value = state.height + ((state.height == '') ? '' : ' px');
 			}
 		}
 		else
@@ -2157,18 +1857,6 @@ ArrangePanel.prototype.addEdgeGeometry = function(container)
 	this.listeners.push({destroy: function() { graph.getModel().removeListener(listener); }});
 	listener();
 };
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-TextFormatPanel = function(format, editorUi, container)
-{
-	BaseFormatPanel.call(this, format, editorUi, container);
-	this.init();
-};
-
-mxUtils.extend(TextFormatPanel, BaseFormatPanel);
-
 /**
  * 增加基础操作部分
  */
@@ -2203,22 +1891,32 @@ ArrangePanel.prototype.addBase = function (container) {
 		}
 	}
 	var shapeName = rect.style.shape;
-	// 名称
-	this.addName(container);
-	// 文字参数
-	this.addFont(container);
-	// 文字对齐
-	this.alignFont(container);
+	if (['menuCell', 'tableCell'].indexOf(shapeName) == -1) {
+		// 名称
+		this.addName(container);
+	}
+	if (['image'].indexOf(shapeName) == -1) {
+		// 文字参数
+		this.addFont(container);
+	}
+	if (['image'].indexOf(shapeName) == -1) {
+		// 文字对齐
+		this.alignFont(container);
+	}
 	// 大小
 	this.addGeometry(container);
 	if (['menuCell', 'menulist', 'tableBox', 'tableCell'].indexOf(shapeName) == -1) {
 		// 角度
 		this.addAngle(container);
 	}
-	// 边框
-	this.addStroke(container);
-	// 背景色
-	this.addBgColor(container);
+	if (['menulist', 'tableBox'].indexOf(shapeName) == -1) {
+		// 边框
+		this.addStroke(container);
+	}
+	if (['image', 'menulist', 'tableBox'].indexOf(shapeName) == -1) {
+		// 填充
+		this.addBgColor(container);
+	}
 	// 隐藏
 	this.addShowHide(container);
 
@@ -2402,10 +2100,10 @@ ArrangePanel.prototype.alignFont = function (container) {
 	{
 		if (selected) {
 			elt.style.backgroundColor = '#518EEC';
-			elt.style.backgroundImage = 'url("http://localhost:10010/static/images/icons/' + type + '_white.png")';
+			elt.style.backgroundImage = 'url("/static/images/icons/' + type + '_white.png")';
 		} else {
 			elt.style.backgroundColor = '';
-			elt.style.backgroundImage = 'url("http://localhost:10010/static/images/icons/' + type + '.png")';
+			elt.style.backgroundImage = 'url("/static/images/icons/' + type + '.png")';
 		}
 	};
 	// 监听选中状态
@@ -2429,323 +2127,6 @@ ArrangePanel.prototype.alignFont = function (container) {
 	listener();
 }
 
-/**
- * Adds the label menu items to the given menu and parent.
- */
-StyleFormatPanel = function(format, editorUi, container)
-{
-	BaseFormatPanel.call(this, format, editorUi, container);
-	// this.init();
-};
-
-mxUtils.extend(StyleFormatPanel, BaseFormatPanel);
-
-/**
- * 
- */
-ArrangePanel.prototype.defaultStrokeColor = 'black';
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-ArrangePanel.prototype.styleInit = function()
-{
-	var ui = this.editorUi;
-	var editor = ui.editor;
-	var ss = this.format.getSelectionState();
-	if (ss.containsImage && ss.vertices.length == 1 && ss.style.shape == 'image' &&
-		ss.style.image != null && ss.style.image.substring(0, 19) == 'data:image/svg+xml;')
-	{
-		this.container.appendChild(this.addSvgStyles(this.createPanel()));
-	}
-	
-	if (!ss.containsImage || ss.style.shape == 'image')
-	{
-		this.container.appendChild(this.addFill(this.createPanel()));
-	}
-
-	// this.container.appendChild(this.addStroke(this.createPanel()));
-	this.container.appendChild(this.addLineJumps(this.createPanel()));
-	var opacityPanel = this.createRelativeOption(mxResources.get('opacity'), mxConstants.STYLE_OPACITY, 41);
-	opacityPanel.style.paddingTop = '8px';
-	opacityPanel.style.paddingBottom = '8px';
-	this.container.appendChild(opacityPanel);
-	this.container.appendChild(this.addEffects(this.createPanel()));
-	var opsPanel = this.addEditOps(this.createPanel());
-	
-	if (opsPanel.firstChild != null)
-	{
-		mxUtils.br(opsPanel);
-	}
-	
-};
-
-/**
- * Use browser for parsing CSS.
- */
-ArrangePanel.prototype.getCssRules = function(css)
-{
-	var doc = document.implementation.createHTMLDocument('');
-	var styleElement = document.createElement('style');
-	
-	mxUtils.setTextContent(styleElement, css);
-	doc.body.appendChild(styleElement);
-	
-	return styleElement.sheet.cssRules;
-};
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-ArrangePanel.prototype.addSvgStyles = function(container)
-{
-	var ui = this.editorUi;
-	var graph = ui.editor.graph;
-	var ss = this.format.getSelectionState();
-	container.style.paddingTop = '6px';
-	container.style.paddingBottom = '6px';
-	container.style.display = 'none';
-
-	try
-	{
-		var exp = ss.style.editableCssRules;
-		
-		if (exp != null)
-		{
-			var regex = new RegExp(exp);
-			
-			var data = ss.style.image.substring(ss.style.image.indexOf(',') + 1);
-			var xml = (window.atob) ? atob(data) : Base64.decode(data, true);
-			var svg = mxUtils.parseXml(xml);
-			
-			if (svg != null)
-			{
-				var styles = svg.getElementsByTagName('style');
-				
-				for (var i = 0; i < styles.length; i++)
-				{
-					var rules = this.getCssRules(mxUtils.getTextContent(styles[i]));
-					
-					for (var j = 0; j < rules.length; j++)
-					{
-						this.addSvgRule(container, rules[j], svg, styles[i], rules, j, regex);
-					}
-				}
-			}
-		}
-	}
-	catch (e)
-	{
-		// ignore
-	}
-	
-	return container;
-};
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-ArrangePanel.prototype.addSvgRule = function(container, rule, svg, styleElem, rules, ruleIndex, regex)
-{
-	var ui = this.editorUi;
-	var graph = ui.editor.graph;
-	
-	if (regex.test(rule.selectorText))
-	{
-		function rgb2hex(rgb)
-		{
-			 rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-			 
-			 return (rgb && rgb.length === 4) ? "#" +
-			  ("0" + parseInt(rgb[1],10).toString(16)).slice(-2) +
-			  ("0" + parseInt(rgb[2],10).toString(16)).slice(-2) +
-			  ("0" + parseInt(rgb[3],10).toString(16)).slice(-2) : '';
-		};
-		
-		var addStyleRule = mxUtils.bind(this, function(rule, key, label)
-		{
-			if (rule.style[key] != '')
-			{
-				var option = this.createColorOption(label + ' ' + rule.selectorText, function()
-				{
-					return rgb2hex(rule.style[key]);
-				}, function(color)
-				{
-					rules[ruleIndex].style[key] = color;
-					var cssTxt = '';
-					
-					for (var i = 0; i < rules.length; i++) 
-					{
-						cssTxt += rules[i].cssText + ' ';
-					}
-					
-					styleElem.textContent = cssTxt;
-					var xml = mxUtils.getXml(svg.documentElement);
-					
-					graph.setCellStyles(mxConstants.STYLE_IMAGE, 'data:image/svg+xml,' +
-						((window.btoa) ? btoa(xml) : Base64.encode(xml, true)),
-						graph.getSelectionCells());
-				}, '#ffffff',
-				{
-					install: function(apply)
-					{
-						// ignore
-					},
-					destroy: function()
-					{
-						// ignore
-					}
-				});
-			
-				container.appendChild(option);
-				
-				// Shows container if rules are added
-				container.style.display = '';
-			}
-		});
-		
-		addStyleRule(rule, 'fill', mxResources.get('fill'));
-		addStyleRule(rule, 'stroke', mxResources.get('line'));
-	}
-};
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-ArrangePanel.prototype.addEditOps = function(div)
-{
-	var ss = this.format.getSelectionState();
-	var btn = null;
-	
-	if (this.editorUi.editor.graph.getSelectionCount() == 1)
-	{
-	}
-	
-	if (ss.image)
-	{
-		var btn2 = mxUtils.button(mxResources.get('editImage'), mxUtils.bind(this, function(evt)
-		{
-			this.editorUi.actions.get('image').funct();
-		}));
-		
-		btn2.setAttribute('title', mxResources.get('editImage'));
-		btn2.style.marginBottom = '2px';
-		
-		if (btn == null)
-		{
-			btn2.style.width = '202px';
-		}
-		else
-		{
-			btn.style.width = '100px';
-			btn2.style.width = '100px';
-			btn2.style.marginLeft = '2px';
-		}
-		
-		div.appendChild(btn2);
-	}
-	
-	return div;
-};
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-ArrangePanel.prototype.addFill = function(container)
-{
-	var ui = this.editorUi;
-	var graph = ui.editor.graph;
-	var ss = this.format.getSelectionState();
-	container.style.paddingTop = '6px';
-	container.style.paddingBottom = '6px';
-
-	// Adds gradient direction option
-	var gradientSelect = document.createElement('select');
-	gradientSelect.style.position = 'absolute';
-	gradientSelect.style.marginTop = '-2px';
-	gradientSelect.style.right = (mxClient.IS_QUIRKS) ? '52px' : '72px';
-	gradientSelect.style.width = '70px';
-	
-	// Stops events from bubbling to color option event handler
-	mxEvent.addListener(gradientSelect, 'click', function(evt)
-	{
-		mxEvent.consume(evt);
-	});
-
-	var fillKey = (ss.style.shape == 'image') ? mxConstants.STYLE_IMAGE_BACKGROUND : mxConstants.STYLE_FILLCOLOR;
-	var label = (ss.style.shape == 'image') ? mxResources.get('background') : mxResources.get('fill');
-	
-	var fillPanel = this.createCellColorOption(label, fillKey, '#ffffff');
-
-	var tmpColor = mxUtils.getValue(ss.style, fillKey, null);
-
-	var directions = [mxConstants.DIRECTION_NORTH, mxConstants.DIRECTION_EAST,
-	                  mxConstants.DIRECTION_SOUTH, mxConstants.DIRECTION_WEST];
-
-	for (var i = 0; i < directions.length; i++)
-	{
-		var gradientOption = document.createElement('option');
-		gradientOption.setAttribute('value', directions[i]);
-		mxUtils.write(gradientOption, mxResources.get(directions[i]));
-		gradientSelect.appendChild(gradientOption);
-	}
-	
-
-	var listener = mxUtils.bind(this, function()
-	{
-		ss = this.format.getSelectionState();
-		var value = mxUtils.getValue(ss.style, mxConstants.STYLE_GRADIENT_DIRECTION, mxConstants.DIRECTION_SOUTH);
-		
-		if (value == '')
-		{
-			value = mxConstants.DIRECTION_SOUTH;
-		}
-		
-		gradientSelect.value = value;
-		container.style.display = (ss.fill) ? '' : 'none';
-		
-		var fillColor = mxUtils.getValue(ss.style, mxConstants.STYLE_FILLCOLOR, null);
-
-	});
-	
-	graph.getModel().addListener(mxEvent.CHANGE, listener);
-	this.listeners.push({destroy: function() { graph.getModel().removeListener(listener); }});
-	listener();
-
-	mxEvent.addListener(gradientSelect, 'change', function(evt)
-	{
-		graph.setCellStyles(mxConstants.STYLE_GRADIENT_DIRECTION, gradientSelect.value, graph.getSelectionCells());
-		mxEvent.consume(evt);
-	});
-	
-	container.appendChild(fillPanel);
-	
-	// Adds custom colors
-	var custom = this.getCustomColors();
-	
-	for (var i = 0; i < custom.length; i++)
-	{
-		container.appendChild(this.createCellColorOption(custom[i].title, custom[i].key, custom[i].defaultValue));
-	}
-	
-	return container;
-};
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-ArrangePanel.prototype.getCustomColors = function()
-{
-	var ss = this.format.getSelectionState();
-	var result = [];
-	
-	if (ss.style.shape == 'swimlane')
-	{
-		result.push({title: mxResources.get('laneColor'), key: 'swimlaneFillColor', defaultValue: '#ffffff'});
-	}
-	
-	return result;
-};
 /**
  * 背景颜色
  */
@@ -2900,223 +2281,6 @@ ArrangePanel.prototype.addStroke = function(container)
 };
 
 /**
- * Adds UI for configuring line jumps.
- */
-ArrangePanel.prototype.addLineJumps = function(container)
-{
-	var ss = this.format.getSelectionState();
-	
-	if (Graph.lineJumpsEnabled && ss.edges.length > 0 &&
-		ss.vertices.length == 0 && ss.lineJumps)
-	{
-		container.style.padding = '8px 0px 24px 18px';
-		
-		var ui = this.editorUi;
-		var editor = ui.editor;
-		var graph = editor.graph;
-		
-		var span = document.createElement('div');
-		span.style.position = 'absolute';
-		span.style.width = '80px';
-		
-		mxUtils.write(span, mxResources.get('lineJumps'));
-		container.appendChild(span);
-		
-		var styleSelect = document.createElement('select');
-		styleSelect.style.position = 'absolute';
-		styleSelect.style.marginTop = '-2px';
-		styleSelect.style.right = '76px';
-		styleSelect.style.width = '62px';
-
-		var styles = ['none', 'arc', 'gap', 'sharp'];
-
-		for (var i = 0; i < styles.length; i++)
-		{
-			var styleOption = document.createElement('option');
-			styleOption.setAttribute('value', styles[i]);
-			mxUtils.write(styleOption, mxResources.get(styles[i]));
-			styleSelect.appendChild(styleOption);
-		}
-		
-		mxEvent.addListener(styleSelect, 'change', function(evt)
-		{
-			graph.getModel().beginUpdate();
-			try
-			{
-				graph.setCellStyles('jumpStyle', styleSelect.value, graph.getSelectionCells());
-				ui.fireEvent(new mxEventObject('styleChanged', 'keys', ['jumpStyle'],
-					'values', [styleSelect.value], 'cells', graph.getSelectionCells()));
-			}
-			finally
-			{
-				graph.getModel().endUpdate();
-			}
-			
-			mxEvent.consume(evt);
-		});
-		
-		// Stops events from bubbling to color option event handler
-		mxEvent.addListener(styleSelect, 'click', function(evt)
-		{
-			mxEvent.consume(evt);
-		});
-		
-		container.appendChild(styleSelect);
-		
-		var jumpSizeUpdate;
-		
-		var jumpSize = this.addUnitInput(container, 'px', 22, 33, function()
-		{
-			jumpSizeUpdate.apply(this, arguments);
-		});
-		
-		jumpSizeUpdate = this.installInputHandler(jumpSize, 'jumpSize',
-			Graph.defaultJumpSize, 0, 999, ' px');
-		
-		var listener = mxUtils.bind(this, function(sender, evt, force)
-		{
-			ss = this.format.getSelectionState();
-			styleSelect.value = mxUtils.getValue(ss.style, 'jumpStyle', 'none');
-
-			if (force || document.activeElement != jumpSize)
-			{
-				var tmp = parseInt(mxUtils.getValue(ss.style, 'jumpSize', Graph.defaultJumpSize));
-				jumpSize.value = (isNaN(tmp)) ? '' : tmp  + ' px';
-			}
-		});
-
-		this.addKeyHandler(jumpSize, listener);
-
-		graph.getModel().addListener(mxEvent.CHANGE, listener);
-		this.listeners.push({destroy: function() { graph.getModel().removeListener(listener); }});
-		listener();
-	}
-	else
-	{
-		container.style.display = 'none';
-	}
-	
-	return container;
-};
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-ArrangePanel.prototype.addEffects = function(div)
-{
-	var ui = this.editorUi;
-	var editor = ui.editor;
-	var graph = editor.graph;
-	var ss = this.format.getSelectionState();
-	
-	div.style.paddingTop = '0px';
-	div.style.paddingBottom = '2px';
-
-	var table = document.createElement('table');
-
-	if (mxClient.IS_QUIRKS)
-	{
-		table.style.fontSize = '12px';
-	}
-
-	table.style.width = '100%';
-	table.style.fontWeight = 'bold';
-	table.style.paddingRight = '20px';
-	var tbody = document.createElement('tbody');
-	var row = document.createElement('tr');
-	row.style.padding = '0px';
-	var left = document.createElement('td');
-	left.style.padding = '0px';
-	left.style.width = '50%';
-	left.setAttribute('valign', 'top');
-	
-	var right = left.cloneNode(true);
-	right.style.paddingLeft = '8px';
-	row.appendChild(left);
-	row.appendChild(right);
-	tbody.appendChild(row);
-	table.appendChild(tbody);
-	div.appendChild(table);
-
-	var current = left;
-	var count = 0;
-	
-	var addOption = mxUtils.bind(this, function(label, key, defaultValue)
-	{
-		var opt = this.createCellOption(label, key, defaultValue);
-		opt.style.width = '100%';
-		current.appendChild(opt);
-		current = (current == left) ? right : left;
-		count++;
-	});
-
-	var listener = mxUtils.bind(this, function(sender, evt, force)
-	{
-		ss = this.format.getSelectionState();
-		
-		left.innerHTML = '';
-		right.innerHTML = '';
-		current = left;
-		
-		if (ss.rounded)
-		{
-			addOption(mxResources.get('rounded'), mxConstants.STYLE_ROUNDED, 0);
-		}
-		
-		if (ss.style.shape == 'swimlane')
-		{
-			addOption(mxResources.get('divider'), 'swimlaneLine', 1);
-		}
-
-		if (!ss.containsImage)
-		{
-			// addOption(mxResources.get('shadow'), mxConstants.STYLE_SHADOW, 0);
-		}
-		
-		if (ss.glass)
-		{
-			addOption(mxResources.get('glass'), mxConstants.STYLE_GLASS, 0);
-		}
-
-		if (ss.comic)
-		{
-			addOption(mxResources.get('comic'), 'comic', 0);
-		}
-		
-		if (count == 0)
-		{
-			div.style.display = 'none';
-		}
-	});
-	
-	graph.getModel().addListener(mxEvent.CHANGE, listener);
-	this.listeners.push({destroy: function() { graph.getModel().removeListener(listener); }});
-	listener();
-
-	return div;
-}
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-ArrangePanel.prototype.addStyleOps = function(div)
-{
-	div.style.paddingTop = '10px';
-	div.style.paddingBottom = '10px';
-	
-	var btn = mxUtils.button(mxResources.get('setAsDefaultStyle'), mxUtils.bind(this, function(evt)
-	{
-		this.editorUi.actions.get('setAsDefaultStyle').funct();
-	}));
-	
-	btn.setAttribute('title', mxResources.get('setAsDefaultStyle') + ' (' + this.editorUi.actions.get('setAsDefaultStyle').shortcut + ')');
-	btn.style.width = '202px';
-	div.appendChild(btn);
-
-	return div;
-};
-
-/**
  * 交互面板
  */
 ActionsPanel = function(format, editorUi, container)
@@ -3134,12 +2298,14 @@ ActionsPanel = function(format, editorUi, container)
 // 选择事件
 const eventContrast = {
 	'unset': '选择',
-	'mousein': '鼠标移入',
-	'mouseout': '鼠标移出',
+	'mouseenter': '鼠标移入',
+	'mouseleave': '鼠标移出',
 	'click': '点击',
-	'dblclick': '双击',
+	'dblclick': '双击'
+}
+const eventContrastSelect = {
 	'select': '选中',
-	'unselect': '未选中',
+	'unselect': '未选中'
 }
 // 选择动作
 const actionContrast = {
@@ -3231,11 +2397,26 @@ ActionsPanel.prototype.createInfoBox = function (container, actionsInfo, i) {
 	var editor = ui.editor;
 	var graph = editor.graph;
 	var cell = graph.getSelectionCell();
-	// 描述内容
+
+	// 信息
 	var info = actionsInfo[i]
 	var infoTxt = document.createElement('p');
 	infoTxt.className = 'infoTxt';
-	var desc = `${info.mouseEvent == 'unset' ? '' : eventContrast[info.mouseEvent] + ','}${info.effectAction == 'unset' ? '' : actionContrast[info.effectAction] + ','}${info.type == 'out' ? '' : typeContrast[info.innerType] + ','}${info.link}`
+	var paletteName = pageName = '';
+	if (info.innerType == 'palette') {
+		// 控件名称
+		var list = $("#paletteManageList li");
+		for (let i = 0; i < list.length; i++) {
+			if (list[i].getAttribute('data-paletteid') === info.link) {
+				paletteName = list[i].innerText
+			}
+		}
+	} else if (info.link) {
+		pageName = editor.pages[info.link].title || ''
+	}
+	
+	// 描述内容
+	var desc = `${info.mouseEvent == 'unset' ? '' : eventContrast[info.mouseEvent] + ','}${info.effectAction == 'unset' ? '' : actionContrast[info.effectAction] + ','}${info.type == 'out' ? '' : typeContrast[info.innerType] + ','}${info.innerType == 'page' ? pageName : paletteName}`
 	infoTxt.innerHTML = desc;
 	container.appendChild(infoTxt);
 	// 编辑图标
@@ -3287,6 +2468,9 @@ ActionsPanel.prototype.createOperateBox = function(container)
 	var editor = ui.editor;
 	var graph = editor.graph;
 	var rect = this.format.getSelectionState();
+	if (['singleCheck', 'multipleCheck', 'select'].includes(rect.style.shape)){
+		Object.assign(eventContrast, eventContrastSelect);
+	}
 	var cell = graph.getSelectionCell();
 	var modelInfo = graph.getModel().getValue(cell);
 	// 初始化属性
@@ -3314,6 +2498,7 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		var divpanel = this.createPanel();
 		divpanel.id = 'actionPanel';
 		divpanel.style.paddingBottom = '12px';
+		
 		// 新增下拉框
 		var mouseEvent = this.addUnitSelect(divpanel, 218, eventContrast, temp.mouseEvent, mxResources.get('chooseEvent'));
 		// 选择动作
@@ -3337,10 +2522,11 @@ ActionsPanel.prototype.createOperateBox = function(container)
 		var pagesNameList = Object.keys(editor.pages).reduce((item, val) => {
 			item.push({
 				id: val,
-				name: val
+				name: editor.pages[val].title
 			})
 			return item
 		}, []);
+
 		// 控件列表
 		var paletteList = [];
 		var list = $("#paletteManageList li");

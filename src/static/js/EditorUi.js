@@ -3492,7 +3492,7 @@ EditorUi.prototype.saveFile = function(forceDialog)
 	else
 	{
 		// 编辑保存
-		var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '创建', mxUtils.bind(this, function(name, des)
+		var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '保存', mxUtils.bind(this, function(name, des)
 		{
 			this.save(name, des);
 		}), null, mxUtils.bind(this, function(name)
@@ -3531,7 +3531,8 @@ EditorUi.prototype.saveSuccess = function (res) {
 EditorUi.prototype.saveError = function (res) {
 	setTimeout(() => {
 		this.hideDialog();
-		this.editor.tipInfo(this, false, '保存');
+		console.log(res)
+		this.editor.tipInfo(this, null, res.message);
 	}, 350);
 }
 /**
@@ -3555,7 +3556,7 @@ EditorUi.prototype.save = function(name, des)
 			var data = {
 				name: name,
 				describe: des,
-				applyCon: Object.keys(pages).join(),
+				applyCon: editor.pagesNameList().join(),
 				content: JSON.stringify({pages, rank: editor.pagesRank}),
 			}
 			var id = editor.getApplyId();
@@ -3564,21 +3565,20 @@ EditorUi.prototype.save = function(name, des)
 				data.id = id;
 				editor.ajax(ui, '/api/viewtool', 'PUT', data, (res) => {
 					this.saveSuccess(res);					
-				}, () => {
-					this.saveError();
+				}, (res) => {
+					this.saveError(res.responseJSON);
 				})
 			} else {
 				// 新增保存
 				editor.ajax(ui, '/api/viewtool', 'POST', data, (res) => {
 					this.saveSuccess(res);
-				}, () => {
-					this.saveError();
+				}, (res) => {
+					this.saveError(res.responseJSON);
 				})
 			}
 		}
 		catch (e)
 		{
-			console.log(e)
 			editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
 		}
 	}
@@ -3825,7 +3825,6 @@ EditorUi.prototype.createKeyHandler = function(editor)
 								if (geo != null)
 								{
 									geo = geo.clone();
-									
 									if (keyCode == 37)
 									{
 										geo.width = Math.max(0, geo.width - stepSize);
@@ -3883,7 +3882,12 @@ EditorUi.prototype.createKeyHandler = function(editor)
 					{
 						var dx = 0;
 						var dy = 0;
-						
+						for (let cell of graph.getSelectionCells()) {
+							let shapeName = graph.view.getState(cell).style.shape;
+							if (['menuCell', 'tableCell'].includes(shapeName)) {
+								return false;
+							}
+						}
 						if (keyCode == 37)
 						{
 							dx = -stepSize;
@@ -4091,28 +4095,17 @@ EditorUi.prototype.createKeyHandler = function(editor)
 	keyHandler.bindKey(35, function() { graph.refresh(); }); // End
 	keyHandler.bindAction(107, true, 'zoomIn'); // Ctrl+Plus
 	keyHandler.bindAction(109, true, 'zoomOut'); // Ctrl+Minus
-	// keyHandler.bindAction(80, true, 'print'); // Ctrl+P
-	// keyHandler.bindAction(79, true, 'outline', true); // Ctrl+Shift+O
-	// keyHandler.bindAction(112, false, 'about'); // F1
 
 	if (!this.editor.chromeless || this.editor.editable)
 	{
-		// keyHandler.bindControlKey(36, function() { if (graph.isEnabled()) { graph.foldCells(true); }}); // Ctrl+Home
-		// keyHandler.bindControlKey(35, function() { if (graph.isEnabled()) { graph.foldCells(false); }}); // Ctrl+End
 		keyHandler.bindControlKey(13, function() { if (graph.isEnabled()) { graph.setSelectionCells(graph.duplicateCells(graph.getSelectionCells(), false)); }}); // Ctrl+Enter
 		keyHandler.bindAction(8, false, 'delete'); // Backspace
 		keyHandler.bindAction(8, true, 'deleteAll'); // Backspace
 		keyHandler.bindAction(46, false, 'delete'); // Delete
 		keyHandler.bindAction(46, true, 'deleteAll'); // Ctrl+Delete
 		keyHandler.bindAction(72, true, 'resetView'); // Ctrl+H
-		// keyHandler.bindAction(72, true, 'fitWindow', true); // Ctrl+Shift+H
-		// keyHandler.bindAction(74, true, 'fitPage'); // Ctrl+J
-		// keyHandler.bindAction(74, true, 'fitTwoPages', true); // Ctrl+Shift+J
-		// keyHandler.bindAction(48, true, 'customZoom'); // Ctrl+0
-		// keyHandler.bindAction(82, true, 'turn'); // Ctrl+R
 		keyHandler.bindAction(82, true, 'clearDefaultStyle', true); // Ctrl+Shift+R
 		keyHandler.bindAction(83, true, 'save'); // Ctrl+S
-		// keyHandler.bindAction(83, true, 'saveAs', true); // Ctrl+Shift+S
 		keyHandler.bindAction(79, true, 'publish', true); // Ctrl+Shift+O,
 		keyHandler.bindAction(65, true, 'selectAll'); // Ctrl+A
 		keyHandler.bindAction(65, true, 'selectNone', true); // Ctrl+A
@@ -4123,24 +4116,13 @@ EditorUi.prototype.createKeyHandler = function(editor)
 		keyHandler.bindAction(66, true, 'toBack', true); // Ctrl+Shift+B
 		keyHandler.bindAction(70, true, 'toFront', true); // Ctrl+Shift+F
 		keyHandler.bindAction(68, true, 'duplicate'); // Ctrl+D
-		// keyHandler.bindAction(68, true, 'setAsDefaultStyle', true); // Ctrl+Shift+D   
 		keyHandler.bindAction(90, true, 'undo'); // Ctrl+Z
 		keyHandler.bindAction(89, true, 'autosize', true); // Ctrl+Shift+Y
 		keyHandler.bindAction(88, true, 'cut'); // Ctrl+X
 		keyHandler.bindAction(67, true, 'copy'); // Ctrl+C
 		keyHandler.bindAction(86, true, 'paste'); // Ctrl+V
 		keyHandler.bindAction(71, true, 'group'); // Ctrl+G
-		// keyHandler.bindAction(77, true, 'editData'); // Ctrl+M
-		// keyHandler.bindAction(75, true, 'editProp'); // Ctrl+K
-		// keyHandler.bindAction(71, true, 'grid', true); // Ctrl+Shift+G
-		// keyHandler.bindAction(73, true, 'italic'); // Ctrl+I
-		// keyHandler.bindAction(76, true, 'lockUnlock'); // Ctrl+L
-		// keyHandler.bindAction(76, true, 'pageView', true); // Ctrl+Shift+L
-		// keyHandler.bindAction(80, true, 'formatPanel', true); // Ctrl+Shift+P
-		// keyHandler.bindAction(85, true, 'underline'); // Ctrl+U
-		keyHandler.bindAction(85, true, 'ungroup', true); // Ctrl+Shift+U
 		keyHandler.bindKey(13, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // Enter
-		// keyHandler.bindKey(113, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // F2
 	}
 	
 	if (!mxClient.IS_WIN)

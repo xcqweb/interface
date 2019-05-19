@@ -385,10 +385,19 @@ div.mxWindow .geButton {
 }
 .geSidebarContainer .geSidebar .pageList li{
 	line-height: 24px;
+	height: 24px;
 	padding-left: 30px;
 	white-space: nowrap;
-	text-overflow: ellipsis;
 	overflow: hidden;
+	text-overflow: ellipsis;
+	position: relative;
+}
+.geSidebarContainer .geSidebar .pageList li #editPageInput {
+	width: 200px;
+	margin-left: -30px;
+	height: 24px;
+	outline: none;
+	border: 1px solid #ccc;
 }
 .geSidebarContainer .geSidebar .pageList .currentPage {
 	color: #fff;

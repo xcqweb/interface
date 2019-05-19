@@ -649,7 +649,7 @@ var LinkReportDialog = function(editorUi, defaultLink) {
 
 	// 保存按钮
 	var btnContent =editorUi.createDiv('btnContent');
-	var genericBtn = mxUtils.button('创建', function()
+	var genericBtn = mxUtils.button('保存', function()
 	{
 		if (!nameInput.value) {
 			mxUtils.alert('请输入链接名称')
@@ -731,7 +731,7 @@ var PublishDialog = function(editorUi) {
 /**
  * 提示弹窗
  * @param {object} editorUi
- * @param {boolean} flag true：成功；false失败
+ * @param {boolean} flag null:不额外添加字段；true：成功；false失败
  * @param {string} info	提示信息
  */
 var tipDialog = function(editorUi, flag, info) {
@@ -743,7 +743,7 @@ var tipDialog = function(editorUi, flag, info) {
 	// 内容
 	var infoText = document.createElement('p')
 	infoText.className = 'tipText'
-	infoText.innerHTML = info + (flag ? '成功' : '失败');
+	infoText.innerHTML = info + (flag === null ? '' : flag ? '成功' : '失败');
 	tipContent.appendChild(infoText)
 	setTimeout(function () {
 		editorUi.hideDialog()
@@ -758,7 +758,6 @@ var tipDialog = function(editorUi, flag, info) {
  */
 var ImageDialog = function (editorUi, cell) {
 	var graph = editorUi.editor.graph;
-
 	var value = graph.getModel().getValue(cell);
 	// Converts the value to an XML node
 	if (!mxUtils.isNode(value))
@@ -920,7 +919,7 @@ var ImageDialog = function (editorUi, cell) {
  */
 var addPageDialog = function (editorUi, type) {
 	type = type || 'add';
-	var desc = title = '';
+	var desc = title = id = '';
 	var pageType = 'normal';
 	var currentPage = editorUi.editor.pages[editorUi.editor.currentPage]
 	var xml = editorUi.editor.defaultXml;
@@ -930,6 +929,7 @@ var addPageDialog = function (editorUi, type) {
 		desc = currentPage.desc;
 		pageType = currentPage.type;
 		xml = currentPage.xml;
+		id = currentPage.id;
 	} else if (type == 'addPrev' || type == 'addNext') {
 		pageType = currentPage.type;
 	}
@@ -989,25 +989,26 @@ var addPageDialog = function (editorUi, type) {
 			mxUtils.alert('请输入页面名称');
 		} else if (editorUi.editor.pages[titleText]) {
 			mxUtils.alert('存在相同名称页面');
+		} else if (titleText.length > 20) {
+			mxUtils.alert('页面名称不能超过20个字符');
 		} else {
 			const pageType = isDialogFlag.checked ? 'dialog' : 'normal';
 			var page = {
 				title: titleText,
 				desc: descInput.value,
 				xml,
+				id,
 				type: pageType
 			};
 
 			if (type == 'rename') {
 				// 重命名
-				editorUi.editor.setCurrentPage(page.title)
-				delete editorUi.editor.pages[currentPage.title];
-				editorUi.editor.pages[page.title] = page;
+				editorUi.editor.pages[page.id] = page;
 				$(".currentPage").text(page.title);
-				// 更新排序
-				editorUi.editor.pagesRank[pageType].splice(editorUi.editor.pagesRank[pageType].indexOf(currentPage.title), 1, page.title)
 			} else {
-				var _li = document.createElement('li');
+				let _li = document.createElement('li');
+				let resPage = editorUi.editor.addPage(page);
+				_li.setAttribute('data-pageid', resPage.id);
 				_li.innerHTML = titleText;
 				// 根据类型插入列表
 				if (type === 'addPrev') {
@@ -1019,7 +1020,6 @@ var addPageDialog = function (editorUi, type) {
 				} else {
 					$("#normalPages").append(_li);
 				};
-				editorUi.editor.addPage(page);
 			}
 			editorUi.hideDialog();
 		}

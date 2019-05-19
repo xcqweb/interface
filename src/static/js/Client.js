@@ -70183,7 +70183,6 @@ mxGraphHandler.prototype.mouseUp = function(sender, me)
 			this.currentDx != null && this.currentDy != null)
 		{
 			var cell = me.getCell();
-			
 			if (this.connectOnDrop && this.target == null && cell != null && graph.getModel().isVertex(cell) &&
 				graph.isCellConnectable(cell) && graph.isEdgeValid(null, this.cell, cell))
 			{
@@ -76440,7 +76439,6 @@ mxVertexHandler.prototype.mouseUp = function(sender, me)
 	if (this.index != null && this.state != null)
 	{
 		var point = new mxPoint(me.getGraphX(), me.getGraphY());
-
 		this.graph.getModel().beginUpdate();
 		try
 		{
@@ -76652,9 +76650,9 @@ mxVertexHandler.prototype.reset = function()
 mxVertexHandler.prototype.resizeCell = function(cell, dx, dy, index, gridEnabled, constrained, recurse)
 {
 	var geo = this.graph.model.getGeometry(cell);
-	
 	if (geo != null)
 	{
+		console.log(geo)
 		if (index == mxEvent.LABEL_HANDLE)
 		{
 			var scale = this.graph.view.scale;
