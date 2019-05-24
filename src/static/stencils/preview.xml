@@ -1,14 +1,14 @@
-<shapes>
+<shapes name="jevin">
   <shape name="drop" viewBox="0 0 19 25">
     <path d="M3727.78,1370.35L3735,1380l7.22-9.65A9,9,0,1,0,3727.78,1370.35Z" transform="translate(-3725.5 -1355.5)"/>
   </shape>
   <shape name="circle" viewBox="0 0 25 25">
-    <circle cx="12.5" cy="12.5" r="12"/>
+    <ellipse cx="12.5" cy="12.5" rx="12" ry="12" stroke-width="1"/>
   </shape>
-  <shape name="diamond" viewBox="0 0 21 21">
-    <rect x="0.5" y="0.5" width="20" height="20"/>
+  <shape name="square" viewBox="0 0 21 21">
+    <rect stroke-width="1" stroke="red" x="0.5" y="0.5" width="20" height="20"/>
   </shape>
-  <shape name="square" viewBox="0 0 25 25">
+  <shape name="diamond" viewBox="0 0 25 25">
     <path d="M3819,1368l12-12,12,12-12,12Z" transform="translate(-3818.5 -1355.5)"/>
   </shape>
   <shape name="pentagram" viewBox="0 0 24.94 24">

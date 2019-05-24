@@ -16704,7 +16704,7 @@ mxAbstractCanvas2D.prototype.createState = function()
 		gradientColor: null,
 		gradientAlpha: 1,
 		gradientDirection: null,
-		strokeColor: null,
+		strokeColor: '#FFFFFF',
 		strokeWidth: 1,
 		dashed: false,
 		dashPattern: '3 3',
@@ -18985,7 +18985,6 @@ mxSvgCanvas2D.prototype.addNode = function(filled, stroked)
 {
 	var node = this.node;
 	var s = this.state;
-
 	if (node != null)
 	{
 		if (node.nodeName == 'path')
@@ -19000,7 +18999,11 @@ mxSvgCanvas2D.prototype.addNode = function(filled, stroked)
 				return;
 			}
 		}
-
+		if (node.getAttribute('width') == 50) {
+			// console.log(node)
+			// console.log(filled)
+			console.log('初始化样式：', s)
+		}
 		if (filled && s.fillColor != null)
 		{
 			this.updateFill();
@@ -19056,8 +19059,7 @@ mxSvgCanvas2D.prototype.addNode = function(filled, stroked)
 		else if (!this.pointerEvents && this.originalRoot == null)
 		{
 			node.setAttribute('pointer-events', 'none');
-		}
-		
+		};
 		// Removes invisible nodes from output if they don't handle events
 		if ((node.nodeName != 'rect' && node.nodeName != 'path' && node.nodeName != 'ellipse') ||
 			(node.getAttribute('fill') != 'none' && node.getAttribute('fill') != 'transparent') ||
@@ -19238,7 +19240,7 @@ mxSvgCanvas2D.prototype.createTolerance = function(node)
 	// other browsers need a stroke color to perform the hit-detection but
 	// do not ignore the visibility attribute. Side-effect is that Opera's
 	// hit detection for horizontal/vertical edges seems to ignore the tol.
-	tol.setAttribute('stroke', (mxClient.IS_OT) ? 'none' : 'white');
+	tol.setAttribute('stroke', (mxClient.IS_OT) ? 'none' : '#FFFFFF');
 	
 	return tol;
 };
@@ -19552,6 +19554,7 @@ mxSvgCanvas2D.prototype.convertHtml = function(val)
 	else if (document.implementation != null && document.implementation.createDocument != null)
 	{
 		var xd = document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'html', null);
+		console.log(xd)
 		var xb = xd.createElement('body');
 		xd.documentElement.appendChild(xb);
 		
@@ -19630,11 +19633,6 @@ mxSvgCanvas2D.prototype.createDiv = function(str, align, valign, style, overflow
 
 	var css = '';
 	
-	if (s.fontBackgroundColor != null)
-	{
-		css += 'background-color:' + s.fontBackgroundColor + ';';
-	}
-	
 	if (s.fontBorderColor != null)
 	{
 		css += 'border:1px solid ' + s.fontBorderColor + ';';
@@ -19648,7 +19646,7 @@ mxSvgCanvas2D.prototype.createDiv = function(str, align, valign, style, overflow
 		
 		if (overflow != 'fill' && overflow != 'width')
 		{
-			// Inner div always needed to measure wrapped text
+		// Inner div always needed to measure wrapped text
 			val = '<div xmlns="http://www.w3.org/1999/xhtml" style="display:inline-block;text-align:inherit;text-decoration:inherit;word-wrap: break-word;' + css + '">' + val + '</div>';
 		}
 		else
@@ -76652,7 +76650,6 @@ mxVertexHandler.prototype.resizeCell = function(cell, dx, dy, index, gridEnabled
 	var geo = this.graph.model.getGeometry(cell);
 	if (geo != null)
 	{
-		console.log(geo)
 		if (index == mxEvent.LABEL_HANDLE)
 		{
 			var scale = this.graph.view.scale;
@@ -77014,6 +77011,9 @@ mxVertexHandler.prototype.redrawHandles = function()
 			if (this.sizers.length >= 8)
 			{
 				// 菜单单元格和表格单元格，不展示伸缩图标
+				// if (this.state.style.shape == 'tableCell' || this.state.style.shape == 'menuCell') {
+				// 	return
+				// }
 				var crs = this.state.style.shape !== 'tableCell' && this.state.style.shape !== 'menuCell' ? ['nw-resize', 'n-resize', 'ne-resize', 'e-resize', 'se-resize', 's-resize', 'sw-resize', 'w-resize'] : ['default','default','default','default','default','default','default','default'];
 				
 				var alpha = mxUtils.toRadians(this.state.style[mxConstants.STYLE_ROTATION] || '0');
@@ -81501,7 +81501,7 @@ mxCellHighlight.prototype.repaint = function()
 				// KNOWN: Quirks mode does not seem to catch events if
 				// we do not force an update of the DOM via a change such
 				// as mxLog.debug. Since IE6 is EOL we do not add a fix.
-				this.shape.stroke = 'white';
+				this.shape.stroke = '#FFF';
 				this.shape.opacity = 1;
 			}
 			else

@@ -6,6 +6,7 @@
 /**
  * Construcs a new sidebar for the given editor.
  */
+var basicXmlFns = [];
 function Sidebar(editorUi, container)
 {
 	this.editorUi = editorUi;
@@ -71,7 +72,7 @@ function Sidebar(editorUi, container)
 		this.hideTooltip();
 	}));
 	
-	this.init();
+	// this.init();
 	
 	// Pre-fetches tooltip image
 	if (!mxClient.IS_SVG)
@@ -85,10 +86,12 @@ function Sidebar(editorUi, container)
  */
 Sidebar.prototype.init = function()
 {
+	const dir = '/static/stencils/'
 	this.createPageContextMenu();
 	this.addPagePalette(true);//页面管理
 	this.addGeneralPalette(true);//基础控件
-	// this.addBasicPalette(dir);//基本图形
+	// this.addPrimitive2();
+	// this.addBasicPalette()
 };
 
 /**
@@ -1075,7 +1078,8 @@ function createPageList (editorUi, data, id) {
 				editInput.focus();
 				
 				let saveFn = () => {
-					let name = '' + editInput.value;
+					let name = editInput.value.trim();
+					mxEvent.removeListener(document.body, 'click', saveFn);
 					if (!name) {
 						mxUtils.alert('页面名称不能为空');
 						evt.target.innerHTML = oldVal;
@@ -1083,10 +1087,18 @@ function createPageList (editorUi, data, id) {
 						mxUtils.alert('页面名称不能超过20个字符');
 						evt.target.innerHTML = oldVal;
 					} else {
+						if (name !== oldVal) {
+							for (let key in editorUi.editor.pages) {
+								if (editorUi.editor.pages[key].title === name) {
+									mxUtils.alert('页面名称不能重复');
+									evt.target.innerHTML = oldVal;
+									return;
+								}
+							}
+						}
 						editorUi.editor.pages[evt.target.getAttribute('data-pageid')].title = name;
 						evt.target.innerHTML = name;
 					}
-					mxEvent.removeListener(document.body, 'click', saveFn);
 				}
 				
 				mxEvent.addListener(document.body, 'click', saveFn);
@@ -1130,13 +1142,6 @@ Sidebar.prototype.addPagePalette = function (expand) {
 	var normalPages = []
 	var dialogPages = [];
 	var pages = this.editorUi.editor.pages;
-	// for (var title in pages) {
-	// 	if (pages[title].type == 'normal') {
-	// 		normalPages[title] = pages[title]
-	// 	} else {
-	// 		dialogPages[title] = pages[title]
-	// 	}
-	// }
 	// 普通页面
 	for (let key of this.editorUi.editor.pagesRank.normal) {
 		normalPages.push(pages[key])
@@ -1158,15 +1163,6 @@ Sidebar.prototype.addPagePalette = function (expand) {
 	this.addPaletteFunctions('pageManage', '页面管理', (expand != null) ? expand : true, fns);
 }
 /**
- * baseic.xml
- */
-Sidebar.prototype.addBasicPalette = function(dir)
-{
-	this.addStencilPalette('basic', mxResources.get('basic'), dir + '/basic.xml',
-		';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2',
-		null, null, null, null, []);
-};
-/**
  * 添加给定的模板控件.
  */
 Sidebar.prototype.addStencilPalette = function(id, title, stencilFile, style, ignore, onInit, scale, tags, customFns)
@@ -1182,7 +1178,6 @@ Sidebar.prototype.addStencilPalette = function(id, title, stencilFile, style, ig
 			fns.push(customFns[i]);
 		}
 	}
-
 	mxStencilRegistry.loadStencilSet(stencilFile, mxUtils.bind(this, function(packageName, stencilName, displayName, w, h)
 	{
 		if (ignore == null || mxUtils.indexOf(ignore, stencilName) < 0)
@@ -1195,17 +1190,28 @@ Sidebar.prototype.addStencilPalette = function(id, title, stencilFile, style, ig
 				tmp.push(tmpTags);
 			}
 			fns.push(this.createVertexTemplateEntry('shape=' + packageName + stencilName.toLowerCase() + style,
-				Math.round(w * scale), Math.round(h * scale), '', stencilName.replace(/_/g, ' '), null, null,
+				Math.round(w * scale), Math.round(h * scale), '', '', null, null,
 				this.filterTags(tmp.join(' '))));
-		}
-	}), true, true);
+			}
+		}), true, true);
+		// this.addPaletteFunctions(id, title, true, fns);
+		// basicXmlFns = fns;
+		this.addPaletteFunctions(id, title, false, fns);
+};
 
-	this.addPaletteFunctions(id, title, false, fns);
+Sidebar.prototype.addBasicXml= function () {
+	this.addPaletteFunctions('primitiveManage', '图元管理', true, basicXmlFns);
+}
+Sidebar.prototype.addBasicPalette = function(dir)
+{
+	this.addStencilPalette('basic', mxResources.get('basic'), '/static/stencils/basic.xml',
+		';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2',
+		null, null, null, null, []);
 };
 /**
  * 图元列表
  */
-Sidebar.prototype.primitives = ['circle', 'diamond', 'drop', 'pentagram', 'square'];
+Sidebar.prototype.primitives = ['sasa', 'circle', 'diamond', 'drop', 'pentagram', 'square'];
 Sidebar.prototype.addPrimitive = function (expand) {
 	var fns = [
 		this.createVertexTemplateEntry('shape=circle;html=1;labelBackgroundColor=#ffffff;image=/static/images/svg/circle.svg', 50, 50, '', ''),
@@ -1215,6 +1221,11 @@ Sidebar.prototype.addPrimitive = function (expand) {
 		this.createVertexTemplateEntry('shape=square;html=1;labelBackgroundColor=#ffffff;image=/static/images/svg/square.svg', 50, 50, '', ''),
 	];
 	this.addPaletteFunctions('primitiveManage', '图元管理', (expand != null) ? expand : true, fns);
+}
+Sidebar.prototype.addPrimitive2 = function() {
+	this.addStencilPalette('primitiveManagess', '图元管理', '/static/stencils/basic.xml',
+			';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1;aspect=fixed',
+			null, null, null, null, []);
 }
 /**
  * 基本控件
@@ -1271,7 +1282,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 			for (let i = 0; i < 9; i++) {
 				let line = parseInt(i/3);
 				let xNum = i % 3;
-				let symbol = new mxCell(i < 3 ? 'Column ' + (i + 1) : '', new mxGeometry(xNum * 100, 30 * line, 100, 30), 'shape=tableCell;strokeColor:#000;html=1;whiteSpace=wrap;');
+				let symbol = new mxCell(i < 3 ? 'Column ' + (i + 1) : '', new mxGeometry(xNum * 100, 30 * line, 100, 30), 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;');
 				symbol.vertex = true;
 				cell.insert(symbol);
 			}
@@ -1449,7 +1460,6 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 	{
 		elt.style.border = 'none';
 	}
-	
 	// 控件默认点击事件
 	mxEvent.addListener(elt, 'click', function(evt)
 	{
@@ -1466,6 +1476,7 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 	var bounds = new mxRectangle(0, 0, width, height);
 	if (cells.length > 1 || cells[0].vertex)
 	{
+		console.log()
 		if (!/primitive/.test(cells[0].style)) {
 			// 非图元绑定拖拽插入画布事件
 			var ds = this.createDragSource(elt, this.createDropHandler(cells, true, allowCellsInserted, bounds), this.createDragPreview(width, height), cells, bounds);
@@ -1478,7 +1489,6 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 				return this.editorUi.editor.graph.graphHandler.guidesEnabled;
 			});
 		}
-	
 	}
 	else if (cells[0] != null && cells[0].edge)
 	{
@@ -2914,13 +2924,7 @@ Sidebar.prototype.addPalette = function(id, title, expanded, onInit)
     this.addFoldingHandler(elt, div, onInit);
 	
 	var outer = document.createElement('div');
-		outer.appendChild(div);
-	if (id === 'primitiveManage') {
-		// 图元
-		document.body.appendChild(outer)
-	} else {
-    this.container.appendChild(outer);
-	}
+	this.container.appendChild(div);
     
     // Keeps references to the DOM nodes
     if (id != null)

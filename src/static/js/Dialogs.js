@@ -992,6 +992,12 @@ var addPageDialog = function (editorUi, type) {
 		} else if (titleText.length > 20) {
 			mxUtils.alert('页面名称不能超过20个字符');
 		} else {
+			for (let key in editorUi.editor.pages) {
+				if (editorUi.editor.pages[key].title === titleText) {
+					mxUtils.alert('页面名称不能重复');
+					return;
+				}
+			}
 			const pageType = isDialogFlag.checked ? 'dialog' : 'normal';
 			var page = {
 				title: titleText,
@@ -1211,6 +1217,7 @@ var PaletteDataDialog = function(editorUi, cell) {
 		pointType: '',
 		point: '',
 		params: [],
+		fillVariable: false,
 		changeStatus: []
 	}
 	// 弹窗内容
@@ -1274,16 +1281,15 @@ var PaletteDataDialog = function(editorUi, cell) {
 	// 填充内容的变量
 	var insertVariable = document.createElement('div');
 	insertVariable.className = 'geDialogInfoTitle';
-	const flag = true;
 	insertVariable.innerHTML = `
 		<span>填充数据：</span>
 		<span>
 			<label>
-				<input type='radio' style="transform: translateY(2px)" name='insert' ${flag && 'checked'} />
+				<input type='radio' class="fillVariable" value=true style="transform: translateY(2px)" name='insert' ${bindData.fillVariable && 'checked'} />
 				是(默认填充第一个参数)
 			</label>
 			<label>
-				<input type='radio' style="transform: translateY(2px)" name='insert' ${!flag && 'checked'} />
+				<input type='radio' class="fillVariable" value=false style="transform: translateY(2px)" name='insert' ${!bindData.fillVariable && 'checked'} />
 				否
 			</label>
 		</span>
@@ -1341,7 +1347,8 @@ var PaletteDataDialog = function(editorUi, cell) {
 		bindData = {
 			pointType: typeSelect.value,
 			point: pointSelect.value,
-			params: choosedParam
+			params: choosedParam,
+			fillVariable: $('.fillVariable:checked').val() == 'true'
 		}
 		
 		graph.getModel().beginUpdate();
@@ -1352,6 +1359,7 @@ var PaletteDataDialog = function(editorUi, cell) {
 		finally {
 			graph.getModel().endUpdate();
 		}
+		editorUi.hideDialog();
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
 	// 取消按钮

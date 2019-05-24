@@ -20,14 +20,40 @@ const defaultStyle= {
   fillColor: '#FFFFFF',
   fontSize: '12px'
 }
-// 事件对应js
-const eventContrast = {
-  '双击': 'dbclick',
-  '单击': 'click',
-  '鼠标移入': 'mousein',
-  '鼠标移出': '',
-  '': '',
-  '': '',
+// 浮窗节点
+const formatLayer = document.getElementById('formatLayer');
+let layerData = null;
+let formatLayerFlag = false;
+// // 浮窗事件
+// formatLayer.addEventListener('mouseenter', function (e) {
+//   formatLayerFlag = true;
+// })
+// formatLayer.addEventListener('mouseout', function () {
+//   formatLayerFlag = false;
+//   setTimeout(() => {
+//     if (!formatLayerFlag) {
+//       formatLayer.style = '';
+//     }
+//   })
+// })
+// websocket信息
+let applyData = {};
+// 接收的点位数据
+let pointData = {};
+/**
+ * 格式化时间
+ * @param {number|string} time 
+ */
+function timeFormate(time) {
+  time = time || new Date().getTime();
+  const timeEle = new Date(time);
+  const year = timeEle.getFullYear();
+  const month = timeEle.getMonth() + 1;
+  const day = timeEle.getDate();
+  const hours = timeEle.getHours();
+  const minute = timeEle.getMinutes();
+  const second = timeEle.getSeconds();
+  return `${year}/${month > 9 ? month : '0' + month}/${day > 9 ? day : '0' + day} ${hours > 9 ? hours : '0' + hours}:${minute > 9 ? minute : '0' + minute}:${second > 9 ? second : '0' + second}`;
 }
 /**
  * 插入系统自带svg
@@ -44,9 +70,18 @@ function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor='#333') {
   let svgContent = document.createElement('div');
   inner.setAttribute('fill', fillColor)
   inner.setAttribute('stroke', strokeColor)
-  
+  inner.setAttribute('stroke-width', 1);
   let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', shapeXmls[key].viewBox)
+  svg.style.float = 'left';
+  if (key === 'circle') {
+    inner.setAttribute('cx', w/2);
+    inner.setAttribute('cy', h/2);
+    inner.setAttribute('rx', w/2);
+    inner.setAttribute('ry', h/2);
+  } else {
+    svg.setAttribute('viewBox', shapeXmls[key].viewBox)
+  }
+  svg.setAttribute('stroke-width', 1);
   svg.setAttribute('width', w);
   svg.setAttribute('height', h);
   svg.innerHTML = inner.outerHTML;
@@ -54,6 +89,123 @@ function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor='#333') {
   return svgContent;
 }
 
+// 避免重复链接
+let lockWs = false;
+/**
+ * 创建websocket链接
+ * @param {Array} data 
+ * @param {string} pageId 
+ */
+function createWs(pageId) {
+  if ( applyData[pageId].wsParams.length === 0) {
+    return;
+  };
+  const token = getCookie('token');
+  // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token);
+  let ws = new WebSocket(`ws://localhost:3000/pipixia`, token);
+  initialWs(ws, pageId);
+  return ws;
+}
+/**
+ * 重连websocket
+ * @param {string} pageId 
+ */
+function reconnect (pageId) {
+  if (!applyData[pageId] || applyData[pageId].lockWs) return;
+  applyData[pageId].lockWs = true;
+  // 3s重连
+  setTimeout(function () {
+    createWs(pageId)
+    applyData[pageId].lockWs = false;
+  }, 3000)
+}
+/**
+ * 初始化websocket的钩子
+ * @param {object} ws 
+ * @param {string} pageId 
+ */
+function initialWs (ws, pageId) {
+  // websocket连接成功
+  ws.onopen = function () {
+    ws.send(applyData[pageId].wsParams);
+  }
+  // 接收消息
+  ws.onmessage = function (res) {
+    let resData = JSON.parse(res.data)
+    let doms = document.getElementsByClassName(resData.pointId + '_text');
+    // 填充文本
+    new Promise(() => {
+      for (let item of doms) {
+        if (item.childElementCount == 0) {
+          item.innerHTML = resData[item.getAttribute('data-filltext')]
+        }
+      }
+    })
+    // 根据状态设置颜色
+    new Promise(() => {
+      if (!pointData[resData.pointId] || resData.alarm !== pointData[resData.pointId].alarm) {
+        setCellStatus(resData.pointId, resData.alarm)
+      }
+    })
+    // 渲染弹窗
+    new Promise(() => {
+      pointData[resData.pointId] = resData;
+      if (layerData && layerData.point === resData.pointId) {
+        mainProcess.renderLayer()
+      }
+    })
+  }
+  // 接收异常
+  ws.onerror = function (e) {
+    reconnect(pageId)
+  }
+  // 关闭
+  ws.onclose = function (e) {
+    reconnect(pageId);
+  }
+}
+/**
+ * 关闭websocket
+ * @param {string} pageId 
+ */
+function destroyWs (pageId) {
+  applyData[pageId].ws && applyData[pageId].ws.close();
+  delete applyData[pageId];
+}
+/**
+ * 设置节点属性
+ * @param {string} id 
+ * @param {number} alarm 
+ */
+function setCellStatus(id, alarm) {
+  // 该参数全部DOM
+  let doms = document.getElementsByClassName(id);
+  let color = null;
+  switch (alarm) {
+    case 1:
+      // 预警黄
+      color = '#FFDA05';  
+      break;
+    case 2:
+      // 告警红
+      color = '#FF5542';  
+      break;
+    case 3:
+      // 异常灰
+      color = '#A1B0B5';  
+      break;
+    default:
+      color = null;
+      break;
+  }
+  for (let dom of doms) {
+    if (dom.childElementCount == 0) {
+      dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
+    } else {
+      dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', color || dom.getAttribute('data-defaultFill'));
+    }
+  }
+}
 /**
  * 插入图片
  * @param {object} cell 
@@ -225,38 +377,64 @@ function geAjax (url, method = 'GET', data = null) {
 function BindEvent(ele, actionsInfo) {
   if (actionsInfo) {
     for(let action of actionsInfo) {
-      console.log(action)
       if (action.mouseEvent !== 'unset' && action.effectAction !== 'unset' && action.link) {
-        ele.addEventListener(action.mouseEvent, function (e) {
-          e = e || window.event;
-          if (e.stopPropagation) {
-            e.stopPropagation();
-          } else {
-            e.cancelBubble = true;
-          }
-          // 触发事件
-          switch (action.effectAction) {
-            case 'show':
-              actionShow(action);
-              break;
-            case 'hide':
-              actionHide(action);
-              break;
-            case 'open':
-              actionOpen(action);
-              break;
-            case 'close':
-              actionClose(action);
-              break;
-            default:
-              break;
-          }
-        })
+        if ((action.mouseEvent === 'select' || action.mouseEvent === 'unselect') && ele.nodeName !== 'SELECT') {
+          // 单选、复选的选中和取消选中事件
+          ele.addEventListener('click', function (e) {
+            if (ele.checked && action.mouseEvent === 'select'){
+              effectEvent(action);
+            } else if (!ele.checked && action.mouseEvent === 'unselect') {
+              effectEvent(action);
+            }
+          })
+        } else if ((action.mouseEvent === 'select' || action.mouseEvent === 'unselect') && ele.nodeName == 'SELECT') {
+          // 下拉框的选中和取消选中事件
+          ele.addEventListener('change', function (e) {
+            if (ele.value !== '请选择' && action.mouseEvent === 'select') {
+              effectEvent(action);
+            } else if (ele.value === '请选择' && action.mouseEvent === 'unselect') {
+              effectEvent(action);
+            }
+          })
+        } else {
+          ele.addEventListener(action.mouseEvent, function (e) {
+            e = e || window.event;
+            if (e.stopPropagation) {
+              e.stopPropagation();
+            } else {
+              e.cancelBubble = true;
+            }
+            // 触发事件
+            effectEvent(action);
+          })
+        }
       }
     }
   }
 }
 
+/**
+ * 触发事件
+ * @param {object} action 
+ */
+function effectEvent(action) {
+  switch (action.effectAction) {
+    case 'show':
+      actionShow(action);
+      break;
+    case 'hide':
+      actionHide(action);
+      break;
+    case 'open':
+      actionOpen(action);
+      break;
+    case 'close':
+      actionClose(action);
+      break;
+    default:
+      break;
+  }
+}
 /**
  * 显示事件
  */
@@ -264,6 +442,7 @@ function actionShow (action) {
   if (action.innerType === 'palette') {
     document.getElementById('palette_' + action.link).style.display = '';
   } else {
+    console.log(action)
     mainProcess.renderDialog(action.link)
   }
 }
@@ -273,9 +452,11 @@ function actionShow (action) {
 function actionHide (action) {
   if (action.innerType === 'palette') {
     document.getElementById('palette_' + action.link).style.display = 'none';
-  } else {
+  } else if (document.getElementById(action.link)) {
     document.getElementById(action.link).remove();
     document.getElementById('bg_' + action.link).remove();
+    // 断开websocket
+    destroyWs(action.link);
   }
 }
 /**
@@ -300,9 +481,10 @@ function actionOpen (action) {
  * 关闭事件
  */
 function actionClose (action) {
-  if (action.innerType === 'page' && action.type === 'in') {
+  if (action.innerType === 'page' && action.type === 'in' && document.getElementById(action.link)) {
     document.getElementById(action.link).remove();
     document.getElementById('bg_' + action.link).remove();
+    destroyWs(action.link);
   }
 }
 /**
@@ -322,6 +504,7 @@ class PreviewPage {
     this.describe = describe;
     this.id = id;
     this.name = name;
+    this.renderPageId = id;
   }
 
   // 页面数量
@@ -329,28 +512,31 @@ class PreviewPage {
     return Object.keys(this.content);
   }
   // 生成弹窗
-  createDialog(id) {
+  createDialog(id, pagetitle) {
     let bg = document.createElement('div')
     bg.className = 'bg';
     bg.id = 'bg_' + id;
-    document.body.appendChild(bg)
+    document.getElementById('geDialogs').appendChild(bg)
     let dialog = document.createElement('div');
     dialog.className = 'geDialog';
     dialog.id = id;
     // 标题
     let title = document.createElement('p');
     title.className = 'geDialogTitle';
-    title.innerHTML = '弹窗';
+    title.innerHTML = pagetitle;
     dialog.appendChild(title);
     // 点击关闭弹窗
     title.addEventListener('click', () => {
       dialog.remove();
       bg.remove();
+      // 关闭websocket
+      destroyWs(id);
     })
     // 弹窗正文
     let content = document.createElement('div');
+    content.className = 'geDialogContent'
     dialog.appendChild(content);
-    document.body.appendChild(dialog);
+    document.getElementById('geDialogs').appendChild(dialog);
     return content;
   }
   // 解析所有控件节点
@@ -366,6 +552,8 @@ class PreviewPage {
           let id = item.getAttribute('id');
           // 节点交互
           let actionsInfo = JSON.parse(item.getAttribute('actionsInfo'));
+          // 数据绑定
+          let bindData = JSON.parse(item.getAttribute('bindData'));
           // 链接
           let smartBiLink = item.getAttribute('smartBiLink');
           // mxcell节点
@@ -388,7 +576,7 @@ class PreviewPage {
             styles = node.getAttribute('style');
             isGroup = styles.indexOf('group') != -1;
             fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF';
-            fontColor = getNodeInfo.getStyles('fontColor') || '#FFFFFF';
+            fontColor = getNodeInfo.getStyles('fontColor') || '#000000';
             verticalAlign = getNodeInfo.getStyles('verticalAlign') || 'middle';
             rotation = getNodeInfo.getStyles('rotation') || 0;
             flipH = getNodeInfo.getStyles('flipH') || 0;
@@ -469,8 +657,8 @@ class PreviewPage {
                 }
               }
             }
-            x < minX && (minX = x);
-            y < minY && (minY = y);
+            (x < minX || minX === 0) && (minX = x);
+            (y < minY || minY === 0) && (minY = y);
             let obj = {
                 id,
                 shapeName,
@@ -487,6 +675,7 @@ class PreviewPage {
                 image,
                 smartBiLink,
                 actionsInfo,
+                bindData,
                 hide,
                 verticalAlign,
                 align,
@@ -506,8 +695,8 @@ class PreviewPage {
     let cells = getNode();
     cells.map(cell => {
       // 修正最外层节点的定位信息
-      cell.x += Math.abs(minX) + 20;
-      cell.y += Math.abs(minY) + 20;
+      cell.x -= minX - 20;
+      cell.y -= minY - 20;
       // 计算页面高度
       pageWidth = ((cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth) + 20;
       pageHeight = ((cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight) + 20;
@@ -523,7 +712,15 @@ class PreviewPage {
     const xmlDoc = mxUtils.parseXml(page.xml).documentElement;
     const root = xmlDoc.getElementsByTagName('root')[0].children;
     let cells = this.parseCells(root);
+    this.renderPageId = page.id;
+    let wsParams = [];
     if (page.type === 'normal') {
+      // 清除全部websocket
+      for (let key in applyData) {
+        destroyWs(key);
+      }
+      pointData = Object.assign({});
+      document.getElementById('geDialogs').innerHTML = '';
       // 正常的最小x、y偏移量
       minX = minY = 0;
       // 页面宽度和高度
@@ -531,20 +728,36 @@ class PreviewPage {
       // 清空页面内容
       this.clearPage();
       // 正常页面      
-      this.renderPages(cells);
+      wsParams = this.renderPages(cells);
       gePreview.style.width = pageWidth + 'px';
       gePreview.style.height = pageHeight + 'px';
     } else {
       // 弹窗页面
-      let layerContent = this.createDialog(page.id);
+      let layerContent = this.createDialog(page.id, page.title);
       layerContent.innerHTML = ``;
-      this.renderPages(cells, layerContent);
+      wsParams = this.renderPages(cells, layerContent);
     }
+    applyData[page.id] = {
+      ws: '',
+      data: {},
+      wsParams,
+      lockWs: false
+    };
+    applyData[page.id].ws = createWs(page.id);
     return cells
   }
   // 渲染页面
   renderPages (cells, ele = gePreview) {
+    let data = [];
     for (let cell of cells) {
+      if (cell.bindData) {
+        data.push({
+          pointId: cell.bindData.point,
+          params: cell.bindData.params.map(val => {
+            return val.name
+          }).join()
+        })
+      }
       let cellHtml = this.renderCell(cell);
       ele.appendChild(cellHtml);
       // 组内资源
@@ -552,6 +765,7 @@ class PreviewPage {
         this.renderPages(cell.children, cellHtml);
       }
     }
+    return data
   }
   
   // 渲染控件节点
@@ -565,7 +779,7 @@ class PreviewPage {
       // smartBi链接iframe
       cellHtml = document.createElement('iframe');
       // &user=admin&password=123456
-      cellHtml.setAttribute('src', `${cell.smartBiLink}`);
+      cellHtml.setAttribute('src', `${/^http/.test(cell.smartBiLink) ? '' : 'http://' }${cell.smartBiLink}`);
     } else if (shapeName === 'menuCell' || shapeName === 'menulist') {
       // 菜单
       cellHtml = document.createElement('div');
@@ -574,6 +788,7 @@ class PreviewPage {
       // 下拉框
       cellHtml = document.createElement('select');
       const selectProps = cell.selectProps.split(',');
+      selectProps.unshift('请选择');
       for (let item of selectProps) {
         let opt = document.createElement('option');
         opt.setAttribute('value', item);
@@ -600,7 +815,8 @@ class PreviewPage {
       // 箭头、直线，曲线
       cellHtml = inserEdge(cell)
     } else if (configSvg.includes(shapeName)) {
-      cellHtml = insertSvg(shapeName, cell.width, cell.height, cell.x, cell.y, "#FFFFFF", cell.strokeColor)
+      // svg图
+      cellHtml = insertSvg(shapeName, cell.width, cell.height, cell.x, cell.y, cell.fillColor, cell.strokeColor)
     } else {
       // 其他
       cellHtml = document.createElement('p');
@@ -646,10 +862,59 @@ class PreviewPage {
     cellHtml.id = `palette_${cell.id}`
     // 绑定事件
     BindEvent(cellHtml, cell.actionsInfo)
+    // 浮窗
+    if (cell.bindData && cell.bindData.point && cell.bindData.params.length > 0) {
+      if (cell.bindData.fillVariable) {
+        // 需要填充数据
+        cellHtml.className += ` ${cell.bindData.point} ${cell.bindData.point}_text`;
+        cellHtml.setAttribute('data-filltext', cell.bindData.params[0].name);
+        cellHtml.innerHTML = '';
+      } else {
+        // 根据接收数据
+        cellHtml.className += ` ${cell.bindData.point}`;
+      }
+      cellHtml.setAttribute('data-defaultFill', cell.fillColor)
+      // 显示
+      cellHtml.addEventListener('mousemove', (e) => {
+        layerData = cell.bindData;
+        this.renderLayer();
+        formatLayer.style.left =  e.clientX + 5 + 'px';
+        formatLayer.style.top = e.clientY + 5 + 'px';
+        formatLayer.style.opacity = '1';
+      })
+      // 隐藏
+      cellHtml.addEventListener('mouseleave', () => {
+        layerData = null;
+        formatLayer.style = '';
+      })
+    }
     return cellHtml;
+  }
+  // 渲染浮窗
+  renderLayer () {
+    formatLayer.innerHTML = '';
+    const data = Object.assign({}, pointData[layerData.point]);
+    let params = [{name: 'timestamp'}].concat(layerData.params)
+    let leftKeys = document.createElement('ul');
+    leftKeys.id = 'leftKeys';
+    let rightKeys = document.createElement('ul');
+    rightKeys.id = 'rightKeys';
+    // 填充内容
+    for (let param of params) {
+      let leftInfo = document.createElement('li');
+      leftInfo.innerHTML = `${param.name}=`;
+      let rightInfo = document.createElement('li');
+      rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : data[param.name];
+      leftKeys.appendChild(leftInfo);
+      rightKeys.appendChild(rightInfo);
+    }
+    formatLayer.appendChild(leftKeys);
+    formatLayer.appendChild(rightKeys);
   }
 }
 
+function layerInfo () {
+}
 /**
  * 获取控件样式
  */
@@ -719,6 +984,11 @@ class Main {
   renderDialog(id) {
     let pageContent = this.previewPage.content[id];
     this.previewPage.parsePage(pageContent);
+  }
+
+  // 渲染浮窗
+  renderLayer() {
+    this.previewPage.renderLayer()
   }
 }
 

@@ -4547,7 +4547,6 @@ mxStencilRegistry.parseStencilSet = function(root, postStencilLoad, install)
 						
 						w = (w == null) ? 80 : parseInt(w, 10);
 						h = (h == null) ? 80 : parseInt(h, 10);
-	
 						postStencilLoad(packageName, stencilName, name, w, h);
 					}
 				}

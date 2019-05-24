@@ -281,6 +281,13 @@ Editor.prototype.getNodeInfo = function (key) {
 	let graph = this.graph;
 	let cell = graph.getSelectionCell();
 	let modelInfo = graph.getModel().getValue(cell);
+	if (!mxUtils.isNode(modelInfo))
+	{
+		let doc = mxUtils.createXmlDocument();
+		let obj = doc.createElement('object');
+		obj.setAttribute('label', modelInfo || '');
+		modelInfo = obj;
+	};
 	return JSON.parse(modelInfo.getAttribute(key))
 }
 /**
@@ -432,12 +439,24 @@ Editor.prototype.uploadFile = function (editorUi, url, method, data, fn = functi
  * 控件信息
  */
 Editor.prototype.palettesInfo = {
-	'jevin.jevin1': {
-		name: 'jevin1',
+	'jevin.sasa': {
+		name: 'sasa',
 		num: 0
 	},
-	'jevin.jevin2': {
-		name: 'jevin2',
+	'jevin.diamond': {
+		name: 'diamond',
+		num: 0
+	},
+	'jevin.drop': {
+		name: 'drop',
+		num: 0
+	},
+	'jevin.square': {
+		name: 'square',
+		num: 0
+	},
+	'jevin.pentagram': {
+		name: 'pentagram',
 		num: 0
 	},
 	rectangle: {
@@ -815,7 +834,6 @@ Editor.prototype.readGraphState = function(node)
 
 	// Loads the persistent state settings
 	var bg = node.getAttribute('background');
-	
 	if (bg != null && bg.length > 0)
 	{
 		this.graph.background = bg;
@@ -2396,6 +2414,7 @@ PageSetupDialog.getFormats = function()
 		// KNOWN: Rounding errors for certain scales (eg. 144%, 121% in Chrome, FF and Safari). Workaround
 		// in Chrome is to use 100% for the svg size, but this results in blurred grid for large diagrams.
 		var size = tmp2;
+		// console.log(11212, color)
 		var svg =  '<svg width="' + size + '" height="' + size + '" xmlns="' + mxConstants.NS_SVG + '">' +
 		    '<defs><pattern id="grid" width="' + tmp2 + '" height="' + tmp2 + '" patternUnits="userSpaceOnUse">' +
 		    '<path d="' + d.join(' ') + '" fill="none" stroke="' + color + '" opacity="0.2" stroke-width="1"/>' +

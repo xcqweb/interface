@@ -1460,22 +1460,24 @@ ArrangePanel.prototype.addGeometry = function(container)
 	autosizeBtn.className = fixed == "fixed" ? 'geSprite geSprite-limit' : 'geSprite geSprite-limit geSprite-unlimit';
 	autosizeBtn.setAttribute('title', '限制比例');
 	// 点击限制比例
-	mxEvent.addListener(autosizeBtn, 'click', function()
-	{
-		fixed = fixed == "fixed" ? '' : 'fixed';
-		autosizeBtn.className = fixed == "fixed" ? 'geSprite geSprite-limit' : 'geSprite geSprite-limit geSprite-unlimit';
-		graph.getModel().beginUpdate();
-		try
+	if (!ui.sidebar.primitives.includes(rect.style.shape)) {
+		mxEvent.addListener(autosizeBtn, 'click', function()
 		{
-			graph.setCellStyles(mxConstants.STYLE_ASPECT, fixed, graph.getSelectionCells());
-			ui.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],
-				'values', [fixed], 'cells', graph.getSelectionCells()));
-		}
-		finally
-		{
-			graph.getModel().endUpdate();
-		}
-	});
+			fixed = fixed == "fixed" ? '' : 'fixed';
+			autosizeBtn.className = fixed == "fixed" ? 'geSprite geSprite-limit' : 'geSprite geSprite-limit geSprite-unlimit';
+			graph.getModel().beginUpdate();
+			try
+			{
+				graph.setCellStyles(mxConstants.STYLE_ASPECT, fixed, graph.getSelectionCells());
+				ui.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],
+					'values', [fixed], 'cells', graph.getSelectionCells()));
+			}
+			finally
+			{
+				graph.getModel().endUpdate();
+			}
+		});
+	}
 	
 	div.appendChild(autosizeBtn);
 	// 高度
@@ -2344,7 +2346,13 @@ ActionsPanel.prototype.init = function (container) {
 	var graph = editor.graph;
 	var cell = graph.getSelectionCell();
 	this.modelInfo = graph.getModel().getValue(cell);
-	
+	if (!mxUtils.isNode(this.modelInfo))
+	{
+		let doc = mxUtils.createXmlDocument();
+		let obj = doc.createElement('object');
+		obj.setAttribute('label', this.modelInfo || '');
+		this.modelInfo = obj;
+	};
 	// 编辑数据
 	if (graph.getSelectionCount() == 1)
 	{
@@ -2473,6 +2481,13 @@ ActionsPanel.prototype.createOperateBox = function(container)
 	}
 	var cell = graph.getSelectionCell();
 	var modelInfo = graph.getModel().getValue(cell);
+	if (!mxUtils.isNode(modelInfo))
+	{
+		let doc = mxUtils.createXmlDocument();
+		let obj = doc.createElement('object');
+		obj.setAttribute('label', modelInfo || '');
+		modelInfo = obj;
+	};
 	// 初始化属性
 	if (modelInfo !== undefined && modelInfo !== null) {
 		var attrs = modelInfo.attributes;
