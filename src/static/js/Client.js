@@ -18999,11 +18999,6 @@ mxSvgCanvas2D.prototype.addNode = function(filled, stroked)
 				return;
 			}
 		}
-		if (node.getAttribute('width') == 50) {
-			// console.log(node)
-			// console.log(filled)
-			console.log('初始化样式：', s)
-		}
 		if (filled && s.fillColor != null)
 		{
 			this.updateFill();
@@ -69650,14 +69645,10 @@ mxGraphHandler.prototype.consumeMouseEvent = function(evtName, me)
 /**
  * Function: mouseDown
  * 
- * Handles the event by selecing the given cell and creating a handle for
- * it. By consuming the event all subsequent events of the gesture are
- * redirected to this handler.
  * 控件拖拽句柄，鼠标按下操作
  */
 mxGraphHandler.prototype.mouseDown = function(sender, me)
 {
-	//  && me.getState().style.shape != 'menuCell'
 	if (!me.isConsumed() && this.isEnabled() && this.graph.isEnabled() &&
 		me.getState() != null && !mxEvent.isMultiTouchEvent(me.getEvent()))
 	{
@@ -86235,7 +86226,6 @@ mxCodec.prototype.encode = function(obj)
 mxCodec.prototype.decode = function(node, into)
 {
 	var obj = null;
-	
 	if (node != null && node.nodeType == mxConstants.NODETYPE_ELEMENT)
 	{
 		var ctor = null;
@@ -86248,7 +86238,6 @@ mxCodec.prototype.decode = function(node, into)
 		{
 			// ignore
 		}
-		
 		var dec = mxCodecRegistry.getCodec(ctor);
 		
 		if (dec != null)

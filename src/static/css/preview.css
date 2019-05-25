@@ -1,6 +1,7 @@
 html, body {
   height: 100%;
   overflow: auto;
+  min-width: 1440px;
 }
 #gePreview {
   position: relative;
@@ -98,6 +99,7 @@ html, body {
   left: -9999px;
   top: -9999px;
   z-index: 99999;
+  display: flex;
   animation: opacity .4s ease .6s;
 }
 #formatLayer #leftKeys {

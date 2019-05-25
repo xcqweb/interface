@@ -146,7 +146,7 @@ EditorUi = function(editor, container, lightbox)
     }
     
 	// Creates hover icons
-	this.hoverIcons = this.createHoverIcons();
+	// this.hoverIcons = this.createHoverIcons();
 	
 	// Adds tooltip when mouse is over scrollbars to show space-drag panning option
 	mxEvent.addListener(this.diagramContainer, 'mousemove', mxUtils.bind(this, function(evt)
@@ -168,19 +168,19 @@ EditorUi = function(editor, container, lightbox)
 	var spaceKeyPressed = false;
 	
 	// Overrides hovericons to disable while space key is pressed
-	var hoverIconsIsResetEvent = this.hoverIcons.isResetEvent;
+	// var hoverIconsIsResetEvent = this.hoverIcons.isResetEvent;
 	
-	this.hoverIcons.isResetEvent = function(evt, allowShift)
-	{
-		return spaceKeyPressed || hoverIconsIsResetEvent.apply(this, arguments);
-	};
+	// this.hoverIcons.isResetEvent = function(evt, allowShift)
+	// {
+	// 	return spaceKeyPressed || hoverIconsIsResetEvent.apply(this, arguments);
+	// };
 	
 	this.keydownHandler = mxUtils.bind(this, function(evt)
 	{
 		if (evt.which == 32 /* Space */)
 		{
 			spaceKeyPressed = true;
-			this.hoverIcons.reset();
+			// this.hoverIcons.reset();
 			graph.container.style.cursor = 'move';
 			
 			// Disables scroll after space keystroke with scrollbars
@@ -861,6 +861,7 @@ EditorUi = function(editor, container, lightbox)
 	graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt)
 	{
 		var cells = evt.getProperty('cells');
+		console.log(cells)
 		// 转换类型
 		for (let cell of cells) {
 			if (cell.style !== 'group') {
@@ -2790,7 +2791,6 @@ EditorUi.prototype.updateActionStates = function()
 	// 更新 action 状态
 	var state = graph.view.getState(graph.getSelectionCell());
 	var shapeName = state && state.style.shape;
-	// console.log(shapeName)
 	var actions = ['cut', 'copy', 'bold', 'underline', 'delete', 'duplicate', 
 	            		'editLink', 'backgroundColor', 'borderColor',
 	               'edit', 'toFront', 'toBack', 'lockUnlock',

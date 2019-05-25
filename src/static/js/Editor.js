@@ -349,13 +349,17 @@ Editor.prototype.ajax = function (editorUi, url, method, data, fn = function() {
  * 初始化进入
  */
 Editor.prototype.InitEditor = function (editorUi) {
+	// 获取文件服务器地址
 	let getFileSystem = new Promise((resolve, reject) => {
+		editorUi.sidebar.container.innerHTML = ''
+		editorUi.sidebar.init()
 		this.ajax(editorUi, '/api/image/host', 'GET', null, function (res) {
 			// 文件服务器地址
 			window.fileSystem = res.host;
 			resolve(res)
 		}, null)
 	})
+	// 编辑数据
 	let editPromise = null;
 	if (/id=(.+?)$/.exec(location.search)) {
 		editPromise = new Promise((resolve, reject) => {
@@ -391,11 +395,8 @@ Editor.prototype.InitEditor = function (editorUi) {
 			editorUi.editor.setApplyId(editData.id)
 			editorUi.editor.setDescribe(editData.describe)
 		}
-		editorUi.sidebar.container.innerHTML = ''
-		editorUi.sidebar.init()
 		// 默认选中
 		$("#normalPages li").eq(0).click();
-		return res;
 	})
 }
 /**
@@ -439,23 +440,27 @@ Editor.prototype.uploadFile = function (editorUi, url, method, data, fn = functi
  * 控件信息
  */
 Editor.prototype.palettesInfo = {
-	'jevin.sasa': {
+	'sasa': {
 		name: 'sasa',
 		num: 0
 	},
-	'jevin.diamond': {
+	'diamond': {
 		name: 'diamond',
 		num: 0
 	},
-	'jevin.drop': {
+	'circle': {
+		name: 'circle',
+		num: 0
+	},
+	'drop': {
 		name: 'drop',
 		num: 0
 	},
-	'jevin.square': {
+	'square': {
 		name: 'square',
 		num: 0
 	},
-	'jevin.pentagram': {
+	'pentagram': {
 		name: 'pentagram',
 		num: 0
 	},
@@ -2414,7 +2419,6 @@ PageSetupDialog.getFormats = function()
 		// KNOWN: Rounding errors for certain scales (eg. 144%, 121% in Chrome, FF and Safari). Workaround
 		// in Chrome is to use 100% for the svg size, but this results in blurred grid for large diagrams.
 		var size = tmp2;
-		// console.log(11212, color)
 		var svg =  '<svg width="' + size + '" height="' + size + '" xmlns="' + mxConstants.NS_SVG + '">' +
 		    '<defs><pattern id="grid" width="' + tmp2 + '" height="' + tmp2 + '" patternUnits="userSpaceOnUse">' +
 		    '<path d="' + d.join(' ') + '" fill="none" stroke="' + color + '" opacity="0.2" stroke-width="1"/>' +

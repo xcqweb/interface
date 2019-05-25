@@ -90,8 +90,7 @@ Sidebar.prototype.init = function()
 	this.createPageContextMenu();
 	this.addPagePalette(true);//页面管理
 	this.addGeneralPalette(true);//基础控件
-	// this.addPrimitive2();
-	// this.addBasicPalette()
+	this.addBasicPalette();
 };
 
 /**
@@ -969,7 +968,6 @@ Sidebar.prototype.createPageContextMenu = function  () {
 		// 添加页面
 		var addPage = this.editorUi.actions.get('addPage').funct;
 		const pageType = this.editorUi.editor.currentType;
-		console.log(ele.data('pageid'))
 		let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.data('pageid'))
 		switch (actionType) {
 			case 'movePrev':
@@ -1194,39 +1192,24 @@ Sidebar.prototype.addStencilPalette = function(id, title, stencilFile, style, ig
 				this.filterTags(tmp.join(' '))));
 			}
 		}), true, true);
-		// this.addPaletteFunctions(id, title, true, fns);
-		// basicXmlFns = fns;
-		this.addPaletteFunctions(id, title, false, fns);
+		basicXmlFns = fns;
 };
-
+/**
+ * 图元管理
+ */
 Sidebar.prototype.addBasicXml= function () {
 	this.addPaletteFunctions('primitiveManage', '图元管理', true, basicXmlFns);
 }
-Sidebar.prototype.addBasicPalette = function(dir)
+Sidebar.prototype.addBasicPalette = function()
 {
 	this.addStencilPalette('basic', mxResources.get('basic'), '/static/stencils/basic.xml',
-		';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=2',
+		';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1;aspect=fixed',
 		null, null, null, null, []);
 };
 /**
  * 图元列表
  */
-Sidebar.prototype.primitives = ['sasa', 'circle', 'diamond', 'drop', 'pentagram', 'square'];
-Sidebar.prototype.addPrimitive = function (expand) {
-	var fns = [
-		this.createVertexTemplateEntry('shape=circle;html=1;labelBackgroundColor=#ffffff;image=/static/images/svg/circle.svg', 50, 50, '', ''),
-		this.createVertexTemplateEntry('shape=diamond;html=1;labelBackgroundColor=#ffffff;image=/static/images/svg/diamond.svg', 50, 50, '', ''),
-		this.createVertexTemplateEntry('shape=drop;html=1;labelBackgroundColor=#ffffff;image=/static/images/svg/drop.svg', 50, 50, '', ''),
-		this.createVertexTemplateEntry('shape=pentagram;html=1;labelBackgroundColor=#ffffff;image=/static/images/svg/pentagram.svg', 50, 50, '', ''),
-		this.createVertexTemplateEntry('shape=square;html=1;labelBackgroundColor=#ffffff;image=/static/images/svg/square.svg', 50, 50, '', ''),
-	];
-	this.addPaletteFunctions('primitiveManage', '图元管理', (expand != null) ? expand : true, fns);
-}
-Sidebar.prototype.addPrimitive2 = function() {
-	this.addStencilPalette('primitiveManagess', '图元管理', '/static/stencils/basic.xml',
-			';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1;aspect=fixed',
-			null, null, null, null, []);
-}
+Sidebar.prototype.primitives = ['circle', 'diamond', 'drop', 'pentagram', 'square'];
 /**
  * 基本控件
  */
@@ -1467,7 +1450,7 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 			mxEvent.consume(evt);
 			ui.hideDialog();
 		} else if (shapeName == 'primitive') {
-			this.addPrimitive(true);//图元管理
+			this.addBasicXml();//图元管理
 			var dialog = document.getElementById('primitiveManage');
 			ui.showDialog(dialog, 410, 120, true, false, null, null, '图元管理');
 		}
@@ -1476,7 +1459,6 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 	var bounds = new mxRectangle(0, 0, width, height);
 	if (cells.length > 1 || cells[0].vertex)
 	{
-		console.log()
 		if (!/primitive/.test(cells[0].style)) {
 			// 非图元绑定拖拽插入画布事件
 			var ds = this.createDragSource(elt, this.createDropHandler(cells, true, allowCellsInserted, bounds), this.createDragPreview(width, height), cells, bounds);

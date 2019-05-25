@@ -45,7 +45,7 @@ let pointData = {};
  * @param {number|string} time 
  */
 function timeFormate(time) {
-  time = time || new Date().getTime();
+  if (!time) return '';
   const timeEle = new Date(time);
   const year = timeEle.getFullYear();
   const month = timeEle.getMonth() + 1;
@@ -894,6 +894,7 @@ class PreviewPage {
   renderLayer () {
     formatLayer.innerHTML = '';
     const data = Object.assign({}, pointData[layerData.point]);
+    if (!Object.keys(data).length) return;
     let params = [{name: 'timestamp'}].concat(layerData.params)
     let leftKeys = document.createElement('ul');
     leftKeys.id = 'leftKeys';
@@ -904,7 +905,7 @@ class PreviewPage {
       let leftInfo = document.createElement('li');
       leftInfo.innerHTML = `${param.name}=`;
       let rightInfo = document.createElement('li');
-      rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : data[param.name];
+      rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : data[param.name] || '';
       leftKeys.appendChild(leftInfo);
       rightKeys.appendChild(rightInfo);
     }
@@ -913,8 +914,6 @@ class PreviewPage {
   }
 }
 
-function layerInfo () {
-}
 /**
  * 获取控件样式
  */
