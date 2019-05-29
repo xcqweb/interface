@@ -1222,7 +1222,6 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		// 矩形
 		this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, '矩形'),
 		// 按钮
-		// this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box">BUTTON</button>', '按钮'),
 		this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box;background:transparent;">BUTTON</button>', '按钮'),
 		// 横向菜单
 		this.addEntry('page menu', function()
@@ -1242,14 +1241,14 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		}),
 		// 复选
 		// this.createVertexTemplateEntry('shape=multipleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="checkbox" class="inputTag1" />', '复选'),
-		this.createVertexTemplateEntry('shape=multipleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/multipleCheck.png', 40, 40, '', '复选'),
+		this.createVertexTemplateEntry('shape=multipleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/multipleCheck.png', 40, 16, '', '复选'),
 		// 单选
 		// this.createVertexTemplateEntry('shape=singleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="radio" class="inputTag" />', '单选'),
-		this.createVertexTemplateEntry('shape=singleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/singleCheck.png', 40, 40, '', '单选'),
+		this.createVertexTemplateEntry('shape=singleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/singleCheck.png', 40, 16, '', '单选'),
 		// 图片
 		this.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
 		// 下拉列表
-		this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 100, 16, '<div style="width:100%;height:100%;position: relative"><select class="selectTag"></select><div class="selectTagShade"></div></div>', '下拉列表'),
+		this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 100, 16, '<select disabled class="selectTag"></select><div class="selectTagShade"></div>', '下拉列表'),
 		// 表格，通过html生成
 		// this.createVertexTemplateEntry('shape=table;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
 		//  	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
@@ -1277,7 +1276,6 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		this.createEdgeTemplateEntry('shape=endarrow;html=1;', 50, 0, '', '箭头', false, false),
 		//直线
 		this.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 0, '', '直线', null,''),
-
 		// 曲线
 		this.addEntry('curve', mxUtils.bind(this, function()
 	 	{
@@ -1294,7 +1292,8 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		// 文字 
 		this.createVertexTemplateEntry('shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',
 			 40, 20, 'text', '文字'),
-	];
+			 this.createVertexTemplateEntry('shape=jevinsvg;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;html=1;outlineConnect=0;', 30, 30, 'jevin', 'jevin', false, null, ''),
+			];
 	//封装
 	this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
 };

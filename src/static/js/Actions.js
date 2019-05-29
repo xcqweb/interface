@@ -179,6 +179,11 @@ Actions.prototype.init = function()
 		var dlg = new LinkReportDialog(ui, '')
 		ui.showDialog(dlg.container, 410, 200, true, false, null, null, '链接');
 	}, true)
+	// 预览
+	this.addAction('previewapply', function() {		
+		var dlg = new PreviewDialog(ui, '')
+		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '预览');
+	}, true, null, '');
 	// 发布
 	this.addAction('publish', function() {
 		var dlg = new PublishDialog(ui, '')

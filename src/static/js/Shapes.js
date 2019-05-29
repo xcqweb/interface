@@ -1159,6 +1159,25 @@
 
 	// Replaces existing actor shape
 	mxCellRenderer.registerShape('umlActor', UmlActorShape);
+	// 注册svg
+	function JevinShape()
+	{
+		mxShape.call(this);
+	};
+	mxUtils.extend(JevinShape, mxShape);
+	JevinShape.prototype.paintBackground = function(c, x, y, w, h)
+	{
+		c.translate(x, y);
+
+		// Head
+		c.ellipse(0, 0, w, h);
+		c.fillAndStroke();
+		
+		c.end();
+		
+		c.stroke();
+	};
+	mxCellRenderer.registerShape('jevinsvg', JevinShape);
 	
 	// UML Boundary Shape
 	function UmlBoundaryShape()
@@ -3688,22 +3707,8 @@
 	IsoRectangleShape.prototype.constraints = [];
 	IsoCubeShape.prototype.constraints = [];
 	CalloutShape.prototype.constraints = [];
-	mxRectangleShape.prototype.constraints = [new mxConnectionConstraint(new mxPoint(0.25, 0), true),
-	                                          new mxConnectionConstraint(new mxPoint(0.5, 0), true),
-	                                          new mxConnectionConstraint(new mxPoint(0.75, 0), true),
-	        	              		 new mxConnectionConstraint(new mxPoint(0, 0.25), true),
-	        	              		 new mxConnectionConstraint(new mxPoint(0, 0.5), true),
-	        	              		 new mxConnectionConstraint(new mxPoint(0, 0.75), true),
-	        	            		 new mxConnectionConstraint(new mxPoint(1, 0.25), true),
-	        	            		 new mxConnectionConstraint(new mxPoint(1, 0.5), true),
-	        	            		 new mxConnectionConstraint(new mxPoint(1, 0.75), true),
-	        	            		 new mxConnectionConstraint(new mxPoint(0.25, 1), true),
-	        	            		 new mxConnectionConstraint(new mxPoint(0.5, 1), true),
-	        	            		 new mxConnectionConstraint(new mxPoint(0.75, 1), true)];
-	mxEllipse.prototype.constraints = [new mxConnectionConstraint(new mxPoint(0, 0), true), new mxConnectionConstraint(new mxPoint(1, 0), true),
-	                                   new mxConnectionConstraint(new mxPoint(0, 1), true), new mxConnectionConstraint(new mxPoint(1, 1), true),
-	                                   new mxConnectionConstraint(new mxPoint(0.5, 0), true), new mxConnectionConstraint(new mxPoint(0.5, 1), true),
-	          	              		   new mxConnectionConstraint(new mxPoint(0, 0.5), true), new mxConnectionConstraint(new mxPoint(1, 0.5))];
+	mxRectangleShape.prototype.constraints = [];
+	mxEllipse.prototype.constraints = [];
 	mxLabel.prototype.constraints = mxRectangleShape.prototype.constraints;
 	mxImageShape.prototype.constraints = mxRectangleShape.prototype.constraints;
 	mxSwimlane.prototype.constraints = mxRectangleShape.prototype.constraints;

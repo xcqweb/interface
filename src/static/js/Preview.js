@@ -7,7 +7,7 @@ let shapeXmls,applyInfo,fileSystem;
 // 正常页面渲染地方
 let gePreview = document.getElementById('gePreview');
 // 正常的最小x、y偏移量
-let minX = minY = 0;
+let minX = minY = null;
 // 页面宽度和高度
 let pageWidth = pageHeight = 0;
 // 配置好的svg图
@@ -442,7 +442,6 @@ function actionShow (action) {
   if (action.innerType === 'palette') {
     document.getElementById('palette_' + action.link).style.display = '';
   } else {
-    console.log(action)
     mainProcess.renderDialog(action.link)
   }
 }
@@ -572,7 +571,7 @@ class PreviewPage {
             let getNodeInfo = new GetNodeInfo(node);
             // 节点类型
             let shapeName = getNodeInfo.getStyles('shape');
-            let x,y,width,height,fillColor,strokeColor,fontColor,fontSize,styles, isGroup, image, hide, align, verticalAlign, selectProps, points,rotation,flipH,flipV;
+            let x,y,width,height,fillColor,strokeColor,fontColor,fontSize,styles, isGroup, image, hide, align, verticalAlign, selectProps,defaultProp, points,rotation,flipH,flipV;
             styles = node.getAttribute('style');
             isGroup = styles.indexOf('group') != -1;
             fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF';
@@ -592,6 +591,7 @@ class PreviewPage {
             hide = item.getAttribute('hide');
             height = parseFloat(node.children[0].getAttribute('height'));
             selectProps = item.getAttribute('selectProps') || '';
+            defaultProp = item.getAttribute('defaultProp') || '';
             // edge获取路径节点
             if (shapeName === 'endarrow' || shapeName === 'beeline' || shapeName === 'curve') {
               const childNodes = node.getElementsByTagName('mxGeometry')[0].children;
@@ -657,8 +657,8 @@ class PreviewPage {
                 }
               }
             }
-            (x < minX || minX === 0) && (minX = x);
-            (y < minY || minY === 0) && (minY = y);
+            (x < minX || minX === null) && (minX = x);
+            (y < minY || minY === null) && (minY = y);
             let obj = {
                 id,
                 shapeName,
@@ -680,6 +680,7 @@ class PreviewPage {
                 verticalAlign,
                 align,
                 selectProps,
+                defaultProp,
                 points,
                 rotation,
                 flipH,
@@ -687,6 +688,7 @@ class PreviewPage {
             };
             // 组合节点
             obj.children = getNode(id);
+            console.log(node)
             list.push(obj);
           };
       };
@@ -722,7 +724,7 @@ class PreviewPage {
       pointData = Object.assign({});
       document.getElementById('geDialogs').innerHTML = '';
       // 正常的最小x、y偏移量
-      minX = minY = 0;
+      minX = minY = null;
       // 页面宽度和高度
       pageWidth = pageHeight = 0;
       // 清空页面内容
@@ -788,13 +790,15 @@ class PreviewPage {
       // 下拉框
       cellHtml = document.createElement('select');
       const selectProps = cell.selectProps.split(',');
-      selectProps.unshift('请选择');
-      for (let item of selectProps) {
-        let opt = document.createElement('option');
-        opt.setAttribute('value', item);
-        opt.innerHTML = item;
-        cellHtml.appendChild(opt)
-      }
+      console.log(selectProps)
+      cellHtml.innerHTML = `
+        <option>请选择</option>
+        ${
+          selectProps.map(prop => `
+            <option ${prop === cell.defaultProp ? 'selected' : ''}>${prop}</option>
+          `).join('')
+        }
+      `
     } else if (shapeName === 'singleCheck') {
       // 单选框
       cellHtml = document.createElement('input');
@@ -943,24 +947,34 @@ class Main {
 
   // 初始化
   async init () {
-    let id = /id=(.+?)$/.exec(location.search)
+    let id = /id=(.+?)$/.exec(location.search);
+    let preview_data = null;
     if ( id ) {
-      id = id[1]
+      // 查看应用
+      id = id[1];
     } else {
-      console.log('id不存在');
-      return;
+      // 编辑时预览
+      preview_data = JSON.parse(localStorage.getItem('preview_data'));
+      localStorage.removeItem('preview_data');
     }
     const host = await geAjax('/api/image/host', 'GET');
     fileSystem = host.host;
-    applyInfo = await geAjax(`/api/viewtool/${id}`, 'GET');
+    if (preview_data) {
+      applyInfo= preview_data;
+    } else {
+      applyInfo = await geAjax(`/api/viewtool/${id}`, 'GET');
+    }
     shapeXmls = await loadShapeXml();
     if (!applyInfo) {
       console.log('未查到对应数据')
       return;
     }
-    applyInfo = applyInfo;
+    // 设置页签名称
+    document.getElementsByTagName('title')[0].innerHTML = applyInfo.name;
+    // 设置默认页面
     this.previewPage = new PreviewPage(applyInfo);
     this.pageId = this.previewPage.pagesRank.normal[0];
+    // 渲染页面
     this.renderNormal();
   }
   // 判断页面类型

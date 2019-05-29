@@ -16,7 +16,7 @@ Editor = function(chromeless, themes, model, graph, editable)
 
 	this.getOrCreateFilename = function()
 	{
-		return this.filename || mxResources.get('app', [Editor.pageCounter]);
+		return this.filename || '新建应用';
 	};
 	
 	this.getFilename = function()
@@ -351,8 +351,6 @@ Editor.prototype.ajax = function (editorUi, url, method, data, fn = function() {
 Editor.prototype.InitEditor = function (editorUi) {
 	// 获取文件服务器地址
 	let getFileSystem = new Promise((resolve, reject) => {
-		editorUi.sidebar.container.innerHTML = ''
-		editorUi.sidebar.init()
 		this.ajax(editorUi, '/api/image/host', 'GET', null, function (res) {
 			// 文件服务器地址
 			window.fileSystem = res.host;
@@ -374,6 +372,7 @@ Editor.prototype.InitEditor = function (editorUi) {
 		if (res[1]) {
 			var editData = res[1];
 			var content = JSON.parse(editData.content);
+			console.log(content)
 			if (content.rank) {
 				editorUi.editor.pages = content.pages;
 				editorUi.editor.pagesRank = content.rank;
@@ -391,6 +390,8 @@ Editor.prototype.InitEditor = function (editorUi) {
 					}
 				}
 			}
+			editorUi.sidebar.container.innerHTML = ''
+			editorUi.sidebar.init()
 			editorUi.editor.setFilename(editData.name)
 			editorUi.editor.setApplyId(editData.id)
 			editorUi.editor.setDescribe(editData.describe)
@@ -494,6 +495,10 @@ Editor.prototype.palettesInfo = {
 	},
 	table: {
 		name: '表格',
+		num: 0
+	},
+	jevinsvg: {
+		name: '演员',
 		num: 0
 	},
 	tableBox: {

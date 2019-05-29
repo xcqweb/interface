@@ -627,7 +627,6 @@ setAsDefaultStyle=设置为默认样式
 shadow=阴影
 shape=形状
 shapes=形状
-share=发布
 shareLink=发布编辑的链接
 linkReport=链接
 sharp=尖角

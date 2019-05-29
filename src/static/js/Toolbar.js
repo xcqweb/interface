@@ -102,7 +102,7 @@ Toolbar.prototype.init = function()
 	// 旋转
 	this.addItems([ 'turn', 'flipV', 'flipH'], this.containerList[6]);
 	// 链接发布
-	this.addItems([ 'publish'], this.containerList[7]);
+	this.addItems([ 'previewapply', 'publish'], this.containerList[7]);
 };
 
 

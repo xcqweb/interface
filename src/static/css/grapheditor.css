@@ -625,7 +625,7 @@ div.mxWindow .geButton {
 }
 .geDialog .geDialogTitle::after {
 	content: '';
-	background: url(./../images/default/closeDialog.png);
+	background: url(/static/images/default/closeDialog.png);
 	background-size: 16px 16px;
 	width: 16px;
 	height: 16px;
@@ -807,7 +807,7 @@ div.mxWindow .geButton {
 	height: 24px;
 }
 .geSprite-new {
-	background-image: url(./../images/menu/new.png);
+	background-image: url(/static/images/menu/new.png);
 }
 .geSprite::after {
 	position: absolute;
@@ -820,163 +820,170 @@ div.mxWindow .geButton {
 	left: 6px;
 }
 .geSprite-save {
-	background-image: url(./../images/menu/save.png);
+	background-image: url(/static/images/menu/save.png);
 }
 .geSprite-save::after {
 	content: '保存';
 	left: 6px;
 }
 .geSprite-zoomin {
-	background-image: url(./../images/menu/zoomin.png);	
+	background-image: url(/static/images/menu/zoomin.png);	
 }
 .geSprite-zoomin::after {
 	content: '缩放';
 	left: 37px;
 }
 .geSprite-fullscreen {
-	background-image: url(./../images/menu/fullscreen.png);	
+	background-image: url(/static/images/menu/fullscreen.png);	
 }
 .geSprite-fullscreen::after {
 	content: '全屏';
 	left: 0;
 }
 .geSprite-zoomout {
-	background-image: url(./../images/menu/zoomout.png);
+	background-image: url(/static/images/menu/zoomout.png);
 }
 .geSprite-copy {
-	background-image: url(./../images/menu/copy.png);
+	background-image: url(/static/images/menu/copy.png);
 }
 .geSprite-copy::after {
 	content: '复制';
 	left: 13px;
 }
 .geSprite-paste {
-	background-image: url(./../images/menu/paste.png);
+	background-image: url(/static/images/menu/paste.png);
 }
 .geSprite-paste::after {
 	content: '粘贴';
 	left: 13px;
 }
 .geSprite-cut {
-	background-image: url(./../images/menu/cut.png);
+	background-image: url(/static/images/menu/cut.png);
 }
 .geSprite-cut::after {
 	content: '剪切';
 	left: 13px;
 }
 .geSprite-duplicate {
-	background-image: url(./../images/menu/duplicate.png);
+	background-image: url(/static/images/menu/duplicate.png);
 }
 .geSprite-duplicate::after {
 	content: '重复';
 	left: 13px;
 }
 .geSprite-undo {
-	background-image: url(./../images/menu/undo.png);
+	background-image: url(/static/images/menu/undo.png);
 }
 .geSprite-undo::after {
 	content: '撤销';
 	left: 13px;
 }
 .geSprite-redo {
-	background-image: url(./../images/menu/redo.png);
+	background-image: url(/static/images/menu/redo.png);
 }
 .geSprite-redo::after {
 	content: '重做';
 	left: 13px;
 }
 .geSprite-delete {
-	background-image: url(./../images/menu/delete.png);
+	background-image: url(/static/images/menu/delete.png);
 }
 .geSprite-delete::after {
 	content: '删除';
 	left: 13px;
 }
 .geSprite-leftalign {
-	background-image: url(./../images/menu/left.png);
+	background-image: url(/static/images/menu/left.png);
 }
 .geSprite-centeralign {
-	background-image: url(./../images/menu/center.png);
+	background-image: url(/static/images/menu/center.png);
 }
 .geSprite-rightalign {
-	background-image: url(./../images/menu/right.png);
+	background-image: url(/static/images/menu/right.png);
 }
 .geSprite-top {
-	background-image: url(./../images/menu/top.png);
+	background-image: url(/static/images/menu/top.png);
 }
 .geToolbarContainer .geSprite-bottom {
-	background-image: url(./../images/menu/bottom.png);
+	background-image: url(/static/images/menu/bottom.png);
 }
 .geSprite-verticalalign {
-	background-image: url(./../images/menu/verticalalign.png);
+	background-image: url(/static/images/menu/verticalalign.png);
 }
 .geSprite-verticalcenter {
-	background-image: url(./../images/menu/verticalcenter.png);
+	background-image: url(/static/images/menu/verticalcenter.png);
 }
 .geSprite-horizontalcenter {
-	background-image: url(./../images/menu/horizontalcenter.png);
+	background-image: url(/static/images/menu/horizontalcenter.png);
 }
 .geSprite-horizontalalign {
-	background-image: url(./../images/menu/horizontalalign.png);
+	background-image: url(/static/images/menu/horizontalalign.png);
 }
 .geSprite-tofront {
-	background-image: url(./../images/menu/tofront.png);
+	background-image: url(/static/images/menu/tofront.png);
 }
 .geSprite-tofront::after {
 	content: '置于顶层';
 	left: 6px;
 }
 .geSprite-toback {
-	background-image: url(./../images/menu/toback.png);
+	background-image: url(/static/images/menu/toback.png);
 }
 .geSprite-toback::after {
 	content: '置于底层';
 	left: 6px;
 }
 .geSprite-group {
-	background-image: url(./../images/menu/group.png);
+	background-image: url(/static/images/menu/group.png);
 }
 .geSprite-group::after {
 	content: '组合';
 	left: 13px;
 }
 .geSprite-ungroup {
-	background-image: url(./../images/menu/ungroup.png);
+	background-image: url(/static/images/menu/ungroup.png);
 }
 .geSprite-ungroup::after {
 	content: '取消组合';
 	left: 0px;
 }
 .geSprite-flipv {
-	background-image: url(./../images/menu/flipv.png);
+	background-image: url(/static/images/menu/flipv.png);
 }
 .geSprite-flipv::after {
 	content: '垂直翻转';
 	left: 6px;
 }
 .geSprite-fliph {
-	background-image: url(./../images/menu/fliph.png);
+	background-image: url(/static/images/menu/fliph.png);
 }
 .geSprite-fliph::after {
 	content: '水平翻转';
 	left: 6px;
 }
 .geSprite-turn {
-	background-image: url(./../images/menu/turn.png);
+	background-image: url(/static/images/menu/turn.png);
 }
 .geSprite-turn::after {
 	content: '旋转90';
 	left: 12px;
 }
 .geSprite-linkreport {
-	background-image: url(./../images/menu/link.png);
+	background-image: url(/static/images/menu/link.png);
 }
 .geSprite-linkreport::after {
 	content: '链接';
 	left: 6px;
 }
+.geSprite-previewapply {
+	background-image: url(/static/images/menu/preview.png);
+}
+.geSprite-previewapply::after {
+	content: '预览';
+	left: 6px;
+}
 .geSprite-publish {
-	background-image: url(./../images/menu/share.png);
+	background-image: url(/static/images/menu/publish.png);
 }
 .geSprite-publish::after {
 	content: '发布';
@@ -1250,8 +1257,11 @@ html td.mxWindowTitle {
 	background-image: url(/static/images/menu/collapsedImage.png)
 }
 .selectTag {
-	width: calc(100% - 2px);
-	height: calc(100% - 2px);
+	width: 100%;
+	height: 100%;
+	width: calc(100% - 2px) \9;
+	height: calc(100% - 2px) \9;
+	float: left;
 	border: none;
 }
 button.buttonTag, input.inputTag {
@@ -1267,7 +1277,8 @@ button.buttonTag, input.inputTag {
 	height: 100%;
 	top: 0;
 	left: 0;
-	z-index: 9;
+	z-index: 99999;
+	background: transparent;
 }
 .innerPropsOperate {
 	height: 36px;
@@ -1297,10 +1308,11 @@ button.buttonTag, input.inputTag {
 	position: absolute;
 	top: 0;
 	left: 30px;
-	width: calc( 100% - 31px);
+	width: 333px;
 	height: 28px;
 	padding: 0;
 	margin: 0;
+	border: 1px solid #DCE5E8;
 }
 #innerPropsList li.active {
 	background-color: #D9E6F6
@@ -1326,7 +1338,7 @@ button.buttonTag, input.inputTag {
 	float: left;
 	padding-left: 34px;
 	margin-bottom: 12px;
-	background: url(./../images/default/search.png) no-repeat 12px 8px #fff;
+	background: url(/static/images/default/search.png) no-repeat 12px 8px #fff;
 	background-size: 16px 16px;
 }
 .geDialog .geDialogInfo .searchBox button {
@@ -1379,7 +1391,7 @@ button.buttonTag, input.inputTag {
 .geDialog .geDialogInfo .variableList li.active {
 	color: #fff;
 	background-color: #3D91F7;
-	background-image: url(./../images/default/checked.png);
+	background-image: url(/static/images/default/checked.png);
 	background-repeat: no-repeat;
 	background-size: 16px 16px;
 	background-position: right 9px top 4px;
@@ -1417,6 +1429,9 @@ button.buttonTag, input.inputTag {
 	overflow-x: hidden;
 	overflow-y: auto;
 	padding: 0 6px 12px;
+}
+.geFormatContainer .pageSet select {
+	height: 24px !important;
 }
 .geFormatContainer .formatMiddleBtn {
 	float: left;

@@ -346,12 +346,15 @@ Format.prototype.refresh = function()
 	label.style.lineHeight = '32px';
 	label.style.width = '100%';
 	this.container.appendChild(div);
-	if (graph.isSelectionEmpty()) {
+	if (graph.isSelectionEmpty() || graph.getSelectionCount() > 1) {
 		// 不选择控件时
 		mxUtils.write(label, mxResources.get('style'));
 		div.appendChild(label);
+		var pageSetPanel = div.cloneNode(false);
+		pageSetPanel.className = 'formatPannel'
+		new PageSetPanel(this, ui, pageSetPanel)
 		// let container = new PageSetupDialog(ui).container;
-		// this.container.appendChild(container);
+		this.container.appendChild(pageSetPanel);
 	} else {
 		// 选择控件时
 		var containsLabel = this.getSelectionState().containsLabel;
@@ -997,7 +1000,6 @@ BaseFormatPanel.prototype.createColorOption = function(label, getColorFn, setCol
 			btn.innerHTML = '<div style="width: 100%;height: 16px;background-color:' +
 				((color != null && color != mxConstants.NONE) ? color : defaultColor) + ';"></div>';
 			btn.style.display = color ? '' : 'none';
-
 			if (callbackFn != null)
 			{
 				callbackFn(color);
@@ -1061,6 +1063,7 @@ BaseFormatPanel.prototype.createCellColorOption = function(label, colorKey, defa
 		return null;
 	}, function(color)
 	{
+		var state = graph.view.getState(graph.getSelectionCell());
 		graph.getModel().beginUpdate();
 		try
 		{
@@ -1068,7 +1071,11 @@ BaseFormatPanel.prototype.createCellColorOption = function(label, colorKey, defa
 			{
 				// setStyleFn(color);
 			}
-			graph.setCellStyles(colorKey, color, graph.getSelectionCells());
+			if (state.style.shape === 'menulist') {
+				graph.setCellStyles(colorKey, color,  graph.getSelectionCells().concat(graph.getSelectionCell().children));
+			} else {
+				graph.setCellStyles(colorKey, color, graph.getSelectionCells());
+			}
 			// ui.fireEvent(new mxEventObject('styleChanged', 'keys', [colorKey],
 			// 	'values', [color], 'cells', graph.getSelectionCells()));
 		}
@@ -1366,11 +1373,135 @@ BaseFormatPanel.prototype.destroy = function()
 		this.listeners = null;
 	}
 };
+/**
+ * 页面操作面板
+ */
+var PageSetPanel = function (format, editorUi, container) {
+	this.editorUi = editorUi;
+	var editor = editorUi.editor;
+	var graph = editor.graph;
+	this.refresh(container);
+	this.update = mxUtils.bind(this, function(sender, evt)
+	{
+		this.refresh(container);
+	});
+	editorUi.editor.graph.getModel().addListener(mxEvent.CHANGE, this.update);
+}
+mxUtils.extend(PageSetPanel, BaseFormatPanel);
+/**
+ * 初始化
+ */
+PageSetPanel.prototype.refresh = function (container) {
+	container.innerHTML = '';
+	// 名称
+	this.addName(container);
+	// 页面尺寸
+	this.addPageSize(container);
+	// 背景颜色，网格
+	this.addPageColor(container);
+}
+/**
+ * 页面名称
+ */
+PageSetPanel.prototype.addName = function (container) {
+	container.appendChild(this.createTitle('名称'));
+	let input = document.createElement('input');
+	input.className = 'formatLargeInput';
+	input.style.width = '100%';
+	container.appendChild(input);
+	input.value = this.editorUi.editor.currentPage;
+}
+/** 
+ * 页面尺寸
+*/
+PageSetPanel.prototype.addPageSize = function (container) {
+}
+/**
+ * 背景颜色
+ */
+PageSetPanel.prototype.addPageColor = function (container) {
+	var ui = this.editorUi;
+	var graph = ui.editor.graph;
+	container.appendChild(this.createTitle('页面尺寸'));
+	let pageSet =document.createElement('div');
+	pageSet.className = "pageSet"
+	var accessor = PageSetupDialog.addPageFormatPanel(pageSet, 'pagesetupdialog', this.editorUi.editor.graph.pageFormat);
+	container.appendChild(pageSet)
 
+	container.appendChild(this.createTitle('背景颜色'));
+
+	var backgroundButton = document.createElement('span');	
+	backgroundButton.style.width = '238px';
+	backgroundButton.style.height = '22px';	
+	backgroundButton.style.display = 'block';	
+	backgroundButton.style.border = '1px solid #D4D4D4';	
+	var newBackgroundColor = graph.background;
+	
+	function updateBackgroundColor()
+	{
+		if (newBackgroundColor == null || newBackgroundColor == mxConstants.NONE)
+		{
+			backgroundButton.style.backgroundColor = '';
+			backgroundButton.style.backgroundImage = 'url(\'' + Dialog.prototype.noColorImage + '\')';
+		}
+		else
+		{
+			backgroundButton.style.backgroundColor = newBackgroundColor;
+			backgroundButton.style.backgroundImage = '';
+		}
+	};
+	
+	updateBackgroundColor();
+
+	mxEvent.addListener(backgroundButton, 'click', function(evt)
+	{
+		ui.pickColor(newBackgroundColor || 'none', function(color)
+		{
+			newBackgroundColor = color;
+			updateBackgroundColor();
+			newBackgroundImage = graph.backgroundImage;
+			var change = new ChangePageSetup(ui, newBackgroundColor,
+				newBackgroundImage, accessor.get());
+			change.ignoreColor = graph.background == newBackgroundColor;
+			
+			var oldSrc = (graph.backgroundImage != null) ? graph.backgroundImage.src : null;
+			var newSrc = (newBackgroundImage != null) ? newBackgroundImage.src : null;
+			
+			change.ignoreImage = oldSrc === newSrc;
+	
+			if (graph.pageFormat.width != change.previousFormat.width ||
+				graph.pageFormat.height != change.previousFormat.height ||
+				!change.ignoreColor || !change.ignoreImage)
+				{
+					graph.model.execute(change);
+				}
+		});
+		mxEvent.consume(evt);
+	});
+	container.appendChild(backgroundButton);
+	container.appendChild(this.createTitle('网格线间隔'));
+	
+	var gridSizeInput = document.createElement('input');
+	gridSizeInput.setAttribute('type', 'number');
+	gridSizeInput.setAttribute('min', '0');
+	gridSizeInput.style.width = '238px';
+	gridSizeInput.style.height = '24px';
+	gridSizeInput.style.border = '1px solid #D4D4D4';
+	
+	gridSizeInput.value = graph.getGridSize();
+	container.appendChild(gridSizeInput);
+	
+	mxEvent.addListener(gridSizeInput, 'change', function()
+	{
+		var value = parseInt(gridSizeInput.value);
+		gridSizeInput.value = Math.max(1, (isNaN(value)) ? graph.getGridSize() : value);
+		graph.setGridSize(parseInt(gridSizeInput.value));
+	});
+}
 /**
  * 样式操作面板
  */
-ArrangePanel = function(format, editorUi, container)
+var ArrangePanel = function(format, editorUi, container)
 {
 	BaseFormatPanel.call(this, format, editorUi, container);
 	if (format.getSelectionState().vertices.length === 1) {
@@ -1460,7 +1591,7 @@ ArrangePanel.prototype.addGeometry = function(container)
 	autosizeBtn.className = fixed == "fixed" ? 'geSprite geSprite-limit' : 'geSprite geSprite-limit geSprite-unlimit';
 	autosizeBtn.setAttribute('title', '限制比例');
 	// 点击限制比例
-	if (!ui.sidebar.primitives.includes(rect.style.shape)) {
+	if (!ui.sidebar.primitives.includes(rect.style.shape) && !['multipleCheck', 'singleCheck', 'select'].includes(rect.style.shape)) {
 		mxEvent.addListener(autosizeBtn, 'click', function()
 		{
 			fixed = fixed == "fixed" ? '' : 'fixed';
@@ -1485,6 +1616,9 @@ ArrangePanel.prototype.addGeometry = function(container)
 	{
 		heightUpdate.apply(this, arguments);
 	});
+	if (['multipleCheck', 'singleCheck', 'select'].includes(rect.style.shape)) {
+		height.setAttribute('disabled', true)
+	}
 	height.className = 'formatMiddleInput';
 
 	var wrapper = document.createElement('div');
@@ -1907,15 +2041,15 @@ ArrangePanel.prototype.addBase = function (container) {
 	}
 	// 大小
 	this.addGeometry(container);
-	if (['menuCell', 'menulist', 'tableBox', 'tableCell'].indexOf(shapeName) == -1) {
+	if (['menuCell', 'menulist', 'tableBox', 'tableCell', 'select'].indexOf(shapeName) == -1) {
 		// 角度
 		this.addAngle(container);
 	}
-	if (['menulist', 'tableBox'].indexOf(shapeName) == -1) {
+	if (['tableBox'].indexOf(shapeName) == -1) {
 		// 边框
 		this.addStroke(container);
 	}
-	if (['image', 'menulist', 'tableBox'].indexOf(shapeName) == -1) {
+	if (['image', 'tableBox'].indexOf(shapeName) == -1) {
 		// 填充
 		this.addBgColor(container);
 	}
@@ -2183,7 +2317,6 @@ ArrangePanel.prototype.alignFont = function (container) {
 	
 	var fillKey = (ss.style.shape == 'image') ? mxConstants.STYLE_IMAGE_BACKGROUND : mxConstants.STYLE_FILLCOLOR;
 	var label = (ss.style.shape == 'image') ? mxResources.get('background') : mxResources.get('fill');
-
 	var fillColor = this.createCellColorOption(label, fillKey, '#FFFFFF');
 	fillColor.className += " formatMiddleBtn";
 	colorPanel.appendChild(fillColor);

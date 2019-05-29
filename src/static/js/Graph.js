@@ -7511,9 +7511,9 @@ if (typeof mxVertexHandler != 'undefined')
 		mxRubberband.prototype.defaultOpacity = 30;
 		
 		// Enables connections along the outline, virtual waypoints, parent highlight etc
-		mxConnectionHandler.prototype.outlineConnect = true;
+		mxConnectionHandler.prototype.outlineConnect = false;
 		mxCellHighlight.prototype.keepOnTop = true;
-		mxVertexHandler.prototype.parentHighlightEnabled = true;
+		mxVertexHandler.prototype.parentHighlightEnabled = false;
 		mxVertexHandler.prototype.rotationHandleVSpacing = -20;
 		
 		mxEdgeHandler.prototype.parentHighlightEnabled = true;
@@ -8148,7 +8148,8 @@ if (typeof mxVertexHandler != 'undefined')
 			// Disables connection points
 			this.constraintHandler.isEnabled = mxUtils.bind(this, function()
 			{
-				return this.state.view.graph.connectionHandler.isEnabled();
+				return false
+				// return this.state.view.graph.connectionHandler.isEnabled();
 			});
 			
 			var update = mxUtils.bind(this, function()
@@ -8192,17 +8193,17 @@ if (typeof mxVertexHandler != 'undefined')
 		};
 	
 		// Disables connection points
-		var connectionHandlerInit = mxConnectionHandler.prototype.init;
+		// var connectionHandlerInit = mxConnectionHandler.prototype.init;
 		
-		mxConnectionHandler.prototype.init = function()
-		{
-			connectionHandlerInit.apply(this, arguments);
+		// mxConnectionHandler.prototype.init = function()
+		// {
+		// 	connectionHandlerInit.apply(this, arguments);
 			
-			this.constraintHandler.isEnabled = mxUtils.bind(this, function()
-			{
-				return this.graph.connectionHandler.isEnabled();
-			});
-		};
+		// 	this.constraintHandler.isEnabled = mxUtils.bind(this, function()
+		// 	{
+		// 		return this.graph.connectionHandler.isEnabled();
+		// 	});
+		// };
 	
 		var vertexHandlerRedrawHandles = mxVertexHandler.prototype.redrawHandles;
 		mxVertexHandler.prototype.redrawHandles = function()

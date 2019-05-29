@@ -691,12 +691,45 @@ var LinkReportDialog = function(editorUi, defaultLink) {
 	saveContent.appendChild(btnContent)
 	this.container = saveContent;
 }
+/**
+ * 发布弹窗
+ */
+var PreviewDialog = function(editorUi) {
+	var saveContent = editorUi.createDiv('geDialogInfo');
+	// 链接
+	var nameTitle = document.createElement('p')
+	nameTitle.innerHTML = '保存并预览该应用？';
+	nameTitle.className = 'geDialogInfoTitle';
+	saveContent.appendChild(nameTitle)
 
+	// 保存按钮
+	var btnContent = editorUi.createDiv('btnContent');
+	var genericBtn = mxUtils.button('保存并预览', function()
+	{
+		editorUi.save(editorUi.editor.filename, editorUi.editor.describe).then(res => {
+			window.open('/preview.html?id=' + res.id);
+			editorUi.hideDialog();
+		});
+	});
+	genericBtn.className = 'geBtn gePrimaryBtn';
+	// 取消按钮
+	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
+	{
+		editorUi.hideDialog();
+	});
+	cancelBtn.className = 'geBtn';
+	btnContent.appendChild(cancelBtn);
+	btnContent.appendChild(genericBtn);
+	
+	saveContent.appendChild(btnContent)
+	this.container = saveContent;
+}
 /**
  * 发布弹窗
  */
 var PublishDialog = function(editorUi) {
 	var saveContent = editorUi.createDiv('geDialogInfo');
+	let editor = editorUi.editor;
 	// 链接
 	var nameTitle = document.createElement('p')
 	nameTitle.innerHTML = '发布之后，生成的应用将在平台展示。';
@@ -705,13 +738,16 @@ var PublishDialog = function(editorUi) {
 
 	// 保存按钮
 	var btnContent = editorUi.createDiv('btnContent');
-	var genericBtn = mxUtils.button('发布', function()
+	var genericBtn = mxUtils.button('保存并发布', function()
 	{
 		editorUi.hideDialog();
-		editorUi.editor.ajax(editorUi, '/api/viewtool/publish/1e964cb38542c908c2c59c9447069a2/1', 'PUT', null, function () {
-			editorUi.editor.tipInfo(editorUi, true, '发布');
-		}, function () {
-			editorUi.editor.tipInfo(editorUi, false, '发布');
+		editorUi.save(editor.filename, editor.describe).then(res => {
+			editor.ajax(editorUi, '/api/viewtool/publish/'+ editor.getApplyId()+'/1', 'PUT', null, function () {
+				editor.tipInfo(editorUi, true, '发布');
+			}, function () {
+				editor.tipInfo(editorUi, false, '发布');
+			});
+			editorUi.hideDialog();
 		});
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
@@ -1076,10 +1112,11 @@ var SelectPropDialog = function (editorUi, cell) {
 		obj.setAttribute('label', cellInfo || '');
 		cellInfo = obj;
 	}
-	var mockData = []
+	var selectData = []
 	if (cellInfo.attributes.selectProps) {
-		mockData = [].concat(cellInfo.attributes.selectProps.nodeValue.split(','))
+		selectData = [].concat(cellInfo.attributes.selectProps.nodeValue.split(','))
 	}
+	var defaultProp = cellInfo.getAttribute('defaultProp');
 	var saveContent = editorUi.createDiv('geDialogInfo')
 	// 属性列表
 	saveContent.innerHTML = `
@@ -1092,9 +1129,9 @@ var SelectPropDialog = function (editorUi, cell) {
 			</div>
 			<ul id="innerPropsList">
 			${
-				mockData.reduce((str, v) => str += `
+				selectData.reduce((str, v) => str += `
 						<li class="innerPropsType">
-							<input type="checkbox" />
+							<input type="checkbox" ${defaultProp === v ? 'checked' : '' } />
 							<span>${v}</span>
 						</li>
 				`, '')
@@ -1118,19 +1155,19 @@ var SelectPropDialog = function (editorUi, cell) {
 		})
 		// 上移
 		$("#moveUp").click(function () {
-			var node = 	$(".innerPropsType").children(':checked').parent();
+			var node = 	$("#innerPropsList .active").eq(0);
 			if (!node) { return false };
 			node.insertBefore(node.prev());
 		})
 		// 下移
 		$("#moveDown").click(function () {
-			var node = 	$(".innerPropsType").children(':checked').parent();
+			var node = 	$("#innerPropsList .active").eq(0);
 			if (!node) { return false };
 			node.insertAfter(node.next());
 		})
 		// 删除
 		$("#delProp").click(function () {
-			$(".innerPropsType").children(':checked').parent().remove()
+			$("#innerPropsList .active").eq(0).remove()
 		})
 		// 单击选中
 		$("#innerPropsList").click(function (e) {
@@ -1175,6 +1212,10 @@ var SelectPropDialog = function (editorUi, cell) {
 		for (var i = 0; i < list.length; i++) {
 			data.push(list[i].children[1].innerText)
 		};
+		defaultProp = $('.innerPropsType input:checked').next().text();
+		cellInfo.setAttribute('defaultProp', defaultProp);
+		console.log(cellInfo.getAttribute('label'),defaultProp)
+		cellInfo.setAttribute('label', cellInfo.getAttribute('label').replace(/"selectTag">(.*)<\/select>/, `"selectTag"><option>${defaultProp}</option></select>`))
 		cellInfo.setAttribute('selectProps', data);
 		graph.getModel().setValue(cell, cellInfo)
 		editorUi.hideDialog();
@@ -1676,7 +1717,6 @@ var ChangePrimitiveDialog = function (editorUi) {
 	// 图元列表
 	var graph = editorUi.editor.graph;
 	var cells = graph.getSelectionCells();
-	// var mockData = []
 	saveContent.innerHTML = `
 	${
 		editorUi.sidebar.primitives.map(val => `

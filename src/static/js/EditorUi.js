@@ -835,7 +835,7 @@ EditorUi = function(editor, container, lightbox)
 	{
 		var update = mxUtils.bind(this, function()
 		{
-			var ff = graph.currentVertexStyle['fontFamily'] || 'Helvetica';
+			var ff = graph.currentVertexStyle['fontFamily'] || 'MicrosoftYaHei';
 			var fs = String(graph.currentVertexStyle['fontSize'] || '12');
 		    	var state = graph.getView().getState(graph.getSelectionCell());
 		    	
@@ -1566,7 +1566,7 @@ EditorUi.prototype.initCanvas = function()
 			var pageInfo = document.createElement('div');
 			pageInfo.style.display = 'inline-block';
 			pageInfo.style.verticalAlign = 'top';
-			pageInfo.style.fontFamily = 'Helvetica,Arial';
+			pageInfo.style.fontFamily = 'MicrosoftYaHei';
 			pageInfo.style.marginTop = '8px';
 			pageInfo.style.color = '#ffffff';
 			this.chromelessToolbar.appendChild(pageInfo);
@@ -3540,48 +3540,52 @@ EditorUi.prototype.saveError = function (res) {
  */
 EditorUi.prototype.save = function(name, des)
 {
-	if (name != null)
-	{
-		if (this.editor.graph.isEditing())
+	return new Promise((resolve, reject) => {
+		if (name != null)
 		{
-			this.editor.graph.stopEditing();
-		}
-		try
-		{
-			var ui = this;
-			var editor = ui.editor;
-			editor.setXml()
-			// 页面信息
-			var pages = editor.pages;
-			var data = {
-				name: name,
-				describe: des,
-				applyCon: editor.pagesNameList().join(),
-				content: JSON.stringify({pages, rank: editor.pagesRank}),
+			if (this.editor.graph.isEditing())
+			{
+				this.editor.graph.stopEditing();
 			}
-			var id = editor.getApplyId();
-			if (id) {
-				// 编辑保存
-				data.id = id;
-				editor.ajax(ui, '/api/viewtool', 'PUT', data, (res) => {
-					this.saveSuccess(res);					
-				}, (res) => {
-					this.saveError(res.responseJSON);
-				})
-			} else {
-				// 新增保存
-				editor.ajax(ui, '/api/viewtool', 'POST', data, (res) => {
-					this.saveSuccess(res);
-				}, (res) => {
-					this.saveError(res.responseJSON);
-				})
+			try
+			{
+				var ui = this;
+				var editor = ui.editor;
+				editor.setXml();
+				// 页面信息
+				var pages = editor.pages;
+				var data = {
+					name: name,
+					describe: des,
+					applyCon: editor.pagesNameList().join(),
+					content: JSON.stringify({pages, rank: editor.pagesRank}),
+				}
+				var id = editor.getApplyId();
+				if (id) {
+					// 编辑保存
+					data.id = id;
+					editor.ajax(ui, '/api/viewtool', 'PUT', data, (res) => {
+						this.saveSuccess(res);					
+						resolve(res);
+					}, (res) => {
+						this.saveError(res.responseJSON);
+						reject();
+					})
+				} else {
+					// 新增保存
+					editor.ajax(ui, '/api/viewtool', 'POST', data, (res) => {
+						this.saveSuccess(res);
+					}, (res) => {
+						this.saveError(res.responseJSON);
+					})
+				}
+			}
+			catch (e)
+			{
+				editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
 			}
 		}
-		catch (e)
-		{
-			editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
-		}
-	}
+	})
 };
 
 /**

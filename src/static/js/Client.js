@@ -7102,9 +7102,9 @@ var mxUtils =
 	/**
 	 * Variable: DEFAULT_FONTFAMILY
 	 * 
-	 * Defines the default family for all fonts. Default is Arial,Helvetica.
+	 * Defines the default family for all fonts. Default is'MicrosoftYaHei'
 	 */
-	DEFAULT_FONTFAMILY: 'Arial,Helvetica',
+	DEFAULT_FONTFAMILY: 'MicrosoftYaHei',
 
 	/**
 	 * Variable: DEFAULT_FONTSIZE
@@ -19876,7 +19876,6 @@ mxSvgCanvas2D.prototype.text = function(x, y, w, h, str, align, valign, wrap, fo
 	if (this.textEnabled && str != null)
 	{
 		rotation = (rotation != null) ? rotation : 0;
-		
 		var s = this.state;
 		x += s.dx;
 		y += s.dy;
@@ -19954,7 +19953,6 @@ mxSvgCanvas2D.prototype.text = function(x, y, w, h, str, align, valign, wrap, fo
 			{
 				// Handles non-standard namespace for getting size in IE
 				var clone = document.createElement('div');
-				
 				clone.style.cssText = div.getAttribute('style');
 				clone.style.display = (mxClient.IS_QUIRKS) ? 'inline' : 'inline-block';
 				clone.style.position = 'absolute';
@@ -20031,6 +20029,7 @@ mxSvgCanvas2D.prototype.text = function(x, y, w, h, str, align, valign, wrap, fo
 			}
 			else
 			{
+
 				// Uses document for text measuring during export
 				if (this.root.ownerDocument != document)
 				{
@@ -26284,7 +26283,6 @@ mxText.prototype.paint = function(c, update)
 		{
 			dir = null;
 		}
-	
 		c.text(x, y, w, h, val, this.align, this.valign, this.wrap, fmt, this.overflow,
 			this.clipped, this.getTextRotation(), dir);
 	}
@@ -57556,7 +57554,6 @@ mxGraph.prototype.alignCells = function(align, cells, param)
 							{
 								geo.x += (param - state.x) / s;
 							}
-							
 							this.resizeCell(cells[i], geo);
 						}
 					}
@@ -69961,7 +69958,7 @@ mxGraphHandler.prototype.roundLength = function(length)
 mxGraphHandler.prototype.mouseMove = function(sender, me)
 {
 	var graph = this.graph;
-
+	
 	if (!me.isConsumed() && graph.isMouseDown && this.cell != null &&
 		this.first != null && this.bounds != null)
 	{
@@ -70031,7 +70028,6 @@ mxGraphHandler.prototype.mouseMove = function(sender, me)
 					dx = 0;
 				}
 			}
-
 			this.currentDx = dx;
 			this.currentDy = dy;
 			this.updatePreviewShape();
@@ -75529,7 +75525,6 @@ mxVertexHandler.prototype.init = function()
 					this.sizers.push(this.createSizer('sw-resize', i++));
 					this.sizers.push(this.createSizer('s-resize', i++));
 				}
-				
 				this.sizers.push(this.createSizer('se-resize', i++));
 			}
 			
@@ -76117,6 +76112,7 @@ mxVertexHandler.prototype.mouseMove = function(sender, me)
 			}
 			else
 			{
+				// 拖拽过程更新尺寸
 				this.resizeVertex(me);
 			}
 			// 更新显示浮窗
@@ -76197,7 +76193,7 @@ mxVertexHandler.prototype.rotateVertex = function(me)
 /**
  * Function: rotateVertex
  * 
- * Rotates the vertex.
+ * 设置尺寸
  */
 mxVertexHandler.prototype.resizeVertex = function(me)
 {
@@ -76998,77 +76994,100 @@ mxVertexHandler.prototype.redrawHandles = function()
 		{
 			var cx = s.x + s.width / 2;
 			var cy = s.y + s.height / 2;
-			
 			if (this.sizers.length >= 8)
 			{
 				// 菜单单元格和表格单元格，不展示伸缩图标
-				// if (this.state.style.shape == 'tableCell' || this.state.style.shape == 'menuCell') {
-				// 	return
-				// }
 				var crs = this.state.style.shape !== 'tableCell' && this.state.style.shape !== 'menuCell' ? ['nw-resize', 'n-resize', 'ne-resize', 'e-resize', 'se-resize', 's-resize', 'sw-resize', 'w-resize'] : ['default','default','default','default','default','default','default','default'];
 				
-				var alpha = mxUtils.toRadians(this.state.style[mxConstants.STYLE_ROTATION] || '0');
-				var cos = Math.cos(alpha);
-				var sin = Math.sin(alpha);
-				
-				var da = Math.round(alpha * 4 / Math.PI);
-				
-				var ct = new mxPoint(s.getCenterX(), s.getCenterY());
-				var pt = mxUtils.getRotatedPoint(new mxPoint(s.x, s.y), cos, sin, ct);
-				
-				this.moveSizerTo(this.sizers[0], pt.x, pt.y);
-				this.sizers[0].setCursor(crs[mxUtils.mod(0 + da, crs.length)]);
-				
-				pt.x = cx;
-				pt.y = s.y;
-				pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
-				
-				this.moveSizerTo(this.sizers[1], pt.x, pt.y);
-				this.sizers[1].setCursor(crs[mxUtils.mod(1 + da, crs.length)]);
-				
-				pt.x = r;
-				pt.y = s.y;
-				pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
-				
-				this.moveSizerTo(this.sizers[2], pt.x, pt.y);
-				this.sizers[2].setCursor(crs[mxUtils.mod(2 + da, crs.length)]);
-				
-				pt.x = s.x;
-				pt.y = cy;
-				pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
-				
-				this.moveSizerTo(this.sizers[3], pt.x, pt.y);
-				this.sizers[3].setCursor(crs[mxUtils.mod(7 + da, crs.length)]);
+				// 只能横向扩展长度
+				if (this.state.style.shape === 'multipleCheck' || this.state.style.shape === 'singleCheck' || this.state.style.shape === 'select') {
+					var alpha = mxUtils.toRadians(this.state.style[mxConstants.STYLE_ROTATION] || '0');
+					var cos = Math.cos(alpha);
+					var sin = Math.sin(alpha);
+					
+					var da = Math.round(alpha * 4 / Math.PI);
+					
+					var ct = new mxPoint(s.getCenterX(), s.getCenterY());
+					var pt = mxUtils.getRotatedPoint(new mxPoint(s.x, s.y), cos, sin, ct);
+					
+					pt.x = s.x;
+					pt.y = cy;
+					pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
+					
+					this.moveSizerTo(this.sizers[3], pt.x, pt.y);
+					this.sizers[3].setCursor(crs[mxUtils.mod(7 + da, crs.length)]);
+	
+					pt.x = r;
+					pt.y = cy;
+					pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
+					
+					this.moveSizerTo(this.sizers[4], pt.x, pt.y);
+					this.sizers[4].setCursor(crs[mxUtils.mod(3 + da, crs.length)]);
 
-				pt.x = r;
-				pt.y = cy;
-				pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
-				
-				this.moveSizerTo(this.sizers[4], pt.x, pt.y);
-				this.sizers[4].setCursor(crs[mxUtils.mod(3 + da, crs.length)]);
-
-				pt.x = s.x;
-				pt.y = b;
-				pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
-				
-				this.moveSizerTo(this.sizers[5], pt.x, pt.y);
-				this.sizers[5].setCursor(crs[mxUtils.mod(6 + da, crs.length)]);
-
-				pt.x = cx;
-				pt.y = b;
-				pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
-				
-				this.moveSizerTo(this.sizers[6], pt.x, pt.y);
-				this.sizers[6].setCursor(crs[mxUtils.mod(5 + da, crs.length)]);
-
-				pt.x = r;
-				pt.y = b;
-				pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
-				
-				this.moveSizerTo(this.sizers[7], pt.x, pt.y);
-				this.sizers[7].setCursor(crs[mxUtils.mod(4 + da, crs.length)]);
-				
-				this.moveSizerTo(this.sizers[8], cx + this.state.absoluteOffset.x, cy + this.state.absoluteOffset.y);
+				} else {
+					var alpha = mxUtils.toRadians(this.state.style[mxConstants.STYLE_ROTATION] || '0');
+					var cos = Math.cos(alpha);
+					var sin = Math.sin(alpha);
+					
+					var da = Math.round(alpha * 4 / Math.PI);
+					
+					var ct = new mxPoint(s.getCenterX(), s.getCenterY());
+					var pt = mxUtils.getRotatedPoint(new mxPoint(s.x, s.y), cos, sin, ct);
+					
+					this.moveSizerTo(this.sizers[0], pt.x, pt.y);
+					this.sizers[0].setCursor(crs[mxUtils.mod(0 + da, crs.length)]);
+					
+					pt.x = cx;
+					pt.y = s.y;
+					pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
+					
+					this.moveSizerTo(this.sizers[1], pt.x, pt.y);
+					this.sizers[1].setCursor(crs[mxUtils.mod(1 + da, crs.length)]);
+					
+					pt.x = r;
+					pt.y = s.y;
+					pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
+					
+					this.moveSizerTo(this.sizers[2], pt.x, pt.y);
+					this.sizers[2].setCursor(crs[mxUtils.mod(2 + da, crs.length)]);
+					
+					pt.x = s.x;
+					pt.y = cy;
+					pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
+					
+					this.moveSizerTo(this.sizers[3], pt.x, pt.y);
+					this.sizers[3].setCursor(crs[mxUtils.mod(7 + da, crs.length)]);
+	
+					pt.x = r;
+					pt.y = cy;
+					pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
+					
+					this.moveSizerTo(this.sizers[4], pt.x, pt.y);
+					this.sizers[4].setCursor(crs[mxUtils.mod(3 + da, crs.length)]);
+	
+					pt.x = s.x;
+					pt.y = b;
+					pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
+					
+					this.moveSizerTo(this.sizers[5], pt.x, pt.y);
+					this.sizers[5].setCursor(crs[mxUtils.mod(6 + da, crs.length)]);
+	
+					pt.x = cx;
+					pt.y = b;
+					pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
+					
+					this.moveSizerTo(this.sizers[6], pt.x, pt.y);
+					this.sizers[6].setCursor(crs[mxUtils.mod(5 + da, crs.length)]);
+	
+					pt.x = r;
+					pt.y = b;
+					pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
+					
+					this.moveSizerTo(this.sizers[7], pt.x, pt.y);
+					this.sizers[7].setCursor(crs[mxUtils.mod(4 + da, crs.length)]);
+					
+					this.moveSizerTo(this.sizers[8], cx + this.state.absoluteOffset.x, cy + this.state.absoluteOffset.y);
+				}
 			}
 			else if (this.state.width >= 2 && this.state.height >= 2)
 			{

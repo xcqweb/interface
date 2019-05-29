@@ -20,7 +20,7 @@ Menus = function(editorUi)
 /**
  * Sets the default font family.
  */
-Menus.prototype.defaultFont = 'Helvetica';
+Menus.prototype.defaultFont = 'MicrosoftYaHei';
 
 /**
  * Sets the default font size.
@@ -35,7 +35,7 @@ Menus.prototype.defaultMenuItems = ['file', 'edit', 'view', 'arrange', 'publish'
 /**
  * Adds the label menu items to the given menu and parent.
  */
-Menus.prototype.defaultFonts = ['Helvetica', 'Verdana', 'Times New Roman', 'Garamond', 'Comic Sans MS',
+Menus.prototype.defaultFonts = ['MicrosoftYaHei', 'Verdana', 'Times New Roman', 'Garamond', 'Comic Sans MS',
            		             'Courier New', 'Georgia', 'Lucida Console', 'Tahoma'];
 
 /**
