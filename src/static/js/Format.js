@@ -1409,7 +1409,7 @@ PageSetPanel.prototype.addName = function (container) {
 	input.className = 'formatLargeInput';
 	input.style.width = '100%';
 	container.appendChild(input);
-	input.value = this.editorUi.editor.currentPage;
+	input.value = this.editorUi.editor.pages[this.editorUi.editor.currentPage].title;
 }
 /** 
  * 页面尺寸

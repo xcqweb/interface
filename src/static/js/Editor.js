@@ -271,7 +271,7 @@ Editor.prototype.tipInfo = function (editorUi, flag, title) {
 	setTimeout(() => {
 		document.body.removeChild(bg)
 		document.body.removeChild(tips)
-	}, 2500)
+	}, 1500)
 }
 /**
  * 获取节点的属性信息
@@ -372,30 +372,14 @@ Editor.prototype.InitEditor = function (editorUi) {
 		if (res[1]) {
 			var editData = res[1];
 			var content = JSON.parse(editData.content);
-			console.log(content)
-			if (content.rank) {
-				editorUi.editor.pages = content.pages;
-				editorUi.editor.pagesRank = content.rank;
-			} else {
-				editorUi.editor.pages = content;
-				editorUi.editor.pagesRank = {
-					normal: [],
-					dialog: []
-				};
-				for (let key in content) {
-					if (content[key].type == 'dialog') {
-						editorUi.editor.pagesRank.dialog.push(key)
-					} else {
-						editorUi.editor.pagesRank.normal.push(key)
-					}
-				}
-			}
-			editorUi.sidebar.container.innerHTML = ''
-			editorUi.sidebar.init()
-			editorUi.editor.setFilename(editData.name)
-			editorUi.editor.setApplyId(editData.id)
-			editorUi.editor.setDescribe(editData.describe)
+			editorUi.editor.pages = content.pages;
+			editorUi.editor.pagesRank = content.rank;
+			editorUi.editor.setFilename(editData.name);
+			editorUi.editor.setApplyId(editData.id);
+			editorUi.editor.setDescribe(editData.describe);
 		}
+		editorUi.sidebar.container.innerHTML = '';
+		editorUi.sidebar.init();
 		// 默认选中
 		$("#normalPages li").eq(0).click();
 	})
@@ -549,7 +533,7 @@ Editor.prototype.fileSystem = '';
 /**
  * 当前选中的页面 
  */
-Editor.prototype.currentPage = '页面1';
+Editor.prototype.currentPage = 'pageid_1';
 /**
  * 当前选中的页面 
  */

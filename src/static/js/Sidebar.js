@@ -1292,7 +1292,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		// 文字 
 		this.createVertexTemplateEntry('shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',
 			 40, 20, 'text', '文字'),
-			 this.createVertexTemplateEntry('shape=jevinsvg;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;html=1;outlineConnect=0;', 30, 30, 'jevin', 'jevin', false, null, ''),
+		// this.createVertexTemplateEntry('shape=jevinsvg;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;html=1;outlineConnect=0;', 30, 30, 'jevin', 'jevin', false, null, ''),
 			];
 	//封装
 	this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);

@@ -3569,14 +3569,16 @@ EditorUi.prototype.save = function(name, des)
 						resolve(res);
 					}, (res) => {
 						this.saveError(res.responseJSON);
-						reject();
+						reject(res);
 					})
 				} else {
 					// 新增保存
 					editor.ajax(ui, '/api/viewtool', 'POST', data, (res) => {
 						this.saveSuccess(res);
+						resolve(res);
 					}, (res) => {
 						this.saveError(res.responseJSON);
+						reject(res);
 					})
 				}
 			}

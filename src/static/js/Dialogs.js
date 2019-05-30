@@ -706,9 +706,13 @@ var PreviewDialog = function(editorUi) {
 	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('保存并预览', function()
 	{
-		editorUi.save(editorUi.editor.filename, editorUi.editor.describe).then(res => {
+		console.log('oppop')
+		editorUi.save(editorUi.editor.filename || '新建应用', editorUi.editor.describe || '').then(res => {
+			console.log(res)
 			window.open('/preview.html?id=' + res.id);
 			editorUi.hideDialog();
+		}).catch(e => {
+			console.log(e)
 		});
 	});
 	genericBtn.className = 'geBtn gePrimaryBtn';
