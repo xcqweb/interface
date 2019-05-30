@@ -706,10 +706,8 @@ var PreviewDialog = function(editorUi) {
 	var btnContent = editorUi.createDiv('btnContent');
 	var genericBtn = mxUtils.button('保存并预览', function()
 	{
-		console.log('oppop')
 		editorUi.save(editorUi.editor.filename || '新建应用', editorUi.editor.describe || '').then(res => {
-			console.log(res)
-			window.open('/preview.html?id=' + res.id);
+			window.open('/interface/preview.html?id=' + res.id);
 			editorUi.hideDialog();
 		}).catch(e => {
 			console.log(e)

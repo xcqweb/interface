@@ -101,7 +101,7 @@ Toolbar.prototype.init = function()
 	this.addItems([ 'group', 'ungroup'], this.containerList[5]);
 	// 旋转
 	this.addItems([ 'turn', 'flipV', 'flipH'], this.containerList[6]);
-	let role_auth = ['ADMIN']
+	let role_auth = JSON.parse(localStorage.getItem('roleAuth')) || [];
 	// 链接发布
 	let link_pub = ['previewapply'];
 	if (role_auth.indexOf('ADMIN') !== -1 || role_auth.indexOf('SYS_VIEWTOOL_PUSH') !== -1) {
