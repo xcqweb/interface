@@ -286,6 +286,7 @@ function loadShapeXml () {
       let obj = {};
       let shape = root.documentElement.firstChild;
       while (shape != null) {
+        console.log(shape.nodeType)
         if (shape.nodeType == 1) {
           obj[shape.getAttribute('name')] = {
             viewBox: shape.getAttribute('viewBox'),

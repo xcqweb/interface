@@ -1657,7 +1657,7 @@ function fillModelList (ele, data) {
 				data.map(model => `
 					<li>
 						<span style="color: #767676">${model.modelName}</span>
-						<span title="${model.modelRule}">${model.modelRule}</span>
+						<span title="${JSON.parse(model.modelContent)[0].replaceName}">${JSON.parse(model.modelContent)[0].replaceName}</span>
 					</li>
 				`).join('')
 			}

@@ -2039,8 +2039,10 @@ ArrangePanel.prototype.addBase = function (container) {
 		// 文字对齐
 		this.alignFont(container);
 	}
-	// 大小
-	this.addGeometry(container);
+	if (['menuCell', 'menulist', 'tableBox', 'tableCell'].indexOf(shapeName) == -1) {
+		// 大小
+		this.addGeometry(container);
+	}
 	if (['menuCell', 'menulist', 'tableBox', 'tableCell', 'select'].indexOf(shapeName) == -1) {
 		// 角度
 		this.addAngle(container);
