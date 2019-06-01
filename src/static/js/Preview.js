@@ -284,16 +284,12 @@ function loadShapeXml () {
     mxUtils.get('/static/stencils/preview.xml', function (res) {
       let root = res.getXml();
       let obj = {};
-      let shape = root.documentElement.firstChild;
-      while (shape != null) {
-        console.log(shape.nodeType)
-        if (shape.nodeType == 1) {
-          obj[shape.getAttribute('name')] = {
-            viewBox: shape.getAttribute('viewBox'),
-            path: shape.children[0]
-          };
-        }
-        shape = shape.nextSibling
+      const shapes = root.documentElement.getElementsByTagName('shape');
+      for (let shape of shapes) {
+        obj[shape.getAttribute('name')] = {
+          viewBox: shape.getAttribute('viewBox'),
+          path: shape.childNodes[1]
+        };
       }
       resolve(obj)
     })    
@@ -558,7 +554,7 @@ class PreviewPage {
           let smartBiLink = item.getAttribute('smartBiLink');
           // mxcell节点
           if (tagName == 'object') {
-            node = item.children[0];
+            node = item.childNodes[0];
             value = item.getAttribute('label');
           } else {
             node = item;
@@ -586,16 +582,16 @@ class PreviewPage {
             strokeColor = (shapeName == 'image' ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
             // 图片地址
             image = getNodeInfo.getStyles('image') || null;
-            x = parseFloat(node.children[0].getAttribute('x')) || 0;
-            y = parseFloat(node.children[0].getAttribute('y')) || 0;
-            width = parseFloat(node.children[0].getAttribute('width'));
+            x = parseFloat(node.childNodes[0].getAttribute('x')) || 0;
+            y = parseFloat(node.childNodes[0].getAttribute('y')) || 0;
+            width = parseFloat(node.childNodes[0].getAttribute('width'));
             hide = item.getAttribute('hide');
-            height = parseFloat(node.children[0].getAttribute('height'));
+            height = parseFloat(node.childNodes[0].getAttribute('height'));
             selectProps = item.getAttribute('selectProps') || '';
             defaultProp = item.getAttribute('defaultProp') || '';
             // edge获取路径节点
             if (shapeName === 'endarrow' || shapeName === 'beeline' || shapeName === 'curve') {
-              const childNodes = node.getElementsByTagName('mxGeometry')[0].children;
+              const childNodes = node.getElementsByTagName('mxGeometry')[0].childNodes;
               points = {
                 points: []
               };
@@ -609,7 +605,7 @@ class PreviewPage {
                   points.target = [parseFloat(childNode.getAttribute('x')) || 0, parseFloat(childNode.getAttribute('y')) || 0];
                 } else if (asText === 'points') {
                   // 节点
-                  for (let point of childNode.children) {
+                  for (let point of childNode.childNodes) {
                     points.points.push([parseFloat(point.getAttribute('x')) || 0, parseFloat(point.getAttribute('y')) || 0])
                   }
                 }
@@ -689,7 +685,6 @@ class PreviewPage {
             };
             // 组合节点
             obj.children = getNode(id);
-            console.log(node)
             list.push(obj);
           };
       };
@@ -713,8 +708,13 @@ class PreviewPage {
   // 解析页面
   parsePage (page) {
     const xmlDoc = mxUtils.parseXml(page.xml).documentElement;
-    const root = xmlDoc.getElementsByTagName('root')[0].children;
-    let cells = this.parseCells(root);
+    // const root = xmlDoc.getElementsByTagName('root')[0].children;
+    const root = xmlDoc.getElementsByTagName('root')[0].childNodes;
+    const list = []
+    for (let i = 0; i < root.length; i++) {
+      list.push(root[i])
+    }
+    let cells = this.parseCells(list);
     this.renderPageId = page.id;
     let wsParams = [];
     if (page.type === 'normal') {
@@ -747,7 +747,7 @@ class PreviewPage {
       lockWs: false
     };
     applyData[page.id].ws = createWs(page.id);
-    return cells
+    return cells;
   }
   // 渲染页面
   renderPages (cells, ele = gePreview) {
