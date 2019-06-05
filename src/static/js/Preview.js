@@ -101,8 +101,8 @@ function createWs(pageId) {
     return;
   };
   const token = getCookie('token');
-  // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token);
-  let ws = new WebSocket(`ws://localhost:3000/pipixia`, token);
+  let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token);
+  // let ws = new WebSocket(`ws://localhost:3000/pipixia`, token);
   initialWs(ws, pageId);
   return ws;
 }
