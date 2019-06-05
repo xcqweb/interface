@@ -461,7 +461,7 @@ function actionHide (action) {
 function actionOpen (action) {
   if (action.type === 'out') {
     // 打开外部链接
-    window.location.href =  /^https:\/\//.test(action.link) || /^http:\/\//.test(action.link) ? action.link : 'http://' + action.link;
+    window.location.href =  `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
   } else if (action.innerType === 'page') {
     // 打开页面
     const pageType = mainProcess.getPageType(action.link);
@@ -781,7 +781,7 @@ class PreviewPage {
     } else if (shapeName === 'linkTag') {
       // smartBi链接iframe
       cellHtml = document.createElement('iframe');
-      cellHtml.setAttribute('src', `${/^https:\/\//.test(cell.smartBiLink) ? '' : /^http:\/\//.test(cell.smartBiLink) ? '' : 'http://' }${cell.smartBiLink}`);
+      cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(cell.smartBiLink) ? '' : 'http://' }${cell.smartBiLink}`);
     } else if (shapeName === 'menuCell' || shapeName === 'menulist') {
       // 菜单
       cellHtml = document.createElement('div');

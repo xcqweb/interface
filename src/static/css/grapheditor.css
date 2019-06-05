@@ -661,7 +661,6 @@ div.mxWindow .geButton {
 .geDialog .geDialogInfo button {
 	text-overflow:ellipsis;
 	overflow:hidden;
-	width: 84px;
 	height: 30px;
 	line-height: 28px;
 	font-size: 12px;
