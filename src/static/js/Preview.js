@@ -102,7 +102,7 @@ function createWs(pageId) {
   };
   const token = getCookie('token');
   let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token);
-  // let ws = new WebSocket(`ws://localhost:3000/pipixia`, token);
+  // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token);
   initialWs(ws, pageId);
   return ws;
 }
@@ -127,7 +127,7 @@ function reconnect (pageId) {
 function initialWs (ws, pageId) {
   // websocket连接成功
   ws.onopen = function () {
-    ws.send(applyData[pageId].wsParams);
+    ws.send(JSON.stringify(applyData[pageId].wsParams));
   }
   // 接收消息
   ws.onmessage = function (res) {
@@ -707,7 +707,6 @@ class PreviewPage {
       cell.x -= minX - 20;
       cell.y -= minY - 20;
       // 计算页面高度
-      console.log(cell.x + cell.width, '111==', pageWidth)
       pageWidth = ((cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth) + 20;
       pageHeight = ((cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight) + 20;
     })
