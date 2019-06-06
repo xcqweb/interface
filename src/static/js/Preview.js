@@ -524,6 +524,8 @@ class PreviewPage {
     document.getElementById('geDialogs').appendChild(bg)
     let dialog = document.createElement('div');
     dialog.className = 'geDialog';
+    dialog.style.width = pageWidth + 'px';
+    dialog.style.height = pageHeight + 'px';
     dialog.id = id;
     // 标题
     let title = document.createElement('p');
@@ -705,6 +707,7 @@ class PreviewPage {
       cell.x -= minX - 20;
       cell.y -= minY - 20;
       // 计算页面高度
+      console.log(cell.x + cell.width, '111==', pageWidth)
       pageWidth = ((cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth) + 20;
       pageHeight = ((cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight) + 20;
     })
@@ -723,7 +726,10 @@ class PreviewPage {
     for (let i = 0; i < root.length; i++) {
       list.push(root[i])
     }
+    // 页面宽度和高度
+    pageWidth = pageHeight = 0;
     let cells = this.parseCells(list);
+    console.log(333, pageWidth)
     this.renderPageId = page.id;
     let wsParams = [];
     if (page.type === 'normal') {
@@ -735,8 +741,6 @@ class PreviewPage {
       document.getElementById('geDialogs').innerHTML = '';
       // 正常的最小x、y偏移量
       minX = minY = null;
-      // 页面宽度和高度
-      pageWidth = pageHeight = 0;
       // 清空页面内容
       this.clearPage();
       // 正常页面      
@@ -799,7 +803,6 @@ class PreviewPage {
       // 下拉框
       cellHtml = document.createElement('select');
       const selectProps = cell.selectProps.split(',');
-      console.log(selectProps)
       cellHtml.innerHTML = `
         <option>请选择</option>
         ${
