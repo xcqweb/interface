@@ -255,6 +255,7 @@ Editor.prototype.enabled = true;
 /**
  * Contains the name which was used for the last save. Default value is null.
  */
+Editor.prototype.colSpanPaletteManagePanel = true;
 Editor.prototype.filename = null;
 Editor.prototype.applyId = null;
 Editor.prototype.paletteNum =  {};

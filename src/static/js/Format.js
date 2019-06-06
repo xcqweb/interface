@@ -2997,10 +2997,13 @@ PaletteManagePanel.prototype.createContent = function (container) {
 PaletteManagePanel.prototype.addFoldingHandler = function(elt, content) {
 	mxEvent.addListener(elt, 'click', function () {
 		if (content.style.display !== 'none') {
+			// 折叠
+			this.editorUi.editor.colSpanPaletteManagePanel = false;
 			content.style.display = 'none';
 			elt.style.backgroundImage = 'url(' + this.colspanImage + ')';
 			elt.parentNode.style.flex = 'none';
 		} else {
+			this.editorUi.editor.colSpanPaletteManagePanel = true;
 			content.style.display = '';
 			elt.style.backgroundImage = 'url(' + this.expandImage + ')';
 			elt.parentNode.style.flex = '';
@@ -3022,6 +3025,16 @@ PaletteManagePanel.prototype.refresh = function () {
 	this.container.appendChild(title);
 
 	var content = this.createContent(this.container);
+	if (this.editorUi.editor.colSpanPaletteManagePanel) {
+		content.style.display = '';
+		title.style.backgroundImage = 'url(' + this.expandImage + ')';
+		title.parentNode.style.flex = '';
+		title.parentNode.style.height = '';
+	} else {
+		content.style.display = 'none';
+		title.style.backgroundImage = 'url(' + this.colspanImage + ')';
+		title.parentNode.style.flex = 'none';
+	}
 	this.addFoldingHandler(title, content);
 }
 /**
