@@ -365,7 +365,16 @@ function geAjax (url, method = 'GET', data = null) {
     }
   })
 }
-
+/**
+ * 移除dom节点
+ * @param {object} ele 
+ */
+function removeEle(ele) {
+  const parent = ele.parentNode;
+  if (parent) {
+    parent.removeChild(ele);
+  }
+}
 /**
  * 绑定事件
  * @param {object} ele DOM节点
@@ -449,8 +458,8 @@ function actionHide (action) {
   if (action.innerType === 'palette') {
     document.getElementById('palette_' + action.link).style.display = 'none';
   } else if (document.getElementById(action.link)) {
-    document.getElementById(action.link).remove();
-    document.getElementById('bg_' + action.link).remove();
+    removeEle(document.getElementById(action.link));
+    removeEle(document.getElementById('bg_' + action.link));
     // 断开websocket
     destroyWs(action.link);
   }
@@ -478,8 +487,8 @@ function actionOpen (action) {
  */
 function actionClose (action) {
   if (action.innerType === 'page' && action.type === 'in' && document.getElementById(action.link)) {
-    document.getElementById(action.link).remove();
-    document.getElementById('bg_' + action.link).remove();
+    removeEle(document.getElementById(action.link));
+    removeEle(document.getElementById('bg_' + action.link));
     destroyWs(action.link);
   }
 }
@@ -523,8 +532,8 @@ class PreviewPage {
     dialog.appendChild(title);
     // 点击关闭弹窗
     title.addEventListener('click', () => {
-      dialog.remove();
-      bg.remove();
+      removeEle(dialog);
+      removeEle(bg);
       // 关闭websocket
       destroyWs(id);
     })
