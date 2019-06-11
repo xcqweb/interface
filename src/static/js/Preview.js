@@ -300,7 +300,7 @@ function loadShapeXml () {
  * 提示信息
  * @param {boolean} flag 失败提示还是成功提示 
  */
-function showTips (flag=true, title='请求') {
+function showTips(flag=true, title='请求') {
   let dialog = document.createElement('div');
   dialog.className = 'geDialog';
   // 遮罩层
@@ -360,7 +360,7 @@ function geHttp(url, method = 'GET', data = null) {
  * @param {string} method 请求方法，默认GET方法
  * @param {object} data 请求参数
  */
-async function geAjax (url, method = 'GET', data = null) {
+async function geAjax(url, method = 'GET', data = null) {
   const token = getCookie('token');
   const refreshToken = getCookie('refreshToken');
   if (!token || !refreshToken) {
