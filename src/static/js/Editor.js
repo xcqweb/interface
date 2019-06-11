@@ -310,6 +310,25 @@ Editor.prototype.getCookie = function(cname) {
 	return '';
 };
 /**
+ * 刷新token
+ */
+Editor.prototype.refreshToken = function (refreshToken) {
+	return new Promise((resolve, rejec) => {
+		$.ajax({
+			method: 'POST',
+			url: '/api/auth/refreshToken',
+			data: {
+				refreshToken
+			},
+			success: function (res) {
+				setCookie('token', res.token);
+				setCookie('refreshToken', res.refreshToken);
+				resolve();
+			}
+		})
+	})
+}
+/**
  * 二次封装ajax请求
  * @param {object} editorUi
  * @param {string} url
@@ -318,7 +337,23 @@ Editor.prototype.getCookie = function(cname) {
  * @param {Function} fn
  * @param {Function} errorfn
  */
-Editor.prototype.ajax = function (editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title='加载中···') {
+Editor.prototype.ajax = async function (editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title='加载中···') {
+	var token = getCookie('token');
+	var refreshToken = getCookie('refreshToken');
+  if (!token || !refreshToken) {
+    alert('登陆失效，请重新登陆系统！');
+    return;
+  }
+  const t_exp = jwt_decode(token).exp;
+  const r_exp = jwt_decode(refreshToken).exp;
+  const now = new Date().valueOf();
+  if (now > t_exp * 1000 && now < r_exp * 1000) {
+		// 刷新token
+		await this.refreshToken(refreshToken);
+  } else  if (now > r_exp * 1000) {
+		alert('登陆失效，请重新登陆系统！');
+		return;
+  };
 	var loadingBarInner = editorUi.actions.get('loading').funct(title);
 	var token = getCookie('token');
 	$.ajax({
@@ -336,6 +371,7 @@ Editor.prototype.ajax = function (editorUi, url, method, data, fn = function() {
 			loadingBarInner.style.width = '100%';
 			setTimeout(() => {
 				fn && fn(res);
+				// resolve(res);
 			}, 550)
 		},
 		error: function (res) {

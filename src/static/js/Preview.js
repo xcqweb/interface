@@ -314,30 +314,75 @@ function showTips (flag=true, title='请求') {
   let msg = document.createElement('p')
   msg.innerHTML = `${title}${flag ? '成功' : '失败'}`
 }
+
 /**
- * 获取cookie信息
- * @param {string} cname cookie的key值
+ * 原生http
+ * @param {string} url  请求地址
+ * @param {string} method 请求方法，默认GET方法
+ * @param {object} data 请求参数
  */
-function getCookie (cname) {
-  const name = cname + '=';
-  const ca = document.cookie.split(';');
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') {c = c.substring(1); }
-    if (c.indexOf(name) !== -1) {return c.substring(name.length, c.length); }
-  }
-  return '';
-};
+function geHttp(url, method = 'GET', data = null) {
+  const token = getCookie('token');
+  const refreshToken = getCookie('refreshToken');
+  return new Promise((resolve, reject) => {
+    if ( token && refreshToken ) {
+      let xmlhttp;
+      if(window.XMLHttpRequest){
+        xmlhttp =new XMLHttpRequest();
+      }else{
+        //针对IE
+        xmlhttp = new ActiveXObject("Microsoft.XMLHttp")
+      }
+      // 监听readystate，执行回调
+      xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState == 4 &&xmlhttp.status ==200){
+          // 服务器响应正确数据
+          resolve(JSON.parse(xmlhttp.responseText))
+        } else if (xmlhttp.readyState == 4) {
+          // 服务器响应错误数据
+          reject(xmlhttp.responseText)
+        }
+      }
+      xmlhttp.open(method, url, true);
+      // 设置请求头
+      xmlhttp.setRequestHeader("Content-Type","application/json;charset=utf-8");
+      xmlhttp.setRequestHeader("Authorization","Bearer " + getCookie('token'));
+      xmlhttp.send(data);
+    } else {
+      reject('登陆失效')
+    }
+  })
+}
+
 /**
  * 封装ajax请求
  * @param {string} url  请求地址
  * @param {string} method 请求方法，默认GET方法
  * @param {object} data 请求参数
  */
-function geAjax (url, method = 'GET', data = null) {
+async function geAjax (url, method = 'GET', data = null) {
   const token = getCookie('token');
+  const refreshToken = getCookie('refreshToken');
+  if (!token || !refreshToken) {
+    alert('登陆失效，请重新登陆系统！');
+    return;
+  }
+  const t_exp = jwt_decode(token).exp;
+  const r_exp = jwt_decode(refreshToken).exp;
+  const now = new Date().valueOf();
+  if (now > t_exp * 1000 && now < r_exp * 1000) {
+    // 刷新token
+    await geHttp('/api/auth/refreshToken', 'POST', {refreshToken}).then(res => {
+      setCookie('token', res.token);
+      setCookie('refreshToken', res.refreshToken);
+    })
+  } else  if (now > r_exp * 1000) {
+    alert('登陆失效，请重新登陆系统！');
+    return;
+  }
+
   return new Promise((resolve, reject) => {
-    if ( token ) {
+    if ( token && refreshToken ) {
       let xmlhttp;
       if(window.XMLHttpRequest){
         xmlhttp =new XMLHttpRequest();
@@ -897,8 +942,8 @@ class PreviewPage {
       })
       // 隐藏
       cellHtml.addEventListener('mouseleave', () => {
+        formatLayer.style.opacity = 0;
         layerData = null;
-        formatLayer.style = '';
       })
     }
     return cellHtml;
