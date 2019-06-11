@@ -907,7 +907,6 @@ class PreviewPage {
   renderLayer () {
     formatLayer.innerHTML = '';
     const data = Object.assign({}, pointData[layerData.point]);
-    console.log(data)
     if (!Object.keys(data).length) return;
     let params = [{name: 'timestamp'}].concat(layerData.params)
     let leftKeys = document.createElement('ul');
@@ -919,7 +918,6 @@ class PreviewPage {
       let leftInfo = document.createElement('li');
       leftInfo.innerHTML = `${param.name}=`;
       let rightInfo = document.createElement('li');
-      console.log(param.name, data[param.name]);
       rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : (data[param.name] || '');
       leftKeys.appendChild(leftInfo);
       rightKeys.appendChild(rightInfo);

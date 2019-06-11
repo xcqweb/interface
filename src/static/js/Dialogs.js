@@ -1663,6 +1663,22 @@ function fillModelList (ele, data) {
 			}
 		`;
 	} else {
+		sessionStorage.setItem('oldTab', JSON.stringify(      
+			[
+				{
+						"path":"/alarmCenter",
+						"name":"控制中心",
+						"current":"",
+						"status":""
+				},
+				{
+						"name":"模型管理",
+						"path":"/modelManage",
+						"current":"}",
+						"status":"add"
+				}
+		]));
+		sessionStorage.setItem('tabIndex', 1);
 		ele.innerHTML = `
 			<span>当前采集点参数未独立应用模型</span><a class="addModelBtn" target="_blank" href="/modelManage">去添加模型</a>
 		`
