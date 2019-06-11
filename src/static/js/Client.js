@@ -69664,7 +69664,7 @@ mxGraphHandler.prototype.mouseDown = function(sender, me)
 			var geo = model.getGeometry(cell);
 			var shapeName = this.graph.view.getState(selectCell).style.shape;
 			// 菜单单元格不允许拖拽、表格单元格不允许拖拽
-			if ( shapeName != 'menuCell' && shapeName != 'tableCell'  && this.graph.isCellMovable(cell) && ((!model.isEdge(cell) || this.graph.getSelectionCount() > 1 ||
+			if ( shapeName != 'menuCell' && shapeName != 'tableCell' && this.graph.isCellMovable(cell) && ((!model.isEdge(cell) || this.graph.getSelectionCount() > 1 ||
 				(geo.points != null && geo.points.length > 0) || model.getTerminal(cell, true) == null ||
 				model.getTerminal(cell, false) == null) || this.graph.allowDanglingEdges || 
 				(this.graph.isCloneEvent(me.getEvent()) && this.graph.isCellsCloneable())))

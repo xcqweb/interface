@@ -600,19 +600,21 @@ BaseFormatPanel.prototype.installInputHandler = function(input, key, defaultValu
 			graph.getModel().beginUpdate();
 			try
 			{
-				graph.setCellStyles(key, value, graph.getSelectionCells());
-				
-				// Handles special case for fontSize where HTML labels are parsed and updated
+				var shapeName = graph.view.getState(graph.getSelectionCell()).style.shape;
+				let ss = shapeName === 'tableBox' || shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells();
+				graph.setCellStyles(key, value, ss);
+
 				if (key == mxConstants.STYLE_FONTSIZE)
 				{
-					graph.updateLabelElements(graph.getSelectionCells(), function(elt)
+					graph.updateLabelElements(ss, function(elt)
 					{
 						elt.style.fontSize = value + 'px';
 						elt.removeAttribute('size');
 					});
 				}
+				
 				ui.fireEvent(new mxEventObject('styleChanged', 'keys', [key],
-						'values', [value], 'cells', graph.getSelectionCells()));
+						'values', [value], 'cells', ss));
 			}
 			finally
 			{
@@ -1071,7 +1073,7 @@ BaseFormatPanel.prototype.createCellColorOption = function(label, colorKey, defa
 			{
 				// setStyleFn(color);
 			}
-			if (state.style.shape === 'menulist') {
+			if (state.style.shape === 'menulist' || state.style.shape === 'tableBox') {
 				graph.setCellStyles(colorKey, color,  graph.getSelectionCells().concat(graph.getSelectionCell().children));
 			} else {
 				graph.setCellStyles(colorKey, color, graph.getSelectionCells());

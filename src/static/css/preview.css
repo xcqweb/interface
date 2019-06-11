@@ -113,6 +113,11 @@ html, body {
   float: left;
   color: #333333;
 }
+#formatLayer #leftKeys li, #formatLayer #rightKeys li {
+  width: 100%;
+  height: 24px;
+  line-height: 24px;
+}
 .buttonTag {
   border: none;
   outline: none;

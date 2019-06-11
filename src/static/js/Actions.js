@@ -1299,7 +1299,7 @@ Actions.prototype.insertTableCell = function (type) {
 	};
 	// 插入新节点
 	for (let i = 0; i < insertNum; i++) {
-		var symbol = new mxCell('', new mxGeometry(insertRow ? insertX + cellW * i : insertX, insertRow ? insertY : insertY + cellH * i, cellW, cellH), 'shape=tableCell;html=1;whiteSpace=wrap;');
+		var symbol = new mxCell('', new mxGeometry(insertRow ? insertX + cellW * i : insertX, insertRow ? insertY : insertY + cellH * i, cellW, cellH), 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;');
 		symbol.vertex = true;
 		// 设置id
 		symbol.setId(graph.getModel().createId(symbol));
@@ -1309,6 +1309,8 @@ Actions.prototype.insertTableCell = function (type) {
 	try{
 		var geo = graph.getModel().getGeometry(table);
 		insertRow ? geo.height += cellH : geo.width += cellW;
+		graph.getModel().setGeometry(table, geo);
+		graph.getModel().setValue(table, graph.getModel().getValue(table));
 	} finally {
 		graph.getModel().endUpdate();
 	}
@@ -1358,6 +1360,8 @@ Actions.prototype.deleteTableCell = function (type) {
 	try{
 		var geo = graph.getModel().getGeometry(table);
 		type == 'row' ? geo.height -= cellH : geo.width -= cellW;
+		graph.getModel().setGeometry(table, geo);
+		graph.getModel().setValue(table, graph.getModel().getValue(table));
 	} finally {
 		graph.getModel().endUpdate();
 	}

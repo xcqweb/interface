@@ -101,8 +101,8 @@ function createWs(pageId) {
     return;
   };
   const token = getCookie('token');
-  let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token);
-  // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token);
+  // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token);
+  let ws = new WebSocket(`ws://localhost:3000/pipixia`, token);
   initialWs(ws, pageId);
   return ws;
 }
@@ -136,7 +136,7 @@ function initialWs (ws, pageId) {
     // 填充文本
     new Promise(() => {
       for (let item of doms) {
-        if (item.childElementCount == 0) {
+        if (item.childElementCount == 0 && resData[item.getAttribute('data-filltext')]) {
           item.innerHTML = resData[item.getAttribute('data-filltext')]
         }
       }
@@ -510,6 +510,7 @@ class PreviewPage {
     this.id = id;
     this.name = name;
     this.renderPageId = id;
+    this.wsParams = [];
   }
 
   // 页面数量
@@ -719,7 +720,6 @@ class PreviewPage {
   // 解析页面
   parsePage (page) {
     const xmlDoc = mxUtils.parseXml(page.xml).documentElement;
-    // const root = xmlDoc.getElementsByTagName('root')[0].children;
     const root = xmlDoc.getElementsByTagName('root')[0].childNodes;
     const list = []
     for (let i = 0; i < root.length; i++) {
@@ -728,9 +728,8 @@ class PreviewPage {
     // 页面宽度和高度
     pageWidth = pageHeight = 0;
     let cells = this.parseCells(list);
-    console.log(333, pageWidth)
     this.renderPageId = page.id;
-    let wsParams = [];
+    this.wsParams = [];
     if (page.type === 'normal') {
       // 清除全部websocket
       for (let key in applyData) {
@@ -743,19 +742,20 @@ class PreviewPage {
       // 清空页面内容
       this.clearPage();
       // 正常页面      
-      wsParams = this.renderPages(cells);
+      this.renderPages(cells);
       gePreview.style.width = pageWidth + 'px';
       gePreview.style.height = pageHeight + 'px';
     } else {
       // 弹窗页面
       let layerContent = this.createDialog(page.id, page.title);
       layerContent.innerHTML = ``;
-      wsParams = this.renderPages(cells, layerContent);
+      this.renderPages(cells, layerContent);
     }
+    console.log(this.wsParams)
     applyData[page.id] = {
       ws: '',
       data: {},
-      wsParams,
+      wsParams: this.wsParams,
       lockWs: false
     };
     applyData[page.id].ws = createWs(page.id);
@@ -763,10 +763,9 @@ class PreviewPage {
   }
   // 渲染页面
   renderPages (cells, ele = gePreview) {
-    let data = [];
     for (let cell of cells) {
       if (cell.bindData) {
-        data.push({
+        this.wsParams.push({
           pointId: cell.bindData.point,
           params: cell.bindData.params.map(val => {
             return val.name
@@ -780,7 +779,6 @@ class PreviewPage {
         this.renderPages(cell.children, cellHtml);
       }
     }
-    return data
   }
   
   // 渲染控件节点
@@ -909,6 +907,7 @@ class PreviewPage {
   renderLayer () {
     formatLayer.innerHTML = '';
     const data = Object.assign({}, pointData[layerData.point]);
+    console.log(data)
     if (!Object.keys(data).length) return;
     let params = [{name: 'timestamp'}].concat(layerData.params)
     let leftKeys = document.createElement('ul');
@@ -920,7 +919,8 @@ class PreviewPage {
       let leftInfo = document.createElement('li');
       leftInfo.innerHTML = `${param.name}=`;
       let rightInfo = document.createElement('li');
-      rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : data[param.name] || '';
+      console.log(param.name, data[param.name]);
+      rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : (data[param.name] || '');
       leftKeys.appendChild(leftInfo);
       rightKeys.appendChild(rightInfo);
     }
