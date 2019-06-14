@@ -913,22 +913,27 @@ Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, resu
  */
 Sidebar.prototype.deletePage = function (ele) {
 	// 删除后应该显示的页面
-	var target;
-	var type = this.editorUi.editor.pages[this.editorUi.editor.currentPage].type
-	if (ele.prev().length) {
-		target = ele.prev();
-	} else if (ele.next().length) {
-		target = ele.next();
-	} else if (type == 'dialog' && !!$("#normalPages li").first()) {
-		target = $("#normalPages li").first();
-	} else if (type == 'noraml' && !!$("#dialogPages li").first()) {
-		target = $("#dialogPages li").first();
+	if (Object.keys(this.editorUi.editor.pages).length === 1) {
+		alert('至少保留一个页面');
+		return;
+	} else {
+		var target;
+		var type = this.editorUi.editor.pages[this.editorUi.editor.currentPage].type
+		if (ele.prev().length) {
+			target = ele.prev();
+		} else if (ele.next().length) {
+			target = ele.next();
+		} else if (type == 'dialog' && !!$("#normalPages li").first()) {
+			target = $("#normalPages li").first();
+		} else if (type == 'noraml' && !!$("#dialogPages li").first()) {
+			target = $("#dialogPages li").first();
+		}
+		// 删除页面数据
+		this.editorUi.editor.deletePage(ele.data('pageid'))
+		target.click();
+		// 移除节点
+		ele.remove()
 	}
-	// 删除页面数据
-	this.editorUi.editor.deletePage(ele.data('pageid'))
-	target.click();
-	// 移除节点
-	ele.remove()
 }
 
 /**
@@ -1032,6 +1037,7 @@ function createPageList (editorUi, data, id) {
 		pageListEle.id = id;
 		for (var i in data) {
 			var page = document.createElement('li')
+			console.log(data[i]);
 			page.setAttribute('data-pageid', data[i].id);
 			page.innerHTML =  data[i].title;
 			pageListEle.appendChild(page)
@@ -1142,11 +1148,11 @@ Sidebar.prototype.addPagePalette = function (expand) {
 	var pages = this.editorUi.editor.pages;
 	// 普通页面
 	for (let key of this.editorUi.editor.pagesRank.normal) {
-		normalPages.push(pages[key])
+		pages[key] && normalPages.push(pages[key]);
 	}
 	// 弹窗页面
 	for (let key of this.editorUi.editor.pagesRank.dialog) {
-		dialogPages.push(pages[key])
+		pages[key] && dialogPages.push(pages[key]);
 	}
 	var fns = [
 		// 普通页面标题
