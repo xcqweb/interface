@@ -629,17 +629,24 @@ Editor.prototype.pagesNameList = function () {
  */
 Editor.prototype.addPage = function (page) {
 	page.xml = page.xml || this.defaultXml;
-	let id = `pageid_${this.pagesRank.normal.length + this.pagesRank.normal.length + 1}`;
+	let id = 1;
+	for (let pageid in this.pages) {
+		const idNum = parseInt(pageid.match(/^pageid\_([0-9]+)/)[1]);
+		id < idNum && (id = idNum);
+	}
+
+	id = 'pageid_' + (id + 1);
 	page.id = id;
 	this.pages[id] = page;
-	this.pagesRank[page.type].push(page.id);
+	// this.pagesRank[page.type].push(page.id);
 	return page;
 }
 /**
  * 删除页面
  */
-Editor.prototype.deletePage = function (id) {
-	delete this.pages[id]
+Editor.prototype.deletePage = function (id, type) {
+	this.pagesRank[type].splice(this.pagesRank[type].indexOf(id), 1);
+	delete this.pages[id];
 }
 /**
  * 设置页面顺序

@@ -929,7 +929,7 @@ Sidebar.prototype.deletePage = function (ele) {
 			target = $("#dialogPages li").first();
 		}
 		// 删除页面数据
-		this.editorUi.editor.deletePage(ele.data('pageid'))
+		this.editorUi.editor.deletePage(ele.data('pageid'), type)
 		target.click();
 		// 移除节点
 		ele.remove()
@@ -1037,7 +1037,6 @@ function createPageList (editorUi, data, id) {
 		pageListEle.id = id;
 		for (var i in data) {
 			var page = document.createElement('li')
-			console.log(data[i]);
 			page.setAttribute('data-pageid', data[i].id);
 			page.innerHTML =  data[i].title;
 			pageListEle.appendChild(page)
@@ -1146,6 +1145,8 @@ Sidebar.prototype.addPagePalette = function (expand) {
 	var normalPages = []
 	var dialogPages = [];
 	var pages = this.editorUi.editor.pages;
+	console.log(pages)
+	console.log(this.editorUi.editor.pagesRank)
 	// 普通页面
 	for (let key of this.editorUi.editor.pagesRank.normal) {
 		pages[key] && normalPages.push(pages[key]);
