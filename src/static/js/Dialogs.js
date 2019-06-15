@@ -1352,9 +1352,9 @@ var PaletteDataDialog = function(editorUi, cell) {
 	fillParams(variableList, choosedParam);
 	saveContent.appendChild(variableList);
 	
-	// 选择模型：
+	// 相关模型：
 	var modelTitle = document.createElement('p');
-	modelTitle.innerHTML = '选择模型：';
+	modelTitle.innerHTML = '相关模型：';
 	modelTitle.className = 'geDialogInfoTitle';
 	saveContent.appendChild(modelTitle)
 	// 模型列表
