@@ -562,6 +562,10 @@ Editor.prototype.palettesInfo = {
 		name: '单选',
 		num: 0
 	},
+	trendChart: {
+		name: '趋势图',
+		num: 0
+	},
 }
 /**
  * 文件服务器的地址

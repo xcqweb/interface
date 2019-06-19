@@ -963,7 +963,7 @@ class PreviewPage {
       let leftInfo = document.createElement('li');
       leftInfo.innerHTML = `${param.name}=`;
       let rightInfo = document.createElement('li');
-      rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : (data[param.name] || '');
+      rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : data[param.name] !== undefined ? data[param.name] : 'NaN';
       leftKeys.appendChild(leftInfo);
       rightKeys.appendChild(rightInfo);
     }
