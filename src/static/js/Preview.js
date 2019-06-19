@@ -144,8 +144,10 @@ function initialWs (ws, pageId) {
     })
     // 根据状态设置颜色
     new Promise(() => {
-      if (!pointData[resData.pointId] || resData.alarm !== pointData[resData.pointId].alarm) {
-        setCellStatus(resData.pointId, resData.alarm)
+      if (resData.alarm) {
+        if (!pointData[resData.pointId] || resData.alarm !== pointData[resData.pointId].alarm) {
+          setCellStatus(resData.pointId, resData.alarm)
+        }
       }
     })
     // 渲染弹窗
