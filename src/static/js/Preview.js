@@ -144,9 +144,18 @@ function initialWs (ws, pageId) {
     })
     // 根据状态设置颜色
     new Promise(() => {
-      if (resData.alarm) {
+      if (resData.alarm && resData.operation !== 3) {
         if (!pointData[resData.pointId] || resData.alarm !== pointData[resData.pointId].alarm) {
           setCellStatus(resData.pointId, resData.alarm)
+        }
+      }
+      if (resData.operation === 3) {
+        for (let dom of doms) {
+          if (dom.childElementCount == 0) {
+            dom.style.backgroundColor = dom.getAttribute('data-defaultFill');
+          } else {
+            dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', dom.getAttribute('data-defaultFill'));
+          }
         }
       }
     })
