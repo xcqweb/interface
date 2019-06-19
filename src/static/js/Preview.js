@@ -132,6 +132,7 @@ function initialWs (ws, pageId) {
   // 接收消息
   ws.onmessage = function (res) {
     let resData = JSON.parse(res.data)
+    console.log(111, resData);
     let doms = document.getElementsByClassName(resData.pointId + '_text');
     // 填充文本
     new Promise(() => {
