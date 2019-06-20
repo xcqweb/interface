@@ -3580,6 +3580,13 @@ EditorUi.prototype.save = function(name, des)
 						this.saveError(res.responseJSON);
 						reject(res);
 					})
+					// editor.ajax(ui, 'http://10.74.20.25/api/viewtool', 'POST', data, (res) => {
+					// 	this.saveSuccess(res);
+					// 	resolve(res);
+					// }, (res) => {
+					// 	this.saveError(res.responseJSON);
+					// 	reject(res);
+					// })
 				}
 			}
 			catch (e)

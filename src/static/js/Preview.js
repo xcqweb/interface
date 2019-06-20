@@ -101,8 +101,8 @@ function createWs(pageId) {
     return;
   };
   const token = getCookie('token');
-  let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token);
-  // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket
+  // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
+  let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
   initialWs(ws, pageId);
   return ws;
 }
@@ -218,12 +218,17 @@ function setCellStatus(id, alarm, data) {
   //     dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', color || dom.getAttribute('data-defaultFill'));
   //   }
   // }
+  // 修改后
   for (let dom of doms) {
     if (dom.childElementCount == 0) {
-      for (let i in data) {
-        if (i === dom.getAttribute('data-filltext')) {
-          dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
+      if (dom.getAttribute('data-filltext')) {
+        for (let i in data) {
+          if (i === dom.getAttribute('data-filltext')) {
+            dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
+          }
         }
+      } else {
+        dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
       }
     } else {
       dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', color || dom.getAttribute('data-defaultFill'));
@@ -769,6 +774,7 @@ class PreviewPage {
             list.push(obj);
           };
       };
+      // console.log(123, list);
       return list;
     };
     let cells = getNode();
