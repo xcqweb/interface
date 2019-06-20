@@ -919,7 +919,8 @@ class PreviewPage {
         cellHtml.style.lineHeight = cell.height + 'px';
       }
       cellHtml.style.textAlign = cell.align;
-      cellHtml.style.backgroundColor = cell.fillColor;
+      // cellHtml.style.backgroundColor = cell.fillColor;
+      cellHtml.style.backgroundColor = 'transparent'; // 组合生成的背景为透明
     } else {
       cellHtml.style.lineHeight = 0;
     }
