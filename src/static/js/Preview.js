@@ -101,8 +101,8 @@ function createWs(pageId) {
     return;
   };
   const token = getCookie('token');
-  let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token);
-  // let ws = new WebSocket(`ws://localhost:3000/pipixia`, token);
+  // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token);
+  let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket
   initialWs(ws, pageId);
   return ws;
 }
@@ -132,7 +132,7 @@ function initialWs (ws, pageId) {
   // 接收消息
   ws.onmessage = function (res) {
     let resData = JSON.parse(res.data)
-    console.log(111, resData);
+    // console.log(111, resData);
     let doms = document.getElementsByClassName(resData.pointId + '_text');
     // 填充文本
     new Promise(() => {
@@ -146,7 +146,7 @@ function initialWs (ws, pageId) {
     new Promise(() => {
       if (resData.alarm && resData.operation !== 3) {
         if (!pointData[resData.pointId] || resData.alarm !== pointData[resData.pointId].alarm) {
-          setCellStatus(resData.pointId, resData.alarm)
+          setCellStatus(resData.pointId, resData.alarm, resData)
         }
       }
       if (resData.operation === 3) {
@@ -189,7 +189,7 @@ function destroyWs (pageId) {
  * @param {string} id 
  * @param {number} alarm 
  */
-function setCellStatus(id, alarm) {
+function setCellStatus(id, alarm, data) {
   // 该参数全部DOM
   let doms = document.getElementsByClassName(id);
   let color = null;
@@ -210,9 +210,21 @@ function setCellStatus(id, alarm) {
       color = null;
       break;
   }
+  // 修改前
+  // for (let dom of doms) {
+  //   if (dom.childElementCount == 0) {
+  //     dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
+  //   } else {
+  //     dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', color || dom.getAttribute('data-defaultFill'));
+  //   }
+  // }
   for (let dom of doms) {
     if (dom.childElementCount == 0) {
-      dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
+      for (let i in data) {
+        if (i === dom.getAttribute('data-filltext')) {
+          dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
+        }
+      }
     } else {
       dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', color || dom.getAttribute('data-defaultFill'));
     }
