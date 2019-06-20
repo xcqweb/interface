@@ -137,6 +137,10 @@ function initialWs (ws, pageId) {
     // 填充文本
     new Promise(() => {
       for (let item of doms) {
+        // 上抛数据为数字 0 的时候,转换为字符串 '0';
+        if (resData[item.getAttribute('data-filltext')] === 0) {
+          resData[item.getAttribute('data-filltext')] = '0';
+        }
         if (item.childElementCount == 0 && resData[item.getAttribute('data-filltext')]) {
           item.innerHTML = resData[item.getAttribute('data-filltext')]
         }
@@ -919,8 +923,8 @@ class PreviewPage {
         cellHtml.style.lineHeight = cell.height + 'px';
       }
       cellHtml.style.textAlign = cell.align;
-      // cellHtml.style.backgroundColor = cell.fillColor;
-      cellHtml.style.backgroundColor = 'transparent'; // 组合生成的背景为透明
+      cellHtml.style.backgroundColor = cell.fillColor;
+      // cellHtml.style.backgroundColor = 'transparent'; // 组合生成的背景为透明
     } else {
       cellHtml.style.lineHeight = 0;
     }
