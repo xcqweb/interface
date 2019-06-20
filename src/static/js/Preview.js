@@ -40,6 +40,8 @@ let formatLayerFlag = false;
 let applyData = {};
 // 接收的点位数据
 let pointData = {};
+// 接收的报警数据
+let oldRightInfo = {};
 /**
  * 格式化时间
  * @param {number|string} time 
@@ -101,8 +103,8 @@ function createWs(pageId) {
     return;
   };
   const token = getCookie('token');
-  let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
-  // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
+  // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
+  let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
   initialWs(ws, pageId);
   return ws;
 }
@@ -132,7 +134,7 @@ function initialWs (ws, pageId) {
   // 接收消息
   ws.onmessage = function (res) {
     let resData = JSON.parse(res.data)
-    console.log(111, resData);
+    // console.log(111, resData);
     let doms = document.getElementsByClassName(resData.pointId + '_text');
     // 填充文本
     new Promise(() => {
@@ -166,6 +168,9 @@ function initialWs (ws, pageId) {
     // 渲染弹窗
     new Promise(() => {
       pointData[resData.pointId] = resData;
+      if(!resData.alarm) {
+        oldRightInfo[resData.pointId] = resData;
+      }
       if (layerData && layerData.point === resData.pointId) {
         mainProcess.renderLayer()
       }
@@ -985,8 +990,30 @@ class PreviewPage {
   }
   // 渲染浮窗
   renderLayer () {
+  //   formatLayer.innerHTML = '';
+  //   const data = Object.assign({}, pointData[layerData.point]);
+  //   if (!Object.keys(data).length) return;
+  //   let params = [{name: 'timestamp'}].concat(layerData.params)
+  //   let leftKeys = document.createElement('ul');
+  //   leftKeys.id = 'leftKeys';
+  //   let rightKeys = document.createElement('ul');
+  //   rightKeys.id = 'rightKeys';
+  //   // 填充内容
+  //   for (let param of params) {
+  //     let leftInfo = document.createElement('li');
+  //     leftInfo.innerHTML = `${param.name}=`;
+  //     let rightInfo = document.createElement('li');
+  //     // console.log(data);
+  //     // rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : (data[param.name] || ''); // 旧版本
+  //     rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : data[param.name] !== undefined ? data[param.name] : 'NaN';
+  //     leftKeys.appendChild(leftInfo);
+  //     rightKeys.appendChild(rightInfo);
+  //   }
+  //   formatLayer.appendChild(leftKeys);
+  //   formatLayer.appendChild(rightKeys);
+  // }
     formatLayer.innerHTML = '';
-    const data = Object.assign({}, pointData[layerData.point]);
+    const data = Object.assign({}, oldRightInfo[layerData.point]);
     if (!Object.keys(data).length) return;
     let params = [{name: 'timestamp'}].concat(layerData.params)
     let leftKeys = document.createElement('ul');
