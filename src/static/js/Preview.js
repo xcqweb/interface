@@ -103,8 +103,8 @@ function createWs(pageId) {
     return;
   };
   const token = getCookie('token');
-  // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
-  let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
+  let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
+  // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
   initialWs(ws, pageId);
   return ws;
 }
