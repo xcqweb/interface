@@ -103,8 +103,8 @@ function createWs(pageId) {
     return;
   };
   const token = getCookie('token');
-  let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
-  // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
+  // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
+  let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
   initialWs(ws, pageId);
   return ws;
 }
@@ -1025,7 +1025,7 @@ class PreviewPage {
       let leftInfo = document.createElement('li');
       leftInfo.innerHTML = `${param.name}=`;
       let rightInfo = document.createElement('li');
-      rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : data[param.name] !== undefined ? data[param.name] : 'NaN';
+      rightInfo.innerHTML = param.name === 'timestamp' ? data[param.name].substring(0, data[param.name].length - 4) : data[param.name] !== undefined ? data[param.name] : 'NaN';
       leftKeys.appendChild(leftInfo);
       rightKeys.appendChild(rightInfo);
     }
