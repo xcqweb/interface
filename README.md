@@ -12,7 +12,7 @@ npm install
 
 ### 运行开发环境
 ```javascript
-npm run serve
+npm run start
 ```
 
 ### 打包编译
