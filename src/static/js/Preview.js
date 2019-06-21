@@ -103,8 +103,8 @@ function createWs(pageId) {
     return;
   };
   const token = getCookie('token');
-  let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
-  // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
+  // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
+  let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
   initialWs(ws, pageId);
   return ws;
 }
@@ -928,8 +928,8 @@ class PreviewPage {
         cellHtml.style.lineHeight = cell.height + 'px';
       }
       cellHtml.style.textAlign = cell.align;
-      cellHtml.style.backgroundColor = cell.fillColor;
-      // cellHtml.style.backgroundColor = 'transparent'; // 组合生成的背景为透明
+      // cellHtml.style.backgroundColor = cell.fillColor; // 原来的写法
+      cellHtml.style.backgroundColor = cell.fillColor === '#FFFFFF' ? 'transparent' : cell.fillColor; // 组合生成的背景为透明
     } else {
       cellHtml.style.lineHeight = 0;
     }
