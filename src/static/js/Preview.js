@@ -928,8 +928,10 @@ class PreviewPage {
         cellHtml.style.lineHeight = cell.height + 'px';
       }
       cellHtml.style.textAlign = cell.align;
-      // cellHtml.style.backgroundColor = cell.fillColor; // 原来的写法
-      cellHtml.style.backgroundColor = cell.fillColor === '#FFFFFF' ? 'transparent' : cell.fillColor; // 组合生成的背景为透明
+      cellHtml.style.backgroundColor = cell.fillColor; // 原来的写法
+      if (cell.children.length > 0 && cell.fillColor === '#FFFFFF') {
+        cellHtml.style.backgroundColor = 'transparent';
+      } // 组合生成的背景为透明
     } else {
       cellHtml.style.lineHeight = 0;
     }
