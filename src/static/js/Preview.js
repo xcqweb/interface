@@ -805,6 +805,8 @@ class PreviewPage {
   parsePage (page) {
     const xmlDoc = mxUtils.parseXml(page.xml).documentElement;
     const root = xmlDoc.getElementsByTagName('root')[0].childNodes;
+    const bodyBackground = xmlDoc.getAttribute('background'); // 新增全背景色
+    document.body.setAttribute('style', `background:${bodyBackground}`);
     const list = []
     for (let i = 0; i < root.length; i++) {
       list.push(root[i])
