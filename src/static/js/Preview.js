@@ -1027,7 +1027,7 @@ class PreviewPage {
       let leftInfo = document.createElement('li');
       leftInfo.innerHTML = `${param.name}=`;
       let rightInfo = document.createElement('li');
-      rightInfo.innerHTML = param.name === 'timestamp' ? data[param.name].substring(0, data[param.name].length - 4) : data[param.name] !== undefined ? data[param.name] : 'NaN';
+      rightInfo.innerHTML = param.name === 'timestamp' ? data[param.name] : data[param.name] !== undefined ? data[param.name] : 'NaN';
       leftKeys.appendChild(leftInfo);
       rightKeys.appendChild(rightInfo);
     }
