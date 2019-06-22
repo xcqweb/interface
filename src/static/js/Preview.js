@@ -978,10 +978,14 @@ class PreviewPage {
       cellHtml.setAttribute('data-defaultFill', cell.fillColor)
       // 显示
       cellHtml.addEventListener('mousemove', (e) => {
+        const bodyScrollTop = document.getElementsByTagName('body')[0].scrollTop; // body滚动
+        const bodyScrollLeft = document.getElementsByTagName('body')[0].scrollLeft;
+        const htmlScrollTop = document.getElementsByTagName('html')[0].scrollTop; // 最外层滚动
+        const htmlScrollLeft = document.getElementsByTagName('html')[0].scrollLeft;
         layerData = cell.bindData;
         this.renderLayer();
-        formatLayer.style.left =  e.clientX + 5 + 'px';
-        formatLayer.style.top = e.clientY + 5 + 'px';
+        formatLayer.style.left =  e.clientX + bodyScrollLeft + htmlScrollLeft + 5 + 'px';
+        formatLayer.style.top = e.clientY + bodyScrollTop + htmlScrollTop + 5 + 'px';
         formatLayer.style.opacity = '1';
       })
       // 隐藏
