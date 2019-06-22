@@ -2143,7 +2143,7 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 
 	div.appendChild(paperSizeSelect);
 
-	div.appendChild(formatDiv);
+	// div.appendChild(formatDiv); // 630以后再做
 	div.appendChild(customDiv);
 	
 	var currentPageFormat = pageFormat;
