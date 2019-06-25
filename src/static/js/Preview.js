@@ -135,7 +135,7 @@ function initialWs (ws, pageId) {
   ws.onmessage = function (res) {
     let resData = JSON.parse(res.data)
     // console.log(111, resData);
-    let doms = document.getElementsByClassName(resData.pointId + '_text') || document.getElementsByClassName(resData.pointId);
+    let doms = document.getElementsByClassName(resData.pointId + '_text');
     // 填充文本
     new Promise(() => {
       for (let item of doms) {
@@ -156,6 +156,9 @@ function initialWs (ws, pageId) {
         }
       }
       if (resData.operation === 3) {
+        if (doms.length === 0) {
+          doms = document.getElementsByClassName(resData.pointId);
+        }
         for (let dom of doms) {
           if (dom.childElementCount == 0) {
             dom.style.backgroundColor = dom.getAttribute('data-defaultFill');
@@ -200,6 +203,7 @@ function destroyWs (pageId) {
  */
 function setCellStatus(id, alarm, data) {
   // 该参数全部DOM
+  console.log(id, alarm, data)
   let doms = document.getElementsByClassName(id);
   let color = null;
   switch (alarm) {
