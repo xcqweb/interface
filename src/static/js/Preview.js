@@ -103,8 +103,8 @@ function createWs(pageId) {
     return;
   };
   const token = getCookie('token');
-  let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
-  // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
+  // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
+  let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
   initialWs(ws, pageId);
   return ws;
 }
@@ -135,7 +135,7 @@ function initialWs (ws, pageId) {
   ws.onmessage = function (res) {
     let resData = JSON.parse(res.data)
     // console.log(111, resData);
-    let doms = document.getElementsByClassName(resData.pointId + '_text');
+    let doms = document.getElementsByClassName(resData.pointId + '_text') || document.getElementsByClassName(resData.pointId);
     // 填充文本
     new Promise(() => {
       for (let item of doms) {
@@ -156,6 +156,7 @@ function initialWs (ws, pageId) {
         }
       }
       if (resData.operation === 3) {
+        console.log(111, doms);
         for (let dom of doms) {
           if (dom.childElementCount == 0) {
             dom.style.backgroundColor = dom.getAttribute('data-defaultFill');
@@ -837,7 +838,7 @@ class PreviewPage {
       layerContent.innerHTML = ``;
       this.renderPages(cells, layerContent);
     }
-    console.log(this.wsParams)
+    // console.log(this.wsParams)
     applyData[page.id] = {
       ws: '',
       data: {},
