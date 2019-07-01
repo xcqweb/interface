@@ -913,22 +913,27 @@ Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, resu
  */
 Sidebar.prototype.deletePage = function (ele) {
 	// 删除后应该显示的页面
-	var target;
-	var type = this.editorUi.editor.pages[this.editorUi.editor.currentPage].type
-	if (ele.prev().length) {
-		target = ele.prev();
-	} else if (ele.next().length) {
-		target = ele.next();
-	} else if (type == 'dialog' && !!$("#normalPages li").first()) {
-		target = $("#normalPages li").first();
-	} else if (type == 'noraml' && !!$("#dialogPages li").first()) {
-		target = $("#dialogPages li").first();
+	if (Object.keys(this.editorUi.editor.pages).length === 1) {
+		alert('至少保留一个页面');
+		return;
+	} else {
+		var target;
+		var type = this.editorUi.editor.pages[this.editorUi.editor.currentPage].type
+		if (ele.prev().length) {
+			target = ele.prev();
+		} else if (ele.next().length) {
+			target = ele.next();
+		} else if (type == 'dialog' && !!$("#normalPages li").first()) {
+			target = $("#normalPages li").first();
+		} else if (type == 'noraml' && !!$("#dialogPages li").first()) {
+			target = $("#dialogPages li").first();
+		}
+		// 删除页面数据
+		this.editorUi.editor.deletePage(ele.data('pageid'), type)
+		target.click();
+		// 移除节点
+		ele.remove()
 	}
-	// 删除页面数据
-	this.editorUi.editor.deletePage(ele.data('pageid'))
-	target.click();
-	// 移除节点
-	ele.remove()
 }
 
 /**
@@ -1140,13 +1145,15 @@ Sidebar.prototype.addPagePalette = function (expand) {
 	var normalPages = []
 	var dialogPages = [];
 	var pages = this.editorUi.editor.pages;
+	console.log(pages)
+	console.log(this.editorUi.editor.pagesRank)
 	// 普通页面
 	for (let key of this.editorUi.editor.pagesRank.normal) {
-		normalPages.push(pages[key])
+		pages[key] && normalPages.push(pages[key]);
 	}
 	// 弹窗页面
 	for (let key of this.editorUi.editor.pagesRank.dialog) {
-		dialogPages.push(pages[key])
+		pages[key] && dialogPages.push(pages[key]);
 	}
 	var fns = [
 		// 普通页面标题
@@ -1290,8 +1297,9 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 		// 链接
 		this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
 		// 文字 
-		this.createVertexTemplateEntry('shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',
-			 40, 20, 'text', '文字'),
+		this.createVertexTemplateEntry('shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;',40, 20, 'text', '文字'),
+		// 趋势图
+		// this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
 		// this.createVertexTemplateEntry('shape=jevinsvg;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;html=1;outlineConnect=0;', 30, 30, 'jevin', 'jevin', false, null, ''),
 			];
 	//封装

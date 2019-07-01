@@ -1054,16 +1054,24 @@ var addPageDialog = function (editorUi, type) {
 				let resPage = editorUi.editor.addPage(page);
 				_li.setAttribute('data-pageid', resPage.id);
 				_li.innerHTML = titleText;
+				let changeRank = editorUi.editor.pagesRank[resPage.type];
 				// 根据类型插入列表
 				if (type === 'addPrev') {
+					const idx = changeRank.indexOf($('.currentPage').attr('data-pageid'));;
+					changeRank.splice(idx, 0, resPage.id);
 					$(_li).insertBefore($('.currentPage'));
 				} else if (type === 'addNext') {
+					const idx = changeRank.indexOf($('.currentPage').attr('data-pageid'));;
+					changeRank.splice(idx + 1, 0, resPage.id);
 					$(_li).insertAfter($('.currentPage'));
 				} else if (isDialogFlag.checked) {
+					changeRank.push(resPage.id);
 					$("#dialogPages").append(_li);
 				} else {
+					changeRank.push(resPage.id);
 					$("#normalPages").append(_li);
 				};
+				editorUi.editor.pagesRank[resPage.type] = [].concat(changeRank);
 			}
 			editorUi.hideDialog();
 		}
@@ -1344,9 +1352,9 @@ var PaletteDataDialog = function(editorUi, cell) {
 	fillParams(variableList, choosedParam);
 	saveContent.appendChild(variableList);
 	
-	// 选择模型：
+	// 相关模型：
 	var modelTitle = document.createElement('p');
-	modelTitle.innerHTML = '选择模型：';
+	modelTitle.innerHTML = '相关模型：';
 	modelTitle.className = 'geDialogInfoTitle';
 	saveContent.appendChild(modelTitle)
 	// 模型列表

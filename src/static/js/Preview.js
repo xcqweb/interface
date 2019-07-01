@@ -40,6 +40,8 @@ let formatLayerFlag = false;
 let applyData = {};
 // 接收的点位数据
 let pointData = {};
+// 接收的报警数据
+let oldRightInfo = {};
 /**
  * 格式化时间
  * @param {number|string} time 
@@ -101,8 +103,8 @@ function createWs(pageId) {
     return;
   };
   const token = getCookie('token');
-  let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token);
-  // let ws = new WebSocket(`ws://localhost:3000/pipixia`, token);
+  let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
+  // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
   initialWs(ws, pageId);
   return ws;
 }
@@ -132,10 +134,15 @@ function initialWs (ws, pageId) {
   // 接收消息
   ws.onmessage = function (res) {
     let resData = JSON.parse(res.data)
+    // console.log(111, resData);
     let doms = document.getElementsByClassName(resData.pointId + '_text');
     // 填充文本
     new Promise(() => {
       for (let item of doms) {
+        // 上抛数据为数字 0 的时候,转换为字符串 '0';
+        if (resData[item.getAttribute('data-filltext')] === 0) {
+          resData[item.getAttribute('data-filltext')] = '0';
+        }
         if (item.childElementCount == 0 && resData[item.getAttribute('data-filltext')]) {
           item.innerHTML = resData[item.getAttribute('data-filltext')]
         }
@@ -143,13 +150,30 @@ function initialWs (ws, pageId) {
     })
     // 根据状态设置颜色
     new Promise(() => {
-      if (!pointData[resData.pointId] || resData.alarm !== pointData[resData.pointId].alarm) {
-        setCellStatus(resData.pointId, resData.alarm)
+      if (resData.alarm && resData.operation !== 3) {
+        if (!pointData[resData.pointId] || resData.alarm !== pointData[resData.pointId].alarm) {
+          setCellStatus(resData.pointId, resData.alarm, resData)
+        }
+      }
+      if (resData.operation === 3) {
+        if (doms.length === 0) {
+          doms = document.getElementsByClassName(resData.pointId);
+        }
+        for (let dom of doms) {
+          if (dom.childElementCount == 0) {
+            dom.style.backgroundColor = dom.getAttribute('data-defaultFill');
+          } else {
+            dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', dom.getAttribute('data-defaultFill'));
+          }
+        }
       }
     })
     // 渲染弹窗
     new Promise(() => {
       pointData[resData.pointId] = resData;
+      if(!resData.alarm) {
+        oldRightInfo[resData.pointId] = resData;
+      }
       if (layerData && layerData.point === resData.pointId) {
         mainProcess.renderLayer()
       }
@@ -177,8 +201,9 @@ function destroyWs (pageId) {
  * @param {string} id 
  * @param {number} alarm 
  */
-function setCellStatus(id, alarm) {
+function setCellStatus(id, alarm, data) {
   // 该参数全部DOM
+  console.log(id, alarm, data)
   let doms = document.getElementsByClassName(id);
   let color = null;
   switch (alarm) {
@@ -198,9 +223,26 @@ function setCellStatus(id, alarm) {
       color = null;
       break;
   }
+  // 修改前
+  // for (let dom of doms) {
+  //   if (dom.childElementCount == 0) {
+  //     dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
+  //   } else {
+  //     dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', color || dom.getAttribute('data-defaultFill'));
+  //   }
+  // }
+  // 修改后
   for (let dom of doms) {
     if (dom.childElementCount == 0) {
-      dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
+      if (dom.getAttribute('data-filltext')) {
+        for (let i in data) {
+          if (i === dom.getAttribute('data-filltext')) {
+            dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
+          }
+        }
+      } else {
+        dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
+      }
     } else {
       dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', color || dom.getAttribute('data-defaultFill'));
     }
@@ -745,6 +787,7 @@ class PreviewPage {
             list.push(obj);
           };
       };
+      // console.log(123, list);
       return list;
     };
     let cells = getNode();
@@ -766,6 +809,8 @@ class PreviewPage {
   parsePage (page) {
     const xmlDoc = mxUtils.parseXml(page.xml).documentElement;
     const root = xmlDoc.getElementsByTagName('root')[0].childNodes;
+    const bodyBackground = xmlDoc.getAttribute('background'); // 新增全背景色
+    document.body.setAttribute('style', `background:${bodyBackground}`);
     const list = []
     for (let i = 0; i < root.length; i++) {
       list.push(root[i])
@@ -796,7 +841,7 @@ class PreviewPage {
       layerContent.innerHTML = ``;
       this.renderPages(cells, layerContent);
     }
-    console.log(this.wsParams)
+    // console.log(this.wsParams)
     applyData[page.id] = {
       ws: '',
       data: {},
@@ -889,7 +934,10 @@ class PreviewPage {
         cellHtml.style.lineHeight = cell.height + 'px';
       }
       cellHtml.style.textAlign = cell.align;
-      cellHtml.style.backgroundColor = cell.fillColor;
+      cellHtml.style.backgroundColor = cell.fillColor; // 原来的写法
+      if (cell.children.length > 0 && cell.fillColor === '#FFFFFF') {
+        cellHtml.style.backgroundColor = 'transparent';
+      } // 组合生成的背景为透明
     } else {
       cellHtml.style.lineHeight = 0;
     }
@@ -934,10 +982,14 @@ class PreviewPage {
       cellHtml.setAttribute('data-defaultFill', cell.fillColor)
       // 显示
       cellHtml.addEventListener('mousemove', (e) => {
+        const bodyScrollTop = document.getElementsByTagName('body')[0].scrollTop; // body滚动
+        const bodyScrollLeft = document.getElementsByTagName('body')[0].scrollLeft;
+        const htmlScrollTop = document.getElementsByTagName('html')[0].scrollTop; // 最外层滚动
+        const htmlScrollLeft = document.getElementsByTagName('html')[0].scrollLeft;
         layerData = cell.bindData;
         this.renderLayer();
-        formatLayer.style.left =  e.clientX + 5 + 'px';
-        formatLayer.style.top = e.clientY + 5 + 'px';
+        formatLayer.style.left =  e.clientX + bodyScrollLeft + htmlScrollLeft + 5 + 'px';
+        formatLayer.style.top = e.clientY + bodyScrollTop + htmlScrollTop + 5 + 'px';
         formatLayer.style.opacity = '1';
       })
       // 隐藏
@@ -950,8 +1002,30 @@ class PreviewPage {
   }
   // 渲染浮窗
   renderLayer () {
+  //   formatLayer.innerHTML = '';
+  //   const data = Object.assign({}, pointData[layerData.point]);
+  //   if (!Object.keys(data).length) return;
+  //   let params = [{name: 'timestamp'}].concat(layerData.params)
+  //   let leftKeys = document.createElement('ul');
+  //   leftKeys.id = 'leftKeys';
+  //   let rightKeys = document.createElement('ul');
+  //   rightKeys.id = 'rightKeys';
+  //   // 填充内容
+  //   for (let param of params) {
+  //     let leftInfo = document.createElement('li');
+  //     leftInfo.innerHTML = `${param.name}=`;
+  //     let rightInfo = document.createElement('li');
+  //     // console.log(data);
+  //     // rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : (data[param.name] || ''); // 旧版本
+  //     rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : data[param.name] !== undefined ? data[param.name] : 'NaN';
+  //     leftKeys.appendChild(leftInfo);
+  //     rightKeys.appendChild(rightInfo);
+  //   }
+  //   formatLayer.appendChild(leftKeys);
+  //   formatLayer.appendChild(rightKeys);
+  // }
     formatLayer.innerHTML = '';
-    const data = Object.assign({}, pointData[layerData.point]);
+    const data = Object.assign({}, oldRightInfo[layerData.point]);
     if (!Object.keys(data).length) return;
     let params = [{name: 'timestamp'}].concat(layerData.params)
     let leftKeys = document.createElement('ul');
@@ -963,7 +1037,7 @@ class PreviewPage {
       let leftInfo = document.createElement('li');
       leftInfo.innerHTML = `${param.name}=`;
       let rightInfo = document.createElement('li');
-      rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : (data[param.name] || '');
+      rightInfo.innerHTML = param.name === 'timestamp' ? data[param.name] : data[param.name] !== undefined ? data[param.name] : 'NaN';
       leftKeys.appendChild(leftInfo);
       rightKeys.appendChild(rightInfo);
     }
