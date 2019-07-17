@@ -8,8 +8,9 @@ var gulp = require('gulp'),
   rev  = require('gulp-rev-append'),
   merge = require('merge-stream'),
   server = require('gulp-devserver'),
-  minifyCss = require("gulp-minify-css");
-
+  minifyCss = require("gulp-minify-css"),
+  connect = require('gulp-connect'),
+  proxy = require('http-proxy-middleware');
 /**
  * 清空内容
  */
@@ -72,21 +73,47 @@ gulp.task('uglify-js', function(){
  * 开发代理服务
  */
 gulp.task('devserver', function () {
-  return gulp.src('./src')
-    .pipe(server({
-      listdir: false,
-      debug: false,
-      open: false,
-      port: 3000,
-      livereload: {
-      	clientConsole: false
-      },
-      proxy: {
-      	enable: true,
-      	host: 'http://10.74.20.25',
-      	urls: /^\/api\//
-      }
-     }));
+  connect.server({
+        root: ['src'],
+        port: 3000,
+        livereload: false,
+        middleware: function(connect, opt) {
+            return [
+                proxy('/hj', {
+                    target: 'http://10.74.20.17:8882/',
+                    changeOrigin:true,
+                    pathRewrite: {
+                      '^/hj': '/api'
+                    },
+                }),
+                proxy('/ll', {
+                  target: 'http://10.8.4.117:5000/',
+                  changeOrigin:true,
+                  pathRewrite: {
+                    '^/ll': ''
+                  },
+                }),
+                proxy('/api',  {
+                  target: 'http://10.74.20.25',
+                  changeOrigin:true,
+              }),
+            ]
+        }
+
+      // listdir: false,
+      // debug: false,
+      // open: false,
+      // port: 3000,
+      // host:'loalhost',
+      // livereload: {
+      // 	clientConsole: false
+      // },
+      // proxy: {
+      // 	enable: true,
+      // 	host: 'http://10.74.20.25',
+      // 	urls: /^\/api\//
+      // }
+     });
 });
 
 /**
