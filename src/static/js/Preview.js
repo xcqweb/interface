@@ -106,8 +106,8 @@ async function getLastData() {
 }
 
 //获取websocket连接信息
-let websocketUrl_real = ''
-let websocketUrl_alarm = ''
+var websocketUrl_real = ''
+var websocketUrl_alarm = ''
 
 async function getsubscribeInfos(isReal){
   let points = [];
@@ -178,12 +178,17 @@ function createWs_real(pageId) {
  * 重连websocket
  * @param {string} pageId 
  */
-function reconnect (pageId) {
+function reconnect (pageId,type) {
   if (!applyData[pageId] || applyData[pageId].lockWs) return;
   applyData[pageId].lockWs = true;
   // 3s重连
   setTimeout(function () {
-    createWs_real(pageId)
+    if(type === 'real'){
+      createWs_real(pageId)
+    }else{
+      createWs_alarm(pageId)
+    }
+    
     applyData[pageId].lockWs = false;
   }, 3000)
 }
@@ -266,11 +271,11 @@ function initialWs (ws, pageId,type) {
   }
   // 接收异常
   ws.onerror = function (e) {
-    reconnect(pageId)
+    reconnect(pageId,type)
   }
   // 关闭
   ws.onclose = function (e) {
-    reconnect(pageId);
+    reconnect(pageId,type);
   }
 }
 /**
