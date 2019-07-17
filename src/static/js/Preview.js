@@ -90,7 +90,7 @@ function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor='#333') {
   svgContent.appendChild(svg);
   return svgContent;
 }
-
+let pointParams = []
 //获取最后一笔数据
 async function getLastData() {
   let points = [];
@@ -98,7 +98,7 @@ async function getLastData() {
     points.push(key.params)
   }
   const params = [{
-    pointId: '1e9a3bb16b938808db18dcc0cbc3b6b',
+    pointId: pointParams[0].pointId,
     keys: points
   }]
   const data = await geAjax('/api/persist/opentsdb/point/last', 'POST',JSON.stringify(params));
@@ -108,7 +108,7 @@ async function getLastData() {
 //获取websocket连接信息
 let websocketUrl_reaal = ''
 let websocketUrl_alarm = ''
-let pointParams = []
+
 async function getsubscribeInfos(isReal){
   let points = [];
   for(let key of pointParams){
