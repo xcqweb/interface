@@ -106,7 +106,7 @@ async function getLastData() {
 }
 
 //获取websocket连接信息
-let websocketUrl_reaal = ''
+let websocketUrl_real = ''
 let websocketUrl_alarm = ''
 
 async function getsubscribeInfos(isReal){
