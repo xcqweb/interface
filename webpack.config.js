@@ -19,7 +19,7 @@ module.exports = {
     entry: ["babel-polyfill",'./src/main.js'], //入口文件，src下的main.js
     output: {
         path: path.join(__dirname, 'interface'), // 出口目录，dist文件
-        publicPath: '/',// 表示在引入静态资源时，从根路径开始引入,否则路由多层时候资源找不到
+        publicPath: '',// 表示在引入静态资源时，从根路径开始引入,否则路由多层时候资源找不到
         filename: 'js/[name].[hash].js', //这里name就是打包出来的文件名
         chunkFilename: 'js/[name].js',//指定动态生成的Chunk在输出时的文件名称
     }, 
