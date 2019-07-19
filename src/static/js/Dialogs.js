@@ -903,20 +903,34 @@ var ImageDialog = function (editorUi, cell) {
 		var select = null;
 		var cells = graph.getSelectionCells();
 		var updateImg = function (newValue) {
-			newValue = 'getechFileSystem/' + newValue
-			graph.getModel().beginUpdate();
-			try {
-				graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
-			}
-			finally {
-				graph.getModel().endUpdate();
-			}
-	
-			if (select != null) {
-				graph.setSelectionCells(select);
-				graph.scrollCellToVisible(select[0]);
-			}
-			editorUi.hideDialog();
+			let prefix = 'getechFileSystem/'
+			let originVal = newValue
+			newValue =  prefix + newValue
+			
+			let img = new Image()
+			img.src = window.fileSystem +'/'+originVal
+			img.onload = function(){
+				console.log('imgHeight:'+img.height,'imgWidth:'+img.width)
+				let geometry = graph.getSelectionCell().geometry
+				let {x,y,width,height} = geometry
+				console.log(geometry)
+				geometry.__proto__.IMAGE_RATIO = width/height
+				geometry.setRect(x,y,img.width,img.height)
+				graph.getModel().beginUpdate();
+				try {
+					console.log(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
+					graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
+				}
+				finally {
+					graph.getModel().endUpdate();
+				}
+		
+				if (select != null) {
+					graph.setSelectionCells(select);
+					graph.scrollCellToVisible(select[0]);
+				}
+				editorUi.hideDialog();
+				}
 		}
 		var newValue;
 		// 选择的是本地文件，上传文件

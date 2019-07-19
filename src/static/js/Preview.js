@@ -90,6 +90,52 @@ function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor='#333') {
   svgContent.appendChild(svg);
   return svgContent;
 }
+let pointParams = []
+//获取最后一笔数据
+async function getLastData() {
+  if(!pointParams.length)return
+  let points = [];
+  for(let key of pointParams){
+    points.push(key.params)
+  }
+  console.log(pointParams)
+  const params = [{
+    pointId: pointParams[0].pointId,
+    keys: points
+  }]
+  const res = await geAjax('/api/persist/opentsdb/point/last', 'POST',JSON.stringify(params));
+  setterReleData(res,'LAST')
+}
+
+//获取websocket连接信息
+var websocketUrl_real = ''
+var websocketUrl_alarm = ''
+
+async function getsubscribeInfos(isReal){
+  if(!pointParams.length)return
+  let points = [];
+  for(let key of pointParams){
+    points.push(key.params)
+  }
+  
+  const params = {
+      subscribeInfos: [
+          {
+              pointId: pointParams[0].pointId,
+              subscribeType: isReal?'realtime':'realtime_alarm',
+              pushRate: 3000,
+              params: points, 
+          },
+      ],
+      networkProtocol: 'websocket',
+  };
+  
+  const data = await geAjax('/api/subscribe', 'POST',JSON.stringify(params));
+  console.log(data)
+  isReal?(websocketUrl_real = data.data):(websocketUrl_alarm = data.data)
+  return data
+}
+
 
 // 避免重复链接
 let lockWs = false;
@@ -98,94 +144,132 @@ let lockWs = false;
  * @param {Array} data 
  * @param {string} pageId 
  */
-function createWs(pageId) {
-  if ( applyData[pageId].wsParams.length === 0) {
-    return;
-  };
-  const token = getCookie('token');
-  let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
-  // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
-  initialWs(ws, pageId);
-  return ws;
+
+ //报警数据
+ function createWs_alarm(pageId) {
+  getsubscribeInfos().then( (res) => {
+    if ( applyData[pageId].wsParams.length === 0 || !websocketUrl_alarm) {
+      return;
+    };
+    const token = getCookie('token');
+    // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
+    let ws = new WebSocket(res.data, token); // 提交时使用这个
+    // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
+    initialWs(ws, pageId,'alarm');
+    applyData[pageId].ws_alarm = ws;
+  })
+}
+
+//实时数据
+function createWs_real(pageId) {
+  getLastData()
+  getsubscribeInfos(true).then( (res) => {
+    if ( applyData[pageId].wsParams.length === 0 || !websocketUrl_real) {
+      return;
+    };
+    const token = getCookie('token');
+    // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
+    let ws = new WebSocket(res.data, token); // 提交时使用这个
+    // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
+    initialWs(ws, pageId,'real');
+    applyData[pageId].ws_real = ws;
+  })
 }
 /**
  * 重连websocket
  * @param {string} pageId 
  */
-function reconnect (pageId) {
+function reconnect (pageId,type) {
   if (!applyData[pageId] || applyData[pageId].lockWs) return;
   applyData[pageId].lockWs = true;
   // 3s重连
   setTimeout(function () {
-    createWs(pageId)
+    if(type === 'real'){
+      createWs_real(pageId)
+    }else{
+      createWs_alarm(pageId)
+    }
+    
     applyData[pageId].lockWs = false;
   }, 3000)
 }
+
+//处理实时数据
+function setterReleData(res,type) {
+  let resData = type === 'LAST'?res[res.length-1] : JSON.parse(res.data)[JSON.parse(res.data).length - 1]
+  let doms = document.getElementsByClassName(resData.pointId + '_text');
+  // 填充文本
+  for (let item of doms) {
+    // 上抛数据为数字 0 的时候,转换为字符串 '0';
+    if (resData[item.getAttribute('data-filltext')] === 0) {
+      resData[item.getAttribute('data-filltext')] = '0';
+    }
+    if (item.childElementCount == 0 && resData[item.getAttribute('data-filltext')]) {
+      item.innerHTML = resData[item.getAttribute('data-filltext')]
+    }
+  }
+};
+
+//处理报警数据
+function setterAlarmdata(res) {
+  let resData = JSON.parse(res.data)
+  // 根据状态设置颜色
+  if (resData.alarm && resData.operation !== 3) {
+    if (!pointData[resData.pointId] || resData.alarm !== pointData[resData.pointId].alarm) {
+      setCellStatus(resData.pointId, resData.alarm, resData)
+    }
+  }
+  if (resData.operation === 3) {
+    if (doms.length === 0) {
+      doms = document.getElementsByClassName(resData.pointId);
+    }
+    for (let dom of doms) {
+      if (dom.childElementCount == 0) {
+        dom.style.backgroundColor = dom.getAttribute('data-defaultFill');
+      } else {
+        dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', dom.getAttribute('data-defaultFill'));
+      }
+    }
+  }
+  // 渲染弹窗
+  pointData[resData.pointId] = resData;
+  if(!resData.alarm) {
+    oldRightInfo[resData.pointId] = resData;
+  }
+  if (layerData && layerData.point === resData.pointId) {
+    mainProcess.renderLayer()
+  }
+}
+
+
 /**
  * 初始化websocket的钩子
  * @param {object} ws 
  * @param {string} pageId 
  */
-function initialWs (ws, pageId) {
+function initialWs (ws, pageId,type) {
   // websocket连接成功
   ws.onopen = function () {
-    ws.send(JSON.stringify(applyData[pageId].wsParams));
+    // ws.send(JSON.stringify(applyData[pageId].wsParams));
   }
   // 接收消息
   ws.onmessage = function (res) {
-    let resData = JSON.parse(res.data)
-    // console.log(111, resData);
-    let doms = document.getElementsByClassName(resData.pointId + '_text');
-    // 填充文本
-    new Promise(() => {
-      for (let item of doms) {
-        // 上抛数据为数字 0 的时候,转换为字符串 '0';
-        if (resData[item.getAttribute('data-filltext')] === 0) {
-          resData[item.getAttribute('data-filltext')] = '0';
-        }
-        if (item.childElementCount == 0 && resData[item.getAttribute('data-filltext')]) {
-          item.innerHTML = resData[item.getAttribute('data-filltext')]
-        }
-      }
-    })
-    // 根据状态设置颜色
-    new Promise(() => {
-      if (resData.alarm && resData.operation !== 3) {
-        if (!pointData[resData.pointId] || resData.alarm !== pointData[resData.pointId].alarm) {
-          setCellStatus(resData.pointId, resData.alarm, resData)
-        }
-      }
-      if (resData.operation === 3) {
-        if (doms.length === 0) {
-          doms = document.getElementsByClassName(resData.pointId);
-        }
-        for (let dom of doms) {
-          if (dom.childElementCount == 0) {
-            dom.style.backgroundColor = dom.getAttribute('data-defaultFill');
-          } else {
-            dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', dom.getAttribute('data-defaultFill'));
-          }
-        }
-      }
-    })
-    // 渲染弹窗
-    new Promise(() => {
-      pointData[resData.pointId] = resData;
-      if(!resData.alarm) {
-        oldRightInfo[resData.pointId] = resData;
-      }
-      if (layerData && layerData.point === resData.pointId) {
-        mainProcess.renderLayer()
-      }
-    })
+    let data = JSON.parse(res.data)
+    let dataArr = Object.keys(data)
+    if(dataArr[0] === 'rspCode' || dataArr[1] === 'rspMsg')return
+    if(type === 'real'){
+      throttle(setterReleData(res),600)
+    }else{
+      throttle(setterAlarmdata(res),600)
+    }
   }
   // 接收异常
   ws.onerror = function (e) {
-    reconnect(pageId)
+    reconnect(pageId,type)
   }
   // 关闭
   ws.onclose = function (e) {
-    reconnect(pageId);
+    reconnect(pageId,type);
   }
 }
 /**
@@ -193,7 +277,7 @@ function initialWs (ws, pageId) {
  * @param {string} pageId 
  */
 function destroyWs (pageId) {
-  applyData[pageId].ws && applyData[pageId].ws.close();
+  (applyData[pageId].ws_real && applyData[pageId].ws_real.close()) || (applyData[pageId].ws_alarm && applyData[pageId].ws_alarm.close());
   delete applyData[pageId];
 }
 /**
@@ -203,7 +287,7 @@ function destroyWs (pageId) {
  */
 function setCellStatus(id, alarm, data) {
   // 该参数全部DOM
-  console.log(id, alarm, data)
+  // console.log(id, alarm, data)
   let doms = document.getElementsByClassName(id);
   let color = null;
   switch (alarm) {
@@ -843,12 +927,15 @@ class PreviewPage {
     }
     // console.log(this.wsParams)
     applyData[page.id] = {
-      ws: '',
+      ws_real: '',
+      ws_alarm: '',
       data: {},
       wsParams: this.wsParams,
       lockWs: false
     };
-    applyData[page.id].ws = createWs(page.id);
+    applyData[page.id].ws_real = createWs_real(page.id);
+    applyData[page.id].ws_alarm = createWs_alarm(page.id);
+    // console.log(applyData[page.id].ws_real)
     return cells;
   }
   // 渲染页面
@@ -861,6 +948,7 @@ class PreviewPage {
             return val.name
           }).join()
         })
+        pointParams = this.wsParams
       }
       let cellHtml = this.renderCell(cell);
       ele.appendChild(cellHtml);
@@ -1104,6 +1192,7 @@ class Main {
     this.pageId = this.previewPage.pagesRank.normal[0];
     // 渲染页面
     this.renderNormal();
+    
   }
   // 判断页面类型
   getPageType(id) {

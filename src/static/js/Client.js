@@ -19454,7 +19454,7 @@ mxSvgCanvas2D.prototype.image = function(x, y, w, h, src, aspect, flipH, flipV)
 		node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src.replace(/^\S*getechFileSystem/, fileSystem));
 	}
 	
-	if (!aspect)
+	if (aspect)
 	{
 		node.setAttribute('preserveAspectRatio', 'none');
 	}
@@ -19549,7 +19549,7 @@ mxSvgCanvas2D.prototype.convertHtml = function(val)
 	else if (document.implementation != null && document.implementation.createDocument != null)
 	{
 		var xd = document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'html', null);
-		console.log(xd)
+		// console.log(xd)
 		var xb = xd.createElement('body');
 		xd.documentElement.appendChild(xb);
 		
@@ -22719,7 +22719,7 @@ mxStencil.prototype.drawNode = function(canvas, shape, node, aspect, disableShad
 					y0 + Number(node.getAttribute('y')) * sy,
 					Number(node.getAttribute('w')) * sx,
 					Number(node.getAttribute('h')) * sy,
-					src, false, node.getAttribute('flipH') == '1',
+					src, false , node.getAttribute('flipH') == '1',
 					node.getAttribute('flipV') == '1');
 			}
 		}
@@ -27524,9 +27524,9 @@ mxImageShape.prototype.paintVertexShape = function(c, x, y, w, h)
 			c.rect(x, y, w, h);
 			c.fillAndStroke();
 		}
-
+		// console.log(mxGeometry.prototype.IMAGE_RATIO)
 		// FlipH/V are implicit via mxShape.updateTransform
-		c.image(x, y, w, h, this.image, this.preserveImageAspect, false, false);
+		c.image(x, y, w, h, this.image, mxGeometry.prototype.IMAGE_RATIO >0?true:false, false, false);
 		
 		var stroke = mxUtils.getValue(this.style, mxConstants.STYLE_IMAGE_BORDER, null);
 		
@@ -42765,6 +42765,9 @@ mxGeometry.prototype.constructor = mxGeometry;
  * Global switch to translate the points in translate. Default is true.
  */
 mxGeometry.prototype.TRANSLATE_CONTROL_POINTS = true;
+
+//宽高比
+mxGeometry.prototype.IMAGE_RATIO = -1;
 
 /**
  * Variable: alternateBounds

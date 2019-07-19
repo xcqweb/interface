@@ -38,7 +38,6 @@ function Sidebar(editorUi, container)
 	this.pointerMoveHandler = mxUtils.bind(this, function(evt)
 	{
 		var src = mxEvent.getSource(evt);
-		
 		while (src != null)
 		{
 			if (src == this.currentElt)

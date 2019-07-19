@@ -861,23 +861,24 @@ EditorUi = function(editor, container, lightbox)
 	graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt)
 	{
 		var cells = evt.getProperty('cells');
-		console.log(cells)
 		// 转换类型
 		for (let cell of cells) {
 			if (cell.style !== 'group') {
 				let cellInfo = graph.getModel().getValue(cell);
-				let shapeName = /shape=(.+?);/.exec(cell.style)[1];
-				shapeName = this.sidebar.primitives.includes(shapeName) ? 'primitive' : shapeName;
-				if (!mxUtils.isNode(cellInfo))
-				{
-					let doc = mxUtils.createXmlDocument();
-					let obj = doc.createElement('object');
-					obj.setAttribute('label', cellInfo || '');
-					cellInfo = obj;
-				};
-				this.editor.palettesInfo[shapeName].num++;
-				cellInfo.setAttribute('palettename', this.editor.palettesInfo[shapeName].name + this.editor.palettesInfo[shapeName].num);
-				graph.getModel().setValue(cell, cellInfo);
+				if (cell.style.indexOf('shape') !== -1) {
+					let shapeName = /shape=(.+?);/.exec(cell.style)[1];
+					shapeName = this.sidebar.primitives.includes(shapeName) ? 'primitive' : shapeName;
+					if (!mxUtils.isNode(cellInfo))
+					{
+						let doc = mxUtils.createXmlDocument();
+						let obj = doc.createElement('object');
+						obj.setAttribute('label', cellInfo || '');
+						cellInfo = obj;
+					};
+					this.editor.palettesInfo[shapeName].num++;
+					cellInfo.setAttribute('palettename', this.editor.palettesInfo[shapeName].name + this.editor.palettesInfo[shapeName].num);
+					graph.getModel().setValue(cell, cellInfo);
+				}
 			}
 		}
 		var parent = evt.getProperty('parent');
