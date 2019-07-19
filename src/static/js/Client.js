@@ -19549,7 +19549,7 @@ mxSvgCanvas2D.prototype.convertHtml = function(val)
 	else if (document.implementation != null && document.implementation.createDocument != null)
 	{
 		var xd = document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'html', null);
-		console.log(xd)
+		// console.log(xd)
 		var xb = xd.createElement('body');
 		xd.documentElement.appendChild(xb);
 		
@@ -27524,7 +27524,7 @@ mxImageShape.prototype.paintVertexShape = function(c, x, y, w, h)
 			c.rect(x, y, w, h);
 			c.fillAndStroke();
 		}
-		console.log(mxGeometry.prototype.IMAGE_RATIO)
+		// console.log(mxGeometry.prototype.IMAGE_RATIO)
 		// FlipH/V are implicit via mxShape.updateTransform
 		c.image(x, y, w, h, this.image, mxGeometry.prototype.IMAGE_RATIO >0?true:false, false, false);
 		
