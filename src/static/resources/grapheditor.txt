@@ -535,6 +535,7 @@ position=位置
 posterPrint=海报样式
 preferences=喜好
 preview=预览
+previewapply=预览
 previousPage=上一页
 print=打印
 printAllPages=打印所有页

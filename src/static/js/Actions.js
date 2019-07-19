@@ -183,7 +183,7 @@ Actions.prototype.init = function()
 	this.addAction('previewapply', function() {		
 		var dlg = new PreviewDialog(ui, '')
 		ui.showDialog(dlg.container, 410, 160, true, false, null, null, '预览');
-	}, true, null, '');
+	}, true, null, 'Ctrl+Shift+L');
 	// 发布
 	this.addAction('publish', function() {
 		var dlg = new PublishDialog(ui, '')

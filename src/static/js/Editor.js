@@ -462,10 +462,6 @@ Editor.prototype.uploadFile = function (editorUi, url, method, data, fn = functi
  * 控件信息
  */
 Editor.prototype.palettesInfo = {
-	'sasa': {
-		name: 'sasa',
-		num: 0
-	},
 	'diamond': {
 		name: 'diamond',
 		num: 0
@@ -518,10 +514,6 @@ Editor.prototype.palettesInfo = {
 		name: '表格',
 		num: 0
 	},
-	jevinsvg: {
-		name: '演员',
-		num: 0
-	},
 	tableBox: {
 		name: '表格',
 		num: 0
@@ -532,10 +524,6 @@ Editor.prototype.palettesInfo = {
 	},
 	endarrow: {
 		name: '箭头',
-		num: 0
-	},
-	line: {
-		name: '直线',
 		num: 0
 	},
 	beeline: {

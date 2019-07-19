@@ -366,7 +366,8 @@ div.mxWindow .geButton {
 	line-height: 30px;
 	position: relative;
 }
-.geSidebarContainer .geTitle #addPage {
+
+.geSidebarContainer .geTitle #searchWidget,#addPage{
 	float: right;
 	width: 16px;
 	height: 16px;
@@ -779,7 +780,7 @@ div.mxWindow .geButton {
 @media print {
 	div.geNoPrint { display: none !important; }
 }
-.geToolbar1 .geSprite, .geToolbar8 .geSprite{
+.geToolbar1 .geSprite, . .geSprite{
 	width: 36px;
 	height: 36px;
 	padding: 10px;
