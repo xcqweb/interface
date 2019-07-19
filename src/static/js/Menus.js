@@ -555,7 +555,6 @@ Menus.prototype.toggleStyle = function(key, defaultValue)
 Menus.prototype.addMenuItem = function(menu, key, parent, trigger, sprite, label)
 {
 	var action = this.editorUi.actions.get(key);
-
 	if (action != null && (menu.showDisabled || action.isEnabled()) && action.visible)
 	{
 		var item = menu.addItem(label || action.label, null, function()
@@ -610,7 +609,7 @@ Menus.prototype.addMenuItems = function(menu, keys, parent, trigger, sprites)
 };
 
 /**
- * Creates the keyboard event handler for the current graph and history.
+ * Creates the keyboard event handler for the current graph and history.//右键菜单
  */
 Menus.prototype.createPopupMenu = function(menu, cell, evt)
 {
@@ -704,11 +703,9 @@ Menus.prototype.createMenubar = function(container)
 				// Allows extensions of menu.funct
 				menu.funct.apply(this, arguments);
 			}));
-			
 			this.menuCreated(menu, elt);
 		}))(this.get(menus[i]));
 	}
-
 	return menubar;
 };
 

@@ -8298,7 +8298,6 @@ if (typeof mxVertexHandler != 'undefined')
 						b = new mxRectangle(b.x, b.y, b.width, b.height);
 						b.add(this.state.text.bounds);
 					}
-					
 					this.linkHint.style.left = Math.max(0, Math.round(b.x + (b.width - this.linkHint.clientWidth) / 2)) + 'px';
 					this.linkHint.style.top = Math.round(b.y + b.height + 6 + this.state.view.graph.tolerance) + 'px';
 				}
