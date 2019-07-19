@@ -1,0 +1,1587 @@
+.geEditor {
+	font-size:14px;
+	border:none;
+	margin:0px;
+}
+.geEditor input[type=text]::-ms-clear {
+	display: none;
+}
+.geMenubarContainer .geItem, .geToolbar .geButton, .geToolbar .geLabel, .geSidebarContainer .geTitle {
+	cursor:pointer !important;
+}
+.geBackgroundPage {
+  	-webkit-box-shadow:0px 0px 3px 0px #d9d9d9;
+	-moz-box-shadow:0px 0px 3px 0px #d9d9d9;
+  	box-shadow:0px 0px 3px 0px #d9d9d9;
+}
+.geSidebarContainer a, .geMenubarContainer a, .geToolbar a {
+	color:#252525;
+	text-decoration:none;
+}
+.geMenubarContainer, .geToolbarContainer, .geDiagramContainer, .geSidebarContainer, .geFooterContainer, .geHsplit, .geVsplit {
+	overflow:hidden;
+	position:absolute;
+	cursor:default;
+}
+.geRightBarContainer {
+	background: #F2F2F2;
+	display: flex;
+	flex-direction: column;
+}
+.geSidebarContainer.geFormatContainer {
+	overflow-x: hidden !important;
+	overflow-y: hidden !important;
+	/* overflow-y: auto !important; */
+	font-size:12px;
+	flex: 1;
+	position: relative;
+}
+.geSidebarContainer.gePaletteManageContainer {
+	position: relative;
+	flex: 1;
+}
+.geFormatContainer .geToolbarContainer {
+	display: block;
+}
+.geDiagramContainer {
+	background-color:#ffffff;
+	border: 1px solid #e5e5e5;
+	outline:none;
+}
+.geDiagramContainer div, .geDiagramContainer button, .geDiagramContainer a  {
+	color: inherit;
+}
+.geMenubar, .geToolbar {
+	white-space:nowrap;
+	display:block;
+}
+.geHint {
+	background-color: #ffffff;
+	border: 1px solid gray;
+	padding: 4px 16px 4px 16px;
+	border-radius:3px;
+	-webkit-box-shadow: 1px 1px 2px 0px #ddd;
+	-moz-box-shadow: 1px 1px 2px 0px #ddd;
+	box-shadow: 1px 1px 2px 0px #ddd;
+	opacity:0.8;
+	filter:alpha(opacity=80);
+	display: none;
+}
+.geStatusAlert {
+	white-space:nowrap;
+	margin-top:-5px;
+	font-size:12px;
+	padding:4px 6px 4px 6px;
+	background-color:#f2dede;
+	border:1px solid #ebccd1;
+	color:#a94442 !important;
+	border-radius:3px;
+}
+.geStatusAlert:hover {
+	background-color:#f1d8d8;
+	border-color:#d6b2b8;
+}
+.geStatusMessage {
+	white-space:nowrap;
+	margin-top:-5px;
+	padding:4px 6px 4px 6px;
+	font-size:12px;
+	background-image: -webkit-linear-gradient(top,#dff0d8 0,#c8e5bc 100%);
+	background-image: -o-linear-gradient(top,#dff0d8 0,#c8e5bc 100%);
+	background-image: -webkit-gradient(linear,left top,left bottom,from(#dff0d8),to(#c8e5bc));
+	background-image: linear-gradient(to bottom,#dff0d8 0,#c8e5bc 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdff0d8', endColorstr='#ffc8e5bc', GradientType=0);
+	background-repeat: repeat-x;
+	border:1px solid #b2dba1;
+	border-radius:3px;
+	color:#3c763d !important;
+}
+.geStatusMessage:hover {
+	background:#c8e5bc;
+	border-color:#b2dba1;
+}
+.geAlert {
+	position:absolute;
+	white-space:nowrap;
+	padding:14px;
+	background-color:#f2dede;
+	border:1px solid #ebccd1;
+	color:#a94442;
+	border-radius:3px;
+	-webkit-box-shadow: 2px 2px 3px 0px #ddd;
+	-moz-box-shadow: 2px 2px 3px 0px #ddd;
+	box-shadow: 2px 2px 3px 0px #ddd;
+}
+.geBtn, .mxWindow .geBtn {
+	background-image: none;
+	background-color: #fff;
+	border-radius: 2px;
+	color: #252525;
+	cursor: default;
+	font-size: 14px;
+	height: 30px;
+	line-height: 30px;
+	margin: 0 0 0 8px;
+	min-width: 72px;
+	outline: 0;
+	padding: 0 8px;
+	cursor: pointer;
+	border: 1px solid #C4C4C4;
+}
+.geBtn:disabled {
+	opacity: .5;
+}
+.geBtnUp {
+	cursor: pointer;
+	background-size: 8px 8px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-image: url(/static/images/icons/expandup.png);
+}
+.geBtnDown {
+	cursor: pointer;
+	background-size: 8px 8px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-image: url(/static//images/icons/expanddown.png);
+}
+.geColorBtn {
+	border-radius: 4px;
+	color: #333;
+	cursor: default;
+	margin: 0px;
+	outline: 0;
+	padding: 0px;
+	cursor: pointer;
+	float: left;
+}
+.geColorBtn:disabled {
+	opacity: .5;
+}
+.gePrimaryBtn, .mxWindow .gePrimaryBtn {
+	background-color: #3D91F7;
+	border: 1px solid #277AE0;
+	color: #fff;
+}
+.gePrimaryBtn:disabled {
+	opacity: .5;
+}
+.geAlertLink {
+	color:#843534;
+	font-weight:700;
+	text-decoration:none;
+}
+.geMenubarContainer {
+	background-color:#E4E3E4;
+}
+.geMenubar {
+	padding:0px 2px 0px 2px;
+	vertical-align:middle;
+}
+.geMenubarContainer .geItem, .geToolbar .geItem {
+	cursor:default;
+	font-size: 14px;
+	display: inline-block;
+	line-height: 20px;
+	padding:6px 15px 6px 15px;
+}
+
+.geMenubarContainer .geItem:hover, .geMenubarContainer .geItem.activeMenu {
+	color: #fff;
+	background:#3D91F7;
+}
+.mxDisabled:hover {
+	background:inherit !important;
+}
+.geMenubar a.geStatus {
+	color:#b3b3b3;
+	padding-left:6px;
+	display:inline-block;
+	cursor:default !important;
+}
+.geMenubar a.geStatus:hover {
+	background:transparent;
+}
+.geMenubarMenu {
+	border:1px solid #d5d5d5 !important;
+}
+.geToolbarContainer {
+	border-top: 1px solid #cbcbcb;
+	border-bottom: 1px solid #cbcbcb;
+	background: linear-gradient(0deg,rgba(216,216,216,1) 0%,rgba(228,227,228,1) 100%);
+	display: flex;
+	justify-content: space-between;
+	padding: 0 12px;
+}
+.geSidebarContainer .geToolbarContainer {
+	background:transparent;
+	border-bottom:none;
+}
+.geSidebarContainer button {
+	text-overflow:ellipsis;
+	overflow:hidden;
+	height: 26px;
+	color: #3b72a8;
+	border: 1px solid #D4D4D4;
+	border-radius: 2px;
+	background: #fff;
+	margin: 0;
+	padding: 0;
+	cursor: pointer;
+	outline: none;
+}
+.geToolbarContainer .geToolbar {
+	padding-top: 12px;
+	overflow: hidden;
+	box-sizing: border-box;
+	flex: 0 0 auto;
+}
+.geToolbarContainer .geToolbar1 {
+	width: 80px;
+}
+
+.geToolbarContainer .geToolbar2 {
+	width: 130px;
+}
+
+.geToolbarContainer .geToolbar3 {
+	width: 360px;
+}
+.geToolbarContainer .geToolbar4 {
+	width: 170px;
+}
+.geToolbarContainer .geToolbar4 a:nth-of-type(4) {
+	clear: left;
+}
+.geToolbarContainer .geToolbar5 {
+	width: 125px;
+}
+.geToolbarContainer .geToolbar6 {
+	width: 100px;
+}
+.geToolbarContainer .geToolbar7 {
+	width: 185px;
+}
+.geToolbarContainer .geToolbar8 {
+	width: 80px;
+}
+.geToolbarContainer .geSeparator {
+	float:left;
+	width:1px;
+	height:104px;
+	background:#e5e5e5;
+	margin-left:6px;
+	margin-right:6px;
+	margin-top:-2px;
+}
+.geToolbarContainer .geButton {
+	float:left;
+	border:1px solid #cac9ca;
+	cursor:pointer;
+	background: #fff;
+	position: relative;
+	box-sizing: border-box;
+}
+.geToolbarContainer .geButton:hover {
+	border-radius:2px;
+	opacity:1;
+	background: #D9E6F6;
+}
+div.mxWindow .geButton {
+	margin: -1px 2px 2px 2px;
+	padding: 1px 2px 2px 1px;
+}
+.geToolbarContainer .geLabel {
+	float:left;
+	cursor:pointer;
+	height: 24px;
+	line-height: 26px;
+	font-size: 12px;
+	margin: 0 -1px;
+	border:1px solid #CAC9CA;
+	background: #fff;
+}
+.geToolbarContainer .geLabel:hover {
+	border-radius:2px;
+	opacity:1;
+	background: #D9E6F6;
+}
+.geToolbarMenu {
+	border:3px solid #e0e0e0 !important;
+	-webkit-box-shadow:none !important;
+	-moz-box-shadow:none !important;
+	box-shadow:none !important;
+	filter:none !important;
+}
+.geDiagramBackdrop {
+	background-color: #ebebeb;
+}
+.geSidebarContainer {
+	background:#F2F2F2;
+	overflow:hidden;
+	position:absolute;
+	border-top:1px solid #CCCCCC;
+	border-bottom:1px solid #CCCCCC;
+	overflow:auto;
+	margin-top: -1px;
+}
+.geSidebar {
+	padding: 4px;
+	font-size: 12px;
+	background:whiteSmoke;
+	border-bottom:1px solid #e5e5e5;
+	overflow:hidden;
+}
+.geSidebarContainer #pageManage {
+	/* padding-left: 20px; */
+}
+.geSidebarContainer #pageManage p {
+	line-height: 24px;
+	padding-left: 30px;
+	background-image: url('/static/images/icons/expand.png');
+	background-repeat: no-repeat;
+	background-position: 13px 50%;
+	background-size: 16px 16px;
+	cursor: pointer;
+}
+.geSidebar .comInput {
+	width: 32px;
+	height: 16px;
+	border: 1px solid #7D7D7D;
+}
+.geSidebarContainer .geTitle {
+	display:block;
+	font-size: 12px;
+	border-bottom:1px solid #cccccc;
+	border-top:1px solid #cccccc;
+	font-weight:bold;
+	padding-left: 20px;
+	margin:0px;
+	margin-top: -1px;
+	cursor:default;
+	background:#FAFAFA;
+	white-space:nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	line-height: 30px;
+	position: relative;
+}
+
+.geSidebarContainer .geTitle #searchWidget,#addPage{
+	float: right;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+	padding: 8px 7px;
+}
+.geSidebarContainer #primitiveManageTitle {
+	display: none;
+}
+#primitiveManage {
+	margin: 20px 0;
+	border: none;
+}
+#primitiveManage .geItem {
+	margin: 0 10px;
+}
+#primitiveManage .geItemTitle {
+	display: none;
+}
+.geSidebarContainer .geSidebar .pageList li{
+	line-height: 24px;
+	height: 24px;
+	padding-left: 30px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	position: relative;
+}
+.geSidebarContainer .geSidebar .pageList li #editPageInput {
+	width: 170px;
+	margin-left: -5px;
+	padding-left: 5px;
+	height: 18px;
+	outline: none;
+	border: none;
+}
+.geSidebarContainer .geSidebar .pageList .currentPage {
+	color: #fff;
+	background: #3D91F7;
+	border-radius: 4px;
+}
+.geTitle img {
+	opacity:0.5;
+}
+.geTitle img:hover {
+	opacity:1;
+}
+.geTitle .geButton {
+	border:1px solid transparent;
+	padding:3px;
+	border-radius:2px;
+}
+.geTitle .geButton:hover {
+	border:1px solid gray;
+}
+.geSidebar .geItem {
+	display:inline-block;
+	background-repeat:no-repeat;
+	background-position: 50% 0;
+	background-size: 36px 36px;
+	border:1px solid transparent;
+	border-radius:2px;
+	cursor: move;
+}
+.geSidebar .geItem:hover {
+	border-radius:2px;
+	opacity:1;
+	background-color: #D9E6F6;
+	background-repeat:no-repeat;
+}
+.geSidebar .geItem .geItemTitle {
+	color: #252525;
+	font-size: 12px;
+	overflow: hidden;
+	text-align: center;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	line-height: 20px;
+}
+.geItem {
+	vertical-align: top;
+	display: inline-block;
+}
+.geSidebarTooltip {
+	position:absolute;
+	background:white;
+	overflow:hidden;
+	border:1px solid gray;
+	border-radius:8px;
+	-webkit-box-shadow:0px 0px 2px 2px #d5d5d5;
+	-moz-box-shadow:0px 0px 2px 2px #d5d5d5;
+	box-shadow:0px 0px 2px 2px #d5d5d5;
+	_filter:progid:DXImageTransform.Microsoft.DropShadow(OffX=2, OffY=2, Color='#d5d5d5', Positive='true');
+}
+.geFooterContainer {
+	background:#e5e5e5;
+	border-top:1px solid #c0c0c0;
+}
+.geFooterContainer a {
+	display:inline-block;
+	box-sizing:border-box;
+	width:100%;
+	white-space:nowrap;
+	font-size:14px;
+	color:#235695;
+	font-weight:bold;
+	text-decoration:none;
+}
+.geFooterContainer table {
+	border-collapse:collapse;
+	margin:0 auto;
+}
+.geFooterContainer td {
+	border-left:1px solid #c0c0c0;
+	border-right:1px solid #c0c0c0;
+}
+.geFooterContainer td:hover {
+	background-color: #b3b3b3;
+}
+.geHsplit {
+	/* cursor:col-resize; */
+	background-color:#e5e5e5;
+	/* background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHBAMAAADdS/HjAAAAGFBMVEUzMzP///9tbW1QUFCKiopBQUF8fHxfX1/IXlmXAAAAHUlEQVQImWMQEGAQFWUQFmYQF2cQEmIQE2MQEQEACy4BF67hpEwAAAAASUVORK5CYII=); */
+	background-repeat:no-repeat;
+	background-position:center center;
+}
+.geVsplit {
+	font-size:1pt;
+	cursor:row-resize;
+	background-color:#e5e5e5;
+	background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAEBAMAAACw6DhOAAAAGFBMVEUzMzP///9tbW1QUFCKiopBQUF8fHxfX1/IXlmXAAAAFElEQVQImWNgNVdzYBAUFBRggLMAEzYBy29kEPgAAAAASUVORK5CYII=);
+	background-repeat:no-repeat;
+	background-position:center center;
+}
+.geHsplit:hover, .geVsplit:hover {
+	background-color:#d5d5d5;
+}
+.selectVariableDialog{
+	width: 400px;
+	height: 330px;
+	border: 1px solid #acacac;
+	border-radius: 4px;
+	position: absolute;
+	z-index: 99999999999999;
+	background: #fff;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+	padding: 30px;
+}
+.selectMultipleVariableDialog {
+    height: 450px;
+}
+.selectVariableDialog .selectedVariables {
+	height: 100px;
+	margin-top: 15px;
+	overflow: auto;
+	padding: 8px;
+	border: 1px solid #EBF0F2;
+	background: #F4F8FA;
+}
+.variableDetail {
+	height: 28px;
+    background: rgba(115,132,138,1);
+    border-radius: 2px;
+    margin-right: 6px;
+    display: inline-block;
+    text-align: center;
+    line-height: 28px;
+    color: #fff;
+	padding: 0 20px;
+	margin-bottom: 14px;
+	position: relative;
+}
+.variableDetail .variableDetailDel{
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 12px;
+    height: 12px;
+    background: #fff;
+    color: red;
+	line-height: 12px;
+	cursor: pointer;
+}
+
+.selectVariableDialog p{
+	margin: 0;
+}
+.selectVariableDialog .searchBox {
+	margin-top: 15px;
+}
+.selectVariableDialog .searchBox input {
+	width:274px;
+	height:28px;
+	background:#fff;
+	padding: 0 0 0 24px;
+	border:1px solid #DCE5E8;
+	border-radius:2px;
+}
+.selectVariableDialog .searchBox button {
+	width:80px;
+	height:30px;
+	background:#3B72A8;
+	border-radius:2px;
+	color: #fff;
+    outline: none;
+    border: none;
+    margin-left: 8px;
+}
+.selectVariableDialog .variablesList{
+	height: 180px;
+	overflow: auto;
+	margin: 15px 0;
+	border: 1px solid #DCE5E8;
+}
+.selectVariableDialog .variablesList p{
+	line-height: 30px;
+	padding-left: 24px;
+	font-size: 14px;
+	margin: 0;
+	cursor: pointer;
+}
+.selectVariableDialog .dialogTitle {
+	font-size: 24px;
+	font-weight: bold;
+}
+.selectVariableDialog .dialogBtns {
+	text-align: center;
+}
+.geDialog {
+	position:absolute;
+	margin: auto;
+	background:#F5F5F5;
+	overflow:hidden;
+	border:1px solid #CCCCCC;
+	border-radius: 4px;
+	-webkit-box-shadow:0px 0px 24px 0px rgba(0, 0, 0, .3);
+	-moz-box-shadow:0px 0px 24px 0px rgba(0, 0, 0, .3);
+	box-shadow:0px 0px 24px 0px rgba(0, 0, 0, .3);
+	z-index: 2;
+	transition: border .6s .1s;
+}
+.geDialog .geDialogTitle {
+	color: #252525;
+	font-size: 12px;
+	line-height: 36px;
+	text-align: center;
+	box-sizing:border-box;
+	white-space:nowrap;
+	position: relative;
+	pointer-events: none;
+	background: linear-gradient(0deg,rgba(216,216,216,1) 0%,rgba(228,227,228,1) 100%);
+}
+.geDialog .geDialogTitle::after {
+	content: '';
+	background: url(/static/images/default/closeDialog.png);
+	background-size: 16px 16px;
+	width: 16px;
+	height: 16px;
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	cursor: pointer;
+	pointer-events: auto;
+}
+.geDialog .geDialogInfo {
+	overflow: hidden;
+	padding: 22px;
+	font-size: 12px;
+}
+.geDialog .tipDialogInfo {
+	padding: 22px;
+	text-align: center;
+}
+.geDialog .tipDialogInfo img {
+	width: 24px;
+	height: 24px;
+}
+.geDialog .tipDialogInfo .tipText{
+	color: #252525;
+	font-size: 14px;
+	line-height: 18px;
+}
+.geDialog .geDialogInfo .btnContent {
+	text-align: right;
+	padding-top: 20px;
+	clear: left;
+}
+.geDialog .geDialogInfo button {
+	text-overflow:ellipsis;
+	overflow:hidden;
+	height: 30px;
+	line-height: 28px;
+	font-size: 12px;
+	border: 1px solid #C4C4C4;
+	color: #252525;
+	border-radius: 2px;
+	background: #fff;
+	margin: 0;
+	padding: 0 10px;
+	cursor: pointer;
+	outline: none;
+	margin-left: 12px;
+}
+.geDialog .geDialogInfo .btnContent .gePrimaryBtn {
+	background: #3D91F7;
+	color: #FFFFFF;
+}
+.geDialog .geDialogInfo button:disabled{
+	background: #e8edee;
+	border-color: #d6dee1;
+	color: #999999;
+}
+.geDialog .geDialogInfo .primitiveIcon {
+	width: 24px;
+	height: 24px;
+	padding: 5px;
+	margin-right: 24px;
+}
+.geDialog .geDialogInfo .primitiveIcon:hover {
+	background-color: #D9E6F6;
+}
+.geDialog .geDialogInfo select, .geDialog .geDialogInfo input[type="text"] {
+	width: 200px;
+	outline: none;
+}
+.geDialog .geDialogLeft {
+	width: 50px;
+	color: #999999;
+	float: left;
+	line-height: 28px;
+	text-align: right;
+}
+.geDialog .geDialogRight {
+	float: left;
+	margin-left: 8px;
+	min-height: 28px;
+}
+.geDialogClose {
+	position:absolute;
+	width:9px;
+	height:9px;
+	opacity:0.5;
+	cursor:pointer;
+	_filter:alpha(opacity=50);
+}
+.geDialogClose:hover {
+	opacity:1;
+}
+.geDialogFooter {
+	background:whiteSmoke;
+	white-space:nowrap;
+	text-align:right;
+	box-sizing:border-box;
+	border-top:1px solid #e5e5e5;
+	color:darkGray;
+}
+.geSprite {
+	background-image:url('data:image/png;base64,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');
+	width:24px;
+	height:24px;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+}
+
+.geToolbar .geSprite {
+	width:24px;
+	height:24px;
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	margin-left: -1px;
+}
+.geBaseButton {
+	padding:10px;
+	border-radius:6px;
+	border:1px solid #c0c0c0;
+	cursor:pointer;
+	background-color:#ececec;
+	background-image:linear-gradient(#ececec 0%, #fcfcfc 100%);
+}
+.geBaseButton:hover {
+	background:#ececec;
+}
+.geBigButton {
+	color:#ffffff;
+	border: none;
+	padding:10px;
+	font-size:14pt;
+	white-space: nowrap;
+	border-radius:6px;
+	text-shadow: rgb(41, 89, 137) 0px 1px 0px;
+	background-color:#428bca;
+	background-image:linear-gradient(rgb(70, 135, 206) 0px, rgb(48, 104, 162) 100%);
+	-webkit-box-shadow: rgba(255, 255, 255, 0.0980392) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.2) 0px 1px 1px 0px;
+	-moz-box-shadow: rgba(255, 255, 255, 0.0980392) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.2) 0px 1px 1px 0px;
+	box-shadow: rgba(255, 255, 255, 0.0980392) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.2) 0px 1px 1px 0px;
+} 
+.geBigButton:hover {
+	background-color:#2d6ca2;
+	background-image: linear-gradient(rgb(90, 148, 211) 0px, rgb(54, 115, 181) 100%);
+}
+.geBigButton:active {
+	background-color: rgb(54, 115, 181);
+	background-image: none;
+}
+@media print {
+	div.geNoPrint { display: none !important; }
+}
+.geToolbar1 .geSprite, .geToolbar8 .geSprite{
+	width: 36px;
+	height: 36px;
+	padding: 10px;
+}
+.geToolbar2 .geSprite{
+	width: 24px;
+	height: 24px;
+	padding: 4px;
+}
+.geToolbar3 .geSprite, .geToolbar6 .geSprite{
+	width: 48px;
+	height: 24px;
+	padding: 4px 16px;
+}
+
+.geToolbar5 .geSprite, .geToolbar7 .geSprite{
+	width: 60px;
+	height: 24px;
+	padding: 4px 22px;
+}
+.geSpriteBtn {
+	float: left;
+	width: 36px;
+	height: 24px;
+}
+.geSprite-new {
+	background-image: url(/static/images/menu/new.png);
+}
+.geSprite::after {
+	position: absolute;
+	font-family: 'MicrosoftYaHei';
+	bottom: -20px;
+	font-size: 11px;
+}
+.geSprite-new::after {
+	content: '新建';
+	left: 6px;
+}
+.geSprite-save {
+	background-image: url(/static/images/menu/save.png);
+}
+.geSprite-save::after {
+	content: '保存';
+	left: 6px;
+}
+.geSprite-zoomin {
+	background-image: url(/static/images/menu/zoomin.png);	
+}
+.geSprite-zoomin::after {
+	content: '缩放';
+	left: 37px;
+}
+.geSprite-fullscreen {
+	background-image: url(/static/images/menu/fullscreen.png);	
+}
+.geSprite-fullscreen::after {
+	content: '全屏';
+	left: 0;
+}
+.geSprite-zoomout {
+	background-image: url(/static/images/menu/zoomout.png);
+}
+.geSprite-copy {
+	background-image: url(/static/images/menu/copy.png);
+}
+.geSprite-copy::after {
+	content: '复制';
+	left: 13px;
+}
+.geSprite-paste {
+	background-image: url(/static/images/menu/paste.png);
+}
+.geSprite-paste::after {
+	content: '粘贴';
+	left: 13px;
+}
+.geSprite-cut {
+	background-image: url(/static/images/menu/cut.png);
+}
+.geSprite-cut::after {
+	content: '剪切';
+	left: 13px;
+}
+.geSprite-duplicate {
+	background-image: url(/static/images/menu/duplicate.png);
+}
+.geSprite-duplicate::after {
+	content: '重复';
+	left: 13px;
+}
+.geSprite-undo {
+	background-image: url(/static/images/menu/undo.png);
+}
+.geSprite-undo::after {
+	content: '撤销';
+	left: 13px;
+}
+.geSprite-redo {
+	background-image: url(/static/images/menu/redo.png);
+}
+.geSprite-redo::after {
+	content: '重做';
+	left: 13px;
+}
+.geSprite-delete {
+	background-image: url(/static/images/menu/delete.png);
+}
+.geSprite-delete::after {
+	content: '删除';
+	left: 13px;
+}
+.geSprite-leftalign {
+	background-image: url(/static/images/menu/left.png);
+}
+.geSprite-centeralign {
+	background-image: url(/static/images/menu/center.png);
+}
+.geSprite-rightalign {
+	background-image: url(/static/images/menu/right.png);
+}
+.geSprite-top {
+	background-image: url(/static/images/menu/top.png);
+}
+.geToolbarContainer .geSprite-bottom {
+	background-image: url(/static/images/menu/bottom.png);
+}
+.geSprite-verticalalign {
+	background-image: url(/static/images/menu/verticalalign.png);
+}
+.geSprite-verticalcenter {
+	background-image: url(/static/images/menu/verticalcenter.png);
+}
+.geSprite-horizontalcenter {
+	background-image: url(/static/images/menu/horizontalcenter.png);
+}
+.geSprite-horizontalalign {
+	background-image: url(/static/images/menu/horizontalalign.png);
+}
+.geSprite-tofront {
+	background-image: url(/static/images/menu/tofront.png);
+}
+.geSprite-tofront::after {
+	content: '置于顶层';
+	left: 6px;
+}
+.geSprite-toback {
+	background-image: url(/static/images/menu/toback.png);
+}
+.geSprite-toback::after {
+	content: '置于底层';
+	left: 6px;
+}
+.geSprite-group {
+	background-image: url(/static/images/menu/group.png);
+}
+.geSprite-group::after {
+	content: '组合';
+	left: 13px;
+}
+.geSprite-ungroup {
+	background-image: url(/static/images/menu/ungroup.png);
+}
+.geSprite-ungroup::after {
+	content: '取消组合';
+	left: 0px;
+}
+.geSprite-flipv {
+	background-image: url(/static/images/menu/flipv.png);
+}
+.geSprite-flipv::after {
+	content: '垂直翻转';
+	left: 6px;
+}
+.geSprite-fliph {
+	background-image: url(/static/images/menu/fliph.png);
+}
+.geSprite-fliph::after {
+	content: '水平翻转';
+	left: 6px;
+}
+.geSprite-turn {
+	background-image: url(/static/images/menu/turn.png);
+}
+.geSprite-turn::after {
+	content: '旋转90';
+	left: 12px;
+}
+.geSprite-linkreport {
+	background-image: url(/static/images/menu/link.png);
+}
+.geSprite-linkreport::after {
+	content: '链接';
+	left: 6px;
+}
+.geSprite-previewapply {
+	background-image: url(/static/images/menu/preview.png);
+}
+.geSprite-previewapply::after {
+	content: '预览';
+	left: 6px;
+}
+.geSprite-publish {
+	background-image: url(/static/images/menu/publish.png);
+}
+.geSprite-publish::after {
+	content: '发布';
+	left: 6px;
+}
+.geSprite-limit {
+	cursor: pointer;
+	float: left;
+	margin-left: -10px;
+	background-size: 16px  16px;
+	background-image: url(/static/images/icons/limit.png);
+}
+.geSprite-unlimit {
+	background-image: url(/static/images/icons/unlimit.png);
+}
+.geSpriteBtn {
+	cursor: pointer;
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+	border: 1px solid #CAC9CA;
+	background-color: #fff;
+}
+.geSprite-left { 
+	background-image: url(/static/images/icons/left.png)
+}
+.geSprite-center { 
+	margin: 0 -1px;
+	background-image: url(/static/images/icons/center.png);
+}
+.geSprite-right { 
+	background-image: url(/static/images/icons/right.png)
+}
+.geSpriteBtn.geSprite-top {
+	margin-left: 5px;
+	background-position-y: 0;
+	background-image: url(/static/images/icons/vertical.png);
+}
+.geSprite-middle { 
+	margin: 0 -1px;
+	background-image: url(/static/images/icons/vertical.png);
+}
+.geSprite-bottom { 
+	background-position-y: 10px;
+	background-image: url(/static/images/icons/vertical.png);
+}
+html div.mxRubberband {
+	border-color:#0000DD;
+	background:#99ccff;
+}
+td.mxPopupMenuIcon div {
+	width:16px;
+	height:16px;
+}
+html div.mxPopupMenu {
+	-webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0 , .3);
+	-moz-box-shadow: 0 0 10px 0 rgba(0, 0, 0 , .3);
+	box-shadow: 0 0 10px 0 rgba(0, 0, 0 , .3);
+	background:#F5F5F5;
+	position:absolute;
+	border:1px solid #CCCCCC;
+	border-radius: 2px;
+	padding: 6px 0;
+}
+html table.mxPopupMenu {
+	border-collapse:collapse;
+	margin:0px;
+}
+html td.mxPopupMenuItem {
+	padding: 5px 5px 5px 15px;
+	font-size: 14px;
+	color: #252525;
+	line-height: 14px;
+}
+html td.mxPopupMenuIcon {
+	background-color:white;
+	padding:0px;
+}
+td.mxPopupMenuIcon .geIcon {
+	padding:2px;
+	padding-bottom:4px;
+	margin:2px;
+	border:1px solid transparent;
+	opacity:0.5;
+	_width:26px;
+	_height:26px;
+}
+td.mxPopupMenuIcon .geIcon:hover {
+	border:1px solid gray;
+	border-radius:2px;
+	opacity:1;
+}
+html tr.mxPopupMenuItemHover {
+	color: #fff;
+	background:#3D91F7;
+}
+html tr.mxPopupMenuItemHover td, tr.mxPopupMenuItemHover td span {
+	color: #fff;
+}
+table.mxPopupMenu hr {
+	color:#cccccc;
+	background-color:#cccccc;
+	border:none;
+	height:1px;
+}
+table.mxPopupMenu tr {
+	font-size: 14px;
+}
+html td.mxWindowTitle {
+ 	text-align:left;
+ 	font-size:12px;
+ 	color:rgb(112, 112, 112);
+ 	padding:4px;
+}
+.geDialog .geDialogInfo .saveFileInput, .geDialog .geDialogInfo .dialogSelect {
+	width:100%;
+	height:32px;
+	border:1px solid #C5C5C5;
+	border-radius:2px;
+	outline: none;
+	padding-left: 14px;
+	min-height: 32px;
+	resize: vertical;
+}
+.geDialog .geDialogInfo .dialogBtn {
+	margin: 0;
+	width: 64px;
+	height: 32px;
+	color: #252525;
+	background: #FFFFFF;
+}
+.geDialog .geDialogInfo #variableBtn {
+	width: 120px
+}
+.geDialog .geDialogInfo .saveFileInput:focus {
+	border: 2px solid #3D91F7;
+}
+.geDialog .geDialogInfo .geDialogInfoTitle {
+	margin: 9px 0 5px;
+	color: #929292;
+}
+.geDialog .geDialogInfo td.geDialogInfoTitle {
+	padding: 11px 0 4px;
+}
+.geDialog .geDialogInfo .geDialogInfoTitle .addVariableBtn {
+	width: 45px;
+	height: 24px;
+	color: #252525;
+	text-align: right;
+	line-height: 24px;
+	padding-right: 11px;
+	display: inline-block;
+	cursor: default;
+	border: 1px solid #C5C5C5;
+	background: url(/static/images/icons/addPage.png) no-repeat 5px center/16px 16px;
+}
+.geDialog .geDialogInfo .geDialogInfoTitle .addModelBtn {
+	width: 84px;
+	height: 24px;
+	line-height: 22px;
+	font-size: 12px;
+	border: 1px solid #C4C4C4;
+	color: #252525;
+	border-radius: 2px;
+	background: #fff;
+	margin: 0;
+	padding: 0 10px;
+	cursor: pointer;
+	outline: none;
+	margin-left: 12px;
+}
+.geDialog .geDialogInfo .dataDialogList {
+	width: 100%;
+	overflow-y: auto;
+	padding: 6px 12px;
+	background-color: #FFFFFF;
+	border: 1px solid #C5C5C5;
+}
+.geDialog .geDialogInfo .variablesList {
+	height: 60px;
+}
+.geDialog .geDialogInfo .modelList, .geDialog .geDialogInfo .executeList {
+	height: 120px;
+}
+.geDialog .geDialogInfo .modelList .addModelBtn {
+	height: 24px;
+	color: #252525;
+	line-height: 24px;
+	display: inline-block;
+	padding: 0 12px;
+	margin-left: 6px;
+	border: 1px solid #C5C5C5;
+	border-radius: 2px;
+}
+.geDialog .geDialogInfo .dataDialogList li {
+	width: 100%;
+	color: #252525;
+	height: 24px;
+	line-height: 24px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	display: inline-block;
+	white-space: nowrap;
+}
+.geLogo {
+	float: left;
+	width: 20px;
+	margin: 6px 12px 0 12px;
+}
+.imageRadio {
+	display: block;
+	color: #252525;
+	margin: 12px 0;
+	position: relative;
+	cursor: pointer;
+}
+.imageRadio .imageTypeRadio {
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin-right: 7px;
+}
+.imageRadio #chooseImage {
+	position: absolute;
+	left: 0;
+	top: 0;
+	opacity: 0;
+	z-index: 9999;
+	cursor: pointer;
+	width: 90px;
+	height: 16px;
+}
+#innerImageBox {
+	height: 160px;
+	border: 1px solid #D4D4D4;
+	border-radius: 2px;
+	overflow-y: auto;
+	padding: 12px 20px;
+}
+#innerImageBox li {
+	cursor: pointer;
+	color: #252525;
+	line-height: 24px;
+	padding-left: 16px;
+	padding-right: 30px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+#innerImageBox .innerImageType {
+	padding-left: 16px;
+	background-position: 0 4px;
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+}
+#innerImageBox .innerImageList {
+	overflow: hidden;
+}
+#innerImageBox .innerImageList #checkedImage {
+	color: #ffffff;
+	border-radius: 2px;
+	background-color: #3D91F7;
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+	background-position: right 10px top 50%;
+	background-image: url(/static/images/icons/checked_white.png);
+}
+.expandedImage {
+	background-image: url(/static/images/menu/expandedImage.png)
+}
+.collapsedImage {
+	background-image: url(/static/images/menu/collapsedImage.png)
+}
+.selectTag {
+	width: 100%;
+	height: 100%;
+	width: calc(100% - 2px) \9;
+	height: calc(100% - 2px) \9;
+	float: left;
+	border: none;
+}
+button.buttonTag, input.inputTag {
+	background: #fff;
+	border: none;
+	display: block;
+	width: calc(100% - 2px);
+	height: calc(100% - 2px);
+}
+.selectTagShade {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	z-index: 99999;
+	background: transparent;
+}
+.innerPropsOperate {
+	height: 36px;
+	padding-bottom: 20px;
+}
+.innerPropsOperate img {
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin-right: 20px;
+	cursor: pointer;
+}
+#innerPropsList {
+	height: 180px;
+	padding: 12px 0;
+	background: #fff;
+	border-radius: 2px;
+	overflow-y: auto;
+}
+#innerPropsList li {
+	height: 28px;
+	line-height: 28px;
+	padding-left: 12px;
+	position: relative;
+}
+#innerPropsList li .editInput {
+	position: absolute;
+	top: 0;
+	left: 30px;
+	width: 333px;
+	height: 28px;
+	padding: 0;
+	margin: 0;
+	border: 1px solid #DCE5E8;
+}
+#innerPropsList li.active {
+	background-color: #D9E6F6
+}
+#innerPropsList li input {
+	float: left;
+	margin: 6px 6px 0 0;
+}
+#innerPropsList li span {
+	font-size: 14px;
+	float: left;
+	cursor: default;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: calc(100% - 22px);
+}
+.geDialog .geDialogInfo .searchBox {
+	overflow: hidden;
+}
+.geDialog .geDialogInfo .searchBox input {
+	width: 290px;
+	float: left;
+	padding-left: 34px;
+	margin-bottom: 12px;
+	background: url(/static/images/default/search.png) no-repeat 12px 8px #fff;
+	background-size: 16px 16px;
+}
+.geDialog .geDialogInfo .searchBox button {
+	float: left;
+	width: 60px;
+}
+.geDialog .geDialogInfo .operateList {
+	float: left;
+	width: 40px;
+	height: 52px;
+	padding: 0 8px;
+	transform: translateY(74px);
+}
+.geDialog .geDialogInfo .increment, .geDialog .geDialogInfo .decrement {
+	color: #fff;
+	background-color: #3D91F7;
+	width: 24px;
+	height: 20px;
+	line-height: 20px;
+	text-align: center;
+	margin: 3px 0;
+	cursor: default;
+}
+.geDialog .geDialogInfo .disabledCrement {
+	color: #CECECE;
+	height: 22px;
+	border: 1px solid #CECECE;
+	background: transparent;
+}
+.geDialog .geDialogInfo .variableList {
+	width: 160px;
+	height: 200px;
+	float: left;
+	overflow: auto;
+	padding: 7px 0;
+	border-radius: 2px;
+	border: 1px solid #C5C5C5;
+}
+.geDialog .geDialogInfo .variableList li {
+	height: 24px;
+	font-size: 14px;
+	line-height: 24px;
+	padding: 0 25px 0 10px;
+	border-top: 1px solid #f5f5f5;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	cursor: default;
+}
+.geDialog .geDialogInfo .variableList li.active {
+	color: #fff;
+	background-color: #3D91F7;
+	background-image: url(/static/images/default/checked.png);
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
+	background-position: right 9px top 4px;
+	border-top: 1px solid #78c3ef;
+}
+#pageContextMenu {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: none;
+	z-index: 999999;
+	color: #252525;
+	background: #F5F5F5;
+	border: 1px solid #CCCCCC;
+	border-radius: 2px;
+	box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.3);
+}
+#pageContextMenu li {
+	height: 24px;
+	font-size: 14px;
+	padding: 0 15px;
+	cursor: default;
+	line-height: 24px;
+}
+#pageContextMenu li:hover {
+	color: #fff;
+	background-color: #3D91F7;
+}
+#pageContextMenu li:nth-of-type(2), #pageContextMenu li:nth-of-type(4) {
+	margin-bottom: 6px;
+	border-bottom: 1px solid #cccccc;
+}
+.formatPannel {
+	height: calc(100% - 34px);
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding: 0 6px 12px;
+}
+.geFormatContainer .pageSet select {
+	height: 24px !important;
+}
+.geFormatContainer .formatMiddleBtn {
+	float: left;
+	border: 1px solid #D4D4D4;
+	height: 24px;
+	width: 118px;
+	text-align: center;
+	line-height: 16px;
+	box-sizing: border-box;
+	padding: 3px;
+	background-color: #fff;
+}
+.geFormatContainer .formatLargeInput, .gePaletteManageContainer .formatLargeInput {
+	width: 218px;
+	height: 24px;
+	padding: 3px;
+	border: 1px solid #cccccc;
+}
+.geFormatContainer .formatMiddleInput, .formatMiddleSelect {
+	width: 80px;
+	height: 24px;
+	float: left;
+	border: 1px solid #cccccc;
+	border-radius: 2px;
+}
+.formatMiddleSelect:disabled {
+	color: #999999;
+	background: #E9EEF3;
+}
+#paletteManageList li {
+	height: 24px;
+	font-size: 12px;
+	line-height: 24px;
+	padding-left: 24px;
+	background-repeat: no-repeat;
+	background-size: 16px;
+	background-position: 4px 50%;
+}
+#paletteManageList li.paletteActive {
+	color: #fff;
+	background-color: #3D91F7;
+}
+.gePaletteManageContainer .formatLargeInput {
+	width: 222px;
+	margin: 6px 4px;
+}
+.formatPannel .formatSmallBtn {
+	width: 60px;
+	margin: 12px 0;
+	color: #252525;
+}
+.formatPannel .infoTxt {
+	cursor: pointer;
+	position: relative;
+	border-radius: 2px;
+	white-space: pre-wrap;
+	padding: 6px 6px 28px;
+	border: 1px solid #D4D4D4;
+	margin-bottom: 6px;
+}
+.formatPannel .infoTxt .editIcon {
+	float: right;
+	width: 16px;
+	height: 16px;
+	position: absolute;
+	right: 24px;
+	bottom: 6px;
+}
+.formatPannel .infoTxt .delIcon {
+	float: right;
+	width: 16px;
+	height: 16px;
+	position: absolute;
+	right: 6px;
+	bottom: 6px;
+}
+.formatPannel .pageList  {
+	width: 198px;
+	height: 127px;
+	margin-left: 20px;
+	border: 1px solid #D4D4D4;
+	overflow-y: auto;
+}
+.formatPannel .pageList li{
+	height: 24px;
+	line-height: 24px;
+	padding-left: 6px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.formatPannel .pageList li.formatPageActive {
+	color: #fff;
+	background-color: #3D91F7;
+}
+.formatPannel .outLink {
+	width: 198px;
+	height: 24px;
+	margin-left: 20px;
+	border: 1px solid #D4D4D4;
+}
+#loadingText {
+	font-size: 14px;
+	margin-bottom: 12px;
+	color: #333333;
+	font-weight: bold;
+	text-align: center;
+}
+.geLoadingBar {
+	height: 4px;
+	border-radius: 2px;
+	background: #D4D4D4;
+}
+.geLoadingBarInner {
+	width: 0;
+	border-radius: 2px;
+	border: 2px solid #3D91F7;
+	transition: width .4s linear 0s;
+}
+.background {
+	position: absolute;
+	background: white;
+	height: 937px;
+	right: 0px;
+	z-index: 10003;
+	opacity: 0;
+	left: 0px;
+	top: 0px;
+}
+.tipDialogInfo {
+	position: absolute;
+	z-index: 99999;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+	background: #F5F5F5;
+	overflow: hidden;
+	border: 1px solid #CCCCCC;
+	border-radius: 4px;
+	height: 80px;
+	width: 120px;
+	text-align: center;
+	padding: 18px 0;
+}
+.tipDialogInfo img {
+	width: 24px;
+	height: 24px;
+}
+.tipDialogInfo p {
+	font-size: 12px;
+}

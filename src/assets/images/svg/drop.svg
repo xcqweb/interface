@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="19" height="25" viewBox="0 0 19 25">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #7d7d7d;
+        stroke-width: 1px;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path id="Drop" class="cls-1" d="M3727.78,1370.35L3735,1380l7.22-9.65A9,9,0,1,0,3727.78,1370.35Z" transform="translate(-3725.5 -1355.5)"/>
+</svg>
