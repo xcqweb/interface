@@ -1,27 +1,20 @@
-module.exports = function (api) {
-  api.cache(true);
-  const  presets = [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          "browsers": [
-            "ie>=11",
-            "chrome>=62"
-          ],
-          "node": "8.9.0",
-          "safari": "11.1"
-        },
-        "modules": false,
-        "debug": true,
-        "useBuiltIns": false 
-      }
+module.exports = {
+    "presets": [
+        ["@babel/preset-env", {
+            "modules": false,
+            "targets": {
+                "browsers": ["> 1%", "last 2 versions", "not ie <= 8"]
+            },
+        }]
+    ],
+    "plugins": [
+        [
+            "component",
+            {
+                "libraryName": "element-ui",
+                "styleLibraryName": "theme-chalk"
+            }
+        ],
+        "dynamic-import-webpack",//动态组件加载
     ]
-  ]
-  const plugins =  []
-
-  return {
-    presets,
-    plugins
-  };
 }
