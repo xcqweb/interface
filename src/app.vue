@@ -20,12 +20,11 @@ export default {
     },
     beforeCreate() {
         let {search} = window.location
-        console.log(search)
         if(search.includes("preview=1")) {
             let split1 = search.split("&")
             let split2 = split1[1].split("=")
             this.$router.push({
-                path: "/preview",
+                path: "/interface_preview",
                 query: {
                     id: split2[1]
                 }

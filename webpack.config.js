@@ -134,7 +134,7 @@ module.exports = {
         ]),
     ],
     devServer: {
-        contentBase: path.join(__dirname, "dist"), //打包输出文件根目录
+        contentBase: path.join(__dirname, "interface"), //打包输出文件根目录
         port: 8080, // 端口
         host: '0.0.0.0',
         historyApiFallback: true,//history 模式路由刷新 404 

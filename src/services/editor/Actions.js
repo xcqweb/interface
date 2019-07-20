@@ -191,7 +191,7 @@ Actions.prototype.init = function()
     this.addAction('previewapply', function() {		
         var dlg = new PreviewDialog(ui, function(id){
             let page = router.resolve({
-                path: "/preview",
+                path: "/interface_preview",
                 query: {
                     id: id
                 }
