@@ -23,7 +23,7 @@ export default {
         }
     },
     mounted() {
-        window.mxUtils.getAll(['/static/resources/grapheditor.txt', '/static/default.xml'], function(xhr) {
+        window.mxUtils.getAll(['../static/resources/grapheditor.txt', '../static/default.xml'], function(xhr) {
             window.mxResources.parse(xhr[0].getText());
             // 默认配置
             var themes = new Object();
