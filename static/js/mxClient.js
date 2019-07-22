@@ -319,7 +319,6 @@ var mxClient =
 	loadResources: function(fn, lan)
 	{
 		var pending = mxClient.defaultBundles.length;
-		
 		function callback()
 		{
 			if (--pending == 0)
@@ -27524,9 +27523,9 @@ mxImageShape.prototype.paintVertexShape = function(c, x, y, w, h)
 			c.rect(x, y, w, h);
 			c.fillAndStroke();
 		}
-
+		var $index = this.image.indexOf('/image.png')
 		// FlipH/V are implicit via mxShape.updateTransform
-		c.image(x, y, w, h, this.image, mxGeometry.prototype.IMAGE_RATIO > 0 ? true : false, false, false);
+		c.image(x, y, w, h, this.image, $index > 0 ? false : true, false, false);
 		
 		var stroke = mxUtils.getValue(this.style, mxConstants.STYLE_IMAGE_BORDER, null);
 		

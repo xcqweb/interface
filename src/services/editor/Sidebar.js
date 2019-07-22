@@ -1249,10 +1249,10 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         }),
         // 复选
         // this.createVertexTemplateEntry('shape=multipleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="checkbox" class="inputTag1" />', '复选'),
-        this.createVertexTemplateEntry('shape=multipleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/multipleCheck.png', 40, 16, '', '复选'),
+        this.createVertexTemplateEntry('shape=multipleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/multipleCheck.png', 16, 16, '', '复选'),
         // 单选
         // this.createVertexTemplateEntry('shape=singleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="radio" class="inputTag" />', '单选'),
-        this.createVertexTemplateEntry('shape=singleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/singleCheck.png', 40, 16, '', '单选'),
+        this.createVertexTemplateEntry('shape=singleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/singleCheck.png', 16, 16, '', '单选'),
         // 图片
         this.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
         // 下拉列表
@@ -1314,6 +1314,7 @@ Sidebar.prototype.createTitle = function(label, id)
 {
     var elt = document.createElement('a');
     elt.setAttribute('href', 'javascript:void(0);');
+    elt.setAttribute('ondragstart', 'return false;');
     elt.setAttribute('title', mxResources.get('sidebarTooltip'));
     elt.className = 'geTitle';
     elt.id = id + 'Title';
@@ -1429,7 +1430,8 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
 {
     var elt = document.createElement('a');
     var ui = this.editorUi;
-    elt.setAttribute('href', 'javascript:void(0);');
+    elt.setAttribute('href', "javascript:void(0);");
+    elt.setAttribute('ondragstart', 'return false;');
     elt.className = 'geItem';
     elt.style.overflow = 'hidden';
     var border = (mxClient.IS_QUIRKS) ? 8 + 2 * this.thumbPadding : 2 * this.thumbBorder;

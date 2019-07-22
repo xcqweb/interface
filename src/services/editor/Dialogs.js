@@ -467,7 +467,6 @@ let FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
             var dlg = saveContent.parentNode;
             var graph = editorUi.editor.graph;
             var dropElt = null;
-				
             mxEvent.addListener(dlg, 'dragleave', function(evt)
             {
                 if (dropElt != null)
@@ -906,33 +905,22 @@ let ImageDialog = function(editorUi, cell) {
 		var cells = graph.getSelectionCells();
 		var updateImg = function (newValue) {
 			let prefix = 'getechFileSystem/'
-			let originVal = newValue
 			newValue =  prefix + newValue
 			
-			let img = new Image()
-			img.src = window.fileSystem +'/'+originVal
-			img.onload = function(){
-				console.log('imgHeight:'+img.height,'imgWidth:'+img.width)
-				let geometry = graph.getSelectionCell().geometry
-				let {x,y,width,height} = geometry
-				console.log(geometry)
-				geometry.__proto__.IMAGE_RATIO = width/height
-				geometry.setRect(x,y,img.width,img.height)
-				graph.getModel().beginUpdate();
-				try {
-					console.log(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
-					graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
-				}
-				finally {
-					graph.getModel().endUpdate();
-				}
-		
-				if (select != null) {
-					graph.setSelectionCells(select);
-					graph.scrollCellToVisible(select[0]);
-				}
-				editorUi.hideDialog();
-				}
+            graph.getModel().beginUpdate();
+            try {
+                console.log(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
+                graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
+            }
+            finally {
+                graph.getModel().endUpdate();
+            }
+    
+            if (select != null) {
+                graph.setSelectionCells(select);
+                graph.scrollCellToVisible(select[0]);
+            }
+            editorUi.hideDialog();
 		}
         var newValue;
         // 选择的是本地文件，上传文件
@@ -1419,7 +1407,6 @@ var PaletteDataDialog = function(editorUi, cell) {
             params: choosedParam,
             fillVariable: $('.fillVariable:checked').val() == 'true'
         }
-		
         graph.getModel().beginUpdate();
         try {
             modelInfo.setAttribute('bindData', JSON.stringify(bindData));

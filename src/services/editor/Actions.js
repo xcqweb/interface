@@ -9,7 +9,9 @@ import router from '../../router'
 import {
     PreviewDialog,
     PublishDialog,
-    addPageDialog
+    addPageDialog,
+    ImageDialog,
+    PaletteDataDialog
 } from '../editor/Dialogs'
 let mxUtils = window.mxUtils
 function Actions(editorUi)
