@@ -11,7 +11,10 @@ import {
     PublishDialog,
     addPageDialog,
     ImageDialog,
-    PaletteDataDialog
+    PaletteDataDialog,
+    SelectPropDialog,
+    ConfigLinkDialog,
+    ChangePrimitiveDialog
 } from '../editor/Dialogs'
 let mxUtils = window.mxUtils
 function Actions(editorUi)

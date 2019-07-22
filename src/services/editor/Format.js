@@ -2544,7 +2544,7 @@ ActionsPanel.prototype.createInfoBox = function(container, actionsInfo, i) {
     var editor = ui.editor;
     var graph = editor.graph;
     var cell = graph.getSelectionCell();
-
+    var pageName = ''
     // 信息
     var info = actionsInfo[i]
     var infoTxt = document.createElement('p');

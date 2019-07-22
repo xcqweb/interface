@@ -27747,7 +27747,7 @@ mxLabel.prototype.paintForeground = function(c, x, y, w, h)
  * Generic background painting implementation.
  */
 mxLabel.prototype.paintImage = function(c, x, y, w, h)
-{
+{debugger
 	if (this.image != null)
 	{
 		var bounds = this.getImageBounds(x, y, w, h);
