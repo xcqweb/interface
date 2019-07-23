@@ -772,6 +772,7 @@ Menubar.prototype.addMenu = function(label, funct, before)
 {
     var elt = document.createElement('a');
     elt.setAttribute('href', 'javascript:void(0);');
+    elt.setAttribute('ondragstart', 'return false;');
     elt.className = 'geItem';
     mxUtils.write(elt, label);
     this.addMenuHandler(elt, funct);

@@ -341,6 +341,7 @@ Toolbar.prototype.createButton = function(classname)
 {
     var elt = document.createElement('a');
     elt.setAttribute('href', 'javascript:void(0);');
+    elt.setAttribute('ondragstart', 'return false;');
     elt.className = 'geButton';
 
     var inner = document.createElement('div');
@@ -362,6 +363,7 @@ Toolbar.prototype.createLabel = function(label, tooltip)
 {
     var elt = document.createElement('a');
     elt.setAttribute('href', 'javascript:void(0);');
+    elt.setAttribute('ondragstart', 'return false;');
     elt.className = 'geLabel';
     mxUtils.write(elt, label);
 	

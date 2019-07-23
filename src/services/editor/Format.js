@@ -2,7 +2,8 @@
 /**
  * Copyright (c) 2006-2012, JGraph Ltd
  */
-Format = function(editorUi, container)
+import {ChangePageSetup} from './Init'
+export var Format = function(editorUi, container)
 {
     this.editorUi = editorUi;
     this.container = container;
@@ -1462,7 +1463,7 @@ PageSetPanel.prototype.addPageColor = function(container) {
         {
             newBackgroundColor = color;
             updateBackgroundColor();
-            newBackgroundImage = graph.backgroundImage;
+            var newBackgroundImage = graph.backgroundImage;
             var change = new ChangePageSetup(ui, newBackgroundColor,
                 newBackgroundImage, accessor.get());
             change.ignoreColor = graph.background == newBackgroundColor;
@@ -2250,7 +2251,7 @@ ArrangePanel.prototype.alignFont = function(container) {
     // 监听选中状态
     var listener = mxUtils.bind(this, function(sender, evt, force)
     {
-        ss = graph.getView().getState(graph.getSelectionCell());
+        var ss = graph.getView().getState(graph.getSelectionCell());
         // 水平对齐
         var align = mxUtils.getValue(ss.style, mxConstants.STYLE_ALIGN, mxConstants.ALIGN_CENTER);
         setSelected(left, align == mxConstants.ALIGN_LEFT, mxConstants.ALIGN_LEFT);
@@ -2423,7 +2424,7 @@ ArrangePanel.prototype.addStroke = function(container)
 /**
  * 交互面板
  */
-ActionsPanel = function(format, editorUi, container)
+var ActionsPanel = function(format, editorUi, container)
 {
     BaseFormatPanel.call(this, format, editorUi, container);
     this.init(container);
@@ -2543,7 +2544,7 @@ ActionsPanel.prototype.createInfoBox = function(container, actionsInfo, i) {
     var editor = ui.editor;
     var graph = editor.graph;
     var cell = graph.getSelectionCell();
-
+    var pageName = ''
     // 信息
     var info = actionsInfo[i]
     var infoTxt = document.createElement('p');
