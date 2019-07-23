@@ -1107,8 +1107,9 @@ Actions.prototype.init = function()
 	
 	
     // 编辑图片
-    this.addAction('image', function() {
+    this.addAction('image', function(e) {
         var cell = graph.getSelectionCell();
+        console.log(e,cell,cell.children)
         var dlg = new ImageDialog(ui, cell)
         ui.showDialog(dlg.container, 410, 370, true, false, null, null, '选择图片');
         dlg.init()

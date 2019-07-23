@@ -906,7 +906,6 @@ let ImageDialog = function(editorUi, cell) {
 		var updateImg = function (newValue) {
 			let prefix = 'getechFileSystem/'
 			newValue =  prefix + newValue
-			
             graph.getModel().beginUpdate();
             try {
                 console.log(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);

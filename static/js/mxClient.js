@@ -27523,7 +27523,7 @@ mxImageShape.prototype.paintVertexShape = function(c, x, y, w, h)
 			c.rect(x, y, w, h);
 			c.fillAndStroke();
 		}
-		var $index = this.image.indexOf('/image.png')
+		var $index = this.image.indexOf('/basic/image.png');
 		// FlipH/V are implicit via mxShape.updateTransform
 		c.image(x, y, w, h, this.image, $index > 0 ? false : true, false, false);
 		
@@ -27747,7 +27747,7 @@ mxLabel.prototype.paintForeground = function(c, x, y, w, h)
  * Generic background painting implementation.
  */
 mxLabel.prototype.paintImage = function(c, x, y, w, h)
-{debugger
+{
 	if (this.image != null)
 	{
 		var bounds = this.getImageBounds(x, y, w, h);
