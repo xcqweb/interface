@@ -86,7 +86,6 @@ async function getLastData() {
   for(let key of pointParams){
     points.push(key.params)
   }
-  console.log(pointParams)
   const params = [{
     pointId: pointParams[0].pointId,
     keys: points
@@ -119,7 +118,6 @@ async function getsubscribeInfos(isReal){
   };
   
   const data = await geAjax('/api/subscribe', 'POST',JSON.stringify(params));
-  console.log(data)
   isReal?(websocketUrl_real = data.data):(websocketUrl_alarm = data.data)
   return data
 }
@@ -221,7 +219,8 @@ function setterAlarmdata(res) {
   }
   // 渲染弹窗
   pointData[resData.pointId] = resData;
-  if(!resData.alarm) {
+  console.log(resData)
+  if(resData.alarm) {
     oldRightInfo[resData.pointId] = resData;
   }
   if (layerData && layerData.point === resData.pointId) {
@@ -237,7 +236,7 @@ function initialWs (ws, pageId,type) {
   ws.onmessage = function (res) {
     let data = JSON.parse(res.data)
     let dataArr = Object.keys(data)
-    if(dataArr[0] === 'rspCode' || dataArr[1] === 'rspMsg')return
+    if(dataArr[0] === 'rspCode' || dataArr[1] === 'rspMsg') return
     if(type === 'real'){
       throttle(setterReleData(res),600)
     }else{
@@ -1121,6 +1120,7 @@ class PreviewPage {
         //   formatLayer.appendChild(rightKeys);
         // }
         formatLayer.innerHTML = '';
+        console.log(oldRightInfo)
         const data = Object.assign({}, oldRightInfo[layerData.point]);
         if (!Object.keys(data).length) {return;}
         let params = [{name: 'timestamp'}].concat(layerData.params)
@@ -1129,6 +1129,8 @@ class PreviewPage {
         let rightKeys = document.createElement('ul');
         rightKeys.id = 'rightKeys';
         // 填充内容
+        console.log(layerData)
+        console.log(params)
         for (let param of params) {
             let leftInfo = document.createElement('li');
             leftInfo.innerHTML = `${param.name}=`;
@@ -1139,6 +1141,7 @@ class PreviewPage {
         }
         formatLayer.appendChild(leftKeys);
         formatLayer.appendChild(rightKeys);
+        console.log(formatLayer)
     }
 }
 

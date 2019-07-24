@@ -1649,7 +1649,9 @@ function getModels(editorUi, modelEle, pointId, paramId, closeDialog = false) {
     if (pointId && paramId) {
         editorUi.editor.ajax(editorUi, '/api/viewTool/model/serach', 'POST', {pointId, paramId}, function(res) {
             modelData = [].concat(res);
-            fillModelList(modelEle, modelData);
+            if(res && res.length){
+                fillModelList(modelEle, modelData);
+            }
         }, null, '获取应用模型中···')
     } else {
         fillModelList(modelEle, modelData);
