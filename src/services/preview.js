@@ -21,7 +21,7 @@ const defaultStyle = {
     fontSize: '12px'
 }
 // 浮窗节点
-const formatLayer = document.getElementById('formatLayer');
+let formatLayer;
 let layerData = null;
 let formatLayerFlag = false;
 // websocket信息
@@ -1154,6 +1154,7 @@ class Main {
     // 初始化
     async init() {
         gePreview = document.getElementById('gePreview');
+        formatLayer = document.getElementById('formatLayer')
         let id = /id=(.+?)$/.exec(location.search);
         let preview_data = null;
         if ( id ) {
