@@ -1,5 +1,7 @@
 <template>
-  <div>
+  <div
+    style="height: 100%;overflow: scroll;"
+  >
     <!-- 内容主体 -->
     <div id="gePreview" />
     <!-- 跟随内容浮窗 -->
