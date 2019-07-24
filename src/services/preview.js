@@ -799,24 +799,43 @@ class PreviewPage {
                         height = height < 10 ? 10 : height;
                         if (shapeName !== 'curve') {
                             if (shapeName === 'endarrow') {
-                                if (points.target[0] == 0 || points.target[1] == 0) {
+                               /*  if (points.target[0] == 0) {
                                     if(points.source[0]<points.source[1]){
-                                          if (points.target[0] <= points.target[1]) {
-                                              points.target[0] += 4;
-                                          } else {
-                                              points.target[1] += 4;
-                                          }
-                                    } else if (points.target[0] == 0 && points.target[1] == 0) {
-                                        points.target[1]+=4;
+                                        points.target[0] -= 4;
                                     } else{
-                                         points.target[1] -= 4;
+                                        points.target[1] -= 4;
                                     }
-                                } else if (points.source[0] == 0 || points.source[1] == 0) {
+                                } else if (points.source[0] == 0) {
                                      if (points.target[0] <= points.target[1]) {
                                          points.target[0] -= 4;
                                      } else {
                                          points.target[1] -= 4;
                                      }
+                                } */
+                                if (points.target[0] == 0 && points.target[1] == 0) {
+                                    if (points.source[0] < points.source[1]){
+                                        points.target[0] = 4;
+                                    }else{
+                                        points.target[1] = 4;
+                                    }
+                                }else if (points.source[1] == 0 && points.target[0] == 0) {
+                                     if (points.source[0] > points.target[1]) {
+                                         points.target[1] -= 4;
+                                     } else {
+                                         points.target[0] = 4;
+                                     }
+                                }else if (points.source[0] == 0 && points.target[1] == 0) {
+                                    if (points.source[1] > points.target[0]) {
+                                        points.target[0] -= 4;
+                                    } else {
+                                        points.target[1] = 4;
+                                    }
+                                } else if (points.source[0] == 0 && points.source[1] == 0) {
+                                    if (points.target[1] > points.target[0]) {
+                                        points.target[0] -= 4;
+                                    } else {
+                                        points.target[1] -= 4;
+                                    }
                                 }
                             }
                             if (points.target[0] == 0 && points.source[0] == 0) {
@@ -827,7 +846,6 @@ class PreviewPage {
                                 points.target[1] = 4;
                                 points.source[1] = 4;
                             }
-                        
                         } 
                     }
                     (x < minX || minX === null) && (minX = x);
