@@ -2559,7 +2559,12 @@ ActionsPanel.prototype.createInfoBox = function(container, actionsInfo, i) {
             }
         }
     } else if (info.link) {
-        pageName = editor.pages[info.link].title || ''
+        // pageName = editor.pages[info.link].title || ''
+        if(editor.pages[info.link] && editor.pages[info.link].title){
+            pageName = editor.pages[info.link].title
+        }else{
+            pageName = ''
+        }
     }
 	
     // 描述内容
