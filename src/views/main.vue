@@ -16,6 +16,7 @@ import '../services/editor/Menus'
 import '../services/editor/Toolbar'
 import '../services/editor/Dialogs'
 
+import {Graph,Editor,EditorUi} from '../services/mxGlobal'
 export default {
     data() {
         return{
@@ -23,13 +24,14 @@ export default {
         }
     },
     mounted() {
-        window.mxUtils.getAll(['../static/resources/grapheditor.txt', '../static/default.xml'], function(xhr) {
+        window.mxUtils.getAll(['../static/resources/grapheditor.txt', '../static/default.xml'],xhr=> {
             window.mxResources.parse(xhr[0].getText());
             // 默认配置
             var themes = new Object();
-            themes[window.Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement();
+            themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement();
             // 正常实例化
-            var editorUi = new window.EditorUi(new window.Editor(false, themes),document.querySelector("#app"));
+            let myEditor = new Editor(false, themes);
+            var editorUi = new EditorUi(myEditor,document.querySelector("#app"));
             editorUi.editor.InitEditor(editorUi);
         })
     },

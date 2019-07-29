@@ -1,5 +1,5 @@
 /* eslint-disable */
-import {getCookie,throttle} from '../services/Utils'
+import {getCookie,throttle,setCookie} from '../services/Utils'
 // 主函数
 let mainProcess;
 // 控件xml解析信息
@@ -23,28 +23,13 @@ const defaultStyle = {
 // 浮窗节点
 let formatLayer;
 let layerData = null;
-let formatLayerFlag = false;
 // websocket信息
 let applyData = {};
 // 接收的点位数据
 let pointData = {};
-// 接收的报警数据
-let oldRightInfo = {};
-/**
- * 格式化时间
- * @param {number|string} time 
- */
-function timeFormate(time) {
-  if (!time) return '';
-  const timeEle = new Date(time);
-  const year = timeEle.getFullYear();
-  const month = timeEle.getMonth() + 1;
-  const day = timeEle.getDate();
-  const hours = timeEle.getHours();
-  const minute = timeEle.getMinutes();
-  const second = timeEle.getSeconds();
-  return `${year}/${month > 9 ? month : '0' + month}/${day > 9 ? day : '0' + day} ${hours > 9 ? hours : '0' + hours}:${minute > 9 ? minute : '0' + minute}:${second > 9 ? second : '0' + second}`;
-}
+let pointParams = [];
+//获取模型id
+let modelSearchParam=null;
 /**
  * 插入系统自带svg
  * @param {string} key 
@@ -78,7 +63,6 @@ function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor = '#333') {
     svgContent.appendChild(svg);
     return svgContent;
 }
-let pointParams = []
 //获取最后一笔数据
 async function getLastData() {
   if(!pointParams.length)return
@@ -98,49 +82,70 @@ async function getLastData() {
 var websocketUrl_real = ''
 var websocketUrl_alarm = ''
 
-async function getsubscribeInfos(isReal){
-  if(!pointParams.length)return
-  let points = [];
-  for(let key of pointParams){
-    points.push(key.params)
+/**
+ * 
+ * @param {*} isReal 是否是实时数据
+ * @param {*} modeId 绑定数据时候 viewTool/model/serach 返回的 模型id
+ */
+async function getsubscribeInfos(isReal,modeIds){
+  if(!pointParams.length) return
+  let points=[];
+  if (pointParams && pointParams[0].params) {
+    points = pointParams[0].params.split(",");
   }
-  
   const params = {
       subscribeInfos: [
           {
               pointId: pointParams[0].pointId,
               subscribeType: isReal?'realtime':'realtime_alarm',
-              pushRate: 3000,
-              params: points, 
           },
       ],
       networkProtocol: 'websocket',
   };
-  
+  if (isReal) {
+       params.subscribeInfos[0].pushRate = 3000;
+       params.subscribeInfos[0].params = points;
+   } else {
+      params.subscribeInfos[0].params = modeIds
+   }
   const data = await geAjax('/api/subscribe', 'POST',JSON.stringify(params));
   isReal?(websocketUrl_real = data.data):(websocketUrl_alarm = data.data)
   return data
 }
-// 避免重复链接
-let lockWs = false;
-/**
- * 创建websocket链接
- * @param {Array} data 
- * @param {string} pageId 
- */
+
+//获取 viewTool/model/serach 返回的 模型id
+async function getModelSearchId() {
+    const res = await geAjax('/api/viewTool/model/serach', 'POST', JSON.stringify(modelSearchParam));
+    return res
+}
+
  //报警数据
  function createWs_alarm(pageId) {
-  getsubscribeInfos().then( (res) => {
-    if ( applyData[pageId].wsParams.length === 0 || !websocketUrl_alarm) {
-      return;
-    };
-    const token = getCookie('token');
-    // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
-    let ws = new WebSocket(res.data, token); // 提交时使用这个
-    // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
-    initialWs(ws, pageId,'alarm');
-    applyData[pageId].ws_alarm = ws;
-  })
+     if (modelSearchParam){
+        getModelSearchId().then((res)=>{
+            let modeIds = res.map(val=>{
+                return val.id
+            })
+            alarmSubFun(pageId,modeIds);
+        })
+     }else{
+        alarmSubFun(pageId);
+     }
+}
+//报警订阅
+function alarmSubFun(pageId,modeIds) {
+    getsubscribeInfos(false, modeIds).then((res) => {
+        if (applyData[pageId].wsParams.length === 0 || !websocketUrl_alarm) {
+            return;
+        };
+        const token = getCookie('token');
+        // let ws = new WebSocket(`ws://${location.host}/ws/websocket`, token); // 提交时使用这个
+        let ws = new WebSocket(res.data, token); // 提交时使用这个
+        // let ws = new WebSocket(`ws://10.74.20.17:8082/websocket`, token); // SIT环境websocket,调试用这个
+
+        initialWs(ws, pageId, 'alarm');
+        applyData[pageId].ws_alarm = ws;
+    })
 }
 
 //实时数据
@@ -177,33 +182,53 @@ function reconnect (pageId,type) {
   }, 3000)
 }
 /**
- * 初始化websocket的钩子
+ * 
  * @param {object} ws 
  * @param {string} pageId 
  */
 function setterReleData(res,type) {
   let resData = type === 'LAST'?res[res.length-1] : JSON.parse(res.data)[JSON.parse(res.data).length - 1]
-  let doms = document.getElementsByClassName(resData.pointId + '_text');
+  // 浮窗
+  let lastItem
+  if (Object.prototype.toString.call(resData) === '[object Array]'){
+    lastItem = resData[resData.length-1];
+    pointData[lastItem.pointId] = lastItem;
+  }else{
+    lastItem = resData
+    pointData[resData.pointId] = resData;
+  }
+  if (layerData && layerData.point === lastItem.pointId) {
+      mainProcess.renderLayer()
+  }
+  let doms = document.getElementsByClassName(lastItem.pointId + '_text');
   // 填充文本
   for (let item of doms) {
     // 上抛数据为数字 0 的时候,转换为字符串 '0';
-    if (resData[item.getAttribute('data-filltext')] === 0) {
-      resData[item.getAttribute('data-filltext')] = '0';
+    if (lastItem[item.getAttribute('data-filltext')] === 0) {
+      lastItem[item.getAttribute('data-filltext')] = '0';
     }
-    if (item.childElementCount == 0 && resData[item.getAttribute('data-filltext')]) {
-      item.innerHTML = resData[item.getAttribute('data-filltext')]
+    if (item.childElementCount == 0 && lastItem[item.getAttribute('data-filltext')]) {
+      item.innerHTML = lastItem[item.getAttribute('data-filltext')]
     }
   }
 };
+
+ 
 
 //处理报警数据
 function setterAlarmdata(res) {
   let resData = JSON.parse(res.data)
   // 根据状态设置颜色
+  let doms = document.getElementsByClassName(resData.pointId + '_text');
   if (resData.alarm && resData.operation !== 3) {
     if (!pointData[resData.pointId] || resData.alarm !== pointData[resData.pointId].alarm) {
       setCellStatus(resData.pointId, resData.alarm, resData)
     }
+    // 浮窗
+ /*    pointData[resData.pointId] = resData;
+    if (layerData && layerData.point === resData.pointId) {
+        mainProcess.renderLayer()
+    } */
   }
   if (resData.operation === 3) {
     if (doms.length === 0) {
@@ -216,16 +241,7 @@ function setterAlarmdata(res) {
         dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', dom.getAttribute('data-defaultFill'));
       }
     }
-  }
-  // 渲染弹窗
-  pointData[resData.pointId] = resData;
-  console.log(resData)
-  if(resData.alarm) {
-    oldRightInfo[resData.pointId] = resData;
-  }
-  if (layerData && layerData.point === resData.pointId) {
-    mainProcess.renderLayer()
-  }
+  } 
 }
 function initialWs (ws, pageId,type) {
   // websocket连接成功
@@ -237,7 +253,7 @@ function initialWs (ws, pageId,type) {
     let data = JSON.parse(res.data)
     let dataArr = Object.keys(data)
     if(dataArr[0] === 'rspCode' || dataArr[1] === 'rspMsg') return
-    if(type === 'real'){
+     if(type === 'real'){
       throttle(setterReleData(res),600)
     }else{
       throttle(setterAlarmdata(res),600)
@@ -798,36 +814,27 @@ class PreviewPage {
                         height = height < 10 ? 10 : height;
                         if (shapeName !== 'curve') {
                             if (shapeName === 'endarrow') {
-                               /*  if (points.target[0] == 0) {
-                                    if(points.source[0]<points.source[1]){
-                                        points.target[0] -= 4;
-                                    } else{
-                                        points.target[1] -= 4;
-                                    }
-                                } else if (points.source[0] == 0) {
-                                     if (points.target[0] <= points.target[1]) {
-                                         points.target[0] -= 4;
-                                     } else {
-                                         points.target[1] -= 4;
-                                     }
-                                } */
                                 if (points.target[0] == 0 && points.target[1] == 0) {
                                     if (points.source[0] < points.source[1]){
                                         points.target[0] = 4;
+                                        points.source[0] = 4;
                                     }else{
                                         points.target[1] = 4;
+                                        points.source[1] = 4;
                                     }
                                 }else if (points.source[1] == 0 && points.target[0] == 0) {
                                      if (points.source[0] > points.target[1]) {
                                          points.target[1] -= 4;
                                      } else {
                                          points.target[0] = 4;
+                                         points.source[0] = 4;
                                      }
                                 }else if (points.source[0] == 0 && points.target[1] == 0) {
                                     if (points.source[1] > points.target[0]) {
                                         points.target[0] -= 4;
                                     } else {
                                         points.target[1] = 4;
+                                        points.source[1] = 4;
                                     }
                                 } else if (points.source[0] == 0 && points.source[1] == 0) {
                                     if (points.target[1] > points.target[0]) {
@@ -941,9 +948,9 @@ class PreviewPage {
       wsParams: this.wsParams,
       lockWs: false
     };
+
     applyData[page.id].ws_real = createWs_real(page.id);
     applyData[page.id].ws_alarm = createWs_alarm(page.id);
-    // console.log(applyData[page.id].ws_real)
     return cells;
   }
   // 渲染页面
@@ -957,6 +964,12 @@ class PreviewPage {
           }).join()
         })
         pointParams = this.wsParams
+        modelSearchParam = {
+            "pointId": cell.bindData.point,
+            "paramId": cell.bindData.params.map(val=>{
+                return val.id
+            }).join(",")
+        }
       }
       let cellHtml = this.renderCell(cell);
       ele.appendChild(cellHtml);
@@ -1098,30 +1111,8 @@ class PreviewPage {
     }
     // 渲染浮窗
     renderLayer() {
-        //   formatLayer.innerHTML = '';
-        //   const data = Object.assign({}, pointData[layerData.point]);
-        //   if (!Object.keys(data).length) return;
-        //   let params = [{name: 'timestamp'}].concat(layerData.params)
-        //   let leftKeys = document.createElement('ul');
-        //   leftKeys.id = 'leftKeys';
-        //   let rightKeys = document.createElement('ul');
-        //   rightKeys.id = 'rightKeys';
-        //   // 填充内容
-        //   for (let param of params) {
-        //     let leftInfo = document.createElement('li');
-        //     leftInfo.innerHTML = `${param.name}=`;
-        //     let rightInfo = document.createElement('li');
-        //     // rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : (data[param.name] || ''); // 旧版本
-        //     rightInfo.innerHTML = param.name === 'timestamp' ? timeFormate(data[param.name]) : data[param.name] !== undefined ? data[param.name] : 'NaN';
-        //     leftKeys.appendChild(leftInfo);
-        //     rightKeys.appendChild(rightInfo);
-        //   }
-        //   formatLayer.appendChild(leftKeys);
-        //   formatLayer.appendChild(rightKeys);
-        // }
         formatLayer.innerHTML = '';
-        console.log(oldRightInfo)
-        const data = Object.assign({}, oldRightInfo[layerData.point]);
+        const data = Object.assign({}, pointData[layerData.point]);
         if (!Object.keys(data).length) {return;}
         let params = [{name: 'timestamp'}].concat(layerData.params)
         let leftKeys = document.createElement('ul');
@@ -1129,19 +1120,17 @@ class PreviewPage {
         let rightKeys = document.createElement('ul');
         rightKeys.id = 'rightKeys';
         // 填充内容
-        console.log(layerData)
-        console.log(params)
         for (let param of params) {
             let leftInfo = document.createElement('li');
             leftInfo.innerHTML = `${param.name}=`;
             let rightInfo = document.createElement('li');
+            rightInfo.innerHTML = data[param.name]
             rightInfo.innerHTML = param.name === 'timestamp' ? data[param.name] : data[param.name] !== undefined ? data[param.name] : 'NaN';
             leftKeys.appendChild(leftInfo);
             rightKeys.appendChild(rightInfo);
         }
         formatLayer.appendChild(leftKeys);
         formatLayer.appendChild(rightKeys);
-        console.log(formatLayer)
     }
 }
 
@@ -1177,22 +1166,13 @@ class Main {
         gePreview = document.getElementById('gePreview');
         formatLayer = document.getElementById('formatLayer')
         let id = /id=(.+?)$/.exec(location.search);
-        let preview_data = null;
         if ( id ) {
             // 查看应用
             id = id[1];
-        } else {
-            // 编辑时预览
-            preview_data = JSON.parse(localStorage.getItem('preview_data'));
-            localStorage.removeItem('preview_data');
         }
         const host = await geAjax('/api/image/host', 'GET');
         fileSystem = host.host;
-        if (preview_data) {
-            applyInfo = preview_data;
-        } else {
-            applyInfo = await geAjax(`/api/viewtool/${id}`, 'GET');
-        }
+        applyInfo = await geAjax(`/api/viewtool/${id}`, 'GET');
         shapeXmls = await loadShapeXml();
         if (!applyInfo) {
             console.log('未查到对应数据')

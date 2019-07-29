@@ -12,7 +12,6 @@
 </template>
 
 <script> 
-import '../services/editor/Init'
 import preview from '../services/preview'
 export default {
     data() {

@@ -3504,6 +3504,7 @@ EditorUi.prototype.save = function(name, des)
                 editor.setXml();
                 // 页面信息
                 var pages = editor.pages;
+                console.log("save--page")
                 var data = {
                     name: name,
                     describe: des,
