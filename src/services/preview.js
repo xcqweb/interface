@@ -977,7 +977,8 @@ class PreviewPage {
         } else if (shapeName === 'linkTag') {
             // smartBi链接iframe
             cellHtml = document.createElement('iframe');
-            cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(cell.smartBiLink) ? '' : 'http://' }${cell.smartBiLink}`);
+            let curLink = cell.smartBiLink || cell.actionsInfo[0].link
+            cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(curLink) ? '' : 'http://' }${curLink}`);
         } else if (shapeName === 'menuCell' || shapeName === 'menulist') {
             // 菜单
             cellHtml = document.createElement('div');
