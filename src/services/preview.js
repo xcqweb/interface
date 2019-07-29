@@ -28,8 +28,6 @@ let applyData = {};
 // 接收的点位数据
 let pointData = {};
 let pointParams = [];
-//获取模型id
-let modelSearchParam=null;
 /**
  * 插入系统自带svg
  * @param {string} key 
@@ -75,7 +73,7 @@ async function getLastData() {
       params.push(obj);
   });
   const res = await geAjax('/api/persist/opentsdb/point/last', 'POST',JSON.stringify(params));
-  setterReleData(res,'LAST')
+  setterRealDataLast(res)
 }
 
 //获取websocket连接信息
@@ -87,52 +85,50 @@ var websocketUrl_alarm = ''
  * @param {*} isReal 是否是实时数据
  * @param {*} modeId 绑定数据时候 viewTool/model/serach 返回的 模型id
  */
-async function getsubscribeInfos(isReal,modeIds){
+async function getsubscribeInfos(isReal){
     if(!pointParams.length) return
     let params={
         subscribeInfos:[],
         networkProtocol: 'websocket',
-    }
+    };
+    let maps=new Map();
     pointParams.forEach(item => {
-        let obj = {
-            pointId: item.pointId,
-            subscribeType: isReal ? 'realtime' : 'realtime_alarm',
+        if(item.pointId){
+            let obj = {
+                pointId: item.pointId,
+                subscribeType: isReal ? 'realtime' : 'realtime_alarm',
+            }
+            if (isReal) {
+                obj.pushRate = 3000;
+                obj.params = item.params.split(",");
+            }
+            if (isReal && maps.has(item.pointId)) {
+                let tempObj = maps.get(item.pointId);
+                tempObj.params=Array.from(new Set(tempObj.params.concat(obj.params)));
+                maps.set(item.pointId,tempObj);
+            } else if (isReal){
+                maps.set(item.pointId,obj);
+            }
+            if(!isReal){
+                params.subscribeInfos.push(obj)
+            }
         }
-        if (isReal) {
-            obj.pushRate = 3000;
-            obj.params = item.params.split(",");
-        } else {
-            obj.params = modeIds
-        }
-        params.subscribeInfos.push(obj)
     });
+    if(isReal){
+        for (let item of maps.values()) {
+            params.subscribeInfos.push(item)
+        }
+    }
     const data = await geAjax('/api/subscribe', 'POST',JSON.stringify(params));
     isReal?(websocketUrl_real = data.data):(websocketUrl_alarm = data.data)
     return data
 }
 
-//获取 viewTool/model/serach 返回的 模型id
-async function getModelSearchId() {
-    const res = await geAjax('/api/viewTool/model/serach', 'POST', JSON.stringify(modelSearchParam));
-    return res
-}
+ 
 
  //报警数据
  function createWs_alarm(pageId) {
-     if (modelSearchParam){
-        getModelSearchId().then((res)=>{
-            let modeIds = res.map(val=>{
-                return val.id
-            })
-            alarmSubFun(pageId,modeIds);
-        })
-     }else{
-        alarmSubFun(pageId);
-     }
-}
-//报警订阅
-function alarmSubFun(pageId,modeIds) {
-    getsubscribeInfos(false, modeIds).then((res) => {
+    getsubscribeInfos(false).then((res) => {
         if (applyData[pageId].wsParams.length === 0 || !websocketUrl_alarm) {
             return;
         };
@@ -179,37 +175,66 @@ function reconnect (pageId,type) {
     applyData[pageId].lockWs = false;
   }, 3000)
 }
+
+function setterRealDataLast(res){
+    let resData = res[res.length - 1];
+    // 浮窗
+    let lastItem
+    if (Object.prototype.toString.call(resData) === '[object Array]') {
+        lastItem = resData[resData.length - 1];
+        pointData[lastItem.pointId] = lastItem;
+    } else {
+        lastItem = resData
+        pointData[resData.pointId] = resData;
+    }
+    let doms = document.getElementsByClassName(lastItem.pointId + '_text');
+    // 填充文本
+    for (let item of doms) {
+        let dataFillText = item.getAttribute('data-filltext')
+        if (dataFillText) {
+            dataFillText = dataFillText.split(",")
+            // 上抛数据为数字 0 的时候,转换为字符串 '0';
+            if (lastItem[dataFillText[0]] === 0) {
+                lastItem[dataFillText[0]] = '0';
+            }
+            if (item.childElementCount == 0 && lastItem[dataFillText[0]]) {
+                item.innerHTML = lastItem[dataFillText[0]]
+            }
+        }
+    }
+    if (layerData && layerData.point === lastItem.pointId) {
+        mainProcess.renderLayer()
+    }
+}
 /**
  * 
  * @param {object} ws 
  * @param {string} pageId 
  */
-function setterReleData(res,type) {
-  let resData = type === 'LAST'?res[res.length-1] : JSON.parse(res.data)[JSON.parse(res.data).length - 1]
-  // 浮窗
-  let lastItem
-  if (Object.prototype.toString.call(resData) === '[object Array]'){
-    lastItem = resData[resData.length-1];
-    pointData[lastItem.pointId] = lastItem;
-  }else{
-    lastItem = resData
-    pointData[resData.pointId] = resData;
-  }
-  if (layerData && layerData.point === lastItem.pointId) {
-      mainProcess.renderLayer()
-  }
-  let doms = document.getElementsByClassName(lastItem.pointId + '_text');
-  // 填充文本
-  for (let item of doms) {
-    // 上抛数据为数字 0 的时候,转换为字符串 '0';
-    if (lastItem[item.getAttribute('data-filltext')] === 0) {
-      lastItem[item.getAttribute('data-filltext')] = '0';
-    }
-    if (item.childElementCount == 0 && lastItem[item.getAttribute('data-filltext')]) {
-      item.innerHTML = lastItem[item.getAttribute('data-filltext')]
-    }
-  }
-};
+function setterRealData(res) {
+   let resData = JSON.parse(res.data)
+   resData.forEach(item=>{
+        pointData[item.pointId]=item;
+        let doms = document.getElementsByClassName(item.pointId + '_text');
+        // 填充文本
+        for (let d of doms) {
+            let dataFillText = d.getAttribute('data-filltext')
+            if (dataFillText) {
+                dataFillText = dataFillText.split(",")
+                // 上抛数据为数字 0 的时候,转换为字符串 '0';
+                if (item[dataFillText[0]] === 0) {
+                    item[dataFillText[0]] = '0';
+                }
+                if (d.childElementCount == 0 && item[dataFillText[0]]) {
+                    d.innerHTML = item[dataFillText[0]]
+                }
+            }
+        }
+        if (layerData && layerData.point === item.pointId) {
+            mainProcess.renderLayer()
+        }
+   })
+}
 
  
 
@@ -252,7 +277,7 @@ function initialWs (ws, pageId,type) {
     let dataArr = Object.keys(data)
     if(dataArr[0] === 'rspCode' || dataArr[1] === 'rspMsg') return
      if(type === 'real'){
-      throttle(setterReleData(res),600)
+      throttle(setterRealData(res),600)
     }else{
       throttle(setterAlarmdata(res),600)
     }
@@ -300,12 +325,14 @@ function setCellStatus(id, alarm, data) {
             color = null;
             break;
     }
-    // 修改后
     for (let dom of doms) {
         if (dom.childElementCount == 0) {
-            if (dom.getAttribute('data-filltext')) {
-                for (let i in data) {
-                    if (i === dom.getAttribute('data-filltext')) {
+            let dataFillText = dom.getAttribute('data-filltext');
+            let arr;
+            if (dataFillText) {
+                arr=dataFillText.split(",")
+                for (let d in data) {
+                    if (arr.indexOf(d)!=-1) {
                         dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
                     }
                 }
@@ -962,12 +989,6 @@ class PreviewPage {
           }).join()
         })
         pointParams = this.wsParams
-        modelSearchParam = {
-            "pointId": cell.bindData.point,
-            "paramId": cell.bindData.params.map(val=>{
-                return val.id
-            }).join(",")
-        }
       }
       let cellHtml = this.renderCell(cell);
       ele.appendChild(cellHtml);
@@ -1081,7 +1102,7 @@ class PreviewPage {
             if (cell.bindData.fillVariable) {
                 // 需要填充数据
                 cellHtml.className += ` ${cell.bindData.point} ${cell.bindData.point}_text`;
-                cellHtml.setAttribute('data-filltext', cell.bindData.params[0].name);
+                cellHtml.setAttribute('data-filltext', cell.bindData.params.map(item=>{return item.name}).join(","));
                 cellHtml.innerHTML = '';
             } else {
                 // 根据接收数据
