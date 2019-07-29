@@ -65,15 +65,15 @@ function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor = '#333') {
 }
 //获取最后一笔数据
 async function getLastData() {
-  if(!pointParams.length)return
-  let points = [];
-  for(let key of pointParams){
-    points.push(key.params)
-  }
-  const params = [{
-    pointId: pointParams[0].pointId,
-    keys: points
-  }]
+  if(!pointParams.length) return
+  let params=[];
+  pointParams.forEach(item=>{
+      let obj={
+          pointId: item.pointId,
+          keys: item.params.split(",")
+      }
+      params.push(obj);
+  });
   const res = await geAjax('/api/persist/opentsdb/point/last', 'POST',JSON.stringify(params));
   setterReleData(res,'LAST')
 }
@@ -88,29 +88,27 @@ var websocketUrl_alarm = ''
  * @param {*} modeId 绑定数据时候 viewTool/model/serach 返回的 模型id
  */
 async function getsubscribeInfos(isReal,modeIds){
-  if(!pointParams.length) return
-  let points=[];
-  if (pointParams && pointParams[0].params) {
-    points = pointParams[0].params.split(",");
-  }
-  const params = {
-      subscribeInfos: [
-          {
-              pointId: pointParams[0].pointId,
-              subscribeType: isReal?'realtime':'realtime_alarm',
-          },
-      ],
-      networkProtocol: 'websocket',
-  };
-  if (isReal) {
-       params.subscribeInfos[0].pushRate = 3000;
-       params.subscribeInfos[0].params = points;
-   } else {
-      params.subscribeInfos[0].params = modeIds
-   }
-  const data = await geAjax('/api/subscribe', 'POST',JSON.stringify(params));
-  isReal?(websocketUrl_real = data.data):(websocketUrl_alarm = data.data)
-  return data
+    if(!pointParams.length) return
+    let params={
+        subscribeInfos:[],
+        networkProtocol: 'websocket',
+    }
+    pointParams.forEach(item => {
+        let obj = {
+            pointId: item.pointId,
+            subscribeType: isReal ? 'realtime' : 'realtime_alarm',
+        }
+        if (isReal) {
+            obj.pushRate = 3000;
+            obj.params = item.params.split(",");
+        } else {
+            obj.params = modeIds
+        }
+        params.subscribeInfos.push(obj)
+    });
+    const data = await geAjax('/api/subscribe', 'POST',JSON.stringify(params));
+    isReal?(websocketUrl_real = data.data):(websocketUrl_alarm = data.data)
+    return data
 }
 
 //获取 viewTool/model/serach 返回的 模型id
