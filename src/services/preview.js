@@ -65,15 +65,25 @@ function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor = '#333') {
 async function getLastData() {
   if(!pointParams.length) return
   let params=[];
+  let maps = new Map();
   pointParams.forEach(item=>{
       if(item.pointId){
         let obj={
             pointId: item.pointId,
             keys: item.params.split(",")
         }
-        params.push(obj);
+        if (maps.has(item.pointId)) {
+            let tempObj = maps.get(item.pointId);
+            tempObj.keys = Array.from(new Set(tempObj.keys.concat(obj.keys)));
+            maps.set(item.pointId, tempObj);
+        } else {
+            maps.set(item.pointId, obj);
+        }
       }
   });
+  for (let item of maps.values()) {
+      params.push(item)
+  }
   const res = await geAjax('/api/persist/opentsdb/point/last', 'POST',JSON.stringify(params));
   setterRealDataLast(res)
 }
@@ -182,6 +192,7 @@ function setterRealDataLast(res){
     setterRealDataDeal(res)
 }
 function setterRealDataDeal(resData) {
+    console.log(resData)
     resData.forEach(item => {
         pointData[item.pointId] = item;
         let doms = document.getElementsByClassName(item.pointId + '_text');
@@ -198,9 +209,6 @@ function setterRealDataDeal(resData) {
                     d.innerHTML = item[dataFillText[0]]
                 }
             }
-        }
-        if (layerData && layerData.point === item.pointId) {
-            mainProcess.renderLayer()
         }
     })
 }
@@ -225,11 +233,6 @@ function setterAlarmdata(res) {
     if (!pointData[resData.pointId] || resData.alarm !== pointData[resData.pointId].alarm) {
       setCellStatus(resData.pointId, resData.alarm, resData)
     }
-    // 浮窗
- /*    pointData[resData.pointId] = resData;
-    if (layerData && layerData.point === resData.pointId) {
-        mainProcess.renderLayer()
-    } */
   }
   if (resData.operation === 3) {
     if (doms.length === 0) {
@@ -1094,6 +1097,7 @@ class PreviewPage {
                 const htmlScrollTop = document.getElementsByTagName('html')[0].scrollTop; // 最外层滚动
                 const htmlScrollLeft = document.getElementsByTagName('html')[0].scrollLeft;
                 layerData = cell.bindData;
+                console.log(layerData)
                 this.renderLayer();
                 formatLayer.style.left =  e.clientX + bodyScrollLeft + htmlScrollLeft + 5 + 'px';
                 formatLayer.style.top = e.clientY + bodyScrollTop + htmlScrollTop + 5 + 'px';
