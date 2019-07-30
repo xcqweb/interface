@@ -192,7 +192,6 @@ function setterRealDataLast(res){
     setterRealDataDeal(res)
 }
 function setterRealDataDeal(resData) {
-    console.log(resData)
     resData.forEach(item => {
         pointData[item.pointId] = item;
         let doms = document.getElementsByClassName(item.pointId + '_text');
@@ -209,6 +208,9 @@ function setterRealDataDeal(resData) {
                     d.innerHTML = item[dataFillText[0]]
                 }
             }
+        }
+        if (layerData && layerData.point === item.pointId) {
+            mainProcess.renderLayer()
         }
     })
 }
@@ -1097,7 +1099,6 @@ class PreviewPage {
                 const htmlScrollTop = document.getElementsByTagName('html')[0].scrollTop; // 最外层滚动
                 const htmlScrollLeft = document.getElementsByTagName('html')[0].scrollLeft;
                 layerData = cell.bindData;
-                console.log(layerData)
                 this.renderLayer();
                 formatLayer.style.left =  e.clientX + bodyScrollLeft + htmlScrollLeft + 5 + 'px';
                 formatLayer.style.top = e.clientY + bodyScrollTop + htmlScrollTop + 5 + 'px';
