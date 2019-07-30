@@ -40823,7 +40823,6 @@ mxGraphModel.prototype.setGeometry = function(cell, geometry)
 	{
 		this.execute(new mxGeometryChange(this, cell, geometry));
 	}
-	
 	return geometry;
 };
 
@@ -57445,7 +57444,6 @@ mxGraph.prototype.alignCells = function(align, cells, param)
 	{
 		cells = this.getSelectionCells();
 	}
-	
 	if (cells != null && cells.length > 1)
 	{
 		// Finds the required coordinate for the alignment
@@ -57513,18 +57511,15 @@ mxGraph.prototype.alignCells = function(align, cells, param)
 		if (param != null)
 		{
 			var s = this.view.scale;
-
 			this.model.beginUpdate();
 			try
 			{
 				for (var i = 0; i < cells.length; i++)
 				{
 					var state = this.view.getState(cells[i]);
-					
 					if (state != null)
 					{
 						var geo = this.getCellGeometry(cells[i]);
-						
 						if (geo != null && !this.model.isEdge(cells[i]))
 						{
 							geo = geo.clone();
@@ -57553,7 +57548,10 @@ mxGraph.prototype.alignCells = function(align, cells, param)
 							{
 								geo.x += (param - state.x) / s;
 							}
-							this.resizeCell(cells[i], geo);
+							if (typeof cells[i].value === 'object'){ // 做一个限制
+								this.resizeCell(cells[i], geo);
+							}
+							
 						}
 					}
 				}
@@ -57563,11 +57561,11 @@ mxGraph.prototype.alignCells = function(align, cells, param)
 			}
 			finally
 			{
+				// console.log(8888)
 				this.model.endUpdate();
 			}
 		}
 	}
-	
 	return cells;
 };
 
@@ -59546,7 +59544,6 @@ mxGraph.prototype.resizeCells = function(cells, bounds, recurse)
 mxGraph.prototype.cellsResized = function(cells, bounds, recurse)
 {
 	recurse = (recurse != null) ? recurse : false;
-	
 	if (cells != null && bounds != null && cells.length == bounds.length)
 	{
 		this.model.beginUpdate();
@@ -59624,7 +59621,6 @@ mxGraph.prototype.cellResized = function(cell, bounds, ignoreRelative, recurse)
 			geo.x = Math.max(0, geo.x);
 			geo.y = Math.max(0, geo.y);
 		}
-
 		this.model.beginUpdate();
 		try
 		{
@@ -59632,7 +59628,6 @@ mxGraph.prototype.cellResized = function(cell, bounds, ignoreRelative, recurse)
 			{
 				this.resizeChildCells(cell, geo);
 			}
-						
 			this.model.setGeometry(cell, geo);
 			this.constrainChildCells(cell);
 		}
