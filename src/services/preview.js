@@ -66,11 +66,13 @@ async function getLastData() {
   if(!pointParams.length) return
   let params=[];
   pointParams.forEach(item=>{
-      let obj={
-          pointId: item.pointId,
-          keys: item.params.split(",")
+      if(item.pointId){
+        let obj={
+            pointId: item.pointId,
+            keys: item.params.split(",")
+        }
+        params.push(obj);
       }
-      params.push(obj);
   });
   const res = await geAjax('/api/persist/opentsdb/point/last', 'POST',JSON.stringify(params));
   setterRealDataLast(res)
@@ -99,7 +101,7 @@ async function getsubscribeInfos(isReal){
                 subscribeType: isReal ? 'realtime' : 'realtime_alarm',
             }
             if (isReal) {
-                obj.pushRate = 3000;
+                obj.pushRate = 500;
                 obj.params = item.params.split(",");
             }
             if (isReal && maps.has(item.pointId)) {
@@ -177,44 +179,11 @@ function reconnect (pageId,type) {
 }
 
 function setterRealDataLast(res){
-    let resData = res[res.length - 1];
-    // 浮窗
-    let lastItem
-    if (Object.prototype.toString.call(resData) === '[object Array]') {
-        lastItem = resData[resData.length - 1];
-        pointData[lastItem.pointId] = lastItem;
-    } else {
-        lastItem = resData
-        pointData[resData.pointId] = resData;
-    }
-    let doms = document.getElementsByClassName(lastItem.pointId + '_text');
-    // 填充文本
-    for (let item of doms) {
-        let dataFillText = item.getAttribute('data-filltext')
-        if (dataFillText) {
-            dataFillText = dataFillText.split(",")
-            // 上抛数据为数字 0 的时候,转换为字符串 '0';
-            if (lastItem[dataFillText[0]] === 0) {
-                lastItem[dataFillText[0]] = '0';
-            }
-            if (item.childElementCount == 0 && lastItem[dataFillText[0]]) {
-                item.innerHTML = lastItem[dataFillText[0]]
-            }
-        }
-    }
-    if (layerData && layerData.point === lastItem.pointId) {
-        mainProcess.renderLayer()
-    }
+    setterRealDataDeal(res)
 }
-/**
- * 
- * @param {object} ws 
- * @param {string} pageId 
- */
-function setterRealData(res) {
-   let resData = JSON.parse(res.data)
-   resData.forEach(item=>{
-        pointData[item.pointId]=item;
+function setterRealDataDeal(resData) {
+    resData.forEach(item => {
+        pointData[item.pointId] = item;
         let doms = document.getElementsByClassName(item.pointId + '_text');
         // 填充文本
         for (let d of doms) {
@@ -233,7 +202,16 @@ function setterRealData(res) {
         if (layerData && layerData.point === item.pointId) {
             mainProcess.renderLayer()
         }
-   })
+    })
+}
+/**
+ * 
+ * @param {object} ws 
+ * @param {string} pageId 
+ */
+function setterRealData(res) {
+   let resData = JSON.parse(res.data)
+   setterRealDataDeal(resData)
 }
 
  
