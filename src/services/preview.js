@@ -1023,7 +1023,9 @@ class PreviewPage {
             cellHtml = document.createElement('span');
             cellHtml.innerHTML = cell.value;
             // 还原位置与界面工具一样
-            cellHtml.firstChild.style.display = 'inline-block'
+            if (cellHtml.firstChild && cellHtml.firstChild.style) {
+                cellHtml.firstChild.style.display = 'inline-block'
+            }
         } else if (shapeName === 'button') {
             // 按钮
             cellHtml = document.createElement('div');
