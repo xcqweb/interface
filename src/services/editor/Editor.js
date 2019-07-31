@@ -897,7 +897,9 @@ Editor.prototype.setGraphXml = function(node)
         // 保留控件数量
         if (palettesInfo) {
             for (let palette in palettesInfo) {
-                this.palettesInfo[palette].num = palettesInfo[palette].num;
+                if (this.palettesInfo[palette]){
+                    this.palettesInfo[palette].num = palettesInfo[palette].num;
+                }
             }
         }
         if (node.nodeName == 'mxGraphModel')
