@@ -10,6 +10,7 @@ import {
     getCookie,
     setCookie
 } from '../Utils'
+import Vue from 'vue'
 window.Editor = function(chromeless, themes, model, graph, editable)
 {
     mxEventSource.call(this);
@@ -392,6 +393,7 @@ Editor.prototype.ajax = async function(editorUi, url, method, data, fn = functio
  * 初始化进入
  */
 Editor.prototype.InitEditor = function(editorUi) {
+    Vue.prototype.editorUi = editorUi;
     // 获取文件服务器地址
     let getFileSystem = new Promise((resolve, reject) => {
         this.ajax(editorUi, '/api/image/host', 'GET', null, function(res) {
@@ -770,6 +772,7 @@ Editor.prototype.editAsNew = function(xml, title)
  */
 Editor.prototype.createGraph = function(themes, model)
 {
+    console.log("graph--create")
     var graph = new Graph(null, model, null, null, themes);
     graph.transparentBackground = false;
 	
@@ -790,6 +793,7 @@ Editor.prototype.createGraph = function(themes, model)
  */
 Editor.prototype.resetGraph = function()
 {
+    console.log("reset--graph")
     this.graph.gridEnabled = !this.isChromelessView() || urlParams['grid'] == '1';
     this.graph.graphHandler.guidesEnabled = true;
     this.graph.setTooltips(true);
@@ -885,6 +889,7 @@ Editor.prototype.readGraphState = function(node)
  */
 Editor.prototype.setGraphXml = function(node)
 {
+    console.log('set--view--data')
     if (node != null)
     {
         var dec = new mxCodec(node.ownerDocument);
@@ -892,7 +897,9 @@ Editor.prototype.setGraphXml = function(node)
         // 保留控件数量
         if (palettesInfo) {
             for (let palette in palettesInfo) {
-                this.palettesInfo[palette].num = palettesInfo[palette].num;
+                if (this.palettesInfo[palette]){
+                    this.palettesInfo[palette].num = palettesInfo[palette].num;
+                }
             }
         }
         if (node.nodeName == 'mxGraphModel')
@@ -948,6 +955,7 @@ Editor.prototype.setGraphXml = function(node)
  */
 Editor.prototype.getGraphXml = function(ignoreSelection)
 {
+    console.log('get--view--data')
     ignoreSelection = (ignoreSelection != null) ? ignoreSelection : true;
     var node = null;
     if (ignoreSelection)

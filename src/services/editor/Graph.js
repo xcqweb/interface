@@ -400,7 +400,8 @@ window.Graph = function(container, model, renderHint, stylesheet, themes)
     if (typeof mxVertexHandler !== 'undefined')
     {
         this.setConnectable(false);
-        this.setDropEnabled(true);
+        // this.setDropEnabled(true);
+        this.setDropEnabled(false);
         this.setPanning(true);
         this.setTooltips(true);
         this.setAllowLoops(true);

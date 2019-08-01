@@ -1,5 +1,7 @@
 <template>
-  <div>
+  <div
+    style="height: 100%;overflow: scroll;"
+  >
     <!-- 内容主体 -->
     <div id="gePreview" />
     <!-- 跟随内容浮窗 -->
@@ -10,7 +12,6 @@
 </template>
 
 <script> 
-import '../services/editor/Init'
 import preview from '../services/preview'
 export default {
     data() {
