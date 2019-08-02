@@ -389,6 +389,9 @@ function inserEdge(cell) {
     if (cell.shapeName === 'endarrow') {
         attrs['marker-end'] = "url(#arrow)";
     }
+    if(cell.shapeName === 'curve'){
+        attrs.fill = 'none'
+    }
     for (let item in attrs) {
         path.setAttribute(item, attrs[item])
     }
