@@ -1,9 +1,10 @@
 <template>
-  <div>
+  <div class="container">
     <Toolbar
       ref="toolbar"
     />
     <RightBar />
+    <FooterBar />
   </div>
 </template>
 
@@ -24,12 +25,14 @@ import '../services/editor/Dialogs'
 import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal' 
 import Toolbar from './toolbar/toolbar'
 import RightBar from './rightBar'
+import FooterBar from './footerbar'
 import Vue from 'vue'
 export default {
     components:{
-       
+        
         Toolbar,
-        RightBar
+        RightBar,
+        FooterBar,
     },
     data() {
         return{
@@ -74,5 +77,9 @@ export default {
   font-family:MicrosoftYaHei;
   position: relative;
   height:100%;
+}
+.container{
+    position: relative;
+    height: 100%;
 }
 </style>
