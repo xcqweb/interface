@@ -1,9 +1,10 @@
 <template>
-  <div>
+  <div class="container">
     <Toolbar
       ref="toolbar"
       :drop-down-img="dropDownImg"
     />
+    <Footbar />
   </div>
 </template>
 
@@ -23,10 +24,12 @@ import '../services/editor/Dialogs'
 
 import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal'
 import Toolbar from './toolbar'
+import Footbar from './footbar'
 import Vue from 'vue'
 export default {
     components:{
-        Toolbar
+        Toolbar,
+        Footbar
     },
     data() {
         return{
@@ -73,5 +76,9 @@ export default {
   font-family:MicrosoftYaHei;
   position: relative;
   height:100%;
+}
+.container{
+    height: 100%;
+    position: relative;
 }
 </style>
