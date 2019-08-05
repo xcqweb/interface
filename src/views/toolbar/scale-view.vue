@@ -1,8 +1,9 @@
 <template>
   <div
     class="mxPopupMenu geToolbarMenu"
-    style="display: inline; z-index:22; left: 243px; top: 71px;"
-    @mouseout="hideScale()"
+    style="display: inline; z-index:22; left:18%; top: 71px;"
+    @mouseleave="hideScale($event)"
+    @blur="hideScale($event)"
   >
     <table class="mxPopupMenu">
       <tbody>
@@ -53,9 +54,9 @@ export default{
         changeScale(d) {
             this.$emit("changeScale",d)
         },
-        hideScale() {
-            console.log("tt--aa")
+        hideScale(event) {
             this.$emit("hideScale")
+            event.stopPropagation();
         }
     },      
 }

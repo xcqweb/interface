@@ -1,14 +1,13 @@
 <template>
-  <div class="container">
+  <div>
     <Toolbar
       ref="toolbar"
-      :drop-down-img="dropDownImg"
     />
-    <Footbar />
+    <RightBar />
   </div>
 </template>
 
-<script>  
+<script> 
 //mxgraph editor
 import '../services/editor/Init'
 import '../services/editor/EditorUi'
@@ -22,18 +21,18 @@ import '../services/editor/Menus'
 import '../services/editor/Toolbar'
 import '../services/editor/Dialogs'
 
-import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal'
-import Toolbar from './toolbar'
-import Footbar from './footbar'
+import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal' 
+import Toolbar from './toolbar/toolbar'
+import RightBar from './rightBar'
 import Vue from 'vue'
 export default {
     components:{
+       
         Toolbar,
-        Footbar
+        RightBar
     },
     data() {
         return{
-            dropDownImg:"",
         }
     },
     created() {
@@ -54,7 +53,6 @@ export default {
     },
     methods: {
         init() {
-            this.dropDownImg = this.myEditorUi.toolbar.dropdownImage
             this.myEditorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
@@ -66,8 +64,8 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
- 
+<style scoped lang="less"> 
+
 </style>
 
 <style lang="less">
@@ -76,9 +74,5 @@ export default {
   font-family:MicrosoftYaHei;
   position: relative;
   height:100%;
-}
-.container{
-    height: 100%;
-    position: relative;
 }
 </style>

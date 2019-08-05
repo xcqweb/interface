@@ -7,7 +7,7 @@
           :class="{'selected':tab==1}"
           @click="changeTab(1)"
         >
-          <img src="../assets/images/menu/page1_ic.png">
+          <img src="../../assets/images/menu/page1_ic.png">
         </div>
         <div
           class="item data-tab"
@@ -15,7 +15,7 @@
           style="border-left:0;"
           @click="changeTab(2)"
         >
-          <img src="../assets/images/menu/datasource2_ic.png">
+          <img src="../../assets/images/menu/datasource2_ic.png">
         </div>
       </div>
     </div>
@@ -34,16 +34,10 @@
         href="javascript:void(0);"
         class="geLabel"
         title="缩放 (Alt+Mousewheel)"
-        style="white-space: nowrap; position: relative; overflow: hidden; width: 50px;"
+        style="white-space: nowrap; position: relative; overflow: hidden; width: 50px;text-align:center;"
         @click.stop.prevent="showScale('in')"
       >
         {{ scaleText }}
-        <img
-          border="0"
-          style="position: absolute; right: 1px; top: 5px;"
-          :src="dropDownImg"
-          valign="middle"
-        >
       </a>
       <a
         href="javascript:void(0);"
@@ -62,6 +56,26 @@
         <div class="geSprite geSprite-fullscreen" />
       </a>
     </div>
+    <div class="geToolbar geToolbar3">
+      <a
+        ref="undo"
+        href="javascript:void(0);"
+        class="geButton"
+        title="撤销 (Ctrl+Z)"
+        @click.stop.prevent="undo()"
+      >
+        <div class="geSprite geSprite-undo" />
+      </a>
+      <a
+        ref="redo"
+        href="javascript:void(0);"
+        class="geButton"
+        title="重做 (Ctrl+Y)"
+        @click.stop.prevent="redo()"
+      >
+        <div class="geSprite geSprite-redo" />
+      </a> 
+    </div>
     <ScaleView
       v-if="isShowScale"
       @changeScale="changeScale"
@@ -70,13 +84,12 @@
   </div>
 </template>
 <script>
-import {mxUtils} from '../services/mxGlobal'
+import {mxUtils} from '../../services/mxGlobal'
 import ScaleView from './scale-view'
 export default{
     components:{
         ScaleView,
     },
-    props:['dropDownImg'],
     data() {
         return {
             tab:1,
@@ -102,7 +115,20 @@ export default{
             }
         },
         init() {
-          
+            let keys = [
+                'undo','redo'
+            ]
+            keys.forEach(key=>{
+                let action = this.myEditorUi.actions.get(key);
+                let elt = this.$refs[key]
+                this.myEditorUi.toolbar.initElement(elt)
+                if (action != null)  {
+                    elt.setEnabled(action.enabled);
+                    action.addListener('stateChanged',()=>{
+                        elt.setEnabled(action.enabled)
+                    })
+                }
+            })
         },
         fullscreen() {
             mxUtils.fullScreen()
@@ -119,7 +145,17 @@ export default{
         changeScale(scale) {
             this.myEditorUi.editor.graph.zoomTo(scale)
             this.isShowScale = false
-        }
+        },
+        addAction(key) {
+            let action = this.myEditorUi.actions.get(key);
+            action.funct()
+        },
+        undo() {
+            this.addAction('undo')
+        },
+        redo() {
+            this.addAction('redo')
+        },
     },      
 }
 </script>
