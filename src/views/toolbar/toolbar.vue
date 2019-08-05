@@ -34,16 +34,10 @@
         href="javascript:void(0);"
         class="geLabel"
         title="缩放 (Alt+Mousewheel)"
-        style="white-space: nowrap; position: relative; overflow: hidden; width: 50px;"
+        style="white-space: nowrap; position: relative; overflow: hidden; width: 50px;text-align:center;"
         @click.stop.prevent="showScale('in')"
       >
         {{ scaleText }}
-        <img
-          border="0"
-          style="position: absolute; right: 1px; top: 5px;"
-          :src="dropDownImg"
-          valign="middle"
-        >
       </a>
       <a
         href="javascript:void(0);"
@@ -96,7 +90,6 @@ export default{
     components:{
         ScaleView,
     },
-    props:['dropDownImg'],
     data() {
         return {
             tab:1,

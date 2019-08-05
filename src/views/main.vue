@@ -2,7 +2,6 @@
   <div>
     <Toolbar
       ref="toolbar"
-      :drop-down-img="dropDownImg"
     />
     <RightBar />
   </div>
@@ -34,7 +33,6 @@ export default {
     },
     data() {
         return{
-            dropDownImg:"",
         }
     },
     created() {
@@ -55,7 +53,6 @@ export default {
     },
     methods: {
         init() {
-            this.dropDownImg = this.myEditorUi.toolbar.dropdownImage
             this.myEditorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
