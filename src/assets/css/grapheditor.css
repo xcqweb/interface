@@ -252,7 +252,7 @@
 }
 
 .geToolbarContainer .geToolbar3 {
-	width: 98px;
+	width: 110px;
 }
 .geToolbarContainer .geToolbar4 {
 	width: 170px;
@@ -261,17 +261,12 @@
 	clear: left;
 }
 .geToolbarContainer .geToolbar5 {
-	width: 125px;
+	width: 110px;
 }
 .geToolbarContainer .geToolbar6 {
-	width: 100px;
+	width: 172px;
 }
-.geToolbarContainer .geToolbar7 {
-	width: 185px;
-}
-.geToolbarContainer .geToolbar8 {
-	width: 80px;
-}
+ 
 .geToolbarContainer .geSeparator {
 	float:left;
 	width:1px;
@@ -787,7 +782,7 @@ div.mxWindow .geButton {
 @media print {
 	div.geNoPrint { display: none !important; }
 }
-.geToolbar1 .geSprite, .geToolbar8 .geSprite{
+.geToolbar1 .geSprite{
 	width: 36px;
 	height: 36px;
 	padding: 10px;
@@ -797,17 +792,12 @@ div.mxWindow .geButton {
 	height: 24px;
 	padding: 4px;
 }
-.geToolbar3 .geSprite, .geToolbar6 .geSprite{
+.geToolbar3 .geSprite, .geToolbar6 .geSprite, .geToolbar4 .geSprite, .geToolbar5 .geSprite {
 	width: 48px;
 	height: 24px;
 	padding: 4px 16px;
 }
-
-.geToolbar5 .geSprite, .geToolbar7 .geSprite{
-	width: 60px;
-	height: 24px;
-	padding: 4px 22px;
-}
+ 
 .geSpriteBtn {
 	float: left;
 	width: 36px;
@@ -820,7 +810,7 @@ div.mxWindow .geButton {
 	font-size: 11px;
 }
 .geSprite-save {
-	background-image: url(/static/images/menu/save.png);
+	background-image: url(../images/menu/storage_ic.png);
 }
 .geSprite-save::after {
 	content: '保存';
@@ -885,6 +875,13 @@ div.mxWindow .geButton {
 	content: '重做';
 	left: 13px;
 }
+.geSprite-align{
+	background-image: url(../images/menu/alignment_ic.png);
+}
+.geSprite-align::after {
+	content: '对齐';
+	left: 13px;
+}
 .geSprite-delete {
 	background-image: url(/static/images/menu/delete.png);
 }
@@ -923,15 +920,15 @@ div.mxWindow .geButton {
 	background-image: url(/static/images/menu/tofront.png);
 }
 .geSprite-tofront::after {
-	content: '置于顶层';
-	left: 6px;
+	content: '顶层';
+	left: 10px;
 }
 .geSprite-toback {
 	background-image: url(/static/images/menu/toback.png);
 }
 .geSprite-toback::after {
-	content: '置于底层';
-	left: 6px;
+	content: '底层';
+	left: 10px;
 }
 .geSprite-group {
 	background-image: url(/static/images/menu/group.png);
@@ -975,11 +972,19 @@ div.mxWindow .geButton {
 	content: '链接';
 	left: 6px;
 }
-.geSprite-previewapply {
-	background-image: url(/static/images/menu/preview.png);
+.geSprite-preview {
+	background-image: url(../images/menu/preview_ic.png);
 }
-.geSprite-previewapply::after {
+.geSprite-preview::after {
 	content: '预览';
+	left: 6px;
+}
+.geSprite-material {
+	background-image: url(../images/menu/materiallibrary_ic.png);
+}
+
+.geSprite-material::after {
+	content: '素材库';
 	left: 6px;
 }
 .geSprite-publish {

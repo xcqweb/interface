@@ -2941,9 +2941,9 @@ EditorUi.prototype.createDivs = function()
     this.menubarContainer = this.createDiv('geMenubarContainer');
     this.toolbarContainer = document.querySelector(".geToolbarContainer");
     this.sidebarContainer = this.createDiv('geSidebarContainer');
-    this.formatContainer = this.createDiv('geSidebarContainer geFormatContainer');
+    this.formatContainer = document.querySelector('.geSidebarContainer.geFormatContainer');
     this.rightBarContainer = document.querySelector('.geSidebarContainer.geRightBarContainer');
-    this.paletteManageContainer = this.createDiv('geSidebarContainer gePaletteManageContainer');
+    this.paletteManageContainer = document.querySelector('.geSidebarContainer.gePaletteManageContainer');
     this.diagramContainer = this.createDiv('geDiagramContainer');
     this.footerContainer = this.createDiv('geFooterContainer');
     //去掉sidebar 右边的创建的直线
@@ -3071,11 +3071,8 @@ EditorUi.prototype.createUi = function()
 
     // 多个toolbar功能区
     var containerList = []
-    for(let i=1;i<4;i++){
+    for(let i=1;i<7;i++){
         containerList.push(document.querySelector('.geToolbar.geToolbar' + i))
-    }
-    for(var i = 4; i < 9; i++) {
-        containerList.push(this.createDiv('geToolbar geToolbar' + i))
     }
     // 创建 toolbar
     this.toolbar = (this.editor.chromeless) ? null : this.createToolbar(containerList);
