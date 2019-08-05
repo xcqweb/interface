@@ -19,7 +19,10 @@
         </div>
       </div>
     </div>
-    <div class="geToolbar geToolbar2">
+    <div
+      class="geToolbar geToolbar2"
+      style="margin-left:-100px;"
+    >
       <a
         href="javascript:void(0);"
         ondragstart="return false;"
@@ -62,7 +65,7 @@
         href="javascript:void(0);"
         class="geButton"
         title="撤销 (Ctrl+Z)"
-        @click.stop.prevent="undo()"
+        @click.stop.prevent="addAction('undo')"
       >
         <div class="geSprite geSprite-undo" />
       </a>
@@ -70,11 +73,93 @@
         ref="redo"
         href="javascript:void(0);"
         class="geButton"
+        style="margin-left:12px;"
         title="重做 (Ctrl+Y)"
-        @click.stop.prevent="redo()"
+        @click.stop.prevent="addAction('redo')"
       >
         <div class="geSprite geSprite-redo" />
       </a> 
+    </div>
+    <div class="geToolbar geToolbar4">
+      <a
+        ref="align"
+        href="javascript:void(0);"
+        class="geButton"
+        style="width:48px;display:flex;align-items:center;justify-content:center;"
+        title="对齐"
+        @click.stop.prevent="align()"
+      >
+        <div
+          class="geSprite geSprite-align"
+        />
+        <img src="../../assets/images/menu/down_ic.png">
+      </a>
+      <a
+        href="javascript:void(0);"
+        class="geButton"
+        title="移至最前 (Ctrl+Shift+F)"
+        style="margin-left:12px;"
+        @click.stop.prevent="addAction('toFront')"
+      >
+        <div class="geSprite geSprite-tofront" />
+      </a>
+      <a
+        href="javascript:void(0);"
+        ondragstart="return false;"
+        class="geButton"
+        title="移至最后 (Ctrl+Shift+B)"
+        style="margin-left:12px;"
+        @click.stop.prevent="addAction('toBack')"
+      >
+        <div class="geSprite geSprite-toback" />
+      </a>
+      <div class="geToolbar geToolbar5">
+        <a
+          href="javascript:void(0);"
+          class="geButton"
+          title="组合 (Ctrl+G)"
+          @click.stop.prevent="addAction('group')"
+        >
+          <div class="geSprite geSprite-group" />
+        </a>
+        <a
+          href="javascript:void(0);"
+          class="geButton"
+          title="取消组合 (Ctrl+Shift+U)"
+          style="margin-left:12px;"
+          @click.stop.prevent="addAction('ungroup')"
+        >
+          <div class="geSprite geSprite-ungroup" />
+        </a>
+      </div>
+      <div class="geToolbar geToolbar6">
+        <a
+          href="javascript:void(0);"
+          class="geButton"
+          title="素材库"
+          @click.stop.prevent="materialLab"
+        >
+          <div class="geSprite geSprite-material" />
+        </a>
+        <a
+          href="javascript:void(0);"
+          class="geButton"
+          title="保存 (Ctrl+S)"
+          style="margin-left:12px;"
+          @click.stop.prevent="save"
+        >
+          <div class="geSprite geSprite-save" />
+        </a>
+        <a
+          href="javascript:void(0);"
+          class="geButton"
+          title="预览 (Ctrl+Shift+L)"
+          style="margin-left:12px;"
+          @click.stop.prevent="preview"
+        >
+          <div class="geSprite geSprite-preview" />
+        </a>
+      </div>
     </div>
     <ScaleView
       v-if="isShowScale"
@@ -86,6 +171,8 @@
 <script>
 import {mxUtils} from '../../services/mxGlobal'
 import ScaleView from './scale-view'
+import {PreviewDialog} from '../../services/editor/Dialogs'
+import router from '../../router'
 export default{
     components:{
         ScaleView,
@@ -156,6 +243,28 @@ export default{
         redo() {
             this.addAction('redo')
         },
+        toFront() {
+            this.addAction('toFront')
+        },
+        materialLab() {
+
+        },
+        save() {
+            this.myEditorUi.saveFile(true);
+        },
+        preview() {
+            let ui = this.myEditorUi
+            var dlg = new PreviewDialog(ui, function(id) {
+                let page = router.resolve({
+                    path: "/interface_preview",
+                    query: {
+                        id: id
+                    }
+                });
+                window.open(page.href, '_blank');
+            })
+            ui.showDialog(dlg.container, 410, 160, true, false, null, null, '预览');
+        }
     },      
 }
 </script>
