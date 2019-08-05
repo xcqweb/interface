@@ -10,7 +10,6 @@ import {
     getCookie,
     setCookie
 } from '../Utils'
-import Vue from 'vue'
 window.Editor = function(chromeless, themes, model, graph, editable)
 {
     mxEventSource.call(this);
@@ -393,7 +392,6 @@ Editor.prototype.ajax = async function(editorUi, url, method, data, fn = functio
  * 初始化进入
  */
 Editor.prototype.InitEditor = function(editorUi) {
-    Vue.prototype.editorUi = editorUi;
     // 获取文件服务器地址
     let getFileSystem = new Promise((resolve, reject) => {
         this.ajax(editorUi, '/api/image/host', 'GET', null, function(res) {

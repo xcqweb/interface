@@ -27,6 +27,7 @@
 	background: #F2F2F2;
 	display: flex;
 	flex-direction: column;
+	border: none;
 }
 .geSidebarContainer.geFormatContainer {
 	overflow-x: hidden !important;
@@ -207,11 +208,12 @@
 }
 .geToolbarContainer {
 	border-top: 1px solid #cbcbcb;
-	border-bottom: 1px solid #cbcbcb;
 	background: linear-gradient(0deg,rgba(216,216,216,1) 0%,rgba(228,227,228,1) 100%);
 	display: flex;
 	justify-content: space-between;
 	padding: 0 12px;
+	left:0;
+	right:0;
 }
 .geSidebarContainer .geToolbarContainer {
 	background:transparent;
@@ -237,11 +239,16 @@
 	flex: 0 0 auto;
 }
 .geToolbarContainer .geToolbar1 {
-	width: 80px;
+	width: calc(208px - 11px);
+	display: flex;
+	justify-content:center;
+	padding-right:12px;
+	border-right:1px solid #ccc;
 }
 
 .geToolbarContainer .geToolbar2 {
 	width: 130px;
+	margin-left:12px;
 }
 
 .geToolbarContainer .geToolbar3 {
@@ -321,9 +328,9 @@ div.mxWindow .geButton {
 	overflow:hidden;
 	position:absolute;
 	border-top:1px solid #CCCCCC;
-	border-bottom:1px solid #CCCCCC;
 	overflow:auto;
 	margin-top: -1px;
+	z-index: 2;
 }
 .geSidebar {
 	padding: 4px;
@@ -806,18 +813,11 @@ div.mxWindow .geButton {
 	width: 36px;
 	height: 24px;
 }
-.geSprite-new {
-	background-image: url(/static/images/menu/new.png);
-}
 .geSprite::after {
 	position: absolute;
 	font-family: 'MicrosoftYaHei';
 	bottom: -20px;
 	font-size: 11px;
-}
-.geSprite-new::after {
-	content: '新建';
-	left: 6px;
 }
 .geSprite-save {
 	background-image: url(/static/images/menu/save.png);

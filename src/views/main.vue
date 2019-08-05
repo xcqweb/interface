@@ -1,5 +1,10 @@
 <template>
-  <div />
+  <div>
+    <Toolbar
+      ref="toolbar"
+      :drop-down-img="dropDownImg"
+    />
+  </div>
 </template>
 
 <script>  
@@ -16,14 +21,19 @@ import '../services/editor/Menus'
 import '../services/editor/Toolbar'
 import '../services/editor/Dialogs'
 
-import {Graph,Editor,EditorUi} from '../services/mxGlobal'
+import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal'
+import Toolbar from './toolbar'
+import Vue from 'vue'
 export default {
+    components:{
+        Toolbar
+    },
     data() {
         return{
-            
+            dropDownImg:"",
         }
     },
-    mounted() {
+    created() {
         window.mxUtils.getAll(['../static/resources/grapheditor.txt', '../static/default.xml'],xhr=> {
             window.mxResources.parse(xhr[0].getText());
             // 默认配置
@@ -31,10 +41,25 @@ export default {
             themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement();
             // 正常实例化
             let myEditor = new Editor(false, themes);
-            var editorUi = new EditorUi(myEditor,document.querySelector("#app"));
-            editorUi.editor.InitEditor(editorUi);
+            let myEditorUi = new EditorUi(myEditor,document.querySelector("#app"));
+            Vue.prototype.myEditorUi = myEditorUi
+            myEditorUi.editor.InitEditor(myEditorUi)
+            this.init()
         })
     },
+    mounted() {
+    },
+    methods: {
+        init() {
+            this.dropDownImg = this.myEditorUi.toolbar.dropdownImage
+            this.myEditorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
+            this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
+            this.$refs.toolbar.init();
+        },
+        updateZoom() {
+            this.$refs.toolbar.updateZoom();
+        }
+    }
 };
 </script>
 

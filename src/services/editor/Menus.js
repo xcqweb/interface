@@ -73,8 +73,8 @@ Menus.prototype.init = function()
     })));
     this.put('pageScale', new Menu(mxUtils.bind(this, function(menu, parent)
     {
+        debugger
         var scales = [0.25, 0.5, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4];
-		
         for (var i = 0; i < scales.length; i++)
         {
             (function(scale)
@@ -85,8 +85,6 @@ Menus.prototype.init = function()
                 }, parent);
             })(scales[i]);
         }
-
-        // this.addMenuItems(menu, ['-', 'fitWindow', 'fitPageWidth', 'fitPage', 'fitTwoPages', '-', 'customZoom'], parent);
     })));
     // 文件
     this.put('file', new Menu(mxUtils.bind(this, function(menu, parent)
@@ -908,5 +906,6 @@ Menu.prototype.execute = function(menu, parent)
  */
 EditorUi.prototype.createMenus = function()
 {
+    debugger
     return new Menus(this);
 };

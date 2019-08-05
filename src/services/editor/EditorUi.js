@@ -1271,14 +1271,6 @@ EditorUi.prototype.getCssClassForMarker = function(prefix, shape, marker, fill)
 };
 
 /**
- * Overridden in Menus.js
- */
-EditorUi.prototype.createMenus = function()
-{
-    return null;
-};
-
-/**
  * Hook for allowing selection and context menu for certain events.
  */
 EditorUi.prototype.updatePasteActionStates = function()
@@ -2870,10 +2862,10 @@ EditorUi.prototype.refresh = function(sizeDidChange)
 
     this.formatContainer.style.top = '0px';
     this.formatContainer.style.width = fw + 'px';
-    // this.formatContainer.style.height = '50%';
+    this.formatContainer.style.height = '50%';
     this.formatContainer.style.display = (this.format != null) ? '' : 'none';
 	
-    this.diagramContainer.style.left = (this.hsplit.parentNode != null) ? (this.sidebarWidth + this.splitSize) + 'px' : '0px';
+    this.diagramContainer.style.left = (this.hsplit && this.hsplit.parentNode != null) ? (this.sidebarWidth + this.splitSize) + 'px' : '0px';
     this.diagramContainer.style.top = this.sidebarContainer.style.top;
     this.hsplit.style.top = this.sidebarContainer.style.top;
     this.hsplit.style.bottom = (this.footerHeight + off) + 'px';
@@ -2892,7 +2884,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
         this.sidebarContainer.style.height = sidebarHeight  + 'px';
         this.formatContainer.style.height = sidebarHeight + 'px';
         this.rightBarContainer.style.height = sidebarHeight + 'px';
-        this.diagramContainer.style.width = (this.hsplit.parentNode != null) ? Math.max(0, w - this.sidebarWidth - this.splitSize - fw) + 'px' : w + 'px';
+        this.diagramContainer.style.width = (this.hsplit&&this.hsplit.parentNode != null) ? Math.max(0, w - this.sidebarWidth - this.splitSize - fw) + 'px' : w + 'px';
         var diagramHeight = Math.max(0, h - this.footerHeight - this.menubarHeight - this.toolbarHeight);
 		
         if (this.tabContainer != null)
@@ -2948,13 +2940,14 @@ EditorUi.prototype.createTabContainer = function()
 EditorUi.prototype.createDivs = function()
 {
     this.menubarContainer = this.createDiv('geMenubarContainer');
-    this.toolbarContainer = this.createDiv('geToolbarContainer');
+    this.toolbarContainer = document.querySelector(".geToolbarContainer");
     this.sidebarContainer = this.createDiv('geSidebarContainer');
     this.formatContainer = this.createDiv('geSidebarContainer geFormatContainer');
     this.rightBarContainer = this.createDiv('geSidebarContainer geRightBarContainer');
     this.paletteManageContainer = this.createDiv('geSidebarContainer gePaletteManageContainer');
     this.diagramContainer = this.createDiv('geDiagramContainer');
     this.footerContainer = this.createDiv('geFooterContainer');
+    //去掉sidebar 右边的创建的直线
     this.hsplit = this.createDiv('geHsplit');
     this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));
 
@@ -2962,8 +2955,6 @@ EditorUi.prototype.createDivs = function()
     this.menubarContainer.style.top = '0px';
     this.menubarContainer.style.left = '0px';
     this.menubarContainer.style.right = '0px';
-    this.toolbarContainer.style.left = '0px';
-    this.toolbarContainer.style.right = '0px';
     this.sidebarContainer.style.left = '0px';
     this.formatContainer.style.right = '0px';
     this.formatContainer.style.zIndex = '1';
@@ -3081,7 +3072,10 @@ EditorUi.prototype.createUi = function()
 
     // 多个toolbar功能区
     var containerList = []
-    for(var i = 1; i < 9; i++) {
+    for(let i=1;i<3;i++){
+        containerList.push(document.querySelector('.geToolbar.geToolbar' + i))
+    }
+    for(var i = 2; i < 9; i++) {
         containerList.push(this.createDiv('geToolbar geToolbar' + i))
     }
     // 创建 toolbar
@@ -3531,13 +3525,6 @@ EditorUi.prototype.save = function(name, des)
                         this.saveError(res.responseJSON);
                         reject(res);
                     })
-                    // editor.ajax(ui, 'http://10.74.20.25/api/viewtool', 'POST', data, (res) => {
-                    // 	this.saveSuccess(res);
-                    // 	resolve(res);
-                    // }, (res) => {
-                    // 	this.saveError(res.responseJSON);
-                    // 	reject(res);
-                    // })
                 }
             }
             catch (e)
@@ -4185,7 +4172,7 @@ EditorUi.prototype.destroy = function()
 	
     var c = [this.menubarContainer, this.toolbarContainer, this.sidebarContainer,
 	         this.formatContainer, this.rightBarContainer, this.paletteManageContainer, this.diagramContainer, /*this.footerContainer*/,
-	         this.chromelessToolbar, /*this.hsplit,*/ this.sidebarFooterContainer,
+	         this.chromelessToolbar, this.hsplit, this.sidebarFooterContainer,
 	         this.layersDialog];
 	
     for (var i = 0; i < c.length; i++)

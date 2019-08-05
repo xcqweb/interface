@@ -58,10 +58,10 @@ Toolbar.prototype.staticElements = null;
 Toolbar.prototype.init = function()
 {
     // 新建、保存
-    this.addItems(['new', 'save'], this.containerList[0]);
+    //this.addItems(['new', 'save'], this.containerList[0]);
     // 重置视图百分比
-    this.addItems(['zoomIn'], this.containerList[1]);
-    var viewMenu = this.addMenu('', mxResources.get('zoom') + ' (Alt+Mousewheel)', true, 'pageScale', this.containerList[1], true);
+    //this.addItems(['zoomIn'], this.containerList[1]);
+    /* var viewMenu = this.addMenu('', mxResources.get('zoom') + ' (Alt+Mousewheel)', true, 'pageScale', this.containerList[1], true);
     viewMenu.showDisabled = true;
     viewMenu.style.whiteSpace = 'nowrap';
     viewMenu.style.position = 'relative';
@@ -73,13 +73,13 @@ Toolbar.prototype.init = function()
     else
     {
         viewMenu.style.width = (mxClient.IS_QUIRKS) ? '62px' : '36px';
-    }
+    } */
 	
     // 放大缩小
-    this.addItems(['zoomOut'], this.containerList[1]);
-    this.addItems(['fullScreen'], this.containerList[1]);
+    //this.addItems(['zoomOut'], this.containerList[1]);
+    //this.addItems(['fullScreen'], this.containerList[1]);
     // 如果缩放后，更新标签
-    this.updateZoom = mxUtils.bind(this, function()
+    /* this.updateZoom = mxUtils.bind(this, function()
     {
         viewMenu.innerHTML = Math.round(this.editorUi.editor.graph.view.scale * 100) + '%' +
 			this.dropdownImageHtml;
@@ -89,10 +89,10 @@ Toolbar.prototype.init = function()
             viewMenu.getElementsByTagName('img')[0].style.right = '1px';
             viewMenu.getElementsByTagName('img')[0].style.top = '5px';
         }
-    });
+    }); */
 
-    this.editorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
-    this.editorUi.editor.addListener('resetGraphView', this.updateZoom);
+    //this.editorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
+    //this.editorUi.editor.addListener('resetGraphView', this.updateZoom);
     // 复制、粘贴
     this.addItems(['copy', 'paste', 'cut', 'duplicate', 'undo', 'redo', 'delete'], this.containerList[2]);
     // 排版
@@ -375,6 +375,7 @@ Toolbar.prototype.createLabel = function(label, tooltip)
  */
 Toolbar.prototype.addMenuHandler = function(elt, showLabels, funct, showAll)
 {
+    debugger
     if (funct != null)
     {
         var graph = this.editorUi.editor.graph;

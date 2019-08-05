@@ -33,12 +33,13 @@ export default {
            
             let applyInfo = await this.requestUtil.get(`/api/viewtool/${id}`);
             let {content} = applyInfo
-            content = JSON.parse(content)
-            console.log(content)
-            pages = content.pages
-            rank = content.rank
-            this.pageId = rank.normal[0]
-            this.currentPage = pages[this.pageId]
+            if(content) {
+                content = JSON.parse(content)
+                pages = content.pages
+                rank = content.rank
+                this.pageId = rank.normal[0]
+                this.currentPage = pages[this.pageId]
+            }
 
             /*  let model = new window.mxGraphModel();
             let graph = new window.mxGraph(document.querySelector("#preview_c"), model);
@@ -51,16 +52,13 @@ export default {
 
             var container = document.getElementById("preview_c");
             //设置背景样式
-            container.style.background = 'url(../static/images/default/grid.gif)';        
+            //container.style.background = 'url(../static/images/default/grid.gif)';        
             container.style.height = "300px";
             container.style.padding = "20px";
             //创建一个画板
             var graph = new window.mxGraph(container);
-            
+            graph.setCellsEditable(false); 
             var doc = window.mxUtils.parseXml(this.currentPage.xml);
-            console.log(doc.firstChild)
-            let a = doc.firstChild
-            console.dir(a)
             var codec = new window.mxCodec(doc);
             codec.decode(doc.documentElement, graph.getModel());
 

@@ -138,9 +138,9 @@ Actions.prototype.init = function()
 	
     field = null;
     // 全屏
-    this.addAction('fullScreen', function() {
+    /* this.addAction('fullScreen', function() {
         mxUtils.fullScreen()
-    })
+    }) */
     // 菜单部分排版操作
     // 文本左对齐
     this.addAction('leftalign', function() {
@@ -823,8 +823,8 @@ Actions.prototype.init = function()
         graph.zoomTo(1);
         ui.resetScrollbars();
     }, null, null, Editor.ctrlKey + '+H');
-    this.addAction('zoomIn', function(evt) { graph.zoomIn(); }, null, null, Editor.ctrlKey + '+');
-    this.addAction('zoomOut', function(evt) { graph.zoomOut(); }, null, null, Editor.ctrlKey + '-');
+    //this.addAction('zoomIn', function(evt) { graph.zoomIn(); }, null, null, Editor.ctrlKey + '+');
+    //this.addAction('zoomOut', function(evt) { graph.zoomOut(); }, null, null, Editor.ctrlKey + '-');
     this.addAction('fitWindow', function() { graph.fit(); }, null, null, Editor.ctrlKey + '+Shift+H');
     this.addAction('fitPage', mxUtils.bind(this, function()
     {
@@ -1394,7 +1394,6 @@ Actions.prototype.deleteTableCell = function(type) {
 Actions.prototype.addAction = function(key, funct, enabled, iconCls, shortcut)
 {
     var title;
-	
     if (key.substring(key.length - 3) == '...')
     {
         key = key.substring(0, key.length - 3);
