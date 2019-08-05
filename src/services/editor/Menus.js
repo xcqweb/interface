@@ -10,7 +10,7 @@ Menus = function(editorUi)
     this.editorUi = editorUi;
     this.menus = new Object();
     this.init();
-	
+
     // Pre-fetches checkmark image
     if (!mxClient.IS_SVG)
     {
@@ -57,7 +57,7 @@ Menus.prototype.init = function()
         this.addSubmenu('align', menu, parent);
         this.addMenuItems(menu, ['-', 'group', 'ungroup', 'removeFromGroup', '-','autosize'], parent);
     }))).isEnabled = isGraphEnabled;
-	
+
     // 文件
     this.put('publish', new Menu(mxUtils.bind(this, function(menu, parent)
     {
@@ -108,7 +108,7 @@ Menus.prototype.init = function()
 Menus.prototype.put = function(name, menu)
 {
     this.menus[name] = menu;
-	
+
     return menu;
 };
 
@@ -126,11 +126,11 @@ Menus.prototype.get = function(name)
 Menus.prototype.addSubmenu = function(name, menu, parent, label)
 {
     var entry = this.get(name);
-	
+
     if (entry != null)
     {
         var enabled = entry.isEnabled();
-	
+
         if (menu.showDisabled || enabled)
         {
             var submenu = menu.addItem(label || mxResources.get(name), null, null, parent, null, enabled);
@@ -145,7 +145,7 @@ Menus.prototype.addSubmenu = function(name, menu, parent, label)
 Menus.prototype.addMenu = function(name, popupMenu, parent)
 {
     var menu = this.get(name);
-	
+
     if (menu != null && (popupMenu.showDisabled || menu.isEnabled()))
     {
         this.get(name).execute(popupMenu, parent);
@@ -159,54 +159,54 @@ Menus.prototype.addInsertTableItem = function(menu)
 {
     // KNOWN: Does not work in IE8 standards and quirks
     var graph = this.editorUi.editor.graph;
-	
+
     function createTable(rows, cols)
     {
         var html = ['<table>'];
-		
+
         for (var i = 0; i < rows; i++)
         {
             html.push('<tr>');
-			
+
             for (var j = 0; j < cols; j++)
             {
                 html.push('<td><br></td>');
             }
-			
+
             html.push('</tr>');
         }
-		
+
         html.push('</table>');
-		
+
         return html.join('');
     }
-	
+
     // Show table size dialog
     var elt2 = menu.addItem('', null, mxUtils.bind(this, function(evt)
     {
         var td = graph.getParentByName(mxEvent.getSource(evt), 'TD');
-		
+
         if (td != null)
         {
             var row2 = graph.getParentByName(td, 'TR');
-			
+
             // To find the new link, we create a list of all existing links first
     		// LATER: Refactor for reuse with code for finding inserted image below
             var tmp = graph.cellEditor.textarea.getElementsByTagName('table');
             var oldTables = [];
-			
+
             for (var i = 0; i < tmp.length; i++)
             {
                 oldTables.push(tmp[i]);
             }
-			
+
             // Finding the new table will work with insertHTML, but IE does not support that
             graph.container.focus();
             graph.pasteHtmlAtCaret(createTable(row2.sectionRowIndex + 1, td.cellIndex + 1));
-			
+
             // Moves cursor to first table cell
             var newTables = graph.cellEditor.textarea.getElementsByTagName('table');
-			
+
             if (newTables.length == oldTables.length + 1)
             {
                 // Inverse order in favor of appended tables
@@ -221,7 +221,7 @@ Menus.prototype.addInsertTableItem = function(menu)
             }
         }
     }));
-	
+
     // Quirks mode does not add cell padding if cell is empty, needs good old spacer solution
     var quirksCellHtml = '<img src="' + mxClient.imageBasePath + '/transparent.gif' + '" width="16" height="16"/>';
 
@@ -235,22 +235,22 @@ Menus.prototype.addInsertTableItem = function(menu)
         {
             table2.setAttribute('cellPadding', '8');
         }
-		
+
         for (var i = 0; i < rows; i++)
         {
             var row = table2.insertRow(i);
-			
+
             for (var j = 0; j < cols; j++)
             {
                 var cell = row.insertCell(-1);
-				
+
                 if (mxClient.IS_QUIRKS)
                 {
                     cell.innerHTML = quirksCellHtml;
                 }
             }
         }
-		
+
         return table2;
     }
 
@@ -259,26 +259,26 @@ Menus.prototype.addInsertTableItem = function(menu)
         for (var i = picker.rows.length; i < rows; i++)
         {
             var row = picker.insertRow(i);
-			
+
             for (var j = 0; j < picker.rows[0].cells.length; j++)
             {
                 var cell = row.insertCell(-1);
-				
+
                 if (mxClient.IS_QUIRKS)
                 {
                     cell.innerHTML = quirksCellHtml;
                 }
             }
         }
-		
+
         for (var i = 0; i < picker.rows.length; i++)
         {
             var row = picker.rows[i];
-			
+
             for (var j = row.cells.length; j < cols; j++)
             {
                 var cell = row.insertCell(-1);
-				
+
                 if (mxClient.IS_QUIRKS)
                 {
                     cell.innerHTML = quirksCellHtml;
@@ -286,35 +286,35 @@ Menus.prototype.addInsertTableItem = function(menu)
             }
         }
     }
-	
+
     elt2.firstChild.innerHTML = '';
     var picker = createPicker(5, 5);
     elt2.firstChild.appendChild(picker);
-	
+
     var label = document.createElement('div');
     label.style.padding = '4px';
     label.style.fontSize = Menus.prototype.defaultFontSize + 'px';
     label.innerHTML = '1x1';
     elt2.firstChild.appendChild(label);
-	
+
     mxEvent.addListener(picker, 'mouseover', function(e)
     {
         var td = graph.getParentByName(mxEvent.getSource(e), 'TD');
-		
+
         if (td != null)
         {
             var row2 = graph.getParentByName(td, 'TR');
             extendPicker(picker, Math.min(20, row2.sectionRowIndex + 2), Math.min(20, td.cellIndex + 2));
             label.innerHTML = (td.cellIndex + 1) + 'x' + (row2.sectionRowIndex + 1);
-			
+
             for (var i = 0; i < picker.rows.length; i++)
             {
                 var r = picker.rows[i];
-				
+
                 for (var j = 0; j < r.cells.length; j++)
                 {
                     var cell = r.cells[j];
-					
+
                     if (i <= row2.sectionRowIndex && j <= td.cellIndex)
                     {
                         cell.style.backgroundColor = 'blue';
@@ -325,7 +325,7 @@ Menus.prototype.addInsertTableItem = function(menu)
                     }
                 }
             }
-			
+
             mxEvent.consume(e);
         }
     });
@@ -340,23 +340,23 @@ Menus.prototype.edgeStyleChange = function(menu, label, keys, values, sprite, pa
     {
         var graph = this.editorUi.editor.graph;
         graph.stopEditing(false);
-		
+
         graph.getModel().beginUpdate();
         try
         {
             var cells = graph.getSelectionCells();
             var edges = [];
-			
+
             for (var i = 0; i < cells.length; i++)
             {
                 var cell = cells[i];
-				
+
                 if (graph.getModel().isEdge(cell))
                 {
                     if (reset)
                     {
                         var geo = graph.getCellGeometry(cell);
-			
+
                         // Resets all edge points
                         if (geo != null)
                         {
@@ -365,16 +365,16 @@ Menus.prototype.edgeStyleChange = function(menu, label, keys, values, sprite, pa
                             graph.getModel().setGeometry(cell, geo);
                         }
                     }
-					
+
                     for (var j = 0; j < keys.length; j++)
                     {
                         graph.setCellStyles(keys[j], values[j], [cell]);
                     }
-					
+
                     edges.push(cell);
                 }
             }
-			
+
             this.editorUi.fireEvent(new mxEventObject('styleChanged', 'keys', keys,
                 'values', values, 'cells', edges));
         }
@@ -391,11 +391,11 @@ Menus.prototype.edgeStyleChange = function(menu, label, keys, values, sprite, pa
 Menus.prototype.styleChange = function(menu, label, keys, values, sprite, parent, fn, post)
 {
     var apply = this.createStyleChangeFunction(keys, values);
-	
+
     return menu.addItem(label, null, mxUtils.bind(this, function()
     {
         var graph = this.editorUi.editor.graph;
-		
+
         if (fn != null && graph.cellEditor.isContentEditing())
         {
             fn();
@@ -408,7 +408,7 @@ Menus.prototype.styleChange = function(menu, label, keys, values, sprite, parent
 };
 
 /**
- * 
+ *
  */
 Menus.prototype.createStyleChangeFunction = function(keys, values)
 {
@@ -416,7 +416,7 @@ Menus.prototype.createStyleChangeFunction = function(keys, values)
     {
         var graph = this.editorUi.editor.graph;
         graph.stopEditing(false);
-		
+
         graph.getModel().beginUpdate();
         try
         {
@@ -424,7 +424,7 @@ Menus.prototype.createStyleChangeFunction = function(keys, values)
             {
                 graph.setCellStyles(keys[i], values[i]);
             }
-			
+
             if (post != null)
             {
                 post();
@@ -449,12 +449,12 @@ Menus.prototype.promptChange = function(menu, label, hint, defaultValue, key, pa
         var graph = this.editorUi.editor.graph;
         var value = defaultValue;
     	var state = graph.getView().getState(graph.getSelectionCell());
-    	
+
     	if (state != null)
     	{
     		value = state.style[key] || value;
     	}
-    	
+
         var dlg = new FilenameDialog(this.editorUi, value, mxResources.get('apply'), mxUtils.bind(this, function(newValue)
         {
             if (newValue != null && newValue.length > 0)
@@ -469,7 +469,7 @@ Menus.prototype.promptChange = function(menu, label, hint, defaultValue, key, pa
                 {
                     graph.getModel().endUpdate();
                 }
-				
+
                 if (fn != null)
                 {
                     fn(newValue);
@@ -487,12 +487,12 @@ Menus.prototype.promptChange = function(menu, label, hint, defaultValue, key, pa
 Menus.prototype.pickColor = function(key, cmd, defaultValue)
 {
     var graph = this.editorUi.editor.graph;
-	
+
     if (cmd != null && graph.cellEditor.isContentEditing())
     {
         // Saves and restores text selection for in-place editor
         var selState = graph.cellEditor.saveSelection();
-		
+
         var dlg = new ColorDialog(this.editorUi, defaultValue || '000000', mxUtils.bind(this, function(color)
         {
             graph.cellEditor.restoreSelection(selState);
@@ -510,16 +510,16 @@ Menus.prototype.pickColor = function(key, cmd, defaultValue)
         {
             this.colorDialog = new ColorDialog(this.editorUi);
         }
-	
+
         this.colorDialog.currentColorKey = key;
         var state = graph.getView().getState(graph.getSelectionCell());
         var color = 'none';
-		
+
         if (state != null)
         {
             color = state.style[key] || color;
         }
-		
+
         if (color == 'none')
         {
             color = 'ffffff';
@@ -530,7 +530,7 @@ Menus.prototype.pickColor = function(key, cmd, defaultValue)
         {
             this.colorDialog.picker.fromString(color);
         }
-	
+
         this.editorUi.showDialog(this.colorDialog.container, 230, 430, true, true);
         this.colorDialog.init();
     }
@@ -560,7 +560,7 @@ Menus.prototype.addMenuItem = function(menu, key, parent, trigger, sprite, label
         {
             action.funct(trigger);
         }, parent, sprite, action.isEnabled());
-		
+
         // Adds checkmark image
         if (action.toggleAction && action.isSelected())
         {
@@ -568,10 +568,10 @@ Menus.prototype.addMenuItem = function(menu, key, parent, trigger, sprite, label
         }
         // 右键菜单，快捷键提示
         this.addShortcut(item, action);
-		
+
         return item;
     }
-	
+
     return null;
 };
 
@@ -634,7 +634,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
         if (state != null)
         {
             this.addMenuItems(menu, ['toFront', 'toBack', '-'], null, evt);
-            if (graph.getSelectionCount() > 1 && shapeName !== 'menuCell' && shapeName !== 'menulist')	
+            if (graph.getSelectionCount() > 1 && shapeName !== 'menuCell' && shapeName !== 'menulist')
             {
                 // 选择多个节点，增加组合操作
                 menu.addSeparator();
@@ -647,7 +647,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                 menu.addSeparator();
                 this.addMenuItems(menu, ['ungroup'], null, evt);
             }
-			
+
             // 选中单个节点,展示不同的右键菜单
             if (graph.getSelectionCount() == 1)
             {
@@ -702,7 +702,7 @@ Menus.prototype.createMenubar = function(container)
                 // Allows extensions of menu.funct
                 menu.funct.apply(this, arguments);
             }));
-			
+
             this.menuCreated(menu, elt);
         }))(this.get(menus[i]));
     }
@@ -718,15 +718,15 @@ Menus.prototype.menuCreated = function(menu, elt, className)
     if (elt != null)
     {
         className = (className != null) ? className : 'geItem';
-		
+
         menu.addListener('stateChanged', function()
         {
             elt.enabled = menu.enabled;
-			
+
             if (!menu.enabled)
             {
                 elt.className = className + ' mxDisabled';
-				
+
                 if (document.documentMode == 8)
                 {
                     elt.style.color = '#c3c3c3';
@@ -735,7 +735,7 @@ Menus.prototype.menuCreated = function(menu, elt, className)
             else
             {
                 elt.className = className;
-				
+
                 if (document.documentMode == 8)
                 {
                     elt.style.color = '';
@@ -773,7 +773,7 @@ Menubar.prototype.addMenu = function(label, funct, before)
     elt.className = 'geItem';
     mxUtils.write(elt, label);
     this.addMenuHandler(elt, funct);
-	
+
     if (before != null)
     {
     	this.container.insertBefore(elt, before);
@@ -782,7 +782,7 @@ Menubar.prototype.addMenu = function(label, funct, before)
     {
     	this.container.appendChild(elt);
     }
-	
+
     return elt;
 };
 
@@ -794,7 +794,7 @@ Menubar.prototype.addMenuHandler = function(elt, funct)
     if (funct != null)
     {
         var show = true;
-		
+
         var clickHandler = mxUtils.bind(this, function(evt)
         {
             this.editorUi.sidebar.hidePageContextMenu();
@@ -819,10 +819,10 @@ Menubar.prototype.addMenuHandler = function(elt, funct)
                 menu.popup(offset.x, offset.y + elt.offsetHeight, null, evt);
                 this.editorUi.setCurrentMenu(menu, elt);
             }
-			
+
             mxEvent.consume(evt);
         });
-		
+
         // 点击之后的鼠标移动
         mxEvent.addListener(elt, 'mousemove', mxUtils.bind(this, function(evt)
         {
@@ -842,7 +842,7 @@ Menubar.prototype.addMenuHandler = function(elt, funct)
             elt.className += ' activeMenu';
             show = this.currentElt != elt;
         }));
-		
+
         mxEvent.addListener(elt, 'click', mxUtils.bind(this, function(evt)
         {
             clickHandler(evt);

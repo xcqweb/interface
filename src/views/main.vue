@@ -4,10 +4,11 @@
       ref="toolbar"
       :drop-down-img="dropDownImg"
     />
+    <RightBar />
   </div>
 </template>
 
-<script>  
+<script> 
 //mxgraph editor
 import '../services/editor/Init'
 import '../services/editor/EditorUi'
@@ -21,12 +22,15 @@ import '../services/editor/Menus'
 import '../services/editor/Toolbar'
 import '../services/editor/Dialogs'
 
-import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal'
+import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal' 
 import Toolbar from './toolbar/toolbar'
+import RightBar from './rightBar'
 import Vue from 'vue'
 export default {
     components:{
-        Toolbar
+       
+        Toolbar,
+        RightBar
     },
     data() {
         return{
@@ -63,8 +67,8 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
- 
+<style scoped lang="less"> 
+
 </style>
 
 <style lang="less">
