@@ -94,7 +94,7 @@ Toolbar.prototype.init = function()
     //this.editorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
     //this.editorUi.editor.addListener('resetGraphView', this.updateZoom);
     // 复制、粘贴
-    this.addItems(['copy', 'paste', 'cut', 'duplicate', 'undo', 'redo', 'delete'], this.containerList[2]);
+    //this.addItems(['copy', 'paste', 'cut', 'duplicate', 'undo', 'redo', 'delete'], this.containerList[2]);
     // 排版
     this.addItems([ 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'], this.containerList[3]);
     // 置前
@@ -280,7 +280,6 @@ Toolbar.prototype.initElement = function(elt, tooltip)
     {
         elt.setAttribute('title', tooltip);
     }
-
     this.addEnabledState(elt);
 };
 
@@ -299,6 +298,7 @@ Toolbar.prototype.addEnabledState = function(elt)
         }
         else
         {
+            debugger
             elt.className = classname + ' mxDisabled';
         }
     };

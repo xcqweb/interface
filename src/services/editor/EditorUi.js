@@ -3072,10 +3072,10 @@ EditorUi.prototype.createUi = function()
 
     // 多个toolbar功能区
     var containerList = []
-    for(let i=1;i<3;i++){
+    for(let i=1;i<4;i++){
         containerList.push(document.querySelector('.geToolbar.geToolbar' + i))
     }
-    for(var i = 2; i < 9; i++) {
+    for(var i = 4; i < 9; i++) {
         containerList.push(this.createDiv('geToolbar geToolbar' + i))
     }
     // 创建 toolbar

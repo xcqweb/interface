@@ -22,7 +22,7 @@ import '../services/editor/Toolbar'
 import '../services/editor/Dialogs'
 
 import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal'
-import Toolbar from './toolbar'
+import Toolbar from './toolbar/toolbar'
 import Vue from 'vue'
 export default {
     components:{
