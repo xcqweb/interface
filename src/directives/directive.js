@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-function deal(el,isVisible) {
+function deal(el, isVisible) {
     if (isVisible.value) {
         el.style.visibility = "visible"
     } else {
@@ -8,12 +8,30 @@ function deal(el,isVisible) {
     }
 }
 
-const visible = Vue.directive('visible',{
-    update:function(el,isVisible) {
-        deal(el,isVisible)
+const visible = Vue.directive('visible', {
+    update: function(el, isVisible) {
+        deal(el, isVisible)
     },
     inserted: function(el, isVisible) {
         deal(el, isVisible)
     }
 })
-export {visible}
+
+const clickOutSide = {
+    bind: function(el, {value}) {
+        let clickOutside = value
+        el.handler = function(e) {
+
+            if (el && !el.contains(e.target)) {
+                clickOutside(e)
+            }
+        }
+        document.addEventListener('click', el.handler, true)
+    },
+    unbind:function(el) {
+        document.removeEventListener('click', el.handler, true)
+        el.handler = null
+    }
+}
+
+export {visible , clickOutSide}

@@ -74,7 +74,6 @@ window.EditorUi = function(editor, container, lightbox)
         {
             evt = window.event;
         }
-
         return (this.isSelectionAllowed(evt) || graph.isEditing());
     });
 

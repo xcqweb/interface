@@ -1,5 +1,6 @@
 <template>
   <div
+    v-clickOutSide="close"
     class="geFootbarContainer"
     :style="{bottom:bottom+'px'}"
   >
@@ -9,61 +10,55 @@
     />
     <ul class="tab">
       <li 
-        :class="{active:activeTab === 1}"
-        @click="activeTab=1"
+        :class="{active:componentId === 'DataSource'}"
+        @click="componentId='DataSource'"
       >
         数据源
       </li>
       <li 
-        :class="{active:activeTab === 2}"
-        @click="activeTab=2"
+        :class="{active:componentId === 'ShowData'}"
+        @click="componentId='ShowData'"
       >
         数据显示
       </li>
       <li 
-        :class="{active:activeTab === 3}"
-        @click="activeTab=3"
+        :class="{active:componentId === 'ModelState'}"
+        @click="componentId='ModelState'"
       >
         状态模型
       </li>
       <p class="clearFix" />
     </ul>
-    <div 
-      v-show="activeTab === 1"
-      class="content" 
-    >
-      wwww1
-    </div>
-    <div 
-      v-show="activeTab === 2"
-      class="content" 
-    >
-      wwww2
-    </div>
-    <div 
-      v-show="activeTab === 3"
-      class="content" 
-    >
-      wwww3
-    </div>
+    <keep-alive>
+      <component :is="componentId" />
+    </keep-alive>
   </div>
 </template>
 
 <script>
+import {clickOutSide} from '@/directives/directive'
+import conponents from './components'
 export default {
+    directives: {
+        "clickOutSide" : clickOutSide
+    },
+    components: {...conponents},
     data() {
         return {
-            isCollapse: false,
             activeTab: 1,
-            bottom: -75
+            bottom: -100,
+            componentId: 'DataSource'
         };
     },
     methods: {
+        close() {
+            this.bottom = -100
+        },
         tabHandler(e) {
             console.log(e.target);
         },
         toggle() {
-            this.bottom === 0 ? (this.bottom = -75) : (this.bottom = 0);
+            this.bottom === -25 ? (this.bottom = -100) : (this.bottom = -25);
         }
     }
 };
@@ -74,7 +69,7 @@ export default {
   width: 100%;
   height: 100px;
   position: absolute;
-  bottom: 0;
+  bottom: -24px;
   z-index: 100;
   background: rgba(242, 242, 242, 1);
   border: 1px solid rgba(204, 204, 204, 1);

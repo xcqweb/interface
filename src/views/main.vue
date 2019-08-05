@@ -57,12 +57,19 @@ export default {
     methods: {
         init() {
             this.myEditorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
+            this.myEditorUi.editor.graph.addListener(mxEvent.CLICK, this.selectCell,false);
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
         },
         updateZoom() {
             this.$refs.toolbar.updateZoom();
-        }
+        },
+        selectCell() {
+            let cells = this.myEditorUi.editor.graph.getSelectionCells();
+            for (let i = 0; i < cells.length; i++) {
+            //   console.dir(cells[i].value && cells[i].value.attributes && cells[i].value.attributes.bindData);  
+            }
+        },
     }
 };
 </script>
@@ -72,12 +79,6 @@ export default {
 </style>
 
 <style lang="less">
-#app{
-  font-size:14px;
-  font-family:MicrosoftYaHei;
-  position: relative;
-  height:100%;
-}
 .container{
     position: relative;
     height: 100%;

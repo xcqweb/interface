@@ -46,6 +46,6 @@ export default {
   font-size:14px;
   font-family:MicrosoftYaHei;
   position: relative;
-  height:100%;
+  height:calc(100% - 24px);
 }
 </style>
