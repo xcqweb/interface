@@ -37,13 +37,9 @@
 </template>
 
 <script>
-import {clickOutSide} from '@/directives/directive'
 import conponents from './components'
 const BOTTOM = -75
 export default {
-    directives: {
-        "clickOutSide" : clickOutSide
-    },
     components: {...conponents},
     props: {
         bindDatas: {

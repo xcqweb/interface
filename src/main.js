@@ -17,8 +17,6 @@ import './assets/css/common'
 import './assets/css/grapheditor'
 import './assets/css/preview'
 
-Vue.prototype.$filters = Vue.options.filters
-
 Vue.component('v-chart', VueECharts)
 
 Vue.config.productionTip = false
