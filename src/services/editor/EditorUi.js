@@ -2893,7 +2893,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
             diagramHeight -= this.tabContainer.clientHeight;
         }
 
-        this.diagramContainer.style.height = diagramHeight + 'px';
+        this.diagramContainer.style.height = diagramHeight-25 + 'px';
         this.hsplit.style.height = diagramHeight + 'px';
     }
     else

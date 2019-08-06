@@ -4,7 +4,7 @@
       ref="toolbar"
     />
     <RightBar />
-    <FooterBar />
+    <FooterBar :bindDatas='bindDatas' />
   </div>
 </template>
 
@@ -35,6 +35,7 @@ export default {
     },
     data() {
         return{
+            bindDatas: []
         }
     },
     created() {
@@ -51,8 +52,6 @@ export default {
             this.init()
         })
     },
-    mounted() {
-    },
     methods: {
         init() {
             this.myEditorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
@@ -64,9 +63,14 @@ export default {
             this.$refs.toolbar.updateZoom();
         },
         selectCell() {
+            this.bindDatas = []
             let cells = this.myEditorUi.editor.graph.getSelectionCells();
             for (let i = 0; i < cells.length; i++) {
-            //   console.dir(cells[i].value && cells[i].value.attributes && cells[i].value.attributes.bindData);  
+                let val = (cells[i].value && cells[i].value.attributes && cells[i].value.attributes.bindData) ? JSON.parse(cells[i].value.attributes.bindData.value) : ''
+                if (val) {
+                    this.bindDatas.push(val)
+                }
+                // console.dir(cells[i].value && cells[i].value.attributes && cells[i].value.attributes.bindData);  
             }
         },
     }

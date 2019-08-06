@@ -7,6 +7,7 @@
     <div
       class="collapse-menu"
       @click="toggle"
+      :style="{transform: rotate}"
     />
     <ul class="tab">
       <li 
@@ -38,27 +39,38 @@
 <script>
 import {clickOutSide} from '@/directives/directive'
 import conponents from './components'
+const BOTTOM = -75
 export default {
     directives: {
         "clickOutSide" : clickOutSide
     },
     components: {...conponents},
+    props: {
+        bindDatas: {
+            type: Array
+        }
+    },
     data() {
         return {
             activeTab: 1,
-            bottom: -100,
+            bottom: BOTTOM,
             componentId: 'DataSource'
         };
     },
+    computed: {
+        rotate() {
+            return this.bottom === 0 ? `rotateZ(180deg)` : `rotateZ(0)`
+        }
+    },
     methods: {
         close() {
-            this.bottom = -100
+            this.bottom = BOTTOM
         },
         tabHandler(e) {
             console.log(e.target);
         },
         toggle() {
-            this.bottom === -25 ? (this.bottom = -100) : (this.bottom = -25);
+            this.bottom === 0 ? (this.bottom = BOTTOM) : (this.bottom = 0)
         }
     }
 };
@@ -66,13 +78,13 @@ export default {
 
 <style lang="less" scoped>
 .geFootbarContainer {
-  width: 100%;
+  width: calc(100% - 402px);
   height: 100px;
   position: absolute;
-  bottom: -24px;
+  left: 180px;
+  bottom: 0;
   z-index: 100;
-  background: rgba(242, 242, 242, 1);
-  border: 1px solid rgba(204, 204, 204, 1);
+  background: #fff;
   transition: all 0.36s;
   .collapse-menu {
     width: 16px;
@@ -81,16 +93,18 @@ export default {
     background-repeat: no-repeat;
     background-size: contain;
     position: absolute;
-    right: 0;
-    top: 4px;
-    border: 1px dashed rgba(204, 204, 204, 1);
+    right: 2px;
+    top: 5px;
     cursor: pointer;
   }
   .tab {
     border-bottom: 1px solid rgba(204, 204, 204, 1);
+    border-top: 1px solid rgba(204, 204, 204, 1);
+    border-right: 1px solid rgba(204, 204, 204, 1);
     display: flex;
     align-items: center;
     user-select: none;
+    background: rgba(242, 242, 242, 1);
     & > li {
       width: 72px;
       height: 24px;

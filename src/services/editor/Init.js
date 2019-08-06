@@ -78,7 +78,6 @@ ChangePageSetup.prototype.execute = function()
     {
         this.format = this.previousFormat;
         var tmp = graph.pageFormat;
-		
         if (this.previousFormat.width != tmp.width ||
 			this.previousFormat.height != tmp.height)
         {
