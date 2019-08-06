@@ -48,7 +48,6 @@ export default {
     },
     data() {
         return {
-            activeTab: 1,
             bottom: BOTTOM,
             componentId: 'DataSource'
         };
@@ -61,9 +60,6 @@ export default {
     methods: {
         close() {
             this.bottom = BOTTOM
-        },
-        tabHandler(e) {
-            console.log(e.target);
         },
         toggle() {
             this.bottom === 0 ? (this.bottom = BOTTOM) : (this.bottom = 0)
