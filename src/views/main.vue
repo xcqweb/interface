@@ -4,7 +4,9 @@
       ref="toolbar"
     />
     <RightBar />
-    <FooterBar :bindDatas='bindDatas' />
+    <Footer-bar 
+      :bind-datas="bindDatas"
+    />
   </div>
 </template>
 
@@ -52,6 +54,9 @@ export default {
             this.init()
         })
     },
+    mounted() {
+        
+    },
     methods: {
         init() {
             this.myEditorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
@@ -65,6 +70,9 @@ export default {
         selectCell() {
             this.bindDatas = []
             let cells = this.myEditorUi.editor.graph.getSelectionCells();
+            if (cells.length > 1) {
+                return;
+            }
             for (let i = 0; i < cells.length; i++) {
                 let val = (cells[i].value && cells[i].value.attributes && cells[i].value.attributes.bindData) ? JSON.parse(cells[i].value.attributes.bindData.value) : ''
                 if (val) {

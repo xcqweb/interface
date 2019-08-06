@@ -6,8 +6,8 @@
   >
     <div
       class="collapse-menu"
-      @click="toggle"
       :style="{transform: rotate}"
+      @click="toggle"
     />
     <ul class="tab">
       <li 
