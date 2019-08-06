@@ -1314,7 +1314,66 @@ Sidebar.prototype.addGeneralPalette = function(expand)
     ];
     //封装
     this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
+
+    this.addGeneralPaletteShort();
 };
+
+/**
+ * 快捷方式控件
+ */
+Sidebar.prototype.addGeneralPaletteShort = function () {
+    var that = this;
+    var fns = [
+        // 文字
+        that.createVertexTemplateEntry(
+            "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;image=/static/stencils/basic/image.png",
+            // "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;",
+            40,
+            20,
+            // 类似链接一样设置
+            '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">text</span>',
+            "文字"
+        ),
+        // 矩形
+        that.createVertexTemplateEntry(
+            "rounded=0;shape=rectangle;whiteSpace=wrap;html=1;",
+            120,
+            60,
+            "",
+            "矩形",
+            null,
+            null,
+            "矩形"
+        ),
+        //直线
+        that.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 0, '', '直线', null, ''),
+        // 按钮
+        that.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box;background:transparent;">BUTTON</button>', '按钮'),
+        //表格,通过矩形拼接
+        this.addEntry('tableBox', function () {
+            var cell = new mxCell('', new mxGeometry(0, 0, 300, 90), 'shape=tableBox;group');
+            cell.vertex = true;
+            for (let i = 0; i < 9; i++) {
+                let line = parseInt(i / 3);
+                let xNum = i % 3;
+                let symbol = new mxCell(i < 3 ? 'Column ' + (i + 1) : '', new mxGeometry(xNum * 100, 30 * line, 100, 30), 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;');
+                symbol.vertex = true;
+                cell.insert(symbol);
+            }
+            return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '表格');
+        }),
+        // 图片
+        that.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', that.defaultImageWidth, that.defaultImageHeight, '', '图片'),
+    ];
+    
+    that.addPaletteCus(
+        mxUtils.bind(that, function (content) {
+            for (let i = 0; i < fns.length; i++) {
+                content.appendChild(fns[i](content));
+            }
+        })
+    );
+}
 
 /**
  * 左侧列表标题栏
@@ -2936,6 +2995,24 @@ Sidebar.prototype.addPalette = function(id, title, expanded, onInit)
     }
     return div;
 };
+
+
+/**
+ * 快捷方式
+ */
+Sidebar.prototype.addPaletteCus = function (onInit) {
+    var div = document.createElement('div');
+    div.className = 'geSidebar';
+
+    // Disables built-in pan and zoom in IE10 and later
+    if (mxClient.IS_POINTER) {
+        div.style.touchAction = 'none';
+    }
+    onInit(div);
+    onInit = null;
+    document.querySelector('#rightbarShortcut').appendChild(div);
+    return div;
+}
 
 /**
  * Create the given title element.

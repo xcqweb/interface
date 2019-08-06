@@ -2,16 +2,10 @@
   <div class="geSidebarContainer geRightBarContainer">
     <div class="geSidebarContainer geFormatContainer" />
     <div class="geSidebarContainer gePaletteManageContainer" />
-    <div class="rightbarShortcut">
-      <div
-        v-for="(item,i) in leftBar"
-        :key="i"
-        class="shortcutItem"
-        :style="{'background':'url('+item.icon+') no-repeat top center'}"
-      >
-        {{ item.text }}
-      </div>
-    </div>
+    <div
+      id="rightbarShortcut"
+      class="rightbarShortcut"
+    />
   </div>
 </template>
 <script>
@@ -20,40 +14,41 @@ export default {
     props: [""],
     data() {
         return {
-            leftBar: [
+            /*  leftBar: [
                 {
                     text: "文字",
-                    icon:require('@/assets/images/menu/rightBar/text_ic.png')
+                    icon: require("@/assets/images/menu/rightBar/text_ic.png")
                 },
                 {
                     text: "矩形",
-                    icon:require('@/assets/images/menu/rightBar/rectangle_ic.png')
+                    icon: require("@/assets/images/menu/rightBar/rectangle_ic.png")
                 },
                 {
                     text: "椭圆",
-                    icon:require('@/assets/images/menu/rightBar/oval_ic.png')
+                    icon: require("@/assets/images/menu/rightBar/oval_ic.png")
                 },
                 {
                     text: "直线",
-                    icon:require('@/assets/images/menu/rightBar/line_ic.png')
+                    icon: require("@/assets/images/menu/rightBar/line_ic.png")
                 },
                 {
                     text: "按钮",
-                    icon:require('@/assets/images/menu/rightBar/btn_ic.png')
+                    icon: require("@/assets/images/menu/rightBar/btn_ic.png")
                 },
                 {
                     text: "表格",
-                    icon:require('@/assets/images/menu/rightBar/form_ic.png')
+                    icon: require("@/assets/images/menu/rightBar/form_ic.png")
                 },
                 {
                     text: "图片",
-                    icon:require('@/assets/images/menu/rightBar/bg_ic.png')
+                    icon: require("@/assets/images/menu/rightBar/bg_ic.png")
                 }
-            ]
+            ] */
         };
     },
     created() {},
-    mounted() {},
+    mounted() {
+    },
     methods: {}
 };
 </script>
@@ -71,18 +66,31 @@ export default {
         width: 40px;
         border-right: 1px solid #ccc;
         border-left: 1px solid #ccc;
-        .shortcutItem{
-          text-align: center;
-          height: 32px;
-          margin-top: 15px;
-          display: flex;
-          align-items: flex-end;
-          justify-content: center;
-          cursor: pointer;
-          &:last-child{
-            background-size: 23px 16px !important;
-          }
+        .geSidebar{
+            padding: 0;
         }
+        a{
+            padding: 0 !important;
+            width: auto !important;
+            height: 45px !important;
+            background-size:22px 22px;
+            background-position: top center;
+            svg{
+                height: 21px !important;
+            }
+        }
+        /* .shortcutItem {
+            text-align: center;
+            height: 32px;
+            margin-top: 15px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            cursor: pointer;
+            &:last-child {
+                background-size: 23px 16px !important;
+            }
+        } */
     }
     .geFormatContainer {
         width: 210px !important;
