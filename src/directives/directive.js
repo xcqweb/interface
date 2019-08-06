@@ -8,7 +8,7 @@ function deal(el, isVisible) {
     }
 }
 
-const visible = Vue.directive('visible', {
+Vue.directive('visible', {
     update: function(el, isVisible) {
         deal(el, isVisible)
     },
@@ -16,8 +16,7 @@ const visible = Vue.directive('visible', {
         deal(el, isVisible)
     }
 })
-
-const clickOutSide = {
+Vue.directive('clickOutSide',{
     bind: function(el, {value}) {
         let clickOutside = value
         el.handler = function(e) {
@@ -32,6 +31,4 @@ const clickOutSide = {
         document.removeEventListener('click', el.handler, true)
         el.handler = null
     }
-}
-
-export {visible , clickOutSide}
+})

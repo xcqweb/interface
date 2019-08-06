@@ -56,7 +56,9 @@ export default{
         },
         hideScale(event) {
             this.$emit("hideScale")
-            event.stopPropagation();
+            if(event) {
+                event.stopPropagation();
+            }
         }
     },      
 }

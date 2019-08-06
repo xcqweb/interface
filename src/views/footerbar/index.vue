@@ -36,12 +36,8 @@
 </template>
 
 <script>
-import {clickOutSide} from '@/directives/directive'
 import conponents from './components'
 export default {
-    directives: {
-        "clickOutSide" : clickOutSide
-    },
     components: {...conponents},
     data() {
         return {
