@@ -6,6 +6,7 @@ import './directives/directive'
 import './filters/filter'
 import urls from './constants/url'
 import requestUtil from './services/request'
+import {i18n} from '@/common/i18n'
 
 import 'echarts'
 import VueECharts from 'vue-echarts'
@@ -25,6 +26,7 @@ Vue.prototype.router = router;
 Vue.prototype.urls = urls;
 Vue.prototype.requestUtil = requestUtil;
 new Vue({
+    i18n,
     router,
     render: h => h(App),
 }).$mount('#app')
