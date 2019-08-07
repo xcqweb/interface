@@ -301,7 +301,7 @@ var jscolor = {
 	 * var myColor = new jscolor.color(myInputElement)
 	 */
 
-	color : function(target, prop) {
+	color : function(target,target2, prop) {
 
 
 		this.required = true; // refuse empty values?
@@ -310,7 +310,7 @@ var jscolor = {
 		this.caps = true; // uppercase?
 		this.slider = true; // show the value/saturation slider?
 		this.valueElement = target; // value holder
-		this.styleElement = target; // where to reflect current color
+		this.styleElement = target2; // where to reflect current color
 		this.onImmediateChange = null; // onchange callback (can be either string or function)
 		this.hsv = [0, 0, 1]; // read-only  0-6, 0-1, 0-1
 		this.rgb = [1, 1, 1]; // read-only  0-1, 0-1, 0-1
@@ -708,7 +708,6 @@ var jscolor = {
 			p.pad.style.backgroundImage = "url('"+jscolor.getDir()+padImg+"')";
 			p.pad.style.backgroundRepeat = "no-repeat";
 			p.pad.style.backgroundPosition = "0 0";
-
 			// place pointers
 			redrawPad();
 			redrawSld();

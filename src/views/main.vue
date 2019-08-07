@@ -4,7 +4,7 @@
       ref="toolbar"
     />
     <RightBar />
-    <FooterBar
+  <FooterBar
       ref="footbar"
       :bind-datas="bindDatas"
     />
@@ -53,7 +53,11 @@ export default {
             Vue.prototype.myEditorUi = myEditorUi
             myEditorUi.editor.InitEditor(myEditorUi)
             this.init()
+            console.dir(this.myEditorUi)
         })
+    },
+    mounted() {
+        
     },
     methods: {
         init() {
@@ -69,6 +73,9 @@ export default {
         selectCell() {
             this.bindDatas = []
             let cells = this.myEditorUi.editor.graph.getSelectionCells();
+            if (cells.length > 1) {
+                return;
+            }
             for (let i = 0; i < cells.length; i++) {
                 let val = (cells[i].value && cells[i].value.attributes && cells[i].value.attributes.bindData) ? JSON.parse(cells[i].value.attributes.bindData.value) : ''
                 if (val) {
