@@ -52,6 +52,7 @@ export default {
             Vue.prototype.myEditorUi = myEditorUi
             myEditorUi.editor.InitEditor(myEditorUi)
             this.init()
+            console.dir(this.myEditorUi)
         })
     },
     mounted() {

@@ -36,17 +36,46 @@ var OpenDialog = function()
 var ColorDialog = function(editorUi, color, apply, cancelFn)
 {
     this.editorUi = editorUi;
-	
+    
+    var selectColor = document.createElement('div');
+    selectColor.style.display = 'flex';
+    selectColor.style.marginTop = '6px';
     var input = document.createElement('input');
-    input.style.marginBottom = '10px';
-    input.style.margintop = '3px';
-    input.style.width = '194px';
-	
+    input.style.width = '80px';
+    input.style.border = '1px solid #D4D4D4';
+    input.style.backgroundColor = '#fff';
+    input.style.borderRadius = '2px';
+    input.setAttribute('disabled',true);
+
+    var rect = document.createElement('input')
+    rect.style.width = '16px';
+    rect.style.height = '16px';
+    rect.style.marginRight = '4px';
+    rect.style.backgroundColor = '#fff';
+    rect.style.borderRadius = '2px';
+    rect.style.border = 'none';
+    rect.setAttribute('disabled',true);
+
+    var copyColor = document.createElement('p');
+    copyColor.style.width = '16px';
+    copyColor.style.height = '16px';
+    copyColor.style.marginLeft = '10px';
+    copyColor.style.background = "url('/static/images/default/copyColor.png')";
+
+    selectColor.appendChild(rect);
+    selectColor.appendChild(input);
+    selectColor.appendChild(copyColor);
+
+    var border = document.createElement('p');
+    border.style.height = '1px';
+    border.style.marginTop = '6px';
+    border.style.backgroundColor = '#e1e1e1';
+
     // Required for picker to render in IE
     if (mxClient.IS_IE)
     {
-        input.style.marginTop = '10px';
-        document.body.appendChild(input);
+        // input.style.marginTop = '10px';
+        document.body.appendChild(selectColor);
     }
 	
     this.init = function()
@@ -56,8 +85,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
             input.focus();
         }
     };
-
-    var picker = new jscolor.color(input);
+    var picker = new jscolor.color(input,rect);
     picker.pickerOnfocus = false;
     picker.showPicker();
 
@@ -67,45 +95,49 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
     jscolor.picker.box.style.height = '100px';
     jscolor.picker.box.style.paddingBottom = '10px';
     div.appendChild(jscolor.picker.box);
-
     var center = document.createElement('center');
     center.style.textAlign = "left";
 	
     function createRecentColorTable()
     {
         var table = addPresets((ColorDialog.recentColors.length == 0) ? ['FFFFFF'] :
-            ColorDialog.recentColors, 11, 'FFFFFF', true);
+            ColorDialog.recentColors, 9, 'FFFFFF', true,true);
         table.style.marginBottom = '8px';
 		
         return table;
     }
 	
-    function addPresets(presets, rowLength, defaultColor, addResetOption)
+    function addPresets(presets, rowLength, defaultColor, addResetOption,isRecent)
     {
-        rowLength = (rowLength != null) ? rowLength : 12;
-        var table = document.createElement('table');
-        table.style.borderCollapse = 'collapse';
-        table.setAttribute('cellspacing', '0');
-        table.style.marginBottom = '20px';
-        table.style.cellSpacing = '0px';
-        var tbody = document.createElement('tbody');
-        table.appendChild(tbody);
+        rowLength = (rowLength != null) ? rowLength : 9;
+        var odiv = document.createElement('div');
+        // table.style.borderCollapse = 'collapse';
+        // table.setAttribute('cellspacing', '0');
+        // table.style.marginBottom = '20px';
+        // table.style.cellSpacing = '0px';
+        // var tbody = document.createElement('tbody');
+        // table.appendChild(tbody);
 
         var rows = presets.length / rowLength;
 		
         for (var row = 0; row < rows; row++)
         {
-            var tr = document.createElement('tr');
-			
+            var tr = document.createElement('ul');
             for (var i = 0; i < rowLength; i++)
             {
+                if(!presets[row * rowLength + i]){
+                    continue;
+                }
                 (function(clr)
                 {
-                    var td = document.createElement('td');
-                    td.style.border = '1px solid black';
+                    var td = document.createElement('li');
+                    td.style.border = `1px solid #d4d4d4`;
                     td.style.padding = '0px';
                     td.style.width = '16px';
                     td.style.height = '16px';
+                    td.style.float = 'left';
+                    td.style.borderRadius = '2px';
+                    td.style.margin = '0 6px 6px 0';
 					
                     if (clr == null)
                     {
@@ -122,7 +154,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
                     }
 					
                     tr.appendChild(td);
-
+                    
                     if (clr != null)
                     {
                         td.style.cursor = 'pointer';
@@ -137,53 +169,78 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
                             else
                             {
                                 picker.fromString(clr);
+                                rect.style.backgroundColor = `#${clr}`
                             }
                         });
                     }
                 })(presets[row * rowLength + i]);
             }
-			
-            tbody.appendChild(tr);
+            odiv.appendChild(tr);
         }
-		
-        if (addResetOption)
-        {
-            var td = document.createElement('td');
-            td.setAttribute('title', mxResources.get('reset'));
-            td.style.border = '1px solid black';
-            td.style.padding = '0px';
-            td.style.width = '16px';
-            td.style.height = '16px';
-            td.style.backgroundImage = 'url(\'' + Dialog.prototype.closeImage + '\')';
-            td.style.backgroundPosition = 'center center';
-            td.style.backgroundRepeat = 'no-repeat';
-            td.style.cursor = 'pointer';
+        
+		var clearFix = document.createElement('p');
+            clearFix.style.display= 'block';
+            clearFix.style.overflow= 'auto';
+            clearFix.style.clear= 'both';
+            odiv.appendChild(clearFix);
+        // if (addResetOption)
+        // {
+        //     var td = document.createElement('li');
+        //     // td.setAttribute('title', mxResources.get('reset'));
+        //     td.style.border = '1px solid black';
+        //     td.style.padding = '0px';
+        //     td.style.width = '16px';
+        //     td.style.height = '16px';
+        //     td.style.backgroundImage = 'url(\'' + Dialog.prototype.closeImage + '\')';
+        //     td.style.backgroundPosition = 'center center';
+        //     td.style.backgroundRepeat = 'no-repeat';
+        //     td.style.cursor = 'pointer';
 			
-            tr.appendChild(td);
+        //     tr.appendChild(td);
 
-            mxEvent.addListener(td, 'click', function()
-            {
-                ColorDialog.resetRecentColors();
-                table.parentNode.replaceChild(createRecentColorTable(), table);
-            });
+        //     mxEvent.addListener(td, 'click', function()
+        //     {
+        //         ColorDialog.resetRecentColors();
+        //         odiv.parentNode.replaceChild(createRecentColorTable(), odiv);
+        //     });
+        // }
+
+        center.appendChild(odiv);
+        if(!isRecent){
+            var borderU = document.createElement('p');
+            borderU.style.height = '1px';
+            borderU.style.margin = '6px 0 6px 0';
+            borderU.style.backgroundColor = '#e1e1e1';
+            odiv.appendChild(borderU);
+            var defaultColor = document.createElement('p');
+            defaultColor.style.margin = '6px 0 3px 0';
+            defaultColor.style.fontSize = '12px';
+            defaultColor.style.color = '#252525';
+            defaultColor.innerText = '最近使用';
+            odiv.appendChild(defaultColor);
         }
-		
-        center.appendChild(table);
-		
-        return table;
+        return odiv;
     }
 
-    div.appendChild(input);
-    mxUtils.br(div);
+    div.appendChild(selectColor);
+    div.appendChild(border);
+    var defaultColor = document.createElement('p');
+    defaultColor.style.margin = '6px 0 3px 0';
+    defaultColor.style.fontSize = '12px';
+    defaultColor.style.color = '#252525';
+    defaultColor.innerText = '默认颜色';
+    div.appendChild(defaultColor);
 	
     // Adds recent colors
-    createRecentColorTable();
+    
 		
     // Adds presets
     var table = addPresets(this.presetColors);
-    table.style.marginBottom = '8px';
-    table = addPresets(this.defaultColors);
-    table.style.marginBottom = '16px';
+   
+    createRecentColorTable();
+    // table.style.marginBottom = '8px';
+    // table = addPresets(this.defaultColors);
+    // table.style.marginBottom = '16px';
 
     div.appendChild(center);
 
@@ -214,7 +271,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
     var applyBtn = mxUtils.button(mxResources.get('apply'), function()
     {
         var color = input.value;
-        ColorDialog.addRecentColor(color, 12);
+        ColorDialog.addRecentColor(color, 9);
 		
         if (color != 'none' && color.charAt(0) != '#')
         {
@@ -273,7 +330,8 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
 /**
  * Creates function to apply value
  */
-ColorDialog.prototype.presetColors = ['E6D0DE', 'CDA2BE', 'B5739D', 'E1D5E7', 'C3ABD0', 'A680B8', 'D4E1F5', 'A9C4EB', '7EA6E0', 'D5E8D4', '9AC7BF', '67AB9F', 'D5E8D4', 'B9E0A5', '97D077', 'FFF2CC', 'FFE599', 'FFD966', 'FFF4C3', 'FFCE9F', 'FFB570', 'F8CECC', 'F19C99', 'EA6B66']; 
+// ColorDialog.prototype.presetColors = ['E6D0DE', 'CDA2BE', 'B5739D', 'E1D5E7', 'C3ABD0', 'A680B8', 'D4E1F5', 'A9C4EB', '7EA6E0', 'D5E8D4', '9AC7BF', '67AB9F', 'D5E8D4', 'B9E0A5', '97D077', 'FFF2CC', 'FFE599', 'FFD966', 'FFF4C3', 'FFCE9F', 'FFB570', 'F8CECC', 'F19C99', 'EA6B66']; 
+ColorDialog.prototype.presetColors = ['D0021B', 'F5A623', 'F8E71C', '8B572A', '7ED321', '417505', 'BD10E0', '9013FE', '4A90E2', '50E3C2', 'B8E986', '000000', '4A4A4A','9B9B9B','FFFFFF']; 
 
 /**
  * Creates function to apply value
