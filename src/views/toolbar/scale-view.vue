@@ -1,9 +1,10 @@
 <template>
   <div
+    v-clickOutSide="hideScale"
     class="mxPopupMenu geToolbarMenu"
-    style="display: inline; z-index:22; left:18%; top: 71px;"
-    @mouseleave="hideScale($event)"
-    @blur="hideScale($event)"
+    style="display: inline; z-index:22; left:17.9%; top: 71px;"
+    @mouseleave="hideScale()"
+    @blur="hideScale()"
   >
     <table class="mxPopupMenu">
       <tbody>
@@ -54,11 +55,8 @@ export default{
         changeScale(d) {
             this.$emit("changeScale",d)
         },
-        hideScale(event) {
+        hideScale() {
             this.$emit("hideScale")
-            if(event) {
-                event.stopPropagation();
-            }
         }
     },      
 }

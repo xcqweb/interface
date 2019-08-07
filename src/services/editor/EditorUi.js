@@ -993,7 +993,7 @@ EditorUi.prototype.splitSize = (mxClient.IS_TOUCH || mxClient.IS_POINTER) ? 1 : 
  * Specifies the height of the menubar. Default is 34.
  */
 // 顶部操作栏高度
-EditorUi.prototype.menubarHeight = 32;
+EditorUi.prototype.menubarHeight = 0; //默认32 2.0版本屏蔽掉 改为 0
 
 /**
  * Specifies the width of the format panel should be enabled. Default is true.

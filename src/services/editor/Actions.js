@@ -152,6 +152,14 @@ Actions.prototype.init = function()
     this.addAction('rightalign', function() {
         ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_RIGHT])()
     }, false)
+    // 控件向左对齐
+    this.addAction('left', function () {
+        graph.alignCells(mxConstants.ALIGN_LEFT)
+    }, false)
+     // 控件向右对齐
+    this.addAction('right', function () {
+        graph.alignCells(mxConstants.ALIGN_RIGHT)
+    }, false)
     // 控件向上对齐
     this.addAction('top', function() {
         graph.alignCells(mxConstants.ALIGN_TOP)

@@ -58,6 +58,7 @@ export default {
             //创建一个画板
             var graph = new window.mxGraph(container);
             graph.setCellsEditable(false); 
+            console.log(this.currentPage.xml)
             var doc = window.mxUtils.parseXml(this.currentPage.xml);
             var codec = new window.mxCodec(doc);
             codec.decode(doc.documentElement, graph.getModel());

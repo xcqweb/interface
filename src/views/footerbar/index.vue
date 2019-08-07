@@ -6,8 +6,8 @@
   >
     <div
       class="collapse-menu"
-      @click="toggle"
       :style="{transform: rotate}"
+      @click="toggle"
     />
     <ul class="tab">
       <li 
@@ -39,6 +39,7 @@
 <script>
 import conponents from './components'
 const BOTTOM = -75
+let mainContainerOriginHeight,mainContainer
 export default {
     components: {...conponents},
     props: {
@@ -49,7 +50,7 @@ export default {
     data() {
         return {
             bottom: BOTTOM,
-            componentId: 'DataSource'
+            componentId: 'DataSource',
         };
     },
     computed: {
@@ -57,12 +58,25 @@ export default {
             return this.bottom === 0 ? `rotateZ(180deg)` : `rotateZ(0)`
         }
     },
+    mounted() {
+    },
     methods: {
         close() {
             this.bottom = BOTTOM
+            mainContainer.style.height = mainContainerOriginHeight + 'px'
+        },
+        init() {
+            mainContainer = document.querySelector(".geDiagramContainer")
+            mainContainerOriginHeight = mainContainer.offsetHeight
         },
         toggle() {
-            this.bottom === 0 ? (this.bottom = BOTTOM) : (this.bottom = 0)
+            if(this.bottom === 0) {
+                this.bottom = BOTTOM
+                mainContainer.style.height = mainContainerOriginHeight + 'px'
+            }else{
+                this.bottom = 0
+                mainContainer.style.height = mainContainerOriginHeight + BOTTOM + 'px'
+            }
         }
     }
 };
@@ -70,14 +84,13 @@ export default {
 
 <style lang="less" scoped>
 .geFootbarContainer {
-  width: calc(100% - 402px);
+  width: calc(100% - 458px);
   height: 100px;
   position: absolute;
-  left: 180px;
+  left: 208px;
   bottom: 0;
   z-index: 100;
   background: #fff;
-  transition: all 0.36s;
   .collapse-menu {
     width: 16px;
     height: 16px;
