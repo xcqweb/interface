@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import App from './app.vue'
 import router from './router'
+import 'iview/dist/styles/iview.css'
 import './assets/less/theme.less'
 import './directives/directive'
 import './filters/filter'
 import urls from './constants/url'
 import requestUtil from './services/request'
-import 'iview/dist/styles/iview.css'
 import {i18n} from '@/common/i18n'
 
 import 'echarts'
