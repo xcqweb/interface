@@ -2970,6 +2970,9 @@ EditorUi.prototype.createDivs = function()
     this.hsplit.style.width = this.splitSize + 'px';
     this.sidebarFooterContainer = this.createSidebarFooterContainer();
 
+    // 左侧侧边栏
+    const leftgeSidebarContainer = document.querySelector('.left-geSidebarContainer');
+    this.sidebarContainer.appendChild(leftgeSidebarContainer);
     if (this.sidebarFooterContainer)
     {
         this.sidebarFooterContainer.style.left = '0px';
@@ -3139,7 +3142,7 @@ EditorUi.prototype.createToolbar = function(container)
  * Creates a new sidebar for the given container.
  */
 EditorUi.prototype.createSidebar = function(container)
-{
+{   
     return new Sidebar(this, container);
 };
 

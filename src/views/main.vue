@@ -3,6 +3,7 @@
     <Toolbar
       ref="toolbar"
     />
+    <LeftSideBar ref="leftsidebar" />
     <RightBar />
   </div>
 </template>
@@ -23,11 +24,12 @@ import '../services/editor/Dialogs'
 
 import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal' 
 import Toolbar from './toolbar/toolbar'
+import LeftSideBar from './left-sidebar/left-sidebar'
 import RightBar from './rightBar'
 import Vue from 'vue'
 export default {
     components:{
-       
+        LeftSideBar,
         Toolbar,
         RightBar
     },
@@ -56,6 +58,7 @@ export default {
             this.myEditorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
+            this.$refs.leftsidebar.init();
         },
         updateZoom() {
             this.$refs.toolbar.updateZoom();
