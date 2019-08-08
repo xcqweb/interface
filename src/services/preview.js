@@ -342,6 +342,7 @@ function insertImage(cell) {
     image.setAttribute('href', cell.image.replace(/getechFileSystem/, fileSystem));
     image.setAttribute('width', cell.width);
     image.setAttribute('height', cell.height);
+    image.setAttribute('preserveAspectRatio', 'none');
 
     svg.appendChild(image);
     svgContent.appendChild(svg);

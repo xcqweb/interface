@@ -1,14 +1,18 @@
 <template>
-  <div>
+  <div class="container">
     <Toolbar
       ref="toolbar"
     />
     <LeftSideBar ref="leftsidebar" />
     <RightBar />
+    <FooterBar
+      ref="footbar"
+      :bind-datas="bindDatas"
+    />
   </div>
 </template>
 
-<script> 
+<script>
 //mxgraph editor
 import '../services/editor/Init'
 import '../services/editor/EditorUi'
@@ -22,19 +26,29 @@ import '../services/editor/Menus'
 import '../services/editor/Toolbar'
 import '../services/editor/Dialogs'
 
-import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal' 
+import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal'
 import Toolbar from './toolbar/toolbar'
+<<<<<<< HEAD
 import LeftSideBar from './left-sidebar/left-sidebar'
 import RightBar from './rightBar'
 import Vue from 'vue'
 export default {
     components:{
         LeftSideBar,
+=======
+import RightBar from './rightbar/rightbar'
+import FooterBar from './footerbar'
+import Vue from 'vue'
+export default {
+    components:{
+>>>>>>> 785fc6086239050aeeb57e41dcfa6625e825b6e4
         Toolbar,
-        RightBar
+        RightBar,
+        FooterBar,
     },
     data() {
         return{
+            bindDatas: []
         }
     },
     created() {
@@ -49,33 +63,52 @@ export default {
             Vue.prototype.myEditorUi = myEditorUi
             myEditorUi.editor.InitEditor(myEditorUi)
             this.init()
+            console.dir(this.myEditorUi)
         })
     },
     mounted() {
+        
     },
     methods: {
         init() {
             this.myEditorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
+            this.myEditorUi.editor.graph.addListener(mxEvent.CLICK, this.selectCell,false);
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
+<<<<<<< HEAD
             this.$refs.leftsidebar.init();
+=======
+            this.$refs.footbar.init();
+>>>>>>> 785fc6086239050aeeb57e41dcfa6625e825b6e4
         },
         updateZoom() {
             this.$refs.toolbar.updateZoom();
-        }
+        },
+        selectCell() {
+            this.bindDatas = []
+            let cells = this.myEditorUi.editor.graph.getSelectionCells();
+            if (cells.length > 1) {
+                return;
+            }
+            for (let i = 0; i < cells.length; i++) {
+                let val = (cells[i].value && cells[i].value.attributes && cells[i].value.attributes.bindData) ? JSON.parse(cells[i].value.attributes.bindData.value) : ''
+                if (val) {
+                    this.bindDatas.push(val)
+                }
+                // console.dir(cells[i].value && cells[i].value.attributes && cells[i].value.attributes.bindData);  
+            }
+        },
     }
 };
 </script>
 
-<style scoped lang="less"> 
+<style scoped lang="less">
 
 </style>
 
 <style lang="less">
-#app{
-  font-size:14px;
-  font-family:MicrosoftYaHei;
-  position: relative;
-  height:100%;
+.container{
+    position: relative;
+    height: 100%;
 }
 </style>

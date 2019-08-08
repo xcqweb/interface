@@ -6,6 +6,7 @@ let Toolbar = window.Toolbar
 let mxUtils = window.mxUtils
 let mxEvent = window.mxEvent
 let Menu = window.Menu
+let mxConstants = window.mxConstants
 export {
-    Graph, Editor, EditorUi, Toolbar, mxUtils, mxEvent, Menu
+    Graph, Editor, EditorUi, Toolbar, mxUtils, mxEvent, Menu, mxConstants
 }

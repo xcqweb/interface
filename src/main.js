@@ -7,6 +7,7 @@ import './filters/filter'
 import urls from './constants/url'
 import requestUtil from './services/request'
 import 'iview/dist/styles/iview.css'
+import {i18n} from '@/common/i18n'
 
 import 'echarts'
 import VueECharts from 'vue-echarts'
@@ -18,8 +19,6 @@ import './assets/css/common'
 import './assets/css/grapheditor'
 import './assets/css/preview'
 
-Vue.prototype.$filters = Vue.options.filters
-
 Vue.component('v-chart', VueECharts)
 
 Vue.config.productionTip = false
@@ -28,6 +27,7 @@ Vue.prototype.router = router;
 Vue.prototype.urls = urls;
 Vue.prototype.requestUtil = requestUtil;
 new Vue({
+    i18n,
     router,
     render: h => h(App),
 }).$mount('#app')

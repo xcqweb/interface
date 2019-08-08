@@ -5,9 +5,7 @@
 /**
  * Constructs the actions object for the given UI.
  */
-import router from '../../router'
 import {
-    PreviewDialog,
     PublishDialog,
     addPageDialog,
     ImageDialog,
@@ -154,6 +152,14 @@ Actions.prototype.init = function()
     this.addAction('rightalign', function() {
         ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_RIGHT])()
     }, false)
+    // 控件向左对齐
+    this.addAction('left', function () {
+        graph.alignCells(mxConstants.ALIGN_LEFT)
+    }, false)
+     // 控件向右对齐
+    this.addAction('right', function () {
+        graph.alignCells(mxConstants.ALIGN_RIGHT)
+    }, false)
     // 控件向上对齐
     this.addAction('top', function() {
         graph.alignCells(mxConstants.ALIGN_TOP)
@@ -193,23 +199,13 @@ Actions.prototype.init = function()
         ui.showDialog(dlg.container, 410, 200, true, false, null, null, '链接');
     }, true)
     // 预览
-    this.addAction('previewapply', function() {		
-        var dlg = new PreviewDialog(ui, function(id){
-            let page = router.resolve({
-                path: "/interface_preview",
-                query: {
-                    id: id
-                }
-            });
-            window.open(page.href, '_blank');
-        })
-        ui.showDialog(dlg.container, 410, 160, true, false, null, null, '预览');
+    this.addAction('previewapply', function() {	
     }, true, null, 'Ctrl+Shift+L');
     // 发布
-    this.addAction('publish', function() {
+ /*    this.addAction('publish', function() {
         var dlg = new PublishDialog(ui, '')
         ui.showDialog(dlg.container, 410, 160, true, false, null, null, '发布');
-    }, true, null, 'Ctrl+Shift+O');
+    }, true, null, 'Ctrl+Shift+O'); */
     // 配置链接
     this.addAction('configLink', function() {
         var dlg = new ConfigLinkDialog(ui, '', '应用', function(val, desc) {

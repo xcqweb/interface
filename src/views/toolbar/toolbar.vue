@@ -19,7 +19,10 @@
         </div>
       </div>
     </div>
-    <div class="geToolbar geToolbar2">
+    <div
+      class="geToolbar geToolbar2"
+      style="margin-left:-7.1%;"
+    >
       <a
         href="javascript:void(0);"
         ondragstart="return false;"
@@ -35,7 +38,7 @@
         class="geLabel"
         title="缩放 (Alt+Mousewheel)"
         style="white-space: nowrap; position: relative; overflow: hidden; width: 50px;text-align:center;"
-        @click.stop.prevent="showScale('in')"
+        @click.stop.prevent="isShowScale = true"
       >
         {{ scaleText }}
       </a>
@@ -62,7 +65,7 @@
         href="javascript:void(0);"
         class="geButton"
         title="撤销 (Ctrl+Z)"
-        @click.stop.prevent="undo()"
+        @click.stop.prevent="addAction('undo')"
       >
         <div class="geSprite geSprite-undo" />
       </a>
@@ -70,31 +73,125 @@
         ref="redo"
         href="javascript:void(0);"
         class="geButton"
+        style="margin-left:12px;"
         title="重做 (Ctrl+Y)"
-        @click.stop.prevent="redo()"
+        @click.stop.prevent="addAction('redo')"
       >
         <div class="geSprite geSprite-redo" />
       </a> 
     </div>
+    <div class="geToolbar geToolbar4">
+      <a
+        href="javascript:void(0);"
+        class="geButton"
+        style="width:48px;display:flex;align-items:center;justify-content:center;"
+        :title="alignText"
+        @click="dealAlign(alignCls)"
+        @mouseover.stop.prevent="showAlignDialog=true"
+      >
+        <div
+          class="geSprite"
+          :class="alignCls"
+        />
+        <img src="../../assets/images/menu/down_ic.png">
+      </a>
+      <a
+        href="javascript:void(0);"
+        class="geButton"
+        title="移至最前 (Ctrl+Shift+F)"
+        style="margin-left:12px;"
+        @click.stop.prevent="addAction('toFront')"
+      >
+        <div class="geSprite geSprite-tofront" />
+      </a>
+      <a
+        href="javascript:void(0);"
+        ondragstart="return false;"
+        class="geButton"
+        title="移至最后 (Ctrl+Shift+B)"
+        style="margin-left:12px;"
+        @click.stop.prevent="addAction('toBack')"
+      >
+        <div class="geSprite geSprite-toback" />
+      </a>
+      <div class="geToolbar geToolbar5">
+        <a
+          href="javascript:void(0);"
+          class="geButton"
+          title="组合 (Ctrl+G)"
+          @click.stop.prevent="addAction('group')"
+        >
+          <div class="geSprite geSprite-group" />
+        </a>
+        <a
+          href="javascript:void(0);"
+          class="geButton"
+          title="取消组合 (Ctrl+Shift+U)"
+          style="margin-left:12px;"
+          @click.stop.prevent="addAction('ungroup')"
+        >
+          <div class="geSprite geSprite-ungroup" />
+        </a>
+      </div>
+      <div class="geToolbar geToolbar6">
+        <a
+          href="javascript:void(0);"
+          class="geButton"
+          title="素材库"
+          @click.stop.prevent="materialLab"
+        >
+          <div class="geSprite geSprite-material" />
+        </a>
+        <a
+          href="javascript:void(0);"
+          class="geButton"
+          title="保存 (Ctrl+S)"
+          style="margin-left:12px;"
+          @click.stop.prevent="save"
+        >
+          <div class="geSprite geSprite-save" />
+        </a>
+        <a
+          href="javascript:void(0);"
+          class="geButton"
+          title="预览 (Ctrl+Shift+L)"
+          style="margin-left:12px;"
+          @click.stop.prevent="preview"
+        >
+          <div class="geSprite geSprite-preview" />
+        </a>
+      </div>
+    </div>
     <ScaleView
       v-if="isShowScale"
       @changeScale="changeScale"
-      @hideScale="hideScale"
+      @hideScale="isShowScale = false"
+    />
+    <AlignDialog
+      v-if="showAlignDialog"
+      @changeAlign="changeAlign"
+      @hideDialog="showAlignDialog=false"
     />
   </div>
 </template>
 <script>
-import {mxUtils} from '../../services/mxGlobal'
+import {mxUtils,mxConstants} from '../../services/mxGlobal'
 import ScaleView from './scale-view'
+import AlignDialog from './align-dialog'
+import {PreviewDialog} from '../../services/editor/Dialogs'
+import router from '../../router'
 export default{
     components:{
-        ScaleView,
+        ScaleView,AlignDialog,
     },
     data() {
         return {
             tab:1,
             scaleText:"100%",
             isShowScale:false,
+            showAlignDialog:false,
+            alignCls:'geSprite-left-align',
+            alignText:'左对齐',
         }
     },
     created() {
@@ -124,7 +221,7 @@ export default{
                 let elt = this.$refs[key]
                 this.myEditorUi.toolbar.initElement(elt)
                 if (action != null)  {
-                    elt.setEnabled(action.enabled);
+                    elt.setEnabled(action.enabled)
                     action.addListener('stateChanged',()=>{
                         elt.setEnabled(action.enabled)
                     })
@@ -137,12 +234,6 @@ export default{
         updateZoom() {
             this.scaleText = Math.round(this.myEditorUi.editor.graph.view.scale * 100) + '%'
         },
-        showScale() {
-            this.isShowScale = true
-        },
-        hideScale() {
-            this.isShowScale = false
-        },
         changeScale(scale) {
             this.myEditorUi.editor.graph.zoomTo(scale)
             this.isShowScale = false
@@ -151,12 +242,60 @@ export default{
             let action = this.myEditorUi.actions.get(key);
             action.funct()
         },
-        undo() {
-            this.addAction('undo')
+        changeAlign(d) {
+            this.alignCls = d.cls
+            this.alignText = d.text
+            this.dealAlign(d.cls)
+            this.showAlignDialog = false
         },
-        redo() {
-            this.addAction('redo')
+        dealAlign(cls) {
+            let graph = this.myEditorUi.editor.graph
+            switch(cls) {
+                case 'geSprite-left-align':
+                    graph.alignCells(mxConstants.ALIGN_LEFT)
+                    break;
+                case 'geSprite-right-align':
+                    graph.alignCells(mxConstants.ALIGN_RIGHT)
+                    break;
+                case 'geSprite-top-align':
+                    graph.alignCells(mxConstants.ALIGN_TOP)
+                    break;
+                case 'geSprite-bottom-align':
+                    graph.alignCells(mxConstants.ALIGN_BOTTOM)
+                    break;
+                case 'geSprite-vertical-center':
+                    graph.alignCells(mxConstants.ALIGN_CENTER)
+                    break;
+                case 'geSprite-horizon-center':
+                    graph.alignCells(mxConstants.ALIGN_MIDDLE)
+                    break;
+                case 'geSprite-vertical-align':
+                    graph.distributeCells(false)
+                    break;
+                case 'geSprite-horizon-align':
+                    graph.distributeCells(true)
+                    break;
+            }
         },
+        materialLab() {
+
+        },
+        save() {
+            this.myEditorUi.saveFile(true);
+        },
+        preview() {
+            let ui = this.myEditorUi
+            var dlg = new PreviewDialog(ui, function(id) {
+                let page = router.resolve({
+                    path: "/interface_preview",
+                    query: {
+                        id: id
+                    }
+                });
+                window.open(page.href, '_blank');
+            })
+            ui.showDialog(dlg.container, 410, 160, true, false, null, null, '预览');
+        }
     },      
 }
 </script>

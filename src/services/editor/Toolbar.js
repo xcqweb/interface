@@ -96,20 +96,20 @@ Toolbar.prototype.init = function()
     // 复制、粘贴
     //this.addItems(['copy', 'paste', 'cut', 'duplicate', 'undo', 'redo', 'delete'], this.containerList[2]);
     // 排版
-    this.addItems([ 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'], this.containerList[3]);
+    //this.addItems([ 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'], this.containerList[3]);
     // 置前
-    this.addItems([ 'toFront', 'toBack'], this.containerList[4]);
+    //this.addItems([ 'toFront', 'toBack'], this.containerList[4]);
     // 组合
-    this.addItems([ 'group', 'ungroup'], this.containerList[5]);
+    //this.addItems([ 'group', 'ungroup'], this.containerList[5]);
     // 旋转
-    this.addItems([ 'turn', 'flipV', 'flipH'], this.containerList[6]);
+    //this.addItems([ 'turn', 'flipV', 'flipH'], this.containerList[6]);
     let role_auth = JSON.parse(localStorage.getItem('roleAuth')) || [];
     // 链接发布
-    let link_pub = ['previewapply'];
-    if (role_auth.indexOf('ADMIN') !== -1 || role_auth.indexOf('SYS_VIEWTOOL_PUSH') !== -1) {
+    //let link_pub = ['previewapply'];
+   /*  if (role_auth.indexOf('ADMIN') !== -1 || role_auth.indexOf('SYS_VIEWTOOL_PUSH') !== -1) {
         link_pub.push('publish');
-    }
-    this.addItems(link_pub, this.containerList[7]);
+    } */
+    //this.addItems(link_pub, this.containerList[7]);
 };
 
 
@@ -298,7 +298,10 @@ Toolbar.prototype.addEnabledState = function(elt)
         }
         else
         {
+<<<<<<< HEAD
             // debugger
+=======
+>>>>>>> 785fc6086239050aeeb57e41dcfa6625e825b6e4
             elt.className = classname + ' mxDisabled';
         }
     };

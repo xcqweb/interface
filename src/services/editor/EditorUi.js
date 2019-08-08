@@ -74,7 +74,6 @@ window.EditorUi = function(editor, container, lightbox)
         {
             evt = window.event;
         }
-
         return (this.isSelectionAllowed(evt) || graph.isEditing());
     });
 
@@ -994,7 +993,7 @@ EditorUi.prototype.splitSize = (mxClient.IS_TOUCH || mxClient.IS_POINTER) ? 1 : 
  * Specifies the height of the menubar. Default is 34.
  */
 // 顶部操作栏高度
-EditorUi.prototype.menubarHeight = 32;
+EditorUi.prototype.menubarHeight = 0; //默认32 2.0版本屏蔽掉 改为 0
 
 /**
  * Specifies the width of the format panel should be enabled. Default is true.
@@ -2894,7 +2893,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
             diagramHeight -= this.tabContainer.clientHeight;
         }
 
-        this.diagramContainer.style.height = diagramHeight + 'px';
+        this.diagramContainer.style.height = diagramHeight-25 + 'px';
         this.hsplit.style.height = diagramHeight + 'px';
     }
     else
@@ -2942,9 +2941,9 @@ EditorUi.prototype.createDivs = function()
     this.menubarContainer = this.createDiv('geMenubarContainer');
     this.toolbarContainer = document.querySelector(".geToolbarContainer");
     this.sidebarContainer = this.createDiv('geSidebarContainer');
-    this.formatContainer = this.createDiv('geSidebarContainer geFormatContainer');
+    this.formatContainer = document.querySelector('.geSidebarContainer.geFormatContainer');
     this.rightBarContainer = document.querySelector('.geSidebarContainer.geRightBarContainer');
-    this.paletteManageContainer = this.createDiv('geSidebarContainer gePaletteManageContainer');
+    this.paletteManageContainer = document.querySelector('.geSidebarContainer.gePaletteManageContainer');
     this.diagramContainer = this.createDiv('geDiagramContainer');
     this.footerContainer = this.createDiv('geFooterContainer');
     //去掉sidebar 右边的创建的直线
@@ -3075,11 +3074,8 @@ EditorUi.prototype.createUi = function()
 
     // 多个toolbar功能区
     var containerList = []
-    for(let i=1;i<4;i++){
+    for(let i=1;i<7;i++){
         containerList.push(document.querySelector('.geToolbar.geToolbar' + i))
-    }
-    for(var i = 4; i < 9; i++) {
-        containerList.push(this.createDiv('geToolbar geToolbar' + i))
     }
     // 创建 toolbar
     this.toolbar = (this.editor.chromeless) ? null : this.createToolbar(containerList);
@@ -3313,7 +3309,7 @@ EditorUi.prototype.pickColor = function(color, apply)
     {
         graph.cellEditor.restoreSelection(selState);
     });
-    this.showDialog(dlg.container, 240, 430, true, false);
+    this.showDialog(dlg.container, 240, 242, true, false);
     dlg.init();
 };
 
