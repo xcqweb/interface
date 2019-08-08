@@ -4,7 +4,8 @@
       ref="toolbar"
     />
     <RightBar />
-    <Footer-bar 
+    <FooterBar
+      ref="footbar"
       :bind-datas="bindDatas"
     />
   </div>
@@ -64,6 +65,7 @@ export default {
             this.myEditorUi.editor.graph.addListener(mxEvent.CLICK, this.selectCell,false);
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
+            this.$refs.footbar.init();
         },
         updateZoom() {
             this.$refs.toolbar.updateZoom();
