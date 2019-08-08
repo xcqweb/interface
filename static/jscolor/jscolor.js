@@ -413,7 +413,7 @@ var jscolor = {
 		this.exportColor = function(flags) {
 			if(!(flags & leaveValue) && valueElement) {
 				var value = this.toString();
-				if(this.caps) { value = value.toUpperCase(); }
+				if(this.caps) { value = '#'+value.toUpperCase(); }
 				if(this.hash) { value = '#'+value; }
 				valueElement.value = value;
 			}
@@ -661,6 +661,7 @@ var jscolor = {
 			p.sldM.style.position = 'absolute';
 			p.sldM.style.right = '0';
 			p.sldM.style.top = '0';
+			p.sldM.style.zIndex = 1;
 			p.sldM.style.width = jscolor.images.sld[0] + jscolor.images.arrow[0] + THIS.pickerFace + 2*THIS.pickerInset + 'px';
 			p.sldM.style.height = p.box.style.height;
 			try {

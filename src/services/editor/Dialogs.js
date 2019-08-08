@@ -45,7 +45,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
     input.style.border = '1px solid #D4D4D4';
     input.style.backgroundColor = '#fff';
     input.style.borderRadius = '2px';
-    input.setAttribute('disabled',true);
+    // input.setAttribute('disabled',true);
 
     var rect = document.createElement('input')
     rect.style.width = '16px';
@@ -61,6 +61,18 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
     copyColor.style.height = '16px';
     copyColor.style.marginLeft = '10px';
     copyColor.style.background = "url('/static/images/default/copyColor.png')";
+    copyColor.style.cursor = 'pointer';
+
+    //点击复制
+    mxEvent.addListener(copyColor,'click',() => {
+        var oInput = document.createElement('input');
+        oInput.value = input.value;
+        document.body.appendChild(oInput);
+        oInput.select(); // 选择对象
+        document.execCommand("Copy"); // 执行浏览器复制命令
+        oInput.className = 'oInput';
+        oInput.style.display='none';
+    },false)
 
     selectColor.appendChild(rect);
     selectColor.appendChild(input);
@@ -100,8 +112,8 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
 	
     function createRecentColorTable()
     {
-        var table = addPresets((ColorDialog.recentColors.length == 0) ? ['FFFFFF'] :
-            ColorDialog.recentColors, 9, 'FFFFFF', true,true);
+        var table = addPresets((ColorDialog.recentColors.length == 0) ? ['#FFFFFF'] :
+            ColorDialog.recentColors, 9, '#FFFFFF', true,true);
         table.style.marginBottom = '8px';
 		
         return table;
@@ -150,7 +162,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
                     }
                     else
                     {
-                        td.style.backgroundColor = '#' + clr;
+                        td.style.backgroundColor = clr;
                     }
 					
                     tr.appendChild(td);
@@ -169,7 +181,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
                             else
                             {
                                 picker.fromString(clr);
-                                rect.style.backgroundColor = `#${clr}`
+                                rect.style.backgroundColor = `${clr}`
                             }
                         });
                     }
@@ -331,7 +343,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
  * Creates function to apply value
  */
 // ColorDialog.prototype.presetColors = ['E6D0DE', 'CDA2BE', 'B5739D', 'E1D5E7', 'C3ABD0', 'A680B8', 'D4E1F5', 'A9C4EB', '7EA6E0', 'D5E8D4', '9AC7BF', '67AB9F', 'D5E8D4', 'B9E0A5', '97D077', 'FFF2CC', 'FFE599', 'FFD966', 'FFF4C3', 'FFCE9F', 'FFB570', 'F8CECC', 'F19C99', 'EA6B66']; 
-ColorDialog.prototype.presetColors = ['D0021B', 'F5A623', 'F8E71C', '8B572A', '7ED321', '417505', 'BD10E0', '9013FE', '4A90E2', '50E3C2', 'B8E986', '000000', '4A4A4A','9B9B9B','FFFFFF']; 
+ColorDialog.prototype.presetColors = ['#D0021B', '#F5A623', '#F8E71C', '#8B572A', '#7ED321', '#417505', '#BD10E0', '#9013FE', '#4A90E2', '#50E3C2', '#B8E986', '#000000', '#4A4A4A','#9B9B9B','#FFFFFF']; 
 
 /**
  * Creates function to apply value
@@ -380,7 +392,7 @@ ColorDialog.addRecentColor = function(color, max)
         mxUtils.remove(color, ColorDialog.recentColors);
         ColorDialog.recentColors.splice(0, 0, color);
 		
-        if (ColorDialog.recentColors.length >= max)
+        if (ColorDialog.recentColors.length > max)
         {
             ColorDialog.recentColors.pop();
         }
