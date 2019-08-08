@@ -207,7 +207,7 @@
 	border:1px solid #d5d5d5 !important;
 }
 .geToolbarContainer {
-	border-top: 1px solid #cbcbcb;
+	/* border-top: 1px solid #cbcbcb; */
 	background: linear-gradient(0deg,rgba(216,216,216,1) 0%,rgba(228,227,228,1) 100%);
 	display: flex;
 	justify-content: space-between;

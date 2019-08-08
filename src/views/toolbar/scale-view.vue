@@ -2,7 +2,7 @@
   <div
     v-clickOutSide="hideScale"
     class="mxPopupMenu geToolbarMenu"
-    style="display: inline; z-index:22; left:17.9%; top: 71px;"
+    style="display: inline; z-index:22; left:17.9%; top:38px;"
     @mouseleave="hideScale()"
     @blur="hideScale()"
   >

@@ -4,7 +4,7 @@
       ref="toolbar"
     />
     <RightBar />
-  <FooterBar
+    <FooterBar
       ref="footbar"
       :bind-datas="bindDatas"
     />
