@@ -1582,12 +1582,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
     ];
     //封装
     this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
-<<<<<<< HEAD
     this.addPaletteFunctions('chart', '图表控件', false, fns);
-=======
-
-    this.addGeneralPaletteShort();
->>>>>>> 785fc6086239050aeeb57e41dcfa6625e825b6e4
 };
 
 /**

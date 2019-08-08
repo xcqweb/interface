@@ -113,7 +113,7 @@ export default {
             console.log(typePage)
             console.log(this.myEditorUi.editor.pages)
             console.log(this.myEditorUi.editor.pagesRank)
-            const pages = this.myEditorUi.editor.pages
+            // const pages = this.myEditorUi.editor.pages
             const pagesRank = this.myEditorUi.editor.pagesRank
             var xml = this.myEditorUi.editor.defaultXml;
             let targetArr = [...pagesRank.normal, ...pagesRank.dialog]
@@ -124,7 +124,7 @@ export default {
             })
             var getMax = Math.max.apply(null, numtarget)
             var id = `pageid_${getMax + 1}`
-            let titleText = `页面${getMax+1}`
+            let titleText = `页面${getMax + 1}`
             let page = {
                 title: titleText,
                 xml,
@@ -132,7 +132,7 @@ export default {
                 type: typePage === 1 ? 'dialog' : 'normal'
             };
             let _li = document.createElement('li');
-            let resPage = this.myEditorUi.editor.addPage(page);
+            // let resPage = this.myEditorUi.editor.addPage(page);
             _li.setAttribute('data-pageid', id);
             _li.innerHTML = `<span>${titleText}</span><span class="right-icon-dolt"></span>`;
             let changeRank = this.myEditorUi.editor.pagesRank[page.type];

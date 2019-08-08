@@ -298,10 +298,7 @@ Toolbar.prototype.addEnabledState = function(elt)
         }
         else
         {
-<<<<<<< HEAD
             // debugger
-=======
->>>>>>> 785fc6086239050aeeb57e41dcfa6625e825b6e4
             elt.className = classname + ' mxDisabled';
         }
     };

@@ -28,20 +28,13 @@ import '../services/editor/Dialogs'
 
 import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal'
 import Toolbar from './toolbar/toolbar'
-<<<<<<< HEAD
 import LeftSideBar from './left-sidebar/left-sidebar'
-import RightBar from './rightBar'
+import RightBar from './rightBar/rightbar'
+import FooterBar from './footerbar/index'
 import Vue from 'vue'
 export default {
     components:{
         LeftSideBar,
-=======
-import RightBar from './rightbar/rightbar'
-import FooterBar from './footerbar'
-import Vue from 'vue'
-export default {
-    components:{
->>>>>>> 785fc6086239050aeeb57e41dcfa6625e825b6e4
         Toolbar,
         RightBar,
         FooterBar,
@@ -75,11 +68,8 @@ export default {
             this.myEditorUi.editor.graph.addListener(mxEvent.CLICK, this.selectCell,false);
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
-<<<<<<< HEAD
             this.$refs.leftsidebar.init();
-=======
             this.$refs.footbar.init();
->>>>>>> 785fc6086239050aeeb57e41dcfa6625e825b6e4
         },
         updateZoom() {
             this.$refs.toolbar.updateZoom();
