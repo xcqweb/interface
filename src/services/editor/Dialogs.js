@@ -1095,6 +1095,7 @@ let addPageDialog = function(editorUi, type) {
     saveContent.appendChild(isDialog);
     // 保存按钮
     var btnContent = editorUi.createDiv('btnContent');
+
     var genericBtn = mxUtils.button('应用', function()
     {
         var titleText = nameInput.value.trim();

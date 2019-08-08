@@ -203,6 +203,7 @@ export default{
             this.tab = index
         },
         zoom(type) {
+            console.log(this.myEditorUi)
             let myEditor = this.myEditorUi.editor
             let graph = myEditor.graph
             if(type === 'in') {

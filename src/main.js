@@ -6,6 +6,7 @@ import './directives/directive'
 import './filters/filter'
 import urls from './constants/url'
 import requestUtil from './services/request'
+import 'iview/dist/styles/iview.css'
 import {i18n} from '@/common/i18n'
 
 import 'echarts'

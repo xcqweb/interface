@@ -1367,7 +1367,7 @@ button.buttonTag, input.inputTag {
 }
 #pageContextMenu li:nth-of-type(2), #pageContextMenu li:nth-of-type(4) {
 	margin-bottom: 6px;
-	border-bottom: 1px solid #cccccc;
+	/* border-bottom: 1px solid #cccccc; */
 }
 .formatPannel {
 	height: calc(100% - 34px);

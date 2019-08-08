@@ -70,6 +70,7 @@ window.Editor = function(chromeless, themes, model, graph, editable)
 
     // Sets persistent graph state defaults
     this.graph.resetViewOnRootChange = false;
+    console.log(this)
     this.init();
 };
 
@@ -421,10 +422,11 @@ Editor.prototype.InitEditor = function(editorUi) {
             editorUi.editor.setApplyId(editData.id);
             editorUi.editor.setDescribe(editData.describe);
         }
-        editorUi.sidebar.container.innerHTML = '';
-        editorUi.sidebar.init();
+        console.log('-开发--暂时注释掉--')
+        // editorUi.sidebar.container.innerHTML = '';
+        // console.log(editorUi)
+        // editorUi.sidebar.init();
         // 默认选中
-        $("#normalPages li").eq(0).click();
     })
 }
 /**
@@ -604,7 +606,7 @@ Editor.prototype.pages = {
     },
     "pageid_2": {
         id: 'pageid_2',
-        title: '页面2',
+        title: '弹窗1',
         desc: '',
         xml: defaultXml,
         type: 'dialog'
@@ -637,6 +639,7 @@ Editor.prototype.addPage = function(page) {
     page.id = id;
     this.pages[id] = page;
     // this.pagesRank[page.type].push(page.id);
+    console.log(page)
     return page;
 }
 /**
@@ -1261,6 +1264,7 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
     div.style.left = left + 'px';
     div.style.top = top + 'px';
     div.style.zIndex = this.zIndex;
+    console.log(div)
     div.addEventListener('click', function() {
         this.style.boxShadow = ''
     })

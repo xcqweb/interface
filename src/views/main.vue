@@ -3,8 +3,7 @@
     <Toolbar
       ref="toolbar"
     />
-    <RightBar ref="rightbar" />
-    <FooterBar
+    <RightBar ref="rightbar" />    <FooterBar
       ref="footbar"
       :bind-datas="bindDatas"
     />
@@ -27,11 +26,13 @@ import '../services/editor/Dialogs'
 
 import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal'
 import Toolbar from './toolbar/toolbar'
-import RightBar from './rightbar/rightbar'
-import FooterBar from './footerbar'
+import LeftSideBar from './left-sidebar/left-sidebar'
+import RightBar from './rightBar/rightbar'
+import FooterBar from './footerbar/index'
 import Vue from 'vue'
 export default {
     components:{
+        LeftSideBar,
         Toolbar,
         RightBar,
         FooterBar,
@@ -65,6 +66,7 @@ export default {
             this.myEditorUi.editor.graph.addListener(mxEvent.CLICK, this.selectCell,false);
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
+            this.$refs.leftsidebar.init();
             this.$refs.footbar.init();
             this.$refs.rightbar.init()
         },

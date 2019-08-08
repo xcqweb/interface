@@ -87,11 +87,12 @@ function Sidebar(editorUi, container)
  */
 Sidebar.prototype.init = function()
 {
+    // debugger
     const dir = '/static/stencils/'
-    this.createPageContextMenu();
+    // this.createPageContextMenu();
     this.addPagePalette(true);//页面管理
     this.addGeneralPalette(true);//基础控件
-    this.addBasicPalette();
+    // this.addBasicPalette();
 };
 
 /**
@@ -914,8 +915,10 @@ Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, resu
  */
 Sidebar.prototype.deletePage = function(ele) {
     // 删除后应该显示的页面
-    if (Object.keys(this.editorUi.editor.pages).length === 1) {
-        alert('至少保留一个页面');
+    const pageType = this.editorUi.editor.currentType;
+    const restList = this.editorUi.editor.pagesRank[pageType]
+    if (restList.length <= 1) {
+        alert('至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
         return;
     } else {
         var target;
@@ -936,25 +939,128 @@ Sidebar.prototype.deletePage = function(ele) {
         ele.remove()
     }
 }
-
+/**/
+Sidebar.prototype.renameNode = function(ele) {
+    let editInput = document.createElement('input');
+    editInput.id = 'editPageInput';
+    let oldVal = ele.innerText
+    editInput.value = oldVal;
+    ele.innerText = '';
+    ele.appendChild(editInput);
+    editInput.focus();
+    let saveFn = () => {
+        let name = editInput.value.trim();
+        mxEvent.removeListener(document.body, 'click', saveFn);
+        if (!name) {
+            mxUtils.alert('页面名称不能为空');
+            ele.innerHTML = oldVal;
+        } else if (name.length > 20) {
+            mxUtils.alert('页面名称不能超过20个字符');
+            ele.innerHTML = oldVal;
+        } else {
+            if (name !== oldVal) {
+                for (let key in this.editorUi.editor.pages) {
+                    if (this.editorUi.editor.pages[key].title === name) {
+                        mxUtils.alert('页面名称不能重复');
+                        ele.innerHTML = oldVal;
+                        return;
+                    }
+                }
+            }
+            this.editorUi.editor.pages[ele.getAttribute('data-pageid')].title = name;
+            ele.innerHTML = `<span>${name}</span><span class="right-icon-dolt"></span>`;
+        }
+    }
+    // debugger
+    mxEvent.addListener(document.body, 'click', saveFn);
+    // 回车
+    mxEvent.addListener(editInput, 'click', function(e) {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        } else {
+            e.cancelBubble = true;
+        }
+    }, true);
+    // 回车
+    mxEvent.addListener(editInput, 'keydown', function(e) {
+        if (e.keyCode === 13) {
+            saveFn();
+        }
+    });
+}
+/*复制页面*/
+Sidebar.prototype.copyPage = function (ele,pageType) {
+ var title = '',
+     id = '';
+ const currtitle = ele.innerText
+ var xml = this.editorUi.editor.defaultXml;
+ var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
+ xml = currentPage.xml
+ id = currentPage.id
+ let titleText = `${currtitle}_副本`
+ let page = {
+    title: titleText,
+    xml,
+    id,
+    type: pageType
+  };
+  let _li = document.createElement('li');
+  let resPage = this.editorUi.editor.addPage(page);
+  _li.setAttribute('data-pageid', resPage.id);
+  _li.innerHTML = `<span>${titleText}</span><span class="right-icon-dolt"></span>`;
+  let changeRank = this.editorUi.editor.pagesRank[resPage.type];
+  // 根据类型插入列表
+   changeRank.push(resPage.id);
+   if (pageType === 'normal') {
+    $("#normalPages").append(_li);
+   }
+   if (pageType === 'dialog') {
+    $("#dialogPages").append(_li);
+   }
+  this.editorUi.editor.pagesRank[resPage.type] = [].concat(changeRank);
+  _li.click()
+}
+Sidebar.prototype.alertAddPage = function(type) {
+    console.log(type)
+}
 /**
  * 页面右键菜单
  */
-Sidebar.prototype.createPageContextMenu = function() {
+Sidebar.prototype.createPageContextMenu = function(type) {
     var menulist = document.createElement('ul')
+    if (document.querySelector('#pageContextMenu')) {
+        document.querySelector('#pageContextMenu').remove()
+    }
     menulist.id = 'pageContextMenu';
-    var menus = {
-        'addPrev': '上方添加',
-        'addNext': '下方添加',
-        'movePrev': '上移',
-        'moveNext': '下移',
-        'rename': '重命名',
-        'copy': '复制',
-        'delete': '删除',
+    // var menus = {
+    //     'addPrev': '上方添加',
+    //     'addNext': '下方添加',
+    //     'movePrev': '上移',
+    //     'moveNext': '下移',
+    //     'rename': '重命名',
+    //     'copy': '复制',
+    //     'delete': '删除',
+    // }
+    let menus = null
+    if (+type === 1) { // 弹窗
+        menus = {
+            'copy': '复制弹窗',
+            'addTemplate':`添加到模版`,
+            'rename': '重命名',
+            'delete': '删除',
+        }
+    } else {
+        menus = {
+            'copy': '复制页面',
+            'addTemplate':`添加到模版`,
+            'rename': '重命名',
+            'delete': '删除',
+        }
     }
     for (var key in menus) {
         var menu = document.createElement('li')
         menu.innerText = menus[key]
+        menu.className = key
         menu.setAttribute('data-type', key)
         menulist.appendChild(menu)
     }
@@ -965,16 +1071,18 @@ Sidebar.prototype.createPageContextMenu = function() {
             this.hidePageContextMenu();
         }
     });
-
     mxEvent.addListener(menulist, 'click', function(evt) {
+        evt.stopPropagation()
         var target = evt.target;
         var ele = $(".pageList .currentPage").eq(0);
+        const element = document.querySelector('.pageList>li.currentPage')
         // 操作类型
         var actionType = target.getAttribute('data-type');
         // 添加页面
         var addPage = this.editorUi.actions.get('addPage').funct;
         const pageType = this.editorUi.editor.currentType;
         let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.data('pageid'))
+        console.log(index)
         switch (actionType) {
             case 'movePrev':
                 this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems( this.editorUi.editor.pagesRank[pageType], index - 1, index);
@@ -987,6 +1095,27 @@ Sidebar.prototype.createPageContextMenu = function() {
             case 'delete':
                 this.deletePage(ele)
                 break;
+            case 'rename':
+                this.renameNode(element)
+                break;
+            case 'copy':
+                this.copyPage(element,pageType)
+                break;
+            case 'homepage':
+                this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems( this.editorUi.editor.pagesRank[pageType], index - 1, index);
+                // var first = document.pageList
+                var targetEle = null
+                if (pageType ==='normal') {
+                    targetEle = document.querySelector('#normalPages')
+                } else {
+                    targetEle = document.querySelector('#dialogPages')
+                }
+                const currentnode = document.querySelector('.currentPage')
+                const first = targetEle.firstChild
+                targetEle.insertBefore(currentnode,first)
+                $('.left-sidebar-homepage').removeClass('left-sidebar-homepage')
+                currentnode.className += ' left-sidebar-homepage'
+                break
             default:
                 addPage(actionType)
                 break;
@@ -1030,143 +1159,282 @@ function createPageTypeTitle(title) {
  * @param {object} data 页面列表
  * @param {string} id 列表id
  */
-function createPageList(editorUi, data, id) {
-    var fn = function() {
-        // 页面列表
-        var pageListEle = document.createElement('ul');
-        pageListEle.className = "pageList";
-        pageListEle.id = id;
-        for (var i in data) {
-            var page = document.createElement('li')
-            page.setAttribute('data-pageid', data[i].id);
-            page.innerHTML =  data[i].title;
-            pageListEle.appendChild(page)
-        }
-        // 切换选中
-        function changePage(e) {
-            var target = e.target;
-            if (target.nodeName === 'LI' && target.className !== 'currentPage') {
-                // 点击保存上一个页面
-                var type = id.slice(0, id.length - 5);
-                // 目标页面名称
-                var nextTitle = target.getAttribute('data-pageid');
-                // 已选中节点
-                if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {
-                    editorUi.editor.setXml();
-                }
-                // 切换到新的页面
-                $(".currentPage").removeClass();
-                editorUi.editor.setCurrentType(id == 'normalPages' ? 'normal' : 'dialog');
-                editorUi.editor.setCurrentPage(nextTitle);
-                target.className = "currentPage";
-                var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml);
-                editorUi.editor.setGraphXml(doc.documentElement);
-            }
-        }
-        // 鼠标左键点击
-        mxEvent.addListener(pageListEle, 'click', function(evt) {
-            changePage(evt)
-        }, true);
+// function createPageList(editorUi, data, id) {
+//     var fn = function() {
+//         // 页面列表
+//         var pageListEle = document.createElement('ul');
+//         pageListEle.className = "pageList";
+//         pageListEle.id = id;
+//         for (var i in data) {
+//             var page = document.createElement('li')
+//             page.setAttribute('data-pageid', data[i].id);
+//             page.innerHTML =  data[i].title;
+//             pageListEle.appendChild(page)
+//         }
+//         // 切换选中
+//         function changePage(e) {
+//             var target = e.target;
+//             if (target.nodeName === 'LI' && target.className !== 'currentPage') {
+//                 // 点击保存上一个页面
+//                 var type = id.slice(0, id.length - 5);
+//                 // 目标页面名称
+//                 var nextTitle = target.getAttribute('data-pageid');
+//                 // 已选中节点
+//                 if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {
+//                     editorUi.editor.setXml();
+//                 }
+//                 // 切换到新的页面
+//                 $(".currentPage").removeClass();
+//                 editorUi.editor.setCurrentType(id == 'normalPages' ? 'normal' : 'dialog');
+//                 editorUi.editor.setCurrentPage(nextTitle);
+//                 target.className = "currentPage";
+//                 var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml);
+//                 editorUi.editor.setGraphXml(doc.documentElement);
+//             }
+//         }
+//         // 鼠标左键点击
+//         mxEvent.addListener(pageListEle, 'click', function(evt) {
+//             changePage(evt)
+//         }, true);
 
-        // 鼠标双击编辑
-        mxEvent.addListener(pageListEle, 'dblclick', function(evt) {
-            if (evt.target.nodeName === 'LI') {
-                evt.stopPropagation()
-                let editInput = document.createElement('input');
-                editInput.id = 'editPageInput';
-                let oldVal = evt.target.innerHTML
-                editInput.value = oldVal;
-                evt.target.innerHTML = '';
-                evt.target.appendChild(editInput);
+//         // 鼠标双击编辑
+//         mxEvent.addListener(pageListEle, 'dblclick', function(evt) {
+//             if (evt.target.nodeName === 'LI') {
+//                 evt.stopPropagation()
+//                 let editInput = document.createElement('input');
+//                 editInput.id = 'editPageInput';
+//                 let oldVal = evt.target.innerHTML
+//                 editInput.value = oldVal;
+//                 evt.target.innerHTML = '';
+//                 evt.target.appendChild(editInput);
 
-                editInput.focus();
+//                 editInput.focus();
 				
-                let saveFn = () => {
-                    let name = editInput.value.trim();
-                    mxEvent.removeListener(document.body, 'click', saveFn);
-                    if (!name) {
-                        mxUtils.alert('页面名称不能为空');
-                        evt.target.innerHTML = oldVal;
-                    } else if (name.length > 20) {
-                        mxUtils.alert('页面名称不能超过20个字符');
-                        evt.target.innerHTML = oldVal;
-                    } else {
-                        if (name !== oldVal) {
-                            for (let key in editorUi.editor.pages) {
-                                if (editorUi.editor.pages[key].title === name) {
-                                    mxUtils.alert('页面名称不能重复');
-                                    evt.target.innerHTML = oldVal;
-                                    return;
-                                }
-                            }
-                        }
-                        editorUi.editor.pages[evt.target.getAttribute('data-pageid')].title = name;
-                        evt.target.innerHTML = name;
-                    }
+//                 let saveFn = () => {
+//                     let name = editInput.value.trim();
+//                     mxEvent.removeListener(document.body, 'click', saveFn);
+//                     if (!name) {
+//                         mxUtils.alert('页面名称不能为空');
+//                         evt.target.innerHTML = oldVal;
+//                     } else if (name.length > 20) {
+//                         mxUtils.alert('页面名称不能超过20个字符');
+//                         evt.target.innerHTML = oldVal;
+//                     } else {
+//                         if (name !== oldVal) {
+//                             for (let key in editorUi.editor.pages) {
+//                                 if (editorUi.editor.pages[key].title === name) {
+//                                     mxUtils.alert('页面名称不能重复');
+//                                     evt.target.innerHTML = oldVal;
+//                                     return;
+//                                 }
+//                             }
+//                         }
+//                         editorUi.editor.pages[evt.target.getAttribute('data-pageid')].title = name;
+//                         evt.target.innerHTML = name;
+//                     }
+//                 }
+				
+//                 mxEvent.addListener(document.body, 'click', saveFn);
+//                 // 回车
+//                 mxEvent.addListener(editInput, 'click', function(e) {
+//                     if (e.stopPropagation) {
+//                         e.stopPropagation();
+//                     } else {
+//                         e.cancelBubble = true;
+//                     }
+//                 }, true);
+//                 // 回车
+//                 mxEvent.addListener(editInput, 'keydown', function(e) {
+//                     if (e.keyCode === 13) {
+//                         saveFn();
+//                     }
+//                 });
+//             }
+//         })
+//         // 鼠标右键点击
+//         mxEvent.addListener(pageListEle, 'contextmenu', function(evt) {
+//             evt.preventDefault();
+//             if (evt.target.nodeName === 'LI') {
+//                 changePage(evt);
+//                 editorUi.editor.setXml();
+//                 // 右键菜单展示
+//                 var menulist = document.getElementById('pageContextMenu');
+//                 menulist.style.display = 'block';
+//                 menulist.style.left = mxEvent.getClientX(evt) + 'px';
+//                 menulist.style.top = mxEvent.getClientY(evt) + 'px';
+//             }
+//         })
+//         return pageListEle;
+//     };
+//     return fn;
+// }
+function createPageList(editorUi,el,data, id, type) {
+            // 页面列表
+            var pageListEle = document.createElement('ul');
+            pageListEle.className = "pageList";
+            pageListEle.id = id;
+            for (var i in data) {
+                var page = document.createElement('li')
+                if (data[i].type === 'normal' && i === '0') { // 首页
+                    page.className = 'left-sidebar-homepage'
                 }
-				
-                mxEvent.addListener(document.body, 'click', saveFn);
-                // 回车
-                mxEvent.addListener(editInput, 'click', function(e) {
-                    if (e.stopPropagation) {
-                        e.stopPropagation();
-                    } else {
-                        e.cancelBubble = true;
-                    }
-                }, true);
-                // 回车
-                mxEvent.addListener(editInput, 'keydown', function(e) {
-                    if (e.keyCode === 13) {
-                        saveFn();
-                    }
-                });
+                page.setAttribute('data-pageid', data[i].id);
+                page.innerHTML =  `<span>${data[i].title}</span><span class="right-icon-dolt"></span>`;
+                pageListEle.appendChild(page)
             }
-        })
-        // 鼠标右键点击
-        mxEvent.addListener(pageListEle, 'contextmenu', function(evt) {
-            evt.preventDefault();
-            if (evt.target.nodeName === 'LI') {
+            el.appendChild(pageListEle)
+            setTimeout(() => {
+                $("#normalPages li").eq(0).click();
+            })
+            $('.commonPages').on('mouseenter', '.pageList>li.currentPage>.right-icon-dolt',function(evt) {
+                evt.preventDefault();
                 changePage(evt);
                 editorUi.editor.setXml();
+                
                 // 右键菜单展示
                 var menulist = document.getElementById('pageContextMenu');
+                var targetElement = document.querySelector("#pageContextMenu .rename")
+                const textlen = menulist.firstChild.innerText
+                if (!$(this).parent().hasClass('left-sidebar-homepage') && textlen.indexOf('弹窗') === -1) {
+                    if(!$('#pageContextMenu').children('.homepage').length) {
+                        const Oli = document.createElement('li')
+                        Oli.className = 'homepage'
+                        Oli.innerText = '设为首页'
+                        Oli.setAttribute('data-type', 'homepage')
+                        menulist.insertBefore(Oli,targetElement)
+                    }
+                } else {
+                    $('.homepage').remove()
+                }
                 menulist.style.display = 'block';
                 menulist.style.left = mxEvent.getClientX(evt) + 'px';
                 menulist.style.top = mxEvent.getClientY(evt) + 'px';
+            })
+            function changePage(e) {
+                var target = e.target;
+                if (target.nodeName === 'LI' && target.className !== 'currentPage') {
+                    // 点击保存上一个页面
+                    var type = id.slice(0, id.length - 5);
+                    // 目标页面名称
+                    var nextTitle = target.getAttribute('data-pageid');
+                    // 已选中节点
+                    if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {
+                        editorUi.editor.setXml();
+                    }
+                    // 切换到新的页面
+                    $(".currentPage").removeClass('currentPage');
+                    editorUi.editor.setCurrentType(id == 'normalPages' ? 'normal' : 'dialog');
+                    editorUi.editor.setCurrentPage(nextTitle);
+                    target.className += " currentPage";
+                    var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml);
+                    editorUi.editor.setGraphXml(doc.documentElement);
+                }
             }
-        })
-        return pageListEle;
-    };
-    return fn;
+            // 鼠标左键点击
+            mxEvent.addListener(pageListEle, 'click', function(evt) {
+                changePage(evt)
+            }, true);
+            // 鼠标双击编辑
+            // mxEvent.addListener(pageListEle, 'dblclick', function(evt) {
+            //     if (evt.target.nodeName === 'LI') {
+            //         evt.stopPropagation()
+            //         let editInput = document.createElement('input');
+            //         editInput.id = 'editPageInput';
+            //         let oldVal = evt.target.innerHTML
+            //         editInput.value = oldVal;
+            //         evt.target.innerHTML = '';
+            //         evt.target.appendChild(editInput);
+    
+            //         editInput.focus();
+                    
+            //         let saveFn = () => {
+            //             let name = editInput.value.trim();
+            //             mxEvent.removeListener(document.body, 'click', saveFn);
+            //             if (!name) {
+            //                 mxUtils.alert('页面名称不能为空');
+            //                 evt.target.innerHTML = oldVal;
+            //             } else if (name.length > 20) {
+            //                 mxUtils.alert('页面名称不能超过20个字符');
+            //                 evt.target.innerHTML = oldVal;
+            //             } else {
+            //                 if (name !== oldVal) {
+            //                     for (let key in editorUi.editor.pages) {
+            //                         if (editorUi.editor.pages[key].title === name) {
+            //                             mxUtils.alert('页面名称不能重复');
+            //                             evt.target.innerHTML = oldVal;
+            //                             return;
+            //                         }
+            //                     }
+            //                 }
+            //                 editorUi.editor.pages[evt.target.getAttribute('data-pageid')].title = name;
+            //                 evt.target.innerHTML = name;
+            //             }
+            //         }
+                    
+            //         mxEvent.addListener(document.body, 'click', saveFn);
+            //         // 回车
+            //         mxEvent.addListener(editInput, 'click', function(e) {
+            //             if (e.stopPropagation) {
+            //                 e.stopPropagation();
+            //             } else {
+            //                 e.cancelBubble = true;
+            //             }
+            //         }, true);
+            //         // 回车
+            //         mxEvent.addListener(editInput, 'keydown', function(e) {
+            //             if (e.keyCode === 13) {
+            //                 saveFn();
+            //             }
+            //         });
+            //     }
+            // })
+            mxEvent.addListener(pageListEle, 'contextmenu', function(evt) {
+                evt.preventDefault();
+            })
+           
+            return pageListEle;
 }
 Sidebar.prototype.hidePageContextMenu = function() {
     document.getElementById('pageContextMenu') ?  document.getElementById('pageContextMenu').style.display = 'none' : null;
+}
+//
+Sidebar.prototype.tabsSwitch = function(type) {
+    if (type && type === 1) {
+        this.createPageContextMenu(type)
+    } else {
+        this.createPageContextMenu(type)
+    }
+    // const dialogPagesEl = document.querySelector('.dialogPages')
 }
 Sidebar.prototype.addPagePalette = function(expand) {
     var normalPages = []
     var dialogPages = [];
     var pages = this.editorUi.editor.pages;
-    console.log(pages)
-    console.log(this.editorUi.editor.pagesRank)
-    // 普通页面
+    // 页面
     for (let key of this.editorUi.editor.pagesRank.normal) {
         pages[key] && normalPages.push(pages[key]);
     }
-    // 弹窗页面
+    // 弹窗
     for (let key of this.editorUi.editor.pagesRank.dialog) {
         pages[key] && dialogPages.push(pages[key]);
     }
-    var fns = [
-        // 普通页面标题
-        createPageTypeTitle.call(this, '普通页面'),
-        // 普通页面列表
-        createPageList(this.editorUi, normalPages, 'normalPages'),
-        // 弹窗页面标题
-        createPageTypeTitle.call(this, '弹窗页面'),
-        // 弹窗页面列表
-        createPageList(this.editorUi, dialogPages, 'dialogPages')
-    ]
-    this.addPaletteFunctions('pageManage', '页面管理', (expand != null) ? expand : true, fns);
+    const normalPagesEl = document.querySelector('.normalPages')
+    const dialogPagesEl = document.querySelector('.dialogPages')
+    createPageList(this.editorUi,dialogPagesEl, dialogPages, 'dialogPages')
+    createPageList(this.editorUi,normalPagesEl, normalPages, 'normalPages')
+    this.createPageContextMenu()
+    // var fns = [
+    //     // 普通页面标题
+    //     // createPageTypeTitle.call(this, '普通页面'),
+    //     // 普通页面列表
+    //     createPageList(this.editorUi, normalPages, 'normalPages'),
+    //     // 弹窗页面标题
+    //     // createPageTypeTitle.call(this, '弹窗页面'),
+    //     // 弹窗页面列表
+    //     createPageList(this.editorUi, dialogPages, 'dialogPages')
+    // ]
+    // console.log(fns)
+    // this.addPaletteFunctions('pageManage', '页面管理', (expand != null) ? expand : true, fns);
 }
 /**
  * 添加给定的模板控件.
@@ -1312,9 +1580,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
     ];
     //封装
     this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
-
-    //this.addGeneralPaletteShort();
-};
+this.addPaletteFunctions('chart', '图表控件', false, fns);//this.addGeneralPaletteShort();};
 
 /**
  * 快捷方式控件
