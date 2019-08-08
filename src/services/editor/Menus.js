@@ -412,7 +412,6 @@ Menus.prototype.styleChange = function(menu, label, keys, values, sprite, parent
  */
 Menus.prototype.createStyleChangeFunction = function(keys, values)
 {
-    debugger
     return mxUtils.bind(this, function(post)
     {
         var graph = this.editorUi.editor.graph;

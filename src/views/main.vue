@@ -3,7 +3,7 @@
     <Toolbar
       ref="toolbar"
     />
-    <RightBar />
+    <RightBar ref="rightbar" />
     <FooterBar
       ref="footbar"
       :bind-datas="bindDatas"
@@ -66,6 +66,7 @@ export default {
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
             this.$refs.footbar.init();
+            this.$refs.rightbar.init()
         },
         updateZoom() {
             this.$refs.toolbar.updateZoom();

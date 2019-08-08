@@ -1,56 +1,80 @@
 <template>
   <div class="geSidebarContainer geRightBarContainer">
-    <div class="geSidebarContainer geFormatContainer" />
+    <div class="geSidebarContainer geFormatContainer">
+      bbb
+    </div>
     <div class="geSidebarContainer gePaletteManageContainer" />
-    <div
-      id="rightbarShortcut"
-      class="rightbarShortcut"
-    />
+    <div class="rightbarShortcut">
+      <div
+        ref="shortCutWrapper"
+        class="geSidebar"
+        style="touch-action: none;"
+      />
+    </div>
   </div>
 </template>
 <script>
+import {mxCell,mxGeometry} from '../../services/mxGlobal'
+let shortCutWidgets
 export default {
     components: {},
     props: [""],
     data() {
         return {
-            /*  leftBar: [
-                {
-                    text: "文字",
-                    icon: require("@/assets/images/menu/rightBar/text_ic.png")
-                },
-                {
-                    text: "矩形",
-                    icon: require("@/assets/images/menu/rightBar/rectangle_ic.png")
-                },
-                {
-                    text: "椭圆",
-                    icon: require("@/assets/images/menu/rightBar/oval_ic.png")
-                },
-                {
-                    text: "直线",
-                    icon: require("@/assets/images/menu/rightBar/line_ic.png")
-                },
-                {
-                    text: "按钮",
-                    icon: require("@/assets/images/menu/rightBar/btn_ic.png")
-                },
-                {
-                    text: "表格",
-                    icon: require("@/assets/images/menu/rightBar/form_ic.png")
-                },
-                {
-                    text: "图片",
-                    icon: require("@/assets/images/menu/rightBar/bg_ic.png")
-                }
-            ] */
-        };
+        }
     },
     created() {},
     mounted() {
     },
     methods: {
-        
+        init() {
+            let that = this.myEditorUi.sidebar
+            let ele = this.$refs.shortCutWrapper
+            shortCutWidgets = [
+                // 文字
+                that.createVertexTemplateEntry(
+                    "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;image=/static/stencils/basic/image.png",
+                    40,
+                    20,
+                    // 类似链接一样设置
+                    '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">text</span>',
+                    "文字"
+                ),
+                // 矩形
+                that.createVertexTemplateEntry(
+                    "rounded=0;shape=rectangle;whiteSpace=wrap;html=1;",
+                    120,
+                    60,
+                    "",
+                    "矩形",
+                    null,
+                    null,
+                    "矩形"
+                ),
+                //直线
+                that.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 0, '', '直线', null, ''),
+                // 按钮
+                that.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box;background:transparent;">BUTTON</button>', '按钮'),
+                //表格,通过矩形拼接
+                that.addEntry('tableBox', function() {
+                    var cell = new mxCell('', new mxGeometry(0, 0, 300, 90), 'shape=tableBox;group');
+                    cell.vertex = true;
+                    for (let i = 0; i < 9; i++) {
+                        let line = parseInt(i / 3);
+                        let xNum = i % 3;
+                        let symbol = new mxCell(i < 3 ? 'Column ' + (i + 1) : '', new mxGeometry(xNum * 100, 30 * line, 100, 30), 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;');
+                        symbol.vertex = true;
+                        cell.insert(symbol);
+                    }
+                    return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '表格');
+                }),
+                // 图片
+                that.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', that.defaultImageWidth, that.defaultImageHeight, '', '图片'),
+            ]
+            for (let i = 0; i < shortCutWidgets.length; i++) {
+                ele.appendChild(shortCutWidgets[i](ele));
+            }
+        }
     }
 };
 </script>
@@ -81,24 +105,6 @@ export default {
                 height: 21px !important;
             }
         }
-        /* .shortcutItem {
-            text-align: center;
-            height: 32px;
-            margin-top: 15px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            cursor: pointer;
-            &:last-child {
-                background-size: 23px 16px !important;
-            }
-        } */
-    }
-    .geFormatContainer {
-        width: 210px !important;
-    }
-    .gePaletteManageContainer {
-        width: 210px !important;
     }
 }
 </style>

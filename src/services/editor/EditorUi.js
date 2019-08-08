@@ -1098,10 +1098,10 @@ EditorUi.prototype.init = function()
     this.initClipboard();
     this.initCanvas();
 
-    if (this.format != null)
+    /* if (this.format != null)
     {
         this.format.init();
-    }
+    } */
 };
 
 /**
@@ -2104,7 +2104,7 @@ EditorUi.prototype.toggleRightPanel = function(forceHide)
     this.rightWidth = forceHide ? 0 : 240;
     this.formatContainer.style.display = forceHide ? 'none' : '';
     this.refresh();
-    this.format.refresh();
+    //this.format.refresh();
     this.fireEvent(new mxEventObject('formatWidthChanged'));
 };
 
@@ -2860,7 +2860,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
     this.rightBarContainer.style.display = (this.rightWidth != 0) ? '' : 'none';
 
     this.formatContainer.style.top = '0px';
-    this.formatContainer.style.width = fw + 'px';
+    //this.formatContainer.style.width = fw + 'px';
     this.formatContainer.style.height = '50%';
     this.formatContainer.style.display = (this.format != null) ? '' : 'none';
 
@@ -3034,11 +3034,12 @@ EditorUi.prototype.createUi = function()
     }
 
     // 生成交互/样式侧边栏
-    this.format = (this.editor.chromeless || !this.formatEnabled) ? null : this.createFormat(this.formatContainer);
-    if (this.format != null)
+    //this.format = (this.editor.chromeless || !this.formatEnabled) ? null : this.createFormat(this.formatContainer);
+    this.format = (this.editor.chromeless || !this.formatEnabled) ? null : this.formatContainer;
+   /*  if (this.format != null)
     {
         this.rightBarContainer.appendChild(this.formatContainer);
-    }
+    } */
 
     // 生成控件管理
     this.paletteManage = (this.editor.chromeless || !this.formatEnabled) ? null : this.createPaletteManage(this.paletteManageContainer);

@@ -1224,8 +1224,6 @@ Sidebar.prototype.primitives = ['circle', 'diamond', 'drop', 'pentagram', 'squar
 Sidebar.prototype.addGeneralPalette = function(expand)
 {
     var that = this;
-    // var field = new mxCell('基础控件', new mxGeometry(0, 0, 60, 26), 'text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;');
-    // field.vertex = true;
     var fns = [
         // 矩形
         this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, '矩形'),
@@ -1315,19 +1313,18 @@ Sidebar.prototype.addGeneralPalette = function(expand)
     //封装
     this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
 
-    this.addGeneralPaletteShort();
+    //this.addGeneralPaletteShort();
 };
 
 /**
  * 快捷方式控件
  */
-Sidebar.prototype.addGeneralPaletteShort = function () {
+/* Sidebar.prototype.addGeneralPaletteShort = function () {
     var that = this;
     var fns = [
         // 文字
         that.createVertexTemplateEntry(
             "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;image=/static/stencils/basic/image.png",
-            // "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;",
             40,
             20,
             // 类似链接一样设置
@@ -1369,11 +1366,12 @@ Sidebar.prototype.addGeneralPaletteShort = function () {
     that.addPaletteCus(
         mxUtils.bind(that, function (content) {
             for (let i = 0; i < fns.length; i++) {
+                console.log(fns[i],content)
                 content.appendChild(fns[i](content));
             }
         })
     );
-}
+} */
 
 /**
  * 左侧列表标题栏
@@ -3000,7 +2998,7 @@ Sidebar.prototype.addPalette = function(id, title, expanded, onInit)
 /**
  * 快捷方式
  */
-Sidebar.prototype.addPaletteCus = function (onInit) {
+/* Sidebar.prototype.addPaletteCus = function (onInit) {
     var div = document.createElement('div');
     div.className = 'geSidebar';
 
@@ -3009,10 +3007,9 @@ Sidebar.prototype.addPaletteCus = function (onInit) {
         div.style.touchAction = 'none';
     }
     onInit(div);
-    onInit = null;
-    document.querySelector('#rightbarShortcut').appendChild(div);
+    document.querySelector('.rightbarShortcut').appendChild(div);
     return div;
-}
+} */
 
 /**
  * Create the given title element.
