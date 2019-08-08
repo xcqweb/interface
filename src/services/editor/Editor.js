@@ -70,7 +70,6 @@ window.Editor = function(chromeless, themes, model, graph, editable)
 
     // Sets persistent graph state defaults
     this.graph.resetViewOnRootChange = false;
-    console.log(this)
     this.init();
 };
 
@@ -1264,7 +1263,6 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
     div.style.left = left + 'px';
     div.style.top = top + 'px';
     div.style.zIndex = this.zIndex;
-    console.log(div)
     div.addEventListener('click', function() {
         this.style.boxShadow = ''
     })

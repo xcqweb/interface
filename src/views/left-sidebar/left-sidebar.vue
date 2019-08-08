@@ -1,61 +1,68 @@
 <template>
-  <div class="left-sidebar-wrap left-geSidebarContainer">
-    <Tabs 
-      type="card" 
-      :animated="false"
-      @on-click="tabsSwitch"
+  <div
+    class="geSidebarContainer"
+    style="height:calc(100% - 72px); top:72px;width:208px;"
+  >
+    <div
+      class="left-geSidebarContainer"
     >
-      <TabPane
-        label="页面" 
-        class="normalPages commonPages"
+      <Tabs 
+        type="card" 
+        :animated="false"
+        @on-click="tabsSwitch"
       >
-        <div 
-          class="leftSidebar-addicon" 
-          @click="addPageType(1)"
+        <TabPane
+          label="页面" 
+          class="normalPages commonPages"
         >
-          添加页面
-        </div>
-      </TabPane>
-      <TabPane 
-        label="弹窗" 
-        class="dialogPages commonPages"
-      >
-        <div 
-          class="leftSidebar-addicon"
-          @click="addPageType(2)"
-        >
-          添加弹窗
-        </div>
-      </TabPane>
-    </Tabs>
-    <Modal
-      v-model="modelshow"
-      class="left-sidebar-model"
-      :title="alertTitleName"
-      @on-ok="save"
-      @on-cancel="cancel"
-    >
-      <ul 
-        v-for="(item,index) in alertContent" 
-        :key="index" 
-        class="left-sidebar-list"
-      >
-        <li>
-          <span 
-            :class="index === isactive ? 'left-side-listactive' : ''"
-            @click="eventClickList(index)"
+          <div 
+            class="leftSidebar-addicon" 
+            @click="addPageType(1)"
           >
-            <template v-if="index === 0">
-              <span>0</span>
-            </template>
-            <template v-if="index >= 1">
-              <span>123</span>
-            </template>
-          </span>
-          <label>{{ item }} </label>
-        </li>
-      </ul>
-    </Modal>
+            添加页面
+          </div>
+        </TabPane>
+        <TabPane 
+          label="弹窗" 
+          class="dialogPages commonPages"
+        >
+          <div 
+            class="leftSidebar-addicon"
+            @click="addPageType(2)"
+          >
+            添加弹窗
+          </div>
+        </TabPane>
+      </Tabs>
+      <Modal
+        v-model="modelshow"
+        class="left-sidebar-model"
+        :title="alertTitleName"
+        @on-ok="save"
+        @on-cancel="cancel"
+      >
+        <ul 
+          v-for="(item,index) in alertContent" 
+          :key="index" 
+          class="left-sidebar-list"
+        >
+          <li>
+            <span 
+              :class="index === isactive ? 'left-side-listactive' : ''"
+              @click="eventClickList(index)"
+            >
+              <template v-if="index === 0">
+                <span>0</span>
+              </template>
+              <template v-if="index >= 1">
+                <span>123</span>
+              </template>
+            </span>
+            <label>{{ item }} </label>
+          </li>
+        </ul>
+      </Modal>
+    </div>
   </div>
 </template>
 <script>
@@ -87,7 +94,7 @@ export default {
     },
     methods: {
         init() {
-            this.myEditorUi.sidebar.init();
+            //this.myEditorUi.sidebar.init();
         },
         tabsSwitch(type) {
             // 0 页面 1 弹窗
@@ -192,19 +199,19 @@ export default {
                         float:right;
                         width:20px;
                         height:24px;
-                        background: url(../../assets/images/leftsidebar/more1_ic.png) no-repeat left center;
+                        background: url('../../assets/images/leftsidebar/more1_ic.png') no-repeat left center;
                         background-size:16px 16px;
                         position: relative;
                         z-index:100
                     }
                 }
                 #dialogPages>li{
-                    background:url(../../assets/images/leftsidebar/popup2_ic .png) no-repeat left center;
+                    background:url('../../assets/images/leftsidebar/popup2_ic .png') no-repeat left center;
                     background-size:16px 16px;
                     &.currentPage{
                         color:#fff;
                         background-color:#3d91f7;
-                        background: #3d91f7 url(../../assets/images/leftsidebar/popup2_ic .png) no-repeat left center;
+                        background: #3d91f7 url('../../assets/images/leftsidebar/popup2_ic .png') no-repeat left center;
                         background-size:16px 16px;
                     }
                 }

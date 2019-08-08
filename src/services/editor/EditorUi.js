@@ -2940,7 +2940,7 @@ EditorUi.prototype.createDivs = function()
 {
     this.menubarContainer = this.createDiv('geMenubarContainer');
     this.toolbarContainer = document.querySelector(".geToolbarContainer");
-    this.sidebarContainer = this.createDiv('geSidebarContainer');
+    this.sidebarContainer = document.querySelector('.geSidebarContainer');
     this.formatContainer = document.querySelector('.geSidebarContainer.geFormatContainer');
     this.rightBarContainer = document.querySelector('.geSidebarContainer.geRightBarContainer');
     this.paletteManageContainer = document.querySelector('.geSidebarContainer.gePaletteManageContainer');
@@ -2970,8 +2970,8 @@ EditorUi.prototype.createDivs = function()
     this.sidebarFooterContainer = this.createSidebarFooterContainer();
 
     // 左侧侧边栏
-    const leftgeSidebarContainer = document.querySelector('.left-geSidebarContainer');
-    this.sidebarContainer.appendChild(leftgeSidebarContainer);
+    // const leftgeSidebarContainer = document.querySelector('.left-geSidebarContainer');
+    //this.sidebarContainer.appendChild(leftgeSidebarContainer);
     if (this.sidebarFooterContainer)
     {
         this.sidebarFooterContainer.style.left = '0px';

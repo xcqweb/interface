@@ -3,7 +3,13 @@
     <Toolbar
       ref="toolbar"
     />
-    <RightBar ref="rightbar" />    <FooterBar
+    <LeftSideBar
+      ref="leftsidebar"
+    />
+    <RightBar
+      ref="rightbar"
+    />     
+    <FooterBar
       ref="footbar"
       :bind-datas="bindDatas"
     />
@@ -54,7 +60,6 @@ export default {
             Vue.prototype.myEditorUi = myEditorUi
             myEditorUi.editor.InitEditor(myEditorUi)
             this.init()
-            console.dir(this.myEditorUi)
         })
     },
     mounted() {
@@ -67,8 +72,8 @@ export default {
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
             this.$refs.leftsidebar.init();
-            this.$refs.footbar.init();
             this.$refs.rightbar.init()
+            this.$refs.footbar.init();
         },
         updateZoom() {
             this.$refs.toolbar.updateZoom();

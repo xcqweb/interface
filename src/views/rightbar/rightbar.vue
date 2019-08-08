@@ -1,5 +1,8 @@
 <template>
-  <div class="geSidebarContainer geRightBarContainer">
+  <div
+    class="geSidebarContainer geRightBarContainer"
+    style="top:72px;right:0;"
+  >
     <div class="geSidebarContainer geFormatContainer">
       bbb
     </div>

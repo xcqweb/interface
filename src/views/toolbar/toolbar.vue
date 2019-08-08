@@ -1,5 +1,8 @@
 <template>
-  <div class="geToolbarContainer">
+  <div
+    class="geToolbarContainer"
+    style="height:72px;"
+  >
     <div class="geToolbar geToolbar1">
       <div class="tab">
         <div
@@ -114,53 +117,53 @@
       >
         <div class="geSprite geSprite-toback" />
       </a>
-      <div class="geToolbar geToolbar5">
-        <a
-          href="javascript:void(0);"
-          class="geButton"
-          title="组合 (Ctrl+G)"
-          @click.stop.prevent="addAction('group')"
-        >
-          <div class="geSprite geSprite-group" />
-        </a>
-        <a
-          href="javascript:void(0);"
-          class="geButton"
-          title="取消组合 (Ctrl+Shift+U)"
-          style="margin-left:12px;"
-          @click.stop.prevent="addAction('ungroup')"
-        >
-          <div class="geSprite geSprite-ungroup" />
-        </a>
-      </div>
-      <div class="geToolbar geToolbar6">
-        <a
-          href="javascript:void(0);"
-          class="geButton"
-          title="素材库"
-          @click.stop.prevent="materialLab"
-        >
-          <div class="geSprite geSprite-material" />
-        </a>
-        <a
-          href="javascript:void(0);"
-          class="geButton"
-          title="保存 (Ctrl+S)"
-          style="margin-left:12px;"
-          @click.stop.prevent="save"
-        >
-          <div class="geSprite geSprite-save" />
-        </a>
-        <a
-          href="javascript:void(0);"
-          class="geButton"
-          title="预览 (Ctrl+Shift+L)"
-          style="margin-left:12px;"
-          @click.stop.prevent="preview"
-        >
-          <div class="geSprite geSprite-preview" />
-        </a>
-      </div>
+    </div>
+    <div class="geToolbar geToolbar5">
+      <a
+        href="javascript:void(0);"
+        class="geButton"
+        title="组合 (Ctrl+G)"
+        @click.stop.prevent="addAction('group')"
+      >
+        <div class="geSprite geSprite-group" />
+      </a>
+      <a
+        href="javascript:void(0);"
+        class="geButton"
+        title="取消组合 (Ctrl+Shift+U)"
+        style="margin-left:12px;"
+        @click.stop.prevent="addAction('ungroup')"
+      >
+        <div class="geSprite geSprite-ungroup" />
+      </a>
+    </div>
+    <div class="geToolbar geToolbar6">
+      <a
+        href="javascript:void(0);"
+        class="geButton"
+        title="素材库"
+        @click.stop.prevent="materialLab"
+      >
+        <div class="geSprite geSprite-material" />
+      </a>
+      <a
+        href="javascript:void(0);"
+        class="geButton"
+        title="保存 (Ctrl+S)"
+        style="margin-left:12px;"
+        @click.stop.prevent="save"
+      >
+        <div class="geSprite geSprite-save" />
+      </a>
+      <a
+        href="javascript:void(0);"
+        class="geButton"
+        title="预览 (Ctrl+Shift+L)"
+        style="margin-left:12px;"
+        @click.stop.prevent="preview"
+      >
+        <div class="geSprite geSprite-preview" />
+      </a>
     </div>
     <ScaleView
       v-if="isShowScale"

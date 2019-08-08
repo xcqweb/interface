@@ -1580,7 +1580,9 @@ Sidebar.prototype.addGeneralPalette = function(expand)
     ];
     //封装
     this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
-this.addPaletteFunctions('chart', '图表控件', false, fns);//this.addGeneralPaletteShort();};
+    this.addPaletteFunctions('chart', '图表控件', false, fns);
+    //this.addGeneralPaletteShort();
+};
 
 /**
  * 快捷方式控件
