@@ -123,6 +123,7 @@ export default {
             this.scaleText = d
             this.showScale = false
             let arr = d.split("*")
+            
             let pageFormat = new mxRectangle(0, 0, parseInt(arr[0]),  parseInt(arr[1]))
             let change = new ChangePageSetup(this.myEditorUi, null, null, pageFormat);
             change.ignoreColor = true;

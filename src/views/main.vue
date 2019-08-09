@@ -1,108 +1,106 @@
 <template>
-  <div class="container">
-    <Toolbar
-      ref="toolbar"
-    />
-    <LeftSideBar
-      ref="leftsidebar"
-    />
-    <RightBar
-      ref="rightbar"
-    />     
-    <FooterBar
-      ref="footbar"
-      :bind-datas="bindDatas"
-    />
+  <div class="m-contianer">
+    <div class="tab">
+      <div
+        class="item page-tab"
+        :class="{'selected':tab==1}"
+        @click="changeTab(1)"
+      >
+        <img :src="[require(`../assets/images/menu//page${tab}_ic.png`)]">
+      </div>
+      <div
+        class="item data-tab"
+        :class="{'selected':tab==2}"
+        style="border-left:0;"
+        @click="changeTab(2)"
+      >
+        <img :src="[require(`../assets/images/menu/datasource${3-tab}_ic.png`)]">
+      </div>
+    </div>
+    <MPage v-show="isPage" />
+    <MDataS v-show="!isPage" />
   </div>
 </template>
 
 <script>
-//mxgraph editor
-import '../services/editor/Init'
-import '../services/editor/EditorUi'
-import '../services/editor/Editor'
-import '../services/editor/Sidebar'
-import '../services/editor/Graph'
-import '../services/editor/Format'
-import '../services/editor/Shapes'
-import '../services/editor/Actions'
-import '../services/editor/Menus'
-import '../services/editor/Toolbar'
-import '../services/editor/Dialogs'
-
-import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal'
-import Toolbar from './toolbar/toolbar'
-import LeftSideBar from './left-sidebar/left-sidebar'
-import RightBar from './rightBar/rightbar'
-import FooterBar from './footerbar/index'
-import Vue from 'vue'
+import MPage from './m-page'
+import MDataS from './m-datasource'
 export default {
     components:{
-        LeftSideBar,
-        Toolbar,
-        RightBar,
-        FooterBar,
+        MPage,MDataS
     },
     data() {
         return{
+            tab:1,
+            isPage:true,
             bindDatas: []
         }
     },
     created() {
-        window.mxUtils.getAll(['../static/resources/grapheditor.txt', '../static/default.xml'],xhr=> {
-            window.mxResources.parse(xhr[0].getText());
-            // 默认配置
-            var themes = new Object();
-            themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement();
-            // 正常实例化
-            let myEditor = new Editor(false, themes);
-            let myEditorUi = new EditorUi(myEditor,document.querySelector("#app"));
-            Vue.prototype.myEditorUi = myEditorUi
-            myEditorUi.editor.InitEditor(myEditorUi)
-            this.init()
-        })
+        
     },
     mounted() {
         
     },
     methods: {
-        init() {
-            this.myEditorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
-            this.myEditorUi.editor.graph.addListener(mxEvent.CLICK, this.selectCell,false);
-            this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
-            this.$refs.toolbar.init();
-            this.$refs.leftsidebar.init();
-            this.$refs.rightbar.init()
-            this.$refs.footbar.init();
-        },
-        updateZoom() {
-            this.$refs.toolbar.updateZoom();
-        },
-        selectCell() {
-            this.bindDatas = []
-            let cells = this.myEditorUi.editor.graph.getSelectionCells();
-            if (cells.length > 1) {
-                return;
-            }
-            for (let i = 0; i < cells.length; i++) {
-                let val = (cells[i].value && cells[i].value.attributes && cells[i].value.attributes.bindData) ? JSON.parse(cells[i].value.attributes.bindData.value) : ''
-                if (val) {
-                    this.bindDatas.push(val)
-                }
-                // console.dir(cells[i].value && cells[i].value.attributes && cells[i].value.attributes.bindData);  
-            }
+        changeTab(index) {
+            this.tab = index
+            this.isPage = this.tab == 1
         },
     }
 };
 </script>
 
 <style scoped lang="less">
-
+.m-contianer{
+    height:100%;
+    position: relative;
+}
+.tab{
+    width:208px;
+    position:absolute;
+    background: linear-gradient(0deg,rgba(216,216,216,1) 0%,rgba(228,227,228,1) 100%);
+    display:flex;
+    justify-content:center;
+    z-index:33;
+    height:72px;
+    align-items:center;
+    padding-bottom:18px;
+    
+  .item{
+    width:48px;
+    height:24px;
+    border-radius:2px 0px 0px 2px;
+    border:1px solid rgba(202,201,202,1);
+    background:rgba(255,255,255,1);
+    text-align:center;
+    position: relative;
+    &.selected{
+      background:rgba(61,145,247,1);
+      border:1px solid rgba(202,201,202,1);
+    }
+    img{
+      position: absolute;
+      top:50%; 
+      left:50%;
+      transform: translate(-50%,-50%);
+    }
+  }
+  .page-tab::after {
+    content: "页面";
+    position: relative;
+    font-size: 12px;
+    top:24px;
+  }
+   .data-tab::after {
+    content: "数据源";
+    position: relative;
+    font-size: 12px;
+    top:24px;
+  }
+}
 </style>
 
 <style lang="less">
-.container{
-    position: relative;
-    height: 100%;
-}
+ 
 </style>

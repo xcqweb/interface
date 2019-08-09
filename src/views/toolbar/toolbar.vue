@@ -1,30 +1,10 @@
 <template>
   <div
     class="geToolbarContainer"
-    style="height:72px;"
+    style="height:72px;left:208px;width:calc(100% - 208px);border-left:1px solid #ccc;"
   >
-    <div class="geToolbar geToolbar1">
-      <div class="tab">
-        <div
-          class="item page-tab"
-          :class="{'selected':tab==1}"
-          @click="changeTab(1)"
-        >
-          <img src="../../assets/images/menu/page1_ic.png">
-        </div>
-        <div
-          class="item data-tab"
-          :class="{'selected':tab==2}"
-          style="border-left:0;"
-          @click="changeTab(2)"
-        >
-          <img src="../../assets/images/menu/datasource2_ic.png">
-        </div>
-      </div>
-    </div>
     <div
       class="geToolbar geToolbar2"
-      style="margin-left:-7.1%;"
     >
       <a
         href="javascript:void(0);"
@@ -189,7 +169,6 @@ export default{
     },
     data() {
         return {
-            tab:1,
             scaleText:"100%",
             isShowScale:false,
             showAlignDialog:false,
@@ -308,43 +287,5 @@ export default{
 </style>
 
 <style lang="less">
-.geToolbar1{
-  .tab{
-    display:flex;
-    justify-content:center;
-    padding-top:3px;
-  }
-  .item{
-    width:48px;
-    height:24px;
-    border-radius:2px 0px 0px 2px;
-    border:1px solid rgba(202,201,202,1);
-    background:rgba(255,255,255,1);
-    text-align:center;
-    position: relative;
-    &.selected{
-      background:rgba(61,145,247,1);
-      border:1px solid rgba(202,201,202,1);
-    }
-    img{
-      position: absolute;
-      top:50%; 
-      left:50%;
-      transform: translate(-50%,-50%);
-    }
-  }
-  .page-tab::after {
-    content: "页面";
-    position: relative;
-    font-size: 12px;
-    top:24px;
-  }
-   .data-tab::after {
-    content: "数据源";
-    position: relative;
-    font-size: 12px;
-    top:24px;
-  }
-}
   
 </style>

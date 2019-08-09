@@ -239,17 +239,9 @@
 	box-sizing: border-box;
 	flex: 0 0 auto;
 }
-.geToolbarContainer .geToolbar1 {
-	width: calc(208px - 11px);
-	display: flex;
-	justify-content:center;
-	padding-right:12px;
-	border-right:1px solid #ccc;
-}
 
 .geToolbarContainer .geToolbar2 {
 	width: 130px;
-	margin-left:12px;
 }
 
 .geToolbarContainer .geToolbar3 {
@@ -776,16 +768,6 @@ div.mxWindow .geButton {
 }
 @media print {
 	div.geNoPrint { display: none !important; }
-}
-.geToolbar1 .geSprite{
-	width: 36px;
-	height: 36px;
-	padding: 10px;
-}
-.geToolbar2 .geSprite{
-	width: 24px;
-	height: 24px;
-	padding: 4px;
 }
 .geToolbar3 .geSprite, .geToolbar6 .geSprite, .geToolbar4 .geSprite, .geToolbar5 .geSprite {
 	width: 48px;

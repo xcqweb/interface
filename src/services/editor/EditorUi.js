@@ -16,7 +16,6 @@ import {Format} from './Format'
 window.EditorUi = function(editor, container, lightbox)
 {
     mxEventSource.call(this);
-
     this.destroyFunctions = [];
     this.editor = editor || new Editor();
     this.container = container || document.body;
@@ -2878,7 +2877,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
     if (quirks)
     {
         this.menubarContainer.style.width = w + 'px';
-        this.toolbarContainer.style.width = this.menubarContainer.style.width;
+        //this.toolbarContainer.style.width = this.menubarContainer.style.width;
         var sidebarHeight = Math.max(0, h - this.footerHeight - this.menubarHeight - this.toolbarHeight) + 3;
         this.sidebarContainer.style.height = sidebarHeight  + 'px';
         this.formatContainer.style.height = sidebarHeight + 'px';
@@ -3077,7 +3076,7 @@ EditorUi.prototype.createUi = function()
 
     // 多个toolbar功能区
     var containerList = []
-    for(let i=1;i<7;i++){
+    for(let i=2;i<7;i++){
         containerList.push(document.querySelector('.geToolbar.geToolbar' + i))
     }
     // 创建 toolbar
