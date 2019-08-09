@@ -2603,10 +2603,12 @@ EditorUi.prototype.setFoldingEnabled = function(value)
 /**
  * Loads the stylesheet for this graph.
  */
-EditorUi.prototype.setPageFormat = function(value)
+EditorUi.prototype.setPageFormat = function(value,tag)
 {
     this.editor.graph.pageFormat = value;
-
+    if (tag == true){
+        this.editor.graph.pageVisible = true;
+    }
     if (!this.editor.graph.pageVisible)
     {
         this.actions.get('pageView').funct();
