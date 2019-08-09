@@ -3063,5 +3063,5 @@ PaletteManagePanel.prototype.getCellInfo = function(key, cell) {
     var graph = editor.graph;
     var cellInfo = graph.getModel().getValue(cell);
 	
-    return cellInfo.attributes && cellInfo.attributes[key] && cellInfo.attributes[key].nodeValue || '';
+    return cellInfo && cellInfo.attributes && cellInfo.attributes[key] && cellInfo.attributes[key].nodeValue || '';
 }

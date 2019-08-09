@@ -76511,6 +76511,9 @@ mxVertexHandler.prototype.rotateCell = function(cell, angle, parent)
 {
 	if (angle != 0)
 	{
+
+		var model = this.graph.getModel();
+
 		if (model.isVertex(cell) || model.isEdge(cell))
 		{
 			if (!model.isEdge(cell))
