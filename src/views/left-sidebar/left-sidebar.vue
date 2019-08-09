@@ -94,7 +94,7 @@ export default {
     },
     methods: {
         init() {
-            //this.myEditorUi.sidebar.init();
+            this.myEditorUi.sidebar.init();
         },
         tabsSwitch(type) {
             // 0 页面 1 弹窗

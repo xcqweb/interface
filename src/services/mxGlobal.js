@@ -9,6 +9,9 @@ let Menu = window.Menu
 let mxConstants = window.mxConstants
 let mxCell = window.mxCell
 let mxGeometry = window.mxGeometry
+let Dialog = window.Dialog
+let mxRectangle = window.mxRectangle
 export {
-    Graph, Editor, EditorUi, Toolbar, mxUtils, mxEvent, Menu, mxConstants, mxCell, mxGeometry
+    Graph, Editor, EditorUi, Toolbar, mxUtils, mxEvent, Menu, mxConstants, mxCell, mxGeometry, Dialog,
+    mxRectangle
 }

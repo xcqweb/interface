@@ -3,10 +3,6 @@
     class="geSidebarContainer geRightBarContainer"
     style="top:72px;right:0;"
   >
-    <div class="geSidebarContainer geFormatContainer">
-      bbb
-    </div>
-    <div class="geSidebarContainer gePaletteManageContainer" />
     <div class="rightbarShortcut">
       <div
         ref="shortCutWrapper"
@@ -14,16 +10,19 @@
         style="touch-action: none;"
       />
     </div>
+
+    <PageStyle ref="pageStyle" />
   </div>
 </template>
 <script>
 import {mxCell,mxGeometry} from '../../services/mxGlobal'
+import PageStyle from './page-style'
 let shortCutWidgets
 export default {
-    components: {},
-    props: [""],
+    components:{PageStyle},
     data() {
         return {
+            
         }
     },
     created() {},
@@ -77,7 +76,8 @@ export default {
             for (let i = 0; i < shortCutWidgets.length; i++) {
                 ele.appendChild(shortCutWidgets[i](ele));
             }
-        }
+            this.$refs.pageStyle.init()
+        },
     }
 };
 </script>

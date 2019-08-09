@@ -2943,7 +2943,7 @@ EditorUi.prototype.createDivs = function()
     this.sidebarContainer = document.querySelector('.geSidebarContainer');
     this.formatContainer = document.querySelector('.geSidebarContainer.geFormatContainer');
     this.rightBarContainer = document.querySelector('.geSidebarContainer.geRightBarContainer');
-    this.paletteManageContainer = document.querySelector('.geSidebarContainer.gePaletteManageContainer');
+    //this.paletteManageContainer = document.querySelector('.geSidebarContainer.gePaletteManageContainer');
     this.diagramContainer = this.createDiv('geDiagramContainer');
     this.footerContainer = this.createDiv('geFooterContainer');
     //去掉sidebar 右边的创建的直线
@@ -2959,8 +2959,8 @@ EditorUi.prototype.createDivs = function()
     this.formatContainer.style.zIndex = '1';
     this.rightBarContainer.style.right = '0px';
     this.rightBarContainer.style.zIndex = '1';
-    this.paletteManageContainer.style.right = '0px';
-    this.paletteManageContainer.style.zIndex = '1';
+    //this.paletteManageContainer.style.right = '0px';
+    //this.paletteManageContainer.style.zIndex = '1';
     this.diagramContainer.style.right = ((this.format != null) ? this.rightWidth : 0) + 'px';
     this.footerContainer.style.left = '0px';
     this.footerContainer.style.right = '0px';
@@ -3031,10 +3031,10 @@ EditorUi.prototype.createUi = function()
     // 生成左侧边栏
     this.sidebar = (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer);
 
-    if (this.sidebar != null)
+    /* if (this.sidebar != null)
     {
         this.container.appendChild(this.sidebarContainer);
-    }
+    } */
 
     // 生成交互/样式侧边栏
     //this.format = (this.editor.chromeless || !this.formatEnabled) ? null : this.createFormat(this.formatContainer);
@@ -3044,13 +3044,15 @@ EditorUi.prototype.createUi = function()
         this.rightBarContainer.appendChild(this.formatContainer);
     } */
 
-    // 生成控件管理
-    this.paletteManage = (this.editor.chromeless || !this.formatEnabled) ? null : this.createPaletteManage(this.paletteManageContainer);
-    if (this.paletteManage != null)
+    // 生成控件管理 2.0屏蔽掉
+    //this.paletteManage = (this.editor.chromeless || !this.formatEnabled) ? null : this.createPaletteManage(this.paletteManageContainer);
+   /*  if (this.paletteManage != null)
     {
         this.rightBarContainer.appendChild(this.paletteManageContainer);
+    } */
+     if (this.container){
         this.container.appendChild(this.rightBarContainer);
-    }
+     }
 
     // 生成底部
     var footer = (this.editor.chromeless) ? null : this.createFooter();
@@ -4171,7 +4173,7 @@ EditorUi.prototype.destroy = function()
     }
 
     var c = [this.menubarContainer, this.toolbarContainer, this.sidebarContainer,
-	         this.formatContainer, this.rightBarContainer, this.paletteManageContainer, this.diagramContainer, /*this.footerContainer*/,
+	         this.formatContainer, this.rightBarContainer, /* this.paletteManageContainer, */ this.diagramContainer, /*this.footerContainer*/,
 	         this.chromelessToolbar, this.hsplit, this.sidebarFooterContainer,
 	         this.layersDialog];
 
