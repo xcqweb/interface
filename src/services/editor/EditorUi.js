@@ -154,7 +154,7 @@ window.EditorUi = function(editor, container, lightbox)
     }
 
     // Creates hover icons
-    // this.hoverIcons = this.createHoverIcons();
+    this.hoverIcons = this.createHoverIcons();
 
     // Adds tooltip when mouse is over scrollbars to show space-drag panning option
     mxEvent.addListener(this.diagramContainer, 'mousemove', mxUtils.bind(this, function(evt)

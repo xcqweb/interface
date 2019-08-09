@@ -473,6 +473,10 @@ Editor.prototype.palettesInfo = {
         name: 'diamond',
         num: 0
     },
+    'connector': {
+        name: '箭头',
+        num: 0
+    },
     'circle': {
         name: 'circle',
         num: 0
