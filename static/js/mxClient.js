@@ -183,6 +183,15 @@ var mxClient =
 	  	navigator.userAgent.indexOf('Gecko/') >= 0 || // Netscape/Gecko
 	  	navigator.userAgent.indexOf('Opera/') >= 0 || // Opera
 	  	(document.documentMode != null && document.documentMode >= 9), // IE9+
+	/**
+	 * 变量 IS_ADD_IMG 是否开启图案作为画布背景功能
+	 */
+	IS_ADD_IMG:false,
+
+	/**
+	 * 变量 IS_ADD_IMG_SRC 图案背景路径变量声明
+	 */
+	IS_ADD_IMG_SRC:'',
 
 	/**
 	 * Variable: NO_FO

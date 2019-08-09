@@ -2382,21 +2382,22 @@ PageSetupDialog.getFormats = function()
         if (graph.isGridEnabled())
         {
             var phase = 10;
-			
-            if (mxClient.IS_SVG)
-            {
-                // Generates the SVG required for drawing the dynamic grid
-                image = unescape(encodeURIComponent(this.createSvgGrid(gridColor)));
-                image = (window.btoa) ? btoa(image) : Base64.encode(image, true);
-                image = 'url(' + 'data:image/svg+xml;base64,' + image + ')'
-                phase = graph.gridSize * this.scale * this.gridSteps;
+    
+            if (mxClient.IS_ADD_IMG){
+                image = 'url(' + mxClient.IS_ADD_IMG_SRC + ')';
+            }else{
+                if (mxClient.IS_SVG) {
+                    // Generates the SVG required for drawing the dynamic grid
+                    image = unescape(encodeURIComponent(this.createSvgGrid(gridColor)));
+                    image = (window.btoa) ? btoa(image) : Base64.encode(image, true);
+                    image = 'url(' + 'data:image/svg+xml;base64,' + image + ')'
+                    phase = graph.gridSize * this.scale * this.gridSteps;
+                }
+                else {
+                    // Fallback to grid wallpaper with fixed size
+                    image = 'url(' + this.gridImage + ')';
+                }
             }
-            else
-            {
-                // Fallback to grid wallpaper with fixed size
-                image = 'url(' + this.gridImage + ')';
-            }
-			
             var x0 = 0;
             var y0 = 0;
 			
