@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './app.vue'
 import router from './router'
+import store from './store'
 import 'iview/dist/styles/iview.css'
 import './assets/less/theme.less'
 import './directives/directive'
@@ -29,5 +30,6 @@ Vue.prototype.requestUtil = requestUtil;
 new Vue({
     i18n,
     router,
+    store,
     render: h => h(App),
 }).$mount('#app')

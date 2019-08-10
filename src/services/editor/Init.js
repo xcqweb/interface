@@ -78,11 +78,9 @@ ChangePageSetup.prototype.execute = function()
     {
         this.format = this.previousFormat;
         var tmp = graph.pageFormat;
-        console.log(tmp, "tt--aa")
         if (this.previousFormat.width != tmp.width ||
 			this.previousFormat.height != tmp.height)
         {
-            console.log(previousFormat)
             this.ui.setPageFormat(this.previousFormat);
             this.previousFormat = tmp;
         }

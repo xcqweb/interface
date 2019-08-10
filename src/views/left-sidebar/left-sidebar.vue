@@ -100,6 +100,7 @@ export default {
             // 0 页面 1 弹窗
             this.nomralType = type
             this.myEditorUi.sidebar.tabsSwitch(type)
+            this.$store.dispatch('pageTabIndex',type)
         },
         addPageType(type) {
             // 1添加页面 2添加弹窗

@@ -4,7 +4,7 @@
     style="padding:0 4px;"
   >
     <p style="text-align:center;margin:10px;font-size:14px;">
-      页面样式
+      弹窗样式
     </p>
     <p style="margin-top:15px;">
       页面描述
