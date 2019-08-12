@@ -1,6 +1,19 @@
 
 const state = {
     type:0,
+    // 弹窗样式
+    dialogStyle:{
+        desc:'',
+        width:'',
+        height:'',
+        title:{
+            fontSize:'',
+            fonWeight:'bold',
+            color:'',
+            textAlign:'center',
+            verticalAlign:''
+        }
+    }
 }
 
 const mutations = {

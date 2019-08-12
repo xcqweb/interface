@@ -1,52 +1,28 @@
 <template>
   <div
-    class="geSidebarContainer geFormatContainer"
+    class="dialogPage"
     style="padding:0 4px;"
   >
     <p style="text-align:center;margin:10px;font-size:14px;">
       弹窗样式
     </p>
     <p style="margin-top:15px;">
-      页面描述
+      弹框描述
     </p>
     <textarea
       v-model="pageDesc"
       rows="3"
     />
     <div class="item-title">
-      页面尺寸
-    </div>
-    <div
-      v-clickOutSide="hideScale"
-      class="item-container"
-      style="justify-content:space-between;position:relative;"
-      @click="showScale=true"
-    >
-      {{ scaleText }}
-      <img src="../../assets/images/menu/down_ic.png">
-      <ul
-        v-if="showScale"
-        class="scale-dialog"
-        @mouseleave="showScale=false"
-        @blur="showScale=false"
-      >
-        <li
-          v-for="(d,index) in scaleList"
-          :key="index"
-          @click="changeScale(d,$event)"
-        >
-          {{ d }}
-        </li>
-      </ul>
+      弹框尺寸
     </div>
     <div style="display:flex;margin-top:4px;">
       <div
-        class="item-container solidWidth"
+        class="item-container"
       >
         <span style="color:#797979;margin-right:6px;">宽</span>
         <input
           v-model="solidWidth"
-          disabled
         >
       </div>
       <div
@@ -60,10 +36,56 @@
         >
       </div>
     </div>
+    <div class="titleSet">
+      <div class="titleText">
+        标题文本
+      </div>
+      <div class="titleCon">
+        <div class="itemLine">
+          <div
+            v-clickOutSide="hideScale"
+            class="item-container fontSet"
+            style="justify-content:space-between;position:relative;"
+            @click="showScale=true"
+          >
+            {{ scaleText }}
+            <img src="../../assets/images/menu/down_ic.png">
+            <ul
+              v-if="showScale"
+              class="scale-dialog"
+              @mouseleave="showScale=false"
+              @blur="showScale=false"
+            >
+              <li
+                v-for="(d,index) in scaleList"
+                :key="index"
+                @click="changeScale(d,$event)"
+              >
+                {{ d }}
+              </li>
+            </ul>
+          </div>
+          <div class="setBold" />
+          <div class="setColor" />
+        </div>
+        <div class="itemLine">
+          <div class="setLevel">
+            <div class="left" />
+            <div class="center" />
+            <div class="right" />
+          </div>
+          <div class="setVertical">
+            <div class="top" />
+            <div class="mid" />
+            <div class="bottom" />
+          </div>
+        </div>
+      </div>
+    </div>
     <div
       class="item-title"
     >
-      背景颜色
+      标题填充
     </div>
     <div
       class="item-container"
@@ -78,22 +100,6 @@
         color pick
       </div>
     </div>
-    <div
-      class="item-container setBackgroundImg"
-      style="justify-content:center;height:90px;margin-top:4px;"
-      @click="setBackgroundImg"
-    >
-      <div style="text-align:center;">
-        <img src="../../assets/images/rightsidebar/bg_ic_widget.png">
-        <div>选择背景图案</div>
-        <input
-          ref="chooseImg"
-          style="display:none;"
-          type="file"
-          @change="fileChange"
-        >
-      </div>
-    </div>
   </div>
 </template>
 <script>
@@ -106,17 +112,19 @@ export default {
             showColor:false,
             solidHeight: 768,
             solidWidth: 1366, // 需求 宽度固定1366 不可修改
-            scaleText:'1280*800',
+            scaleText:12,
             bgColor:'#fff',
             bgImage:'',
             scaleList:[
-                '1920*1080',
-                '1440*900',
-                '1280*800',
-                '1336*768',
-                '1336*768',
-                '1024*768',
-                '2560*1600',
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20
             ],
         }
     },
@@ -124,55 +132,12 @@ export default {
     mounted() {
     },
     methods: {
-        init() {
-            let myEditor = this.myEditorUi.editor
-            let graph = myEditor.graph
-            newBackgroundColor = graph.background
-        },
         changeScale(d,e) {
-            this.scaleText = d;
             this.showScale = false;
-            let arr = d.split("*");
-            this.myEditorUi.setPageFormat(
-                {
-                    height: arr[1],
-                    width: arr[0],
-                    x: 0,
-                    y: 0
-                },
-                true
-            );            
             e.stopPropagation()
         },
-        changeScaleInput() {
-            this.myEditorUi.setPageFormat(
-                {
-                    height: this.solidHeight,
-                    width: this.solidWidth,
-                    x: 0,
-                    y: 0
-                },
-                true
-            );
-        },
-        setBackgroundImg() {
-            this.$refs.chooseImg.click();
-        },
-        setBg(url) {
-            window.mxClient.IS_ADD_IMG = true;
-            window.mxClient.IS_ADD_IMG_SRC = url;
-            this.myEditorUi.editor.graph.view.validateBackground();
-        },
-        fileChange(e) {
-            let that = this;
-            if (e.target.files[0].size >= 10485760) {
-                // alert("warn", "背景图片大小不得超过10M");
-                return false;
-            }
-            // 预览图片
-            var reader = new FileReader();
-            reader.readAsDataURL(e.target.files[0]);
-            reader.onload = evt => that.setBg(evt.target.result);
+        hideScale() {
+            this.showScale = false
         },
         pickColor() {
             this.myEditorUi.pickColor(newBackgroundColor || 'none',color=>{
@@ -180,24 +145,19 @@ export default {
                 this.updateBackgroundColor()
             });
         },
-        updateBackgroundColor()  {
-            this.bgColor = newBackgroundColor
-            this.myEditorUi.setBackgroundColor(this.bgColor)
-        },
-        hideScale() {
-            this.showScale = false
-        },
     }
 };
 </script>
 
 <style lang="less">
-.geRightBarContainer {
-    align-items: flex-end;
+.dialogPage {
+    width: 210px;
+    font-size:12px;
     textarea{
         resize:none;
         border:1px solid rgba(212,212,212,1);
-        border-radius:2px;width:100%;
+        border-radius:2px;
+        width:100%;
     }
     input{
         outline: none;
@@ -225,7 +185,6 @@ export default {
         border-radius:0px 0px 2px 2px;
     }
     .item-title{
-        border-top:solid 1px #ccc;
         padding-top:6px;
         margin-top:6px;
     }
@@ -241,12 +200,87 @@ export default {
         color:rgba(37,37,37,1);
         padding:0 6px;
     }
-    .solidWidth {
-        background: #f2f2f2;
-        input {
-            background: #f2f2f2;
-            color: #797979;
-        }
+    .titleSet{
+      margin-top: 10px;
+    }
+    .titleText{
+      margin-bottom: 4px;
+    }
+    .fontSet{
+      width: 50%;
+      margin-right: 5px;
+    }
+    .itemLine{
+      display: flex;
+      height: 24px;
+      &:nth-child(2){
+        margin-top: 5px;
+      }
+    }
+    .setBold{
+      width: 25%;
+      background:url('../../assets/images/rightsidebar/B2_ic.png') no-repeat center center;
+      margin-right: 5px;
+      border:1px solid rgba(212,212,212,1);
+      border-radius: 2px;
+      background-color: #fff;
+    }
+    .setColor{
+      width:25%;
+      background: #000;
+      border-radius: 2px;
+      border:1px solid rgba(212,212,212,1);
+    }
+    .setLevel{
+      width: 50%;
+      border:1px solid rgba(212,212,212,1);
+      margin-right: 3px;
+      height: 24px;
+      display: flex;
+      border-radius:2px;
+      background: #fff;
+      .left{
+        width: 33.333%;
+        background:url('../../assets/images/rightsidebar/B2_ic.png') no-repeat center center;
+        border-right:1px solid rgba(212,212,212,1);
+      }
+      .center{
+        width: 33.333%;
+        background:url('../../assets/images/rightsidebar/center2_ic.png') no-repeat center center;
+        border-right:1px solid rgba(212,212,212,1);
+      }
+      .right{
+        width: 33.333%;
+        background:url('../../assets/images/rightsidebar/left2_ic.png') no-repeat center center;
+      }
+    }
+    .setVertical{
+      width: 50%;
+      border:1px solid rgba(212,212,212,1);
+      margin-right: 3px;
+      height: 24px;
+      display: flex;
+      border-radius:2px;
+      background: #fff;
+      .top{
+        width: 33.333%;
+        background:url('../../assets/images/rightsidebar/B2_ic.png') no-repeat center center;
+        border-right:1px solid rgba(212,212,212,1);
+      }
+      .mid{
+        width: 33.333%;
+        background:url('../../assets/images/rightsidebar/centervertically2_ic.png') no-repeat center center;
+        border-right:1px solid rgba(212,212,212,1);
+      }
+      .bottom{
+        width: 33.333%;
+        background:url('../../assets/images/rightsidebar/bottomalign2_ic.png') no-repeat center center;
+      }
+    }
+    .setVertical{
+      width: 50%;
+      border:1px solid rgba(212,212,212,1);
+      margin-left: 3px;
     }
     .setBackgroundImg {
         cursor: pointer;
