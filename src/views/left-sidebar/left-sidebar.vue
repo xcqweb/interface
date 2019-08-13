@@ -118,9 +118,6 @@ export default {
 
         },
         alertAddPage(typePage) {
-            console.log(typePage)
-            console.log(this.myEditorUi.editor.pages)
-            console.log(this.myEditorUi.editor.pagesRank)
             // const pages = this.myEditorUi.editor.pages
             const pagesRank = this.myEditorUi.editor.pagesRank
             var xml = this.myEditorUi.editor.defaultXml;
@@ -140,7 +137,6 @@ export default {
                 type: typePage === 1 ? 'dialog' : 'normal'
             };
             let _li = document.createElement('li');
-            // let resPage = this.myEditorUi.editor.addPage(page);
             _li.setAttribute('data-pageid', id);
             _li.innerHTML = `<span>${titleText}</span><span class="right-icon-dolt"></span>`;
             let changeRank = this.myEditorUi.editor.pagesRank[page.type];
