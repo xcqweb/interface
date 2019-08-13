@@ -2379,7 +2379,6 @@ Sidebar.prototype.createDragSource = function(elt, dropHandler, preview, cells, 
     var freeSourceEdge = null;
     var firstVertex = null;
     var sidebar = this;
-	
     for (var i = 0; i < cells.length; i++)
     {
         if (firstVertex == null && this.editorUi.editor.graph.model.isVertex(cells[i]))

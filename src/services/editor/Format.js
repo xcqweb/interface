@@ -54,7 +54,7 @@ Format.prototype.init = function()
     });
 	
     graph.getSelectionModel().addListener(mxEvent.CHANGE, this.update);
-    this.refresh();
+    //this.refresh();
 };
 
 /**
@@ -321,17 +321,17 @@ Format.prototype.clear = function()
 /**
  * Adds the label menu items to the given menu and parent.
  */
-Format.prototype.refresh = function()
+/* Format.prototype.refresh = function()
 {
-    if (this.container.style.width == '0px')
+    /* if (this.container.style.width == '0px')
     {
         return;
     }
-    this.clear();
-    var ui = this.editorUi;
+    this.clear(); */
+   /*  var ui = this.editorUi;
     var graph = ui.editor.graph;
-
-    var div = document.createElement('div');
+ */
+    /* var div = document.createElement('div');
     div.style.whiteSpace = 'nowrap';
     div.style.cursor = 'default';
 	
@@ -347,7 +347,7 @@ Format.prototype.refresh = function()
     label.style.height = '34px';
     label.style.lineHeight = '32px';
     label.style.width = '100%';
-    this.container.appendChild(div);
+    this.container.appendChild(div); 
     if (graph.isSelectionEmpty() || graph.getSelectionCount() > 1) {
         // 不选择控件时
         mxUtils.write(label, mxResources.get('style'));
@@ -439,7 +439,7 @@ Format.prototype.refresh = function()
         addClickHandler(label, arrangePanel, idx++);
     }
 	
-};
+}; */
 
 /**
  * Base class for format panels.
@@ -2480,6 +2480,7 @@ ActionsPanel.prototype.clear = function()
     this.container.innerHTML = '';
 };
 ActionsPanel.prototype.init = function(container) {
+    console.log("交互")
     var ui = this.editorUi;
     var editor = ui.editor;
     var graph = editor.graph;

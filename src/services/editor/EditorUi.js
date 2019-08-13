@@ -1096,11 +1096,10 @@ EditorUi.prototype.init = function()
     this.updateActionStates();
     this.initClipboard();
     this.initCanvas();
-
-    /* if (this.format != null)
+    if (this.format != null)
     {
         this.format.init();
-    } */
+    }
 };
 
 /**
@@ -2946,7 +2945,7 @@ EditorUi.prototype.createDivs = function()
     this.rightBarContainer = document.querySelector('.geSidebarContainer.geRightBarContainer');
     //this.paletteManageContainer = document.querySelector('.geSidebarContainer.gePaletteManageContainer');
     this.diagramContainer = this.createDiv('geDiagramContainer');
-    this.footerContainer = this.createDiv('geFooterContainer');
+    //this.footerContainer = this.createDiv('geFooterContainer');
     //去掉sidebar 右边的创建的直线
     this.hsplit = this.createDiv('geHsplit');
     this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));
@@ -2963,10 +2962,10 @@ EditorUi.prototype.createDivs = function()
     //this.paletteManageContainer.style.right = '0px';
     //this.paletteManageContainer.style.zIndex = '1';
     this.diagramContainer.style.right = ((this.format != null) ? this.rightWidth : 0) + 'px';
-    this.footerContainer.style.left = '0px';
+   /*  this.footerContainer.style.left = '0px';
     this.footerContainer.style.right = '0px';
     this.footerContainer.style.bottom = '0px';
-    this.footerContainer.style.zIndex = mxPopupMenu.prototype.zIndex - 2;
+    this.footerContainer.style.zIndex = mxPopupMenu.prototype.zIndex - 2; */
     this.hsplit.style.width = this.splitSize + 'px';
     this.sidebarFooterContainer = this.createSidebarFooterContainer();
 
@@ -3038,9 +3037,8 @@ EditorUi.prototype.createUi = function()
     } */
 
     // 生成交互/样式侧边栏
-    //this.format = (this.editor.chromeless || !this.formatEnabled) ? null : this.createFormat(this.formatContainer);
-    this.format = (this.editor.chromeless || !this.formatEnabled) ? null : this.formatContainer;
-   /*  if (this.format != null)
+    this.format = (this.editor.chromeless || !this.formatEnabled) ? null : this.createFormat(this.formatContainer);
+    /* if (this.format != null)
     {
         this.rightBarContainer.appendChild(this.formatContainer);
     } */
@@ -3051,19 +3049,19 @@ EditorUi.prototype.createUi = function()
     {
         this.rightBarContainer.appendChild(this.paletteManageContainer);
     } */
-     if (this.container){
+     /* if (this.container){
         this.container.appendChild(this.rightBarContainer);
-     }
+     } */
 
     // 生成底部
-    var footer = (this.editor.chromeless) ? null : this.createFooter();
+    //var footer = (this.editor.chromeless) ? null : this.createFooter();
 
-    if (footer != null)
+   /*  if (footer != null)
     {
         // this.footerContainer.appendChild(footer);
         // this.container.appendChild(this.footerContainer);
     }
-
+ */
     if (this.sidebar != null && this.sidebarFooterContainer)
     {
         this.container.appendChild(this.sidebarFooterContainer);
