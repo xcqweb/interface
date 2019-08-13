@@ -10,24 +10,28 @@
         style="touch-action: none;"
       />
     </div>
-
-    <PageStyle
-      v-if="$store.state.main.type===0"
-      ref="pageStyle"
-    />
-    <DialogStyle v-if="$store.state.main.type===1" />
+    <div class="geSidebarContainer geFormatContainer">
+      <PageStyle
+        v-show="$store.state.main.type===0 && !showWidgetStyle"
+        ref="pageStyle"
+      />
+      <DialogStyle v-show="$store.state.main.type===1 && !showWidgetStyle" />
+      <WidgetStyleMain v-show="showWidgetStyle" />
+    </div>
   </div>
 </template>
 <script>
 import {mxCell,mxGeometry} from '../../services/mxGlobal'
 import PageStyle from './page-style'
 import DialogStyle from './dialog-style'
+import WidgetStyleMain from './widget-style-main'
+
 let shortCutWidgets
 export default {
-    components:{PageStyle,DialogStyle},
+    components:{PageStyle,DialogStyle,WidgetStyleMain},
     data() {
         return {
-            
+            showWidgetStyle:false,
         }
     },
     created() {},
@@ -36,6 +40,7 @@ export default {
     methods: {
         init() {
             let that = this.myEditorUi.sidebar
+            let graph = this.myEditorUi.editor.graph
             let ele = this.$refs.shortCutWrapper
             shortCutWidgets = [
                 // 文字
@@ -81,6 +86,10 @@ export default {
             for (let i = 0; i < shortCutWidgets.length; i++) {
                 ele.appendChild(shortCutWidgets[i](ele));
             }
+            this.myEditorUi.format.refresh = ()=>{
+                this.showWidgetStyle = !(graph.isSelectionEmpty() || graph.getSelectionCount() > 1)
+            }
+            this.myEditorUi.format.refresh()
             this.$refs.pageStyle.init()
         },
     }

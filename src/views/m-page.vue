@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="geEditor">
     <Toolbar
       ref="toolbar"
     />
@@ -57,7 +57,7 @@ export default {
             themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement();
             // 正常实例化
             let myEditor = new Editor(false, themes);
-            let myEditorUi = new EditorUi(myEditor,document.querySelector(".page-container"));
+            let myEditorUi = new EditorUi(myEditor,document.querySelector(".geEditor"));
             Vue.prototype.myEditorUi = myEditorUi
             myEditorUi.editor.InitEditor(myEditorUi)
             this.init()
@@ -102,8 +102,4 @@ export default {
 </style>
 
 <style lang="less">
- .page-container{
-     position: relative;
-     height:100%;
- }
 </style>

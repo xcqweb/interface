@@ -1,12 +1,11 @@
 <template>
   <div
-    class="geSidebarContainer geFormatContainer"
-    style="padding:0 4px;"
+    class="page-cls"
   >
     <p style="text-align:center;margin:10px;font-size:14px;">
       页面样式
     </p>
-    <p style="margin-top:15px;">
+    <p style="margin-top:10px;">
       页面描述
     </p>
     <textarea
@@ -70,14 +69,7 @@
       style="position:relative;"
       :style="{backgroundColor:bgColor,backgroundImage:bgImage}"
       @click="pickColor"
-    >
-      <div
-        v-if="showColor"
-        class="color-dialog"
-      >
-        color pick
-      </div>
-    </div>
+    />
     <div
       class="item-container setBackgroundImg"
       style="justify-content:center;height:90px;margin-top:4px;"
@@ -97,13 +89,12 @@
   </div>
 </template>
 <script>
-let newBackgroundColor
+let backgroundColor
 export default {
     data() {
         return {
             pageDesc:"",
             showScale:false,
-            showColor:false,
             solidHeight: 768,
             solidWidth: 1366, // 需求 宽度固定1366 不可修改
             scaleText:'1280*800',
@@ -127,7 +118,7 @@ export default {
         init() {
             let myEditor = this.myEditorUi.editor
             let graph = myEditor.graph
-            newBackgroundColor = graph.background
+            backgroundColor = graph.background
         },
         changeScale(d,e) {
             this.scaleText = d;
@@ -175,13 +166,12 @@ export default {
             reader.onload = evt => that.setBg(evt.target.result);
         },
         pickColor() {
-            this.myEditorUi.pickColor(newBackgroundColor || 'none',color=>{
-                newBackgroundColor = color
-                this.updateBackgroundColor()
+            this.myEditorUi.pickColor(backgroundColor || 'none',color=>{
+                this.updateBackgroundColor(color)
             });
         },
-        updateBackgroundColor()  {
-            this.bgColor = newBackgroundColor
+        updateBackgroundColor(color)  {
+            this.bgColor = color
             this.myEditorUi.setBackgroundColor(this.bgColor)
         },
         hideScale() {
@@ -191,9 +181,9 @@ export default {
 };
 </script>
 
-<style lang="less">
-.geRightBarContainer {
-    align-items: flex-end;
+<style lang="less" scoped>
+.page-cls {
+    padding:0 4px;
     textarea{
         resize:none;
         border:1px solid rgba(212,212,212,1);

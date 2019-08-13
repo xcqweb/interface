@@ -2283,13 +2283,11 @@ PageSetupDialog.getFormats = function()
     mxGraphView.prototype.validateBackgroundPage = function()
     {
         var graph = this.graph;
-		
         if (graph.container != null && !graph.transparentBackground)
         {
             if (graph.pageVisible)
             {
                 var bounds = this.getBackgroundPageBounds();
-				
                 if (this.backgroundPageShape == null)
                 {
                     // Finds first element in graph container
@@ -2299,7 +2297,6 @@ PageSetupDialog.getFormats = function()
                     {
                         firstChild = firstChild.nextSibling;
                     }
-					
                     if (firstChild != null)
                     {
                         this.backgroundPageShape = this.createBackgroundPageShape(bounds);
@@ -2420,7 +2417,6 @@ PageSetupDialog.getFormats = function()
         {
             canvas = canvas.ownerSVGElement;
         }
-		
         if (graph.view.backgroundPageShape != null)
         {
             graph.view.backgroundPageShape.node.style.backgroundPosition = position;

@@ -3,26 +3,44 @@
     class="dialogPage"
     style="padding:0 4px;"
   >
-    <p style="text-align:center;margin:10px;font-size:14px;">
-      弹窗样式
+    <p style="margin-top:10px;">
+      组件名称
     </p>
-    <p style="margin-top:1px;">
-      弹框描述
-    </p>
-    <textarea
-      v-model="dialogDesc"
-      rows="3"
-    />
-    <div class="item-title">
-      弹框尺寸
-    </div>
+    <input
+      v-model="widgetName"
+    >
+    <div class="item-line" />
     <div style="display:flex;margin-top:4px;">
+      <div
+        class="item-container"
+      >
+        <span style="color:#797979;margin:0 6px;">X</span>
+        <input
+          v-model="dialogWidth"
+          style="border-left:none;border-right:none;"
+          @keyup.enter="changePosition"
+        >
+      </div>
+      <div
+        class="item-container"
+        style="margin-left:10px;"
+      >
+        <span style="color:#797979;margin:0 6px;">Y</span>
+        <input
+          v-model="dialogHeight"
+          style="border-left:none;border-right:none;"
+          @keyup.enter="changePosition"
+        > 
+      </div>
+    </div>
+    <div style="display:flex;margin-top:2px;">
       <div
         class="item-container"
       >
         <span style="color:#797979;margin:0 6px;">宽</span>
         <input
           v-model="dialogWidth"
+          style="border-left:none;border-right:none;"
           @keyup.enter="changeScaleInput"
         >
       </div>
@@ -33,13 +51,14 @@
         <span style="color:#797979;margin:0 6px;">高</span>
         <input
           v-model="dialogHeight"
+          style="border-left:none;border-right:none;"
           @keyup.enter="changeScaleInput"
         > 
       </div>
     </div>
     <div class="titleSet">
       <div class="item-title">
-        标题文本
+        文本
       </div>
       <div class="titleCon">
         <div class="itemLine">
@@ -50,7 +69,7 @@
             @click="showFont=true"
           >
             {{ fontText }}
-            <img src="../../assets/images/menu/down_ic.png">
+            <img src="../../../assets/images/menu/down_ic.png">
             <ul
               v-if="showFont"
               class="font-dialog"
@@ -67,7 +86,11 @@
             </ul>
           </div>
           <div
-            style="width:50%" 
+            class="setBold"
+            :class="{'selected':isSetBold}"
+            @click="setBold"
+          />
+          <div
             class="setColor"
             :style="{backgroundColor:fontColor}"
             @click="pickFontColor"
@@ -111,34 +134,22 @@
         </div>
       </div>
     </div>
-    <div
-      class="item-title"
-    >
-      标题填充
-    </div>
-    <div
-      class="item-container"
-      style="position:relative;"
-      :style="{backgroundColor:bgColor,backgroundImage:bgImage}"
-      @click="pickColor"
-    />
   </div>
 </template>
 <script>
-let newBackgroundColor,newFontColor
+let newFontColor
 export default {
     data() {
         return {
-            dialogDesc:"",
+            widgetName:"",
             showFont:false,
             dialogHeight: 400,
             dialogWidth: 600,
             fontText:12,
-            bgColor:'#fff',
             fontColor:'#333333',
-            bgImage:'',
             alignIndex1:0,
             alignIndex2:0,
+            isSetBold:false,
             fontList:[
                 12,
                 13,
@@ -168,25 +179,17 @@ export default {
                 this.alignIndex2 = index
             }
         },
+        setBold() {
+            this.isSetBold = !this.isSetBold
+        },
         changeScaleInput() {
-            this.myEditorUi.setPageFormat(
-                {
-                    height: this.dialogHeight,
-                    width: this.dialogWidth,
-                    x: 0,
-                    y: 0
-                },
-                true
-            );
+           
+        },
+        changePosition() {
+
         },
         hideFont() {
             this.showFont = false
-        },
-        pickColor() {
-            this.myEditorUi.pickColor(newBackgroundColor || 'none',color=>{
-                newBackgroundColor = color  
-                this.bgColor = color
-            });
         },
         pickFontColor() {
             this.myEditorUi.pickColor(newFontColor || 'none',color=>{
@@ -200,16 +203,14 @@ export default {
 
 <style lang="less" scoped>
 .dialogPage {
-    textarea{
-        resize:none;
-        border:1px solid rgba(212,212,212,1);
-        border-radius:2px;
-        width:100%;
-    }
     input{
         outline: none;
         border:none;
         width:100%;
+        height:24px;
+        background:rgba(255,255,255,1);
+        border:1px solid rgba(212,212,212,1);
+        border-radius:2px;
     }
     li{
         padding:3px 6px;
@@ -230,6 +231,11 @@ export default {
         opacity:0.98;
         border-radius:0px 0px 2px 2px;
     }
+    .item-line{
+      margin:6px 0;
+      background:#ccc;
+      height:1px;
+    }
     .item-title{
         border-top:solid 1px #ccc;
         padding-top:6px;
@@ -249,6 +255,9 @@ export default {
     .titleSet{
       margin-top: 10px;
     }
+    .titleText{
+      margin-bottom: 4px;
+    }
     .fontSet{
       width: 50%;
       padding-left: 6px;
@@ -262,11 +271,24 @@ export default {
       }
     }
     .setColor{
-      width:50%;
+      width:24%;
       height:100%;
       background: #000;
       border-radius: 2px;
       border:1px solid rgba(212,212,212,1);
+    }
+    .setBold{
+      width:24%;
+      margin-right:2%;
+      height:24px;
+      border:1px solid rgba(212,212,212,1);
+      border-radius:2px;
+      background:url('../../../assets/images/rightsidebar/bold_ic1.png') no-repeat center center;
+       &.selected{
+          background:url('../../../assets/images/rightsidebar/bold_ic2.png') no-repeat center center;
+          background-color:#277AE0;
+          border:1px solid rgba(39,122,224,1);
+        }
     }
     .setLevel{
       width: 50%;
@@ -278,27 +300,27 @@ export default {
       margin-right: 6px;
       .left{
         width: 33.333%;
-        background:url('../../assets/images/rightsidebar/left1.png') no-repeat center center;
+        background:url('../../../assets/images/rightsidebar/left1.png') no-repeat center center;
         border-right:1px solid rgba(212,212,212,1);
         &.selected{
-          background:url('../../assets/images/rightsidebar/left2.png') no-repeat center center;
+          background:url('../../../assets/images/rightsidebar/left2.png') no-repeat center center;
           background-color:#277AE0
         }
       }
       .center{
         width: 33.333%;
-        background:url('../../assets/images/rightsidebar/center1.png') no-repeat center center;
+        background:url('../../../assets/images/rightsidebar/center1.png') no-repeat center center;
         border-right:1px solid rgba(212,212,212,1);
         &.selected{
-          background:url('../../assets/images/rightsidebar/center2.png') no-repeat center center;
+          background:url('../../../assets/images/rightsidebar/center2.png') no-repeat center center;
           background-color:#277AE0
         }
       }
       .right{
         width: 33.333%;
-        background:url('../../assets/images/rightsidebar/right1.png') no-repeat center center;
+        background:url('../../../assets/images/rightsidebar/right1.png') no-repeat center center;
         &.selected{
-          background:url('../../assets/images/rightsidebar/right2.png') no-repeat center center;
+          background:url('../../../assets/images/rightsidebar/right2.png') no-repeat center center;
           background-color:#277AE0
         }
       }
@@ -312,27 +334,27 @@ export default {
       background: #fff;
       .top{
         width: 33.333%;
-        background:url('../../assets/images/rightsidebar/top1.png') no-repeat center center;
+        background:url('../../../assets/images/rightsidebar/top1.png') no-repeat center center;
         border-right:1px solid rgba(212,212,212,1);
         &.selected{
-          background:url('../../assets/images/rightsidebar/top2.png') no-repeat center center;
+          background:url('../../../assets/images/rightsidebar/top2.png') no-repeat center center;
           background-color:#277AE0
         }
       }
       .mid{
         width: 33.333%;
-        background:url('../../assets/images/rightsidebar/middle1.png') no-repeat center center;
+        background:url('../../../assets/images/rightsidebar/middle1.png') no-repeat center center;
         border-right:1px solid rgba(212,212,212,1);
         &.selected{
-          background:url('../../assets/images/rightsidebar/middle2.png') no-repeat center center;
+          background:url('../../../assets/images/rightsidebar/middle2.png') no-repeat center center;
           background-color:#277AE0
         }
       }
       .bottom{
         width: 33.333%;
-        background:url('../../assets/images/rightsidebar/bottom1.png') no-repeat center center;
+        background:url('../../../assets/images/rightsidebar/bottom1.png') no-repeat center center;
         &.selected{
-          background:url('../../assets/images/rightsidebar/bottom2.png') no-repeat center center;
+          background:url('../../../assets/images/rightsidebar/bottom2.png') no-repeat center center;
           background-color:#277AE0
         }
       }
