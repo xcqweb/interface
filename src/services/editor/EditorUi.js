@@ -108,6 +108,7 @@ window.EditorUi = function(editor, container, lightbox)
         var linkHandler = function(evt)
         {
             var source = mxEvent.getSource(evt);
+            console.log(source)
             if (source.nodeName == 'linkTag')
             {
                 while (source != null)
@@ -120,7 +121,6 @@ window.EditorUi = function(editor, container, lightbox)
                     source = source.parentNode;
                 }
             }
-
             return textEditing(evt);
         };
         if (mxClient.IS_IE && (typeof(document.documentMode) === 'undefined' || document.documentMode < 9))

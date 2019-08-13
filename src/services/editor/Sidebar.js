@@ -1020,9 +1020,13 @@ Sidebar.prototype.copyPage = function (ele,pageType) {
   this.editorUi.editor.pagesRank[resPage.type] = [].concat(changeRank);
   _li.click()
 }
-Sidebar.prototype.alertAddPage = function(type) {
-    console.log(type)
+/*添加模版*/
+Sidebar.prototype.addTemplate = function(type) {
+    // console.log(type) // normal / dialog
+    let svg11 = this.editorUi.editor.graph.getSvg(null, null, null, true, null, true, null, null, null, false)
+    console.log(svg11) // 
 }
+
 /**
  * 页面右键菜单
  */
@@ -1082,7 +1086,6 @@ Sidebar.prototype.createPageContextMenu = function(type) {
         var addPage = this.editorUi.actions.get('addPage').funct;
         const pageType = this.editorUi.editor.currentType;
         let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.data('pageid'))
-        console.log(index)
         switch (actionType) {
             case 'movePrev':
                 this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems( this.editorUi.editor.pagesRank[pageType], index - 1, index);
@@ -1116,6 +1119,9 @@ Sidebar.prototype.createPageContextMenu = function(type) {
                 $('.left-sidebar-homepage').removeClass('left-sidebar-homepage')
                 currentnode.className += ' left-sidebar-homepage'
                 break
+            case 'addTemplate':
+                this.addTemplate(pageType)
+                break;
             default:
                 addPage(actionType)
                 break;
@@ -1583,6 +1589,41 @@ Sidebar.prototype.addGeneralPalette = function(expand)
     this.addPaletteFunctions('chart', '图表控件', false, fns);
     //this.addGeneralPaletteShort();
 };
+/**
+ * Adds the given image palette.
+ */
+Sidebar.prototype.addImagePalette = function(id, title, prefix, postfix, items, titles, tags)
+{
+    console.log(id);
+    console.log(title);
+    console.log(prefix);
+    console.log(postfix);
+    console.log(items);
+    console.log(titles);
+    console.log(tags);
+	var showTitles = titles != null;
+	var fns = [];
+	
+	for (var i = 0; i < items.length; i++)
+	{
+		(mxUtils.bind(this, function(item, title, tmpTags)
+		{
+			if (tmpTags == null)
+			{
+				var slash = item.lastIndexOf('/');
+				var dot = item.lastIndexOf('.');
+				tmpTags = item.substring((slash >= 0) ? slash + 1 : 0, (dot >= 0) ? dot : item.length).replace(/[-_]/g, ' ');
+			}
+			
+			fns.push(this.createVertexTemplateEntry('image;html=1;labelBackgroundColor=#ffffff;image=' + prefix + item + postfix,
+				this.defaultImageWidth, this.defaultImageHeight, '', title, title != null, null, this.filterTags(tmpTags)));
+		}))(items[i], (titles != null) ? titles[i] : null, (tags != null) ? tags[items[i]] : null);
+	}
+    console.log(fns)
+	this.addPaletteFunctions(id, title, false, fns);
+};
+
+
 
 /**
  * 快捷方式控件

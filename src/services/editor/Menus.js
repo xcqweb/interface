@@ -552,6 +552,12 @@ Menus.prototype.toggleStyle = function(key, defaultValue)
  */
 Menus.prototype.addMenuItem = function(menu, key, parent, trigger, sprite, label)
 {
+    console.log(menu)
+    console.log(key)
+    console.log(parent)
+    console.log(trigger)
+    console.log(sprite)
+    console.log(label)
     var action = this.editorUi.actions.get(key);
 
     if (action != null && (menu.showDisabled || action.isEnabled()) && action.visible)
@@ -622,15 +628,16 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
         cell = graph.getSelectionCell();
         var state = graph.view.getState(cell);
         var shapeName = state.style.shape;
-
+        console.log(shapeName)
         if (shapeName == "menuCell") {
             this.addMenuItems(menu, ['delete', 'edit','-'], null, evt);
-        } else if (shapeName == "menulist") {
+        } else if (shapeName == "menulist") { // 菜单
             this.addMenuItems(menu, ['delete', '-'], null, evt);
         } else {
+            console.log(66)
             this.addMenuItems(menu, ['cut', 'copy', 'delete','-'], null, evt);
         }
-
+        console.log(state)
         if (state != null)
         {
             this.addMenuItems(menu, ['toFront', 'toBack', '-'], null, evt);

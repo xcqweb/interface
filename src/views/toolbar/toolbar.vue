@@ -155,6 +155,11 @@
       @changeAlign="changeAlign"
       @hideDialog="showAlignDialog=false"
     />
+    <MaterialRoom
+      v-if="ifshowmarerial" 
+      ref="materialroom"
+      @triggerCancel="triggerCancel" 
+    />
   </div>
 </template>
 <script>
@@ -162,10 +167,11 @@ import {mxUtils,mxConstants} from '../../services/mxGlobal'
 import ScaleView from './scale-view'
 import AlignDialog from './align-dialog'
 import {PreviewDialog} from '../../services/editor/Dialogs'
+import MaterialRoom from '../materialroom/materialroom'
 import router from '../../router'
 export default{
     components:{
-        ScaleView,AlignDialog,
+        ScaleView,AlignDialog,MaterialRoom
     },
     data() {
         return {
@@ -174,6 +180,7 @@ export default{
             showAlignDialog:false,
             alignCls:'geSprite-left-align',
             alignText:'左对齐',
+            ifshowmarerial: true
         }
     },
     created() {
@@ -260,7 +267,14 @@ export default{
             }
         },
         materialLab() {
-
+            // console.log(this.myEditorUi.sidebar)
+            this.ifshowmarerial = true
+            this.$nextTick(() => {
+                this.$refs.materialroom.init()
+            })
+        },
+        triggerCancel() {
+            this.ifshowmarerial = false
         },
         save() {
             this.myEditorUi.saveFile(true);
