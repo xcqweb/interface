@@ -180,7 +180,7 @@ export default{
             showAlignDialog:false,
             alignCls:'geSprite-left-align',
             alignText:'左对齐',
-            ifshowmarerial: false
+            ifshowmarerial: true
         }
     },
     created() {
@@ -269,9 +269,9 @@ export default{
         materialLab() {
             // console.log(this.myEditorUi.sidebar)
             this.ifshowmarerial = true
-            this.$nextTick(() => {
-                this.$refs.materialroom.init()
-            })
+            // this.$nextTick(() => {
+            //     this.$refs.materialroom.init()
+            // })
         },
         triggerCancel() {
             this.ifshowmarerial = false
