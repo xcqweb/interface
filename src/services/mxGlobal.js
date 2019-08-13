@@ -11,7 +11,8 @@ let mxCell = window.mxCell
 let mxGeometry = window.mxGeometry
 let Dialog = window.Dialog
 let mxRectangle = window.mxRectangle
+let mxResources = window.mxResources
 export {
     Graph, Editor, EditorUi, Toolbar, mxUtils, mxEvent, Menu, mxConstants, mxCell, mxGeometry, Dialog,
-    mxRectangle
+    mxRectangle, mxResources
 }

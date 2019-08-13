@@ -87,8 +87,8 @@
         <img src="../../assets/images/rightsidebar/bg_ic_widget.png">
         <div>选择背景图案</div>
         <input
-          id="chooseImg"
           ref="chooseImg"
+          style="display:none;"
           type="file"
           @change="fileChange"
         >
@@ -141,7 +141,8 @@ export default {
                     y: 0
                 },
                 true
-            );            e.stopPropagation()
+            );            
+            e.stopPropagation()
         },
         changeScaleInput() {
             this.myEditorUi.setPageFormat(
@@ -182,9 +183,6 @@ export default {
         updateBackgroundColor()  {
             this.bgColor = newBackgroundColor
             this.myEditorUi.setBackgroundColor(this.bgColor)
-        },
-        pickImg() {
-            
         },
         hideScale() {
             this.showScale = false
@@ -252,9 +250,6 @@ export default {
     }
     .setBackgroundImg {
         cursor: pointer;
-    }
-    #chooseImg {
-        display: none;
     }
     .color-dialog{
         position:absolute;

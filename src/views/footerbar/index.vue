@@ -59,6 +59,7 @@ export default {
         }
     },
     mounted() {
+       
     },
     methods: {
         close() {
@@ -68,6 +69,7 @@ export default {
         init() {
             mainContainer = document.querySelector(".geDiagramContainer")
             mainContainerOriginHeight = mainContainer.offsetHeight
+            window.onresize = ()=> mainContainerOriginHeight = mainContainer.offsetHeight
         },
         toggle() {
             if(this.bottom === 0) {

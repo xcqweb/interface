@@ -253,10 +253,10 @@ export default{
                     graph.alignCells(mxConstants.ALIGN_BOTTOM)
                     break;
                 case 'geSprite-vertical-center':
-                    graph.alignCells(mxConstants.ALIGN_CENTER)
+                    graph.alignCells(mxConstants.ALIGN_MIDDLE)
                     break;
                 case 'geSprite-horizon-center':
-                    graph.alignCells(mxConstants.ALIGN_MIDDLE)
+                    graph.alignCells(mxConstants.ALIGN_CENTER)
                     break;
                 case 'geSprite-vertical-align':
                     graph.distributeCells(false)

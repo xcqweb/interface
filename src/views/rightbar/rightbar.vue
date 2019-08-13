@@ -11,15 +11,20 @@
       />
     </div>
 
-    <PageStyle ref="pageStyle" />
+    <PageStyle
+      v-if="$store.state.main.type===0"
+      ref="pageStyle"
+    />
+    <DialogStyle v-if="$store.state.main.type===1" />
   </div>
 </template>
 <script>
 import {mxCell,mxGeometry} from '../../services/mxGlobal'
 import PageStyle from './page-style'
+import DialogStyle from './dialog-style'
 let shortCutWidgets
 export default {
-    components:{PageStyle},
+    components:{PageStyle,DialogStyle},
     data() {
         return {
             
