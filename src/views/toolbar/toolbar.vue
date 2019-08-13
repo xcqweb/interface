@@ -180,7 +180,7 @@ export default{
             showAlignDialog:false,
             alignCls:'geSprite-left-align',
             alignText:'左对齐',
-            ifshowmarerial: true
+            ifshowmarerial: false
         }
     },
     created() {
