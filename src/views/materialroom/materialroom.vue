@@ -411,7 +411,7 @@ export default {
                 } else {
                     ele.innerHTML = `<span>${name}</span><span class="right-spots"></span>`
                     if (name !== oldVal) {
-                        console.log('请求接口')
+                        console.log('重新命名请求接口')
                     }
                 }
                 this.addListHandle()
@@ -536,6 +536,7 @@ export default {
                                                     line-height: 24px;
                                                     font-size: 11px;
                                                     color:#797979;
+                                                    cursor: pointer;
                                                 }
                                                 .assembly-list{
                                                     .assembly-icon{
