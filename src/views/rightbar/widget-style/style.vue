@@ -8,6 +8,8 @@
     </p>
     <input
       v-model="widgetName"
+      style="padding:0 4px;"
+      @keyup.enter="changeName"
     >
     <div class="item-line" />
     <div style="display:flex;margin-top:4px;">
@@ -16,9 +18,9 @@
       >
         <span style="color:#797979;margin:0 6px;">X</span>
         <input
-          v-model="dialogWidth"
+          v-model="positionSize.x"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changePosition"
+          @keyup.enter="changePositionSize"
         >
       </div>
       <div
@@ -27,9 +29,9 @@
       >
         <span style="color:#797979;margin:0 6px;">Y</span>
         <input
-          v-model="dialogHeight"
+          v-model="positionSize.y"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changePosition"
+          @keyup.enter="changePositionSize"
         > 
       </div>
     </div>
@@ -39,9 +41,9 @@
       >
         <span style="color:#797979;margin:0 6px;">宽</span>
         <input
-          v-model="dialogWidth"
+          v-model="positionSize.width"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changeScaleInput"
+          @keyup.enter="changePositionSize"
         >
       </div>
       <div
@@ -50,11 +52,21 @@
       >
         <span style="color:#797979;margin:0 6px;">高</span>
         <input
-          v-model="dialogHeight"
+          v-model="positionSize.height"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changeScaleInput"
+          @keyup.enter="changePositionSize"
         > 
       </div>
+    </div>
+    <div>
+      <div class="item-title">
+        选中
+      </div>
+      <i-switch
+        v-model="select"
+        size="small"
+        @on-change="changeSelect"
+      />
     </div>
     <div class="titleSet">
       <div class="item-title">
@@ -134,22 +146,136 @@
         </div>
       </div>
     </div>
+    <div>
+      <div class="item-title">
+        外观
+      </div>
+      <div>
+        <p style="margin-top:10px;">
+          填充
+        </p>
+        <div
+          class="item-container"
+          style="position:relative;"
+          :style="{backgroundColor:bgColor}"
+          @click="pickBgColor"
+        />
+      </div>
+      <div>
+        <p style="margin-top:10px;">
+          边框
+        </p>
+        <div style="display:flex;"> 
+          <div
+            class="setColor"
+            style="flex:1;margin-right:6px;"
+            :style="{backgroundColor:borderColor}"
+            @click="pickBorderColor"
+          />
+          <div
+            v-clickOutSide="hideBorderLine"
+            class="item-container fontSet"
+            style="justify-content:space-between;position:relative;flex:1;"
+            @click="showBorderLine=true"
+          >
+            <div :class="borderLineCls" />
+            <img src="../../../assets/images/menu/down_ic.png">
+            <ul
+              v-if="showBorderLine"
+              class="font-dialog"
+              @mouseleave="showBorderLine=false"
+              @blur="showBorderLine=false"
+            >
+              <li
+                v-for="(d,index) in borderLineList"
+                :key="index"
+                @click="changeBorderLine(d,$event)"
+              >
+                <div :class="d" />
+              </li>
+            </ul>
+          </div>
+          <div
+            v-clickOutSide="hideBorderLineBold"
+            class="item-container fontSet"
+            style="justify-content:space-between;position:relative;flex:1;margin:0;"
+            @click="showBorderLineBold=true"
+          >
+            <div>{{ borderLineBoldText }}</div>
+            <img src="../../../assets/images/menu/down_ic.png">
+            <ul
+              v-if="showBorderLineBold"
+              class="font-dialog"
+              style="height:200px;overflow:auto;"
+              @mouseleave="showBorderLineBold=false"
+              @blur="showBorderLineBold=false"
+            >
+              <li
+                v-for="(d,index) in borderLineBoldList"
+                :key="index"
+                @click="changeBorderLineBold(d,$event)"
+              >
+                {{ d }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p style="margin-top:10px;">
+          箭头
+        </p>
+        <div
+          v-clickOutSide="hideArrowFun"
+          class="item-container fontSet"
+          style="justify-content:space-between;position:relative;width:100%;"
+          @click="showArrowDialog=true"
+        >
+          <div :class="arrowCls" />
+          <img src="../../../assets/images/menu/down_ic.png">
+          <ul
+            v-if="showArrowDialog"
+            class="font-dialog"
+            @mouseleave="showArrowDialog=false"
+            @blur="showArrowDialog=false"
+          >
+            <li
+              v-for="(d,index) in arrowClsList"
+              :key="index"
+              @click="changeBorderLine(d,$event)"
+            >
+              <div :class="d" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
-let newFontColor
+import {mxEvent,mxConstants,mxEventObject} from '../../../services/mxGlobal'
+let newFontColor,newBgColor,newBorderColor,name
+let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
+let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
+
 export default {
     data() {
         return {
-            widgetName:"",
             showFont:false,
-            dialogHeight: 400,
-            dialogWidth: 600,
-            fontText:12,
+            shapeName:'',
             fontColor:'#333333',
-            alignIndex1:0,
-            alignIndex2:0,
+            fontText:12,
+            alignIndex1:2,
+            showBorderLine:false,
+            alignIndex2:2,
             isSetBold:false,
+            showBorderLineBold:false,
+            select:true,
+            bgColor:'#277AE0',
+            borderColor:'#277AE0',
+            borderLineList:[],
+            borderLineCls:'',
+            showArrowDialog:false,
             fontList:[
                 12,
                 13,
@@ -161,32 +287,108 @@ export default {
                 19,
                 20
             ],
+            borderLineBoldText:1,
+            borderLineBoldList:[
+                1,2,3,4,5,6,7,8,9,10
+            ],
+            arrowClsList:['arrow-empty'],
+            arrowCls:'arrow-empty',
+        }
+    },
+    computed: {
+        widgetName: {
+            get() {
+                return this.$store.state.main.widgetInfo.widgetName
+                
+            },
+            set(val) {
+                name = val
+            }
+        },
+        positionSize() {
+            let {x,y,width,height} = this.$store.state.main.widgetInfo.geo
+            return {
+                x:x,
+                y:y,
+                width:width,
+                height:height,
+            }
         }
     },
     created() {},
     mounted() {
+        this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
+        console.log(this.shapeName )
+        let graph = this.myEditorUi.editor.graph
+        graph.getModel().addListener(mxEvent.CHANGE,()=>{
+            this.$store.commit('getWidgetInfo',graph)
+        })
+        this.fontText = this.$store.state.main.widgetInfo.fontSize
+        this.isSetBold = this.$store.state.main.widgetInfo.isSetBold
+        this.fontColor =  this.$store.state.main.widgetInfo.color
+        this.alignIndex1 = alignArr.indexOf(this.$store.state.main.widgetInfo.align) + 1
+        this.alignIndex2 = valignArr.indexOf(this.$store.state.main.widgetInfo.valign) + 1
+        this.bgColor =  this.$store.state.main.widgetInfo.bgColor
+        this.borderColor =  this.$store.state.main.widgetInfo.borderColor
+        this.borderLineBoldText =  this.$store.state.main.widgetInfo.borderBold
     },
     methods: {
+        changeName() {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let cellInfo = graph.getModel().getValue(cell);
+            cellInfo.setAttribute('palettename',name);
+            graph.getModel().setValue(cell, cellInfo);
+            this.$store.commit('getWidgetInfo',graph)
+        },
+        changeSelect(status) {
+            console.log(status)
+        },
+        changePositionSize() {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let geo = graph.getCellGeometry(cell)
+            geo.x = +this.positionSize.x
+            geo.y = +this.positionSize.y
+            geo.width = +this.positionSize.width
+            geo.height = +this.positionSize.height
+            graph.getModel().beginUpdate()
+            graph.getModel().setGeometry(cell,geo)
+            graph.getModel().endUpdate()
+            this.$store.commit('getWidgetInfo',graph)
+            
+        },
         changeFont(d,e) {
             this.fontText = d
+            let graph = this.myEditorUi.editor.graph
+            var shapeName = graph.view.getState(graph.getSelectionCell()).style.shape;
+            let ss = shapeName === 'tableBox' || shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells();
+            let key = mxConstants.STYLE_FONTSIZE
+            graph.setCellStyles(key,d, ss);
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [key],
+                'values', [+d], 'cells', ss));
             this.showFont = false;
             e.stopPropagation()
         },
         changeAlignIndex(type,index) {
             if(type == 1) {
                 this.alignIndex1 = index
+                this.myEditorUi.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [alignArr[index - 1]])()
             }else{
                 this.alignIndex2 = index
+                this.myEditorUi.menus.createStyleChangeFunction([mxConstants.STYLE_VERTICAL_ALIGN], [valignArr[index - 1]])()
             }
         },
         setBold() {
             this.isSetBold = !this.isSetBold
-        },
-        changeScaleInput() {
-           
-        },
-        changePosition() {
-
+            let graph = this.myEditorUi.editor.graph
+            let cells = graph.getSelectionCells()
+            let bold = 0
+            if(this.isSetBold) {
+                bold = 1
+            }
+            graph.setCellStyles('fontStyle', bold, graph.getSelectionCells());
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontStyle'],'values', [bold], 'cells',cells));
         },
         hideFont() {
             this.showFont = false
@@ -195,8 +397,51 @@ export default {
             this.myEditorUi.pickColor(newFontColor || 'none',color=>{
                 newFontColor = color  
                 this.fontColor = color
+                let graph = this.myEditorUi.editor.graph
+                graph.setCellStyles('fontColor', color, graph.getSelectionCells());
+                this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontColor'],'values', [color], 'cells', graph.getSelectionCells()));
             });
-        }
+        },
+        pickBgColor() {
+            this.myEditorUi.pickColor(newBgColor || 'none',color=>{
+                newBgColor = color  
+                this.bgColor = color
+                let graph = this.myEditorUi.editor.graph
+                graph.setCellStyles('fillColor', color, graph.getSelectionCells());
+                this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fillColor'],'values', [color], 'cells', graph.getSelectionCells()));
+            });
+        },
+        pickBorderColor() {
+            this.myEditorUi.pickColor(newBorderColor || 'none',color=>{
+                newBorderColor = color  
+                this.borderColor = color
+                let graph = this.myEditorUi.editor.graph
+                graph.setCellStyles('strokeColor', color, graph.getSelectionCells());
+                this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['strokeColor'],'values', [color], 'cells', graph.getSelectionCells()));
+            });
+        },
+        hideBorderLine() {
+            this.showBorderLine = false
+        },
+        changeBorderLine(d,e) {
+            this.borderLineCls = d
+            this.showBorderLine = false;
+            e.stopPropagation()
+        },
+        changeBorderLineBold(d,e) {
+            this.borderLineBoldText = d
+            let graph = this.myEditorUi.editor.graph
+            graph.setCellStyles('strokeWidth', d, graph.getSelectionCells());
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['strokeWidth'],'values', [d], 'cells', graph.getSelectionCells()));
+            this.showBorderLineBold = false;
+            e.stopPropagation()
+        },
+        hideBorderLineBold() {
+            this.showBorderLineBold = false
+        },
+        hideArrowFun() {
+            this.showArrowDialog = false
+        },
     }
 };
 </script>
@@ -272,7 +517,7 @@ export default {
     }
     .setColor{
       width:24%;
-      height:100%;
+      height:24px;
       background: #000;
       border-radius: 2px;
       border:1px solid rgba(212,212,212,1);
@@ -371,6 +616,9 @@ export default {
         left:0;
         top:24px;
         border:solid 1px red;
+    }
+    .arrow-empty::after{
+      content:'无'
     }
 }
 </style>

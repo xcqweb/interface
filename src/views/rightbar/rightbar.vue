@@ -16,7 +16,7 @@
         ref="pageStyle"
       />
       <DialogStyle v-show="$store.state.main.type===1 && !showWidgetStyle" />
-      <WidgetStyleMain v-show="showWidgetStyle" />
+      <WidgetStyleMain v-if="showWidgetStyle" />
     </div>
   </div>
 </template>
@@ -88,8 +88,10 @@ export default {
             }
             this.myEditorUi.format.refresh = ()=>{
                 this.showWidgetStyle = !(graph.isSelectionEmpty() || graph.getSelectionCount() > 1)
+                if(this.showWidgetStyle) {
+                    this.$store.commit('getWidgetInfo',graph)
+                }
             }
-            this.myEditorUi.format.refresh()
             this.$refs.pageStyle.init()
         },
     }
