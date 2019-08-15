@@ -15313,23 +15313,53 @@ mxPopupMenu.prototype.isPopupTrigger = function(me)
  */
 mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, enabled, active)
 {
-	// debugger
-	// console.log(PaletteManagePanel().setCellAttrs())
-	// console.log(defaultValue)
-	let selectCell = this.graph.getSelectionCell();
+	let selectCell = this.graph.getSelectionCell()
+	let selectCount = this.graph.getSelectionCount()
+	// console.log(selectCount)
 	let shapeName = ''
 	if (selectCell) {
 		shapeName = this.graph.view.getState(selectCell).style.shape;
 	}
-	let ifshowPaste = false
-	let arr = ['rectangle', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2']
-	let menulistArr = ['menulist','tableBox'] // 菜单 和 表格整体
-	console.log(shapeName)
-	console.log(title)
-	let arr1 = ['粘贴','组合', '取消组合']
-	if (arr.includes(shapeName) && arr1.includes(title)) {
-		ifshowPaste = true
+	if (this.graph.getModel().getValue(selectCell)) {
+		let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') // 获取到元素
+		if ((showOrHide === 'true') && title.includes('设置隐藏')) {
+			title = '设置显示'
+		}
+	} else {
+		if (Object.prototype.toString.call(selectCell) === '[object Object]' && selectCell.hide === true) {
+			title = '设置显示'
+		}
 	}
+	
+	let ifshowPaste = false
+	if (selectCount === 1) { // 单个组件
+		if (!this.graph.getModel().isEdge(selectCell) && !this.graph.isSwimlane(selectCell) && this.graph.getModel().getChildCount(selectCell) > 0 && shapeName !== 'menulist') {
+			// 取消组合
+			let arr4 = ['粘贴', '组合']
+			if (arr4.includes(title)) {
+				ifshowPaste = true
+			}
+		} else {
+			// console.log(123);
+			let arr = ['rectangle', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2'];
+			let menulistArr = ['menulist','tableBox']; // 菜单 和 表格整体
+			// console.log(shapeName)
+			// console.log(title)
+			let arr1 = ['粘贴','组合', '取消组合']
+			if (arr.includes(shapeName) && arr1.includes(title)) {
+				ifshowPaste = true
+			}
+		}
+	} else if (selectCount > 1 ) {
+	    let arr3 = ['粘贴', '取消组合', '设置隐藏']
+		if (arr3.includes(title)) {
+			ifshowPaste = true
+		}
+	} else {
+		ifshowPaste = false
+	}
+	
+	
 	// console.log(image)
 	// console.log(funct)
 	// console.log(parent)
@@ -15341,7 +15371,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 
 	parent = parent || this;
 	this.itemCount++;
-	console.log(parent)
+	// console.log(parent)
 	// Smart separators only added if element contains items
 	if (parent.willAddSeparator)
 	{
@@ -15380,7 +15410,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 		var col2 = document.createElement('td');
 		col2.className = 'mxPopupMenuItem' +
 			((enabled != null && !enabled) ? ' mxDisabled' : '');
-		console.log(title)
+		// console.log(title)
 		mxUtils.write(col2, title);
 		col2.align = 'left';
 		tr.appendChild(col2);
@@ -15498,7 +15528,6 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 			})
 		);
 	}
-	console.log(tr)
 	return tr;
 };
 
@@ -15596,7 +15625,6 @@ mxPopupMenu.prototype.showSubmenu = function(parent, row)
  */
 mxPopupMenu.prototype.addSeparator = function(parent, force)
 {
-	console.log(parent)
 	parent = parent || this;
 	
 	if (this.smartSeparators && !force)
