@@ -2480,7 +2480,6 @@ ActionsPanel.prototype.clear = function()
     this.container.innerHTML = '';
 };
 ActionsPanel.prototype.init = function(container) {
-    console.log("交互")
     var ui = this.editorUi;
     var editor = ui.editor;
     var graph = editor.graph;
