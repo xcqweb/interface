@@ -12,7 +12,9 @@ import {i18n} from '@/common/i18n'
 import 'echarts'
 import VueECharts from 'vue-echarts'
 import {Switch} from 'iview'
-Vue.component('i-switch', Switch)import './services/Utils'
+Vue.component('i-switch', Switch)
+
+import './services/Utils'
 
 import './assets/css/style'
 import './assets/css/common'
