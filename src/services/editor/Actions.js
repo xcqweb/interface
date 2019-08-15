@@ -428,7 +428,7 @@ Actions.prototype.init = function()
             }
         }
     });
-	
+    this.addAction('resetHide', function () { mxClipboard.resetHide(graph); }, null, 'sprite-resetHide',null);
     /**
 	 * 删除节点
 	 * @param {object} includeEdges 是否包含线条
@@ -1398,7 +1398,6 @@ Actions.prototype.addAction = function(key, funct, enabled, iconCls, shortcut)
     {
         title = mxResources.get(key);
     }
-	
     return this.put(key, new Action(title, funct, enabled, iconCls, shortcut));
 };
 

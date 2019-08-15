@@ -9,13 +9,10 @@ import './filters/filter'
 import urls from './constants/url'
 import requestUtil from './services/request'
 import {i18n} from '@/common/i18n'
-
 import 'echarts'
 import VueECharts from 'vue-echarts'
 import {Switch} from 'iview'
-Vue.component('i-switch', Switch)
-
-import './services/Utils'
+Vue.component('i-switch', Switch)import './services/Utils'
 
 import './assets/css/style'
 import './assets/css/common'
@@ -24,8 +21,8 @@ import './assets/css/preview'
 
 Vue.component('v-chart', VueECharts)
 
-Vue.config.productionTip = false
 
+Vue.config.productionTip = false
 Vue.prototype.router = router;
 Vue.prototype.urls = urls;
 Vue.prototype.requestUtil = requestUtil;

@@ -474,7 +474,7 @@ function geHttp(url, method = 'GET', data = null) {
             xmlhttp.setRequestHeader("Authorization","Bearer " + getCookie('token'));
             xmlhttp.send(data);
         } else {
-            reject('登陆失效')
+            reject('登录失效')
         }
     })
 }
@@ -489,7 +489,7 @@ async function geAjax(url, method = 'GET', data = null) {
     const token = getCookie('token');
     const refreshToken = getCookie('refreshToken');
     if (!token || !refreshToken) {
-        alert('登陆失效，请重新登陆系统！');
+        alert('登录失效，请重新登录系统！');
         return;
     }
     const t_exp = jwt_decode(token).exp;
@@ -977,6 +977,7 @@ class PreviewPage {
         })
         pointParams = this.wsParams
       }
+      console.log(cell)
       let cellHtml = this.renderCell(cell);
       ele.appendChild(cellHtml);
       // 组内资源
@@ -988,6 +989,7 @@ class PreviewPage {
   
     // 渲染控件节点
     renderCell(cell) {
+        console.log(cell)
         const shapeName = cell.shapeName;
         let cellHtml;
         if (shapeName === 'image') {
@@ -1073,6 +1075,7 @@ class PreviewPage {
         }
         cellHtml.className = 'gePalette';
         // 隐藏
+        console.log(cellHtml)
         if (cell.hide == 'true') {
             cellHtml.style.display = 'none';
         }

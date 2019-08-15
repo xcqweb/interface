@@ -108,7 +108,6 @@ window.EditorUi = function(editor, container, lightbox)
         var linkHandler = function(evt)
         {
             var source = mxEvent.getSource(evt);
-            console.log(source)
             if (source.nodeName == 'linkTag')
             {
                 while (source != null)
@@ -1270,15 +1269,16 @@ EditorUi.prototype.getCssClassForMarker = function(prefix, shape, marker, fill)
 /**
  * Hook for allowing selection and context menu for certain events.
  */
-EditorUi.prototype.updatePasteActionStates = function()
+EditorUi.prototype.updatePasteActionStates = function ()
 {
     var graph = this.editor.graph;
     var paste = this.actions.get('paste');
     var pasteHere = this.actions.get('pasteHere');
-
-    paste.setEnabled(this.editor.graph.cellEditor.isContentEditing() || (!mxClipboard.isEmpty() &&
-		graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent())));
-    pasteHere.setEnabled(paste.isEnabled());
+    if (!mxClipboard.isEmpty()) {
+        paste.setEnabled(this.editor.graph.cellEditor.isContentEditing() || (!mxClipboard.isEmpty() &&
+            graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent())));
+        pasteHere.setEnabled(paste.isEnabled());
+    }
 };
 
 /**
@@ -1291,6 +1291,7 @@ EditorUi.prototype.initClipboard = function()
     var mxClipboardCut = mxClipboard.cut;
     mxClipboard.cut = function(graph)
     {
+        console.log(555)
         if (graph.cellEditor.isContentEditing())
         {
             document.execCommand('cut', false, null);
@@ -1306,6 +1307,7 @@ EditorUi.prototype.initClipboard = function()
     var mxClipboardCopy = mxClipboard.copy;
     mxClipboard.copy = function(graph)
     {
+        console.log(4645657)
         if (graph.cellEditor.isContentEditing())
         {
             document.execCommand('copy', false, null);
@@ -1330,6 +1332,23 @@ EditorUi.prototype.initClipboard = function()
         else
         {
             result = mxClipboardPaste.apply(this, arguments);
+        }
+
+        ui.updatePasteActionStates();
+
+        return result;
+    };
+
+    // 添加设置隐藏
+    var mxClipboardresetHide = mxClipboard.resetHide;
+    mxClipboard.resetHide = function (graph) {
+        var result = null;
+
+        if (graph.cellEditor.isContentEditing()) {
+            document.execCommand('resetHide', false, null);
+        }
+        else {
+            result = mxClipboardresetHide.apply(this, arguments);
         }
 
         ui.updatePasteActionStates();
@@ -2697,8 +2716,10 @@ EditorUi.prototype.addUndoListener = function()
 */
 EditorUi.prototype.updateActionStates = function()
 {
+    // console.log(this)
     var graph = this.editor.graph;
     var selected = !graph.isSelectionEmpty();
+    // console.log(selected)
     var vertexSelected = false;
     var edgeSelected = false;
 
@@ -2732,8 +2753,9 @@ EditorUi.prototype.updateActionStates = function()
     // 更新 action 状态
     var state = graph.view.getState(graph.getSelectionCell());
     var shapeName = state && state.style.shape;
-    var actions = ['cut', 'copy', 'bold', 'underline', 'delete', 'duplicate',
-	            		'editLink', 'backgroundColor', 'borderColor',
+    console.log(shapeName)
+    var actions = ['cut', 'copy', 'bold', 'underline','paste', 'delete', 'duplicate',
+        'editLink', 'backgroundColor', 'borderColor', 'group','ungroup','resetHide',
 	               'edit', 'toFront', 'toBack', 'lockUnlock',
 	               'fillColor', 'gradientColor', 'fontColor',
 	               'formattedText', 'strokeColor', 'turn', 'flipH', 'flipV', 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'];
@@ -2745,8 +2767,14 @@ EditorUi.prototype.updateActionStates = function()
     var isTable = shapeNameStr.indexOf('tableBox') != -1 || shapeNameStr.indexOf('tableCell') != -1;
     for (var i = 0; i < actions.length; i++)
     {
-        if (menuDisabled.indexOf(actions[i]) != -1 && (!notMenu || isTable)) {
-            // 菜单和表格不操作
+        // if (menuDisabled.indexOf(actions[i]) != -1 && (!notMenu || isTable)) {
+        //     // 菜单和表格不操作
+        //     console.log(12345667889000000, '---', !selected)
+        //     this.actions.get(actions[i]).setEnabled(!selected);
+        // } else {
+            // this.actions.get(actions[i]).setEnabled(selected);
+        // }
+        if (shapeName === 'menuCell' && menuDisabled.indexOf(actions[i]) != -1) { // 单个菜单
             this.actions.get(actions[i]).setEnabled(!selected);
         } else {
             this.actions.get(actions[i]).setEnabled(selected);
@@ -2756,10 +2784,11 @@ EditorUi.prototype.updateActionStates = function()
     this.actions.get('rotation').setEnabled(vertexSelected && shapeName !== 'menuCell');
     this.actions.get('autosize').setEnabled(vertexSelected && !isTable && notMenu);
     var oneVertexSelected = vertexSelected && graph.getSelectionCount() == 1;
-    this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && (shapeName !== 'menuCell' && shapeName !== 'menulist' && !isTable));
-    this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 &&
-		(graph.getModel().getChildCount(graph.getSelectionCell()) > 0 ||
-		(oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) &&  shapeName !== "menulist" && !isTable);
+    // 暂时注释掉
+    // this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && (shapeName !== 'menuCell' && shapeName !== 'menulist' && !isTable));
+    // this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 &&
+	// 	(graph.getModel().getChildCount(graph.getSelectionCell()) > 0 ||
+	// 	(oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) &&  shapeName !== "menulist" && !isTable);
 
     this.actions.get('linkReport').setEnabled(graph.getSelectionCount() == 1 && shapeName === "linkTag");
     this.actions.get('removeFromGroup').setEnabled(oneVertexSelected && graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())) && notMenu && !isTable);
@@ -2800,6 +2829,7 @@ EditorUi.prototype.updateActionStates = function()
     }
 
     this.updatePasteActionStates();
+    // this.updatePasteActionStates(shapeName);
 };
 
 /**

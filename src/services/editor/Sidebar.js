@@ -1315,6 +1315,7 @@ function createPageList(editorUi,el,data, id, type) {
                 menulist.style.display = 'block';
                 menulist.style.left = mxEvent.getClientX(evt) + 'px';
                 menulist.style.top = mxEvent.getClientY(evt) + 'px';
+                $('.commonPages .pageList>li.currentPage>.right-icon-dolt').css({ 'pointer-events': 'none'})
             })
             function changePage(e) {
                 var target = e.target;
@@ -1331,7 +1332,14 @@ function createPageList(editorUi,el,data, id, type) {
                     $(".currentPage").removeClass('currentPage');
                     editorUi.editor.setCurrentType(id == 'normalPages' ? 'normal' : 'dialog');
                     editorUi.editor.setCurrentPage(nextTitle);
-                    target.className += " currentPage";
+                    console.log(target.className)
+                    if (!target.className) {
+                        target.className += "currentPage";
+                    } else {
+                        target.className += " currentPage";
+                    }
+                    
+                    console.log(editorUi.editor.pages)
                     var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml);
                     editorUi.editor.setGraphXml(doc.documentElement);
                 }
@@ -1402,6 +1410,7 @@ function createPageList(editorUi,el,data, id, type) {
 }
 Sidebar.prototype.hidePageContextMenu = function() {
     document.getElementById('pageContextMenu') ?  document.getElementById('pageContextMenu').style.display = 'none' : null;
+    $('.commonPages .pageList>li.currentPage>.right-icon-dolt').css({ 'pointer-events': 'auto' })
 }
 //
 Sidebar.prototype.tabsSwitch = function(type) {
@@ -1576,17 +1585,25 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             40,
             20,
             // 类似链接一样设置
-            '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">text</span>',
+            '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">输入文本</span>',
             // 'text',
             "文字"
-          )
+          ),
+        // 指示灯
+        this.createVertexTemplateEntry('shape=light;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/light.png', 36, 36, '', '指示灯'),
+        // 进度条
+        this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/progress.png', 36, 36, '', '进度条'),
+        // 管道1
+        this.createVertexTemplateEntry('shape=pipeline1;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline1.png', 36, 36, '', '管道1'),
+        // 管道2
+        this.createVertexTemplateEntry('shape=pipeline2;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline2.png', 36, 36, '', '管道2'),
         // 趋势图
         // this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
 		
     ];
     //封装
     this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
-    this.addPaletteFunctions('chart', '图表控件', false, fns);
+    // this.addPaletteFunctions('chart', '图表控件', false, fns);
     //this.addGeneralPaletteShort();
 };
 /**

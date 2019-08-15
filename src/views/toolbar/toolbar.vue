@@ -228,6 +228,7 @@ export default{
             this.isShowScale = false
         },
         addAction(key) {
+            console.log(key)
             let action = this.myEditorUi.actions.get(key);
             action.funct()
         },

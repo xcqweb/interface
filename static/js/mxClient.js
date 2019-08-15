@@ -15313,9 +15313,35 @@ mxPopupMenu.prototype.isPopupTrigger = function(me)
  */
 mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, enabled, active)
 {
+	// debugger
+	// console.log(PaletteManagePanel().setCellAttrs())
+	// console.log(defaultValue)
+	let selectCell = this.graph.getSelectionCell();
+	let shapeName = ''
+	if (selectCell) {
+		shapeName = this.graph.view.getState(selectCell).style.shape;
+	}
+	let ifshowPaste = false
+	let arr = ['rectangle', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2']
+	let menulistArr = ['menulist','tableBox'] // 菜单 和 表格整体
+	console.log(shapeName)
+	console.log(title)
+	let arr1 = ['粘贴','组合', '取消组合']
+	if (arr.includes(shapeName) && arr1.includes(title)) {
+		ifshowPaste = true
+	}
+	// console.log(image)
+	// console.log(funct)
+	// console.log(parent)
+	// console.log(iconCls)
+	// console.log(enabled)
+	// console.log(active)
+
+
+
 	parent = parent || this;
 	this.itemCount++;
-	
+	console.log(parent)
 	// Smart separators only added if element contains items
 	if (parent.willAddSeparator)
 	{
@@ -15330,6 +15356,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	parent.containsItems = true;
 	var tr = document.createElement('tr');
 	tr.className = 'mxPopupMenuItem';
+	tr.className = `mxPopupMenuItem ${ ifshowPaste ? 'disabled' : ''}`;
 	// var col1 = document.createElement('td');
 	// col1.className = 'mxPopupMenuIcon';
 
@@ -15348,13 +15375,12 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	// }
 	
 	// tr.appendChild(col1);
-	
 	if (this.labels)
 	{
 		var col2 = document.createElement('td');
 		col2.className = 'mxPopupMenuItem' +
 			((enabled != null && !enabled) ? ' mxDisabled' : '');
-		
+		console.log(title)
 		mxUtils.write(col2, title);
 		col2.align = 'left';
 		tr.appendChild(col2);
@@ -15364,6 +15390,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 			((enabled != null && !enabled) ? ' mxDisabled' : '');
 		col3.style.textAlign = 'right';
 		col3.style.paddingRight = '15px';
+		col3.style.fontSize = '12px';
 		
 		tr.appendChild(col3);
 		
@@ -15471,7 +15498,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 			})
 		);
 	}
-	
+	console.log(tr)
 	return tr;
 };
 
@@ -15569,6 +15596,7 @@ mxPopupMenu.prototype.showSubmenu = function(parent, row)
  */
 mxPopupMenu.prototype.addSeparator = function(parent, force)
 {
+	console.log(parent)
 	parent = parent || this;
 	
 	if (this.smartSeparators && !force)
@@ -15585,9 +15613,10 @@ mxPopupMenu.prototype.addSeparator = function(parent, force)
 		// col1.style.padding = '0 0 0 0px';
 		
 		// tr.appendChild(col1);
-		
+		tr.style.height = '10px';
 		var col2 = document.createElement('td');
 		col2.style.padding = '0 0 0 0px';
+		// col2.style.height = '10px';
 		col2.setAttribute('colSpan', '2');
 	
 		var hr = document.createElement('hr');
@@ -47805,6 +47834,10 @@ mxCellRenderer.registerShape('pentagram', mxImageShape);
 mxCellRenderer.registerShape('square', mxImageShape);
 mxCellRenderer.registerShape('multipleCheck', mxImageShape);
 mxCellRenderer.registerShape('singleCheck', mxImageShape);
+mxCellRenderer.registerShape('light', mxImageShape);
+mxCellRenderer.registerShape('progress', mxImageShape);
+mxCellRenderer.registerShape('pipeline1', mxImageShape);
+mxCellRenderer.registerShape('pipeline2', mxImageShape);
 mxCellRenderer.registerShape(mxConstants.SHAPE_LABEL, mxLabel);
 
 /**
@@ -56340,6 +56373,7 @@ mxGraph.prototype.startEditingAtCell = function(cell, evt)
 			}
 		}
 		var shapeName = this.getCellStyle(cell).shape;
+		console.log(shapeName)
 		if (cell != null && shapeName !== 'image' && shapeName !== 'select' && shapeName !== 'endarrow' && shapeName !== 'beeline')
 		{
 			this.fireEvent(new mxEventObject(mxEvent.START_EDITING,
@@ -81895,7 +81929,7 @@ mxDefaultPopupMenu.prototype.createMenu = function(editor, menu, cell, evt)
 	{
 		var conditions = this.createConditions(editor, cell, evt);
 		var item = this.config.firstChild;
-
+console.log(77)
 		this.addItems(editor, menu, cell, evt, conditions, item, null);
 	}
 };
@@ -81995,7 +82029,6 @@ mxDefaultPopupMenu.prototype.addAction = function(menu, editor, lab, icon, funct
 			editor.execute(action, cell, evt);
 		}
 	};
-	
 	return menu.addItem(lab, icon, clickHandler, parent, iconCls, enabled);
 };
 
@@ -82197,6 +82230,7 @@ mxDefaultToolbar.prototype.init = function(container)
  */
 mxDefaultToolbar.prototype.addItem = function(title, icon, action, pressed)
 {
+	console.log(9999)
 	var clickHandler = mxUtils.bind(this, function()
 	{
 		if (action != null && action.length > 0)

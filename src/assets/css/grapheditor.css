@@ -1049,6 +1049,13 @@ table.mxPopupMenu hr {
 }
 table.mxPopupMenu tr {
 	font-size: 14px;
+	height:26px;
+}
+table.mxPopupMenu tr.disabled{
+	opacity: 0.5 !important;
+	pointer-events: none;
+	cursor:no-drop !important; 
+    /* cursor: default !important; */
 }
 html td.mxWindowTitle {
  	text-align:left;
