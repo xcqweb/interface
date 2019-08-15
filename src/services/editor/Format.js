@@ -451,6 +451,7 @@ var BaseFormatPanel = function(format, editorUi, container)
     this.container = container;
     this.listeners = [];
 };
+window.BaseFormatPanel = BaseFormatPanel
 /**
  * 获取全部控件
  */
@@ -1570,6 +1571,7 @@ ArrangePanel.prototype.addAngle = function(container)
  */
 ArrangePanel.prototype.addGeometry = function(container)
 {
+    console.log(333)
     var ui = this.editorUi;
     var graph = ui.editor.graph;
     var rect = this.format.getSelectionState();
@@ -2617,6 +2619,7 @@ ActionsPanel.prototype.delIcon = function() {
  */
 ActionsPanel.prototype.createOperateBox = function(container)
 {
+    console.log(8888);
     var ui = this.editorUi;
     var editor = ui.editor;
     var graph = editor.graph;

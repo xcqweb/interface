@@ -101,6 +101,7 @@ export default {
             this.nomralType = type
             this.myEditorUi.sidebar.tabsSwitch(type)
             this.$store.dispatch('pageTabIndex',type)
+            this.checkHasCurrent(type)
         },
         addPageType(type) {
             // 1添加页面 2添加弹窗
@@ -117,19 +118,36 @@ export default {
         cancel() {
 
         },
+        checkHasCurrent(type) {
+            this.$nextTick(() => {
+                if (type === 0) {
+                    $('#normalPages >li:first-child').click()
+                } else if (type === 1) {
+                    $('#dialogPages >li:first-child').click()
+                }
+            })
+        },
         alertAddPage(typePage) {
             // const pages = this.myEditorUi.editor.pages
             const pagesRank = this.myEditorUi.editor.pagesRank
             var xml = this.myEditorUi.editor.defaultXml;
-            let targetArr = [...pagesRank.normal, ...pagesRank.dialog]
+            // let targetArr = [...pagesRank.normal, ...pagesRank.dialog]
+            let targetArr = [...pagesRank.normal]
             let numtarget = []
             targetArr.forEach((item) => {
                 var _r = item.split('_')
                 numtarget.push(_r[1])
             })
+            let namebefore = ''
+            if (+typePage === 0) {
+                namebefore = `页面`
+            } 
+            if (+typePage === 1) {
+                namebefore = `弹窗`
+            }
             var getMax = Math.max.apply(null, numtarget)
             var id = `pageid_${getMax + 1}`
-            let titleText = `页面${getMax + 1}`
+            let titleText = `${namebefore}${getMax + 1}`
             let page = {
                 title: titleText,
                 xml,
@@ -140,6 +158,7 @@ export default {
             _li.setAttribute('data-pageid', id);
             _li.innerHTML = `<span>${titleText}</span><span class="right-icon-dolt"></span>`;
             let changeRank = this.myEditorUi.editor.pagesRank[page.type];
+            this.myEditorUi.editor.pages[id] = page
             // 根据类型插入列表
             changeRank.push(id);
             if (+typePage === 0) {
@@ -179,17 +198,22 @@ export default {
                     height:24px;
                     line-height: 24px;
                     padding-left:18px;
-                    background:url(../../assets/images/leftsidebar/homepage.png) no-repeat left center;
+                    background:url(../../assets/images/material/page1_ic.png) no-repeat left center;
                     background-size:16px 16px;
                     &.currentPage{
                         color:#fff;
-                        background-color:#3d91f7;
-                        background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
+                        background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
                         background-size:16px 16px;
+                        &.left-sidebar-homepage{
+                          background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
+                        }
                         #editPageInput{
                             height: 25px;
                             border:none;
                         }
+                    }
+                    &.left-sidebar-homepage{
+                        background: url(../../assets/images/leftsidebar/homepage.png) no-repeat left center;
                     }
                     .right-icon-dolt{
                         display: block;

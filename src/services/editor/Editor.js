@@ -565,6 +565,23 @@ Editor.prototype.palettesInfo = {
         name: '趋势图',
         num: 0
     },
+    light: {
+        name: '指示灯',
+        num: 0
+    },
+    progress: {
+        name: '进度条',
+        num: 0
+    },
+    pipeline1: {
+        name: '管道1',
+        num: 0
+    },
+    pipeline2: {
+        name: '管道2',
+        num: 0
+    },
+
 }
 /**
  * 文件服务器的地址

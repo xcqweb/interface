@@ -6,6 +6,7 @@
       class="left-sidebar-model"
       :title="materialAlertName"
       :mask-closable="false"
+      @on-cancel="cancel"
     >
       <div class="materialtabs">
         <Tabs
@@ -237,8 +238,8 @@ export default {
             },
             pathbase: '',
             POSITION_LEFT: 'left',
-            POSITION_RIGHT: 'right'
-
+            POSITION_RIGHT: 'right',
+            ismouseenter: false
         }
     },
     created() {
@@ -279,8 +280,9 @@ export default {
             this.$nextTick(() => {
                 const assemblyListEl = document.querySelector('.left-side-listactive .right-spots')
                 if (assemblyListEl) {
-                    newMouse(assemblyListEl,'mouseenter',(event) => {
+                    newMouse(assemblyListEl,'mouseover',(event) => {
                         this.assemblyListHandle(event, this.POSITION_LEFT)
+                        $('.left-side-listactive .right-spots').css({'pointer-events': 'none'})
                     }, false)
                 }
             })
@@ -387,11 +389,10 @@ export default {
             })
         },
         hideMaterialModelMenu() {
+            $('.left-side-listactive .right-spots').css({'pointer-events': 'auto'})
             $('#materialModelMenu').hide()
         },
-        renameHandle(ele, type) {
-            console.log(type)
-            console.log(ele)
+        renameHandle(ele) {
             let editInput = document.createElement('input');
             editInput.id = 'editPageInput'
             let oldVal = ele.innerText

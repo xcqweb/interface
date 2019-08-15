@@ -552,14 +552,8 @@ Menus.prototype.toggleStyle = function(key, defaultValue)
  */
 Menus.prototype.addMenuItem = function(menu, key, parent, trigger, sprite, label)
 {
-    console.log(menu)
-    console.log(key)
-    console.log(parent)
-    console.log(trigger)
-    console.log(sprite)
-    console.log(label)
     var action = this.editorUi.actions.get(key);
-
+    console.log(action)
     if (action != null && (menu.showDisabled || action.isEnabled()) && action.visible)
     {
         var item = menu.addItem(label || action.label, null, function()
@@ -600,6 +594,7 @@ Menus.prototype.addShortcut = function(item, action)
  */
 Menus.prototype.addMenuItems = function(menu, keys, parent, trigger, sprites)
 {
+    console.log(keys[i])
     for (var i = 0; i < keys.length; i++)
     {
         if (keys[i] == '-')
@@ -628,43 +623,53 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
         cell = graph.getSelectionCell();
         var state = graph.view.getState(cell);
         var shapeName = state.style.shape;
-        console.log(shapeName)
-        if (shapeName == "menuCell") {
-            this.addMenuItems(menu, ['delete', 'edit','-'], null, evt);
+        // tableBox 表格  menulist: 菜单 图片 image 按钮 button
+        if (shapeName == "menuCell") { // 直接后面操作
+            // this.addMenuItems(menu, ['delete', 'edit','-'], null, evt);
         } else if (shapeName == "menulist") { // 菜单
-            this.addMenuItems(menu, ['delete', '-'], null, evt);
+            // this.addMenuItems(menu, ['delete', '-'], null, evt);
+            this.addMenuItems(menu, ['copy', 'cut', 'paste', '-'], null, evt);
         } else {
-            console.log(66)
-            this.addMenuItems(menu, ['cut', 'copy', 'delete','-'], null, evt);
+            if (shapeName !== 'tableCell') {
+                this.addMenuItems(menu, ['copy', 'cut', 'paste', '-'], null, evt);
+            }
+            // this.addMenuItems(menu, ['cut', 'copy', 'delete','-'], null, evt);
         }
-        console.log(state)
         if (state != null)
         {
-            this.addMenuItems(menu, ['toFront', 'toBack', '-'], null, evt);
-            if (graph.getSelectionCount() > 1 && shapeName !== 'menuCell' && shapeName !== 'menulist')
-            {
-                // 选择多个节点，增加组合操作
+            let cellArray = ['menuCell', 'tableCell']
+            if (!cellArray.includes(shapeName)) {
+                this.addMenuItems(menu, ['toFront', 'toBack', '-'], null, evt);
                 menu.addSeparator();
-                this.addMenuItems(menu, ['group'], null, evt);
+                this.addMenuItems(menu, ['group', 'ungroup', '-'], null, evt);
             }
-            else if (graph.getSelectionCount() == 1 && !graph.getModel().isEdge(cell) && !graph.isSwimlane(cell) &&
-					graph.getModel().getChildCount(cell) > 0 && shapeName !== 'menulist')
-            {
-                // 选择组合内的节点，增加取消组合操作
-                menu.addSeparator();
-                this.addMenuItems(menu, ['ungroup'], null, evt);
-            }
-
+            // if (graph.getSelectionCount() > 1 && shapeName !== 'menuCell' && shapeName !== 'menulist')
+            // {
+            //     // 选择多个节点，增加组合操作
+            //     menu.addSeparator();
+            //     this.addMenuItems(menu, ['group'], null, evt);
+            // }
+            // else if (graph.getSelectionCount() == 1 && !graph.getModel().isEdge(cell) && !graph.isSwimlane(cell) &&
+			// 		graph.getModel().getChildCount(cell) > 0 && shapeName !== 'menulist')
+            // {
+            //     // 选择组合内的节点，增加取消组合操作
+            //     menu.addSeparator();
+            //     this.addMenuItems(menu, ['ungroup'], null, evt);
+            // }
             // 选中单个节点,展示不同的右键菜单
             if (graph.getSelectionCount() == 1)
             {
                 menu.addSeparator();
+                let arr = ['rectangle', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2']
+                if (arr.includes(shapeName)) {
+                    this.addMenuItems(menu, ['resetHide', '-', 'delete'], null, evt);
+                }
                 if(shapeName == 'linkTag') {
                     // 链接
                     this.addMenuItem(menu, 'configLink', null, evt).firstChild.innerHTML = '配置...';
                 } else if (shapeName == 'rectangle') {
                     // 矩形
-                    this.addMenuItem(menu, 'paletteData', null, evt);
+                    // this.addMenuItem(menu, 'paletteData', null, evt);
                 } else if (shapeName === 'select') {
                     // 下拉列表
                     this.addMenuItem(menu, 'selectProp', null, evt).firstChild.innerHTML = '属性...';
@@ -673,13 +678,13 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                     this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = '选择图片...';
                 } else if (shapeName == 'menuCell') {
                     // 菜单
-                    this.addMenuItems(menu, ['insertMenuBefore', 'insertMenuAfter'], null, evt);
+                    this.addMenuItems(menu, ['insertMenuBefore', 'insertMenuAfter', 'delete'], null, evt);
                 } else if (this.editorUi.sidebar.primitives.indexOf(shapeName) != -1) {
                     // 图元
                     this.addMenuItems(menu, ['changePrimitive', 'paletteData'], null, evt);
                 } else if (shapeName == 'tableCell') {
                     // 单元格
-                    this.addMenuItems(menu, ['addUpRow', 'addLowerRow', 'deleteRow','-', 'addLeftCol', 'addRightCol', 'deleteCol','-', 'paletteData'], null, evt);
+                    this.addMenuItems(menu, ['addUpRow', 'addLowerRow', 'deleteRow','-', 'addLeftCol', 'addRightCol', 'deleteCol'], null, evt);
                 }
             }
         }
