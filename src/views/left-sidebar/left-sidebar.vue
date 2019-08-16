@@ -52,10 +52,10 @@
               @click="eventClickList(index)"
             >
               <template v-if="index === 0">
-                <span>0</span>
+                <span />
               </template>
               <template v-if="index >= 1">
-                <span>123</span>
+                <span />
               </template>
             </span>
             <label>{{ item }} </label>
@@ -69,7 +69,7 @@
 import {Tabs, TabPane, Modal} from 'iview'
 // import {addPageDialog} from '../editor/Dialogs'
 const addPageTypeName = ['','添加页面','添加弹窗']
-const addPageModal = ['',['空白页面','模版1'],['空白页面','模版1']]
+// const addPageModal = ['',['空白页面','模版1'],['空白页面','模版1']]
 export default {
     components: {
         Tabs,
@@ -81,7 +81,7 @@ export default {
         return {
             modelshow: false,
             alertTitleName:'',
-            alertContent:'',
+            alertContent:[],
             isactive: 0,
             ifclickHander:0,
             nomralType: 0
@@ -107,7 +107,13 @@ export default {
             // 1添加页面 2添加弹窗
             this.modelshow = true
             this.alertTitleName = addPageTypeName[type]
-            this.alertContent = addPageModal[type]
+            // console.log(this.urls)
+            let data = {
+                'type': +type === 1 ? 'normal' : 'dialog'
+            }
+            this.requestUtil.get(this.urls.addTemplate.url, data).then((res) => {
+                console.log(res)
+            })
         },
         eventClickList(index) {
             this.isactive = index
@@ -133,11 +139,12 @@ export default {
             var xml = this.myEditorUi.editor.defaultXml;
             // let targetArr = [...pagesRank.normal, ...pagesRank.dialog]
             let targetArr = [...pagesRank.normal]
-            let numtarget = []
-            targetArr.forEach((item) => {
-                var _r = item.split('_')
-                numtarget.push(_r[1])
-            })
+            console.log(targetArr)
+            // let numtarget = []
+            // targetArr.forEach((item) => {
+            //     var _r = item.split('_')
+            //     numtarget.push(_r[1])
+            // })
             let namebefore = ''
             if (+typePage === 0) {
                 namebefore = `页面`
@@ -145,7 +152,8 @@ export default {
             if (+typePage === 1) {
                 namebefore = `弹窗`
             }
-            var getMax = Math.max.apply(null, numtarget)
+            // var getMax = Math.max.apply(null, numtarget)
+            var getMax = targetArr.length
             var id = `pageid_${getMax + 1}`
             let titleText = `${namebefore}${getMax + 1}`
             let page = {

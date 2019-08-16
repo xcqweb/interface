@@ -8420,6 +8420,10 @@ var mxUtils =
 	 */
 	SHAPE_RECTANGLE: 'rectangle',
 
+	/*
+	 *Variable: SHAPE_oval
+	*/
+	SHAPE_OVAL: 'oval',
 	/**
 	 * Variable: SHAPE_ELLIPSE
 	 * 
@@ -8467,6 +8471,7 @@ var mxUtils =
 	 * Default is arrow.
 	 */
 	SHAPE_ARROW: 'arrow',
+
 	
 	/**
 	 * Variable: SHAPE_ARROW_CONNECTOR
@@ -8546,6 +8551,9 @@ var mxUtils =
 	 * Constant for classic arrow markers.
 	 */
 	ARROW_CLASSIC: 'classic',
+
+	/*
+	*/
 
 	/**
 	 * Variable: ARROW_CLASSIC_THIN
@@ -15340,11 +15348,8 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 				ifshowPaste = true
 			}
 		} else {
-			// console.log(123);
-			let arr = ['rectangle', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2'];
+			let arr = ['rectangle', 'button','ellipse', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2'];
 			let menulistArr = ['menulist','tableBox']; // 菜单 和 表格整体
-			// console.log(shapeName)
-			// console.log(title)
 			let arr1 = ['粘贴','组合', '取消组合']
 			if (arr.includes(shapeName) && arr1.includes(title)) {
 				ifshowPaste = true
@@ -19614,7 +19619,6 @@ mxSvgCanvas2D.prototype.convertHtml = function(val)
 	else if (document.implementation != null && document.implementation.createDocument != null)
 	{
 		var xd = document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'html', null);
-		console.log(xd)
 		var xb = xd.createElement('body');
 		xd.documentElement.appendChild(xb);
 		
@@ -25116,6 +25120,7 @@ mxRectangleShape.prototype.paintForeground = function(c, x, y, w, h)
 		this.paintGlassEffect(c, x, y, w, h, this.getArcSize(w + this.strokewidth, h + this.strokewidth));
 	}
 };
+
 /**
  * Copyright (c) 2006-2015, JGraph Ltd
  * Copyright (c) 2006-2015, Gaudenz Alder
@@ -47840,6 +47845,7 @@ mxCellRenderer.registerShape = function(key, shape)
 
 // 注册默认类型
 mxCellRenderer.registerShape(mxConstants.SHAPE_RECTANGLE, mxRectangleShape);
+// mxCellRenderer.registerShape(mxConstants.SHAPE_OVAL, mxOvalShape);
 mxCellRenderer.registerShape(mxConstants.SHAPE_ELLIPSE, mxEllipse);
 mxCellRenderer.registerShape(mxConstants.SHAPE_RHOMBUS, mxRhombus);
 mxCellRenderer.registerShape(mxConstants.SHAPE_CYLINDER, mxCylinder);
@@ -47855,7 +47861,7 @@ mxCellRenderer.registerShape(mxConstants.SHAPE_DOUBLE_ELLIPSE, mxDoubleEllipse);
 mxCellRenderer.registerShape(mxConstants.SHAPE_SWIMLANE, mxSwimlane);
 mxCellRenderer.registerShape(mxConstants.SHAPE_IMAGE, mxImageShape);
 mxCellRenderer.registerShape('primitive', mxImageShape);
-mxCellRenderer.registerShape('circle', mxImageShape);
+// mxCellRenderer.registerShape('oval', mxImageShape);
 mxCellRenderer.registerShape('diamond', mxImageShape);
 mxCellRenderer.registerShape('drop', mxImageShape);
 mxCellRenderer.registerShape('pentagram', mxImageShape);
@@ -56401,7 +56407,7 @@ mxGraph.prototype.startEditingAtCell = function(cell, evt)
 			}
 		}
 		var shapeName = this.getCellStyle(cell).shape;
-		console.log(shapeName)
+		// console.log(shapeName)
 		if (cell != null && shapeName !== 'image' && shapeName !== 'select' && shapeName !== 'endarrow' && shapeName !== 'beeline')
 		{
 			this.fireEvent(new mxEventObject(mxEvent.START_EDITING,
@@ -81957,7 +81963,6 @@ mxDefaultPopupMenu.prototype.createMenu = function(editor, menu, cell, evt)
 	{
 		var conditions = this.createConditions(editor, cell, evt);
 		var item = this.config.firstChild;
-console.log(77)
 		this.addItems(editor, menu, cell, evt, conditions, item, null);
 	}
 };
@@ -82258,7 +82263,6 @@ mxDefaultToolbar.prototype.init = function(container)
  */
 mxDefaultToolbar.prototype.addItem = function(title, icon, action, pressed)
 {
-	console.log(9999)
 	var clickHandler = mxUtils.bind(this, function()
 	{
 		if (action != null && action.length > 0)

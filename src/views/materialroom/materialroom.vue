@@ -153,9 +153,9 @@
       <div class="materialtabs-footer">
         <template v-if="isactive <= 1 || tabNumeber === 1">
           <span>
-            <Button @click="cancel">
+            <!-- <Button @click="cancel">
               {{ madeltext[0] }}
-            </Button>
+            </Button> -->
           </span>
         </template>
         <template v-if="isactive >= 2 && tabNumeber === 0">
@@ -250,6 +250,11 @@ export default {
         this.pathbase = `basic/`
     },
     methods: {
+        init() {
+            this.requestUtil.get(this.urls.materialList.url, {current: 1, size:50}).then((res) => {
+                console.log('获取素材库列表',res)
+            })
+        },
         cancel() {
             this.$emit('triggerCancel')
         },
@@ -299,6 +304,14 @@ export default {
             let name = `新建组件库${num}`
             this.assemblyArrayName.push(name)
             this.selectAssemblyList(num + ROOT_LEN)
+            let data = {
+                libraryName: name,
+                descript:'',
+                libraryType: 1
+            }
+            this.requestUtil.post(this.urls.materialList.url, data).then((res) => {
+                console.log('新增素材库',res)
+            })
         },
         uploadSucc() {
             Message.info('上传成功')
@@ -380,7 +393,7 @@ export default {
                         this.renameHandle(element,type)
                         break;
                     case 'delete':
-                        this.deleteHandle(actionType, type)
+                        this.deleteHandle(element, actionType, type)
                         break;
                     default:
                         console.log('操作出错啦！')
@@ -395,6 +408,7 @@ export default {
         renameHandle(ele) {
             let editInput = document.createElement('input');
             editInput.id = 'editPageInput'
+            let materialLibraryId = '267242385434'
             let oldVal = ele.innerText
             editInput.value = oldVal
             ele.innerText = ''
@@ -412,7 +426,14 @@ export default {
                 } else {
                     ele.innerHTML = `<span>${name}</span><span class="right-spots"></span>`
                     if (name !== oldVal) {
-                        console.log('重新命名请求接口')
+                        // console.log('重新命名请求接口')
+                        let data = {
+                            materialLibraryId:materialLibraryId,
+                            libraryName: name,
+                        }
+                        this.requestUtil.put(this.urls.materialList.url,data).then((res) => {
+                            console.log('重新命名',res)
+                        })
                     }
                 }
                 this.addListHandle()
@@ -433,8 +454,25 @@ export default {
             })
             this.hideMaterialModelMenu()
         },
-        deleteHandle() {
-            console.log('点击了删除按钮')
+        deleteHandle(ele, actionType, type) {
+            let materialLibraryId = '267242385434'
+            let materialId = '123456'
+            let data1 = {
+                materialLibraryId: materialLibraryId,
+            }
+            let data2 = {
+                materialId:materialId
+            }
+            if (type === this.POSITION_LEFT) {
+                this.requestUtil.delete(this.urls.materialList.url,data1).then((res) => {
+                    console.log('删除左边',res)
+                })
+            } else if (type === this.POSITION_RIGHT) {
+                this.requestUtil.delete(this.urls.materialRightList.url,data2).then((res) => {
+                    console.log('删除右边',res)
+                })
+            }
+            
             this.hideMaterialModelMenu()
         },
         deleteOneAssemly(evt) {

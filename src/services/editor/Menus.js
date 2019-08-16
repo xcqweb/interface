@@ -668,7 +668,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                         this.addMenuItems(menu, ['group', 'ungroup', '-'], null, evt);
                     }
                     menu.addSeparator();
-                    let arr = ['rectangle', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2']
+                    let arr = ['rectangle','ellipse', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2']
                     if (arr.includes(shapeName)) {
                         this.addMenuItems(menu, ['resetHide', '-', 'delete'], null, evt);
                     }

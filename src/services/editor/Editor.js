@@ -344,10 +344,11 @@ Editor.prototype.refreshToken = function(refreshToken) {
  * @param {Function} errorfn
  */
 Editor.prototype.ajax = async function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···') {
+    console.log('调试 在此处注释token')
     var token = getCookie('token');
     var refreshToken = getCookie('refreshToken');
     if (!token || !refreshToken) {
-        alert('登陆失效，请重新登陆系统！');
+        alert('登录失效，请重新登录系统！');
         return;
     }
     const t_exp = jwt_decode(token).exp;
@@ -355,13 +356,13 @@ Editor.prototype.ajax = async function(editorUi, url, method, data, fn = functio
     const now = new Date().valueOf();
     if (now > t_exp * 1000 && now < r_exp * 1000) {
         // 刷新token
-        await this.refreshToken(refreshToken);
+        // await this.refreshToken(refreshToken);
     } else  if (now > r_exp * 1000) {
-        alert('登陆失效，请重新登陆系统！');
+        alert('登录失效，请重新登录系统！');
         return;
     }
     var loadingBarInner = editorUi.actions.get('loading').funct(title);
-    var token = getCookie('token');
+    // var token = getCookie('token');
     $.ajax({
         method,
         headers: {
@@ -394,6 +395,7 @@ Editor.prototype.ajax = async function(editorUi, url, method, data, fn = functio
 Editor.prototype.InitEditor = function(editorUi) {
     // 获取文件服务器地址
     let getFileSystem = new Promise((resolve, reject) => {
+        console.log(123456)
         this.ajax(editorUi, '/api/image/host', 'GET', null, function(res) {
             // 文件服务器地址
             window.fileSystem = res.host;
@@ -495,6 +497,10 @@ Editor.prototype.palettesInfo = {
     },
     rectangle: {
         name: '矩形',
+        num: 0
+    },
+    ellipse: {
+        name: '圆形',
         num: 0
     },
     button: {
