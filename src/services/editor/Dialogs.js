@@ -5,24 +5,10 @@
 /**
  * Constructs a new open dialog.
  */
-var OpenDialog = function()
+var OpenDialog = function(tips)
 {
-    // var iframe = document.createElement('iframe');
-    // iframe.style.backgroundColor = 'transparent';
-    // iframe.allowTransparency = 'true';
-    // iframe.style.borderStyle = 'none';
-    // iframe.style.borderWidth = '0px';
-    // iframe.style.overflow = 'hidden';
-    // iframe.frameBorder = '0';
-	
-    // // Adds padding as a workaround for box model in older IE versions
-    // var dx = (mxClient.IS_VML && (document.documentMode == null || document.documentMode < 8)) ? 20 : 0;
-	
-    // iframe.setAttribute('width', (((Editor.useLocalStorage) ? 640 : 320) + dx) + 'px');
-    // iframe.setAttribute('height', (((Editor.useLocalStorage) ? 480 : 220) + dx) + 'px');
-    // iframe.setAttribute('src', OPEN_FORM);
     var p = document.createElement('p')
-    p.innerHTML = '此菜单将打开应用中心';
+    p.innerHTML = tips
     p.style.textAlign = "center"
     p.style.fontSize = '14px';
     p.style.lineHeight = '40px';
@@ -33,13 +19,14 @@ var OpenDialog = function()
 /**
  * Constructs a new color dialog.
  */
-var ColorDialog = function(editorUi, color, apply, cancelFn)
+var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
 {
     this.editorUi = editorUi;
     
     var selectColor = document.createElement('div');
     selectColor.style.display = 'flex';
-    selectColor.style.marginTop = '6px';
+    selectColor.style.marginTop = '8px';
+    selectColor.style.alignItems='center'
     var input = document.createElement('input');
     input.style.width = '80px';
     input.style.border = '1px solid #D4D4D4';
@@ -113,7 +100,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
     function createRecentColorTable()
     {
         var table = addPresets((ColorDialog.recentColors.length == 0) ? ['#FFFFFF'] :
-            ColorDialog.recentColors, 9, '#FFFFFF', true,true);
+            ColorDialog.recentColors, 9, '#FFFFFF', true, true);
         table.style.marginBottom = '8px';
 		
         return table;
@@ -121,17 +108,13 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
 	
     function addPresets(presets, rowLength, defaultColor, addResetOption,isRecent)
     {
+        if (!isShowBtn){
+            presets = ['#D0021B', '#F5A623', '#F8E71C', '#7ED321', '#4A90E2', '#BD10E0', '#4A4A4A', '#9B9B9B']
+        }
         rowLength = (rowLength != null) ? rowLength : 9;
         var odiv = document.createElement('div');
-        // table.style.borderCollapse = 'collapse';
-        // table.setAttribute('cellspacing', '0');
-        // table.style.marginBottom = '20px';
-        // table.style.cellSpacing = '0px';
-        // var tbody = document.createElement('tbody');
-        // table.appendChild(tbody);
 
         var rows = presets.length / rowLength;
-		
         for (var row = 0; row < rows; row++)
         {
             var tr = document.createElement('ul');
@@ -195,28 +178,6 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
             clearFix.style.overflow= 'auto';
             clearFix.style.clear= 'both';
             odiv.appendChild(clearFix);
-        // if (addResetOption)
-        // {
-        //     var td = document.createElement('li');
-        //     // td.setAttribute('title', mxResources.get('reset'));
-        //     td.style.border = '1px solid black';
-        //     td.style.padding = '0px';
-        //     td.style.width = '16px';
-        //     td.style.height = '16px';
-        //     td.style.backgroundImage = 'url(\'' + Dialog.prototype.closeImage + '\')';
-        //     td.style.backgroundPosition = 'center center';
-        //     td.style.backgroundRepeat = 'no-repeat';
-        //     td.style.cursor = 'pointer';
-			
-        //     tr.appendChild(td);
-
-        //     mxEvent.addListener(td, 'click', function()
-        //     {
-        //         ColorDialog.resetRecentColors();
-        //         odiv.parentNode.replaceChild(createRecentColorTable(), odiv);
-        //     });
-        // }
-
         center.appendChild(odiv);
         if(!isRecent){
             var borderU = document.createElement('p');
@@ -242,63 +203,58 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
     defaultColor.style.color = '#252525';
     defaultColor.innerText = '默认颜色';
     div.appendChild(defaultColor);
-	
-    // Adds recent colors
-    
-		
-    // Adds presets
-    var table = addPresets(this.presetColors);
-   
-    createRecentColorTable();
-    // table.style.marginBottom = '8px';
-    // table = addPresets(this.defaultColors);
-    // table.style.marginBottom = '16px';
-
+    // Adds presets 默认
+    addPresets(this.presetColors,9,'#FFFFFF', true, !isShowBtn);
+   if(isShowBtn){
+        createRecentColorTable();
+   }
     div.appendChild(center);
-
-    var buttons = document.createElement('div');
-    buttons.className = "btnContent";
-    buttons.style.textAlign = 'right';
-    buttons.style.whiteSpace = 'nowrap';
-    buttons.style.overflow = 'hidden';
-	
-    var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
-    {
-        editorUi.hideDialog();
-		
-        if (cancelFn != null)
+    if(isShowBtn){
+        var buttons = document.createElement('div');
+        buttons.className = "btnContent";
+        buttons.style.textAlign = 'right';
+        buttons.style.whiteSpace = 'nowrap';
+        buttons.style.overflow = 'hidden';
+        
+        var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
         {
-            cancelFn();
-        }
-    });
-    cancelBtn.className = 'geBtn';
+            editorUi.hideDialog();
+            
+            if (cancelFn != null)
+            {
+                cancelFn();
+            }
+        });
+        cancelBtn.className = 'geBtn';
 
-    if (editorUi.editor.cancelFirst)
-    {
-        buttons.appendChild(cancelBtn);
-    }
-	
-    var applyFunction = (apply != null) ? apply : this.createApplyFunction();
-	
-    var applyBtn = mxUtils.button(mxResources.get('apply'), function()
-    {
-        var color = input.value;
-        ColorDialog.addRecentColor(color, 9);
-		
-        if (color != 'none' && color.charAt(0) != '#')
+        if (editorUi.editor.cancelFirst)
         {
-            color = '#' + color;
+            buttons.appendChild(cancelBtn);
         }
+        
+        var applyFunction = (apply != null) ? apply : this.createApplyFunction();
+        
+        var applyBtn = mxUtils.button(mxResources.get('apply'), function()
+        {
+            var color = input.value;
+            ColorDialog.addRecentColor(color, 9);
+            
+            if (color != 'none' && color.charAt(0) != '#')
+            {
+                color = '#' + color;
+            }
 
-        applyFunction(color);
-        editorUi.hideDialog();
-    });
-    applyBtn.className = 'geBtn gePrimaryBtn';
-    buttons.appendChild(applyBtn);
-	
-    if (!editorUi.editor.cancelFirst)
-    {
-        buttons.appendChild(cancelBtn);
+            applyFunction(color);
+            editorUi.hideDialog();
+        });
+        applyBtn.className = 'geBtn gePrimaryBtn';
+        buttons.appendChild(applyBtn);
+        
+        if (!editorUi.editor.cancelFirst)
+        {
+            buttons.appendChild(cancelBtn);
+        }
+        div.appendChild(buttons);
     }
 	
     if (color != null)
@@ -313,8 +269,6 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
             picker.fromString(color);
         }
     }
-	
-    div.appendChild(buttons);
     this.picker = picker;
     this.colorInput = input;
 

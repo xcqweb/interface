@@ -11,8 +11,9 @@ import requestUtil from './services/request'
 import {i18n} from '@/common/i18n'
 import 'echarts'
 import VueECharts from 'vue-echarts'
-import {Switch} from 'iview'
+import {Switch,Checkbox} from 'iview'
 Vue.component('i-switch', Switch)
+Vue.component('i-checkbox', Checkbox)
 
 import './services/Utils'
 

@@ -12,10 +12,10 @@
     </div>
     <div class="geSidebarContainer geFormatContainer">
       <PageStyle
-        v-show="$store.state.main.type===0 && !showWidgetStyle"
+        v-if="$store.state.main.type===0 && !showWidgetStyle"
         ref="pageStyle"
       />
-      <DialogStyle v-show="$store.state.main.type===1 && !showWidgetStyle" />
+      <DialogStyle v-if="$store.state.main.type===1 && !showWidgetStyle" />
       <WidgetStyleMain v-if="showWidgetStyle" />
     </div>
   </div>
@@ -90,6 +90,7 @@ export default {
                 this.showWidgetStyle = !(graph.isSelectionEmpty() || graph.getSelectionCount() > 1)
                 if(this.showWidgetStyle) {
                     this.$store.commit('getWidgetInfo',graph)
+                    this.$store.commit('widgetChange',new Date().getTime())
                 }
             }
             this.$refs.pageStyle.init()

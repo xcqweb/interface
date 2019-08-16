@@ -2753,7 +2753,6 @@ EditorUi.prototype.updateActionStates = function()
     // 更新 action 状态
     var state = graph.view.getState(graph.getSelectionCell());
     var shapeName = state && state.style.shape;
-    console.log(shapeName)
     var actions = ['cut', 'copy', 'bold', 'underline','paste', 'delete', 'duplicate',
         'editLink', 'backgroundColor', 'borderColor', 'group','ungroup','resetHide',
 	               'edit', 'toFront', 'toBack', 'lockUnlock',
@@ -3341,7 +3340,8 @@ EditorUi.prototype.pickColor = function(color, apply)
     {
         graph.cellEditor.restoreSelection(selState);
     });
-    this.showDialog(dlg.container, 240, 242, true, false);
+    console.log(dlg.container)
+    this.showDialog(dlg.container, 203, 242, true, false);
     dlg.init();
 };
 

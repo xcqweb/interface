@@ -1,6 +1,7 @@
 const state = {
     type:0,//0=页面 1=弹窗 2=普通控件
     widgetInfo:{},//当前组件信息
+    rand:0,//监听控件切换的刷新 随机数字
 }
 
 const mutations = {
@@ -52,6 +53,9 @@ const mutations = {
     },
     setWidgetInfo(state,obj) {
         state.widgetInfo = Object.assign(state.widgetInfo,obj)
+    },
+    widgetChange(state,rand) {
+        state.rand = rand
     }
 }
 

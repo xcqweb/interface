@@ -56373,7 +56373,6 @@ mxGraph.prototype.startEditingAtCell = function(cell, evt)
 			}
 		}
 		var shapeName = this.getCellStyle(cell).shape;
-		console.log(shapeName)
 		if (cell != null && shapeName !== 'image' && shapeName !== 'select' && shapeName !== 'endarrow' && shapeName !== 'beeline')
 		{
 			this.fireEvent(new mxEventObject(mxEvent.START_EDITING,

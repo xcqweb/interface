@@ -653,7 +653,7 @@ div.mxWindow .geButton {
 }
 .geDialog .geDialogInfo {
 	overflow: hidden;
-	padding: 22px;
+	padding: 6px 4px;
 	font-size: 12px;
 }
 .geDialog .tipDialogInfo {
@@ -849,6 +849,10 @@ div.mxWindow .geButton {
 }
 .geSprite-redo::after {
 	content: '重做';
+	left: 13px;
+}
+.geSprite-align::after {
+	content: '对齐';
 	left: 13px;
 }
 .geSprite-left-align {
@@ -1514,12 +1518,12 @@ button.buttonTag, input.inputTag {
 .background {
 	position: absolute;
 	background: white;
-	height: 937px;
-	right: 0px;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom:0;
 	z-index: 10003;
 	opacity: 0;
-	left: 0px;
-	top: 0px;
 }
 .tipDialogInfo {
 	position: absolute;
@@ -1560,5 +1564,18 @@ button.buttonTag, input.inputTag {
 .mutual-btn.selected {
 	background: rgba(61, 145, 247, 1);
 	border: 1px solid rgba(39, 122, 224, 1);
-	color: #fff;
+	color: #fff !important;
+}
+
+/* 组态动画效果 */
+.animate-blink{
+	animation: blink 1s ease infinite;
+}
+@keyframes blink {
+	0% {
+		opacity:0;
+	}
+	100% {
+		opacity:1;
+	}
 }
