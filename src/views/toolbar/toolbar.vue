@@ -73,7 +73,7 @@
         @mouseover.stop.prevent="showAlignDialog=true"
       >
         <div
-          class="geSprite"
+          class="geSprite geSprite-align"
           :class="alignCls"
         />
         <img src="../../assets/images/menu/down_ic.png">

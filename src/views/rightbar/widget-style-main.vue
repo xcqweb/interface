@@ -35,9 +35,11 @@
     />
     <State
       v-show="tab==2"
+      :key="refresh"
     />
     <MutualMain
       v-show="tab==3"
+      :key="refresh+1"
     />
     <Data v-show="tab==4" />
   </div>
@@ -53,7 +55,18 @@ export default{
     data() {
         return {
             tab:1,
+            refresh:0,//切换控件刷新子组件
         }
+    },
+    computed: {
+        rand() {
+            return this.$store.state.main.rand
+        }
+    },
+    watch: {
+        rand() {
+            this.refresh = this.rand
+        },
     },
     mounted() {
     },

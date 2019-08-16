@@ -7,19 +7,22 @@
         选择页面
       </p>
       <ul class="widget-con">
-        <li class="selected">
-          页面1
+        <li
+          v-for="(item,index) in pages"
+          :key="index"
+          :class="{'selected':item.selected}"
+          @click="checkPage(item)"
+        >
+          {{ item.title }}
         </li>
-        <li>页面2</li>
-        <li>页面3</li>
       </ul>
     </div>
     <div style="display:flex;justify-content:space-between;margin-top:10px;">
       <button
         class="mutual-btn"
-        @click="del()"
+        @click="back()"
       >
-        删除
+        取消
       </button>
       <button
         class="mutual-btn selected"
@@ -32,18 +35,54 @@
 </template>
 
 <script>
+import {tipDialog} from '../../../services/Utils'
 export default{
+    props:['pages','bindActions','currentEditItem'],
     data() {
         return {
+            currentItem:null,
         }
     },
     mounted() {
+        
     },
     methods: {
-        del() {
+        back() {
+            this.$emit("submitMutual")
         },
         submit() {
-            this.$emit("submitMutual",1)
+            let flag = false,flag2 = false
+            for(let i = 0;i < this.pages.length;i++) {
+                if(this.pages[i].selected) {
+                    flag = true
+                    break
+                }
+            }
+            if(!flag) {
+                tipDialog(this.myEditorUi,'请选择要跳转的页面')
+                return
+            } 
+            if(!this.currentItem) {
+                this.currentItem = this.currentEditItem  //编辑传过来的
+            }
+            for(let i = 0;i < this.bindActions.length;i++) {
+                if(this.currentItem.id == this.bindActions[i].link) {
+                    flag2 = true
+                    break
+                }
+            }
+            if(flag2) {
+                tipDialog(this.myEditorUi,'该页面已经绑定了跳转事件')
+                return
+            } 
+            this.$emit("submitMutual",{mutualType:1,id:this.currentItem.id,innerType:'page'})
+        },
+        checkPage(item) {
+            this.currentItem = item
+            this.pages.forEach(d=>{
+                d.selected = false
+            })
+            item.selected = true
         }
     },      
 }
@@ -66,6 +105,7 @@ export default{
     &.selected{
       background:rgba(61,145,247,1);
       border:1px solid rgba(39,122,224,1);
+      color:#fff;
     }
   }
 }

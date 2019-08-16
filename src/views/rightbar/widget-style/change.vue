@@ -7,11 +7,14 @@
         选择组件
       </p>
       <ul class="widget-con">
-        <li class="selected">
-          组件1
+        <li
+          v-for="(item,index) in currentPageWidgets"
+          :key="index"
+          :class="{'selected':item.selected}"
+          @click="checkWidget(item)"
+        >
+          {{ item.title }}
         </li>
-        <li>组件2</li>
-        <li>组件3</li>
       </ul>
     </div>
     <div
@@ -34,9 +37,9 @@
     <div style="display:flex;justify-content:space-between;margin-top:10px;">
       <button
         class="mutual-btn"
-        @click="del()"
+        @click="hide()"
       >
-        删除
+        取消
       </button>
       <button
         class="mutual-btn selected"
@@ -50,6 +53,7 @@
 
 <script>
 export default{
+    props:['currentPageWidgets','currentEditItem','bindActions'],
     data() {
         return {
         }
@@ -57,10 +61,18 @@ export default{
     mounted() {
     },
     methods: {
-        del() {
+        hide() {
+            this.$emit("submitMutual")
         },
         submit() {
-            this.$emit("submitMutual",1)
+            this.$emit("submitMutual")
+        },
+        checkWidget(item) {
+            this.currentWidgetItem = item
+            this.currentPageWidgets.forEach(d=>{
+                d.selected = false
+            })
+            item.selected = true
         }
     },      
 }
@@ -83,6 +95,7 @@ export default{
     &.selected{
       background:rgba(61,145,247,1);
       border:1px solid rgba(39,122,224,1);
+      color:#fff;
     }
   }
 }

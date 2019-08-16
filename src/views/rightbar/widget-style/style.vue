@@ -318,7 +318,6 @@ export default {
     created() {},
     mounted() {
         this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
-        console.log(this.shapeName )
         let graph = this.myEditorUi.editor.graph
         graph.getModel().addListener(mxEvent.CHANGE,()=>{
             this.$store.commit('getWidgetInfo',graph)

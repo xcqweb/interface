@@ -30,11 +30,14 @@
           选择弹窗
         </p>
         <ul class="widget-con">
-          <li class="selected">
-            弹窗1
+          <li
+            v-for="(item,index) in dialogs"
+            :key="index"
+            :class="{'selected':item.selected}"
+            @click="checkDialog(item)"
+          >
+            {{ item.title }}
           </li>
-          <li>弹窗2</li>
-          <li>弹窗3</li>
         </ul>
       </div>
       <div
@@ -45,19 +48,22 @@
           选择组件
         </p>
         <ul class="widget-con">
-          <li class="selected">
-            组件1
+          <li
+            v-for="(item,index) in currentPageWidgets"
+            :key="index"
+            :class="{'selected':item.selected}"
+            @click="checkWidget(item)"
+          >
+            {{ item.titleType }}
           </li>
-          <li>组件2</li>
-          <li>组件3</li>
         </ul>
       </div>
       <div style="display:flex;justify-content:space-between;margin-top:10px;">
         <button
           class="mutual-btn"
-          @click="del(typeTab)"
+          @click="hide(typeTab)"
         >
-          删除
+          取消
         </button>
         <button
           class="mutual-btn selected"
@@ -71,24 +77,84 @@
 </template>
 
 <script>
+import {tipDialog} from '../../../services/Utils'
 export default{
+    props:['dialogs','currentPageWidgets','currentEditItem','bindActions','typeTab'],
     data() {
         return {
-            typeTab:1,
+            
         }
     },
     mounted() {
+    
     },
     methods: {
         changeTab(index) {
             this.typeTab = index
+            if(this.typeTab === 1) {
+                this.currentPageWidgets.forEach(d=>{
+                    d.selected = false
+                })
+            }else{
+                this.dialogs.forEach(d=>{
+                    d.selected = false
+                })
+            }
         },
-        del(typeTab) {
-            console.log(typeTab)
+        hide() {
+            this.$emit("submitMutual")
         },
         submit(typeTab) {
-            console.log(typeTab)
-            this.$emit("submitMutual",1)
+            let currentItem,innerType,flag = false,flag2 = false,tempList,tipText
+            if(typeTab == 1) {
+                currentItem = this.currentDialogItem
+                innerType = 'page'
+                tempList = this.dialogs
+                tipText = '弹窗'
+            }else{
+                currentItem = this.currentWidgetItem
+                innerType = 'palette'
+                tempList = this.currentPageWidgets
+                tipText = '控件'
+            }
+            for(let i = 0;i < tempList.length;i++) {
+                if(tempList[i].selected) {
+                    flag = true
+                    break
+                }
+            }
+            if(!flag) {
+                tipDialog(this.myEditorUi,`请选择要设置的${tipText}`)
+                return
+            } 
+            if(!currentItem) {
+                currentItem = this.currentEditItem  //编辑传过来的
+            }
+            for(let i = 0;i < this.bindActions.length;i++) {
+                if(currentItem.id == this.bindActions[i].link) {
+                    flag2 = true
+                    break
+                }
+            }
+            if(flag2) {
+                tipDialog(this.myEditorUi,`该${tipText}已经绑定了显隐事件`)
+                return
+            } 
+            this.$emit("submitMutual",{mutualType:2,id:currentItem.id,hide:currentItem.hide,innerType:innerType})
+        },
+        checkDialog(item) {
+            this.currentDialogItem = item
+            this.dialogs.forEach(d=>{
+                d.selected = false
+            })
+            item.selected = true
+        },
+        checkWidget(item) {
+            this.currentWidgetItem = item
+            this.currentPageWidgets.forEach(d=>{
+                d.selected = false
+            })
+            item.selected = true
         }
     },      
 }
@@ -134,6 +200,7 @@ export default{
     &.selected{
       background:rgba(61,145,247,1);
       border:1px solid rgba(39,122,224,1);
+      color:#fff;
     }
   }
 }
