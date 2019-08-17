@@ -89,7 +89,6 @@ function Sidebar(editorUi, container)
  */
 Sidebar.prototype.init = function()
 {
-    // debugger
     const dir = '/static/stencils/'
     // this.createPageContextMenu();
     this.addPagePalette(true);//页面管理
@@ -973,7 +972,6 @@ Sidebar.prototype.renameNode = function(ele) {
             ele.innerHTML = `<span>${name}</span><span class="right-icon-dolt"></span>`;
         }
     }
-    // debugger
     mxEvent.addListener(document.body, 'click', saveFn);
     // 回车
     mxEvent.addListener(editInput, 'click', function(e) {
@@ -1591,7 +1589,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '表格');
         }),
         // 图片
-        this.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
+        this.createVertexTemplateEntry('shape=image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
         // 图元
         // this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', 50, 50, '', '图元'),
         // 箭头
@@ -1623,7 +1621,12 @@ Sidebar.prototype.addGeneralPalette = function(expand)
     ];
     //封装
     this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
-    // this.addPaletteFunctions('chart', '图表控件', false, fns);
+
+    let fnsChart=[
+        this.createVertexTemplateEntry('shape=lineChart;html=1;labelBackgroundColor=#ffffff;', 320, 240, '<div class="echarts_con"></div>', '趋势图'),
+        this.createVertexTemplateEntry('shape=gaugeChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/gaugeChart.png', 36, 36, '', '仪表盘'),
+    ]
+    this.addPaletteFunctions('chart', '图表控件', false, fnsChart);
     //this.addGeneralPaletteShort();
 };
 /**
@@ -3401,19 +3404,19 @@ Sidebar.prototype.addFoldingHandler = function(title, content, funct)
                         mxClient.NO_FO = Editor.prototype.originalNoForeignObject;
                         funct(content);
                         mxClient.NO_FO = fo;
-                        content.style.display = 'block';
+                        content.style.display = 'flex';
                         title.style.cursor = '';
                         title.innerHTML = prev;
                     }, 0);
                 }
                 else
                 {
-                    content.style.display = 'block';
+                    content.style.display = 'flex';
                 }
             }
             else
             {
-                content.style.display = 'block';
+                content.style.display = 'flex';
             }
 			
             title.style.backgroundImage = 'url(\'' + this.expandedImage + '\')';

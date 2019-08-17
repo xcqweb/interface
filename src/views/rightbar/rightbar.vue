@@ -18,20 +18,24 @@
       <DialogStyle v-if="$store.state.main.type===1 && !showWidgetStyle" />
       <WidgetStyleMain v-if="showWidgetStyle" />
     </div>
+    <Chart v-if="isChart" :key="refresh+10"/>
   </div>
 </template>
 <script>
-import {mxCell,mxGeometry} from '../../services/mxGlobal'
+import {mxCell,mxGeometry,mxEvent} from '../../services/mxGlobal'
 import PageStyle from './page-style'
 import DialogStyle from './dialog-style'
 import WidgetStyleMain from './widget-style-main'
+import Chart from '../charts/chart'
 
 let shortCutWidgets
 export default {
-    components:{PageStyle,DialogStyle,WidgetStyleMain},
+    components:{PageStyle,DialogStyle,WidgetStyleMain,Chart},
     data() {
         return {
             showWidgetStyle:false,
+            isChart:false,
+            refresh:0,
         }
     },
     created() {},
@@ -50,7 +54,7 @@ export default {
                     20,
                     // 类似链接一样设置
                     '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">text</span>',
-                    "文字"
+                    "文字",true,true
                 ),
                 // 矩形
                 that.createVertexTemplateEntry(
@@ -58,10 +62,7 @@ export default {
                     120,
                     60,
                     "",
-                    "矩形",
-                    null,
-                    null,
-                    "矩形"
+                    "矩形",true,true
                 ),
                 //直线
                 that.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 0, '', '直线', null, ''),
@@ -90,9 +91,19 @@ export default {
                 this.showWidgetStyle = !(graph.isSelectionEmpty() || graph.getSelectionCount() > 1)
                 if(this.showWidgetStyle) {
                     this.$store.commit('getWidgetInfo',graph)
+                    let {shapeInfo} = this.$store.state.main.widgetInfo
                     this.$store.commit('widgetChange',new Date().getTime())
+                    if(shapeInfo.shape == "lineChart") {
+                        this.isChart = true
+                    }
                 }
             }
+            graph.addListener(mxEvent.CLICK, ()=>{
+                this.refresh = new Date().getTime()
+            })
+            graph.addListener(mxEvent.CELLS_ADDED, ()=>{
+                this.refresh = new Date().getTime()
+            })
             this.$refs.pageStyle.init()
         },
     }

@@ -78,7 +78,7 @@
                       :key="key"
                     >
                       <div>
-                        <span :style="'background:url(' + (DIR_ + pathbase + key) + ') no-repeat center center;background-size:30px 30px;'" />
+                        <span :style="'background:url(' + (DIR_ + key) + ') no-repeat center center;background-size:30px 30px;'" />
                         <label class="right-spots-assemly" />
                       </div>
                       <span>
@@ -196,7 +196,7 @@ export default {
             showOktext: true,
             assemblyArrayName: ['基本组件', '图表组件', 'layout组件', '自定义组件'],
             materialArrayName: ['页面模版', '弹窗模版'],
-            DIR_: `../../../static/stencils/`,
+            DIR_: `../../../static/stencils/basic/`,
             baseAssembly: {
                 'rectangle.png': '矩形',
                 'button.png': '按钮',
@@ -218,8 +218,8 @@ export default {
                 'pipeline2.png': '管道2'
             },
             tablesAssembly: {
-                'trendchart.png': '趋势图',
-                'dashboard.png': '仪表盘'
+                'lineChart.png': '趋势图',
+                'gaugeChart.png': '仪表盘'
             },
             arrListTables: [],
             emptyArray: [],
@@ -236,7 +236,6 @@ export default {
                 'rename': '重命名',
                 'delete': '删除'
             },
-            pathbase: '',
             POSITION_LEFT: 'left',
             POSITION_RIGHT: 'right',
             ismouseenter: false
@@ -247,7 +246,6 @@ export default {
     },
     mounted() {
         this.arrListTables = this.baseAssembly
-        this.pathbase = `basic/`
     },
     methods: {
         init() {
@@ -271,12 +269,6 @@ export default {
             }
             this.arrListTables = index === 0 ? this.baseAssembly : (index === 1 ? this.tablesAssembly : this.emptyArray)
             console.log(this.arrListTables)
-            
-            if (index === 0) {
-                this.pathbase = `basic/`
-            } else {
-                this.pathbase = `tables/`
-            }
             this.isactive = index
             this.addListHandle(index)
         },

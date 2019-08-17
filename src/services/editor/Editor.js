@@ -567,10 +567,6 @@ Editor.prototype.palettesInfo = {
         name: '单选',
         num: 0
     },
-    trendChart: {
-        name: '趋势图',
-        num: 0
-    },
     light: {
         name: '指示灯',
         num: 0
@@ -587,7 +583,14 @@ Editor.prototype.palettesInfo = {
         name: '管道2',
         num: 0
     },
-
+    lineChart: {
+        name: '趋势图',
+        num: 0
+    },
+    gaugeChart: {
+        name: '仪表盘',
+        num: 0
+    },
 }
 /**
  * 文件服务器的地址

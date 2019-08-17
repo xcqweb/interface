@@ -183,10 +183,10 @@ export default {
 </script>
 <style lang="less" scoped>
     .left-geSidebarContainer{
-        height:278px;
-        overflow: hidden;
+        height:150px;
+        overflow: auto;
         .ivu-tabs{
-            overflow: hidden;
+            overflow: auto;
             height:100%;
             /deep/.ivu-tabs-content{
                 height:100% !important;

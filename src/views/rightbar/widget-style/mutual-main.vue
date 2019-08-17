@@ -23,7 +23,9 @@
           style="flex:1;"
         >
           <div>事件类型-{{ mutualTypes[e.type-1] }}</div>
-          <div>{{ e.title }}</div>
+          <div>
+            {{ e.title }}<span v-if="e.type==3">-{{ e.stateName }}</span>
+          </div>
         </div>
         <div
           style="display:flex;align-items:flex-start;"
@@ -109,7 +111,6 @@ export default{
             events:[],
             pages:[],//页面
             bindActions:[],
-            refreshChild:0,
             currentEditItem:null,//Link组件当前页面名称列表选中项
             currentPageWidgets:[],//当前页面控件
             dialogs:[],//弹窗

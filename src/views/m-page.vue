@@ -30,7 +30,7 @@ import '../services/editor/Menus'
 import '../services/editor/Toolbar'
 import '../services/editor/Dialogs'
 
-import {Graph,Editor,EditorUi,mxEvent} from '../services/mxGlobal'
+import {Graph,Editor,EditorUi,mxEvent,mxUtils,mxResources} from '../services/mxGlobal'
 import Toolbar from './toolbar/toolbar'
 import LeftSideBar from './left-sidebar/left-sidebar'
 import RightBar from './rightBar/rightbar'
@@ -50,8 +50,8 @@ export default {
         }
     },
     created() {
-        window.mxUtils.getAll(['../static/resources/grapheditor.txt', '../static/default.xml'],xhr=> {
-            window.mxResources.parse(xhr[0].getText());
+        mxUtils.getAll(['../static/resources/grapheditor.txt', '../static/default.xml'],xhr=> {
+            mxResources.parse(xhr[0].getText());
             // 默认配置
             var themes = new Object();
             themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement();
@@ -60,6 +60,16 @@ export default {
             let myEditorUi = new EditorUi(myEditor,document.querySelector(".geEditor"));
             Vue.prototype.myEditorUi = myEditorUi
             myEditorUi.editor.InitEditor(myEditorUi)
+            /* let graph = this.myEditorUi.editor.graph
+            let  parent = graph.getDefaultParent()
+            var doc = mxUtils.createXmlDocument();
+            var obj = doc.createElement('UserObject');
+            //obj.setAttribute('label', 'Hello, World!');
+            //let chartCon = document.querySelector('.chart-con-main') 
+            setTimeout(()=>{
+                graph.insertVertex(parent, null, obj,100, 100,400, 240)
+            },3000) */
+
             this.init()
         })
     },
@@ -90,7 +100,6 @@ export default {
                 if (val) {
                     this.bindDatas.push(val)
                 }
-                // console.dir(cells[i].value && cells[i].value.attributes && cells[i].value.attributes.bindData);  
             }
         },
     }

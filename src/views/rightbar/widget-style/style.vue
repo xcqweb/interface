@@ -254,7 +254,7 @@
 </template>
 <script>
 import {mxEvent,mxConstants,mxEventObject} from '../../../services/mxGlobal'
-let newFontColor,newBgColor,newBorderColor,name
+let newFontColor = "#000000",newBgColor = "#ffffff",newBorderColor = "#000000",name
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
 
