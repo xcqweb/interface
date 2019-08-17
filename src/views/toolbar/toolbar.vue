@@ -270,9 +270,9 @@ export default{
         materialLab() {
             // console.log(this.myEditorUi.sidebar)
             this.ifshowmarerial = true
-            // this.$nextTick(() => {
-            //     this.$refs.materialroom.init()
-            // })
+            this.$nextTick(() => {
+                this.$refs.materialroom.init()
+            })
         },
         triggerCancel() {
             this.ifshowmarerial = false

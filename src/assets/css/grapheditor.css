@@ -349,6 +349,9 @@ div.mxWindow .geButton {
 	background:whiteSmoke;
 	border-bottom:1px solid #e5e5e5;
 	overflow:hidden;
+	flex-direction: row;
+	flex-wrap:wrap;
+	display: flex;
 }
 .geSidebarContainer #pageManage p {
 	line-height: 24px;
@@ -443,9 +446,12 @@ div.mxWindow .geButton {
 	background-repeat:no-repeat;
 	background-position: 50% 0;
 	background-size: 36px 36px;
-	border:1px solid transparent;
+	/* border:1px solid transparent; */
 	border-radius:2px;
 	cursor: move;
+	display:flex;
+	justify-content: center;
+	align-items: center;
 }
 .geSidebar .geItem:hover {
 	border-radius:2px;

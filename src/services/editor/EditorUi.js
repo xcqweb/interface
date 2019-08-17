@@ -1291,7 +1291,6 @@ EditorUi.prototype.initClipboard = function()
     var mxClipboardCut = mxClipboard.cut;
     mxClipboard.cut = function(graph)
     {
-        console.log(555)
         if (graph.cellEditor.isContentEditing())
         {
             document.execCommand('cut', false, null);
@@ -1307,13 +1306,14 @@ EditorUi.prototype.initClipboard = function()
     var mxClipboardCopy = mxClipboard.copy;
     mxClipboard.copy = function(graph)
     {
-        console.log(4645657)
+        console.log(graph.cellEditor.isContentEditing());
         if (graph.cellEditor.isContentEditing())
         {
             document.execCommand('copy', false, null);
         }
         else
         {
+            console.log(mxClipboardCopy)
             mxClipboardCopy.apply(this, arguments);
         }
 
@@ -1324,7 +1324,6 @@ EditorUi.prototype.initClipboard = function()
     mxClipboard.paste = function(graph)
     {
         var result = null;
-
         if (graph.cellEditor.isContentEditing())
         {
             document.execCommand('paste', false, null);
@@ -1343,17 +1342,16 @@ EditorUi.prototype.initClipboard = function()
     var mxClipboardresetHide = mxClipboard.resetHide;
     mxClipboard.resetHide = function (graph) {
         var result = null;
-
+        console.log(graph.cellEditor.isContentEditing());
         if (graph.cellEditor.isContentEditing()) {
             document.execCommand('resetHide', false, null);
         }
         else {
+            console.log(mxClipboardresetHide)
             result = mxClipboardresetHide.apply(this, arguments);
         }
 
         ui.updatePasteActionStates();
-
-        return result;
     };
 
     // Overrides cell editor to update paste action state
@@ -2742,11 +2740,6 @@ EditorUi.prototype.updateActionStates = function()
                 vertexSelected = true;
                 shapeNameStr += ',' + graph.view.getState(cell).style.shape
     		}
-
-    	// 	if (edgeSelected && vertexSelected)
-            // {
-            // 	break;
-            // }
         }
     }
 
@@ -2971,10 +2964,11 @@ EditorUi.prototype.createDivs = function()
     this.toolbarContainer = document.querySelector(".geToolbarContainer");
     this.sidebarContainer = document.querySelector('.geSidebarContainer');
     this.formatContainer = document.querySelector('.geSidebarContainer.geFormatContainer');
+
     this.rightBarContainer = document.querySelector('.geSidebarContainer.geRightBarContainer');
     //this.paletteManageContainer = document.querySelector('.geSidebarContainer.gePaletteManageContainer');
     this.diagramContainer = this.createDiv('geDiagramContainer');
-    //this.footerContainer = this.createDiv('geFooterContainer');
+    this.footerContainer = this.createDiv('geFooterContainer');
     //去掉sidebar 右边的创建的直线
     this.hsplit = this.createDiv('geHsplit');
     this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));

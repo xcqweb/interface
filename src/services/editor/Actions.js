@@ -428,7 +428,46 @@ Actions.prototype.init = function()
             }
         }
     });
-    this.addAction('resetHide', function () { mxClipboard.resetHide(graph); }, null, 'sprite-resetHide',null);
+    this.addAction('resetHide', function () { 
+        // // console.log('点击隐藏设置')
+        let flag = false
+        let selectCell = graph.getSelectionCell()
+        if (graph.getModel().getValue(graph.getSelectionCell())) {
+            let showOrHide = graph.getModel().getValue(graph.getSelectionCell()).getAttribute('hide')
+            if (showOrHide === null) {
+                flag = true
+            } else if (showOrHide === 'true') {
+                flag = false
+            } else if (showOrHide === 'false') {
+                flag = true
+            }
+        } else {
+            if (Object.prototype.toString.call(selectCell) === '[object Object]' && (selectCell.hide === undefined || !selectCell.hide)) {
+                selectCell.hide= true
+                flag = true
+            } else {
+                selectCell.hide = false
+                flag = false
+            }
+        }
+        console.log(flag)
+        setTimeout(() => {
+            newSetCellAttrs('hide', flag)
+        })
+    }, null, 'sprite-resetHide',null);
+    function newSetCellAttrs(key, value) {
+        var cell = graph.getSelectionCell();
+        var cellInfo = graph.getModel().getValue(cell);
+        // 转换类型
+        if (!mxUtils.isNode(cellInfo)) {
+            var doc = mxUtils.createXmlDocument();
+            var obj = doc.createElement('object');
+            obj.setAttribute('label', cellInfo || '');
+            cellInfo = obj;
+        }
+        cellInfo.setAttribute(key, value);
+        graph.getModel().setValue(cell, cellInfo);
+    }
     /**
 	 * 删除节点
 	 * @param {object} includeEdges 是否包含线条

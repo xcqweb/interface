@@ -7,6 +7,8 @@
 /**
  * Construcs a new sidebar for the given editor.
  */
+import requestUtil from '../request'
+import Urls from '../../constants/url'
 var basicXmlFns = [];
 function Sidebar(editorUi, container)
 {
@@ -1023,8 +1025,23 @@ Sidebar.prototype.copyPage = function (ele,pageType) {
 /*添加模版*/
 Sidebar.prototype.addTemplate = function(type) {
     // console.log(type) // normal / dialog
-    let svg11 = this.editorUi.editor.graph.getSvg(null, null, null, true, null, true, null, null, null, false)
-    console.log(svg11) // 
+    let svgImage = this.editorUi.editor.graph.getSvg(null, null, null, true, null, true, null, null, null, false)
+    var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
+    // console.log(svgImage.outerHTML)
+    svgImage = svgImage.outerHTML
+    console.log(svgImage)
+    // console.log(typeof currentPage)
+    console.log(Urls.addTemplate)
+    let data = {
+        content: JSON.stringify(currentPage),
+        pic: svgImage,
+        type: type
+    }
+    requestUtil.post(Urls.addTemplate.url, data).then((res) => {
+        console.log(res)
+    })
+    // this.editorUi.editor.ajax(this.editorUi, 'iot-cds/cds/pageTemplate', 'POST')
+    // console.log(svg11) // 
 }
 
 /**
@@ -1508,10 +1525,24 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 {
     var that = this;
     var fns = [
+        // 文字
+        this.createVertexTemplateEntry(
+            "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;",
+            // "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;",
+            60,
+            20,
+            // 类似链接一样设置
+            '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">输入文本</span>',
+            // 'text',
+            "文字"
+        ),
+        // 直线
+        this.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 0, '', '直线', null,''),
         // 矩形
         this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, '矩形'),
-        // 按钮
-        this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box;background:transparent;">BUTTON</button>', '按钮'),
+        // 圆行
+        this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 36, 36, '', 'Circle', null, null, 'circle'),
+        // this.createVertexTemplateEntry('rounded=0;shape=oval;whiteSpace=wrap;html=1;', 36, 36, '', '圆形', null, null, '圆形'),
         // 横向菜单
         this.addEntry('page menu', function()
         {
@@ -1528,16 +1559,16 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             // 
             return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '菜单');
         }),
+        // 按钮
+        this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box;background:transparent;">BUTTON</button>', '按钮'),
         // 复选
         // this.createVertexTemplateEntry('shape=multipleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="checkbox" class="inputTag1" />', '复选'),
-        this.createVertexTemplateEntry('shape=multipleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/multipleCheck.png', 16, 16, '', '复选'),
+        // this.createVertexTemplateEntry('shape=multipleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/multipleCheck.png', 16, 16, '', '复选'),
         // 单选
         // this.createVertexTemplateEntry('shape=singleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="radio" class="inputTag" />', '单选'),
-        this.createVertexTemplateEntry('shape=singleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/singleCheck.png', 16, 16, '', '单选'),
-        // 图片
-        this.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
+        // this.createVertexTemplateEntry('shape=singleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/singleCheck.png', 16, 16, '', '单选'),
         // 下拉列表
-        this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 100, 16, '<select disabled class="selectTag"></select><div class="selectTagShade"></div>', '下拉列表'),
+        // this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 100, 16, '<select disabled class="selectTag"></select><div class="selectTagShade"></div>', '下拉列表'),
         // 表格，通过html生成
         // this.createVertexTemplateEntry('shape=table;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
         //  	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
@@ -1559,44 +1590,33 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             }
             return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '表格');
         }),
+        // 图片
+        this.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
         // 图元
-        this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', 50, 50, '', '图元'),
+        // this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', 50, 50, '', '图元'),
         // 箭头
-        this.createEdgeTemplateEntry('shape=endarrow;endArrow=classic;html=1;', 50, 0, '', '箭头', false, false),
-        //直线
-        this.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 0, '', '直线', null,''),
+        // this.createEdgeTemplateEntry('shape=endarrow;endArrow=classic;html=1;', 50, 0, '', '箭头', false, false),
         // 曲线
-        this.addEntry('curve', mxUtils.bind(this, function()
-	 	{
-            var cell = new mxCell('', new mxGeometry(0, 0, 50, 50), 'shape=curve;curved=1;endArrow=none;html=1;');
-            cell.geometry.setTerminalPoint(new mxPoint(0, 50), true);
-            cell.geometry.setTerminalPoint(new mxPoint(50, 0), false);
-            cell.geometry.points = [new mxPoint(50, 50), new mxPoint(0, 0)];
-            cell.geometry.relative = true;
-            cell.edge = true;
-            return this.createEdgeTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '曲线');
-	 	})),
-        // 链接
-        this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
-        // 文字
-        this.createVertexTemplateEntry(
-            "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;",
-            // "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;",
-            40,
-            20,
-            // 类似链接一样设置
-            '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">输入文本</span>',
-            // 'text',
-            "文字"
-          ),
+        // this.addEntry('curve', mxUtils.bind(this, function()
+	 	// {
+        //     var cell = new mxCell('', new mxGeometry(0, 0, 50, 50), 'shape=curve;curved=1;endArrow=none;html=1;');
+        //     cell.geometry.setTerminalPoint(new mxPoint(0, 50), true);
+        //     cell.geometry.setTerminalPoint(new mxPoint(50, 0), false);
+        //     cell.geometry.points = [new mxPoint(50, 50), new mxPoint(0, 0)];
+        //     cell.geometry.relative = true;
+        //     cell.edge = true;
+        //     return this.createEdgeTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '曲线');
+	 	// })),
+        // 管道2
+        this.createVertexTemplateEntry('shape=pipeline2;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline2.png', 36, 36, '', '管道2'),
         // 指示灯
         this.createVertexTemplateEntry('shape=light;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/light.png', 36, 36, '', '指示灯'),
         // 进度条
         this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/progress.png', 36, 36, '', '进度条'),
         // 管道1
         this.createVertexTemplateEntry('shape=pipeline1;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline1.png', 36, 36, '', '管道1'),
-        // 管道2
-        this.createVertexTemplateEntry('shape=pipeline2;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline2.png', 36, 36, '', '管道2'),
+        // 链接
+        this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
         // 趋势图
         // this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
 		
@@ -1827,9 +1847,13 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
     elt.className = 'geItem';
     elt.style.overflow = 'hidden';
     var border = (mxClient.IS_QUIRKS) ? 8 + 2 * this.thumbPadding : 2 * this.thumbBorder;
-    elt.style.width = (this.thumbWidth + border + 14) + 'px';
-    elt.style.height = (this.thumbHeight + border + 20) + 'px';
-    elt.style.padding = this.thumbPadding + 'px';
+    // elt.style.width = (this.thumbWidth + border + 14) + 'px';
+    // elt.style.height = (this.thumbHeight + border + 20) + 'px';
+    elt.style.width = '50px'
+    elt.style.height = '50px'
+    // elt.style.marginRight = '5px'
+    // elt.style.marginBottom = '5px'
+    // elt.style.padding = this.thumbPadding + 'px';
     var shapeName = /shape=(.+?);/.exec(cells[0].style)[1];
     if (!title) {
         // 图元列表
@@ -1839,6 +1863,8 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
         elt.style.height = '33px';
     } else {
         elt.style.backgroundImage = 'url(/static/stencils/basic/' + shapeName + '.png)';
+        elt.style.backgroundPosition = `center center`
+        elt.style.backgroundRepeat = `no-repeat`
     }
 	
     if (mxClient.IS_IE6)
@@ -1894,13 +1920,13 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
         }));
     }
     // 控件名称
-    var nameText = document.createElement('p')
-    nameText.className = 'geItemTitle'
-    nameText.style.textAlign = 'center'
-    nameText.style.textOverflow = 'ellipsis'
-    nameText.style.overflow = 'hidden'
-    nameText.innerText = title
-    elt.appendChild(nameText)
+    // var nameText = document.createElement('p')
+    // nameText.className = 'geItemTitle'
+    // nameText.style.textAlign = 'center'
+    // nameText.style.textOverflow = 'ellipsis'
+    // nameText.style.overflow = 'hidden'
+    // nameText.innerText = title
+    // elt.appendChild(nameText)
     return elt;
 };
 

@@ -8420,6 +8420,10 @@ var mxUtils =
 	 */
 	SHAPE_RECTANGLE: 'rectangle',
 
+	/*
+	 *Variable: SHAPE_oval
+	*/
+	SHAPE_OVAL: 'oval',
 	/**
 	 * Variable: SHAPE_ELLIPSE
 	 * 
@@ -8467,6 +8471,7 @@ var mxUtils =
 	 * Default is arrow.
 	 */
 	SHAPE_ARROW: 'arrow',
+
 	
 	/**
 	 * Variable: SHAPE_ARROW_CONNECTOR
@@ -8546,6 +8551,9 @@ var mxUtils =
 	 * Constant for classic arrow markers.
 	 */
 	ARROW_CLASSIC: 'classic',
+
+	/*
+	*/
 
 	/**
 	 * Variable: ARROW_CLASSIC_THIN
@@ -15313,23 +15321,50 @@ mxPopupMenu.prototype.isPopupTrigger = function(me)
  */
 mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, enabled, active)
 {
-	// debugger
-	// console.log(PaletteManagePanel().setCellAttrs())
-	// console.log(defaultValue)
-	let selectCell = this.graph.getSelectionCell();
+	let selectCell = this.graph.getSelectionCell()
+	let selectCount = this.graph.getSelectionCount()
+	// console.log(selectCount)
 	let shapeName = ''
 	if (selectCell) {
 		shapeName = this.graph.view.getState(selectCell).style.shape;
 	}
-	let ifshowPaste = false
-	let arr = ['rectangle', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2']
-	let menulistArr = ['menulist','tableBox'] // 菜单 和 表格整体
-	console.log(shapeName)
-	console.log(title)
-	let arr1 = ['粘贴','组合', '取消组合']
-	if (arr.includes(shapeName) && arr1.includes(title)) {
-		ifshowPaste = true
+	if (this.graph.getModel().getValue(selectCell)) {
+		let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') // 获取到元素
+		if ((showOrHide === 'true') && title.includes('设置隐藏')) {
+			title = '设置显示'
+		}
+	} else {
+		if (Object.prototype.toString.call(selectCell) === '[object Object]' && selectCell.hide === true) {
+			title = '设置显示'
+		}
 	}
+	
+	let ifshowPaste = false
+	if (selectCount === 1) { // 单个组件
+		if (!this.graph.getModel().isEdge(selectCell) && !this.graph.isSwimlane(selectCell) && this.graph.getModel().getChildCount(selectCell) > 0 && shapeName !== 'menulist') {
+			// 取消组合
+			let arr4 = ['粘贴', '组合']
+			if (arr4.includes(title)) {
+				ifshowPaste = true
+			}
+		} else {
+			let arr = ['rectangle', 'button','ellipse', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2'];
+			let menulistArr = ['menulist','tableBox']; // 菜单 和 表格整体
+			let arr1 = ['粘贴','组合', '取消组合']
+			if (arr.includes(shapeName) && arr1.includes(title)) {
+				ifshowPaste = true
+			}
+		}
+	} else if (selectCount > 1 ) {
+	    let arr3 = ['粘贴', '取消组合', '设置隐藏']
+		if (arr3.includes(title)) {
+			ifshowPaste = true
+		}
+	} else {
+		ifshowPaste = false
+	}
+	
+	
 	// console.log(image)
 	// console.log(funct)
 	// console.log(parent)
@@ -15341,7 +15376,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 
 	parent = parent || this;
 	this.itemCount++;
-	console.log(parent)
+	// console.log(parent)
 	// Smart separators only added if element contains items
 	if (parent.willAddSeparator)
 	{
@@ -15380,7 +15415,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 		var col2 = document.createElement('td');
 		col2.className = 'mxPopupMenuItem' +
 			((enabled != null && !enabled) ? ' mxDisabled' : '');
-		console.log(title)
+		// console.log(title)
 		mxUtils.write(col2, title);
 		col2.align = 'left';
 		tr.appendChild(col2);
@@ -15498,7 +15533,6 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 			})
 		);
 	}
-	console.log(tr)
 	return tr;
 };
 
@@ -15596,7 +15630,6 @@ mxPopupMenu.prototype.showSubmenu = function(parent, row)
  */
 mxPopupMenu.prototype.addSeparator = function(parent, force)
 {
-	console.log(parent)
 	parent = parent || this;
 	
 	if (this.smartSeparators && !force)
@@ -19586,7 +19619,6 @@ mxSvgCanvas2D.prototype.convertHtml = function(val)
 	else if (document.implementation != null && document.implementation.createDocument != null)
 	{
 		var xd = document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'html', null);
-		console.log(xd)
 		var xb = xd.createElement('body');
 		xd.documentElement.appendChild(xb);
 		
@@ -25088,6 +25120,7 @@ mxRectangleShape.prototype.paintForeground = function(c, x, y, w, h)
 		this.paintGlassEffect(c, x, y, w, h, this.getArcSize(w + this.strokewidth, h + this.strokewidth));
 	}
 };
+
 /**
  * Copyright (c) 2006-2015, JGraph Ltd
  * Copyright (c) 2006-2015, Gaudenz Alder
@@ -47812,6 +47845,7 @@ mxCellRenderer.registerShape = function(key, shape)
 
 // 注册默认类型
 mxCellRenderer.registerShape(mxConstants.SHAPE_RECTANGLE, mxRectangleShape);
+// mxCellRenderer.registerShape(mxConstants.SHAPE_OVAL, mxOvalShape);
 mxCellRenderer.registerShape(mxConstants.SHAPE_ELLIPSE, mxEllipse);
 mxCellRenderer.registerShape(mxConstants.SHAPE_RHOMBUS, mxRhombus);
 mxCellRenderer.registerShape(mxConstants.SHAPE_CYLINDER, mxCylinder);
@@ -47827,7 +47861,7 @@ mxCellRenderer.registerShape(mxConstants.SHAPE_DOUBLE_ELLIPSE, mxDoubleEllipse);
 mxCellRenderer.registerShape(mxConstants.SHAPE_SWIMLANE, mxSwimlane);
 mxCellRenderer.registerShape(mxConstants.SHAPE_IMAGE, mxImageShape);
 mxCellRenderer.registerShape('primitive', mxImageShape);
-mxCellRenderer.registerShape('circle', mxImageShape);
+// mxCellRenderer.registerShape('oval', mxImageShape);
 mxCellRenderer.registerShape('diamond', mxImageShape);
 mxCellRenderer.registerShape('drop', mxImageShape);
 mxCellRenderer.registerShape('pentagram', mxImageShape);
@@ -56373,6 +56407,7 @@ mxGraph.prototype.startEditingAtCell = function(cell, evt)
 			}
 		}
 		var shapeName = this.getCellStyle(cell).shape;
+		// console.log(shapeName)
 		if (cell != null && shapeName !== 'image' && shapeName !== 'select' && shapeName !== 'endarrow' && shapeName !== 'beeline')
 		{
 			this.fireEvent(new mxEventObject(mxEvent.START_EDITING,
@@ -81928,7 +81963,6 @@ mxDefaultPopupMenu.prototype.createMenu = function(editor, menu, cell, evt)
 	{
 		var conditions = this.createConditions(editor, cell, evt);
 		var item = this.config.firstChild;
-console.log(77)
 		this.addItems(editor, menu, cell, evt, conditions, item, null);
 	}
 };
@@ -82229,7 +82263,6 @@ mxDefaultToolbar.prototype.init = function(container)
  */
 mxDefaultToolbar.prototype.addItem = function(title, icon, action, pressed)
 {
-	console.log(9999)
 	var clickHandler = mxUtils.bind(this, function()
 	{
 		if (action != null && action.length > 0)

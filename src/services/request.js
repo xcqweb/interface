@@ -1,15 +1,16 @@
 import axios from 'axios';
-//import urls from '../constants/url';
+import urls from '../constants/url';
 import {getCookie} from './Utils'
  
 axios.defaults.timeout = 60 * 1000 * 5; //响应超时时间          
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'; //配置请求头
-/* const isDev = process.env.NODE_ENV === 'development';
+// axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded'; //配置请求头
+const isDev = process.env.NODE_ENV === 'development';
 if(isDev) {
     axios.defaults.baseURL = urls.testBaseUrl.url;  //配置接口地址
 } else {
     axios.defaults.baseURL = urls.baseUrl.url;   //配置接口地址
-} */
+} 
 
 //请求拦截器
 axios.interceptors.request.use(
@@ -73,10 +74,22 @@ function post(url, params,isLoading = true) {
 }
 //返回一个Promise(发送get请求)
 function get(url,params,isLoading = true) {
-    return dealRequest(url,params,"get",isLoading);
+    // console.log(params)
+    return dealRequest(url, {params},"get",isLoading);
+}
+//返回一个Promise(发送put请求)
+function put(url, params, isLoading = true) {
+    // console.log(params)
+    return dealRequest(url, params, "put", isLoading);
+}
+//返回一个Promise(发送delete请求)
+function Delete(url, params, isLoading = true) {
+    return dealRequest(url, {params}, "delete", isLoading);
 }
 
 export default {
-    post:post,
-    get:get 
+    post,
+    get,
+    put,
+    delete: Delete
 }
