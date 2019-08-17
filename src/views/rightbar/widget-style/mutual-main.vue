@@ -26,7 +26,7 @@
           <div>{{ e.title }}</div>
         </div>
         <div
-          style="display:flex;align-items:flex-end;"
+          style="display:flex;align-items:flex-start;"
           @click="removeEvent(e,index,$event)"
         >
           <img src="../../../assets/images/rightsidebar/dele_ic.png">
@@ -80,6 +80,7 @@
         :current-edit-item="currentEditItem"
         :type-tab="visibleTypeTab"
         @submitMutual="editEventDone"
+        @modifyTypeTab="modifyTypeTab"
       />
       <Change
         v-show="typeTab===3"
@@ -171,6 +172,9 @@ export default{
             let cellInfo = graph.getModel().getValue(cell)
             return cellInfo && cellInfo.attributes && cellInfo.attributes[key] && cellInfo.attributes[key].nodeValue
         },
+        modifyTypeTab(index) {
+            this.visibleTypeTab = index
+        },
         addEvents() {
             this.pages.forEach(item=>{
                 if(item.selected) {
@@ -206,6 +210,9 @@ export default{
                     hide = 'show'
                 }
                 action.effectAction = hide
+            }else if(data.mutualType == 3) {
+                action.effectAction = 'change'
+                action.stateId = data.stateId
             }
             this.setActionInfos(action)
         },
@@ -217,19 +224,23 @@ export default{
             }
         },
         setEvents(actionsInfo) {
-            this.events = []
+            this.events.splice(0)
             actionsInfo.forEach(item=>{
-                this.events.push({
+                let tempObj = {
                     type:item.mutualType,
                     title:this.findTitle(item),
                     innerType:item.innerType,
                     id:item.link//控件或者页面或者弹窗ID
-                })
+                }
+                if(item.stateId) {
+                    tempObj.stateName = this.findStateById(item.stateId).name
+                }
+                this.events.push(tempObj)
             })
         },
         findTitle(item) {
             let tempList = this.pages
-            if(item.mutualType == 2) {
+            if(item.mutualType > 1) {
                 if(item.innerType == 'palette') {
                     tempList = this.currentPageWidgets
                 }else{
@@ -239,6 +250,17 @@ export default{
             return tempList.filter(d=>{
                 return d.id == item.link
             })[0].title
+        },
+        findStateById(id) {
+            let res
+            let states = this.$store.state.main.states
+            for(let i = 0;i < states.length;i++) {
+                if(id == states[i].id) {
+                    res = states[i]
+                    break
+                }
+            }
+            return res
         },
         getActions(graph) {
             let actions = []
@@ -255,7 +277,7 @@ export default{
             let actions = this.getActions(graph)
             let sameFlag = false
             for(let i = 0;i < actions.length;i++) {//同一个控件只能帮忙弹窗或者页面的一个交互事件
-                if(actions[i].innerType == 'page') {
+                if(actions[i].innerType == 'page' && action.mutualType == actions[i].mutualType) {
                     actions[i] = action
                     sameFlag = true
                     break;

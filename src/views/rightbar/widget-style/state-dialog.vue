@@ -28,6 +28,7 @@
               </div>
             </div>
             <i-checkbox
+              v-model="animateCheck"
               style="width:100%;text-align:center;margin-top:8px;"
               @on-change="changeAnimate"
             >
@@ -102,24 +103,40 @@
 
 <script>
 import {ColorDialog} from '../../../services/editor/Dialogs'
-let style = {'background':'#fff','borderColor':'#000','color':'#000'},inputs
-let tabArr = ['background','borderColor','color']
-let id = 1
+let style = {'background':'#ffffff','borderColor':'#000000','color':'#000000'},inputs
+let tabArr = ['background','borderColor','color'],editStateTemp
 export default{
+    props:['editState'],
     data() {
         return {
             stateName:"",
             stateDesc:"",
             typeTab:1,
             animateCls:'',
+            animateCheck:false,
         }
     },
     mounted() {
         const component = this.$mount();
         document.querySelector('body').appendChild(component.$el)
-        this.stateName = `状态${id}`
+        if(this.editState) {
+            editStateTemp = JSON.parse(JSON.stringify(this.editState))//深拷贝 
+            this.stateName = editStateTemp.name
+            this.animateCls = editStateTemp.animateCls
+            this.animateCheck = this.animateCls != ''
+            this.stateDesc = editStateTemp.desc
+            if(this.stateDesc == '暂无描述') {
+                this.stateDesc = ''
+            }
+            style = editStateTemp.style
+        }else{
+            let graph = this.myEditorUi.editor.graph
+            let states = this.$parent.getStates(graph)
+            let index = states.length
+            this.stateName = `状态${index}`
+        }
         this.$nextTick(()=>{
-            let dlg = new ColorDialog(this.myEditorUi,'fffff', null,null,false)
+            let dlg = new ColorDialog(this.myEditorUi,style.background, null,null,false)
             document.querySelector(".state-color-con").appendChild(dlg.container)
             setTimeout(()=>{
                 inputs = $(".state-color-con").find("input")
@@ -131,7 +148,7 @@ export default{
                 })
             },1000)
         })
-    },
+    },  
     methods: {
         changeTab(index) {
             this.typeTab = index
@@ -143,14 +160,17 @@ export default{
             this.$emit("closeStateDialog")
         },
         submitState() {
-            id++
             let data = {
                 name:this.stateName,
                 desc:this.stateDesc,
                 style:style,
                 animateCls:this.animateCls,
             }
+            if(editStateTemp) {
+                data.id = editStateTemp.id
+            }
             this.$emit("closeStateDialog",data)
+            editStateTemp = null//置空，防止下次编辑时候干扰列表信息
         },
         changeAnimate(status) {
             if(status) {

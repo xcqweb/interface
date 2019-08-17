@@ -27,11 +27,14 @@
         class="widget-con"
         style="height:84%;"
       >
-        <li class="selected">
-          默认
+        <li
+          v-for="item in states"
+          :key="item.id"
+          :class="{'selected':item.check}"
+          @click="checkState(item)"
+        >
+          {{ item.name }}
         </li>
-        <li>状态1</li>
-        <li>状态2</li>
       </ul>
     </div>
     <div style="display:flex;justify-content:space-between;margin-top:10px;">
@@ -52,10 +55,18 @@
 </template>
 
 <script>
+import {tipDialog} from '../../../services/Utils'
+let currentStateItem,currentWidgetItem
 export default{
     props:['currentPageWidgets','currentEditItem','bindActions'],
     data() {
         return {
+            
+        }
+    },
+    computed: {
+        states() {
+            return this.$store.state.main.states
         }
     },
     mounted() {
@@ -65,15 +76,45 @@ export default{
             this.$emit("submitMutual")
         },
         submit() {
-            this.$emit("submitMutual")
+            let sameFlag = false
+            if(this.states && this.states.length && this.states[0].check) {//选中的默认的 不提交添加切换状态的事件
+                this.$emit("submitMutual")
+                return
+            }
+            if(!currentWidgetItem) {
+                tipDialog(this.myEditorUi,`请选择要切换状态的控件`)
+                return
+            }
+            for(let i = 0;i < this.bindActions.length;i++) {
+                if(currentWidgetItem.id == this.bindActions[i].link && currentStateItem.id == this.bindActions[i].stateId) {
+                    sameFlag = true
+                    break
+                }
+            }
+            if(sameFlag) {
+                tipDialog(this.myEditorUi,`该控件已经绑定了${currentStateItem.name}状态`)
+                return
+            } 
+            this.$emit("submitMutual",{mutualType:3,id:currentWidgetItem.id,stateId:currentStateItem.id,innerType:"palette"})
         },
         checkWidget(item) {
-            this.currentWidgetItem = item
+            currentWidgetItem = item
+            this.$set(this.states[0],'check',true)
             this.currentPageWidgets.forEach(d=>{
                 d.selected = false
             })
             item.selected = true
-        }
+        },
+        checkState(item) {
+            currentStateItem = item
+            this.states.forEach((d)=>{
+                if(d.id == item.id) {
+                    d.check = true
+                }else{
+                    d.check = false
+                }
+            })
+        },
     },      
 }
 </script>

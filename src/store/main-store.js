@@ -2,6 +2,7 @@ const state = {
     type:0,//0=页面 1=弹窗 2=普通控件
     widgetInfo:{},//当前组件信息
     rand:0,//监听控件切换的刷新 随机数字
+    states:[],//交互-切换里面的状态列表
 }
 
 const mutations = {
@@ -56,6 +57,9 @@ const mutations = {
     },
     widgetChange(state,rand) {
         state.rand = rand
+    },
+    refreshState(state,states) {//添加状态后，交互列表里面的状态列表刷新
+        state.states = states
     }
 }
 

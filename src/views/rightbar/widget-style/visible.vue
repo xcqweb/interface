@@ -90,8 +90,8 @@ export default{
     },
     methods: {
         changeTab(index) {
-            this.typeTab = index
-            if(this.typeTab === 1) {
+            this.$emit("modifyTypeTab",index)
+            if(index === 1) {
                 this.currentPageWidgets.forEach(d=>{
                     d.selected = false
                 })
