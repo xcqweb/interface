@@ -871,7 +871,6 @@ window.EditorUi = function(editor, container, lightbox)
         for (let cell of cells) {
             if (cell.style !== 'group') {
                 let cellInfo = graph.getModel().getValue(cell);
-                console.log(cell)
 				if (cell.style && cell.style.indexOf('shape') !== -1) {
                 let shapeName = /shape=(.+?);/.exec(cell.style)[1];
                 shapeName = this.sidebar.primitives.includes(shapeName) ? 'primitive' : shapeName;

@@ -1393,14 +1393,13 @@ function createPageList(editorUi,el,data, id, type) {
             })
             function changePage(e) {
                 var target = e.target;
-                console.log(e)
                 if (((target.parentNode.nodeName === 'LI') && target.parentNode.className !== 'currentPage')) {
                     // 点击保存上一个页面
                     var type = id.slice(0, id.length - 5);
                     // 目标页面名称
                     
                     var nextTitle = target.parentElement.getAttribute('data-pageid');
-                    console.log(nextTitle)
+                    // console.log(nextTitle)
                     // 已选中节点
                     if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {
                         editorUi.editor.setXml();
@@ -1969,7 +1968,6 @@ Sidebar.prototype.createThumb = function(cells, width, height, parent, title, sh
  */
 Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, width, height, allowCellsInserted, type, imageurl)
 {
-    console.log(imageurl)
     // let Basic_ = 'http://10.74.20.26:8009/'
     var elt = document.createElement('a');
     var ui = this.editorUi;
