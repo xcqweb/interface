@@ -639,33 +639,25 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
             // 选中单个节点,展示不同的右键菜单
             if (graph.getSelectionCount() == 1)
             {
-                // console.log(!graph.getModel().isEdge(cell))
-                // console.log(!graph.isSwimlane(cell))
-                // console.log(graph.getModel().getChildCount(cell) > 0)
-                // console.log(shapeName)
                 if (!graph.getModel().isEdge(cell) && !graph.isSwimlane(cell) && graph.getModel().getChildCount(cell) > 0 && shapeName !== 'menulist') {
                     // 选择组合内的节点，增加取消组合操作
                     menu.addSeparator();
                     // this.addMenuItems(menu, ['ungroup'], null, evt);
                     this.addMenuItems(menu, ['copy', 'cut', 'paste', '-', 'toFront', 'toBack', '-', 'group', 'ungroup', '-', 'resetHide', 'delete'], null, evt);
                 } else {
-                    // tableBox 表格  menulist: 菜单 图片 image 按钮 button
-                    if (shapeName == "menuCell") { // 直接后面操作
-                        // this.addMenuItems(menu, ['delete', 'edit','-'], null, evt);
-                    } else if (shapeName == "menulist") { // 菜单
+                    if (shapeName == "menulist") { // 菜单
                         // this.addMenuItems(menu, ['delete', '-'], null, evt);
                         this.addMenuItems(menu, ['copy', 'cut', 'paste', '-'], null, evt);
                     } else {
                         if (shapeName !== 'tableCell') {
                             this.addMenuItems(menu, ['copy', 'cut', 'paste', '-'], null, evt);
                         }
-                        // this.addMenuItems(menu, ['cut', 'copy', 'delete','-'], null, evt);
                     }
                     let cellArray = ['menuCell', 'tableCell']
                     if (!cellArray.includes(shapeName)) {
-                        this.addMenuItems(menu, ['toFront', 'toBack', '-'], null, evt);
-                        menu.addSeparator();
-                        this.addMenuItems(menu, ['group', 'ungroup', '-'], null, evt);
+                        this.addMenuItems(menu, ['toFront', 'toBack', '-','group', 'ungroup', '-'], null, evt);
+                        // menu.addSeparator();
+                        // this.addMenuItems(menu, [], null, evt);
                     }
                     menu.addSeparator();
                     let arr = ['rectangle','ellipse', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2']

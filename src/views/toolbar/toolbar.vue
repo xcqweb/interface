@@ -169,6 +169,7 @@ import AlignDialog from './align-dialog'
 import {PreviewDialog} from '../../services/editor/Dialogs'
 import MaterialRoom from '../materialroom/materialroom'
 import router from '../../router'
+import VueEvent from '../../services/VueEvent.js'
 export default{
     components:{
         ScaleView,AlignDialog,MaterialRoom
@@ -276,6 +277,9 @@ export default{
         },
         triggerCancel() {
             this.ifshowmarerial = false
+            // triggerCancel
+            console.log(77777)
+            VueEvent.$emit('select-nodetype') // 兄弟组件传值 改变节点类型 晴空指派方式
         },
         save() {
             this.myEditorUi.saveFile(true);

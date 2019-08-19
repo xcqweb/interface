@@ -9,6 +9,7 @@
  */
 import requestUtil from '../request'
 import Urls from '../../constants/url'
+import {tipDialog} from '../Utils'
 var basicXmlFns = [];
 function Sidebar(editorUi, container)
 {
@@ -87,12 +88,31 @@ function Sidebar(editorUi, container)
 /**
  * 原型初始化
  */
-Sidebar.prototype.init = function()
+Sidebar.prototype.init = function(type)
 {
     const dir = '/static/stencils/'
-    // this.createPageContextMenu();
-    this.addPagePalette(true);//页面管理
-    this.addGeneralPalette(true);//基础控件
+    if (type === 'nowload') {
+        let layoutTitle = document.querySelector("#layoutTitle")
+        let layout = document.querySelector("#layout")
+        let userTitle = document.querySelectorAll("#userTitle")
+        let user = document.querySelectorAll("#user")
+        userTitle.forEach((item) => {
+            item.remove()
+        })
+        user.forEach((item) => {
+            item.remove()
+        })
+        layoutTitle.remove()
+        layout.remove()
+        this.addUserPalette(false); // 自定义控件
+        this.addLayoutPalette(false) // layout
+    } else {
+        this.addPagePalette(true);//页面管理
+        this.addGeneralPalette(true);//基础控件
+        this.addUserPalette(false); // 自定义控件
+        this.addLayoutPalette(false) // layout
+    }
+    
     // this.addBasicPalette();
 };
 
@@ -969,7 +989,7 @@ Sidebar.prototype.renameNode = function(ele) {
                 }
             }
             this.editorUi.editor.pages[ele.getAttribute('data-pageid')].title = name;
-            ele.innerHTML = `<span>${name}</span><span class="right-icon-dolt"></span>`;
+            ele.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${name}</span><span class="right-icon-dolt"></span>`;
         }
     }
     mxEvent.addListener(document.body, 'click', saveFn);
@@ -992,6 +1012,7 @@ Sidebar.prototype.renameNode = function(ele) {
 Sidebar.prototype.copyPage = function (ele,pageType) {
  var title = '',
      id = '';
+     console.log(88)
  const currtitle = ele.innerText
  var xml = this.editorUi.editor.defaultXml;
  var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
@@ -1007,39 +1028,69 @@ Sidebar.prototype.copyPage = function (ele,pageType) {
   let _li = document.createElement('li');
   let resPage = this.editorUi.editor.addPage(page);
   _li.setAttribute('data-pageid', resPage.id);
-  _li.innerHTML = `<span>${titleText}</span><span class="right-icon-dolt"></span>`;
+    _li.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${titleText}</span><span class="right-icon-dolt"></span>`;
   let changeRank = this.editorUi.editor.pagesRank[resPage.type];
   // 根据类型插入列表
    changeRank.push(resPage.id);
+   console.log(_li)
+    console.log(pageType)
    if (pageType === 'normal') {
     $("#normalPages").append(_li);
    }
    if (pageType === 'dialog') {
     $("#dialogPages").append(_li);
    }
-  this.editorUi.editor.pagesRank[resPage.type] = [].concat(changeRank);
-  _li.click()
+   this.editorUi.editor.pagesRank[resPage.type] = [].concat(changeRank);
+    if (pageType === 'normal') {
+        $("#normalPages li:last-child .spanli").click();
+    }
+    if (pageType === 'dialog') {
+        $("#dialogPages li:last-child .spanli").click();
+    }
+}
+Sidebar.prototype.svgPng = function (ele) {
+    const svg = ele
+    let ImgBase64 = ''
+    return new Promise((resolve, reject) => {
+        const s = new XMLSerializer().serializeToString(svg);
+        const src = `data:image/svg+xml;base64,${window.btoa(s)}`;
+        const img = new Image(); // 创建图片容器承载过渡
+        img.src = src;
+        img.onload = function() {
+            // 图片创建后再执行，转Base64过程
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            if (img.width <= 2) {
+                resolve()
+            } else {
+                canvas.height = img.height;
+                const context = canvas.getContext('2d');
+                context.drawImage(img, 0, 0);
+                ImgBase64 = canvas.toDataURL('image/png');
+                resolve(ImgBase64)
+            }
+        }
+    })
 }
 /*添加模版*/
-Sidebar.prototype.addTemplate = function(type) {
-    // console.log(type) // normal / dialog
+Sidebar.prototype.addTemplate = async function(type) {
     let svgImage = this.editorUi.editor.graph.getSvg(null, null, null, true, null, true, null, null, null, false)
-    var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
-    // console.log(svgImage.outerHTML)
-    svgImage = svgImage.outerHTML
-    console.log(svgImage)
-    // console.log(typeof currentPage)
-    console.log(Urls.addTemplate)
-    let data = {
-        content: JSON.stringify(currentPage),
-        pic: svgImage,
-        type: type
+    let imageurl = await this.svgPng(svgImage)
+    if (imageurl) {
+        var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
+        let data = {
+            content: JSON.stringify(currentPage),
+            pic: imageurl,
+            type: type
+        }
+        requestUtil.post(Urls.addTemplate.url, data).then((res) => {
+            if (res.picUrl) {
+                tipDialog(this.editorUi, `添加${type === 'normal' ? '页面模版成功' : '弹窗模版成功' }`)
+            }
+        })
+    } else {
+        alert('您未拖入组件，不能添加为模版！')
     }
-    requestUtil.post(Urls.addTemplate.url, data).then((res) => {
-        console.log(res)
-    })
-    // this.editorUi.editor.ajax(this.editorUi, 'iot-cds/cds/pageTemplate', 'POST')
-    // console.log(svg11) // 
 }
 
 /**
@@ -1094,12 +1145,19 @@ Sidebar.prototype.createPageContextMenu = function(type) {
         evt.stopPropagation()
         var target = evt.target;
         var ele = $(".pageList .currentPage").eq(0);
+        let pageType = null
+        if (ele.parent().attr('id') === 'normalPages') {
+            pageType = 'normal'
+        } else {
+            pageType = 'dialog'
+        }
         const element = document.querySelector('.pageList>li.currentPage')
         // 操作类型
         var actionType = target.getAttribute('data-type');
         // 添加页面
         var addPage = this.editorUi.actions.get('addPage').funct;
-        const pageType = this.editorUi.editor.currentType;
+
+        // const pageType = this.editorUi.editor.currentType;
         let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.data('pageid'))
         switch (actionType) {
             case 'movePrev':
@@ -1300,16 +1358,17 @@ function createPageList(editorUi,el,data, id, type) {
                     page.className = 'left-sidebar-homepage'
                 }
                 page.setAttribute('data-pageid', data[i].id);
-                page.innerHTML =  `<span>${data[i].title}</span><span class="right-icon-dolt"></span>`;
+                page.innerHTML =  `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${data[i].title}</span><span class="right-icon-dolt"></span>`;
                 pageListEle.appendChild(page)
             }
             el.appendChild(pageListEle)
             setTimeout(() => {
-                $("#normalPages li").eq(0).click();
+                $("#normalPages li:first-child .spanli").click();
             })
             $('.commonPages').on('mouseenter', '.pageList>li.currentPage>.right-icon-dolt',function(evt) {
+                // console.log(88)
                 evt.preventDefault();
-                changePage(evt);
+                changePage2(evt);
                 editorUi.editor.setXml();
                 
                 // 右键菜单展示
@@ -1334,7 +1393,34 @@ function createPageList(editorUi,el,data, id, type) {
             })
             function changePage(e) {
                 var target = e.target;
-                if (target.nodeName === 'LI' && target.className !== 'currentPage') {
+                console.log(e)
+                if (((target.parentNode.nodeName === 'LI') && target.parentNode.className !== 'currentPage')) {
+                    // 点击保存上一个页面
+                    var type = id.slice(0, id.length - 5);
+                    // 目标页面名称
+                    
+                    var nextTitle = target.parentElement.getAttribute('data-pageid');
+                    console.log(nextTitle)
+                    // 已选中节点
+                    if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {
+                        editorUi.editor.setXml();
+                    }
+                    // 切换到新的页面
+                    $(".currentPage").removeClass('currentPage');
+                    editorUi.editor.setCurrentType(id == 'normalPages' ? 'normal' : 'dialog');
+                    editorUi.editor.setCurrentPage(nextTitle);
+                    if (!target.parentNode.className) {
+                        target.parentNode.className += "currentPage";
+                    } else {
+                        target.parentNode.className += " currentPage";
+                    }
+                    var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml);
+                    editorUi.editor.setGraphXml(doc.documentElement);
+                }
+            }
+            function changePage2(e) {
+                var target = e.target;
+                if (((target.nodeName === 'LI') && target.className !== 'currentPage')) {
                     // 点击保存上一个页面
                     var type = id.slice(0, id.length - 5);
                     // 目标页面名称
@@ -1347,22 +1433,22 @@ function createPageList(editorUi,el,data, id, type) {
                     $(".currentPage").removeClass('currentPage');
                     editorUi.editor.setCurrentType(id == 'normalPages' ? 'normal' : 'dialog');
                     editorUi.editor.setCurrentPage(nextTitle);
-                    console.log(target.className)
-                    if (!target.className) {
+                    if (!target.parentNode.className) {
                         target.className += "currentPage";
                     } else {
                         target.className += " currentPage";
                     }
-                    
-                    console.log(editorUi.editor.pages)
                     var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml);
                     editorUi.editor.setGraphXml(doc.documentElement);
                 }
             }
-            // 鼠标左键点击
-            mxEvent.addListener(pageListEle, 'click', function(evt) {
+            $('.commonPages').on('click', '.pageList>li>.spanli', function (evt) {
                 changePage(evt)
-            }, true);
+            })
+            // console.log(pageListEle)
+            // mxEvent.addListener(pageListEle, 'click', function(evt) {
+            //     changePage(evt)
+            // }, true);
             // 鼠标双击编辑
             // mxEvent.addListener(pageListEle, 'dblclick', function(evt) {
             //     if (evt.target.nodeName === 'LI') {
@@ -1606,13 +1692,13 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         //     return this.createEdgeTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '曲线');
 	 	// })),
         // 管道2
-        this.createVertexTemplateEntry('shape=pipeline2;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline2.png', 36, 36, '', '管道2'),
+        this.createVertexTemplateEntry('shape=pipeline2;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/npipeline2.svg', 36, 36, '', '管道2'),
         // 指示灯
-        this.createVertexTemplateEntry('shape=light;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/light.png', 36, 36, '', '指示灯'),
+        this.createVertexTemplateEntry('shape=light;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/light2.svg', 36, 36, '', '指示灯'),
         // 进度条
-        this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/progress.png', 36, 36, '', '进度条'),
+        this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/progress2.svg', 72, 36, '', '进度条'),
         // 管道1
-        this.createVertexTemplateEntry('shape=pipeline1;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline1.png', 36, 36, '', '管道1'),
+        this.createVertexTemplateEntry('shape=pipeline1;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/npipeline1.svg', 36, 36, '', '管道1'),
         // 链接
         this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
         // 趋势图
@@ -1627,20 +1713,60 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         this.createVertexTemplateEntry('shape=gaugeChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/gaugeChart.png', 36, 36, '', '仪表盘'),
     ]
     this.addPaletteFunctions('chart', '图表控件', false, fnsChart);
-    //this.addGeneralPaletteShort();
+    // this.createVertexTemplateEntry('shape=userimage;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/progress.png', 36, 36, '', '进度条'),
+
 };
+/**/
+Sidebar.prototype.addLayoutPalette = function (expand) {
+    let materialLibraryId = 'e76e6a1b18e493472bc869d835811711'
+    let Array1 = []
+    requestUtil.get(Urls.materialList.url + `/${materialLibraryId}`).then((res) => {
+        let that = this
+        let data = res.materialList || []
+        data.forEach((item) => {
+            Array1.push(that.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${item.picUrl}`, 300, 170, '', 'layout图', '', '', '', 'layout', `${item.picUrl}`))
+        })
+        if (Array1.length) {
+            this.addPaletteFunctions('layout', 'layout控件', false, Array1);
+        }
+    })
+}
+/*
+addUserPalette
+*/
+Sidebar.prototype.addUserPalette = function (expand) {
+    var that = this;
+    let arr = []
+    requestUtil.get(Urls.materialList.url).then((res) => {
+        let data = res.records || []
+        data.forEach((item) => {
+            let obj = {
+                name: item.libraryName,
+                materialLibraryId: item.materialLibraryId
+            }
+            arr.push(obj)
+        })
+        arr.forEach((item) => {
+            let Array1 = []
+            requestUtil.get(Urls.materialList.url + `/${item.materialLibraryId}`).then((res) => {
+                let that = this
+                let data = res.materialList
+                data.forEach((item) => {
+                    Array1.push(that.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${item.picUrl}`, 300, 170, '', 'layout图', '', '', '', 'layout', `${item.picUrl}`))
+                })
+                if (Array1.length) {
+                    this.addPaletteFunctions('user', `${item.name}`, false, Array1);
+                }
+            })
+        })
+    })
+    
+}
 /**
  * Adds the given image palette.
  */
 Sidebar.prototype.addImagePalette = function(id, title, prefix, postfix, items, titles, tags)
 {
-    console.log(id);
-    console.log(title);
-    console.log(prefix);
-    console.log(postfix);
-    console.log(items);
-    console.log(titles);
-    console.log(tags);
 	var showTitles = titles != null;
 	var fns = [];
 	
@@ -1841,8 +1967,10 @@ Sidebar.prototype.createThumb = function(cells, width, height, parent, title, sh
 /**
  * Creates and returns a new palette item for the given image.
  */
-Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, width, height, allowCellsInserted)
+Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, width, height, allowCellsInserted, type, imageurl)
 {
+    console.log(imageurl)
+    // let Basic_ = 'http://10.74.20.26:8009/'
     var elt = document.createElement('a');
     var ui = this.editorUi;
     elt.setAttribute('href', "javascript:void(0);");
@@ -1865,7 +1993,13 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
         elt.style.width = '33px';
         elt.style.height = '33px';
     } else {
-        elt.style.backgroundImage = 'url(/static/stencils/basic/' + shapeName + '.png)';
+        if (type === 'layout') {
+            elt.style.width = '50px'
+            elt.style.height = '50px'
+            elt.style.backgroundImage = `url(${imageurl})`;
+        } else {
+            elt.style.backgroundImage = 'url(/static/stencils/basic/' + shapeName + '.png)';
+        }
         elt.style.backgroundPosition = `center center`
         elt.style.backgroundRepeat = `no-repeat`
     }
@@ -3214,24 +3348,24 @@ Sidebar.prototype.addClickHandler = function(elt, ds, cells)
 /**
  * Creates a drop handler for inserting the given cells.
  */
-Sidebar.prototype.createVertexTemplateEntry = function(style, width, height, value, title, showLabel, showTitle, tags)
+Sidebar.prototype.createVertexTemplateEntry = function(style, width, height, value, title, showLabel, showTitle, tags, type, imageurl)
 {
     tags = (tags != null && tags.length > 0) ? tags : title.toLowerCase();
 	
     return this.addEntry(tags, mxUtils.bind(this, function()
  	{
- 		return this.createVertexTemplate(style, width, height, value, title, showLabel, showTitle);
+        return this.createVertexTemplate(style, width, height, value, title, showLabel, showTitle, '', type, imageurl);
  	}));
 }
 
 /**
  * Creates a drop handler for inserting the given cells.
  */
-Sidebar.prototype.createVertexTemplate = function(style, width, height, value, title, showLabel, showTitle, allowCellsInserted)
+Sidebar.prototype.createVertexTemplate = function (style, width, height, value, title, showLabel, showTitle, allowCellsInserted, type, imageurl)
 {
     var cells = [new mxCell((value != null) ? value : '', new mxGeometry(0, 0, width, height), style)];
     cells[0].vertex = true;
-    return this.createVertexTemplateFromCells(cells, width, height, title, showLabel, showTitle, allowCellsInserted);
+    return this.createVertexTemplateFromCells(cells, width, height, title, showLabel, showTitle, allowCellsInserted, type, imageurl);
 };
 
 /**
@@ -3253,11 +3387,11 @@ Sidebar.prototype.createVertexTemplateFromData = function(data, width, height, t
 /**
  * Creates a drop handler for inserting the given cells.
  */
-Sidebar.prototype.createVertexTemplateFromCells = function(cells, width, height, title, showLabel, showTitle, allowCellsInserted)
+Sidebar.prototype.createVertexTemplateFromCells = function(cells, width, height, title, showLabel, showTitle, allowCellsInserted,type, imageurl)
 {
     // Use this line to convert calls to this function with lots of boilerplate code for creating cells
     //console.trace('xml', this.graph.compress(mxUtils.getXml(this.graph.encodeCells(cells))), cells);
-    return this.createItem(cells, title, showLabel, showTitle, width, height, allowCellsInserted);
+    return this.createItem(cells, title, showLabel, showTitle, width, height, allowCellsInserted, type, imageurl);
 };
 
 /**

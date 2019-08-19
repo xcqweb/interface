@@ -362,7 +362,6 @@ Editor.prototype.ajax = async function(editorUi, url, method, data, fn = functio
         return;
     }
     var loadingBarInner = editorUi.actions.get('loading').funct(title);
-    // var token = getCookie('token');
     $.ajax({
         method,
         headers: {
@@ -591,6 +590,10 @@ Editor.prototype.palettesInfo = {
         name: '仪表盘',
         num: 0
     },
+    userimage: {
+        name: '用户图',
+        name:0
+    }
 }
 /**
  * 文件服务器的地址
