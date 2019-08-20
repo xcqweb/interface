@@ -33,7 +33,7 @@ import '../services/editor/Dialogs'
 import {Graph,Editor,EditorUi,mxEvent,mxUtils,mxResources} from '../services/mxGlobal'
 import Toolbar from './toolbar/toolbar'
 import LeftSideBar from './left-sidebar/left-sidebar'
-import RightBar from './rightBar/rightbar'
+import RightBar from './rightbar/rightbar'
 import FooterBar from './footerbar/index'
 import Vue from 'vue'
 export default {
