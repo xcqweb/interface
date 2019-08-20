@@ -26,68 +26,127 @@
                     class="assembly-seach-icon"
                   >
                   <div
+                    v-if="leftshowIf"
                     class="addassembly"
                     @click="addassemblyFn"
                   >
                     新增组件库
                   </div>
-                  <ul
-                    v-for="(item,index) in assemblyArrayName"
-                    :key="index"
-                    class="assembly-list"
+                  <template
+                    v-if="leftshowIf"
                   >
-                    <li
-                      class="assembly-icon"
-                      :class="index === isactive ? 'left-side-listactive' : ''"
-                      @click="selectAssemblyList(index, item.materialLibraryId)"
+                    <ul
+                      v-for="(item,index) in assemblyArrayName"
+                      :key="index"
+                      class="assembly-list"
                     >
-                      <span>{{ item.name }}</span>
-                      <span 
-                        v-if="index >= 3" 
-                        class="right-spots" 
-                      />
-                    </li>
-                  </ul>
+                      <li
+                        class="assembly-icon"
+                        :class="index === isactive ? 'left-side-listactive' : ''"
+                        @click="selectAssemblyList($event,index, item.materialLibraryId)"
+                      >
+                        <span style="flex:1;display:inline-block;width:100px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;">{{ item.name }}</span>
+                        <span 
+                          v-if="index >= 3" 
+                          class="right-spots" 
+                        />
+                      </li>
+                    </ul>
+                  </template>
                 </div>
               </div>
               <div class="assembly-right materialtabs-right">
-                <ul class="assembly-right-wrapper">
-                  <template v-if="isactive >= 2">
-                    <li 
-                      v-for="(item, index) in arrListTables"
-                      :key="index"
-                      class="user-uploadimage"
-                    >
-                      <div>
-                        <span :style="'background:url(' + (item.image) + ') no-repeat center center;background-size:120px 60px;'" />
-                        <label
-                          class="right-spots-assemly"
-                          @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.materialId)" 
-                        />
-                      </div>
-                      <span
-                        style="width:136px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
-                        :class="index === isactive3 ? 'right-list-listactive' : ''"
+                <ul
+                  v-if="arrListTables.length"
+                  class="assembly-right-wrapper"
+                >
+                  <template v-if="!ifselectFrom">
+                    <template v-if="isactive >= 2">
+                      <li 
+                        v-for="(item, index) in arrListTables"
+                        :key="index"
+                        class="user-uploadimage"
                       >
-                        {{ item.name }}
-                      </span>
-                    </li>
+                        <div>
+                          <span :style="'background:url(' + (item.image) + ') no-repeat center center;background-size:120px 60px;'" />
+                          <label
+                            class="right-spots-assemly"
+                            @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.materialId)" 
+                          />
+                        </div>
+                        <span
+                          style="width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
+                          :class="index === isactive3 ? 'right-list-listactive' : ''"
+                        >
+                          {{ item.name }}
+                        </span>
+                      </li>
+                    </template>
+                    <template v-else>
+                      <li
+                        v-for="(item, key) in arrListTables"
+                        :key="key"
+                      >
+                        <div>
+                          <span :style="'background:url(' + (DIR_ + item.image) + ') no-repeat center center;background-size:60px 60px;'" />
+                          <label class="right-spots-assemly" />
+                        </div>
+                        <span>
+                          {{ item.name }}
+                        </span>
+                      </li>
+                    </template>
                   </template>
                   <template v-else>
-                    <li
-                      v-for="(item, key) in arrListTables"
-                      :key="key"
+                    <template 
+                      v-if="newArr.length"
                     >
-                      <div>
-                        <span :style="'background:url(' + (DIR_ + key) + ') no-repeat center center;background-size:30px 30px;'" />
-                        <label class="right-spots-assemly" />
-                      </div>
-                      <span>
-                        {{ item }}
-                      </span>
-                    </li>
+                      <li 
+                        v-for="(item, index) in newArr"
+                        :key="index"
+                      >
+                        <div>
+                          <span :style="'background:url(' + (DIR_ + item.image) + ') no-repeat center center;background-size:60px 60px;'" />
+                          <label class="right-spots-assemly" />
+                        </div>
+                        <span>
+                          {{ item.name }}
+                        </span>
+                      </li>
+                    </template>
+                    <template 
+                      v-if="newArr2.length"
+                    >
+                      <li 
+                        v-for="(item, index) in newArr2"
+                        :key="index"
+                        class="user-uploadimage"
+                      >
+                        <div>
+                          <span :style="'background:url(' + (item.image) + ') no-repeat center center;background-size:120px 60px;'" />
+                          <label
+                            class="right-spots-assemly"
+                            @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.materialId)" 
+                          />
+                        </div>
+                        <span
+                          style="width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
+                          :class="index === isactive3 ? 'right-list-listactive' : ''"
+                        >
+                          {{ item.name }}
+                        </span>
+                      </li>
+                    </template>
                   </template>
                 </ul>
+                <div
+                  v-else
+                  class="right-nodata"
+                >
+                  <span>
+                    {{ nodata }}
+                  </span>
+                </div>
               </div>
             </div>
           </TabPane>
@@ -124,6 +183,7 @@
                   v-if="isactive2 === 0"
                 >
                   <ul
+                    v-if="pageMaterial.length"
                     class="material-right-wrapper"
                   >
                     <li
@@ -134,7 +194,7 @@
                       <div>
                         <span style="display:flex;justify-content:center;align-items:center">
                           <img
-                            style="max-width:120px;max-height:100px"
+                            style="max-width:98px;max-height:90px"
                             :src="item.picUrl" 
                           >
                         </span>
@@ -144,18 +204,27 @@
                         />
                       </div>
                       <span
-                        style="width:136px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
+                        style="width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
                         :class="index === isactive3 ? 'right-list-listactive' : ''"
                       >
                         {{ item.name }}
                       </span>
                     </li>
                   </ul>
+                  <div
+                    v-else
+                    class="right-nodata"
+                  >
+                    <span>
+                      {{ nodata }}
+                    </span>
+                  </div>
                 </template>
                 <template
                   v-if="isactive2 === 1"
                 >
                   <ul
+                    v-if="alertMaterial.length"
                     class="material-right-wrapper"
                   >
                     <li
@@ -166,7 +235,7 @@
                       <div>
                         <span style="display:flex;justify-content:center;align-items:center">
                           <img
-                            style="max-width:120px;max-height:100px"
+                            style="max-width:98px;max-height:90px"
                             :src="item.picUrl" 
                           >
                         </span>
@@ -176,13 +245,21 @@
                         />
                       </div>
                       <span
-                        style="width:136px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
+                        style="width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
                         :class="index === isactive3 ? 'right-list-listactive' : ''"
                       >
                         {{ item.name }}
                       </span>
                     </li>
                   </ul>
+                  <div 
+                    v-else
+                    class="right-nodata"
+                  >
+                    <span>
+                      {{ nodata }}
+                    </span>
+                  </div>
                 </template>
               </div>
             </div>
@@ -253,30 +330,24 @@ export default {
             uploadData:{},
             DIR_: `../../../static/stencils/basic/`,
             // bacPicUrl: `http://10.74.20.26:8009/`,
-            baseAssembly: {
-                'rectangle.png': '矩形',
-                'button.png': '按钮',
-                'menulist.png': '菜单',
-                'multipleCheck.png': '复选框',
-                'singleCheck.png': '单选',
-                'image.png': '图片',
-                'select.png': '下拉列表',
-                'table.png': '表格',
-                'primitive.png': '图元',
-                'endarrow.png': '箭头',
-                'line.png': '直线',
-                'curve.png': '曲线',
-                'linkTag.png': 'Link',
-                'text.png': '文字',
-                'light.png': '指示灯',
-                'progress.png': '进度条',
-                'pipeline1.png': '管道1',
-                'pipeline2.png': '管道2'
-            },
-            tablesAssembly: {
-                'lineChart.png': '趋势图',
-                'gaugeChart.png': '仪表盘'
-            },
+            baseAssembly: [
+                {image:'rectangle.png',name :'矩形'},
+                {image:'button.png', name :'按钮'},
+                {image:'menulist.png',name :'菜单'},
+                {image:'image.png', name :'图片'},
+                {image:'table.png', name :'表格'},
+                {image:'line.png', name :'直线'},
+                {image:'linkTag.png',name : 'Link'},
+                {image:'text.png', name :'文字'},
+                {image:'light.png', name :'指示灯'},
+                {image:'progress.png', name :'进度条'},
+                {image:'pipeline1.png', name :'管道1'},
+                {image:'pipeline2.png',name :'管道2'}
+            ],
+            tablesAssembly: [
+                {image:'lineChart.png',name :'趋势图'},
+                {image:'gaugeChart.png',name :'仪表盘'}
+            ],
             arrListTables: [],
             emptyArray: [],
             isactive: 0,
@@ -297,7 +368,13 @@ export default {
             ismouseenter: false,
             allMaterial: [],
             pageMaterial: [],
-            alertMaterial: []
+            alertMaterial: [],
+            nodata: '暂无数据',
+            leftshowIf: true,
+            ifselectFrom: false,
+            userMaterialAll: [],
+            newArr: [],
+            newArr2: []
         }
     },
     created() {
@@ -309,7 +386,7 @@ export default {
     methods: {
         init() {
             this.requestUtil.get(this.urls.materialList.url).then((res) => {
-                let data = res.records
+                let data = res.records || []
                 data.forEach((item) => {
                     let obj = {
                         name: item.libraryName,
@@ -323,25 +400,29 @@ export default {
         },
         cancel() {
             this.$emit('triggerCancel')
+
         },
-        selectAssemblyList(index, materialLibraryId) {
-            this.emptyArray = []
-            if (index >= 2) {
-                // 获取组件库id 上传组件时候要用
-                this.uploadData = {
-                    materialLibraryId: materialLibraryId
-                }
-                this.requestUtil.get(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
-                    let data = res.materialList
-                    data.forEach((item) => {
-                        let obj = {
-                            name: item.descript,
-                            image: item.picUrl,
-                            materialId: item.materialId
-                        }
-                        this.emptyArray.push(obj)
+        selectAssemblyList(evt,index, materialLibraryId) {
+            let target = evt.target.parentElement.className
+            if (!target.includes('left-side-listactive')) {
+                this.emptyArray = []
+                if (index >= 2) {
+                    // 获取组件库id 上传组件时候要用
+                    this.uploadData = {
+                        materialLibraryId: materialLibraryId
+                    }
+                    this.requestUtil.get(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
+                        let data = res.materialList
+                        data.forEach((item) => {
+                            let obj = {
+                                name: item.descript,
+                                image: item.picUrl,
+                                materialId: item.materialId
+                            }
+                            this.emptyArray.push(obj)
+                        })
                     })
-                })
+                }
             }
             this.arrListTables = index === 0 ? this.baseAssembly : (index === 1 ? this.tablesAssembly : this.emptyArray)
             this.isactive = index
@@ -379,7 +460,6 @@ export default {
             }
             this.requestUtil.get(this.urls.addTemplate.url,data).then((res) => {
                 let data = res.records || []
-                console.log(data)
                 data.forEach((item) => {
                     let obj = {
                         picUrl: item.picUrl,
@@ -418,20 +498,47 @@ export default {
             var timer = null
             // 触发 拿到组件
             this.requestUtil.get(this.urls.materialRightList.url).then((res) => {
-                console.log('素材列表',res)
+                // console.log('素材列表',res)
+                let data = res || []
+                data.forEach((item) => {
+                    let obj = {
+                        name: item.descript,
+                        image: item.picUrl,
+                        materialId: item.materialId
+                    }
+                    this.userMaterialAll.push(obj)
+                })
+                
             })
             return function() {
                 clearTimeout(timer)
                 timer = setTimeout(() => {
-                    console.log(this)
                     handle.call(this, this.value)
                 }, deLay);
             }
         },
         selectMaterial(value) {
+            let basicArr = [...this.baseAssembly, ...this.tablesAssembly]
+            let userArr = this.userMaterialAll || []
             if (value !== '') {
-                console.log(66)
-            } 
+                this.leftshowIf = false
+                this.ifselectFrom = true
+                basicArr.forEach(item => {
+                    if(item.name.includes(value.trim())) {
+                        this.newArr.push(item)
+                    }
+                })
+                userArr.forEach(item => {
+                    if(item.name.includes(value.trim())) {
+                        this.newArr2.push(item)
+                    }
+                })
+            } else {
+                this.newArr = []
+                this.newArr2 = []
+                this.leftshowIf = true
+                this.ifselectFrom = false
+            }
         },
         uploadSucc(res) {
             // this.emptyArray = []
@@ -539,11 +646,6 @@ export default {
             $('#materialModelMenu').hide()
         },
         renameHandle(ele, actionType, type,index, materialId) {
-            console.log(ele)
-            console.log(actionType)
-            console.log(type)
-            console.log(index)
-            console.log(materialId)
             let editInput = document.createElement('input');
             editInput.id = 'editPageInput'
             let oldVal = ele.innerText
@@ -559,21 +661,44 @@ export default {
                     ele.innerHTML = `<span>${oldVal}</span><span class="right-spots"></span>`
                 } else if (name.length > 20) {
                     Message.warning('页面名称不能超过20个字符');
-                    ele.innerHTML = `<span>${oldVal}</span><span class="right-spots"></span>`
+                    ele.innerHTML = `<span style="flex:1;display:inline-block;width:100px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;>${oldVal}</span><span class="right-spots"></span>`
                 } else {
-                    ele.innerHTML = `<span>${name}</span><span class="right-spots"></span>`
                     if (name !== oldVal) {
                         // console.log('重新命名请求接口')
                         if (this.tabNumeber === 0) {
-                            let data = {
+                            let data1 = {
                                 materialLibraryId:this.uploadData.materialLibraryId ? this.uploadData.materialLibraryId : '' ,
                                 libraryName: name,
                             }
-                            this.requestUtil.put(this.urls.materialList.url,data).then((res) => {
-                                if (res.libraryName) {
-                                    Message.info('修改成功')
+                            let data2 = {
+                                materialId:materialId || '',
+                                descript: name,
+                            }
+                            if (type === 'left') {
+                                try {
+                                    this.requestUtil.put(this.urls.materialList.url,data1).then((res) => {
+                                        if (res.libraryName) {
+                                            Message.info('修改成功')
+                                            ele.innerHTML = `<span style="flex:1;display:inline-block;width:100px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;">${name}</span><span class="right-spots"></span>`
+                                        }
+                                    })
+                                } catch(e) {
+                                    Message.error('修改失败')
+                                    return false
                                 }
-                            })
+                                
+                            } else if (type === 'right') {
+                                this.requestUtil.put(this.urls.materialRightList.url,data2).then((res) => {
+                                    if (res.libraryName) {
+                                        Message.info('修改成功')
+                                        ele.innerHTML = `<span style="flex:1;display:inline-block;width:100px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;">${name}</span><span class="right-spots"></span>`
+                                    }
+                                }).catch(() => {
+                                    Message.error('修改失败')
+                                    return false
+                                })
+                                
+                            }
                         } else if (this.tabNumeber === 1) {
                             let data = {
                                 pageTemplateId:materialId,
@@ -582,10 +707,13 @@ export default {
                             this.requestUtil.put(this.urls.addTemplate.url,data).then((res) => {
                                 if (res.name) {
                                     Message.info('修改成功')
+                                    ele.innerHTML = `<span style="flex:1;display:inline-block;width:100px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;">${name}</span><span class="right-spots"></span>`
                                 }
+                            }).catch(() => {
+                                Message.error('修改失败')
+                                return false
                             })
                         }
-                        
                     }
                 }
                 this.addListHandle()
@@ -649,7 +777,7 @@ export default {
     .left-sidebar-model{
         /deep/.ivu-modal{
             /deep/.ivu-modal-content{
-                width:600px;
+                width:685px;
                 background-color:#f5f5f5 !important;
                 .ivu-modal-header{
                     height: 36px;
@@ -716,7 +844,7 @@ export default {
                                             width:150px;
                                             box-sizing: border-box;
                                             border-right:1px solid #ccc;
-                                            padding:2px 5px;
+                                            padding:5px;
                                             .assembly-seach-wrapper{
                                                 box-sizing: border-box;
                                                 .assembly-seach-icon{
@@ -750,6 +878,8 @@ export default {
                                                         line-height: 24px;
                                                         font-size: 12px;
                                                         color:#252525;
+                                                        cursor: pointer;
+                                                        display: flex;
                                                         &.left-side-listactive{
                                                             background-color: #277AE0;
                                                             color:#fff;
@@ -769,7 +899,7 @@ export default {
                                                             height:24px;
                                                             background: url(../../assets/images/material/more2_ic.png) no-repeat center center;
                                                             background-size: 16px 16px;
-                                                            float:right;
+                                                            // float:right;
                                                             position: relative;
                                                         }
                                                     }
@@ -803,47 +933,55 @@ export default {
                                         }
                                         .materialtabs-right{
                                             flex:1;
-                                            padding:4px 2px 2px;
+                                            padding:5px;
                                             height: 300px;
                                             overflow-y: auto;
+                                            .right-nodata{
+                                                height:100%;
+                                                text-align: center;
+                                                display:flex;
+                                                justify-content: center;
+                                                align-items: center;
+                                                color:#acacac;
+                                            }
                                             .assembly-right-wrapper{
                                                 display: flex;
                                                 flex-wrap:wrap;
                                                 overflow-y:auto; 
                                                 &>li{
-                                                    width:60px;
-                                                    height:80px;
-                                                    margin-right:2px;
+                                                    width:100px;
+                                                    height:130px;
+                                                    margin-right:5px;
                                                     &>div{
-                                                        width:60px;
-                                                        height: 60px;
+                                                        width:100px;
+                                                        height: 100px;
                                                         border:1px solid #E1E1E1;
                                                         display: flex;
                                                         justify-content: center;
                                                         align-items: center; 
                                                         &>span{
                                                             display: block;
-                                                            width:36px;
-                                                            height: 36px;
-                                                            border: 1px dashed #E1E1E1;
+                                                            width:72px;
+                                                            height: 72px;
+                                                            // border: 1px dashed #E1E1E1;
                                                         }
                                                     }
                                                     &>span{
                                                         display: block;
-                                                        width:60px;
-                                                        height: 20px;
+                                                        width:100px;
+                                                        height: 30px;
                                                         text-align: center;
-                                                        line-height: 20px;
+                                                        line-height: 30px;
                                                         color: #252525;
                                                     }
                                                 }
                                                 &>li.user-uploadimage{
-                                                  width:138px;
-                                                  height:158px;
-                                                  margin-right:2px;
+                                                  width:100px;
+                                                  height:130px;
+                                                  margin-right:5px;
                                                   &>div{
-                                                      width:138px;
-                                                      height: 138px;
+                                                      width:100px;
+                                                      height: 100px;
                                                       border:1px solid #E1E1E1;
                                                       display: flex;
                                                       justify-content: center;
@@ -851,9 +989,9 @@ export default {
                                                       position: relative;
                                                       &>span{
                                                           display: block;
-                                                          width:120px;
-                                                          height: 100px;
-                                                          border: 1px dashed #E1E1E1;
+                                                          width:80px;
+                                                          height: 80px;
+                                                          // border: 1px dashed #E1E1E1;
                                                       }
                                                       .right-spots-assemly{
                                                         display: block;
@@ -869,15 +1007,15 @@ export default {
                                                     }
                                                     &>span{
                                                         display: block;
-                                                        width:138px;
-                                                        height: 20px;
+                                                        width:100px;
+                                                        height: 30px;
                                                         text-align: center;
-                                                        line-height: 20px;
+                                                        line-height: 30px;
                                                         color: #252525;
                                                         &.right-list-listactive{
                                                           &>#editPageInput{
                                                             border:none;
-                                                            height:20px;
+                                                            height:30px;
                                                             text-align: center
                                                           }
                                                         }
@@ -889,29 +1027,29 @@ export default {
                                                 flex-wrap:wrap;
                                                 overflow-y:auto; 
                                                 &>li{
-                                                    width:138px;
-                                                    height:158px;
-                                                    margin-right:2px;
+                                                    width:100px;
+                                                    height:130px;
+                                                    margin-right:5px;
                                                     &>div{
-                                                        width:138px;
-                                                        height: 138px;
+                                                        width:100px;
+                                                        height: 100px;
                                                         border:1px solid #E1E1E1;
                                                         display: flex;
                                                         justify-content: center;
                                                         align-items: center; 
                                                         &>span{
                                                             display: block;
-                                                            width:120px;
-                                                            height: 120px;
-                                                            border: 1px dashed #E1E1E1;
+                                                            width:100px;
+                                                            height: 100px;
+                                                            // border: 1px dashed #E1E1E1;
                                                         }
                                                     }
                                                     &>span{
                                                         display: block;
-                                                        width:138px;
-                                                        height: 20px;
+                                                        width:100px;
+                                                        height: 30px;
                                                         text-align: center;
-                                                        line-height: 20px;
+                                                        line-height: 30px;
                                                         color: #252525;
                                                     }
                                                 }
@@ -920,8 +1058,8 @@ export default {
                                                   // height:158px;
                                                   // margin-right:2px;
                                                   &>div{
-                                                      width:138px;
-                                                      height: 138px;
+                                                      width:100px;
+                                                      height: 100px;
                                                       border:1px solid #E1E1E1;
                                                       display: flex;
                                                       justify-content: center;
@@ -929,9 +1067,9 @@ export default {
                                                       position: relative;
                                                       &>span{
                                                           display: block;
-                                                          width:120px;
+                                                          width:100px;
                                                           height: 100px;
-                                                          border: 1px dashed #E1E1E1;
+                                                        //   border: 1px dashed #E1E1E1;
                                                       }
                                                       .right-spots-assemly{
                                                         display: block;
@@ -947,15 +1085,15 @@ export default {
                                                     }
                                                     &>span{
                                                         display: block;
-                                                        width:138px;
-                                                        height: 20px;
+                                                        width:100px;
+                                                        height: 30px;
                                                         text-align: center;
-                                                        line-height: 20px;
+                                                        line-height: 30px;
                                                         color: #252525;
                                                         &.right-list-listactive{
                                                           &>#editPageInput{
                                                             border:none;
-                                                            height:20px;
+                                                            height:30px;
                                                             text-align: center
                                                           }
                                                         }

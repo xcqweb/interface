@@ -939,7 +939,8 @@ Sidebar.prototype.deletePage = function(ele) {
     const pageType = this.editorUi.editor.currentType;
     const restList = this.editorUi.editor.pagesRank[pageType]
     if (restList.length <= 1) {
-        alert('至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
+        // alert('至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
+        tipDialog(this.editorUi,'至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
         return;
     } else {
         var target;
@@ -973,16 +974,19 @@ Sidebar.prototype.renameNode = function(ele) {
         let name = editInput.value.trim();
         mxEvent.removeListener(document.body, 'click', saveFn);
         if (!name) {
-            mxUtils.alert('页面名称不能为空');
+            tipDialog(this.editorUi, '页面名称不能为空');
+            // mxUtils.alert('页面名称不能为空');
             ele.innerHTML = oldVal;
         } else if (name.length > 20) {
-            mxUtils.alert('页面名称不能超过20个字符');
+            // mxUtils.alert('页面名称不能超过20个字符');
+            tipDialog(this.editorUi, '页面名称不能超过20个字符');
             ele.innerHTML = oldVal;
         } else {
             if (name !== oldVal) {
                 for (let key in this.editorUi.editor.pages) {
                     if (this.editorUi.editor.pages[key].title === name) {
-                        mxUtils.alert('页面名称不能重复');
+                        // mxUtils.alert('页面名称不能重复');
+                        tipDialog(this.editorUi, '页面名称不能重复');
                         ele.innerHTML = oldVal;
                         return;
                     }
@@ -1089,7 +1093,8 @@ Sidebar.prototype.addTemplate = async function(type) {
             }
         })
     } else {
-        alert('您未拖入组件，不能添加为模版！')
+        tipDialog(this.editorUi, `您未拖入组件，不能添加为模版！`)
+        // alert('您未拖入组件，不能添加为模版！')
     }
 }
 

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import urls from '../constants/url';
 import {getCookie} from './Utils'
- 
 axios.defaults.timeout = 60 * 1000 * 5; //响应超时时间          
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'; //配置请求头
 // axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded'; //配置请求头
@@ -37,7 +36,7 @@ axios.interceptors.response.use((res) =>{
     return Promise.reject(error)
 })
 function dealRequest(url,params,funName,isLoading) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         //let loading;
         if(isLoading) {
             /*  loading = Loading.service({
@@ -54,10 +53,13 @@ function dealRequest(url,params,funName,isLoading) {
                 }
                 resolve(response.data);
             },(err)=>{
-                console.log(err)
-                if(isLoading) {
-                    //loading.close();
-                }
+                reject(err);
+                // Message.warning('系统繁忙！')
+                // console.log(err)
+                // return false
+                // if(isLoading) {
+                //     //loading.close();
+                // }
             })
             .catch((err) => {
                 console.log(err)
