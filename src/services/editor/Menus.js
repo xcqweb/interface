@@ -623,6 +623,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
         if (state != null)
         {
             var shapeName = state.style.shape;
+            console.log(shapeName)
             // if (graph.getSelectionCount() > 1 && shapeName !== 'menuCell' && shapeName !== 'menulist')
             // {
             //     // 选择多个节点，增加组合操作
@@ -649,7 +650,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                         // this.addMenuItems(menu, ['delete', '-'], null, evt);
                         this.addMenuItems(menu, ['copy', 'cut', 'paste', '-'], null, evt);
                     } else if (shapeName == "menuCell"){
-                            
+
                     } else {
                         if (shapeName !== 'tableCell') {
                             this.addMenuItems(menu, ['copy', 'cut', 'paste', '-'], null, evt);
@@ -662,7 +663,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                         // this.addMenuItems(menu, [], null, evt);
                     }
                     menu.addSeparator();
-                    let arr = ['rectangle','ellipse', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2']
+                    let arr = ['rectangle','ellipse', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2', 'userimage']
                     if (arr.includes(shapeName)) {
                         this.addMenuItems(menu, ['resetHide', '-', 'delete'], null, evt);
                     }
