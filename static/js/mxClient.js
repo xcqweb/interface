@@ -15325,22 +15325,25 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	let selectCount = this.graph.getSelectionCount()
 	// console.log(selectCount)
 	let shapeName = ''
-	console.log(selectCell)
-	console.log(selectCount)
+	// console.log(selectCell)
+	// console.log(selectCount)
 	if (selectCell) {
 		shapeName = this.graph.view.getState(selectCell).style.shape;
 	}
-	console.log(shapeName)
-	console.log(this.graph.getModel().getValue(selectCell))
-	if (this.graph.getModel().getValue(selectCell)) {
-		let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') || undefined // 获取到元素
-		if ((showOrHide === 'true') && title.includes('设置隐藏')) {
-			title = '设置显示'
+	// console.log(shapeName)
+	// console.log(typeof this.graph.getModel().getValue(selectCell))
+	if (typeof this.graph.getModel().getValue(selectCell) === 'object') {
+		if (this.graph.getModel().getValue(selectCell)) {
+			let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') || undefined // 获取到元素
+			if ((showOrHide === 'true') && title.includes('设置隐藏')) {
+				title = '设置显示'
+			}
+		} else {
+			if (Object.prototype.toString.call(selectCell) === '[object Object]' && selectCell.hide === true) {
+				title = '设置显示'
+			}
 		}
 	} else {
-		if (Object.prototype.toString.call(selectCell) === '[object Object]' && selectCell.hide === true) {
-			title = '设置显示'
-		}
 	}
 	
 	let ifshowPaste = false

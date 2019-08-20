@@ -648,6 +648,8 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                     if (shapeName == "menulist") { // 菜单
                         // this.addMenuItems(menu, ['delete', '-'], null, evt);
                         this.addMenuItems(menu, ['copy', 'cut', 'paste', '-'], null, evt);
+                    } else if (shapeName == "menuCell"){
+                            
                     } else {
                         if (shapeName !== 'tableCell') {
                             this.addMenuItems(menu, ['copy', 'cut', 'paste', '-'], null, evt);
