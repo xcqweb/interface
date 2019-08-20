@@ -970,9 +970,11 @@ Sidebar.prototype.renameNode = function(ele) {
     ele.innerText = '';
     ele.appendChild(editInput);
     editInput.focus();
+    console.log(oldVal)
     let saveFn = () => {
         let name = editInput.value.trim();
         mxEvent.removeListener(document.body, 'click', saveFn);
+        console.log(oldVal)
         if (!name) {
             tipDialog(this.editorUi, '页面名称不能为空');
             // mxUtils.alert('页面名称不能为空');
@@ -1713,8 +1715,8 @@ Sidebar.prototype.addGeneralPalette = function(expand)
     this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
 
     let fnsChart=[
-        this.createVertexTemplateEntry('shape=lineChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/lineChart.png', 36, 36, '', '趋势图'),
-        this.createVertexTemplateEntry('shape=gaugeChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/gaugeChart.png', 36, 36, '', '仪表盘'),
+        this.createVertexTemplateEntry('shape=lineChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/lineChart2.svg', 190, 90, '', '趋势图'),
+        this.createVertexTemplateEntry('shape=gaugeChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/gaugeChart2.svg', 100, 90, '', '仪表盘'),
     ]
     this.addPaletteFunctions('chart', '图表控件', false, fnsChart);
    };
@@ -1728,9 +1730,9 @@ Sidebar.prototype.addLayoutPalette = function (expand) {
         data.forEach((item) => {
             Array1.push(that.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${item.picUrl}`, 300, 170, '', 'layout图', '', '', '', 'layout', `${item.picUrl}`))
         })
-        if (Array1.length) {
-            this.addPaletteFunctions('layout', 'layout控件', false, Array1);
-        }
+        // if (Array1.length) {
+        this.addPaletteFunctions('layout', 'layout控件', false, Array1);
+        // }
     })
 }
 /*
@@ -1756,9 +1758,9 @@ Sidebar.prototype.addUserPalette = function (expand) {
                 data.forEach((item) => {
                     Array1.push(that.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${item.picUrl}`, 300, 170, '', 'layout图', '', '', '', 'layout', `${item.picUrl}`))
                 })
-                if (Array1.length) {
+                // if (Array1.length) {
                     this.addPaletteFunctions('user', `${item.name}`, false, Array1);
-                }
+                // }
             })
         })
     })
@@ -1994,7 +1996,7 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
         elt.style.width = '33px';
         elt.style.height = '33px';
     } else {
-        if (type === 'layout') {
+        if (type === 'layout' || type === 'lineChart' || type === 'gaugeChart') {
             elt.style.width = '50px'
             elt.style.height = '50px'
             elt.style.backgroundImage = `url(${imageurl})`;

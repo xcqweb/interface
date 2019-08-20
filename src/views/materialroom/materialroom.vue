@@ -35,23 +35,25 @@
                   <template
                     v-if="leftshowIf"
                   >
-                    <ul
-                      v-for="(item,index) in assemblyArrayName"
-                      :key="index"
-                      class="assembly-list"
-                    >
-                      <li
-                        class="assembly-icon"
-                        :class="index === isactive ? 'left-side-listactive' : ''"
-                        @click="selectAssemblyList($event,index, item.materialLibraryId)"
+                    <div class="left-max-height">
+                      <ul
+                        class="assembly-list"
                       >
-                        <span style="flex:1;display:inline-block;width:100px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;">{{ item.name }}</span>
-                        <span 
-                          v-if="index >= 3" 
-                          class="right-spots" 
-                        />
-                      </li>
-                    </ul>
+                        <li
+                          v-for="(item,index) in assemblyArrayName"
+                          :key="index"
+                          class="assembly-icon"
+                          :class="index === isactive ? 'left-side-listactive' : ''"
+                          @click="selectAssemblyList($event,index, item.materialLibraryId)"
+                        >
+                          <span class="left-assembly-left">{{ item.name }}</span>
+                          <span 
+                            v-if="index >= 3" 
+                            class="right-spots" 
+                          />
+                        </li>
+                      </ul>
+                    </div>
                   </template>
                 </div>
               </div>
@@ -61,24 +63,29 @@
                   class="assembly-right-wrapper"
                 >
                   <template v-if="!ifselectFrom">
-                    <template v-if="isactive >= 2">
+                    <template v-if="+isactive >= 2">
                       <li 
                         v-for="(item, index) in arrListTables"
                         :key="index"
                         class="user-uploadimage"
                       >
                         <div>
-                          <span :style="'background:url(' + (item.image) + ') no-repeat center center;background-size:120px 60px;'" />
+                          <span :style="'background:url(' + (item.image) + ') no-repeat center center;background-size:100px 60px;'" />
                           <label
                             class="right-spots-assemly"
                             @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.materialId)" 
                           />
                         </div>
                         <span
-                          style="width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
+                          style="display:block;width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
                           :class="index === isactive3 ? 'right-list-listactive' : ''"
                         >
-                          {{ item.name }}
+                          <span
+                            class="left-assembly-left"
+                          >
+                            {{ item.name }}
+                          </span>
+                          <span class="right-spots" />
                         </span>
                       </li>
                     </template>
@@ -88,7 +95,10 @@
                         :key="key"
                       >
                         <div>
-                          <span :style="'background:url(' + (DIR_ + item.image) + ') no-repeat center center;background-size:60px 60px;'" />
+                          <span 
+                            class="right-background-size" 
+                            :style="'background:url(' + (DIR_ + item.image) + ') no-repeat center center;'" 
+                          />
                           <label class="right-spots-assemly" />
                         </div>
                         <span>
@@ -123,17 +133,22 @@
                         class="user-uploadimage"
                       >
                         <div>
-                          <span :style="'background:url(' + (item.image) + ') no-repeat center center;background-size:120px 60px;'" />
+                          <span :style="'background:url(' + (item.image) + ') no-repeat center center;background-size:100px 60px;'" />
                           <label
                             class="right-spots-assemly"
                             @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.materialId)" 
                           />
                         </div>
                         <span
-                          style="width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
+                          style="display:block;width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
                           :class="index === isactive3 ? 'right-list-listactive' : ''"
                         >
-                          {{ item.name }}
+                          <span
+                            class="left-assembly-left"
+                          >
+                            {{ item.name }}
+                          </span>
+                          <span class="right-spots" />
                         </span>
                       </li>
                     </template>
@@ -331,22 +346,23 @@ export default {
             DIR_: `../../../static/stencils/basic/`,
             // bacPicUrl: `http://10.74.20.26:8009/`,
             baseAssembly: [
-                {image:'rectangle.png',name :'矩形'},
+                {image:'text2.svg', name :'文字'},
+                {image:'rectangle2.svg',name :'矩形'},
+                {image:'ellipse2.svg',name : '椭圆'},
+                {image:'line2.svg', name :'直线'},
                 {image:'button.png', name :'按钮'},
                 {image:'menulist.png',name :'菜单'},
-                {image:'image.png', name :'图片'},
-                {image:'table.png', name :'表格'},
-                {image:'line.png', name :'直线'},
-                {image:'linkTag.png',name : 'Link'},
-                {image:'text.png', name :'文字'},
-                {image:'light.png', name :'指示灯'},
-                {image:'progress.png', name :'进度条'},
-                {image:'pipeline1.png', name :'管道1'},
-                {image:'pipeline2.png',name :'管道2'}
+                {image:'tableBox2.svg', name :'表格'},
+                {image:'image2.svg', name :'图片'},
+                {image:'linkTag2.svg',name : 'Link'},
+                {image:'light2.svg', name :'指示灯'},
+                {image:'progress2.svg', name :'进度条'},
+                {image:'npipeline1.svg', name :'管道1'},
+                {image:'npipeline2.svg',name :'管道2'}
             ],
             tablesAssembly: [
-                {image:'lineChart.png',name :'趋势图'},
-                {image:'gaugeChart.png',name :'仪表盘'}
+                {image:'lineChart2.svg',name :'趋势图'},
+                {image:'gaugeChart2.svg',name :'仪表盘'}
             ],
             arrListTables: [],
             emptyArray: [],
@@ -403,8 +419,13 @@ export default {
 
         },
         selectAssemblyList(evt,index, materialLibraryId) {
-            let target = evt.target.parentElement.className
-            if (!target.includes('left-side-listactive')) {
+            let target = null
+            if (!evt) {
+                target = 'auto'
+            } else {
+                target = evt.target.parentElement.className
+            }
+            if (!target.includes('left-side-listactive') || target === 'auto') {
                 this.emptyArray = []
                 if (index >= 2) {
                     // 获取组件库id 上传组件时候要用
@@ -491,7 +512,7 @@ export default {
             }
             this.requestUtil.post(this.urls.materialList.url, data).then((res) => {
                 this.assemblyArrayName.push({name: name,materialLibraryId: res.materialLibraryId})
-                this.selectAssemblyList(num + ROOT_LEN)
+                this.selectAssemblyList('',num + ROOT_LEN,res.materialLibraryId)
             })
         },
         debounce(handle, deLay) {
@@ -628,6 +649,7 @@ export default {
                 } else if (type === this.POSITION_LEFT) {
                     element = document.querySelector('.assembly-list>li.left-side-listactive')
                 }
+                console.log(actionType)
                 switch(actionType) {
                     case 'rename':
                         this.renameHandle(element,actionType,type,index,materialId)
@@ -657,14 +679,13 @@ export default {
                 let name = editInput.value.trim()
                 document.body.removeEventListener('click', saveFn)
                 if (!name) {
+                    ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
                     Message.warning('页面名称不能为空')
-                    ele.innerHTML = `<span>${oldVal}</span><span class="right-spots"></span>`
                 } else if (name.length > 20) {
+                    ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
                     Message.warning('页面名称不能超过20个字符');
-                    ele.innerHTML = `<span style="flex:1;display:inline-block;width:100px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;>${oldVal}</span><span class="right-spots"></span>`
                 } else {
                     if (name !== oldVal) {
-                        // console.log('重新命名请求接口')
                         if (this.tabNumeber === 0) {
                             let data1 = {
                                 materialLibraryId:this.uploadData.materialLibraryId ? this.uploadData.materialLibraryId : '' ,
@@ -679,21 +700,22 @@ export default {
                                     this.requestUtil.put(this.urls.materialList.url,data1).then((res) => {
                                         if (res.libraryName) {
                                             Message.info('修改成功')
-                                            ele.innerHTML = `<span style="flex:1;display:inline-block;width:100px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;">${name}</span><span class="right-spots"></span>`
+                                            ele.innerHTML = `<span class="left-assembly-left">${name}</span><span class="right-spots"></span>`
                                         }
                                     })
                                 } catch(e) {
+                                    ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
                                     Message.error('修改失败')
                                     return false
                                 }
-                                
                             } else if (type === 'right') {
                                 this.requestUtil.put(this.urls.materialRightList.url,data2).then((res) => {
                                     if (res.libraryName) {
                                         Message.info('修改成功')
-                                        ele.innerHTML = `<span style="flex:1;display:inline-block;width:100px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;">${name}</span><span class="right-spots"></span>`
+                                        ele.innerHTML = `<span class="left-assembly-left">${name}</span><span class="right-spots"></span>`
                                     }
                                 }).catch(() => {
+                                    ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
                                     Message.error('修改失败')
                                     return false
                                 })
@@ -707,9 +729,10 @@ export default {
                             this.requestUtil.put(this.urls.addTemplate.url,data).then((res) => {
                                 if (res.name) {
                                     Message.info('修改成功')
-                                    ele.innerHTML = `<span style="flex:1;display:inline-block;width:100px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;">${name}</span><span class="right-spots"></span>`
+                                    ele.innerHTML = `<span class="left-assembly-left">${name}</span><span class="right-spots"></span>`
                                 }
                             }).catch(() => {
+                                ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
                                 Message.error('修改失败')
                                 return false
                             })
@@ -741,19 +764,24 @@ export default {
                     this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
                         if (res.code === '0') {
                             this.assemblyArrayName.splice(index ,1)
+                            Message.warning('删除成功')
                         }
+                    }).catch(() => {
+                        Message.warning('删除失败')
                     })
                 } else if (type === this.POSITION_RIGHT) {
                     this.requestUtil.delete(this.urls.materialRightList.url + `/${materialId}`,).then((res) => {
                         if (this.arrListTables[index].materialId === materialId && res.code === '0') {
                             this.arrListTables.splice(index,1)
+                            Message.warning('删除成功')
                         }
+                    }).catch(() => {
+                        Message.warning('删除失败')
                     })
                 }
             } else if (+this.tabNumeber === 1) {
                 this.requestUtil.delete(this.urls.addTemplate.url + `/${materialId}`,).then((res) => {
                     if (res.code === '0') {
-                        // tipDialog(this.myEditorUi,`删除成功`)
                         Message.warning('删除成功')
                         if (+this.isactive2 === 1) {
                             this.alertMaterial.splice(index, 1)
@@ -761,6 +789,8 @@ export default {
                             this.pageMaterial.splice(index, 1)
                         }
                     }
+                }).catch(() => {
+                    Message.warning('删除失败')
                 })
             }
             
@@ -868,41 +898,53 @@ export default {
                                                     color:#797979;
                                                     cursor: pointer;
                                                 }
-                                                .assembly-list{
-                                                    .assembly-icon{
-                                                        width:100%;
-                                                        height: 24px;
-                                                        background: url(../../assets/images/material/subassembly2_ic.png) no-repeat left center;
-                                                        background-size: 16px 16px;
-                                                        padding-left:18px;
-                                                        line-height: 24px;
-                                                        font-size: 12px;
-                                                        color:#252525;
-                                                        cursor: pointer;
-                                                        display: flex;
-                                                        &.left-side-listactive{
-                                                            background-color: #277AE0;
-                                                            color:#fff;
-                                                            .right-spots{
-                                                                background: url('../../assets/images/leftsidebar/more1_ic.png') no-repeat center center;
-                                                                background-size:16px 16px;
-                                                            }
-                                                            #editPageInput{
-                                                              border:none;
-                                                              height:25px;
-                                                              width:100%;
-                                                            }
-                                                        }
-                                                        &>.right-spots{
+                                                .left-max-height{
+                                                  height:240px;
+                                                  overflow-y: auto;
+                                                  .assembly-list{
+                                                      .assembly-icon{
+                                                          width:100%;
+                                                          height: 24px;
+                                                          background: url(../../assets/images/material/subassembly2_ic.png) no-repeat left center;
+                                                          background-size: 16px 16px;
+                                                          padding-left:18px;
+                                                          line-height: 24px;
+                                                          font-size: 12px;
+                                                          color:#252525;
+                                                          cursor: pointer;
+                                                          display: flex;
+                                                          .left-assembly-left{
+                                                            width:100px;
+                                                            overflow:hidden;
+                                                            text-overflow:ellipsis;
+                                                            white-space: nowrap;
+                                                            flex:1;
                                                             display:block;
-                                                            width:24px;
-                                                            height:24px;
-                                                            background: url(../../assets/images/material/more2_ic.png) no-repeat center center;
-                                                            background-size: 16px 16px;
-                                                            // float:right;
-                                                            position: relative;
-                                                        }
-                                                    }
+                                                          }
+                                                          &.left-side-listactive{
+                                                              background-color: #277AE0;
+                                                              color:#fff;
+                                                              .right-spots{
+                                                                  background: url('../../assets/images/leftsidebar/more1_ic.png') no-repeat center center;
+                                                                  background-size:16px 16px;
+                                                              }
+                                                              #editPageInput{
+                                                                border:none;
+                                                                height:25px;
+                                                                width:100%;
+                                                              }
+                                                          }
+                                                          &>.right-spots{
+                                                              display:block;
+                                                              width:24px;
+                                                              height:24px;
+                                                              background: url(../../assets/images/material/more2_ic.png) no-repeat center center;
+                                                              background-size: 16px 16px;
+                                                              // float:right;
+                                                              position: relative;
+                                                          }
+                                                      }
+                                                  }
                                                 }
                                             }
                                             .material-list {
@@ -963,6 +1005,9 @@ export default {
                                                             display: block;
                                                             width:72px;
                                                             height: 72px;
+                                                            &.right-background-size{
+                                                              background-size:50px 50px !important;
+                                                            }
                                                             // border: 1px dashed #E1E1E1;
                                                         }
                                                     }
@@ -973,6 +1018,16 @@ export default {
                                                         text-align: center;
                                                         line-height: 30px;
                                                         color: #252525;
+                                                        display:flex;
+                                                        justify-content: center;
+                                                        .left-assembly-left{
+                                                          width:100px;
+                                                          overflow:hidden;
+                                                          text-overflow:ellipsis;
+                                                          white-space: nowrap;
+                                                          flex:1;
+                                                          display:block;
+                                                        }
                                                     }
                                                 }
                                                 &>li.user-uploadimage{
@@ -1006,7 +1061,7 @@ export default {
                                                       }
                                                     }
                                                     &>span{
-                                                        display: block;
+                                                        display: flex;
                                                         width:100px;
                                                         height: 30px;
                                                         text-align: center;
@@ -1016,7 +1071,8 @@ export default {
                                                           &>#editPageInput{
                                                             border:none;
                                                             height:30px;
-                                                            text-align: center
+                                                            text-align: center;
+                                                            width:100%;
                                                           }
                                                         }
                                                     }

@@ -50,7 +50,27 @@ module.exports = {
             },
             {
                 test: /\.less$/,
-                use: ['style-loader', 'css-loader', 'less-loader']
+                use: [ 
+                    {
+                        loader:MiniCssExtractPlugin.loader,
+                    },
+                    'css-loader', 
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            plugins: [postCssPlugin]
+                        }
+                    },
+                    'less-loader',
+                    {
+                        loader: 'style-resources-loader',
+                        options: {
+                            patterns:[
+                                path.resolve(__dirname, './src/assets/less/theme.less'),
+                            ]
+                        }
+                    }
+                ]
             },
             {
                 test: /\.(css)$/,
