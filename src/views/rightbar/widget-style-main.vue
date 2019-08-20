@@ -9,6 +9,7 @@
         样式
       </div>
       <div
+        v-if="stateList.includes(shapeName)"
         class="tab"
         :class="{'selected':tab==2}"
         @click="changeTab(2)"
@@ -16,6 +17,7 @@
         状态
       </div>
       <div
+        v-if="actionList.includes(shapeName)"
         class="tab"
         :class="{'selected':tab==3}"
         @click="changeTab(3)"
@@ -23,6 +25,7 @@
         交互
       </div>
       <div
+        v-if="dataList.includes(shapeName)"
         class="tab"
         :class="{'selected':tab==4}"
         @click="changeTab(4)"
@@ -34,14 +37,14 @@
       v-show="tab==1"
     />
     <State
-      v-show="tab==2"
+      v-if="tab==2 && stateList.includes(shapeName)"
       :key="refresh"
     />
     <MutualMain
-      v-show="tab==3"
+      v-if="tab==3 && actionList.includes(shapeName)"
       :key="refresh+1"
     />
-    <Data v-show="tab==4" />
+    <Data v-if="tab==4 && dataList.includes(shapeName)" />
   </div>
 </template>
 
@@ -56,9 +59,15 @@ export default{
         return {
             tab:1,
             refresh:0,//切换控件刷新子组件
+            stateList:['rectangle','image'],
+            actionList:['menuCell','rectangle','image','button'],
+            dataList:['rectangle','image'],
         }
     },
     computed: {
+        shapeName() {
+            return this.$store.state.main.widgetInfo.shapeInfo.shape
+        },
         rand() {
             return this.$store.state.main.rand
         }

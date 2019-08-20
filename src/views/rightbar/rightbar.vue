@@ -18,27 +18,23 @@
       <DialogStyle v-if="$store.state.main.type===1 && !showWidgetStyle" />
       <WidgetStyleMain v-if="showWidgetStyle" />
     </div>
-    <Chart 
+ <Chart 
       v-if="isChart" 
       :key="refresh+10" 
-    />
-  </div>
+    />  </div>
 </template>
 <script>
-import {mxCell,mxGeometry,mxEvent} from '../../services/mxGlobal'
+import {mxCell,mxGeometry} from '../../services/mxGlobal'
 import PageStyle from './page-style'
 import DialogStyle from './dialog-style'
 import WidgetStyleMain from './widget-style-main'
-import Chart from '../charts/chart'
 
 let shortCutWidgets
 export default {
-    components:{PageStyle,DialogStyle,WidgetStyleMain,Chart},
+    components:{PageStyle,DialogStyle,WidgetStyleMain},
     data() {
         return {
             showWidgetStyle:false,
-            isChart:false,
-            refresh:0,
         }
     },
     created() {},
@@ -59,6 +55,8 @@ export default {
                     '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">text</span>',
                     "文字",true,true
                 ),
+                //直线
+                that.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 50, '', '直线', true,true),
                 // 矩形
                 that.createVertexTemplateEntry(
                     "rounded=0;shape=rectangle;whiteSpace=wrap;html=1;",
@@ -67,10 +65,10 @@ export default {
                     "",
                     "矩形",true,true
                 ),
-                //直线
-                that.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 0, '', '直线', null, ''),
+                //圆形
+                that.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 36, 36, '', '圆形', true, true, '圆形'),
                 // 按钮
-                that.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box;background:transparent;">BUTTON</button>', '按钮'),
+                that.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box;background:transparent;">BUTTON</button>', '按钮',true,true),
                 //表格,通过矩形拼接
                 that.addEntry('tableBox', function() {
                     var cell = new mxCell('', new mxGeometry(0, 0, 300, 90), 'shape=tableBox;group');
@@ -82,10 +80,10 @@ export default {
                         symbol.vertex = true;
                         cell.insert(symbol);
                     }
-                    return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '表格');
+                    return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '表格',true,true);
                 }),
                 // 图片
-                that.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', that.defaultImageWidth, that.defaultImageHeight, '', '图片'),
+                that.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', that.defaultImageWidth, that.defaultImageHeight, '', '图片',true,true),
             ]
             for (let i = 0; i < shortCutWidgets.length; i++) {
                 ele.appendChild(shortCutWidgets[i](ele));
@@ -94,19 +92,9 @@ export default {
                 this.showWidgetStyle = !(graph.isSelectionEmpty() || graph.getSelectionCount() > 1)
                 if(this.showWidgetStyle) {
                     this.$store.commit('getWidgetInfo',graph)
-                    let {shapeInfo} = this.$store.state.main.widgetInfo
                     this.$store.commit('widgetChange',new Date().getTime())
-                    if(shapeInfo.shape == "lineChart") {
-                        this.isChart = true
-                    }
                 }
             }
-            graph.addListener(mxEvent.CLICK, ()=>{
-                this.refresh = new Date().getTime()
-            })
-            graph.addListener(mxEvent.CELLS_ADDED, ()=>{
-                this.refresh = new Date().getTime()
-            })
             this.$refs.pageStyle.init()
         },
     }
@@ -126,19 +114,16 @@ export default {
         width: 40px;
         border-right: 1px solid #ccc;
         border-left: 1px solid #ccc;
-        .geSidebar{
-            padding: 0;
-        }
-        a{
-            padding: 0 !important;
-            width: auto !important;
-            height: 45px !important;
-            background-size:22px 22px;
-            background-position: top center;
-            svg{
-                height: 21px !important;
-            }
-        }
+    }
+    .geItem{
+        display: inline-block;
+        height:44px !important;
+        background-position: top center !important;
+        background-size:24px 24px;
+        padding:0;
+    }
+    svg{
+        height:24px !important;    
     }
 }
 </style>

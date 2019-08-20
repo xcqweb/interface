@@ -12,7 +12,10 @@
       @keyup.enter="changeName"
     >
     <div class="item-line" />
-    <div style="display:flex;margin-top:4px;">
+    <div
+      v-if="shapeName!='menuCell' && shapeName!='tableCell'"
+      style="display:flex;margin-top:4px;"
+    >
       <div
         class="item-container"
       >
@@ -58,7 +61,33 @@
         > 
       </div>
     </div>
-    <div>
+    <div
+      v-if="shapeName=='tableBox'"
+      style="display:flex;margin-top:2px;"
+    >
+      <div
+        class="item-container"
+      >
+        <span style="color:#797979;margin:0 6px;">行</span>
+        <input
+          v-model="tableRow"
+          style="border-left:none;border-right:none;"
+          @keyup.enter="changeTableSize"
+        >
+      </div>
+      <div
+        class="item-container"
+        style="margin-left:10px;"
+      >
+        <span style="color:#797979;margin:0 6px;">列</span>
+        <input
+          v-model="tableCol"
+          style="border-left:none;border-right:none;"
+          @keyup.enter="changeTableSize"
+        > 
+      </div>
+    </div>
+    <div v-if="shapeName=='menuCell'">
       <div class="item-title">
         选中
       </div>
@@ -68,7 +97,10 @@
         @on-change="changeSelect"
       />
     </div>
-    <div class="titleSet">
+    <div
+      v-if="shapeName!='image'"
+      class="titleSet"
+    >
       <div class="item-title">
         文本
       </div>
@@ -150,7 +182,7 @@
       <div class="item-title">
         外观
       </div>
-      <div>
+      <div v-if="!fillStyleList.includes(shapeName)">
         <p style="margin-top:10px;">
           填充
         </p>
@@ -163,7 +195,7 @@
       </div>
       <div>
         <p style="margin-top:10px;">
-          边框
+          {{ shapeName=='beeline' ? '线条' : '边框' }}
         </p>
         <div style="display:flex;"> 
           <div
@@ -191,7 +223,9 @@
                 :key="index"
                 @click="changeBorderLine(d,$event)"
               >
-                <div :class="d" />
+                <div style="width:100%;height:4px;display:inline-block;vertical-align:middle;">
+                  <div :class="d" />
+                </div>
               </li>
             </ul>
           </div>
@@ -221,7 +255,7 @@
           </div>
         </div>
       </div>
-      <div>
+      <div v-if="shapeName=='beeline'">
         <p style="margin-top:10px;">
           箭头
         </p>
@@ -242,7 +276,7 @@
             <li
               v-for="(d,index) in arrowClsList"
               :key="index"
-              @click="changeBorderLine(d,$event)"
+              @click="changeArrowDialog(d,$event)"
             >
               <div :class="d" />
             </li>
@@ -262,7 +296,6 @@ export default {
     data() {
         return {
             showFont:false,
-            shapeName:'',
             fontColor:'#333333',
             fontText:12,
             alignIndex1:2,
@@ -273,8 +306,8 @@ export default {
             select:true,
             bgColor:'#277AE0',
             borderColor:'#277AE0',
-            borderLineList:[],
-            borderLineCls:'',
+            borderLineList:['border-line','border-dash'],
+            borderLineCls:'border-line',
             showArrowDialog:false,
             fontList:[
                 12,
@@ -291,11 +324,17 @@ export default {
             borderLineBoldList:[
                 1,2,3,4,5,6,7,8,9,10
             ],
-            arrowClsList:['arrow-empty'],
+            arrowClsList:['arrow-empty','arrow-left','arrow-right','arrow-double'],
             arrowCls:'arrow-empty',
+            fillStyleList:['beeline','image'],
+            tableRow:3,
+            tableCol:3,
         }
     },
     computed: {
+        shapeName() {
+            return this.$store.state.main.widgetInfo.shapeInfo.shape
+        },
         widgetName: {
             get() {
                 return this.$store.state.main.widgetInfo.widgetName
@@ -306,6 +345,7 @@ export default {
             }
         },
         positionSize() {
+            console.log(this.shapeName)
             let {x,y,width,height} = this.$store.state.main.widgetInfo.geo
             return {
                 x:x,
@@ -317,7 +357,6 @@ export default {
     },
     created() {},
     mounted() {
-        this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
         let graph = this.myEditorUi.editor.graph
         graph.getModel().addListener(mxEvent.CHANGE,()=>{
             this.$store.commit('getWidgetInfo',graph)
@@ -330,6 +369,10 @@ export default {
         this.bgColor =  this.$store.state.main.widgetInfo.bgColor
         this.borderColor =  this.$store.state.main.widgetInfo.borderColor
         this.borderLineBoldText =  this.$store.state.main.widgetInfo.borderBold
+        this.borderLineCls = this.$store.state.main.widgetInfo.borderLineCls
+        if(this.shapeName == 'beeline') {
+            this.arrowCls = this.$store.state.main.widgetInfo.arrowCls
+        }
     },
     methods: {
         changeName() {
@@ -360,8 +403,7 @@ export default {
         changeFont(d,e) {
             this.fontText = d
             let graph = this.myEditorUi.editor.graph
-            var shapeName = graph.view.getState(graph.getSelectionCell()).style.shape;
-            let ss = shapeName === 'tableBox' || shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells();
+            let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells();
             let key = mxConstants.STYLE_FONTSIZE
             graph.setCellStyles(key,d, ss);
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [key],
@@ -381,13 +423,13 @@ export default {
         setBold() {
             this.isSetBold = !this.isSetBold
             let graph = this.myEditorUi.editor.graph
-            let cells = graph.getSelectionCells()
+            let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells();
             let bold = 0
             if(this.isSetBold) {
                 bold = 1
             }
-            graph.setCellStyles('fontStyle', bold, graph.getSelectionCells());
-            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontStyle'],'values', [bold], 'cells',cells));
+            graph.setCellStyles('fontStyle', bold, ss);
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontStyle'],'values', [bold], 'cells',ss));
         },
         hideFont() {
             this.showFont = false
@@ -397,8 +439,9 @@ export default {
                 newFontColor = color  
                 this.fontColor = color
                 let graph = this.myEditorUi.editor.graph
-                graph.setCellStyles('fontColor', color, graph.getSelectionCells());
-                this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontColor'],'values', [color], 'cells', graph.getSelectionCells()));
+                let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells()
+                graph.setCellStyles('fontColor', color, ss);
+                this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontColor'],'values', [color], 'cells', ss))
             });
         },
         pickBgColor() {
@@ -415,8 +458,12 @@ export default {
                 newBorderColor = color  
                 this.borderColor = color
                 let graph = this.myEditorUi.editor.graph
-                graph.setCellStyles('strokeColor', color, graph.getSelectionCells());
-                this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['strokeColor'],'values', [color], 'cells', graph.getSelectionCells()));
+                let key = 'strokeColor'
+                if(this.shapeName == 'image') {
+                    key = 'imageBorder'
+                }
+                graph.setCellStyles(key, color, graph.getSelectionCells());
+                this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [key],'values', [color], 'cells', graph.getSelectionCells()));
             });
         },
         hideBorderLine() {
@@ -424,7 +471,17 @@ export default {
         },
         changeBorderLine(d,e) {
             this.borderLineCls = d
-            this.showBorderLine = false;
+            let graph = this.myEditorUi.editor.graph
+            let keys = [mxConstants.STYLE_DASHED],values = [null]
+            if(d.includes('dash')) {
+                keys = [mxConstants.STYLE_DASHED]
+                values = ['1']
+            }
+            for (let i = 0; i < keys.length; i++) {
+                graph.setCellStyles(keys[i], values[i]);
+            }
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', keys,'values', values, 'cells', graph.getSelectionCells()));
+            this.showBorderLine = false
             e.stopPropagation()
         },
         changeBorderLineBold(d,e) {
@@ -440,6 +497,73 @@ export default {
         },
         hideArrowFun() {
             this.showArrowDialog = false
+        },
+        changeArrowDialog(d,e) {
+            this.arrowCls = d
+            let keys = [],values = [],keys2 = [],values2 = []
+            let graph = this.myEditorUi.editor.graph
+            if(d.includes('left')) {
+                keys = [mxConstants.STYLE_STARTARROW, 'startFill']
+                values = [mxConstants.ARROW_CLASSIC, 1]
+                keys2 = [mxConstants.STYLE_ENDARROW, 'startFill']
+                values2 = [mxConstants.NONE, 0]
+            }else if(d.includes('right')) {
+                keys = [mxConstants.STYLE_ENDARROW, 'startFill']
+                values = [mxConstants.ARROW_CLASSIC, 1]
+                keys2 = [mxConstants.STYLE_STARTARROW, 'startFill']
+                values2 = [mxConstants.NONE, 0]
+            }else if(d.includes('double')) {
+                keys = [mxConstants.STYLE_STARTARROW, 'startFill']
+                values = [mxConstants.ARROW_CLASSIC, 1]
+                keys2 = [mxConstants.STYLE_ENDARROW, 'startFill']
+                values2 = [mxConstants.ARROW_CLASSIC, 1]
+            }else{
+                keys = [mxConstants.STYLE_ENDARROW, 'startFill']
+                values = [mxConstants.NONE, 0]
+                keys2 = [mxConstants.STYLE_STARTARROW, 'startFill']
+                values2 = [mxConstants.NONE, 0]
+            }
+            for (let i = 0; i < keys2.length; i++) {
+                graph.setCellStyles(keys2[i], values2[i]);
+            }
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys',keys2,'values', values2, 'cells', graph.getSelectionCells()));
+            
+            for (let i = 0; i < keys.length; i++) {
+                graph.setCellStyles(keys[i], values[i]);
+            }
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys',keys,'values', values, 'cells', graph.getSelectionCells()));
+            this.showArrowDialog = false
+            e.stopPropagation()
+        },
+        changeTableSize() {
+            let actions = this.myEditorUi.actions
+            let graph = this.myEditorUi.editor.graph
+            let table = graph.getSelectionCell()
+            let children = table.children
+            let cellLast = children[children.length - 1]
+            let currentRowNum = parseInt(table.geometry.width / cellLast.geometry.width)
+            let currentColNum = parseInt(table.geometry.height / cellLast.geometry.height)
+            let disRow = this.tableRow - currentRowNum
+            let disCol = this.tableCol - currentColNum
+            if(disRow > 0) {
+                for(let i = 0;i < disRow;i++) {
+                    actions.insertTableCell('lower',cellLast)
+                }
+            }else{
+                for(let i = 0;i < -disRow;i++) {
+                    actions.deleteTableCell('row',cellLast)
+                }
+            }
+            if(disCol > 0) {
+                for(let i = 0;i < disCol;i++) {
+                    actions.insertTableCell('right',cellLast)
+                }
+            }else{
+                for(let i = 0;i < -disCol;i++) {
+                    actions.deleteTableCell('col',cellLast)
+                }
+            }
+
         },
     }
 };
@@ -617,7 +741,41 @@ export default {
         border:solid 1px red;
     }
     .arrow-empty::after{
-      content:'无'
+      content:'无';
+    }
+    .arrow-left{
+      width:100%;
+      height: 18px;
+      background: url('../../../assets/images/rightsidebar/arrow_letf1_ic.png') no-repeat center left;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .arrow-right{
+      width:100%;
+      height: 18px;
+      background: url('../../../assets/images/rightsidebar/arrow_right1_ic.png') no-repeat center left;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .arrow-double{
+      width:100%;
+      height:18px;
+      background: url('../../../assets/images/rightsidebar/arrow_twoway1_ic.png') no-repeat center left;
+      cursor: pointer;
+      pointer-events: auto;
+      position: relative;
+      left:-6px;
+    }
+    .border-line{
+      background:#000;
+      height:1px;
+      box-sizing:border-box;
+      width:40px;
+    }
+    .border-dash{ 
+      border:dashed 1px #000;
+      height:1px;
+      width:40px;
     }
 }
 </style>
