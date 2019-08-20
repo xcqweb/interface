@@ -13,8 +13,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  // .dataSource{
-
-  // }
 </style>
 
