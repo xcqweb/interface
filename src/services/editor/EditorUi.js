@@ -3499,7 +3499,6 @@ EditorUi.prototype.saveSuccess = function(res) {
 EditorUi.prototype.saveError = function(res) {
     setTimeout(() => {
         this.hideDialog();
-        console.log(res)
         this.editor.tipInfo(this, null, res.message);
     }, 350);
 }

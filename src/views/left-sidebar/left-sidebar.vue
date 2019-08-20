@@ -41,12 +41,13 @@
         @on-ok="save"
         @on-cancel="cancel"
       >
-        <ul 
-          v-for="(item,index) in alertContent" 
-          :key="index" 
+        <ul
           class="left-sidebar-list"
         >
-          <li>
+          <li
+            v-for="(item,index) in alertContent" 
+            :key="index" 
+          >
             <span 
               :class="index === isactive ? 'left-side-listactive' : ''"
               @click="eventClickList(index)"
@@ -55,10 +56,17 @@
                 <span />
               </template>
               <template v-if="index >= 1">
-                <span />
+                <span 
+                  style="display:flex;justify-content:center;align-items:center"
+                >
+                  <img 
+                    style="max-width:118px;max-height:70px"
+                    :src="item.picUrl"
+                  >
+                </span>
               </template>
             </span>
-            <label>{{ item }} </label>
+            <label>{{ item.name }} </label>
           </li>
         </ul>
       </Modal>
@@ -70,6 +78,7 @@ import {Tabs, TabPane, Modal} from 'iview'
 // import {addPageDialog} from '../editor/Dialogs'
 const addPageTypeName = ['','添加页面','添加弹窗']
 // const addPageModal = ['',['空白页面','模版1'],['空白页面','模版1']]
+import VueEvent from '../../services/VueEvent.js'
 export default {
     components: {
         Tabs,
@@ -82,6 +91,8 @@ export default {
             modelshow: false,
             alertTitleName:'',
             alertContent:[],
+            pageModal: [],
+            alertModal:[],
             isactive: 0,
             ifclickHander:0,
             nomralType: 0
@@ -90,7 +101,9 @@ export default {
     created() {
     },
     mounted() {
-
+        VueEvent.$on('select-nodetype', function() {
+            this.myEditorUi.sidebar.init('nowload');
+        })
     },
     methods: {
         init() {
@@ -107,19 +120,38 @@ export default {
             // 1添加页面 2添加弹窗
             this.modelshow = true
             this.alertTitleName = addPageTypeName[type]
-            // console.log(this.urls)
             let data = {
                 'type': +type === 1 ? 'normal' : 'dialog'
             }
+            this.pageModal = [{'name': '空白页面',picUrl: '',content: '',pageTemplateId: ''}]
+            this.alertModal = [{'name': '空白弹窗',picUrl: '',content: '',pageTemplateId:''}]
             this.requestUtil.get(this.urls.addTemplate.url, data).then((res) => {
-                console.log(res)
+                let data = res.records || []
+                data.forEach(item => {
+                    let obj = {
+                        name: item.name,
+                        picUrl: item.picUrl,
+                        pageTemplateId: item.pageTemplateId,
+                        content:item.content
+                    } 
+                    if (type === 1) {
+                        this.pageModal.push(obj)
+                    } else if (type === 2) {
+                        this.alertModal.push(obj)
+                    }
+                })
             })
+            if (type === 1) {
+                this.alertContent = this.pageModal
+            } else if (type === 2) {
+                this.alertContent = this.alertModal
+            }
         },
         eventClickList(index) {
             this.isactive = index
         },
         save() {
-            this.alertAddPage(this.nomralType)
+            this.alertAddPage(this.nomralType,this.isactive)
         },
         cancel() {
 
@@ -127,24 +159,15 @@ export default {
         checkHasCurrent(type) {
             this.$nextTick(() => {
                 if (type === 0) {
-                    $('#normalPages >li:first-child').click()
+                    $('#normalPages >li:first-child .spanli').click()
                 } else if (type === 1) {
-                    $('#dialogPages >li:first-child').click()
+                    $('#dialogPages >li:first-child .spanli').click()
                 }
             })
         },
-        alertAddPage(typePage) {
-            // const pages = this.myEditorUi.editor.pages
+        alertAddPage(typePage, listNumber) {
             const pagesRank = this.myEditorUi.editor.pagesRank
-            var xml = this.myEditorUi.editor.defaultXml;
-            // let targetArr = [...pagesRank.normal, ...pagesRank.dialog]
             let targetArr = [...pagesRank.normal]
-            console.log(targetArr)
-            // let numtarget = []
-            // targetArr.forEach((item) => {
-            //     var _r = item.split('_')
-            //     numtarget.push(_r[1])
-            // })
             let namebefore = ''
             if (+typePage === 0) {
                 namebefore = `页面`
@@ -152,19 +175,31 @@ export default {
             if (+typePage === 1) {
                 namebefore = `弹窗`
             }
-            // var getMax = Math.max.apply(null, numtarget)
-            var getMax = targetArr.length
-            var id = `pageid_${getMax + 1}`
+            let getMax = targetArr.length
+            let id = `pageid_${getMax + 1}`
             let titleText = `${namebefore}${getMax + 1}`
-            let page = {
-                title: titleText,
-                xml,
-                id,
-                type: typePage === 1 ? 'dialog' : 'normal'
-            };
+            let page = null
+            if (+listNumber === 0) {
+                let xml = this.myEditorUi.editor.defaultXml;
+                page = {
+                    title: titleText,
+                    xml,
+                    id,
+                    type: typePage === 1 ? 'dialog' : 'normal'
+                };
+            } else {
+                let content = +typePage === 0 ? this.pageModal[listNumber].content : this.alertModal[listNumber].content;
+                let xml = JSON.parse(content).xml
+                page = {
+                    title: titleText,
+                    xml,
+                    id,
+                    type: typePage === 1 ? 'dialog' : 'normal'
+                };
+            }
             let _li = document.createElement('li');
             _li.setAttribute('data-pageid', id);
-            _li.innerHTML = `<span>${titleText}</span><span class="right-icon-dolt"></span>`;
+            _li.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${titleText}</span><span class="right-icon-dolt"></span>`;
             let changeRank = this.myEditorUi.editor.pagesRank[page.type];
             this.myEditorUi.editor.pages[id] = page
             // 根据类型插入列表
@@ -176,22 +211,31 @@ export default {
                 $("#dialogPages").append(_li);
             }
             this.myEditorUi.editor.pagesRank[page.type] = [].concat(changeRank);
-            _li.click()
+            if (+typePage === 0) {
+                $("#normalPages li:last-child .spanli").click();
+            }
+            if (+typePage === 1) {
+                $("#dialogPages li:last-child .spanli").click();
+            }
         }
     }
 }
 </script>
 <style lang="less" scoped>
     .left-geSidebarContainer{
-        height:150px;
-        overflow: auto;
+        height:200px;
+        // overflow: auto;
         .ivu-tabs{
-            overflow: auto;
+            // overflow: auto;
             height:100%;
             /deep/.ivu-tabs-content{
                 height:100% !important;
-                overflow: auto;
+                // overflow: auto;
                 padding:0 6px;
+                .commonPages {
+                    height:180px;
+                    overflow-y: auto
+                }
                 .leftSidebar-addicon{
                     width:100%;
                     height: 24px;
@@ -206,6 +250,7 @@ export default {
                     height:24px;
                     line-height: 24px;
                     padding-left:18px;
+                    display: flex;
                     background:url(../../assets/images/material/page1_ic.png) no-repeat left center;
                     background-size:16px 16px;
                     &.currentPage{
@@ -289,7 +334,8 @@ export default {
                     }
                 }
                 .ivu-modal-body{
-                    min-height: 300px !important;
+                    height: 300px !important;
+                    overflow-y: auto;
                     .left-sidebar-list{
                         &>li{
                             width:120px;

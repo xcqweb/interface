@@ -15363,16 +15363,6 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	} else {
 		ifshowPaste = false
 	}
-	
-	
-	// console.log(image)
-	// console.log(funct)
-	// console.log(parent)
-	// console.log(iconCls)
-	// console.log(enabled)
-	// console.log(active)
-
-
 
 	parent = parent || this;
 	this.itemCount++;
@@ -19513,7 +19503,6 @@ mxSvgCanvas2D.prototype.image = function(x, y, w, h, src, aspect, flipH, flipV)
 	node.setAttribute('y', this.format(y * s.scale) + this.imageOffset);
 	node.setAttribute('width', this.format(w * s.scale));
 	node.setAttribute('height', this.format(h * s.scale));
-	
 	// Workaround for missing namespace support
 	if (node.setAttributeNS == null)
 	{
@@ -47872,6 +47861,7 @@ mxCellRenderer.registerShape('light', mxImageShape);
 mxCellRenderer.registerShape('progress', mxImageShape);
 mxCellRenderer.registerShape('pipeline1', mxImageShape);
 mxCellRenderer.registerShape('pipeline2', mxImageShape);
+mxCellRenderer.registerShape('userimage', mxImageShape);
 mxCellRenderer.registerShape('lineChart', mxImageShape);//注册类型
 mxCellRenderer.registerShape('gaugeChart', mxImageShape);
 mxCellRenderer.registerShape(mxConstants.SHAPE_LABEL, mxLabel);

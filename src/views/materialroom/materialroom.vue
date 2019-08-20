@@ -39,9 +39,9 @@
                     <li
                       class="assembly-icon"
                       :class="index === isactive ? 'left-side-listactive' : ''"
-                      @click="selectAssemblyList(index)"
+                      @click="selectAssemblyList(index, item.materialLibraryId)"
                     >
-                      <span>{{ item }}</span>
+                      <span>{{ item.name }}</span>
                       <span 
                         v-if="index >= 3" 
                         class="right-spots" 
@@ -59,13 +59,14 @@
                       class="user-uploadimage"
                     >
                       <div>
-                        <span :style="'background:url(' + item.image + ') no-repeat center center;background-size:120px 60px;'" />
+                        <span :style="'background:url(' + (item.image) + ') no-repeat center center;background-size:120px 60px;'" />
                         <label
                           class="right-spots-assemly"
-                          @click="MiddassemblyListHandle($event,POSITION_RIGHT,index)" 
+                          @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.materialId)" 
                         />
                       </div>
                       <span
+                        style="width:136px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
                         :class="index === isactive3 ? 'right-list-listactive' : ''"
                       >
                         {{ item.name }}
@@ -119,32 +120,70 @@
                 </ul>
               </div>
               <div class="material-right materialtabs-right">
-                <ul 
+                <template
                   v-if="isactive2 === 0"
-                  class="material-right-wrapper"
                 >
-                  <li>
-                    <div>
-                      <span />
-                    </div>
-                    <span>
-                      页面模版1
-                    </span>
-                  </li>
-                </ul>
-                <ul 
+                  <ul
+                    class="material-right-wrapper"
+                  >
+                    <li
+                      v-for="(item, index) in pageMaterial"
+                      :key="index"
+                      class="user-uploadimage"
+                    >
+                      <div>
+                        <span style="display:flex;justify-content:center;align-items:center">
+                          <img
+                            style="max-width:120px;max-height:100px"
+                            :src="item.picUrl" 
+                          >
+                        </span>
+                        <label 
+                          class="right-spots-assemly" 
+                          @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.pageTemplateId)"
+                        />
+                      </div>
+                      <span
+                        style="width:136px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
+                        :class="index === isactive3 ? 'right-list-listactive' : ''"
+                      >
+                        {{ item.name }}
+                      </span>
+                    </li>
+                  </ul>
+                </template>
+                <template
                   v-if="isactive2 === 1"
-                  class="material-right-wrapper"
                 >
-                  <li>
-                    <div>
-                      <span />
-                    </div>
-                    <span>
-                      弹窗模版1
-                    </span>
-                  </li>
-                </ul>
+                  <ul
+                    class="material-right-wrapper"
+                  >
+                    <li
+                      v-for="(item, index) in alertMaterial"
+                      :key="index"
+                      class="user-uploadimage"
+                    >
+                      <div>
+                        <span style="display:flex;justify-content:center;align-items:center">
+                          <img
+                            style="max-width:120px;max-height:100px"
+                            :src="item.picUrl" 
+                          >
+                        </span>
+                        <label 
+                          class="right-spots-assemly" 
+                          @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.pageTemplateId)"
+                        />
+                      </div>
+                      <span
+                        style="width:136px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
+                        :class="index === isactive3 ? 'right-list-listactive' : ''"
+                      >
+                        {{ item.name }}
+                      </span>
+                    </li>
+                  </ul>
+                </template>
               </div>
             </div>
           </TabPane>
@@ -161,12 +200,14 @@
         <template v-if="isactive >= 2 && tabNumeber === 0">
           <span>
             <Upload 
-              action=""
+              action="api/iot-cds/sources/material"
               :show-upload-list="false" 
               :format="['jpg', 'svg', 'png', 'gif']"
               :max-size="500"
               :on-format-error="handleFormatError"
               :on-error="uploadErr"
+              :on-success="uploadSucc" 
+              :data="uploadData"
             >
               <Button type="primary">{{ madeltext[1] }}</Button>
             </Upload>
@@ -178,8 +219,8 @@
 </template>
 <script>
 import {Tabs,TabPane,Modal, Upload, Message, Button} from 'iview'
-// const DIR_ = `../../../static/stencils/`;
-const ROOT_LEN = 3 // 新增组件时计算长度使用
+// import {tipDialog} from '../../services/Utils'
+const ROOT_LEN = 2 // 新增组件时计算长度使用
 export default {
     components: {
         Tabs,
@@ -194,9 +235,24 @@ export default {
             showmarerial: true,
             madeltext: ['取消', '上传组件'],
             showOktext: true,
-            assemblyArrayName: ['基本组件', '图表组件', 'layout组件', '自定义组件'],
+            assemblyArrayName: [
+                {
+                    name: '基本组件',
+                    materialLibraryId: '1'
+                },
+                {
+                    name: '图表组件',
+                    materialLibraryId: '2'
+                },
+                {
+                    name: 'layout组件',
+                    materialLibraryId: 'e76e6a1b18e493472bc869d835811711'
+                }
+            ],
             materialArrayName: ['页面模版', '弹窗模版'],
+            uploadData:{},
             DIR_: `../../../static/stencils/basic/`,
+            // bacPicUrl: `http://10.74.20.26:8009/`,
             baseAssembly: {
                 'rectangle.png': '矩形',
                 'button.png': '按钮',
@@ -238,47 +294,66 @@ export default {
             },
             POSITION_LEFT: 'left',
             POSITION_RIGHT: 'right',
-            ismouseenter: false
+            ismouseenter: false,
+            allMaterial: [],
+            pageMaterial: [],
+            alertMaterial: []
         }
     },
     created() {
-        // Message.warning('123')
     },
     mounted() {
         this.arrListTables = this.baseAssembly
+        this.uploadurl = this.urls.materialList.url
     },
     methods: {
         init() {
-            this.requestUtil.get(this.urls.materialList.url, {current: 1, size:50}).then((res) => {
-                console.log('获取素材库列表',res)
+            this.requestUtil.get(this.urls.materialList.url).then((res) => {
+                let data = res.records
+                data.forEach((item) => {
+                    let obj = {
+                        name: item.libraryName,
+                        materialLibraryId: item.materialLibraryId
+                    }
+                    this.assemblyArrayName.push(obj)
+                })
             })
+            let oInp = document.querySelector('.assembly-seach-icon')
+            oInp.oninput = this.debounce(this.selectMaterial, 1000)
         },
         cancel() {
             this.$emit('triggerCancel')
         },
-        selectAssemblyList(index) {
+        selectAssemblyList(index, materialLibraryId) {
             this.emptyArray = []
-            let r1 = [
-                {image:'http://10.74.20.26:8009/group1/M00/00/06/wKgDTl0XCb6AI7voAAFHFc0a05U189.jpg', name: '图1'},
-                {image: 'http://10.74.20.26:8009/group1/M00/00/06/wKgDTl0VvxWAUyPVAABtaqw0KHk997.jpg',name:'图2'}
-            ]
             if (index >= 2) {
-                r1.forEach((item) => {
-                    this.emptyArray.push(item)
+                // 获取组件库id 上传组件时候要用
+                this.uploadData = {
+                    materialLibraryId: materialLibraryId
+                }
+                this.requestUtil.get(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
+                    let data = res.materialList
+                    data.forEach((item) => {
+                        let obj = {
+                            name: item.descript,
+                            image: item.picUrl,
+                            materialId: item.materialId
+                        }
+                        this.emptyArray.push(obj)
+                    })
                 })
             }
             this.arrListTables = index === 0 ? this.baseAssembly : (index === 1 ? this.tablesAssembly : this.emptyArray)
-            console.log(this.arrListTables)
             this.isactive = index
             this.addListHandle(index)
         },
-        addListHandle() {
+        addListHandle(index) {
             let newMouse = this.mounseHandle()
             this.$nextTick(() => {
                 const assemblyListEl = document.querySelector('.left-side-listactive .right-spots')
                 if (assemblyListEl) {
                     newMouse(assemblyListEl,'mouseover',(event) => {
-                        this.assemblyListHandle(event, this.POSITION_LEFT)
+                        this.assemblyListHandle(event, this.POSITION_LEFT,index)
                         $('.left-side-listactive .right-spots').css({'pointer-events': 'none'})
                     }, false)
                 }
@@ -286,26 +361,87 @@ export default {
         },
         selectMaterialList(index) {
             this.isactive2 = index
+            this.getSelectMaterial(this.isactive2)
+        },
+        getSelectMaterial(index) {
+            let data = ''
+            if (+index === 0) {
+                data = {
+                    type: 'normal'
+                }
+            } else if(+index === 1) {
+                data = {
+                    type: 'dialog'
+                }
+            }
+            if ((this.pageMaterial.length && +index === 0) || (this.alertMaterial.length && +index === 1)) {
+                return false
+            }
+            this.requestUtil.get(this.urls.addTemplate.url,data).then((res) => {
+                let data = res.records || []
+                console.log(data)
+                data.forEach((item) => {
+                    let obj = {
+                        picUrl: item.picUrl,
+                        pageTemplateId: item.pageTemplateId,
+                        name: item.name
+                    }
+                    if (+index === 0) {
+                        this.pageMaterial.push(obj)
+                    } else if (+index === 1) {
+                        this.alertMaterial.push(obj)
+                    }
+                })
+            })
         },
         tabsSwitch(type) {
             this.tabNumeber = type
+            if(this.tabNumeber === 1) { // 默认是页面模版
+                this.getSelectMaterial(0)
+            }
         },
         addassemblyFn() {
             // 新增
             let num = this.assemblyArrayName.length - ROOT_LEN
             let name = `新建组件库${num}`
-            this.assemblyArrayName.push(name)
-            this.selectAssemblyList(num + ROOT_LEN)
             let data = {
                 libraryName: name,
                 descript:'',
                 libraryType: 1
             }
             this.requestUtil.post(this.urls.materialList.url, data).then((res) => {
-                console.log('新增素材库',res)
+                this.assemblyArrayName.push({name: name,materialLibraryId: res.materialLibraryId})
+                this.selectAssemblyList(num + ROOT_LEN)
             })
         },
-        uploadSucc() {
+        debounce(handle, deLay) {
+            var timer = null
+            // 触发 拿到组件
+            this.requestUtil.get(this.urls.materialRightList.url).then((res) => {
+                console.log('素材列表',res)
+            })
+            return function() {
+                clearTimeout(timer)
+                timer = setTimeout(() => {
+                    console.log(this)
+                    handle.call(this, this.value)
+                }, deLay);
+            }
+        },
+        selectMaterial(value) {
+            if (value !== '') {
+                console.log(66)
+            } 
+        },
+        uploadSucc(res) {
+            // this.emptyArray = []
+            let addpicObj = {
+                image:res.picUrl,
+                name: res.descript,
+                materialId: res.materialId
+            }
+            this.emptyArray.push(addpicObj)
+            this.arrListTables = this.emptyArray
             Message.info('上传成功')
         },
         uploadErr() {
@@ -334,11 +470,12 @@ export default {
                 }
             }
         },
-        MiddassemblyListHandle(evt,type,index) {
+        MiddassemblyListHandle(evt,type,index,materialId) {
             this.isactive3 = index
-            this.assemblyListHandle(evt,type)
+            console.log(materialId)
+            this.assemblyListHandle(evt,type,index,materialId)
         },
-        assemblyListHandle(evt, type) {
+        assemblyListHandle(evt, type,index, materialId) {
             evt.preventDefault();
             evt.stopPropagation()
             var menulist = document.createElement('ul')
@@ -360,7 +497,7 @@ export default {
             let newMousHandele = this.mounseHandle()
             // 点击文档document 隐藏
             this.documentClick(newMousHandele)
-            this.liClickHandle(newMousHandele ,menulist, type)
+            this.liClickHandle(newMousHandele ,menulist, type, index, materialId)
         },
         documentClick(fn) {
             fn(document,'click', (evt) => {
@@ -369,23 +506,27 @@ export default {
                 }
             });
         },
-        liClickHandle(fn, el, type) {
+        liClickHandle(fn, el, type,index, materialId) {
             fn(el, 'click',(evt) => {
                 evt.stopPropagation()
                 let target = evt.target;
                 let actionType = target.getAttribute('data-type')
                 let element = ''
                 if (type === this.POSITION_RIGHT) {
-                    element = document.querySelector('.assembly-right-wrapper .right-list-listactive')
+                    if (this.tabNumeber === 0) {
+                        element = document.querySelector('.assembly-right-wrapper .right-list-listactive')
+                    } else {
+                        element = document.querySelector('.material-right-wrapper .right-list-listactive')
+                    }
                 } else if (type === this.POSITION_LEFT) {
                     element = document.querySelector('.assembly-list>li.left-side-listactive')
                 }
                 switch(actionType) {
                     case 'rename':
-                        this.renameHandle(element,type)
+                        this.renameHandle(element,actionType,type,index,materialId)
                         break;
                     case 'delete':
-                        this.deleteHandle(element, actionType, type)
+                        this.deleteHandle(element, actionType, type,index, materialId)
                         break;
                     default:
                         console.log('操作出错啦！')
@@ -397,10 +538,14 @@ export default {
             $('.left-side-listactive .right-spots').css({'pointer-events': 'auto'})
             $('#materialModelMenu').hide()
         },
-        renameHandle(ele) {
+        renameHandle(ele, actionType, type,index, materialId) {
+            console.log(ele)
+            console.log(actionType)
+            console.log(type)
+            console.log(index)
+            console.log(materialId)
             let editInput = document.createElement('input');
             editInput.id = 'editPageInput'
-            let materialLibraryId = '267242385434'
             let oldVal = ele.innerText
             editInput.value = oldVal
             ele.innerText = ''
@@ -419,13 +564,28 @@ export default {
                     ele.innerHTML = `<span>${name}</span><span class="right-spots"></span>`
                     if (name !== oldVal) {
                         // console.log('重新命名请求接口')
-                        let data = {
-                            materialLibraryId:materialLibraryId,
-                            libraryName: name,
+                        if (this.tabNumeber === 0) {
+                            let data = {
+                                materialLibraryId:this.uploadData.materialLibraryId ? this.uploadData.materialLibraryId : '' ,
+                                libraryName: name,
+                            }
+                            this.requestUtil.put(this.urls.materialList.url,data).then((res) => {
+                                if (res.libraryName) {
+                                    Message.info('修改成功')
+                                }
+                            })
+                        } else if (this.tabNumeber === 1) {
+                            let data = {
+                                pageTemplateId:materialId,
+                                name: name
+                            }
+                            this.requestUtil.put(this.urls.addTemplate.url,data).then((res) => {
+                                if (res.name) {
+                                    Message.info('修改成功')
+                                }
+                            })
                         }
-                        this.requestUtil.put(this.urls.materialList.url,data).then((res) => {
-                            console.log('重新命名',res)
-                        })
+                        
                     }
                 }
                 this.addListHandle()
@@ -446,22 +606,33 @@ export default {
             })
             this.hideMaterialModelMenu()
         },
-        deleteHandle(ele, actionType, type) {
-            let materialLibraryId = '267242385434'
-            let materialId = '123456'
-            let data1 = {
-                materialLibraryId: materialLibraryId,
-            }
-            let data2 = {
-                materialId:materialId
-            }
-            if (type === this.POSITION_LEFT) {
-                this.requestUtil.delete(this.urls.materialList.url,data1).then((res) => {
-                    console.log('删除左边',res)
-                })
-            } else if (type === this.POSITION_RIGHT) {
-                this.requestUtil.delete(this.urls.materialRightList.url,data2).then((res) => {
-                    console.log('删除右边',res)
+        deleteHandle(ele, actionType, type,index, materialId) {
+            let materialLibraryId = this.uploadData.materialLibraryId
+            if (+this.tabNumeber === 0) {
+                if (type === this.POSITION_LEFT) {
+                    this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
+                        if (res.code === '0') {
+                            this.assemblyArrayName.splice(index ,1)
+                        }
+                    })
+                } else if (type === this.POSITION_RIGHT) {
+                    this.requestUtil.delete(this.urls.materialRightList.url + `/${materialId}`,).then((res) => {
+                        if (this.arrListTables[index].materialId === materialId && res.code === '0') {
+                            this.arrListTables.splice(index,1)
+                        }
+                    })
+                }
+            } else if (+this.tabNumeber === 1) {
+                this.requestUtil.delete(this.urls.addTemplate.url + `/${materialId}`,).then((res) => {
+                    if (res.code === '0') {
+                        // tipDialog(this.myEditorUi,`删除成功`)
+                        Message.warning('删除成功')
+                        if (+this.isactive2 === 1) {
+                            this.alertMaterial.splice(index, 1)
+                        } else if(+this.isactive2 === 0) {
+                            this.pageMaterial.splice(index, 1)
+                        }
+                    }
                 })
             }
             
@@ -742,6 +913,52 @@ export default {
                                                         text-align: center;
                                                         line-height: 20px;
                                                         color: #252525;
+                                                    }
+                                                }
+                                                &>li.user-uploadimage{
+                                                  // width:138px;
+                                                  // height:158px;
+                                                  // margin-right:2px;
+                                                  &>div{
+                                                      width:138px;
+                                                      height: 138px;
+                                                      border:1px solid #E1E1E1;
+                                                      display: flex;
+                                                      justify-content: center;
+                                                      align-items: center; 
+                                                      position: relative;
+                                                      &>span{
+                                                          display: block;
+                                                          width:120px;
+                                                          height: 100px;
+                                                          border: 1px dashed #E1E1E1;
+                                                      }
+                                                      .right-spots-assemly{
+                                                        display: block;
+                                                        width:30px;
+                                                        height:20px;
+                                                        background: url(../../assets/images/material/more2_ic.png) no-repeat right center;
+                                                        background-size: 16px 16px;
+                                                        position: absolute;
+                                                        right:0;
+                                                        bottom:0;
+                                                        cursor: pointer;
+                                                      }
+                                                    }
+                                                    &>span{
+                                                        display: block;
+                                                        width:138px;
+                                                        height: 20px;
+                                                        text-align: center;
+                                                        line-height: 20px;
+                                                        color: #252525;
+                                                        &.right-list-listactive{
+                                                          &>#editPageInput{
+                                                            border:none;
+                                                            height:20px;
+                                                            text-align: center
+                                                          }
+                                                        }
                                                     }
                                                 }
                                             }
