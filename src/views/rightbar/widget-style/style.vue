@@ -1,7 +1,7 @@
 <template>
   <div
     class="dialogPage"
-    style="padding:0 4px;"
+    style="padding:0 4px 40px;overflow: auto;height:100%;margin-bottom:40px;"
   >
     <p style="margin-top:10px;">
       组件名称
@@ -92,13 +92,24 @@
         选中
       </div>
       <i-switch
-        v-model="select"
+        v-model="selectMenu"
         size="small"
-        @on-change="changeSelect"
       />
     </div>
+    <div v-if="shapeName.includes('Chart')">
+      <div
+        class="item-title"
+        style="display:flex;justify-content:space-between;"
+      >
+        标题
+        <i-switch
+          v-model="chartTitle"
+          size="small"
+        />
+      </div>
+    </div>
     <div
-      v-if="shapeName!='image'"
+      v-if="shapeName!='image' && selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && chartTitle"
       class="titleSet"
     >
       <div class="item-title">
@@ -178,7 +189,42 @@
         </div>
       </div>
     </div>
-    <div>
+    <div v-if="shapeName.includes('Chart')">
+      <div
+        v-if="shapeName=='lineChart'"
+        class="item-title"
+        style="display:flex;justify-content:space-between;"
+      >
+        图例
+        <i-switch
+          v-model="chartLegend"
+          size="small"
+        />
+      </div>
+      <div
+        v-if="shapeName=='lineChart'"
+        class="item-title"
+        style="display:flex;justify-content:space-between;"
+      >
+        网格线
+        <i-switch
+          v-model="chartGrid"
+          size="small"
+        />
+      </div>
+      <div>
+        <p style="margin-top:10px;">
+          背景颜色
+        </p>
+        <div
+          class="item-container"
+          style="position:relative;"
+          :style="{backgroundColor:bgChartColor}"
+          @click="pickBgChartColor"
+        />
+      </div>
+    </div>
+    <div v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart')">
       <div class="item-title">
         外观
       </div>
@@ -240,7 +286,7 @@
             <ul
               v-if="showBorderLineBold"
               class="font-dialog"
-              style="height:200px;overflow:auto;"
+              style="height:100px;overflow:auto;"
               @mouseleave="showBorderLineBold=false"
               @blur="showBorderLineBold=false"
             >
@@ -284,10 +330,262 @@
         </div>
       </div>
     </div>
+    <div
+      v-if="shapeName.includes('pipeline')"
+      class="titleSet"
+    >
+      <div class="item-title">
+        流动指示
+      </div>
+      <div class="titleCon">
+        <div class="itemLine">
+          <div
+            v-clickOutSide="hidePipelineFlow"
+            class="item-container fontSet"
+            style="justify-content:space-between;position:relative;width:100%;"
+            @click="pipelineFlow=true"
+          >
+            {{ pipelineFlowText }}
+            <img src="../../../assets/images/menu/down_ic.png">
+            <ul
+              v-if="pipelineFlow"
+              class="font-dialog"
+              @mouseleave="pipelineFlow=false"
+              @blur="pipelineFlow=false"
+            >
+              <li
+                v-for="(d,index) in pipelineFlowList"
+                :key="index"
+                @click="changePipelineFlow(d,$event)"
+              >
+                {{ d.name }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="shapeName=='progress' || shapeName=='gaugeChart'">
+      <div class="item-title">
+        数值范围
+      </div>
+      <div
+        v-if="shapeName!='menuCell' && shapeName!='tableCell'"
+        style="display:flex;"
+      >
+        <div
+          class="item-container"
+        >
+          <span style="color:#797979;margin:0 6px;">上限</span>
+          <input
+            v-model="progressMax"
+            style="border-left:none;border-right:none;width:52%;"
+            @keyup.enter="changeProgress"
+          >
+        </div>
+        <div
+          class="item-container"
+          style="margin-left:10px;"
+        >
+          <span style="color:#797979;margin:0 6px;">下限</span>
+          <input
+            v-model="progressMin"
+            style="border-left:none;border-right:none;width:52%;"
+            @keyup.enter="changeProgress"
+          > 
+        </div>
+      </div>
+      <div v-if="shapeName!='gaugeChart'">
+        <div
+          class="item-title"
+          style="border:none;"
+        >
+          数值显示
+        </div>
+        <div
+          class="titleCon"
+        >
+          <div class="itemLine">
+            <div
+              v-clickOutSide="hideProgressDialogFun"
+              class="item-container fontSet"
+              style="justify-content:space-between;position:relative;width:100%;"
+              @click="progressDialog=true"
+            >
+              {{ progressText }}
+              <img src="../../../assets/images/menu/down_ic.png">
+              <ul
+                v-if="progressDialog"
+                class="font-dialog"
+                @mouseleave="progressDialog=false"
+                @blur="progressDialog=false"
+              >
+                <li
+                  v-for="(d,index) in progressDialogList"
+                  :key="index"
+                  @click="changeProgressTypeDialog(d,$event)"
+                >
+                  {{ d.name }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="shapeName=='lineChart'">
+      <div
+        class="item-title"
+        style="display:flex;justify-content:space-between;"
+      >
+        指标
+        <div
+          v-if="!isAddMark"
+          style="display:flex;align-items:center;"
+          @click="addMark"
+        >
+          <img src="../../../assets/images/rightsidebar/plus_ic.png"> 添加
+        </div>
+      </div>
+      <div
+        v-if="isAddMark"
+        class="addMark-con"
+      >
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          名称 <input
+            v-model="markName"
+            style="width:82%;padding-left:4px;"
+          >
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+          数值 <input
+            v-model="markValue"
+            style="width:82%;padding-left:4px;"
+          >
+        </div>
+        <div style="display:flex;margin-top:10px;"> 
+          <div style="margin-right:5.5%;">
+            线条
+          </div>
+          <div
+            class="setColor"
+            style="flex:1;margin-right:6px;"
+            :style="{backgroundColor:borderColor}"
+            @click="pickChartBorderColor"
+          />
+          <div
+            v-clickOutSide="hideBorderLine"
+            class="item-container fontSet"
+            style="justify-content:space-between;position:relative;flex:1;"
+            @click="showBorderLine=true"
+          >
+            <div :class="borderLineCls" />
+            <img src="../../../assets/images/menu/down_ic.png">
+            <ul
+              v-if="showBorderLine"
+              class="font-dialog"
+              @mouseleave="showBorderLine=false"
+              @blur="showBorderLine=false"
+            >
+              <li
+                v-for="(d,index) in borderLineList"
+                :key="index"
+                @click="changeChartBorderLine(d,$event)"
+              >
+                <div style="width:100%;height:4px;display:inline-block;vertical-align:middle;">
+                  <div :class="d" />
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div
+            v-clickOutSide="hideBorderLineBold"
+            class="item-container fontSet"
+            style="justify-content:space-between;position:relative;flex:1;margin:0;"
+            @click="showBorderLineBold=true"
+          >
+            <div>{{ borderLineBoldText }}</div>
+            <img src="../../../assets/images/menu/down_ic.png">
+            <ul
+              v-if="showBorderLineBold"
+              class="font-dialog"
+              style="height:100px;overflow:auto;"
+              @mouseleave="showBorderLineBold=false"
+              @blur="showBorderLineBold=false"
+            >
+              <li
+                v-for="(d,index) in borderLineBoldList"
+                :key="index"
+                @click="changeChartBorderLineBold(d,$event)"
+              >
+                {{ d }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;">
+          <button
+            class="mutual-btn"
+            @click="cancel()"
+          >
+            取消
+          </button>
+          <button
+            class="mutual-btn selected"
+            @click="submit()"
+          >
+            提交
+          </button>
+        </div>
+      </div>
+      <div
+        v-if="!isAddMark"
+      >
+        <div
+          v-for="(item,index) in markLineList"
+          :key="index"
+          class="markline-item"
+        >
+          <div
+            style="display:flex;justify-content:space-between;"
+            @click="delMark(item,index)"
+          >
+            名称-{{ item.markName }}
+            <img src="../../../assets/images/rightsidebar/dele_ic.png">
+          </div>
+          <p style="margin:10px 0;">
+            数值-{{ item.markValue }}
+          </p>
+          <div style="display:flex;margin-top:10px;"> 
+            <div style="margin-right:5.5%;">
+              线条
+            </div>
+            <div
+              class="setColor"
+              style="flex:1;margin-right:6px;"
+              :style="{backgroundColor:item.borderColor}"
+            />
+            <div
+              class="item-container fontSet"
+              style="justify-content:space-between;position:relative;flex:1;"
+            >
+              <div :class="item.borderLineCls" />
+            </div>
+            <div
+              class="item-container fontSet"
+              style="justify-content:space-between;position:relative;flex:1;margin:0;"
+            >
+              {{ item.borderLineBoldText }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 import {mxEvent,mxConstants,mxEventObject} from '../../../services/mxGlobal'
+import {sureDialog} from '../../../services/Utils'
 let newFontColor = "#000000",newBgColor = "#ffffff",newBorderColor = "#000000",name
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
@@ -303,7 +601,7 @@ export default {
             alignIndex2:2,
             isSetBold:false,
             showBorderLineBold:false,
-            select:true,
+            selectMenu:true,
             bgColor:'#277AE0',
             borderColor:'#277AE0',
             borderLineList:['border-line','border-dash'],
@@ -329,6 +627,22 @@ export default {
             fillStyleList:['beeline','image'],
             tableRow:3,
             tableCol:3,
+            pipelineFlow:false,//指示灯下拉框
+            pipelineFlowText:'无指示',
+            pipelineFlowList:[{name:'无指示',value:'none'},{name:'正向流动',value:'forward'},{name:'反向流动',value:'back'}],
+            progressMax:100,
+            progressMin:0,
+            progressDialog:false,
+            progressText:'百分比',
+            progressDialogList:[{name:'百分比',value:'percent'},{name:'实际数值',value:'realValue'}],
+            chartTitle:false,
+            chartLegend:false,
+            chartGrid:false,//chart网格线
+            bgChartColor:"#fff",
+            markLineList:[],//标线 line-chart
+            isAddMark:false,
+            markName:'指标1',
+            markValue:0
         }
     },
     computed: {
@@ -373,6 +687,11 @@ export default {
         if(this.shapeName == 'beeline') {
             this.arrowCls = this.$store.state.main.widgetInfo.arrowCls
         }
+        if(this.shapeName == 'tableBox') {
+            let res = this.getRowColNum(graph)
+            this.tableRow = res[0]
+            this.tableCol = res[1]
+        }
     },
     methods: {
         changeName() {
@@ -382,9 +701,6 @@ export default {
             cellInfo.setAttribute('palettename',name);
             graph.getModel().setValue(cell, cellInfo);
             this.$store.commit('getWidgetInfo',graph)
-        },
-        changeSelect(status) {
-            console.log(status)
         },
         changePositionSize() {
             let graph = this.myEditorUi.editor.graph
@@ -535,35 +851,112 @@ export default {
             this.showArrowDialog = false
             e.stopPropagation()
         },
+        getRowColNum(graph) {
+            let cellLast =  this.getCellLast(graph)
+            let table = graph.getSelectionCell()
+            let currentRowNum = parseInt(table.geometry.height / cellLast.geometry.height)
+            let currentColNum =  parseInt(table.geometry.width / cellLast.geometry.width)
+            return [currentRowNum,currentColNum]
+        },
         changeTableSize() {
             let actions = this.myEditorUi.actions
             let graph = this.myEditorUi.editor.graph
+            let res = this.getRowColNum(graph)
+           
+            let disRow = this.tableRow - res[0]
+            let disCol = this.tableCol - res[1]
+            graph.getModel().beginUpdate()
+            try{
+                if(disRow > 0) {
+                    for(let i = 0;i < disRow;i++) {
+                        actions.insertTableCell('lower',this.getCellLast(graph))
+                    }
+                }else if(disRow < 0) {
+                    for(let i = 0;i < -disRow;i++) {
+                        actions.deleteTableCell('row',this.getCellLast(graph))
+                    }
+                }
+                if(disCol > 0) {
+                    for(let i = 0;i < disCol;i++) {
+                        actions.insertTableCell('right',this.getCellLast(graph))
+                    }
+                }else if(disCol < 0) {
+                    for(let i = 0;i < -disCol;i++) {
+                        actions.deleteTableCell('col', this.getCellLast(graph))
+                    }
+                }
+            }finally {
+                graph.getModel().endUpdate();
+            }
+        },
+        getCellLast(graph) {
             let table = graph.getSelectionCell()
             let children = table.children
             let cellLast = children[children.length - 1]
-            let currentRowNum = parseInt(table.geometry.width / cellLast.geometry.width)
-            let currentColNum = parseInt(table.geometry.height / cellLast.geometry.height)
-            let disRow = this.tableRow - currentRowNum
-            let disCol = this.tableCol - currentColNum
-            if(disRow > 0) {
-                for(let i = 0;i < disRow;i++) {
-                    actions.insertTableCell('lower',cellLast)
-                }
-            }else{
-                for(let i = 0;i < -disRow;i++) {
-                    actions.deleteTableCell('row',cellLast)
-                }
-            }
-            if(disCol > 0) {
-                for(let i = 0;i < disCol;i++) {
-                    actions.insertTableCell('right',cellLast)
-                }
-            }else{
-                for(let i = 0;i < -disCol;i++) {
-                    actions.deleteTableCell('col',cellLast)
-                }
-            }
+            return cellLast
+        },
+        hidePipelineFlow() {
+            this.pipelineFlow = false
+        },
+        changePipelineFlow(d,e) {//管道
+            this.pipelineFlowText = d.name
+            this.pipelineFlow = false
+            e.stopPropagation()
+        },
+        changeProgress() {
 
+        },
+        hideProgressDialogFun() {
+            this.progressDialog = false
+        },
+        changeProgressTypeDialog(d,e) {//数值范围
+            this.progressText = d.name
+            this.progressDialog = false
+            e.stopPropagation()
+        },
+        pickBgChartColor() {//chart 设置背景色
+            this.myEditorUi.pickColor('#fff',color=>{
+                this.bgChartColor = color
+            })
+        },
+        addMark() {//折线chart 添加标线
+            this.isAddMark = true
+            this.markName = `指标${this.markLineList.length + 1}`
+        },
+        pickChartBorderColor() {//chart mark-line
+            this.myEditorUi.pickColor('#fff',color=>{
+                this.borderColor = color
+            })
+        },
+        changeChartBorderLine(d,e) {
+            this.borderLineCls = d
+            this.showBorderLine = false
+            e.stopPropagation()
+        },
+        changeChartBorderLineBold(d,e) {
+            this.borderLineBoldText = d
+            this.showBorderLineBold = false;
+            e.stopPropagation()
+        },
+        cancel() {
+            this.isAddMark = false
+        },
+        submit() {
+            this.markLineList.push(
+                {
+                    markName:this.markName,
+                    markValue:this.markValue,
+                    borderColor:this.borderColor,
+                    borderLineCls:this.borderLineCls,
+                    borderLineBoldText:this.borderLineBoldText,
+                }
+            )
+            this.isAddMark = false
+        },
+        delMark(d,index) {
+            sureDialog(this.myEditorUi,`确定要删除${d.markName}吗`,()=>{
+                this.markLineList.splice(index,1)
+            },)
         },
     }
 };
@@ -776,6 +1169,18 @@ export default {
       border:dashed 1px #000;
       height:1px;
       width:40px;
+    }
+    .addMark-con{
+      margin-top:10px;
+      border:1px solid rgba(212,212,212,1);
+      border-radius:2px;
+      padding:8px 4px;
+    }
+    .markline-item{
+      margin-top:10px;
+      border:1px solid rgba(212,212,212,1);
+      border-radius:2px;
+      padding:4px;
     }
 }
 </style>
