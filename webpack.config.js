@@ -14,7 +14,6 @@ const postCssPlugin = require("autoprefixer")({overrideBrowserslist: [ "> 1%",
 
 // 清除dist文件
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-
 module.exports = {
     entry: ["babel-polyfill",'./src/main.js'], //入口文件，src下的main.js
     output: {
@@ -51,27 +50,7 @@ module.exports = {
             },
             {
                 test: /\.less$/,
-                use: [ 
-                    {
-                        loader:MiniCssExtractPlugin.loader,
-                    },
-                    'css-loader', 
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            plugins: [postCssPlugin]
-                        }
-                    },
-                    'less-loader',
-                    {
-                        loader: 'style-resources-loader',
-                        options: {
-                            patterns:[
-                                path.resolve(__dirname, './src/assets/less/theme.less'),
-                            ]
-                        }
-                    }
-                ]
+                use: ['style-loader', 'css-loader', 'less-loader']
             },
             {
                 test: /\.(css)$/,
