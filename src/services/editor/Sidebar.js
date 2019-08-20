@@ -1535,11 +1535,13 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             "文字"
         ),
         // 直线
-        this.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 0, '', '直线', null,''),
+        this.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 50, '', '直线', null,''),
+         //箭头
+        //this.createEdgeTemplateEntry('shape=endarrow;endArrow=classic;html=1;', 50, 0, '', '箭头', false, false),
         // 矩形
         this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, '矩形'),
-        // 圆行
-        this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 36, 36, '', 'Circle', null, null, 'circle'),
+        // 圆形
+        this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 36, 36, '', '圆形', null, null, '圆形'),
         // this.createVertexTemplateEntry('rounded=0;shape=oval;whiteSpace=wrap;html=1;', 36, 36, '', '圆形', null, null, '圆形'),
         // 横向菜单
         this.addEntry('page menu', function()
@@ -1568,12 +1570,12 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         // 下拉列表
         // this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 100, 16, '<select disabled class="selectTag"></select><div class="selectTagShade"></div>', '下拉列表'),
         // 表格，通过html生成
-        // this.createVertexTemplateEntry('shape=table;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
-        //  	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
- 		// 	'<table border="1" style="width:100%;height:75%;border-collapse:collapse;">' +
- 		// 	'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
- 		// 	'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
-        // 	'<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'),
+        /* this.createVertexTemplateEntry('shape=table;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
+         	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
+ 			'<table border="1" style="width:100%;height:75%;border-collapse:collapse;">' +
+ 			'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
+ 			'<tr><td align="center">Value 4</td><td align="center">Value 5</td><td align="center">Value 6</td></tr>' +
+        	'<tr><td align="center">Value 7</td><td align="center">Value 8</td><td align="center">Value 9</td></tr></table>', '表格'), */
         //表格,通过矩形拼接
         this.addEntry('tableBox', function()
         {
@@ -1592,8 +1594,6 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         this.createVertexTemplateEntry('shape=image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
         // 图元
         // this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', 50, 50, '', '图元'),
-        // 箭头
-        // this.createEdgeTemplateEntry('shape=endarrow;endArrow=classic;html=1;', 50, 0, '', '箭头', false, false),
         // 曲线
         // this.addEntry('curve', mxUtils.bind(this, function()
 	 	// {
@@ -1623,24 +1623,16 @@ Sidebar.prototype.addGeneralPalette = function(expand)
     this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
 
     let fnsChart=[
-        this.createVertexTemplateEntry('shape=lineChart;html=1;labelBackgroundColor=#ffffff;', 320, 240, '<div class="echarts_con"></div>', '趋势图'),
+        this.createVertexTemplateEntry('shape=lineChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/lineChart.png', 36, 36, '', '趋势图'),
         this.createVertexTemplateEntry('shape=gaugeChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/gaugeChart.png', 36, 36, '', '仪表盘'),
     ]
     this.addPaletteFunctions('chart', '图表控件', false, fnsChart);
-    //this.addGeneralPaletteShort();
 };
 /**
  * Adds the given image palette.
  */
 Sidebar.prototype.addImagePalette = function(id, title, prefix, postfix, items, titles, tags)
 {
-    console.log(id);
-    console.log(title);
-    console.log(prefix);
-    console.log(postfix);
-    console.log(items);
-    console.log(titles);
-    console.log(tags);
 	var showTitles = titles != null;
 	var fns = [];
 	
@@ -1922,14 +1914,15 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
             }
         }));
     }
-    // 控件名称
-    // var nameText = document.createElement('p')
-    // nameText.className = 'geItemTitle'
-    // nameText.style.textAlign = 'center'
-    // nameText.style.textOverflow = 'ellipsis'
-    // nameText.style.overflow = 'hidden'
-    // nameText.innerText = title
-    // elt.appendChild(nameText)
+    //控件名称
+    if (showLabel){
+        var nameText = document.createElement('p')
+        nameText.style.textAlign = 'center'
+        nameText.style.textOverflow = 'ellipsis'
+        nameText.style.overflow = 'hidden'
+        nameText.innerText = title
+        elt.appendChild(nameText)
+    }
     return elt;
 };
 

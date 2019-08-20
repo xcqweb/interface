@@ -99,6 +99,7 @@ import LinkTo from './LinkTo'
 import Visible from './Visible'
 import Change from './Change'
 import {sureDialog} from '../../../services/Utils'
+import {mxUtils} from '../../../services/mxGlobal'
 // 不显示节点的名称
 let forbiddenShape = ['menuCell', 'tableCell', 'label']
 export default{
@@ -267,6 +268,12 @@ export default{
             let actions = []
             let cell = graph.getSelectionCell()
             let modelInfo = graph.getModel().getValue(cell)
+            if (!mxUtils.isNode(modelInfo)) {
+                var doc = mxUtils.createXmlDocument();
+                var obj = doc.createElement('object');
+                obj.setAttribute('label', modelInfo || '');
+                modelInfo = obj;
+            }
             let actionsAttr = modelInfo.getAttribute('actionsInfo')
             if(actionsAttr) {
                 actions = JSON.parse(actionsAttr)

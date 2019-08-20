@@ -1304,11 +1304,11 @@ Actions.prototype.getColNum = function(cell) {
  * 向表格插入单元格
  * @param {string} type 
  */
-Actions.prototype.insertTableCell = function(type) {
+Actions.prototype.insertTableCell = function (type, selectionCell = null) {
     var ui = this.editorUi;
     var editor = ui.editor;
     var graph = editor.graph;
-    let cell = graph.getSelectionCell();
+    let cell = selectionCell ? selectionCell : graph.getSelectionCell()
     let cellW = cell.geometry.width;
     let cellH = cell.geometry.height;
     let cellX = cell.geometry.x;
@@ -1375,11 +1375,11 @@ Actions.prototype.insertTableCell = function(type) {
  * 删除单元格
  * @param {string} type: row删除行，col删除列
  */
-Actions.prototype.deleteTableCell = function(type) {
+Actions.prototype.deleteTableCell = function(type,selectionCell=null) {
     var ui = this.editorUi;
     var editor = ui.editor;
     var graph = editor.graph;
-    let cell = graph.getSelectionCell();
+    let cell = selectionCell ? selectionCell : graph.getSelectionCell()
     let cellW = cell.geometry.width;
     let cellH = cell.geometry.height;
     let table = cell.parent;

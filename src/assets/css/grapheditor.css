@@ -260,7 +260,7 @@
 	outline: none;
 }
 .geToolbarContainer .geToolbar {
-	padding-top: 12px;
+	padding-top: 16px;
 	overflow: hidden;
 	box-sizing: border-box;
 	flex: 0 0 auto;
@@ -467,10 +467,6 @@ div.mxWindow .geButton {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	line-height: 20px;
-}
-.geItem {
-	vertical-align: top;
-	display: inline-block;
 }
 .geSidebarTooltip {
 	position:absolute;

@@ -29,16 +29,24 @@ const mutations = {
         let fontSize = 12
         let isSetBold = false
         let color = '',bgColor = '',borderColor = '',borderBold = 1
-        let align = mxConstants.ALIGN_CENTER,valign = mxConstants.ALIGN_MIDDLE
+        let align = mxConstants.ALIGN_CENTER,valign = mxConstants.ALIGN_MIDDLE,borderLineCls,arrow1,arrow2
         if (stateWidget) {
             fontSize = parseFloat(mxUtils.getValue(stateWidget.style, mxConstants.STYLE_FONTSIZE, 0));
             isSetBold = mxUtils.getValue(stateWidget.style, 'fontStyle', 0) === 1
             color = mxUtils.getValue(stateWidget.style, 'fontColor', null)
             bgColor = mxUtils.getValue(stateWidget.style, 'fillColor', null)
             borderColor = mxUtils.getValue(stateWidget.style, 'strokeColor', null)
+            if(shapeInfo.shape == 'image') {
+                borderColor = mxUtils.getValue(stateWidget.style, 'imageBorder', "#000000")
+            }
             borderBold = mxUtils.getValue(stateWidget.style, 'strokeWidth', 1)
             align = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_ALIGN, mxConstants.ALIGN_CENTER)
             valign = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_VERTICAL_ALIGN, mxConstants.ALIGN_MIDDLE)
+            borderLineCls = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_DASHED, null)
+            if (shapeInfo.shape == 'beeline') {
+                arrow1 = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_STARTARROW, null)
+                arrow2 = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_ENDARROW, null)
+            }
         }
         widgetInfo.fontSize = fontSize
         widgetInfo.isSetBold = isSetBold
@@ -48,6 +56,22 @@ const mutations = {
         widgetInfo.borderBold = borderBold
         widgetInfo.align = align
         widgetInfo.valign = valign
+        if (!borderLineCls) {
+            widgetInfo.borderLineCls = 'border-line'
+        } else if (borderLineCls == 1) {
+            widgetInfo.borderLineCls = 'border-dash'
+        }
+        if (arrow1 && !arrow2) {
+            widgetInfo.arrowCls = 'arrow-left'
+        } else if (!arrow1 && arrow2) {
+            widgetInfo.arrowCls = 'arrow-right'
+        } else if (arrow1 && arrow2) {
+            widgetInfo.arrowCls = 'arrow-double'
+        } else if (!arrow1 && !arrow2) {
+            widgetInfo.arrowCls = 'arrow-empty'
+        }
+        
+
         let temp = Object.assign({},state.widgetInfo, widgetInfo)
         state.widgetInfo = temp
         graph.refresh()
