@@ -15355,7 +15355,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 				ifshowPaste = true
 			}
 		} else {
-			let arr = ['rectangle', 'button','ellipse', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2'];
+			let arr = ['rectangle', 'button','ellipse', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2', 'userimage'];
 			let menulistArr = ['menulist','tableBox']; // 菜单 和 表格整体
 			let arr1 = ['粘贴','组合', '取消组合']
 			if (arr.includes(shapeName) && arr1.includes(title)) {
