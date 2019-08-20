@@ -14,7 +14,7 @@ const postCssPlugin = require("autoprefixer")({overrideBrowserslist: [ "> 1%",
 
 // 清除dist文件
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-
+console.log('喔喔喔喔喔喔', MiniCssExtractPlugin.loader)
 module.exports = {
     entry: ["babel-polyfill",'./src/main.js'], //入口文件，src下的main.js
     output: {
@@ -51,10 +51,8 @@ module.exports = {
             },
             {
                 test: /\.less$/,
-                use: [ 
-                    {
-                        loader:MiniCssExtractPlugin.loader,
-                    },
+                use: [
+                    'vue-style-loader',
                     'css-loader', 
                     {
                         loader: 'postcss-loader',
