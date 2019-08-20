@@ -55,6 +55,7 @@
 <script>
 import StateDialog from './state-dialog'
 import {sureDialog} from '../../../services/Utils'
+import {mxUtils} from '../../../services/mxGlobal'
 export default{
     components:{StateDialog},
     data() {
@@ -117,6 +118,12 @@ export default{
                 'check':false
             }]
             let modelInfo = graph.getModel().getValue(cell)
+            if (!mxUtils.isNode(modelInfo)) {
+                var doc = mxUtils.createXmlDocument();
+                var obj = doc.createElement('object');
+                obj.setAttribute('label', modelInfo || '');
+                modelInfo = obj;
+            }
             let statesAttr = modelInfo.getAttribute('statesInfo')
             if(statesAttr) {
                 states = JSON.parse(statesAttr)
