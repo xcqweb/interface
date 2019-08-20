@@ -18,10 +18,7 @@
       <DialogStyle v-if="$store.state.main.type===1 && !showWidgetStyle" />
       <WidgetStyleMain v-if="showWidgetStyle" />
     </div>
- <Chart 
-      v-if="isChart" 
-      :key="refresh+10" 
-    />  </div>
+  </div>
 </template>
 <script>
 import {mxCell,mxGeometry} from '../../services/mxGlobal'
