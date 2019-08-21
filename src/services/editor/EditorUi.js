@@ -364,7 +364,6 @@ window.EditorUi = function(editor, container, lightbox)
     };
 
     // Enables scrollbars and sets cursor style for the container
-    graph.container.setAttribute('tabindex', '0');
    	graph.container.style.cursor = 'default';
 
     // Workaround for page scroll if embedded via iframe
@@ -2982,9 +2981,7 @@ EditorUi.prototype.createDivs = function()
     this.menubarContainer.style.right = '0px';
     this.sidebarContainer.style.left = '0px';
     this.formatContainer.style.right = '0px';
-    this.formatContainer.style.zIndex = '1';
     this.rightBarContainer.style.right = '0px';
-    this.rightBarContainer.style.zIndex = '1';
     //this.paletteManageContainer.style.right = '0px';
     //this.paletteManageContainer.style.zIndex = '1';
     this.diagramContainer.style.right = ((this.format != null) ? this.rightWidth : 0) + 'px';

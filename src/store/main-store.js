@@ -3,6 +3,7 @@ const state = {
     widgetInfo:{},//当前组件信息
     rand:0,//监听控件切换的刷新 随机数字
     states:[],//交互-切换里面的状态列表
+    dialogTitleStyle:{},//标题样式
 }
 
 const mutations = {
@@ -84,6 +85,9 @@ const mutations = {
     },
     refreshState(state,states) {//添加状态后，交互列表里面的状态列表刷新
         state.states = states
+    },
+    dialogTitleStyleDeal(state, dialogTitleStyle) {
+        state.dialogTitleStyle = dialogTitleStyle
     }
 }
 

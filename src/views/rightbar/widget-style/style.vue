@@ -635,7 +635,7 @@ export default {
             progressDialog:false,
             progressText:'百分比',
             progressDialogList:[{name:'百分比',value:'percent'},{name:'实际数值',value:'realValue'}],
-            chartTitle:false,
+            chartTitle:true,
             chartLegend:false,
             chartGrid:false,//chart网格线
             bgChartColor:"#fff",

@@ -1,7 +1,7 @@
 <template>
   <div
     class="geSidebarContainer geRightBarContainer"
-    style="top:72px;right:0;"
+    style="top:72px;right:0;z-index:2;"
   >
     <div class="rightbarShortcut">
       <div

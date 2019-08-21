@@ -2439,7 +2439,6 @@ PageSetupDialog.getFormats = function()
             position = -Math.round(phase - mxUtils.mod(this.translate.x * this.scale - x0, phase)) + 'px ' +
 				-Math.round(phase - mxUtils.mod(this.translate.y * this.scale - y0, phase)) + 'px';
         }
-		
         var canvas = graph.view.canvas;
 		
         if (canvas.ownerSVGElement != null)
