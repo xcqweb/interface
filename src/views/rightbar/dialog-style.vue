@@ -1,7 +1,7 @@
 <template>
   <div
     class="dialogPage"
-    style="padding:0 4px;"
+    style="padding:0 4px;o"
   >
     <p style="text-align:center;margin:10px;font-size:14px;">
       弹窗样式
@@ -154,6 +154,9 @@ export default {
     },
     created() {},
     mounted() {
+        this.$nextTick(()=>{
+            this.changeScaleInput()
+        })
     },
     methods: {
         changeFont(d,e) {
@@ -169,15 +172,41 @@ export default {
             }
         },
         changeScaleInput() {
-            this.myEditorUi.setPageFormat(
-                {
-                    height: this.dialogHeight,
-                    width: this.dialogWidth,
-                    x: 0,
-                    y: 0
-                },
-                true
-            );
+            let dialogTitleEle = document.querySelector('.dialog-title-m')
+            dialogTitleEle.parentNode.removeChild(dialogTitleEle)
+            let graph = this.myEditorUi.editor.graph
+            this.myEditorUi.setPageFormat({
+                height: this.dialogHeight,
+                width: this.dialogWidth,
+                x: 0,
+                y: 0
+            }, true)
+            let con = graph.container
+            con.appendChild(dialogTitleEle)
+            let conWidth = con.clientWidth
+            let conHeight = con.clientHeight
+            let {clientWidth,clientHeight} = con.children[1] //svg
+            let canvasView = con.children[0]//画布
+            con.scrollLeft = (clientWidth - conWidth) / 2
+            con.scrollTop = (clientHeight - conHeight - 36) / 2
+            let scheduledAnimationFrame = false
+            con.addEventListener('scroll', () => {
+                if (scheduledAnimationFrame) { //防止 requestAnimationFrame 执行周期内，scroll多次触发造成requestAnimationFrame多次执行
+                    return 
+                }
+                scheduledAnimationFrame = true
+                requestAnimationFrame(()=>{//节流
+                    let dialogStyle = {
+                        top:`${canvasView.offsetTop - 36}px`,
+                        left:`${canvasView.offsetLeft}px`,
+                        width:`${this.dialogWidth}px`
+                    }
+                    this.$store.commit('dialogTitleStyleDeal',dialogStyle) 
+                    this.$nextTick(()=>{
+                        scheduledAnimationFrame = false//执行完操作后 重置
+                    })
+                })
+            })
         },
         hideFont() {
             this.showFont = false
