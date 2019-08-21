@@ -1,7 +1,6 @@
 <template>
   <div
     class="geSidebarContainer"
-    style="height:calc(100% - 72px); top:72px;width:208px;"
   >
     <div
       class="left-geSidebarContainer"
@@ -71,6 +70,8 @@
         </ul>
       </Modal>
     </div>
+    <div class="geSidebarContainer-bottom" />
+    <div class="geSidebarContainer-bottom2" />
   </div>
 </template>
 <script>
@@ -222,9 +223,22 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+    .geSidebarContainer{
+        height:calc(100% - 72px); 
+        top:72px;
+        width:208px;
+        display:flex;
+        flex-direction: column;
+        
+        .geSidebarContainer-bottom{
+            flex:1;
+            overflow-y: auto;
+        }
+        .geSidebarContainer-bottom2{
+            height:30px;
+        }
+    }
     .left-geSidebarContainer{
-        height:200px;
-        // overflow: auto;
         .ivu-tabs{
             // overflow: auto;
             height:100%;
@@ -258,7 +272,7 @@ export default {
                         background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
                         background-size:16px 16px;
                         &.left-sidebar-homepage{
-                          background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
+                        background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
                         }
                         #editPageInput{
                             height: 25px;
@@ -390,6 +404,7 @@ export default {
             }
         }
     }
+    
 </style>
 
 

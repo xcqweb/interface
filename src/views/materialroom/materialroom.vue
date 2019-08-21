@@ -410,6 +410,9 @@ export default {
                     }
                     this.assemblyArrayName.push(obj)
                 })
+            }).catch(() => {
+                Message.error('系统繁忙，请稍后再试试')
+                return false
             })
             let oInp = document.querySelector('.assembly-seach-icon')
             oInp.oninput = this.debounce(this.selectMaterial, 1000)
@@ -442,6 +445,9 @@ export default {
                             }
                             this.emptyArray.push(obj)
                         })
+                    }).catch(() => {
+                        Message.error('系统繁忙，请稍后再试试')
+                        return false
                     })
                 }
             }
@@ -493,6 +499,9 @@ export default {
                         this.alertMaterial.push(obj)
                     }
                 })
+            }).catch(() => {
+                Message.error('系统繁忙，请稍后再试试')
+                return false
             })
         },
         tabsSwitch(type) {
@@ -529,7 +538,9 @@ export default {
                     }
                     this.userMaterialAll.push(obj)
                 })
-                
+            }).catch(() => {
+                Message.error('系统繁忙，请稍后再试试')
+                return false
             })
             return function() {
                 clearTimeout(timer)
@@ -649,7 +660,6 @@ export default {
                 } else if (type === this.POSITION_LEFT) {
                     element = document.querySelector('.assembly-list>li.left-side-listactive')
                 }
-                console.log(actionType)
                 switch(actionType) {
                     case 'rename':
                         this.renameHandle(element,actionType,type,index,materialId)
@@ -696,18 +706,16 @@ export default {
                                 descript: name,
                             }
                             if (type === 'left') {
-                                try {
-                                    this.requestUtil.put(this.urls.materialList.url,data1).then((res) => {
-                                        if (res.libraryName) {
-                                            Message.info('修改成功')
-                                            ele.innerHTML = `<span class="left-assembly-left">${name}</span><span class="right-spots"></span>`
-                                        }
-                                    })
-                                } catch(e) {
+                                this.requestUtil.put(this.urls.materialList.url,data1).then((res) => {
+                                    if (res.libraryName) {
+                                        Message.info('修改成功')
+                                        ele.innerHTML = `<span class="left-assembly-left">${name}</span><span class="right-spots"></span>`
+                                    }
+                                }).catch(() => {
                                     ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
                                     Message.error('修改失败')
                                     return false
-                                }
+                                })
                             } else if (type === 'right') {
                                 this.requestUtil.put(this.urls.materialRightList.url,data2).then((res) => {
                                     if (res.libraryName) {
@@ -764,6 +772,9 @@ export default {
                     this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
                         if (res.code === '0') {
                             this.assemblyArrayName.splice(index ,1)
+                            let lastLen = this.assemblyArrayName.length - 1
+                            let materialLibraryid = this.assemblyArrayName[lastLen].materialLibraryId
+                            this.selectAssemblyList('',lastLen,materialLibraryid)
                             Message.warning('删除成功')
                         }
                     }).catch(() => {

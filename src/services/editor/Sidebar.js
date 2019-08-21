@@ -11,10 +11,11 @@ import requestUtil from '../request'
 import Urls from '../../constants/url'
 import {tipDialog} from '../Utils'
 var basicXmlFns = [];
-function Sidebar(editorUi, container)
+function Sidebar(editorUi, container, container2)
 {
     this.editorUi = editorUi;
     this.container = container;
+    this.containerbottom = container2
     this.palettes = new Object();
     this.taglist = new Object();
     this.showTooltips = true;
@@ -605,7 +606,8 @@ Sidebar.prototype.addSearchPalette = function(expand)
 {
     var elt = document.createElement('div');
     elt.style.visibility = 'hidden';
-    this.container.appendChild(elt);
+    // this.container.appendChild(elt);
+    this.containerbottom.appendChild(elt);
 		
     var div = document.createElement('div');
     div.className = 'geSidebar';
@@ -970,11 +972,9 @@ Sidebar.prototype.renameNode = function(ele) {
     ele.innerText = '';
     ele.appendChild(editInput);
     editInput.focus();
-    console.log(oldVal)
     let saveFn = () => {
         let name = editInput.value.trim();
         mxEvent.removeListener(document.body, 'click', saveFn);
-        console.log(oldVal)
         if (!name) {
             tipDialog(this.editorUi, '页面名称不能为空');
             // mxUtils.alert('页面名称不能为空');
@@ -1018,7 +1018,6 @@ Sidebar.prototype.renameNode = function(ele) {
 Sidebar.prototype.copyPage = function (ele,pageType) {
  var title = '',
      id = '';
-     console.log(88)
  const currtitle = ele.innerText
  var xml = this.editorUi.editor.defaultXml;
  var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
@@ -1038,8 +1037,6 @@ Sidebar.prototype.copyPage = function (ele,pageType) {
   let changeRank = this.editorUi.editor.pagesRank[resPage.type];
   // 根据类型插入列表
    changeRank.push(resPage.id);
-   console.log(_li)
-    console.log(pageType)
    if (pageType === 'normal') {
     $("#normalPages").append(_li);
    }
@@ -1857,6 +1854,7 @@ Sidebar.prototype.addImagePalette = function(id, title, prefix, postfix, items, 
  */
 Sidebar.prototype.createTitle = function(label, id)
 {
+    // let wrapEle = document.createElement('div')
     var elt = document.createElement('a');
     elt.setAttribute('href', 'javascript:void(0);');
     elt.setAttribute('ondragstart', 'return false;');
@@ -1882,6 +1880,7 @@ Sidebar.prototype.createTitle = function(label, id)
         }.bind(this), true)
         elt.appendChild(img);
     }
+    // wrapEle.appendChild(elt)
     return elt;
 };
 
@@ -3438,10 +3437,14 @@ Sidebar.prototype.addPaletteFunctions = function(id, title, expanded, fns)
 {
     this.addPalette(id, title, expanded, mxUtils.bind(this, function(content)
     {
-        for (var i = 0; i < fns.length; i++)
-        {
-            content.appendChild(fns[i](content));
+        if (fns.length) {
+            for (var i = 0; i < fns.length; i++) {
+                content.appendChild(fns[i](content));
+            }
+        } else {
+            content.innerHTML = '<span style="display:block;min-height:30px;width:100%;text-align:center;font-size:12px;line-height:30px;color:#acacac">暂无数据</span>'
         }
+        
     }));
 };
 
@@ -3451,7 +3454,8 @@ Sidebar.prototype.addPaletteFunctions = function(id, title, expanded, fns)
 Sidebar.prototype.addPalette = function(id, title, expanded, onInit)
 {
     var elt = this.createTitle(title, id);
-    this.container.appendChild(elt);
+    // this.container.appendChild(elt);
+    this.containerbottom.appendChild(elt);
     var div = document.createElement('div');
     div.className = 'geSidebar';
 	
@@ -3474,7 +3478,8 @@ Sidebar.prototype.addPalette = function(id, title, expanded, onInit)
     this.addFoldingHandler(elt, div, onInit);
 	
     var outer = document.createElement('div');
-    this.container.appendChild(div);
+    // this.container.appendChild(div);
+    this.containerbottom.appendChild(div);
     
     // Keeps references to the DOM nodes
     if (id != null)

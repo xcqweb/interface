@@ -2962,6 +2962,7 @@ EditorUi.prototype.createDivs = function()
     this.menubarContainer = this.createDiv('geMenubarContainer');
     this.toolbarContainer = document.querySelector(".geToolbarContainer");
     this.sidebarContainer = document.querySelector('.geSidebarContainer');
+    this.sidebarContainerBottom = document.querySelector('.geSidebarContainer-bottom');
     this.formatContainer = document.querySelector('.geSidebarContainer.geFormatContainer');
 
     this.rightBarContainer = document.querySelector('.geSidebarContainer.geRightBarContainer');
@@ -3049,7 +3050,8 @@ EditorUi.prototype.createUi = function()
     }
 
     // 生成左侧边栏
-    this.sidebar = (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer);
+    // this.sidebar = (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer);
+    this.sidebar = (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer, this.sidebarContainerBottom);
 
     /* if (this.sidebar != null)
     {
@@ -3159,9 +3161,9 @@ EditorUi.prototype.createToolbar = function(container)
 /**
  * Creates a new sidebar for the given container.
  */
-EditorUi.prototype.createSidebar = function(container)
+EditorUi.prototype.createSidebar = function (container, container2)
 {   
-    return new Sidebar(this, container);
+    return new Sidebar(this, container, container2);
 };
 
 /**
@@ -3519,13 +3521,20 @@ EditorUi.prototype.save = function(name, des)
                 // 页面信息
                 var pages = editor.pages;
                 console.log("save--page")
+                // var data = {
+                //     name: name,
+                //     describe: des,
+                //     applyCon: editor.pagesNameList().join(),
+                //     content: JSON.stringify({pages, rank: editor.pagesRank}),
+                // }
                 var data = {
-                    name: name,
-                    describe: des,
+                    studioName: name,
+                    descript: des,
                     applyCon: editor.pagesNameList().join(),
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                 }
                 var id = editor.getApplyId();
+                console.log(id)
                 if (id) {
                     // 编辑保存
                     data.id = id;
@@ -3538,7 +3547,14 @@ EditorUi.prototype.save = function(name, des)
                     })
                 } else {
                     // 新增保存
-                    editor.ajax(ui, '/api/viewtool', 'POST', data, (res) => {
+                    // editor.ajax(ui, '/api/viewtool', 'POST', data, (res) => {
+                    //     this.saveSuccess(res);
+                    //     resolve(res);
+                    // }, (res) => {
+                    //     this.saveError(res.responseJSON);
+                    //     reject(res);
+                    // })
+                    editor.ajax(ui, 'api/iot-cds/cds/configurationDesignStudio', 'POST', data, (res) => {
                         this.saveSuccess(res);
                         resolve(res);
                     }, (res) => {
