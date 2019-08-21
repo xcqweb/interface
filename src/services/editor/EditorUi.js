@@ -2963,6 +2963,7 @@ EditorUi.prototype.createDivs = function()
     this.menubarContainer = this.createDiv('geMenubarContainer');
     this.toolbarContainer = document.querySelector(".geToolbarContainer");
     this.sidebarContainer = document.querySelector('.geSidebarContainer');
+    this.sidebarContainerBottom = document.querySelector('.geSidebarContainer-bottom');
     this.formatContainer = document.querySelector('.geSidebarContainer.geFormatContainer');
 
     this.rightBarContainer = document.querySelector('.geSidebarContainer.geRightBarContainer');
@@ -3052,7 +3053,8 @@ EditorUi.prototype.createUi = function()
     }
 
     // 生成左侧边栏
-    this.sidebar = (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer);
+    // this.sidebar = (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer);
+    this.sidebar = (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer, this.sidebarContainerBottom);
 
     /* if (this.sidebar != null)
     {
@@ -3162,9 +3164,9 @@ EditorUi.prototype.createToolbar = function(container)
 /**
  * Creates a new sidebar for the given container.
  */
-EditorUi.prototype.createSidebar = function(container)
+EditorUi.prototype.createSidebar = function (container, container2)
 {   
-    return new Sidebar(this, container);
+    return new Sidebar(this, container, container2);
 };
 
 /**
