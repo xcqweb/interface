@@ -13,6 +13,8 @@ import {
 } from './Editor'
 import {ChangePageSetup} from './Init'
 import {Format} from './Format'
+import urls from '../../constants/url'
+import requestUtil from '../request'
 window.EditorUi = function(editor, container, lightbox)
 {
     mxEventSource.call(this);
@@ -3536,8 +3538,8 @@ EditorUi.prototype.save = function(name, des)
                     applyCon: editor.pagesNameList().join(),
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                 }
+                console.log(data)
                 var id = editor.getApplyId();
-                console.log(id)
                 if (id) {
                     // 编辑保存
                     data.id = id;
@@ -3564,6 +3566,13 @@ EditorUi.prototype.save = function(name, des)
                         this.saveError(res.responseJSON);
                         reject(res);
                     })
+
+                    // import urls from '../../constants/url'
+                    // import request from '../request'
+                    // requestUtil.post(urls.preview.url, data).then((res) => {
+                    //     this.saveSuccess(res);
+                    //     resolve(res);
+                    // })
                 }
             }
             catch (e)

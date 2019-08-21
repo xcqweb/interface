@@ -5,6 +5,7 @@ axios.defaults.timeout = 60 * 1000 * 5; //响应超时时间
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'; //配置请求头
 // axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded'; //配置请求头
 const isDev = process.env.NODE_ENV === 'development';
+console.log(isDev)
 if(isDev) {
     axios.defaults.baseURL = urls.testBaseUrl.url;  //配置接口地址
 } else {

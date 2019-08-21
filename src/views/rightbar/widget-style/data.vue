@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="data-sources">
     数据源
   </div>
 </template>
@@ -21,8 +21,4 @@ export default{
 
 <style scoped lang="less">
 
-</style>
-
-<style lang="less">
-  
 </style>
