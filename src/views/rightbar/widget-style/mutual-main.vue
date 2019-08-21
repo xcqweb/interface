@@ -95,9 +95,9 @@
 </template>
 
 <script>
-import LinkTo from './LinkTo'
-import Visible from './Visible'
-import Change from './Change'
+import LinkTo from './linkto'
+import Visible from './visible'
+import Change from './change'
 import {sureDialog} from '../../../services/Utils'
 import {mxUtils} from '../../../services/mxGlobal'
 // 不显示节点的名称
