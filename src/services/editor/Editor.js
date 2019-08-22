@@ -344,7 +344,6 @@ Editor.prototype.refreshToken = function(refreshToken) {
  * @param {Function} errorfn
  */
 Editor.prototype.ajax = async function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···') {
-    console.log('调试 在此处注释token')
     var token = getCookie('token');
     var refreshToken = getCookie('refreshToken');
     if (!token || !refreshToken) {
@@ -431,7 +430,6 @@ Editor.prototype.InitEditor = function(editorUi) {
             editorUi.editor.setApplyId(editData.id);
             editorUi.editor.setDescribe(editData.describe);
         }
-        console.log('-开发--暂时注释掉--')
         // editorUi.sidebar.container.innerHTML = '';
         // console.log(editorUi)
         // editorUi.sidebar.init();
@@ -2354,12 +2352,12 @@ PageSetupDialog.getFormats = function()
                         this.backgroundPageShape.node.className = 'geBackgroundPage';
 						
                         // Adds listener for double click handling on background
-                        mxEvent.addListener(this.backgroundPageShape.node, 'dblclick',
+                       /*  mxEvent.addListener(this.backgroundPageShape.node, 'dblclick',
                             mxUtils.bind(this, function(evt)
                             {
                                 graph.dblClick(evt);
                             })
-                        );
+                        ); */
 						
                         // Adds basic listeners for graph event dispatching outside of the
                         // container and finishing the handling of a single gesture

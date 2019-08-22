@@ -65,11 +65,28 @@ export default{
         }
     },
     computed: {
-        states() {
-            return this.$store.state.main.states
+        states: {
+            get:function() {
+                return this.$store.state.main.states
+            }
         }
     },
     mounted() {
+        if(!this.states.length) {
+            let states = [{
+                "id":'state_0',
+                "name":"默认",
+                "desc":'默认',
+                'animateCls':'',
+                "style":{
+                    background:this.$store.state.main.widgetInfo.bgColor,
+                    borderColor:this.$store.state.main.widgetInfo.borderColor,
+                    color:this.$store.state.main.widgetInfo.color
+                }, 
+                'check':false
+            }]
+            this.$store.commit('refreshState',states)
+        }
     },
     methods: {
         hide() {

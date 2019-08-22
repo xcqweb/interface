@@ -111,15 +111,16 @@ export default {
             ],
         }
     },
-    created() {},
+    created() {
+    },
     mounted() {
+        
     },
     methods: {
         init() {
             let myEditor = this.myEditorUi.editor
             let graph = myEditor.graph
             backgroundColor = graph.background
-            console.log(this.myEditorUi.editor.currentPage, '---')
         },
         changeScale(d,e) {
             this.scaleText = d;

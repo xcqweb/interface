@@ -1403,8 +1403,7 @@ function createPageList(editorUi, el, data, id) {
                 var target = e.target;
                 if (((target.parentNode.nodeName === 'LI') && target.parentNode.className !== 'currentPage')) {
                     // 点击保存上一个页面
-                    // var type = id.slice(0, id.length - 5);
-                    // 目标页面名称
+                                       // 目标页面名称
                     var nextTitle = target.parentElement.getAttribute('data-pageid');
                     // 已选中节点
                     if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {

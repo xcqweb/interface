@@ -13,13 +13,6 @@
       ref="footbar"
       :bind-datas="bindDatas"
     />
-    <div
-      v-if="$store.state.main.type===1"
-      class="dialog-title-m"
-      :style="$store.state.main.dialogTitleStyle"
-    >
-      弹窗标题
-    </div>
   </div>
 </template>
 
@@ -113,24 +106,4 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
-
-</style>
-
-<style lang="less">
-.dialog-title-m{
-    position: relative;
-    top:72px;
-    left:208px;
-    height:36px;
-    width: calc(100% - 208px - 250px);
-    text-align:center;
-    display: inline-block;
-    vertical-align: top;
-    background:#E2E1E2;
-    border:1px solid rgba(204,204,204,1);
-    border-radius:4px 4px 0px 0px;
-    z-index: 1;
-    overflow: hidden;
-}
-</style>
+ 
