@@ -967,7 +967,7 @@ Sidebar.prototype.deletePage = function(ele) {
     }
 }
 /**/
-Sidebar.prototype.renameNode = function(ele) {
+Sidebar.prototype.renameNode = function(ele, pageType) {
     let editInput = document.createElement('input');
     editInput.id = 'editPageInput';
     let oldVal = ele.innerText
@@ -979,24 +979,23 @@ Sidebar.prototype.renameNode = function(ele) {
         let name = editInput.value.trim();
         mxEvent.removeListener(document.body, 'click', saveFn);
         if (!name) {
-            tipDialog(this.editorUi, '页面名称不能为空');
-            // mxUtils.alert('页面名称不能为空');
-            ele.innerHTML = oldVal;
+            tipDialog(this.editorUi, `${pageType === 'normal' ? '页面' : '弹窗'}名称不能为空`);
+            ele.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${oldVal}</span><span class="right-icon-dolt"></span>`
         } else if (name.length > 20) {
-            // mxUtils.alert('页面名称不能超过20个字符');
-            tipDialog(this.editorUi, '页面名称不能超过20个字符');
-            ele.innerHTML = oldVal;
+            tipDialog(this.editorUi, `${pageType === 'normal' ? '页面' : '弹窗'}名称不能超过20个字符`);
+            ele.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${oldVal}</span><span class="right-icon-dolt"></span>`;
         } else {
-            if (name !== oldVal) {
-                for (let key in this.editorUi.editor.pages) {
-                    if (this.editorUi.editor.pages[key].title === name) {
-                        // mxUtils.alert('页面名称不能重复');
-                        tipDialog(this.editorUi, '页面名称不能重复');
-                        ele.innerHTML = oldVal;
-                        return;
-                    }
-                }
-            }
+            // 去除重名
+            // if (name !== oldVal) {
+            //     for (let key in this.editorUi.editor.pages) {
+            //         if (this.editorUi.editor.pages[key].title === name) {
+            //             // mxUtils.alert('页面名称不能重复');
+            //             tipDialog(this.editorUi, `${pageType === 'normal' ? '页面' : '弹窗'}名称不能重复`);
+            //             ele.innerHTML = oldVal;
+            //             return;
+            //         }
+            //     }
+            // }
             this.editorUi.editor.pages[ele.getAttribute('data-pageid')].title = name;
             ele.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${name}</span><span class="right-icon-dolt"></span>`;
         }
@@ -1019,7 +1018,6 @@ Sidebar.prototype.renameNode = function(ele) {
 }
 /*复制页面*/
 Sidebar.prototype.copyPage = function (ele,pageType) {
-    console.log(pageType)
  var title = '',
      id = '';
  const currtitle = ele.innerText
@@ -1036,11 +1034,9 @@ Sidebar.prototype.copyPage = function (ele,pageType) {
   };
   let _li = document.createElement('li');
   let resPage = this.editorUi.editor.addPage(page);
-    console.log(resPage)
   _li.setAttribute('data-pageid', resPage.id);
     _li.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${titleText}</span><span class="right-icon-dolt"></span>`;
   let changeRank = this.editorUi.editor.pagesRank[resPage.type];
-    console.log(changeRank)
   // 根据类型插入列表
    changeRank.push(resPage.id);
    if (pageType === 'normal') {
@@ -1155,20 +1151,19 @@ Sidebar.prototype.createPageContextMenu = function(type) {
         evt.stopPropagation()
         var target = evt.target;
         var ele = $(".pageList .currentPage").eq(0);
-        let pageType = null
-        if (ele.parent().attr('id') === 'normalPages') {
-            pageType = 'normal'
-        } else {
-            pageType = 'dialog'
-        }
-        console.log(pageType)
+        // let pageType = null
+        // if (ele.parent().attr('id') === 'normalPages') {
+        //     pageType = 'normal'
+        // } else {
+        //     pageType = 'dialog'
+        // }
         const element = document.querySelector('.pageList>li.currentPage')
         // 操作类型
         var actionType = target.getAttribute('data-type');
         // 添加页面
         var addPage = this.editorUi.actions.get('addPage').funct;
 
-        // const pageType = this.editorUi.editor.currentType;
+        const pageType = this.editorUi.editor.currentType;
         let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.data('pageid'))
         switch (actionType) {
             case 'movePrev':
@@ -1183,7 +1178,7 @@ Sidebar.prototype.createPageContextMenu = function(type) {
                 this.deletePage(ele)
                 break;
             case 'rename':
-                this.renameNode(element)
+                this.renameNode(element, pageType)
                 break;
             case 'copy':
                 this.copyPage(element,pageType)
@@ -1375,7 +1370,6 @@ function createPageList(editorUi, el, data, id) {
             el.appendChild(pageListEle)
             $('.commonPages').on('mouseenter', '.pageList>li.currentPage>.right-icon-dolt',function(evt) {
                 evt.preventDefault();
-                console.log(1)
                 changePage(evt);
                 editorUi.editor.setXml();
                 
@@ -1436,8 +1430,6 @@ function createPageList(editorUi, el, data, id) {
                     })
                 })
             }
-            
-            // console.log(pageListEle)
             // mxEvent.addListener(pageListEle, 'click', function(evt) {
             //     changePage(evt)
             // }, true);
@@ -1508,15 +1500,7 @@ Sidebar.prototype.hidePageContextMenu = function() {
 //
 Sidebar.prototype.tabsSwitch = function(type) {
     if (type && +type === 1) {
-        // var dialogPages = []
-        // var pages = this.editorUi.editor.pages;
-        // // 弹窗
-        // for (let key of this.editorUi.editor.pagesRank.dialog) {
-        //     pages[key] && dialogPages.push(pages[key]);
-        // }
-        // const dialogPagesEl = document.querySelector('.dialogPages')
         this.createPageContextMenu(type)
-        
     } else {
         this.createPageContextMenu(type)
     }
@@ -1783,7 +1767,6 @@ Sidebar.prototype.addImagePalette = function(id, title, prefix, postfix, items, 
 				this.defaultImageWidth, this.defaultImageHeight, '', title, title != null, null, this.filterTags(tmpTags)));
 		}))(items[i], (titles != null) ? titles[i] : null, (tags != null) ? tags[items[i]] : null);
 	}
-    console.log(fns)
 	this.addPaletteFunctions(id, title, false, fns);
 };
 

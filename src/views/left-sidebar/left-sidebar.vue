@@ -171,7 +171,6 @@ export default {
         },
         alertAddPage(typePage, listNumber) {
             const pagesRank = this.myEditorUi.editor.pagesRank
-            console.log(pagesRank)
             let targetArr = [...pagesRank.normal, ...pagesRank.dialog]
             let nameArr = null
             let namebefore = ''
