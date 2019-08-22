@@ -15,7 +15,10 @@
         v-if="$store.state.main.type===0 && !showWidgetStyle"
         ref="pageStyle"
       />
-      <DialogStyle v-if="$store.state.main.type===1 && !showWidgetStyle" />
+      <DialogStyle
+        v-if="$store.state.main.type===1 && !showWidgetStyle"
+        ref="dialogStyle"
+      />
       <WidgetStyleMain v-if="showWidgetStyle" />
     </div>
   </div>
@@ -93,6 +96,7 @@ export default {
                 }
             }
             this.$refs.pageStyle.init()
+            this.$refs.dialogStyle.init()
         },
     }
 };

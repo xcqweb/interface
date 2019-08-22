@@ -1352,6 +1352,7 @@ function createPageTypeTitle(title) {
 //     return fn;
 // }
 function createPageList(editorUi,el,data, id, type) {
+            console.log(id,"tt--bb")
             // 页面列表
             var pageListEle = document.createElement('ul');
             pageListEle.className = "pageList";
