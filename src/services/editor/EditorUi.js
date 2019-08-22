@@ -3556,20 +3556,24 @@ EditorUi.prototype.save = function(name, des)
                     //     this.saveError(res.responseJSON);
                     //     reject(res);
                     // })
-                    editor.ajax(ui, '/api/iot-cds/cds/configurationDesignStudio', 'POST', data, (res) => {
-                        this.saveSuccess(res);
-                        resolve(res);
-                    }, (res) => {
-                        this.saveError(res.responseJSON);
-                        reject(res);
-                    })
+
+                    // editor.ajax(ui, '/api/iot-cds/cds/configurationDesignStudio', 'POST', data, (res) => {
+                    //     this.saveSuccess(res);
+                    //     resolve(res);
+                    // }, (res) => {
+                    //     this.saveError(res.responseJSON);
+                    //     reject(res);
+                    // })
 
                     // import urls from '../../constants/url'
                     // import request from '../request'
-                    // requestUtil.post(urls.preview.url, data).then((res) => {
-                    //     this.saveSuccess(res);
-                    //     resolve(res);
-                    // })
+                    requestUtil.post(urls.preview.url, data).then((res) => {
+                        this.saveSuccess(res);
+                        resolve(res);
+                    }).catch(() => {
+                        this.saveError(res.responseJSON);
+                        reject(res);
+                    })
                 }
             }
             catch (e)

@@ -1,6 +1,7 @@
 <template>
   <div
     class="dialogPage"
+    tyle="padding:0 4px;"
     style="padding:0 4px;"
   >
     <p style="text-align:center;margin:10px;font-size:14px;">
