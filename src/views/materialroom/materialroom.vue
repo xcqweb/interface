@@ -472,8 +472,6 @@ export default {
             this.getSelectMaterial(this.isactive2)
         },
         getSelectMaterial(index) {
-            this.pageMaterial = []
-            this.alertMaterial = []
             let data = ''
             if (+index === 0) {
                 data = {
@@ -552,6 +550,8 @@ export default {
             }
         },
         selectMaterial(value) {
+            this.newArr = []
+            this.newArr2 = []
             let basicArr = [...this.baseAssembly, ...this.tablesAssembly]
             let userArr = this.userMaterialAll || []
             if (value !== '') {
