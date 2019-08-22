@@ -1,7 +1,6 @@
 <template>
   <div
     class="dialogPage"
-    tyle="padding:0 4px;"
     style="padding:0 4px;"
   >
     <p style="text-align:center;margin:10px;font-size:14px;">
@@ -179,9 +178,9 @@ export default {
         this.alignIndex2 = valignArr.indexOf(parseInt(this.dialogStyle.lineHeight)) + 1 || 2
         let editor = this.myEditorUi.editor
         this.dialogDesc = editor.pages[editor.currentPage].desc
-        this.$nextTick(()=>{
+        setTimeout(() => {
             this.changeScaleInput()
-        })
+        },50)
     },
     destroyed() {
         let dialogTitleEle = document.querySelector('.dialog-title-m')
@@ -220,6 +219,7 @@ export default {
             this.commitStyleFun(dialogStyle)
         },
         changeScaleInput() {
+            console.log(this.myEditorUi.editor.currentPage,"-aa")  
             this.myEditorUi.setPageFormat({
                 height: this.dialogHeight,
                 width: this.dialogWidth,
@@ -235,8 +235,6 @@ export default {
             let conHeight = con.clientHeight
             let {clientWidth,clientHeight} = con.children[1] //svg
             let canvasView = con.children[0]//画布
-            console.log(con.children.length)
-            console.log(canvasView)
             this.canvasOffsetTop = canvasView.offsetTop
             this.canvasOffsetLeft = canvasView.offsetLeft
             con.scrollLeft = (clientWidth - conWidth) / 2
