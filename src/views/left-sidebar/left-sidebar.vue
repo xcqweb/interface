@@ -171,17 +171,22 @@ export default {
         },
         alertAddPage(typePage, listNumber) {
             const pagesRank = this.myEditorUi.editor.pagesRank
-            let targetArr = [...pagesRank.normal]
+            let targetArr = [...pagesRank.normal, ...pagesRank.dialog]
+            let nameArr = null
             let namebefore = ''
             if (+typePage === 0) {
                 namebefore = `页面`
+                // targetArr = 
+                nameArr = [...pagesRank.normal]
             } 
             if (+typePage === 1) {
                 namebefore = `弹窗`
+                nameArr = [...pagesRank.dialog]
             }
             let getMax = targetArr.length
+            let nameMax = nameArr.length
             let id = `pageid_${getMax + 1}`
-            let titleText = `${namebefore}${getMax + 1}`
+            let titleText = `${namebefore}${nameMax + 1}`
             let page = null
             if (+listNumber === 0) {
                 let xml = this.myEditorUi.editor.defaultXml;

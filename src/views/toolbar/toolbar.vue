@@ -170,6 +170,7 @@ import {PreviewDialog} from '../../services/editor/Dialogs'
 import MaterialRoom from '../materialroom/materialroom'
 import router from '../../router'
 import VueEvent from '../../services/VueEvent.js'
+// import {setTimeout} from 'timers';
 export default{
     components:{
         ScaleView,AlignDialog,MaterialRoom
@@ -286,16 +287,23 @@ export default{
         },
         preview() {
             let ui = this.myEditorUi
-            var dlg = new PreviewDialog(ui, function(id) {
-                let page = router.resolve({
-                    path: "/interface_preview",
-                    query: {
-                        id: id
-                    }
-                });
-                window.open(page.href, '_blank');
-            })
+            let id = null
+            var dlg = new PreviewDialog(ui, function() {})
             ui.showDialog(dlg.container, 410, 160, true, false, null, null, '预览');
+            console.log(8)
+            let timer = setInterval(() => {
+                id = ui.editor.getApplyId()
+                if (id) {
+                    clearInterval(timer)
+                    let page = router.resolve({
+                        path: "/interface_preview",
+                        query: {
+                            id: id
+                        }
+                    });
+                    window.open(page.href, '_blank');
+                }
+            },500)
         }
     },      
 }

@@ -472,6 +472,8 @@ export default {
             this.getSelectMaterial(this.isactive2)
         },
         getSelectMaterial(index) {
+            this.pageMaterial = []
+            this.alertMaterial = []
             let data = ''
             if (+index === 0) {
                 data = {

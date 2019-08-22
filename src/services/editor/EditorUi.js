@@ -3486,9 +3486,13 @@ EditorUi.prototype.saveFile = function(forceDialog)
  */
 EditorUi.prototype.saveSuccess = function(res) {
     // 设置名称和描述
-    this.editor.setFilename(res.name)
-    this.editor.setDescribe(res.describe)
-    this.editor.setApplyId(res.id)
+    // this.editor.setFilename(res.name)
+    // this.editor.setDescribe(res.describe)
+    // this.editor.setApplyId(res.id)
+    this.editor.setFilename(res.studioName)
+    this.editor.setDescribe(res.descript)
+    this.editor.setApplyId(res.studioId)
+    console.log(this.editor.getApplyId())
     setTimeout(() => {
         this.hideDialog();
         this.editor.tipInfo(this, true, '保存');
@@ -3537,10 +3541,18 @@ EditorUi.prototype.save = function(name, des)
                 }
                 console.log(data)
                 var id = editor.getApplyId();
+                console.log(id)
                 if (id) {
                     // 编辑保存
                     data.id = id;
-                    editor.ajax(ui, '/api/viewtool', 'PUT', data, (res) => {
+                    // editor.ajax(ui, '/api/viewtool', 'PUT', data, (res) => {
+                    //     this.saveSuccess(res);
+                    //     resolve(res);
+                    // }, (res) => {
+                    //     this.saveError(res.responseJSON);
+                    //     reject(res);
+                    // })
+                    editor.ajax(ui, '/api/iot-cds/cds/configurationDesignStudio', 'PUT', data, (res) => {
                         this.saveSuccess(res);
                         resolve(res);
                     }, (res) => {
@@ -3557,23 +3569,23 @@ EditorUi.prototype.save = function(name, des)
                     //     reject(res);
                     // })
 
-                    // editor.ajax(ui, '/api/iot-cds/cds/configurationDesignStudio', 'POST', data, (res) => {
-                    //     this.saveSuccess(res);
-                    //     resolve(res);
-                    // }, (res) => {
-                    //     this.saveError(res.responseJSON);
-                    //     reject(res);
-                    // })
-
-                    // import urls from '../../constants/url'
-                    // import request from '../request'
-                    requestUtil.post(urls.preview.url, data).then((res) => {
+                    editor.ajax(ui, urls.preview.url, 'POST', data, (res) => {
                         this.saveSuccess(res);
                         resolve(res);
-                    }).catch(() => {
+                    }, (res) => {
                         this.saveError(res.responseJSON);
                         reject(res);
                     })
+
+                    // import urls from '../../constants/url'
+                    // import request from '../request'
+                    // requestUtil.post(urls.preview.url, data).then((res) => {
+                    //     this.saveSuccess(res);
+                    //     resolve(res);
+                    // }).catch((res) => {
+                    //     this.saveError(res.responseJSON);
+                    //     reject(res);
+                    // })
                 }
             }
             catch (e)

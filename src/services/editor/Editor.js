@@ -407,8 +407,13 @@ Editor.prototype.InitEditor = function(editorUi) {
     // 编辑数据
     let editPromise = null;
     if (/id=(.+?)$/.exec(location.search)) {
+        // editPromise = new Promise((resolve, reject) => {
+        //     this.ajax(editorUi, '/api/viewtool/' + /id=(.+?)$/.exec(location.search)[1], 'GET', null, function(res) {
+        //         resolve(res)
+        //     }, null)
+        // })
         editPromise = new Promise((resolve, reject) => {
-            this.ajax(editorUi, '/api/viewtool/' + /id=(.+?)$/.exec(location.search)[1], 'GET', null, function(res) {
+            this.ajax(editorUi, '/api/iot-cds/cds/configurationDesignStudio/' + /id=(.+?)$/.exec(location.search)[1], 'GET', null, function(res) {
                 resolve(res)
             }, null)
         })

@@ -1,14 +1,19 @@
 <template>
   <div class="data-sources">
-    数据源
+    <div>{{ dataName }}</div>
+    <DataSource />
   </div>
 </template>
 
 <script>
+import DataSource from './dataSource-select'
 export default{
+    components: {
+        DataSource
+    },
     data() {
         return {
-            
+            dataName: `数据源`
         }
     },
     mounted() {

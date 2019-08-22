@@ -1185,9 +1185,11 @@ class Main {
             // 查看应用
             id = id[1];
         }
-        const host = await geAjax('/api/image/host', 'GET');
+        // const host = await geAjax('/api/image/host', 'GET');
+        const host = await geAjax('/api/console/host/imageHost', 'GET');
         fileSystem = host.host;
-        applyInfo = await geAjax(`/api/viewtool/${id}`, 'GET');
+        // applyInfo = await geAjax(`/api/viewtool/${id}`, 'GET');
+        applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudio/${id}`, 'GET');
         shapeXmls = await loadShapeXml();
         if (!applyInfo) {
             console.log('未查到对应数据')
