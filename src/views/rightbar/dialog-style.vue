@@ -128,7 +128,7 @@
       class="dialog-title-m"
       :style="$store.state.main.dialogTitleStyle.style"
     >
-      弹窗标题
+      {{ titleName }}
     </div>
   </div>
 </template>
@@ -141,6 +141,7 @@ export default {
         return {
             dialogDesc:"",
             showFont:false,
+            titleName:'弹窗标题',
             dialogHeight: 400,
             dialogWidth: 600,
             fontText:12,
@@ -172,14 +173,15 @@ export default {
         this.dialogWidth = this.$store.state.main.dialogTitleStyle.size.width || 600
         this.dialogHeight = this.$store.state.main.dialogTitleStyle.size.height || 400
         this.fontText = parseInt(this.dialogStyle.fontSize || 12)
-        this.color = this.dialogStyle.color
+        this.fontColor = this.dialogStyle.color
         this.bgColor = this.dialogStyle.bgColor
         this.alignIndex1 = alignArr.indexOf(this.dialogStyle.textAlign) + 1 || 2
         this.alignIndex2 = valignArr.indexOf(parseInt(this.dialogStyle.lineHeight)) + 1 || 2
         let editor = this.myEditorUi.editor
-        this.dialogDesc = editor.pages[editor.currentPage].desc
         setTimeout(() => {
             this.changeScaleInput()
+            this.dialogDesc = editor.pages[editor.currentPage].desc
+            this.titleName =  editor.pages[editor.currentPage].title
         },50)
     },
     destroyed() {
@@ -219,7 +221,6 @@ export default {
             this.commitStyleFun(dialogStyle)
         },
         changeScaleInput() {
-            console.log(this.myEditorUi.editor.currentPage,"-aa")  
             this.myEditorUi.setPageFormat({
                 height: this.dialogHeight,
                 width: this.dialogWidth,
