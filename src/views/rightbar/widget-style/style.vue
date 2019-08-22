@@ -660,6 +660,8 @@ export default {
         },
         positionSize() {
             console.log(this.shapeName)
+            let graph = this.myEditorUi.editor.graph
+            let cells = graph.getModel().cells
             let {x,y,width,height} = this.$store.state.main.widgetInfo.geo
             return {
                 x:x,
