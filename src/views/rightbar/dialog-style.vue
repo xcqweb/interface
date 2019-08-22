@@ -174,7 +174,6 @@ export default {
         this.fontText = parseInt(this.dialogStyle.fontSize || 12)
         this.color = this.dialogStyle.color
         this.bgColor = this.dialogStyle.bgColor
-        console.log(this.dialogStyle)
         this.alignIndex1 = alignArr.indexOf(this.dialogStyle.textAlign) + 1 || 2
         this.alignIndex2 = valignArr.indexOf(parseInt(this.dialogStyle.lineHeight)) + 1 || 2
         let editor = this.myEditorUi.editor
@@ -188,10 +187,6 @@ export default {
         dialogTitleEle.parentNode.removeChild(dialogTitleEle)
     },
     methods: {
-        init() {
-            let editor = this.myEditorUi.editor
-            console.log(editor.currentPage,"--bb--")
-        },
         descChange() {
             let editor = this.myEditorUi.editor
             editor.pages[editor.currentPage].desc = this.dialogDesc
@@ -230,7 +225,6 @@ export default {
                 x: 0,
                 y: 0
             }, true)
-            this.commitStyleFun({})
             let graph = this.myEditorUi.editor.graph
             let con = graph.container
             let dialogTitleEle = document.querySelector('.dialog-title-m')
@@ -240,6 +234,8 @@ export default {
             let conHeight = con.clientHeight
             let {clientWidth,clientHeight} = con.children[1] //svg
             let canvasView = con.children[0]//画布
+            console.log(con.children.length)
+            console.log(canvasView)
             this.canvasOffsetTop = canvasView.offsetTop
             this.canvasOffsetLeft = canvasView.offsetLeft
             con.scrollLeft = (clientWidth - conWidth) / 2
@@ -254,7 +250,7 @@ export default {
                     let dialogStyle = {
                         top:`${this.canvasOffsetTop - 36}px`,
                         left:`${this.canvasOffsetLeft}px`,
-                        width:`${this.dialogWidth}px`
+                        width:`${this.dialogWidth}px`,
                     }
                     this.commitStyleFun(dialogStyle)
                     this.$nextTick(()=>{

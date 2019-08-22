@@ -344,7 +344,6 @@ Editor.prototype.refreshToken = function(refreshToken) {
  * @param {Function} errorfn
  */
 Editor.prototype.ajax = async function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···') {
-    console.log('调试 在此处注释token')
     var token = getCookie('token');
     var refreshToken = getCookie('refreshToken');
     if (!token || !refreshToken) {
@@ -394,8 +393,12 @@ Editor.prototype.ajax = async function(editorUi, url, method, data, fn = functio
 Editor.prototype.InitEditor = function(editorUi) {
     // 获取文件服务器地址
     let getFileSystem = new Promise((resolve, reject) => {
-        console.log(123456)
-        this.ajax(editorUi, '/api/image/host', 'GET', null, function(res) {
+        // this.ajax(editorUi, '/api/image/host', 'GET', null, function(res) {
+        //     // 文件服务器地址
+        //     window.fileSystem = res.host;
+        //     resolve(res)
+        // }, null)
+        this.ajax(editorUi, '/api/console/host/imageHost', 'GET', null, function(res) {
             // 文件服务器地址
             window.fileSystem = res.host;
             resolve(res)
@@ -422,7 +425,6 @@ Editor.prototype.InitEditor = function(editorUi) {
             editorUi.editor.setApplyId(editData.id);
             editorUi.editor.setDescribe(editData.describe);
         }
-        console.log('-开发--暂时注释掉--')
         // editorUi.sidebar.container.innerHTML = '';
         // console.log(editorUi)
         // editorUi.sidebar.init();

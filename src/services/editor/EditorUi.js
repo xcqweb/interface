@@ -3556,7 +3556,7 @@ EditorUi.prototype.save = function(name, des)
                     //     this.saveError(res.responseJSON);
                     //     reject(res);
                     // })
-                    editor.ajax(ui, 'api/iot-cds/cds/configurationDesignStudio', 'POST', data, (res) => {
+                    editor.ajax(ui, '/api/iot-cds/cds/configurationDesignStudio', 'POST', data, (res) => {
                         this.saveSuccess(res);
                         resolve(res);
                     }, (res) => {

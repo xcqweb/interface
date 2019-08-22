@@ -121,7 +121,7 @@ export default {
             let myEditor = this.myEditorUi.editor
             let graph = myEditor.graph
             backgroundColor = graph.background
-            console.log(myEditor.currentPage,"-aa")
+            console.log(myEditor.currentPage,"-aa")        
         },
         changeScale(d,e) {
             this.scaleText = d;
