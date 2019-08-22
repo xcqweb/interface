@@ -77,9 +77,6 @@ const mutations = {
         state.widgetInfo = temp
         graph.refresh()
     },
-    setWidgetInfo(state,obj) {
-        state.widgetInfo = Object.assign(state.widgetInfo,obj)
-    },
     widgetChange(state,rand) {
         state.rand = rand
     },

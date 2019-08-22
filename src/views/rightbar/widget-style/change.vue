@@ -18,6 +18,7 @@
       </ul>
     </div>
     <div
+      v-if="isWidgetClick"
       style="height:25%;"
     >
       <p style="margin-bottom: 2px;margin-top:10px;">
@@ -56,37 +57,20 @@
 
 <script>
 import {tipDialog} from '../../../services/Utils'
+import {mxUtils} from '../../../services/mxGlobal'
+let cells,graph
 let currentStateItem,currentWidgetItem
 export default{
     props:['currentPageWidgets','currentEditItem','bindActions'],
     data() {
         return {
-            
-        }
-    },
-    computed: {
-        states: {
-            get:function() {
-                return this.$store.state.main.states
-            }
+            isWidgetClick:false,
+            states:[]
         }
     },
     mounted() {
-        if(!this.states.length) {
-            let states = [{
-                "id":'state_0',
-                "name":"默认",
-                "desc":'默认',
-                'animateCls':'',
-                "style":{
-                    background:this.$store.state.main.widgetInfo.bgColor,
-                    borderColor:this.$store.state.main.widgetInfo.borderColor,
-                    color:this.$store.state.main.widgetInfo.color
-                }, 
-                'check':false
-            }]
-            this.$store.commit('refreshState',states)
-        }
+        graph = this.myEditorUi.editor.graph
+        cells = graph.getModel().cells
     },
     methods: {
         hide() {
@@ -94,10 +78,6 @@ export default{
         },
         submit() {
             let sameFlag = false
-            if(this.states && this.states.length && this.states[0].check) {//选中的默认的 不提交添加切换状态的事件
-                this.$emit("submitMutual")
-                return
-            }
             if(!currentWidgetItem) {
                 tipDialog(this.myEditorUi,`请选择要切换状态的控件`)
                 return
@@ -116,11 +96,43 @@ export default{
         },
         checkWidget(item) {
             currentWidgetItem = item
-            this.$set(this.states[0],'check',true)
+            this.isWidgetClick = true
             this.currentPageWidgets.forEach(d=>{
                 d.selected = false
             })
-            item.selected = true
+            item.selected = true 
+            this.states = this.getWidgetStatesById(item.id)
+            this.checkState(status[0])
+        },
+        getWidgetStatesById(id) {
+            let states = []
+            let cell = cells[id]
+            let modelInfo = graph.getModel().getValue(cell)
+            if (!mxUtils.isNode(modelInfo)) {
+                var doc = mxUtils.createXmlDocument();
+                var obj = doc.createElement('object');
+                obj.setAttribute('label', modelInfo || '');
+                modelInfo = obj;
+            }
+            let statesAttr = modelInfo.getAttribute('statesInfo')
+            if(statesAttr) {
+                states = JSON.parse(statesAttr)
+            }
+            if(!states.length) {
+                states = [{
+                    "id":'state_0',
+                    "name":"默认",
+                    "desc":'默认',
+                    'animateCls':'',
+                    "style":{
+                        background:this.$store.state.main.widgetInfo.bgColor,
+                        borderColor:this.$store.state.main.widgetInfo.borderColor,
+                        color:this.$store.state.main.widgetInfo.color
+                    }, 
+                    'check':false
+                }]
+            }
+            return states
         },
         checkState(item) {
             currentStateItem = item
@@ -131,6 +143,13 @@ export default{
                     d.check = false
                 }
             })
+            this.saveWidgetModeState()
+        },
+        saveWidgetModeState() {//将状态设定信息保存在对应的控件的model中
+            let cell = cells[currentWidgetItem.id]
+            let modelInfo = graph.getModel().getValue(cell)
+            modelInfo.setAttribute('statesInfo', JSON.stringify(this.states))
+            graph.getModel().setValue(cell, modelInfo)
         },
     },      
 }

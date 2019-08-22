@@ -641,14 +641,16 @@ Editor.prototype.pages = {
         title: '页面1',
         desc: '',
         xml: defaultXml,
-        type: 'normal'
+        type: 'normal',
+        style:'',
     },
     "pageid_2": {
         id: 'pageid_2',
         title: '弹窗1',
         desc: '',
         xml: defaultXml,
-        type: 'dialog'
+        type: 'dialog',
+        style: '',
     }
 };
 /**

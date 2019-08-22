@@ -59,9 +59,9 @@ export default{
         return {
             tab:1,
             refresh:0,//切换控件刷新子组件
-            stateList:['rectangle','image','tableCell','light'],
-            actionList:['menuCell','rectangle','image','button','tableCell'],
-            dataList:['rectangle','image','tableCell','light','progress','lineChart','gaugeChart'],
+            stateList:['rectangle','image','tableCell','light','ellipse'],
+            actionList:['menuCell','rectangle','image','button','tableCell','ellipse'],
+            dataList:['rectangle','image','tableCell','light','progress','lineChart','gaugeChart','ellipse'],
         }
     },
     computed: {
