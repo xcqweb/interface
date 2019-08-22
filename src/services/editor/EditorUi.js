@@ -3537,10 +3537,18 @@ EditorUi.prototype.save = function(name, des)
                 }
                 console.log(data)
                 var id = editor.getApplyId();
+                console.log(id)
                 if (id) {
                     // 编辑保存
                     data.id = id;
-                    editor.ajax(ui, '/api/viewtool', 'PUT', data, (res) => {
+                    // editor.ajax(ui, '/api/viewtool', 'PUT', data, (res) => {
+                    //     this.saveSuccess(res);
+                    //     resolve(res);
+                    // }, (res) => {
+                    //     this.saveError(res.responseJSON);
+                    //     reject(res);
+                    // })
+                    editor.ajax(ui, '/api/iot-cds/cds/configurationDesignStudio', 'PUT', data, (res) => {
                         this.saveSuccess(res);
                         resolve(res);
                     }, (res) => {

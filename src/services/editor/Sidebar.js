@@ -9,7 +9,7 @@
  */
 import requestUtil from '../request'
 import Urls from '../../constants/url'
-import {tipDialog} from '../Utils'
+import { tipDialog, sureDialog } from '../Utils'
 var basicXmlFns = [];
 function Sidebar(editorUi, container, container2)
 {
@@ -945,22 +945,25 @@ Sidebar.prototype.deletePage = function(ele) {
         tipDialog(this.editorUi,'至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
         return;
     } else {
-        var target;
-        var type = this.editorUi.editor.pages[this.editorUi.editor.currentPage].type
-        if (ele.prev().length) {
-            target = ele.prev();
-        } else if (ele.next().length) {
-            target = ele.next();
-        } else if (type == 'dialog' && !!$("#normalPages li").first()) {
-            target = $("#normalPages li").first();
-        } else if (type == 'noraml' && !!$("#dialogPages li").first()) {
-            target = $("#dialogPages li").first();
-        }
-        // 删除页面数据
-        this.editorUi.editor.deletePage(ele.data('pageid'), type)
-        target.click();
-        // 移除节点
-        ele.remove()
+        sureDialog(this.editorUi, `确定要删除${pageType === 'normal' ? '页面' : '弹窗'}吗`, () => {
+            var target;
+            var type = this.editorUi.editor.pages[this.editorUi.editor.currentPage].type
+            if (ele.prev().length) {
+                target = ele.prev().children('.spanli');
+            } else if (ele.next().length) {
+                target = ele.next().children('.spanli');
+            } else if (type == 'dialog' && !!$("#normalPages li").first()) {
+                target = $("#normalPages li").first().children('.spanli');
+            } else if (type == 'noraml' && !!$("#dialogPages li").first()) {
+                target = $("#dialogPages li").first().children('.spanli');
+            }
+            // 删除页面数据
+            this.editorUi.editor.deletePage(ele.data('pageid'), type)
+            target.click();
+            // 移除节点
+            ele.remove()
+        })
+        
     }
 }
 /**/
@@ -1047,7 +1050,6 @@ Sidebar.prototype.copyPage = function (ele,pageType) {
     $("#dialogPages").append(_li);
    }
    this.editorUi.editor.pagesRank[resPage.type] = [].concat(changeRank);
-   console.log(1111)
     if (pageType === 'normal') {
         $("#normalPages li:last-child .spanli").click();
     }
@@ -1371,32 +1373,32 @@ function createPageList(editorUi, el, data, id) {
                 pageListEle.appendChild(page)
             }
             el.appendChild(pageListEle)
-            // $('.commonPages').on('mouseenter', '.pageList>li.currentPage>.right-icon-dolt',function(evt) {
-            //     evt.preventDefault();
-            //     console.log(1)
-            //     changePage(evt);
-            //     editorUi.editor.setXml();
+            $('.commonPages').on('mouseenter', '.pageList>li.currentPage>.right-icon-dolt',function(evt) {
+                evt.preventDefault();
+                console.log(1)
+                changePage(evt);
+                editorUi.editor.setXml();
                 
-            //     // 右键菜单展示
-            //     var menulist = document.getElementById('pageContextMenu');
-            //     var targetElement = document.querySelector("#pageContextMenu .rename")
-            //     const textlen = menulist.firstChild.innerText
-            //     if (!$(this).parent().hasClass('left-sidebar-homepage') && textlen.indexOf('弹窗') === -1) {
-            //         if(!$('#pageContextMenu').children('.homepage').length) {
-            //             const Oli = document.createElement('li')
-            //             Oli.className = 'homepage'
-            //             Oli.innerText = '设为首页'
-            //             Oli.setAttribute('data-type', 'homepage')
-            //             menulist.insertBefore(Oli,targetElement)
-            //         }
-            //     } else {
-            //         $('.homepage').remove()
-            //     }
-            //     menulist.style.display = 'block';
-            //     menulist.style.left = mxEvent.getClientX(evt) + 'px';
-            //     menulist.style.top = mxEvent.getClientY(evt) + 'px';
-            //     $('.commonPages .pageList>li.currentPage>.right-icon-dolt').css({ 'pointer-events': 'none'})
-            // })
+                // 右键菜单展示
+                var menulist = document.getElementById('pageContextMenu');
+                var targetElement = document.querySelector("#pageContextMenu .rename")
+                const textlen = menulist.firstChild.innerText
+                if (!$(this).parent().hasClass('left-sidebar-homepage') && textlen.indexOf('弹窗') === -1) {
+                    if(!$('#pageContextMenu').children('.homepage').length) {
+                        const Oli = document.createElement('li')
+                        Oli.className = 'homepage'
+                        Oli.innerText = '设为首页'
+                        Oli.setAttribute('data-type', 'homepage')
+                        menulist.insertBefore(Oli,targetElement)
+                    }
+                } else {
+                    $('.homepage').remove()
+                }
+                menulist.style.display = 'block';
+                menulist.style.left = mxEvent.getClientX(evt) + 'px';
+                menulist.style.top = mxEvent.getClientY(evt) + 'px';
+                $('.commonPages .pageList>li.currentPage>.right-icon-dolt').css({ 'pointer-events': 'none'})
+            })
             function changePage(e) {
                 var target = e.target;
                 if (((target.parentNode.nodeName === 'LI') && target.parentNode.className !== 'currentPage')) {

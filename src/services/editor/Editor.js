@@ -394,7 +394,6 @@ Editor.prototype.ajax = async function(editorUi, url, method, data, fn = functio
 Editor.prototype.InitEditor = function(editorUi) {
     // 获取文件服务器地址
     let getFileSystem = new Promise((resolve, reject) => {
-        console.log(123456)
         // this.ajax(editorUi, '/api/image/host', 'GET', null, function(res) {
         //     // 文件服务器地址
         //     window.fileSystem = res.host;
@@ -409,8 +408,13 @@ Editor.prototype.InitEditor = function(editorUi) {
     // 编辑数据
     let editPromise = null;
     if (/id=(.+?)$/.exec(location.search)) {
+        // editPromise = new Promise((resolve, reject) => {
+        //     this.ajax(editorUi, '/api/viewtool/' + /id=(.+?)$/.exec(location.search)[1], 'GET', null, function(res) {
+        //         resolve(res)
+        //     }, null)
+        // })
         editPromise = new Promise((resolve, reject) => {
-            this.ajax(editorUi, '/api/viewtool/' + /id=(.+?)$/.exec(location.search)[1], 'GET', null, function(res) {
+            this.ajax(editorUi, '/api/iot-cds/cds/configurationDesignStudio/' + /id=(.+?)$/.exec(location.search)[1], 'GET', null, function(res) {
                 resolve(res)
             }, null)
         })
