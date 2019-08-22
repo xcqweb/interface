@@ -1399,25 +1399,18 @@ function createPageList(editorUi, el, data, id) {
             // })
             function changePage(e) {
                 var target = e.target;
-                
                 if (((target.parentNode.nodeName === 'LI') && target.parentNode.className !== 'currentPage')) {
                     // 点击保存上一个页面
-                    var type = id.slice(0, id.length - 5);
+                    // var type = id.slice(0, id.length - 5);
                     // 目标页面名称
-                    console.log(target.parentElement)
-                    console.log(target.parentNode)
                     var nextTitle = target.parentElement.getAttribute('data-pageid');
-                    console.log(nextTitle)
-                    // console.log(nextTitle)
                     // 已选中节点
                     if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {
                         editorUi.editor.setXml();
                     }
                     // 切换到新的页面
                     $(".currentPage").removeClass('currentPage');
-                    console.log(id,'-----')
                     editorUi.editor.setCurrentType(id == 'normalPages' ? 'normal' : 'dialog');
-                    console.log(editorUi.editor.currentType)
                     editorUi.editor.setCurrentPage(nextTitle);
                     if (!target.parentNode.className) {
                         target.parentNode.className += "currentPage";
@@ -1514,15 +1507,15 @@ Sidebar.prototype.hidePageContextMenu = function() {
 //
 Sidebar.prototype.tabsSwitch = function(type) {
     if (type && +type === 1) {
-        var dialogPages = []
-        var pages = this.editorUi.editor.pages;
-        // 弹窗
-        for (let key of this.editorUi.editor.pagesRank.dialog) {
-            pages[key] && dialogPages.push(pages[key]);
-        }
+        // var dialogPages = []
+        // var pages = this.editorUi.editor.pages;
+        // // 弹窗
+        // for (let key of this.editorUi.editor.pagesRank.dialog) {
+        //     pages[key] && dialogPages.push(pages[key]);
+        // }
+        // const dialogPagesEl = document.querySelector('.dialogPages')
         this.createPageContextMenu(type)
-        const dialogPagesEl = document.querySelector('.dialogPages')
-       createPageList(this.editorUi,dialogPagesEl, dialogPages, 'dialogPages')
+        
     } else {
         this.createPageContextMenu(type)
     }
@@ -1530,18 +1523,20 @@ Sidebar.prototype.tabsSwitch = function(type) {
 }
 Sidebar.prototype.addPagePalette = function(expand) {
     var normalPages = []
-    // var dialogPages = [];
+    var dialogPages = [];
     var pages = this.editorUi.editor.pages;
     // 页面
     for (let key of this.editorUi.editor.pagesRank.normal) {
         pages[key] && normalPages.push(pages[key]);
     }
     // // 弹窗
-    // for (let key of this.editorUi.editor.pagesRank.dialog) {
-    //     pages[key] && dialogPages.push(pages[key]);
-    // }
+    for (let key of this.editorUi.editor.pagesRank.dialog) {
+        pages[key] && dialogPages.push(pages[key]);
+    }
     const normalPagesEl = document.querySelector('.normalPages')
+    const dialogPagesEl = document.querySelector('.dialogPages')
     createPageList(this.editorUi,normalPagesEl, normalPages, 'normalPages')
+    createPageList(this.editorUi, dialogPagesEl, dialogPages, 'dialogPages')
     this.createPageContextMenu()
     // var fns = [
     //     // 普通页面标题

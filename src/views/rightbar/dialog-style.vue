@@ -157,7 +157,6 @@ export default {
         this.$nextTick(()=>{
             this.changeScaleInput()
         })
-        console.log(this.myEditorUi.editor.currentPage, '---')
     },
     methods: {
         changeFont(d,e) {

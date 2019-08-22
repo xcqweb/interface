@@ -145,10 +145,10 @@ module.exports = {
         },
         proxy: {
             "/api": {
-                "target": "http://10.8.4.190:8001",
+                "target": "http://10.74.20.25",
                 "changeOrigin": true,
+                // "pathRewrite": {"^/api": "/api"}
                 // "pathRewrite": {"^/api": ""}
-                "pathRewrite": {"^/api": "/api"}
             }
         },
     },
