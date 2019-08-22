@@ -1180,6 +1180,7 @@ class Main {
         gePreview = document.getElementById('gePreview');
         formatLayer = document.getElementById('formatLayer')
         let id = /id=(.+?)$/.exec(location.search);
+        console.log(id)
         if ( id ) {
             // 查看应用
             id = id[1];

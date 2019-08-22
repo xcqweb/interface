@@ -109,6 +109,9 @@ export default {
     methods: {
         init() {
             this.myEditorUi.sidebar.init();
+            setTimeout(() => {
+                $("#normalPages li:first-child .spanli").click();
+            })
         },
         tabsSwitch(type) {
             // 0 页面 1 弹窗
@@ -159,9 +162,9 @@ export default {
         },
         checkHasCurrent(type) {
             this.$nextTick(() => {
-                if (type === 0) {
+                if (+type === 0) {
                     $('#normalPages >li:first-child .spanli').click()
-                } else if (type === 1) {
+                } else if (+type === 1) {
                     $('#dialogPages >li:first-child .spanli').click()
                 }
             })

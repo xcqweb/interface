@@ -395,7 +395,12 @@ Editor.prototype.InitEditor = function(editorUi) {
     // 获取文件服务器地址
     let getFileSystem = new Promise((resolve, reject) => {
         console.log(123456)
-        this.ajax(editorUi, '/api/image/host', 'GET', null, function(res) {
+        // this.ajax(editorUi, '/api/image/host', 'GET', null, function(res) {
+        //     // 文件服务器地址
+        //     window.fileSystem = res.host;
+        //     resolve(res)
+        // }, null)
+        this.ajax(editorUi, '/api/console/host/imageHost', 'GET', null, function(res) {
             // 文件服务器地址
             window.fileSystem = res.host;
             resolve(res)

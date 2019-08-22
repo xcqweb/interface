@@ -1,4 +1,5 @@
 export default {
+    // testBaseUrl: {url: "/api", "desc": "测试环境"},
     testBaseUrl: {url: "/api", "desc": "测试环境"},
     baseUrl: {url: "http://10.74.20.25/", "desc": "生产环境"},
     addTemplate: {url: 'iot-cds/cds/pageTemplate', 'desc': '添加模版'},
