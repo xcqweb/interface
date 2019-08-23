@@ -3,11 +3,11 @@
     class="datasource-select"
   >
     <Select 
-      :model.sync="modelValue" 
-      style="width:168px;height:24px"
+      v-model="modelvalue" 
+      style="height:24px"
     >
       <Option 
-        v-for="(item, index) in dataSource"
+        v-for="(item, index) in datalist"
         :key="index"
         :value="item.value"
       >
@@ -24,19 +24,44 @@ export default {
         Select,
         Option
     },
+    props: {
+        datalist:{
+            type: Array,
+            default: () => []
+        },
+        modelvalue: {
+            type: String,
+            default: ''
+        }
+    },
     data() {
         return {
-            dataSource: [
-                {
-                    value: '1',
-                    label: '北京市'
-                }
-            ],
-            modelValue: '1'
         }
+    },
+    mounted() {
+        console.log(this.datalist)
     }
 }
 </script>
-<style lang=" less" scoped>
-
+<style lang="less" scoped>
+.datasource-select{
+  /deep/.ivu-select-selection{
+    height:24px;
+    .ivu-select-placeholder{
+      height:24px;
+      line-height:24px;
+    }
+    .ivu-select-selected-value{
+        height:24px;
+        line-height:24px;
+      }
+  }
+  .ivu-select-dropdown{
+    .ivu-select-dropdown-list{
+      .ivu-select-item{
+        padding: 0 16px 0;
+      }
+    }
+  }
+}
 </style>

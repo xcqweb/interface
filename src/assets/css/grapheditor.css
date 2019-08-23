@@ -246,7 +246,7 @@
 	background:transparent;
 	border-bottom:none;
 }
-.geSidebarContainer button {
+/* .geSidebarContainer button {
 	text-overflow:ellipsis;
 	overflow:hidden;
 	height: 26px;
@@ -258,7 +258,7 @@
 	padding: 0;
 	cursor: pointer;
 	outline: none;
-}
+} */
 .geToolbarContainer .geToolbar {
 	padding-top: 16px;
 	overflow: hidden;

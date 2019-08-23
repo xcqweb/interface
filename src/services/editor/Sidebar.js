@@ -1151,19 +1151,19 @@ Sidebar.prototype.createPageContextMenu = function(type) {
         evt.stopPropagation()
         var target = evt.target;
         var ele = $(".pageList .currentPage").eq(0);
-        // let pageType = null
-        // if (ele.parent().attr('id') === 'normalPages') {
-        //     pageType = 'normal'
-        // } else {
-        //     pageType = 'dialog'
-        // }
+        let pageType = null
+        if (ele.parent().attr('id') === 'normalPages') {
+            pageType = 'normal'
+        } else {
+            pageType = 'dialog'
+        }
         const element = document.querySelector('.pageList>li.currentPage')
         // 操作类型
         var actionType = target.getAttribute('data-type');
         // 添加页面
         var addPage = this.editorUi.actions.get('addPage').funct;
 
-        const pageType = this.editorUi.editor.currentType;
+        // const pageType = this.editorUi.editor.currentType;
         let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.data('pageid'))
         switch (actionType) {
             case 'movePrev':
