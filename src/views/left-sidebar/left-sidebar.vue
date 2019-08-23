@@ -319,16 +319,21 @@ export default {
                 width:50%;
                 padding:0 !important;
                 border-radius: 0 !important;
-                border:none !important;
                 margin-right:0 !important;
                 height: 32px;
                 line-height: 32px;
-                background: #F2F2F2;
+                background: #fff;
+                border:solid 1px #ccc;
+                border-top:none;
                 text-align: center;
                 &.ivu-tabs-tab-active{
-                    border-color:#fff !important;
-                    background: #fff;
+                    background: #F2F2F2;
+                    color:#252525;
+                    border:none;
                 }
+            }
+            .ivu-tabs-tab:active {
+               color:#252525 !important;
             }
         }
     }

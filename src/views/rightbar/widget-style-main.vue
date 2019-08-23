@@ -92,6 +92,7 @@ export default{
     height:32px;
     display: flex;
     line-height:32px;
+    font-size:14px;
     background:#F2F2F2;
     .tab{
         flex:1;

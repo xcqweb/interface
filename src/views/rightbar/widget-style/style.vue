@@ -109,7 +109,7 @@
       </div>
     </div>
     <div
-      v-if="shapeName!='image' && selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && chartTitle"
+      v-if="shapeName!='image' && selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && chartTitle && shapeName!='linkTag'"
       class="titleSet"
     >
       <div class="item-title">
@@ -224,7 +224,7 @@
         />
       </div>
     </div>
-    <div v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart')">
+    <div v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag'">
       <div class="item-title">
         外观
       </div>
@@ -581,6 +581,16 @@
         </div>
       </div>
     </div>
+    <div v-if="shapeName=='linkTag'">
+      <div class="item-title">
+        链接地址
+      </div>
+      <input
+        v-model="linkUrl"
+        style="padding:0 4px;"
+        @keyup.enter="addLinkUrl"
+      >
+    </div>
   </div>
 </template>
 <script>
@@ -642,7 +652,8 @@ export default {
             markLineList:[],//标线 line-chart
             isAddMark:false,
             markName:'指标1',
-            markValue:0
+            markValue:0,
+            linkUrl:"",
         }
     },
     computed: {
@@ -660,8 +671,6 @@ export default {
         },
         positionSize() {
             console.log(this.shapeName)
-            // let graph = this.myEditorUi.editor.graph
-            // let cells = graph.getModel().cells
             let {x,y,width,height} = this.$store.state.main.widgetInfo.geo
             return {
                 x:x,
@@ -959,6 +968,9 @@ export default {
             sureDialog(this.myEditorUi,`确定要删除${d.markName}吗`,()=>{
                 this.markLineList.splice(index,1)
             },)
+        },
+        addLinkUrl() {
+
         },
     }
 };

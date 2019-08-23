@@ -134,6 +134,7 @@
 </template>
 <script>
 let newBackgroundColor,newFontColor
+let observe
 let alignArr = ['left','center','right']
 let valignArr = []
 export default {
@@ -187,6 +188,7 @@ export default {
     destroyed() {
         let dialogTitleEle = document.querySelector('.dialog-title-m')
         dialogTitleEle.parentNode.removeChild(dialogTitleEle)
+        observe.disconnect()
     },
     methods: {
         descChange() {
@@ -256,6 +258,11 @@ export default {
                     this.$nextTick(()=>{
                         scheduledAnimationFrame = false//执行完操作后 重置
                     })
+                    observe = new MutationObserver(()=> {
+                        canvasView.style.width = `${this.dialogWidth}px`
+                        canvasView.style.height = `${this.dialogHeight}px`
+                    })
+                    observe.observe(canvasView,{attributeFilter: ['style'], subtree: false})
                 })
             })
         },
