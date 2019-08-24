@@ -44,12 +44,12 @@ export default {
         background-repeat: no-repeat;
     }
     .input-left-icon{
-        padding:2px 20px 2px 5px;
-        background-position: right center;
+        padding:2px 5px 2px 20px;
+        background-position: left center;
     }
     .input-right-icon{
-        padding:0 5px 0 20px;
-        background-position: left center;
+        padding:2px 20px 2px 5px;
+        background-position: right center;
     }
 }
 </style>

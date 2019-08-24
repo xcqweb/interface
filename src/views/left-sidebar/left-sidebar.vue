@@ -192,7 +192,7 @@ export default {
                     id,
                     type: typePage === 1 ? 'dialog' : 'normal'
                 };
-            } else {
+            } else { // 弹窗和页面模版
                 let content = +typePage === 0 ? this.pageModal[listNumber].content : this.alertModal[listNumber].content;
                 let xml = JSON.parse(content).xml
                 page = {
@@ -317,7 +317,7 @@ export default {
                 height: 32px;
                 line-height: 32px;
                 background: #fff;
-                border:solid 1px #ccc;
+                border:none;
                 border-top:none;
                 text-align: center;
                 &.ivu-tabs-tab-active{
@@ -333,9 +333,6 @@ export default {
     }
     .left-sidebar-model{
         /deep/.ivu-modal{
-            // top: 0px;
-            // transform: translateY(-50%);
-            // top:50%;
             /deep/.ivu-modal-content{
                 width:600px;
                 background-color:#f5f5f5 !important;
