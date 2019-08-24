@@ -43,11 +43,11 @@
             v-for="(item, index) in deviceNameList"
             :key="index"
           >
-            <i-checkbox
+            <Checkbox
               size="small"
             >
               {{ item.name }}
-            </i-checkbox>
+            </Checkbox>
           </li>
         </ul>
         <div v-else>
@@ -78,13 +78,14 @@
 <script>
 import DataSource from './dataSource-select'
 import Input from './input-select'
-import {Button, Page} from 'iview'
+import {Button, Page, Checkbox} from 'iview'
 export default{
     components: {
         DataSource,
         Button,
         Input,
-        Page
+        Page,
+        Checkbox
     },
     data() {
         return {
@@ -92,7 +93,7 @@ export default{
             deviceType: '设备类型',
             deviceName: '设备名称',
             placeText: '搜素设备名称',
-            derection: 'left',
+            derection: 'right',
             nodata: '暂无数据',
             dataNameArr: [
                 {
