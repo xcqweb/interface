@@ -14,7 +14,6 @@ import {
 import {ChangePageSetup} from './Init'
 import {Format} from './Format'
 import urls from '../../constants/url'
-import requestUtil from '../request'
 window.EditorUi = function(editor, container, lightbox)
 {
     mxEventSource.call(this);

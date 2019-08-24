@@ -629,8 +629,8 @@ Editor.prototype.setCurrentPage = function(id) {
 /**
  * 编辑器页面数据
  */
-const defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
-Editor.prototype.defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
+const defaultXml = ['<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>', '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="600" pageHeight="400" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>'];
+Editor.prototype.defaultXml = ['<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>', '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="600" pageHeight="400" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>'];
 Editor.prototype.pagesRank = {
     normal: ['pageid_1'],
     dialog: ['pageid_2']
@@ -640,17 +640,17 @@ Editor.prototype.pages = {
         id: 'pageid_1',
         title: '页面1',
         desc: '',
-        xml: defaultXml,
+        xml: defaultXml[0],
         type: 'normal',
-        style:'',
+        style:{},
     },
     "pageid_2": {
         id: 'pageid_2',
         title: '弹窗1',
         desc: '',
-        xml: defaultXml,
+        xml: defaultXml[1],
         type: 'dialog',
-        style: '',
+        style: {},
     }
 };
 /**
@@ -668,8 +668,8 @@ Editor.prototype.pagesNameList = function() {
  * @param {object} page 新增的页面
  * @returns {boolean} 添加成功返回true，失败返回false
  */
-Editor.prototype.addPage = function(page) {
-    page.xml = page.xml || this.defaultXml;
+Editor.prototype.addPage = function(page,type) {
+    page.xml = page.xml || this.defaultXml[type];
     let id = 1;
     for (let pageid in this.pages) {
         const idNum = parseInt(pageid.match(/^pageid\_([0-9]+)/)[1]);
@@ -679,8 +679,6 @@ Editor.prototype.addPage = function(page) {
     id = 'pageid_' + (id + 1);
     page.id = id;
     this.pages[id] = page;
-    // this.pagesRank[page.type].push(page.id);
-    console.log(page)
     return page;
 }
 /**

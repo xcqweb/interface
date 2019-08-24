@@ -9,6 +9,7 @@
  */
 import requestUtil from '../request'
 import Urls from '../../constants/url'
+import VueEvent from '../VueEvent'
 import { tipDialog, sureDialog } from '../Utils'
 var basicXmlFns = [];
 function Sidebar(editorUi, container, container2)
@@ -1018,10 +1019,9 @@ Sidebar.prototype.renameNode = function(ele, pageType) {
 }
 /*复制页面*/
 Sidebar.prototype.copyPage = function (ele,pageType) {
- var title = '',
-     id = '';
+ let  id = '';
  const currtitle = ele.innerText
- var xml = this.editorUi.editor.defaultXml;
+ var xml = this.editorUi.editor.defaultXml[pageType];
  var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
  xml = currentPage.xml
  id = currentPage.id
@@ -1030,10 +1030,11 @@ Sidebar.prototype.copyPage = function (ele,pageType) {
     title: titleText,
     xml,
     id,
+    style:{},
     type: pageType
   };
   let _li = document.createElement('li');
-  let resPage = this.editorUi.editor.addPage(page);
+  let resPage = this.editorUi.editor.addPage(page,pageType);
   _li.setAttribute('data-pageid', resPage.id);
     _li.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${titleText}</span><span class="right-icon-dolt"></span>`;
   let changeRank = this.editorUi.editor.pagesRank[resPage.type];
@@ -1355,6 +1356,7 @@ function createPageTypeTitle(title) {
 // }
 function createPageList(editorUi, el, data, id) {
             // 页面列表
+            editorUi.editor.setCurrentType(id == 'normalPages' ? 'normal' : 'dialog');
             var pageListEle = document.createElement('ul');
             pageListEle.className = "pageList";
             pageListEle.id = id;
@@ -1405,7 +1407,6 @@ function createPageList(editorUi, el, data, id) {
                     }
                     // 切换到新的页面
                     $(".currentPage").removeClass('currentPage');
-                    editorUi.editor.setCurrentType(id == 'normalPages' ? 'normal' : 'dialog');
                     editorUi.editor.setCurrentPage(nextTitle);
                     if (!target.parentNode.className) {
                         target.parentNode.className += "currentPage";
@@ -1414,20 +1415,20 @@ function createPageList(editorUi, el, data, id) {
                     }
                     var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml);
                     editorUi.editor.setGraphXml(doc.documentElement);
+                    VueEvent.$emit('pageTabEvent', id == 'normalPages' ? 0 : 1)
+                    if (id == 'dialogPages'){
+                        VueEvent.$emit('initDialogPos')
+                    }
                 }
             }
             if (id.includes('normal')) {
                 $('.normalPages').on('click', '.pageList>li>.spanli', function (evt) {
-                    setTimeout(() => {
-                        changePage(evt)
-                    })
+                    changePage(evt)
                 })
             }
             if (id.includes('dialog')) {
                 $('.dialogPages').on('click', '.pageList>li>.spanli', function (evt) {
-                    setTimeout(() => {
-                        changePage(evt)
-                    })
+                    changePage(evt)
                 })
             }
             // mxEvent.addListener(pageListEle, 'click', function(evt) {
@@ -1499,14 +1500,9 @@ Sidebar.prototype.hidePageContextMenu = function() {
 }
 //
 Sidebar.prototype.tabsSwitch = function(type) {
-    if (type && +type === 1) {
-        this.createPageContextMenu(type)
-    } else {
-        this.createPageContextMenu(type)
-    }
-    // const dialogPagesEl = document.querySelector('.dialogPages')
+    this.createPageContextMenu(type)
 }
-Sidebar.prototype.addPagePalette = function(expand) {
+Sidebar.prototype.addPagePalette = function() {
     var normalPages = []
     var dialogPages = [];
     var pages = this.editorUi.editor.pages;
@@ -1523,18 +1519,6 @@ Sidebar.prototype.addPagePalette = function(expand) {
     createPageList(this.editorUi,normalPagesEl, normalPages, 'normalPages')
     createPageList(this.editorUi, dialogPagesEl, dialogPages, 'dialogPages')
     this.createPageContextMenu()
-    // var fns = [
-    //     // 普通页面标题
-    //     // createPageTypeTitle.call(this, '普通页面'),
-    //     // 普通页面列表
-    //     createPageList(this.editorUi, normalPages, 'normalPages'),
-    //     // 弹窗页面标题
-    //     // createPageTypeTitle.call(this, '弹窗页面'),
-    //     // 弹窗页面列表
-    //     createPageList(this.editorUi, dialogPages, 'dialogPages')
-    // ]
-    // console.log(fns)
-    // this.addPaletteFunctions('pageManage', '页面管理', (expand != null) ? expand : true, fns);
 }
 /**
  * 添加给定的模板控件.

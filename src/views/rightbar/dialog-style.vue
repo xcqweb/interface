@@ -124,17 +124,16 @@
       @click="pickColor"
     />
     <div
-      v-if="$store.state.main.type===1"
       class="dialog-title-m"
-      :style="$store.state.main.dialogTitleStyle.style"
+      :style="$store.state.main.dialogTitleStyle"
     >
       {{ titleName }}
     </div>
   </div>
 </template>
 <script>
+import VueEvent from '../../services/VueEvent.js'
 let newBackgroundColor,newFontColor
-let observe
 let alignArr = ['left','center','right']
 let valignArr = []
 export default {
@@ -170,27 +169,34 @@ export default {
     created() {
     },
     mounted() {
-        this.dialogStyle = this.$store.state.main.dialogTitleStyle.style
-        this.dialogWidth = this.$store.state.main.dialogTitleStyle.size.width || 600
-        this.dialogHeight = this.$store.state.main.dialogTitleStyle.size.height || 400
-        this.fontText = parseInt(this.dialogStyle.fontSize || 12)
-        this.fontColor = this.dialogStyle.color
-        this.bgColor = this.dialogStyle.bgColor
-        this.alignIndex1 = alignArr.indexOf(this.dialogStyle.textAlign) + 1 || 2
-        this.alignIndex2 = valignArr.indexOf(parseInt(this.dialogStyle.lineHeight)) + 1 || 2
-        let editor = this.myEditorUi.editor
-        setTimeout(() => {
-            this.changeScaleInput()
-            this.dialogDesc = editor.pages[editor.currentPage].desc
-            this.titleName =  editor.pages[editor.currentPage].title
-        },50)
+        console.log("22-33")
+        VueEvent.$on('initDialogPos',()=>{
+            this.initPage()
+        })
+        this.initPage()
     },
     destroyed() {
         let dialogTitleEle = document.querySelector('.dialog-title-m')
         dialogTitleEle.parentNode.removeChild(dialogTitleEle)
-        observe.disconnect()
     },
     methods: {
+        initPage() {
+            this.dialogStyle = this.$store.state.main.dialogTitleStyle
+            let graph = this.myEditorUi.editor.graph
+            this.dialogWidth = graph.pageFormat.width || 600
+            this.dialogHeight = graph.pageFormat.height || 400
+            this.fontText = parseInt(this.dialogStyle.fontSize || 12)
+            this.fontColor = this.dialogStyle.color
+            this.bgColor = this.dialogStyle.bgColor
+            this.alignIndex1 = alignArr.indexOf(this.dialogStyle.textAlign) + 1 || 2
+            this.alignIndex2 = valignArr.indexOf(parseInt(this.dialogStyle.lineHeight)) + 1 || 2
+            let editor = this.myEditorUi.editor
+            setTimeout(() => {
+                this.changeScaleInput()
+                this.dialogDesc = editor.pages[editor.currentPage].desc
+                this.titleName =  editor.pages[editor.currentPage].title
+            },50)
+        },
         descChange() {
             let editor = this.myEditorUi.editor
             editor.pages[editor.currentPage].desc = this.dialogDesc
@@ -206,8 +212,9 @@ export default {
         },
         commitStyleFun(dialogStyle) {
             this.dialogStyle = Object.assign({},this.dialogStyle,dialogStyle)
-            let obj = {style:this.dialogStyle,size:{width:this.dialogWidth,height:this.dialogHeight}}
-            this.$store.commit('dialogTitleStyleDeal',obj) 
+            let editor = this.myEditorUi.editor
+            editor.pages[editor.currentPage].style = this.dialogStyle
+            this.$store.commit('dialogTitleStyleDeal',this.myEditorUi)
         },
         changeAlignIndex(type,index) {
             valignArr = [this.fontText + 5,36,36 * 2 - this.fontText - 10]
@@ -258,11 +265,6 @@ export default {
                     this.$nextTick(()=>{
                         scheduledAnimationFrame = false//执行完操作后 重置
                     })
-                    observe = new MutationObserver(()=> {
-                        canvasView.style.width = `${this.dialogWidth}px`
-                        canvasView.style.height = `${this.dialogHeight}px`
-                    })
-                    observe.observe(canvasView,{attributeFilter: ['style'], subtree: false})
                 })
             })
         },
