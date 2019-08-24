@@ -215,6 +215,7 @@ export default{
             }else if(data.mutualType == 3) {
                 action.effectAction = 'change'
                 action.stateId = data.stateId
+                action.stateName = data.stateName
             }
             this.setActionInfos(action)
         },
@@ -235,7 +236,7 @@ export default{
                     id:item.link//控件或者页面或者弹窗ID
                 }
                 if(item.stateId) {
-                    tempObj.stateName = this.findStateById(item.stateId).name
+                    tempObj.stateName = item.stateName
                 }
                 this.events.push(tempObj)
             })
@@ -252,17 +253,6 @@ export default{
             return tempList.filter(d=>{
                 return d.id == item.link
             })[0].title
-        },
-        findStateById(id) {
-            let res
-            let states = this.$store.state.main.states
-            for(let i = 0;i < states.length;i++) {
-                if(id == states[i].id) {
-                    res = states[i]
-                    break
-                }
-            }
-            return res
         },
         getActions(graph) {
             let actions = []

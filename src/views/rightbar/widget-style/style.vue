@@ -670,7 +670,6 @@ export default {
             }
         },
         positionSize() {
-            console.log(this.shapeName)
             let {x,y,width,height} = this.$store.state.main.widgetInfo.geo
             return {
                 x:x,
@@ -970,7 +969,16 @@ export default {
             },)
         },
         addLinkUrl() {
-
+            let actions = [{"type":"out","link":this.linkUrl,"innerType":"page","mouseEvent":"click","effectAction":"open"}]
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let modelInfo = graph.getModel().getValue(cell)
+            let actionsAttr = modelInfo.getAttribute('actionsInfo')
+            if(actionsAttr) {
+                actions = JSON.parse(actionsAttr).concat(actions)
+            }
+            modelInfo.setAttribute('actionsInfo', JSON.stringify(actions))
+            graph.getModel().setValue(cell, modelInfo)
         },
     }
 };

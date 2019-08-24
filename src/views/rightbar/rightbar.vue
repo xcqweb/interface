@@ -17,6 +17,7 @@
       />
       <DialogStyle
         v-if="$store.state.main.type===1 && !showWidgetStyle"
+        :key="refresh"
       />
       <WidgetStyleMain v-if="showWidgetStyle" />
     </div>
@@ -35,12 +36,16 @@ export default {
     data() {
         return {
             showWidgetStyle:false,
+            refresh:100,
         }
     },
     created() {},
     mounted() {
         VueEvent.$on('pageTabEvent',(type)=>{
             this.$store.dispatch('pageTabIndex',type)
+        })
+        VueEvent.$on('initDialogPos',()=>{
+            this.refresh++
         })
     },
     methods: {

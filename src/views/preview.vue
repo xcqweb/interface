@@ -12,7 +12,7 @@
 </template>
 
 <script> 
-import preview from '../services/preview'
+import preview from '../services/preview/'
 export default {
     data() {
         return{
