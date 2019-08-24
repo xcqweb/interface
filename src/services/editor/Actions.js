@@ -450,7 +450,6 @@ Actions.prototype.init = function()
                 flag = false
             }
         }
-        console.log(flag)
         setTimeout(() => {
             newSetCellAttrs('hide', flag)
         })
@@ -515,7 +514,6 @@ Actions.prototype.init = function()
             }
         }
     }
-	
     this.addAction('delete', function(evt)
     {
         deleteCells(evt != null && mxEvent.isShiftDown(evt));

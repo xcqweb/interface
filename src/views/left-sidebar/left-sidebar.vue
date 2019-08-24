@@ -76,16 +76,13 @@
 </template>
 <script>
 import {Tabs, TabPane, Modal} from 'iview'
-// import {addPageDialog} from '../editor/Dialogs'
 const addPageTypeName = ['','添加页面','添加弹窗']
-// const addPageModal = ['',['空白页面','模版1'],['空白页面','模版1']]
 import VueEvent from '../../services/VueEvent.js'
 export default {
     components: {
         Tabs,
         TabPane,
         Modal,
-        // addPageDialog
     },
     data() {
         return {
@@ -117,7 +114,6 @@ export default {
             // 0 页面 1 弹窗
             this.nomralType = type
             this.myEditorUi.sidebar.tabsSwitch(type)
-            this.$store.dispatch('pageTabIndex',type)
             this.checkHasCurrent(type)
         },
         addPageType(type) {
@@ -176,7 +172,6 @@ export default {
             let namebefore = ''
             if (+typePage === 0) {
                 namebefore = `页面`
-                // targetArr = 
                 nameArr = [...pagesRank.normal]
             } 
             if (+typePage === 1) {
@@ -189,10 +184,11 @@ export default {
             let titleText = `${namebefore}${nameMax + 1}`
             let page = null
             if (+listNumber === 0) {
-                let xml = this.myEditorUi.editor.defaultXml;
+                let xml = this.myEditorUi.editor.defaultXml[typePage];
                 page = {
                     title: titleText,
                     xml,
+                    style:{},
                     id,
                     type: typePage === 1 ? 'dialog' : 'normal'
                 };
@@ -202,6 +198,7 @@ export default {
                 page = {
                     title: titleText,
                     xml,
+                    style:{},
                     id,
                     type: typePage === 1 ? 'dialog' : 'normal'
                 };
@@ -209,17 +206,14 @@ export default {
             let _li = document.createElement('li');
             _li.setAttribute('data-pageid', id);
             _li.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${titleText}</span><span class="right-icon-dolt"></span>`;
-            let changeRank = this.myEditorUi.editor.pagesRank[page.type];
             this.myEditorUi.editor.pages[id] = page
-            // 根据类型插入列表
-            changeRank.push(id);
             if (+typePage === 0) {
                 $("#normalPages").append(_li);
             }
             if (+typePage === 1) {
                 $("#dialogPages").append(_li);
             }
-            this.myEditorUi.editor.pagesRank[page.type] = [].concat(changeRank);
+            this.myEditorUi.editor.pagesRank[page.type].push(id);
             if (+typePage === 0) {
                 $("#normalPages li:last-child .spanli").click();
             }

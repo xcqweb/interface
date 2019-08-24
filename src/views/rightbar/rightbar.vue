@@ -24,6 +24,7 @@
 </template>
 <script>
 import {mxCell,mxGeometry} from '../../services/mxGlobal'
+import VueEvent from '../../services/VueEvent.js'
 import PageStyle from './page-style'
 import DialogStyle from './dialog-style'
 import WidgetStyleMain from './widget-style-main'
@@ -38,6 +39,9 @@ export default {
     },
     created() {},
     mounted() {
+        VueEvent.$on('pageTabEvent',(type)=>{
+            this.$store.dispatch('pageTabIndex',type)
+        })
     },
     methods: {
         init() {
