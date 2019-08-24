@@ -92,7 +92,7 @@ export default{
                 tipDialog(this.myEditorUi,`该控件已经绑定了${currentStateItem.name}状态`)
                 return
             } 
-            this.$emit("submitMutual",{mutualType:3,id:currentWidgetItem.id,stateId:currentStateItem.id,innerType:"palette"})
+            this.$emit("submitMutual",{mutualType:3,id:currentWidgetItem.id,stateId:currentStateItem.id,stateName:currentStateItem.name,innerType:"palette"})
         },
         checkWidget(item) {
             currentWidgetItem = item

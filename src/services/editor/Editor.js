@@ -393,11 +393,6 @@ Editor.prototype.ajax = async function(editorUi, url, method, data, fn = functio
 Editor.prototype.InitEditor = function(editorUi) {
     // 获取文件服务器地址
     let getFileSystem = new Promise((resolve, reject) => {
-        // this.ajax(editorUi, '/api/image/host', 'GET', null, function(res) {
-        //     // 文件服务器地址
-        //     window.fileSystem = res.host;
-        //     resolve(res)
-        // }, null)
         this.ajax(editorUi, '/api/console/host/imageHost', 'GET', null, function(res) {
             // 文件服务器地址
             window.fileSystem = res.host;
@@ -405,13 +400,8 @@ Editor.prototype.InitEditor = function(editorUi) {
         }, null)
     })
     // 编辑数据
-    let editPromise = null;
+    let editPromise = null
     if (/id=(.+?)$/.exec(location.search)) {
-        // editPromise = new Promise((resolve, reject) => {
-        //     this.ajax(editorUi, '/api/viewtool/' + /id=(.+?)$/.exec(location.search)[1], 'GET', null, function(res) {
-        //         resolve(res)
-        //     }, null)
-        // })
         editPromise = new Promise((resolve, reject) => {
             this.ajax(editorUi, '/api/iot-cds/cds/configurationDesignStudio/' + /id=(.+?)$/.exec(location.search)[1], 'GET', null, function(res) {
                 resolve(res)
@@ -419,22 +409,7 @@ Editor.prototype.InitEditor = function(editorUi) {
         })
     }
 	
-    Promise.all([getFileSystem, editPromise]).then(res => {
-        // 编辑
-        if (res[1]) {
-            var editData = res[1];
-            var content = JSON.parse(editData.content);
-            editorUi.editor.pages = content.pages;
-            editorUi.editor.pagesRank = content.rank;
-            editorUi.editor.setFilename(editData.name);
-            editorUi.editor.setApplyId(editData.id);
-            editorUi.editor.setDescribe(editData.describe);
-        }
-        // editorUi.sidebar.container.innerHTML = '';
-        // console.log(editorUi)
-        // editorUi.sidebar.init();
-        // 默认选中
-    })
+    return Promise.all([getFileSystem, editPromise])
 }
 /**
  * 上传文件请求

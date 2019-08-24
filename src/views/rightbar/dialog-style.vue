@@ -125,17 +125,16 @@
     />
     <div
       class="dialog-title-m"
-      :style="$store.state.main.dialogTitleStyle"
     >
       {{ titleName }}
     </div>
   </div>
 </template>
 <script>
-import VueEvent from '../../services/VueEvent.js'
+//import VueEvent from '../../services/VueEvent.js'
 let newBackgroundColor,newFontColor
 let alignArr = ['left','center','right']
-let valignArr = []
+let valignArr = [],dialogStyle
 export default {
     data() {
         return {
@@ -152,28 +151,16 @@ export default {
             alignIndex2:2,
             canvasOffsetTop:0,
             canvasOffsetLeft:0,
-            dialogStyle:{},
-            fontList:[
-                12,
-                13,
-                14,
-                15,
-                16,
-                17,
-                18,
-                19,
-                20
-            ],
+            fontList:[ 12,  13, 14, 15,  16, 17, 18, 19, 20],
         }
     },
     created() {
     },
     mounted() {
-        console.log("22-33")
-        VueEvent.$on('initDialogPos',()=>{
-            this.initPage()
-        })
         this.initPage()
+    },
+    beforeDestory() {
+        console.log("beforeDestory--不执性--why--")
     },
     destroyed() {
         let dialogTitleEle = document.querySelector('.dialog-title-m')
@@ -181,18 +168,25 @@ export default {
     },
     methods: {
         initPage() {
-            this.dialogStyle = this.$store.state.main.dialogTitleStyle
             let graph = this.myEditorUi.editor.graph
+            let editor = this.myEditorUi.editor
+            dialogStyle = editor.pages[editor.currentPage].style
             this.dialogWidth = graph.pageFormat.width || 600
             this.dialogHeight = graph.pageFormat.height || 400
-            this.fontText = parseInt(this.dialogStyle.fontSize || 12)
-            this.fontColor = this.dialogStyle.color
-            this.bgColor = this.dialogStyle.bgColor
-            this.alignIndex1 = alignArr.indexOf(this.dialogStyle.textAlign) + 1 || 2
-            this.alignIndex2 = valignArr.indexOf(parseInt(this.dialogStyle.lineHeight)) + 1 || 2
-            let editor = this.myEditorUi.editor
+            this.fontText = parseInt(dialogStyle.fontSize || 12)
+            this.fontColor = dialogStyle.color
+            this.bgColor = dialogStyle.bgColor
+            this.alignIndex1 = alignArr.indexOf(dialogStyle.textAlign) + 1 || 2
+            this.alignIndex2 = valignArr.indexOf(parseInt(dialogStyle.lineHeight)) + 1 || 2
             setTimeout(() => {
                 this.changeScaleInput()
+
+                let graph = this.myEditorUi.editor.graph
+                let con = graph.container
+                let dialogTitleEle = document.querySelector('.dialog-title-m')
+                dialogTitleEle.parentNode.removeChild(dialogTitleEle)
+                con.appendChild(dialogTitleEle)
+
                 this.dialogDesc = editor.pages[editor.currentPage].desc
                 this.titleName =  editor.pages[editor.currentPage].title
             },50)
@@ -210,11 +204,34 @@ export default {
             this.commitStyleFun(dialogStyle)
             e.stopPropagation()
         },
-        commitStyleFun(dialogStyle) {
-            this.dialogStyle = Object.assign({},this.dialogStyle,dialogStyle)
+        commitStyleFun(param) {
+            dialogStyle = Object.assign({},dialogStyle,param)
             let editor = this.myEditorUi.editor
-            editor.pages[editor.currentPage].style = this.dialogStyle
-            this.$store.commit('dialogTitleStyleDeal',this.myEditorUi)
+            let el = document.querySelector(".dialog-title-m")
+            let keys = Object.keys(dialogStyle)
+            el.style.cssText = " "//清空之前的标题style
+            for(let i = 0;i < keys.length;i++) {//更改title dom节点位置后，vue的:style失效，采用原生的方式
+                el.style[keys[i]] = dialogStyle[keys[i]]
+            }
+            editor.pages[editor.currentPage].style = dialogStyle
+        },
+        centerCanvas() {//居中画布
+            let graph = this.myEditorUi.editor.graph
+            let con = graph.container
+            let conWidth = con.clientWidth
+            let conHeight = con.clientHeight
+            let {clientWidth,clientHeight} = con.children[1] //svg
+            let canvasView = con.children[0]//画布
+            this.canvasOffsetTop = canvasView.offsetTop
+            this.canvasOffsetLeft = canvasView.offsetLeft
+            con.scrollLeft = (clientWidth - conWidth) / 2
+            con.scrollTop = (clientHeight - conHeight - 36) / 2
+            let dialogStyle = {
+                top:`${this.canvasOffsetTop - 36}px`,
+                left:`${this.canvasOffsetLeft}px`,
+                width:`${this.dialogWidth}px`,
+            }
+            this.commitStyleFun(dialogStyle)
         },
         changeAlignIndex(type,index) {
             valignArr = [this.fontText + 5,36,36 * 2 - this.fontText - 10]
@@ -236,37 +253,7 @@ export default {
                 x: 0,
                 y: 0
             }, true)
-            let graph = this.myEditorUi.editor.graph
-            let con = graph.container
-            let dialogTitleEle = document.querySelector('.dialog-title-m')
-            dialogTitleEle.parentNode.removeChild(dialogTitleEle)
-            con.appendChild(dialogTitleEle)
-            let conWidth = con.clientWidth
-            let conHeight = con.clientHeight
-            let {clientWidth,clientHeight} = con.children[1] //svg
-            let canvasView = con.children[0]//画布
-            this.canvasOffsetTop = canvasView.offsetTop
-            this.canvasOffsetLeft = canvasView.offsetLeft
-            con.scrollLeft = (clientWidth - conWidth) / 2
-            con.scrollTop = (clientHeight - conHeight - 36) / 2
-            let scheduledAnimationFrame = false
-            con.addEventListener('scroll', () => {
-                if (scheduledAnimationFrame) { //防止 requestAnimationFrame 执行周期内，scroll多次触发造成requestAnimationFrame多次执行
-                    return 
-                }
-                scheduledAnimationFrame = true
-                requestAnimationFrame(()=>{//节流
-                    let dialogStyle = {
-                        top:`${this.canvasOffsetTop - 36}px`,
-                        left:`${this.canvasOffsetLeft}px`,
-                        width:`${this.dialogWidth}px`,
-                    }
-                    this.commitStyleFun(dialogStyle)
-                    this.$nextTick(()=>{
-                        scheduledAnimationFrame = false//执行完操作后 重置
-                    })
-                })
-            })
+            this.centerCanvas()
         },
         hideFont() {
             this.showFont = false

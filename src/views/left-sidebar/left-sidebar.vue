@@ -100,14 +100,14 @@ export default {
     },
     mounted() {
         VueEvent.$on('select-nodetype', function() {
-            this.myEditorUi.sidebar.init('nowload');
+            this.myEditorUi.sidebar.init('nowload')
         })
     },
     methods: {
         init() {
-            this.myEditorUi.sidebar.init();
-            setTimeout(() => {
-                $("#normalPages li:first-child .spanli").click();
+            this.myEditorUi.sidebar.init()
+            this.$nextTick(() => {
+                $("#normalPages li:first-child .spanli").click()
             })
         },
         tabsSwitch(type) {

@@ -101,7 +101,6 @@ export default{
         },
         setStates(states) {
             this.states = states
-            this.$store.commit('refreshState',states)
         },
         getStates(graph) {
             let cell = graph.getSelectionCell()

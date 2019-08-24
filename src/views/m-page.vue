@@ -51,26 +51,28 @@ export default {
     },
     created() {
         mxUtils.getAll(['../static/resources/grapheditor.txt', '../static/default.xml'],xhr=> {
-            mxResources.parse(xhr[0].getText());
+            mxResources.parse(xhr[0].getText())
             // 默认配置
-            var themes = new Object();
-            themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement();
+            var themes = new Object()
+            themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement()
             // 正常实例化
-            let myEditor = new Editor(false, themes);
-            let myEditorUi = new EditorUi(myEditor,document.querySelector(".geEditor"));
-            Vue.prototype.myEditorUi = myEditorUi
-            myEditorUi.editor.InitEditor(myEditorUi)
-            /* let graph = this.myEditorUi.editor.graph
-            let  parent = graph.getDefaultParent()
-            var doc = mxUtils.createXmlDocument();
-            var obj = doc.createElement('UserObject');
-            //obj.setAttribute('label', 'Hello, World!');
-            //let chartCon = document.querySelector('.chart-con-main') 
-            setTimeout(()=>{
-                graph.insertVertex(parent, null, obj,100, 100,400, 240)
-            },3000) */
-
-            this.init()
+            let myEditor = new Editor(false, themes)
+            let myEditorUi = new EditorUi(myEditor,document.querySelector(".geEditor"))
+            myEditorUi.editor.InitEditor(myEditorUi).then(res => {
+                // 编辑
+                console.log("tt-bb")
+                if (res[1]) {
+                    var editData = res[1]
+                    var content = JSON.parse(editData.content)
+                    myEditorUi.editor.pages = content.pages
+                    myEditorUi.editor.pagesRank = content.rank
+                    myEditorUi.editor.setFilename(editData.name)
+                    myEditorUi.editor.setApplyId(editData.id)
+                    myEditorUi.editor.setDescribe(editData.describe)
+                }
+                Vue.prototype.myEditorUi = myEditorUi
+                this.init()
+            })
         })
     },
     mounted() {
