@@ -60,7 +60,6 @@ export default {
             let myEditorUi = new EditorUi(myEditor,document.querySelector(".geEditor"))
             myEditorUi.editor.InitEditor(myEditorUi).then(res => {
                 // 编辑
-                console.log("tt-bb")
                 if (res[1]) {
                     var editData = res[1]
                     var content = JSON.parse(editData.content)

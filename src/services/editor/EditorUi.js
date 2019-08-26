@@ -32,7 +32,6 @@ window.EditorUi = function(editor, container, lightbox)
     {
         this.lazyZoomDelay = 0;
     }
-
     // Pre-fetches submenu image or replaces with embedded image if supported
     if (mxClient.IS_SVG)
     {
@@ -613,7 +612,6 @@ window.EditorUi = function(editor, container, lightbox)
                         fillColor: '#FFFFFF',
 
                     }
-
                     for (var j = 0; j < appliedStyles.length; j++)
                     {
                         var key = appliedStyles[j];
@@ -637,14 +635,15 @@ window.EditorUi = function(editor, container, lightbox)
             model.endUpdate();
         }
     };
-
     graph.addListener('cellsInserted', function(sender, evt)
     {
+        debugger
         insertHandler(evt.getProperty('cells'));
     });
 
     graph.addListener('textInserted', function(sender, evt)
     {
+        debugger
         insertHandler(evt.getProperty('cells'), true);
     });
 
@@ -656,7 +655,7 @@ window.EditorUi = function(editor, container, lightbox)
         {
             cells.push(evt.getProperty('terminal'));
         }
-
+    debugger
         insertHandler(cells);
     });
 
@@ -1306,14 +1305,12 @@ EditorUi.prototype.initClipboard = function()
     var mxClipboardCopy = mxClipboard.copy;
     mxClipboard.copy = function(graph)
     {
-        console.log(graph.cellEditor.isContentEditing());
         if (graph.cellEditor.isContentEditing())
         {
             document.execCommand('copy', false, null);
         }
         else
         {
-            console.log(mxClipboardCopy)
             mxClipboardCopy.apply(this, arguments);
         }
 
@@ -1342,12 +1339,10 @@ EditorUi.prototype.initClipboard = function()
     var mxClipboardresetHide = mxClipboard.resetHide;
     mxClipboard.resetHide = function (graph) {
         var result = null;
-        console.log(graph.cellEditor.isContentEditing());
         if (graph.cellEditor.isContentEditing()) {
             document.execCommand('resetHide', false, null);
         }
         else {
-            console.log(mxClipboardresetHide)
             result = mxClipboardresetHide.apply(this, arguments);
         }
 
@@ -2714,10 +2709,8 @@ EditorUi.prototype.addUndoListener = function()
 */
 EditorUi.prototype.updateActionStates = function()
 {
-    // console.log(this)
     var graph = this.editor.graph;
     var selected = !graph.isSelectionEmpty();
-    // console.log(selected)
     var vertexSelected = false;
     var edgeSelected = false;
 
@@ -2759,13 +2752,6 @@ EditorUi.prototype.updateActionStates = function()
     var isTable = shapeNameStr.indexOf('tableBox') != -1 || shapeNameStr.indexOf('tableCell') != -1;
     for (var i = 0; i < actions.length; i++)
     {
-        // if (menuDisabled.indexOf(actions[i]) != -1 && (!notMenu || isTable)) {
-        //     // 菜单和表格不操作
-        //     console.log(12345667889000000, '---', !selected)
-        //     this.actions.get(actions[i]).setEnabled(!selected);
-        // } else {
-            // this.actions.get(actions[i]).setEnabled(selected);
-        // }
         if (shapeName === 'menuCell' && menuDisabled.indexOf(actions[i]) != -1) { // 单个菜单
             this.actions.get(actions[i]).setEnabled(!selected);
         } else {
@@ -3484,14 +3470,9 @@ EditorUi.prototype.saveFile = function(forceDialog)
  * 保存成功
  */
 EditorUi.prototype.saveSuccess = function(res) {
-    // 设置名称和描述
-    // this.editor.setFilename(res.name)
-    // this.editor.setDescribe(res.describe)
-    // this.editor.setApplyId(res.id)
     this.editor.setFilename(res.studioName)
     this.editor.setDescribe(res.descript)
     this.editor.setApplyId(res.studioId)
-    console.log(this.editor.getApplyId())
     setTimeout(() => {
         this.hideDialog();
         this.editor.tipInfo(this, true, '保存');
@@ -3525,33 +3506,17 @@ EditorUi.prototype.save = function(name, des)
                 editor.setXml();
                 // 页面信息
                 var pages = editor.pages;
-                console.log("save--page")
-                // var data = {
-                //     name: name,
-                //     describe: des,
-                //     applyCon: editor.pagesNameList().join(),
-                //     content: JSON.stringify({pages, rank: editor.pagesRank}),
-                // }
                 var data = {
                     studioName: name,
                     descript: des,
                     applyCon: editor.pagesNameList().join(),
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                 }
-                console.log(data)
                 var id = editor.getApplyId();
-                console.log(id)
                 if (id) {
                     // 编辑保存
-                    data.id = id;
-                    // editor.ajax(ui, '/api/viewtool', 'PUT', data, (res) => {
-                    //     this.saveSuccess(res);
-                    //     resolve(res);
-                    // }, (res) => {
-                    //     this.saveError(res.responseJSON);
-                    //     reject(res);
-                    // })
-                    editor.ajax(ui, '/api/iot-cds/cds/configurationDesignStudio', 'PUT', data, (res) => {
+                    data.studioId = id
+                    editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
                         this.saveSuccess(res);
                         resolve(res);
                     }, (res) => {
@@ -3559,15 +3524,6 @@ EditorUi.prototype.save = function(name, des)
                         reject(res);
                     })
                 } else {
-                    // 新增保存
-                    // editor.ajax(ui, '/api/viewtool', 'POST', data, (res) => {
-                    //     this.saveSuccess(res);
-                    //     resolve(res);
-                    // }, (res) => {
-                    //     this.saveError(res.responseJSON);
-                    //     reject(res);
-                    // })
-
                     editor.ajax(ui, urls.preview.url, 'POST', data, (res) => {
                         this.saveSuccess(res);
                         resolve(res);
@@ -3575,16 +3531,6 @@ EditorUi.prototype.save = function(name, des)
                         this.saveError(res.responseJSON);
                         reject(res);
                     })
-
-                    // import urls from '../../constants/url'
-                    // import request from '../request'
-                    // requestUtil.post(urls.preview.url, data).then((res) => {
-                    //     this.saveSuccess(res);
-                    //     resolve(res);
-                    // }).catch((res) => {
-                    //     this.saveError(res.responseJSON);
-                    //     reject(res);
-                    // })
                 }
             }
             catch (e)

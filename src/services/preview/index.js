@@ -45,10 +45,11 @@ class Main {
     async init() {
         gePreview = document.getElementById('gePreview')
         formatLayer = document.getElementById('formatLayer')
-        let id = /id=(.+?)$/.exec(location.search)
-        if (id) {
+        let idArr = /id=(.+?)$/.exec(location.search)
+        let id
+        if (idArr) {
             // 查看应用
-            id = id[1]
+            id = idArr[1]
         }
         const host = await geAjax('/api/console/host/imageHost', 'GET')
         fileSystem = host.host;

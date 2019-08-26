@@ -731,11 +731,9 @@ let PreviewDialog = function(editorUi,callback) {
     var genericBtn = mxUtils.button('保存并预览', function()
     {
         editorUi.save(editorUi.editor.filename || '新建应用', editorUi.editor.describe || '').then(res => {
-            callback(res.id)
-            editorUi.hideDialog();
-        }).catch(e => {
-            console.log(e)
-        });
+            callback(res.studioId)
+            editorUi.hideDialog()
+        })
     });
     genericBtn.className = 'geBtn gePrimaryBtn';
     // 取消按钮
@@ -767,7 +765,6 @@ let PublishDialog = function(editorUi) {
     var genericBtn = mxUtils.button('保存并发布', function()
     {
         editorUi.hideDialog();
-        console.log(editor)
         editorUi.save(editor.filename, editor.describe).then(res => {
             editor.ajax(editorUi, '/api/viewtool/publish/' + editor.getApplyId() + '/1', 'PUT', null, function() {
                 editor.tipInfo(editorUi, true, '发布');
@@ -932,7 +929,6 @@ let ImageDialog = function(editorUi, cell) {
 			newValue =  prefix + newValue
             graph.getModel().beginUpdate();
             try {
-                console.log(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
                 graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
             }
             finally {
@@ -1254,7 +1250,6 @@ var SelectPropDialog = function(editorUi, cell) {
         }
         defaultProp = $('.innerPropsType input:checked').next().text();
         cellInfo.setAttribute('defaultProp', defaultProp);
-        console.log(cellInfo.getAttribute('label'),defaultProp)
         cellInfo.setAttribute('label', cellInfo.getAttribute('label').replace(/"selectTag">(.*)<\/select>/, `"selectTag"><option>${defaultProp}</option></select>`))
         cellInfo.setAttribute('selectProps', data);
         graph.getModel().setValue(cell, cellInfo)

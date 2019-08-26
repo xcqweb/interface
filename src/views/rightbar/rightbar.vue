@@ -103,6 +103,9 @@ export default {
                     this.$store.commit('widgetChange',new Date().getTime())
                 }
             }
+            graph.addListener('cellsInserted', function() {
+                console.log("aa-ccc")
+            });
             this.$refs.pageStyle.init()
         },
     }

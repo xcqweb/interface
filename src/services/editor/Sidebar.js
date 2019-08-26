@@ -1702,18 +1702,6 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
     {
         elt.style.border = 'none';
     }
-    // 控件默认点击事件
-    mxEvent.addListener(elt, 'click', function(evt)
-    {
-        if (this.primitives.indexOf(shapeName) != -1) {
-            mxEvent.consume(evt);
-            ui.hideDialog();
-        } else if (shapeName == 'primitive') {
-            this.addBasicXml();//图元管理
-            var dialog = document.getElementById('primitiveManage');
-            ui.showDialog(dialog, 410, 120, true, false, null, null, '图元管理');
-        }
-    }.bind(this));
     this.createThumb(cells, this.thumbWidth, this.thumbHeight, elt, title, showLabel, showTitle, width, height);
     var bounds = new mxRectangle(0, 0, width, height);
     if (cells.length > 1 || cells[0].vertex)
@@ -1721,10 +1709,6 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
         if (!/primitive/.test(cells[0].style)) {
             // 非图元绑定拖拽插入画布事件
             var ds = this.createDragSource(elt, this.createDropHandler(cells, true, allowCellsInserted, bounds), this.createDragPreview(width, height), cells, bounds);
-            // 非图元绑定点击插入画布事件
-            if (this.primitives.indexOf(shapeName) != -1) {
-                this.addClickHandler(elt, ds, cells);
-            }
             ds.isGuidesEnabled = mxUtils.bind(this, function()
             {
                 return this.editorUi.editor.graph.graphHandler.guidesEnabled;
@@ -1735,8 +1719,6 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
     {
         var ds = this.createDragSource(elt, this.createDropHandler(cells, false, allowCellsInserted,
             bounds), this.createDragPreview(width, height), cells, bounds);
-        // 线条点击插入画布
-        //this.addClickHandler(elt, ds, cells);
     }
 	
     // Shows a tooltip with the rendered cell
@@ -1843,7 +1825,6 @@ Sidebar.prototype.updateShapes = function(source, targets)
 Sidebar.prototype.createDropHandler = function(cells, allowSplit, allowCellsInserted, bounds)
 {
     allowCellsInserted = (allowCellsInserted != null) ? allowCellsInserted : true;
-	
     return mxUtils.bind(this, function(graph, evt, target, x, y, force)
     {
         var elt = (force) ? null : ((mxEvent.isTouchEvent(evt) || mxEvent.isPenEvent(evt)) ?
@@ -1915,6 +1896,7 @@ Sidebar.prototype.createDropHandler = function(cells, allowSplit, allowCellsInse
 	
                         if (allowCellsInserted)
                         {
+                            debugger
                             graph.fireEvent(new mxEventObject('cellsInserted', 'cells', select));
                         }
                     }

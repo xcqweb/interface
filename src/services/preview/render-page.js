@@ -102,6 +102,7 @@ class PreviewPage {
                 if (parentId == tId && id) {
                     // 节点参数信息
                     let getNodeInfo = new GetNodeInfo(node);
+                    console.log(getNodeInfo)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape');
                     let x, y, width, height, fillColor, strokeColor, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, selectProps, defaultProp, points, rotation, flipH, flipV;
@@ -284,6 +285,7 @@ class PreviewPage {
         // 页面宽度和高度
         pageWidth = pageHeight = 0
         let cells = this.parseCells(list)
+        console.log(cells)
         this.renderPageId = page.id
         this.wsParams = [];
         if (page.type === 'normal') {
