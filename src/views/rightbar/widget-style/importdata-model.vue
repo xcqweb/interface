@@ -241,6 +241,7 @@ export default{
     created() {
     },
     methods: {
+        // 取消事件
         cancel() {
             this.$emit('triggerCancel')
         },
@@ -280,6 +281,7 @@ export default{
             }
             
         },
+        // 重置事件
         resetHandle() {
             this.paramsNameList = []
             this.deviceNameList = []

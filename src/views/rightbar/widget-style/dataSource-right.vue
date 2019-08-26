@@ -144,13 +144,13 @@ export default {
                     label: 'IOT平台'
                 }
             ],
-            deviceNameArr:[
+            deviceNameArr:[ // 设备名
                 {
                     value: '1',
                     label: '深圳'
                 }
             ],
-            paramsNameList:[
+            paramsNameList:[ // 参数
                 {
                     name: 'fkafkfks342-y',
                     id:'321312'
@@ -169,6 +169,7 @@ export default {
         }
     },
     methods: {
+        
         handleCheckAll(number) {
             if (this.indeterminateArr[number]) {
                 this.checkAllArr[number] = false;
@@ -194,6 +195,7 @@ export default {
             
             }
         },
+        // 选择够中的
         checkAllGroupChange(data, number) {
             let deviceNameListLen = (number === 1 ? this.paramsNameList.length : this.deviceNameList.length)
             if (data.length === deviceNameListLen) {
@@ -205,9 +207,11 @@ export default {
             }
           
         },
+        // 删除参数
         deleteParamHandle() {
             console.log('删除参数')
         },
+        // 删除设备
         deleteDeviceHandle() {
             console.log('删除设备')
         }
