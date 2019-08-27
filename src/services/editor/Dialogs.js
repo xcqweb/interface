@@ -730,7 +730,7 @@ let PreviewDialog = function(editorUi,callback) {
     var btnContent = editorUi.createDiv('btnContent');
     var genericBtn = mxUtils.button('保存并预览', function()
     {
-        editorUi.save(editorUi.editor.filename || '新建应用', editorUi.editor.describe || '').then(res => {
+        editorUi.save(editorUi.editor.studioName || '新建应用', editorUi.editor.descript || '').then(res => {
             callback(res.studioId)
             editorUi.hideDialog()
         })

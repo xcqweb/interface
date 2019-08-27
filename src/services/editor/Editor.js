@@ -343,9 +343,9 @@ Editor.prototype.refreshToken = function(refreshToken) {
  * @param {Function} fn
  * @param {Function} errorfn
  */
-Editor.prototype.ajax = async function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···') {
+Editor.prototype.ajax = async function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···',hideDialog=false) {
     var token = getCookie('token');
-    var refreshToken = getCookie('refreshToken');
+ var refreshToken = getCookie('refreshToken');
     if (!token || !refreshToken) {
         alert('登录失效，请重新登录系统！');
         return;
@@ -354,33 +354,41 @@ Editor.prototype.ajax = async function(editorUi, url, method, data, fn = functio
     const r_exp = jwt_decode(refreshToken).exp;
     const now = new Date().valueOf();
     if (now > t_exp * 1000 && now < r_exp * 1000) {
-        // 刷新token
-        // await this.refreshToken(refreshToken);
+        //刷新token
+        await this.refreshToken(refreshToken);
     } else  if (now > r_exp * 1000) {
         alert('登录失效，请重新登录系统！');
         return;
     }
-    var loadingBarInner = editorUi.actions.get('loading').funct(title);
-    $.ajax({
+    var loadingBarInner
+    if(!hideDialog){
+        loadingBarInner = editorUi.actions.get('loading').funct(title);
+    }    $.ajax({
         method,
         headers: {
             "Content-Type": 'application/json;charset=utf-8',
             "Authorization": 'Bearer ' + token
         },
         beforeSend: function() {
-            loadingBarInner.style.width = '20%';
+            if(!hideDialog){
+                loadingBarInner.style.width = '20%';
+            }
         },
         data: method == 'GET' ? data : data ? JSON.stringify(data) : '',
         url,
         success: function(res) {
-            loadingBarInner.style.width = '100%';
+            if(!hideDialog){
+                loadingBarInner.style.width = '100%';
+            }
             setTimeout(() => {
                 fn && fn(res);
                 // resolve(res);
             }, 550)
         },
         error: function(res) {
-            loadingBarInner.style.width = '100%';
+            if(!hideDialog){
+                loadingBarInner.style.width = '100%';
+            }
             setTimeout(() => {
                 errorfn && errorfn(res);
             }, 550)
@@ -401,9 +409,17 @@ Editor.prototype.InitEditor = function(editorUi) {
     })
     // 编辑数据
     let editPromise = null
-    if (/id=(.+?)$/.exec(location.search)) {
+    let applyId = sessionStorage.getItem("applyId")
+    let idArr= /id=(.+?)$/.exec(location.search)
+    if (idArr || applyId) {
+        let id
+        if(idArr && idArr.length){
+            id= idArr[1]
+        }else{
+            id = applyId
+        }
         editPromise = new Promise((resolve, reject) => {
-            this.ajax(editorUi, '/api/iot-cds/cds/configurationDesignStudio/' + /id=(.+?)$/.exec(location.search)[1], 'GET', null, function(res) {
+            this.ajax(editorUi, '/api/iot-cds/cds/configurationDesignStudio/' + id, 'GET', null, function(res) {
                 resolve(res)
             }, null)
         })
@@ -787,7 +803,6 @@ Editor.prototype.editAsNew = function(xml, title)
  */
 Editor.prototype.createGraph = function(themes, model)
 {
-    console.log("graph--create")
     var graph = new Graph(null, model, null, null, themes);
     graph.transparentBackground = false;
 	
@@ -808,7 +823,6 @@ Editor.prototype.createGraph = function(themes, model)
  */
 Editor.prototype.resetGraph = function()
 {
-    console.log("reset--graph")
     this.graph.gridEnabled = !this.isChromelessView() || urlParams['grid'] == '1';
     this.graph.graphHandler.guidesEnabled = true;
     this.graph.setTooltips(true);
@@ -904,7 +918,6 @@ Editor.prototype.readGraphState = function(node)
  */
 Editor.prototype.setGraphXml = function(node)
 {
-    console.log('set--view--data')
     if (node != null)
     {
         var dec = new mxCodec(node.ownerDocument);
@@ -970,7 +983,6 @@ Editor.prototype.setGraphXml = function(node)
  */
 Editor.prototype.getGraphXml = function(ignoreSelection)
 {
-    console.log('get--view--data')
     ignoreSelection = (ignoreSelection != null) ? ignoreSelection : true;
     var node = null;
     if (ignoreSelection)

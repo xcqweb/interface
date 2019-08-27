@@ -2316,7 +2316,6 @@ Graph.prototype.connectVertex = function(source, direction, length, evt, forceCl
 		
         if (edge != null)
         {
-            debugger
             this.fireEvent(new mxEventObject('cellsInserted', 'cells', [edge]));
         }
     }
@@ -6771,6 +6770,7 @@ if (typeof mxVertexHandler != 'undefined')
         var mxCellEditorStartEditing = mxCellEditor.prototype.startEditing;
         mxCellEditor.prototype.startEditing = function(cell, trigger)
         {
+            debugger
             mxCellEditorStartEditing.apply(this, arguments);
 			
             // Overrides class in case of HTML content to add
@@ -6943,6 +6943,7 @@ if (typeof mxVertexHandler != 'undefined')
 		
         mxCellEditor.prototype.toggleViewMode = function()
         {
+            debugger
             var state = this.graph.view.getState(this.editingCell);
             var nl2Br = state != null && mxUtils.getValue(state.style, 'nl2Br', '1') != '0';
             var tmp = this.saveSelection();

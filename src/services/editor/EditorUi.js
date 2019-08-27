@@ -636,15 +636,12 @@ window.EditorUi = function(editor, container, lightbox)
         }
     };
     graph.addListener('cellsInserted', function(sender, evt)
-    {
-        // debugger
-        insertHandler(evt.getProperty('cells'));
+    {         insertHandler(evt.getProperty('cells'));
     });
 
     graph.addListener('textInserted', function(sender, evt)
     {
-        // debugger
-        insertHandler(evt.getProperty('cells'), true);
+                insertHandler(evt.getProperty('cells'), true);
     });
 
     graph.connectionHandler.addListener(mxEvent.CONNECT, function(sender, evt)
@@ -655,7 +652,6 @@ window.EditorUi = function(editor, container, lightbox)
         {
             cells.push(evt.getProperty('terminal'));
         }
-    debugger
         insertHandler(cells);
     });
 
@@ -3436,7 +3432,7 @@ EditorUi.prototype.isCompatibleString = function(data)
 /**
  * Adds the label menu items to the given menu and parent.
  */
-EditorUi.prototype.saveFile = function(forceDialog)
+EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
 {
     if (!forceDialog && this.editor.filename != null)
     {
@@ -3445,6 +3441,10 @@ EditorUi.prototype.saveFile = function(forceDialog)
     }
     else
     {
+        if(hideDialog){
+            this.save(this.editor.getOrCreateFilename(), this.editor.getDescribe(),hideDialog)
+            return
+        }
         // 编辑保存
         var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '保存', mxUtils.bind(this, function(name, des)
         {
@@ -3473,6 +3473,9 @@ EditorUi.prototype.saveSuccess = function(res) {
     this.editor.setFilename(res.studioName)
     this.editor.setDescribe(res.descript)
     this.editor.setApplyId(res.studioId)
+    if (res && res.studioId){
+        sessionStorage.setItem('applyId',res.studioId)
+    }
     setTimeout(() => {
         this.hideDialog();
         this.editor.tipInfo(this, true, '保存');
@@ -3490,7 +3493,7 @@ EditorUi.prototype.saveError = function(res) {
 /**
  * 保存当前应用
  */
-EditorUi.prototype.save = function(name, des)
+EditorUi.prototype.save = function(name, des,hideDialog=false)
 {
     return new Promise((resolve, reject) => {
         if (name != null)
@@ -3512,7 +3515,7 @@ EditorUi.prototype.save = function(name, des)
                     applyCon: editor.pagesNameList().join(),
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                 }
-                var id = editor.getApplyId();
+                var id = editor.getApplyId()
                 if (id) {
                     // 编辑保存
                     data.studioId = id
@@ -3522,15 +3525,15 @@ EditorUi.prototype.save = function(name, des)
                     }, (res) => {
                         this.saveError(res.responseJSON);
                         reject(res);
-                    })
+                    },'加载中···',hideDialog)
                 } else {
-                    editor.ajax(ui, urls.preview.url, 'POST', data, (res) => {
+                    editor.ajax(ui, urls.preview.url, 'POST', data,(res) => {
                         this.saveSuccess(res);
                         resolve(res);
                     }, (res) => {
                         this.saveError(res.responseJSON);
                         reject(res);
-                    })
+                    },'加载中···',hideDialog)
                 }
             }
             catch (e)

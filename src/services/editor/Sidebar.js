@@ -1386,9 +1386,9 @@ Sidebar.prototype.addGeneralPalette = function(expand)
          //箭头
         //this.createEdgeTemplateEntry('shape=endarrow;endArrow=classic;html=1;', 50, 0, '', '箭头', false, false),
         // 矩形
-        this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;', 120, 60, '', '矩形', null, null, '矩形'),
+        this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;strokeColor=#000;', 120, 60, '', '矩形', null, null, '矩形'),
         // 圆形
-        this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 36, 36, '', '圆形', null, null, '圆形'),
+        this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;strokeColor=#000;aspect=fixed;', 36, 36, '', '圆形', null, null, '圆形'),
         // this.createVertexTemplateEntry('rounded=0;shape=oval;whiteSpace=wrap;html=1;', 36, 36, '', '圆形', null, null, '圆形'),
         // 横向菜单
         this.addEntry('page menu', function()
@@ -1678,8 +1678,8 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
     var border = (mxClient.IS_QUIRKS) ? 8 + 2 * this.thumbPadding : 2 * this.thumbBorder;
     // elt.style.width = (this.thumbWidth + border + 14) + 'px';
     // elt.style.height = (this.thumbHeight + border + 20) + 'px';
-    elt.style.width = '50px'
-    elt.style.height = '50px'
+    elt.style.width = '46px'
+    elt.style.height = '46px'
     // elt.style.marginRight = '5px'
     // elt.style.marginBottom = '5px'
     // elt.style.padding = this.thumbPadding + 'px';
@@ -1692,8 +1692,6 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
         elt.style.height = '33px';
     } else {
         if (type === 'layout' || type === 'lineChart' || type === 'gaugeChart') {
-            // elt.style.width = '50px'
-            // elt.style.height = '50px'
             elt.style.backgroundImage = `url(${imageurl})`;
         } else {
             elt.style.backgroundImage = 'url(/static/stencils/basic/' + shapeName + '.png)';
@@ -1899,9 +1897,7 @@ Sidebar.prototype.createDropHandler = function(cells, allowSplit, allowCellsInse
                         }
 	
                         if (allowCellsInserted)
-                        {
-                            // debugger
-                            graph.fireEvent(new mxEventObject('cellsInserted', 'cells', select));
+                        {                             graph.fireEvent(new mxEventObject('cellsInserted', 'cells', select));
                         }
                     }
                     finally

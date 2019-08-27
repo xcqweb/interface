@@ -24,7 +24,7 @@
   </div>
 </template>
 <script>
-import {mxCell,mxGeometry} from '../../services/mxGlobal'
+import {mxEvent,mxCell,mxGeometry} from '../../services/mxGlobal'
 import VueEvent from '../../services/VueEvent.js'
 import PageStyle from './page-style'
 import DialogStyle from './dialog-style'
@@ -52,6 +52,9 @@ export default {
         init() {
             let that = this.myEditorUi.sidebar
             let graph = this.myEditorUi.editor.graph
+            graph.getModel().addListener(mxEvent.CHANGE,()=>{
+                this.$store.commit('getWidgetInfo',graph)
+            })
             let ele = this.$refs.shortCutWrapper
             shortCutWidgets = [
                 // 文字
@@ -67,14 +70,14 @@ export default {
                 that.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 50, '', '直线', true,true),
                 // 矩形
                 that.createVertexTemplateEntry(
-                    "rounded=0;shape=rectangle;whiteSpace=wrap;html=1;",
+                    "rounded=0;shape=rectangle;whiteSpace=wrap;html=1;strokeColor=#000;",
                     120,
                     60,
                     "",
                     "矩形",true,true
                 ),
                 //圆形
-                that.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;', 36, 36, '', '圆形', true, true, '圆形'),
+                that.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#000;', 36, 36, '', '圆形', true, true, '圆形'),
                 // 按钮
                 that.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box;background:transparent;">BUTTON</button>', '按钮',true,true),
                 //表格,通过矩形拼接
@@ -103,9 +106,6 @@ export default {
                     this.$store.commit('widgetChange',new Date().getTime())
                 }
             }
-            graph.addListener('cellsInserted', function() {
-                console.log("aa-ccc")
-            });
             this.$refs.pageStyle.init()
         },
     }

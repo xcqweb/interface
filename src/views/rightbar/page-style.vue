@@ -149,12 +149,6 @@ export default {
             this.canvasOffsetLeft = canvasView.offsetLeft
             con.scrollLeft = (clientWidth - conWidth) / 2
             con.scrollTop = (clientHeight - conHeight - 36) / 2
-            let dialogStyle = {
-                top:`${this.canvasOffsetTop - 36}px`,
-                left:`${this.canvasOffsetLeft}px`,
-                width:`${this.dialogWidth}px`,
-            }
-            this.commitStyleFun(dialogStyle)
         },
         changeScaleInput() {
             this.myEditorUi.setPageFormat(

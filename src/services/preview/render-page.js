@@ -105,7 +105,7 @@ class PreviewPage {
                     console.log(getNodeInfo)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape');
-                    let x, y, width, height, fillColor, strokeColor, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, selectProps, defaultProp, points, rotation, flipH, flipV;
+                    let x, y, width, height, fillColor, strokeColor,strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, selectProps, defaultProp, points, rotation, flipH, flipV,startArrow,endArrow
                     styles = node.getAttribute('style');
                     isGroup = styles.indexOf('group') != -1;
                     fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF';
@@ -116,6 +116,7 @@ class PreviewPage {
                     flipV = getNodeInfo.getStyles('flipV') || 0;
                     align = getNodeInfo.getStyles('align') || 'center';
                     fontSize = getNodeInfo.getStyles('fontSize') || '12';
+                    strokeStyle = getNodeInfo.getStyles('dashed')
                     strokeColor = (shapeName == 'image' ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
                     // 图片地址
                     image = getNodeInfo.getStyles('image') || null;
@@ -232,6 +233,7 @@ class PreviewPage {
                         height,
                         fillColor,
                         strokeColor,
+                        strokeStyle,
                         value,
                         isGroup,
                         fontColor,
@@ -250,6 +252,12 @@ class PreviewPage {
                         flipH,
                         flipV
                     };
+                    if (shapeName == 'beeline') {
+                        startArrow = getNodeInfo.getStyles('startArrow')
+                        endArrow = getNodeInfo.getStyles('endArrow')
+                        obj.startArrow = startArrow
+                        obj.endArrow = endArrow
+                    }
                     // 组合节点
                     obj.children = getNode(id);
                     list.push(obj);
@@ -285,7 +293,6 @@ class PreviewPage {
         // 页面宽度和高度
         pageWidth = pageHeight = 0
         let cells = this.parseCells(list)
-        console.log(cells)
         this.renderPageId = page.id
         this.wsParams = [];
         if (page.type === 'normal') {
@@ -352,7 +359,10 @@ class PreviewPage {
         } else if (shapeName === 'linkTag') {
             // smartBi链接iframe
             cellHtml = document.createElement('iframe');
-            let curLink = cell.smartBiLink || cell.actionsInfo[0].link
+            let curLink
+            if (cell.actionsInfo) {
+                curLink = cell.smartBiLink || cell.actionsInfo[0].link
+            }
             cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(curLink) ? '' : 'http://' }${curLink}`);
         } else if (shapeName === 'menuCell' || shapeName === 'menulist') {
             // 菜单
@@ -396,12 +406,16 @@ class PreviewPage {
         } else if (configSvg.includes(shapeName)) {
             // svg图
             cellHtml = insertSvg(shapeName, cell.width, cell.height, cell.x, cell.y, cell.fillColor, cell.strokeColor, shapeXlms)
-        } else {
+        }  
+        else {
             // 其他
             cellHtml = document.createElement('p');
+            if(shapeName === 'ellipse') {
+                cellHtml.style.borderRadius = "50%"
+            }
             cellHtml.innerHTML = cell.value;
         }
-        if (!['endarrow', 'beeline', 'curve'].includes(shapeName)) {
+        if (!['endarrow', 'beeline', 'curve','circle'].includes(shapeName)) {
             if (cell.verticalAlign === 'top') {
                 cellHtml.style.lineHeight = cell.fontSize + 'px';
             } else if (cell.verticalAlign === 'bottom') {
@@ -417,13 +431,13 @@ class PreviewPage {
         } else {
             cellHtml.style.lineHeight = 0;
         }
-        // svg列表背景透明
-        if (['endarrow', 'beeline', 'curve'].includes(shapeName) || configSvg.includes(shapeName)) {
-            cellHtml.style.backgroundColor = 'transparent';
-        }
         // 非Edge和svg控件
-        if (!['endarrow', 'beeline', 'curve'].includes(shapeName) && !configSvg.includes(shapeName)) {
-            cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `1px solid ${cell.strokeColor || defaultStyle.strokeColor}`}`;
+        if (!['endarrow','curve', 'circle','beeline'].includes(shapeName) && !configSvg.includes(shapeName)) {
+            let borderStyle = 'solid'
+            if(cell.strokeStyle) {
+                borderStyle = 'dashed'
+            }
+            cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `1px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
             cellHtml.style.width = cell.width + 'px';
             cellHtml.style.height = cell.height + 'px';
         }
