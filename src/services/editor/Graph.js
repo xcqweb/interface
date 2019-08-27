@@ -359,6 +359,7 @@ window.Graph = function(container, model, renderHint, stylesheet, themes)
 			    				
 			    				if (cursor != null)
 			    				{
+                                    console.log(125553)
 			    					state.setCursor(cursor);
 			    				}
 				    		}
@@ -5428,6 +5429,7 @@ if (typeof mxVertexHandler != 'undefined')
 		 */
         Graph.prototype.dblClick = function(evt, cell)
         {
+            console.log(666)
             if (this.isEnabled())
             {
                 var pt = mxUtils.convertPoint(this.container, mxEvent.getClientX(evt), mxEvent.getClientY(evt));

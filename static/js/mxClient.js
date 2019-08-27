@@ -15350,7 +15350,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 				ifshowPaste = true
 			}
 		} else {
-			let arr = ['rectangle', 'button','ellipse', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','right','progress','pipeline1','pipeline2', 'userimage', 'lineChart', 'gaugeChart'];
+			let arr = ['rectangle', 'button','ellipse', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','light','progress','pipeline1','pipeline2', 'userimage', 'lineChart', 'gaugeChart'];
 			let menulistArr = ['menulist','tableBox']; // 菜单 和 表格整体
 			let arr1 = ['粘贴','组合', '取消组合']
 			if (arr.includes(shapeName) && arr1.includes(title)) {
@@ -23305,7 +23305,6 @@ mxShape.prototype.reconfigure = function()
 mxShape.prototype.redraw = function()
 {
 	this.updateBoundsFromPoints();
-	
 	if (this.visible && this.checkBounds())
 	{
 		this.node.style.visibility = 'visible';
@@ -24313,6 +24312,7 @@ mxShape.prototype.apply = function(state)
  */
 mxShape.prototype.setCursor = function(cursor)
 {
+	// console.log(cursor)
 	if (cursor == null)
 	{
 		cursor = '';
@@ -48589,6 +48589,7 @@ mxCellRenderer.prototype.installListeners = function(state)
 		mxEvent.addListener(state.shape.node, 'dblclick',
 			mxUtils.bind(this, function(evt)
 			{
+				console.log(77)
 				if (this.isShapeEvent(state, evt))
 				{
 					graph.dblClick(evt, state.cell);
@@ -77965,7 +77966,6 @@ mxEdgeHandler.prototype.validateConnection = function(source, target)
 					}
 					
 					bends.push(bend);
-				
 					if (!terminal)
 					{
 						this.points.push(new mxPoint(0,0));

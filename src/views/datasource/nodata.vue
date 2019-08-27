@@ -22,7 +22,7 @@ export default{
     width: 56px;
     padding-top:46px;
     margin-top:-46px;
-    background: url("../../../assets/images/datasource/nodata.png") no-repeat center top;
+    background: url("../../assets/images/datasource/nodata.png") no-repeat center top;
     background-size: 56px 42px;
 }
 </style>

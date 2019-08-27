@@ -76,8 +76,8 @@
 </template>
 
 <script>
-import DataSource from './dataSource-select'
-import Input from './input-select'
+import DataSource from '../../datasource/dataSource-select'
+import Input from '../../datasource/input-select'
 import {Button, Page, Checkbox} from 'iview'
 export default{
     components: {

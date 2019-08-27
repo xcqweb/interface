@@ -411,7 +411,7 @@ export default{
                     top:10px;
                     width:16px;
                     height:16px;
-                    background: url(../../../assets/images/default/closeDialog.png) no-repeat center center;
+                    background: url(../../assets/images/default/closeDialog.png) no-repeat center center;
                     background-size: 16px 16px;
                     .ivu-icon{
                         display:none;

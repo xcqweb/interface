@@ -345,7 +345,7 @@ Editor.prototype.refreshToken = function(refreshToken) {
  */
 Editor.prototype.ajax = async function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···',hideDialog=false) {
     var token = getCookie('token');
-    var refreshToken = getCookie('refreshToken');
+ var refreshToken = getCookie('refreshToken');
     if (!token || !refreshToken) {
         alert('登录失效，请重新登录系统！');
         return;
@@ -363,8 +363,7 @@ Editor.prototype.ajax = async function(editorUi, url, method, data, fn = functio
     var loadingBarInner
     if(!hideDialog){
         loadingBarInner = editorUi.actions.get('loading').funct(title);
-    }
-    $.ajax({
+    }    $.ajax({
         method,
         headers: {
             "Content-Type": 'application/json;charset=utf-8',

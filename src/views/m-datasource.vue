@@ -16,14 +16,44 @@
     <div class="data-main">
       <div class="data-main-left">
         <Tabs
+          type="card" 
+          :animated="false"
           @on-click="tabsSwitchData"
         >
           <TabPane
             :label="dataSource"
-          />
+          >
+            <ul
+              v-if="dataSourceList.length"
+              class="dataSources-ullist"
+            >
+              <li
+                v-for="(item, index) in dataSourceList"
+                :key="index"
+                class="dataSource currentList"
+              >
+                <span class="dataSources-left">{{ item.name }}</span>
+                <span class="delete-icon" />
+              </li>
+            </ul>
+          </TabPane>
           <TabPane
             :label="datamodel"
-          />
+          >
+            <ul
+              v-if="dataSourceList.length"
+              class="dataSources-ullist"
+            >
+              <li
+                v-for="(item, index) in dataSourceList"
+                :key="index"
+                class="dataSource currentList"
+              >
+                <span class="dataSources-left">{{ item.name }}</span>
+                <span class="delete-icon" />
+              </li>
+            </ul>
+          </TabPane>
         </Tabs>
       </div>
       <div class="data-main-right">
@@ -51,9 +81,9 @@
 
 <script>
 import {Tabs, TabPane} from 'iview'
-import DataSourceRight from './rightbar/widget-style/dataSource-right'
-import DataModelRight from './rightbar/widget-style/dataModel-right'
-import DataDataModal from './rightbar/widget-style/importdata-model'
+import DataSourceRight from './datasource/dataSource-right'
+import DataModelRight from './datasource/dataModel-right'
+import DataDataModal from './datasource/importdata-model'
 export default{
     components:{
         Tabs,
@@ -69,7 +99,13 @@ export default{
             datamodel: '数据模型',
             importdataSource:'导入数据源',
             dataType: 1, // dataType 数据源 2: 数据模型
-            ifShowImportData: false
+            ifShowImportData: false,
+            dataSourceList: [
+                {
+                    name: '数据源',
+                    id: '1233'
+                }
+            ]
         }
     },
     mounted() {
@@ -105,7 +141,7 @@ export default{
     background: linear-gradient(0deg,rgba(216,216,216,1) 0%,rgba(228,227,228,1) 100%);
     border-left: 1px solid rgb(204, 204, 204);
     .tool-bar-left{
-      width:208px
+      width:208px;
     }
     .datasour-icon-wrap{
       flex:1;
@@ -166,6 +202,31 @@ export default{
         }
         .ivu-tabs-tab:active {
             color:#252525 !important;
+        }
+      }
+      .dataSources-ullist{
+        li{
+          height:24px;
+          line-height: 24px;
+          padding-left: 10px;
+          padding-right:5px;
+          display: flex;
+          background-color: #3D91F7;
+          .dataSources-left{
+            flex:1;
+          }
+          .delete-icon{
+            width:20px;
+            background:url('../assets/images/datasource/delete.png') no-repeat center center;
+            background-size:16px 16px;
+            cursor: pointer;
+          }
+          &.currentList{
+            color:#ffffff;
+            .delete-icon{
+              background:url('../assets/images/datasource/delete2.png') no-repeat center center;
+            }
+          }
         }
       }
     }

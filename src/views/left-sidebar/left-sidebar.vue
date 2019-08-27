@@ -183,6 +183,8 @@ export default {
             let id = `pageid_${getMax + 1}`
             let titleText = `${namebefore}${nameMax + 1}`
             let page = null
+            console.log(listNumber)
+            console.log(typePage)
             if (+listNumber === 0) {
                 let xml = this.myEditorUi.editor.defaultXml[typePage];
                 page = {
@@ -193,8 +195,10 @@ export default {
                     type: typePage === 1 ? 'dialog' : 'normal'
                 };
             } else { // 弹窗和页面模版
+                console.log(this.pageModal)
                 let content = +typePage === 0 ? this.pageModal[listNumber].content : this.alertModal[listNumber].content;
                 let xml = JSON.parse(content).xml
+                console.log(xml)
                 page = {
                     title: titleText,
                     xml,
@@ -207,6 +211,7 @@ export default {
             _li.setAttribute('data-pageid', id);
             _li.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${titleText}</span><span class="right-icon-dolt"></span>`;
             this.myEditorUi.editor.pages[id] = page
+            console.log(this.myEditorUi.editor.pages)
             if (+typePage === 0) {
                 $("#normalPages").append(_li);
             }
