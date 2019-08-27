@@ -224,7 +224,7 @@
         />
       </div>
     </div>
-    <div v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag'">
+    <div v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text'">
       <div class="item-title">
         外观
       </div>
@@ -594,12 +594,11 @@
   </div>
 </template>
 <script>
-import {mxEvent,mxConstants,mxEventObject} from '../../../services/mxGlobal'
+import {mxConstants,mxEventObject} from '../../../services/mxGlobal'
 import {sureDialog} from '../../../services/Utils'
 let newFontColor = "#000000",newBgColor = "#ffffff",newBorderColor = "#000000",name
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
-
 export default {
     data() {
         return {
@@ -682,9 +681,6 @@ export default {
     created() {},
     mounted() {
         let graph = this.myEditorUi.editor.graph
-        graph.getModel().addListener(mxEvent.CHANGE,()=>{
-            this.$store.commit('getWidgetInfo',graph)
-        })
         this.fontText = this.$store.state.main.widgetInfo.fontSize
         this.isSetBold = this.$store.state.main.widgetInfo.isSetBold
         this.fontColor =  this.$store.state.main.widgetInfo.color

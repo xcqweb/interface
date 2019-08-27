@@ -36,6 +36,7 @@ import LeftSideBar from './left-sidebar/left-sidebar'
 import RightBar from './rightbar/rightbar'
 import FooterBar from './footerbar/index'
 import Vue from 'vue'
+let timer = null
 export default {
     components:{
         LeftSideBar,
@@ -65,9 +66,9 @@ export default {
                     var content = JSON.parse(editData.content)
                     myEditorUi.editor.pages = content.pages
                     myEditorUi.editor.pagesRank = content.rank
-                    myEditorUi.editor.setFilename(editData.name)
-                    myEditorUi.editor.setApplyId(editData.id)
-                    myEditorUi.editor.setDescribe(editData.describe)
+                    myEditorUi.editor.setFilename(editData.studioName)
+                    myEditorUi.editor.setApplyId(editData.studioId)
+                    myEditorUi.editor.setDescribe(editData.descript)
                 }
                 Vue.prototype.myEditorUi = myEditorUi
                 this.init()
@@ -76,6 +77,12 @@ export default {
     },
     mounted() {
         
+    },
+    destoryed() {
+        if (timer) {
+            clearInterval(timer)
+            timer = null
+        }
     },
     methods: {
         init() {
@@ -86,6 +93,9 @@ export default {
             this.$refs.leftsidebar.init();
             this.$refs.rightbar.init()
             this.$refs.footbar.init();
+            timer = setInterval(()=> {
+                this.myEditorUi.saveFile(true,true)
+            },1000 * 60 * 3)//3分钟自动保存一次
         },
         updateZoom() {
             this.$refs.toolbar.updateZoom();

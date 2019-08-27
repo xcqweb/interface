@@ -60,7 +60,7 @@ export default{
             tab:1,
             refresh:0,//切换控件刷新子组件
             stateList:['rectangle','image','tableCell','light','ellipse'],
-            actionList:['menuCell','rectangle','image','button','tableCell','ellipse'],
+            actionList:['menuCell','rectangle','image','button','tableCell','ellipse','text'],
             dataList:['rectangle','image','tableCell','light','progress','lineChart','gaugeChart','ellipse'],
         }
     },

@@ -15323,15 +15323,10 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 {
 	let selectCell = this.graph.getSelectionCell()
 	let selectCount = this.graph.getSelectionCount()
-	// console.log(selectCount)
 	let shapeName = ''
-	// console.log(selectCell)
-	// console.log(selectCount)
 	if (selectCell) {
 		shapeName = this.graph.view.getState(selectCell).style.shape;
 	}
-	// console.log(shapeName)
-	// console.log(typeof this.graph.getModel().getValue(selectCell))
 	if (typeof this.graph.getModel().getValue(selectCell) === 'object') {
 		if (this.graph.getModel().getValue(selectCell)) {
 			let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') || undefined // 获取到元素
@@ -15373,7 +15368,6 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 
 	parent = parent || this;
 	this.itemCount++;
-	// console.log(parent)
 	// Smart separators only added if element contains items
 	if (parent.willAddSeparator)
 	{

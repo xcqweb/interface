@@ -129,7 +129,9 @@ function insertImage(cell, fileSystem) {
     svg.setAttribute('height', cell.height);
 
     let image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-    image.setAttribute('href', cell.image.replace(/getechFileSystem/, fileSystem));
+    if(cell.image) {
+        image.setAttribute('href', cell.image.replace(/getechFileSystem/, fileSystem));
+    }
     image.setAttribute('width', cell.width);
     image.setAttribute('height', cell.height);
     image.setAttribute('preserveAspectRatio', 'none');
@@ -149,8 +151,12 @@ function inserEdge(cell) {
     let {
         source,
         points,
-        target
+        target,
     } = cell.points;
+    console.log(source,points,target)
+    let {startArrow,
+        endArrow,
+        strokeStyle} = cell
     let svgContent = document.createElement('div');
     let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     svg.setAttribute('width', cell.width);
@@ -158,14 +164,14 @@ function inserEdge(cell) {
     svg.innerHTML = `
     <defs>      
         <marker id="arrow" 
-        markerUnits="strokeWidth" 
-        markerWidth="10" 
-        markerHeight="10" 
-        refX="8"
-        refY="5" 
-        orient="auto">
-          <path d="M2,2 L8,5 L2,8 L5,5 Z" style="fill:${cell.strokeColor};" />
-    </marker>
+            markerUnits="strokeWidth" 
+            markerWidth="10" 
+            markerHeight="10" 
+            refX="8"
+            refY="5" 
+            orient="auto">
+            <path d="M2,2 L8,5 L2,8 L5,5 Z" style="fill:${cell.strokeColor};"/>
+        </marker>
     </defs>
   `
     let path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
@@ -177,15 +183,23 @@ function inserEdge(cell) {
     }
     const attrs = {
         d: direct,
-        fill: 'white',
         stroke: cell.strokeColor,
         'stroke-width': 2,
     };
+    if (strokeStyle) {
+        attrs['stroke-dasharray'] = '2.25 2.25'
+    }
     if (cell.shapeName === 'endarrow') {
         attrs['marker-end'] = "url(#arrow)";
     }
     if (cell.shapeName === 'curve') {
         attrs.fill = 'none'
+    }
+    if (startArrow && startArrow == 'classic') {
+        attrs['marker-start'] = "url(#arrow)"
+    }
+    if (endArrow && endArrow == 'classic') {
+        attrs['marker-end'] = "url(#arrow)"
     }
     for (let item in attrs) {
         path.setAttribute(item, attrs[item])
@@ -205,7 +219,7 @@ function inserEdge(cell) {
  * @param {string} fillColor 
  * @param {string} strokeColor 
  */
-function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor = '#333', shapeXmls) {
+function insertSvg(key, w, h, x, y, fillColor = '#000', strokeColor = '#000', shapeXmls) {
     let inner = shapeXmls[key].path;
     let svgContent = document.createElement('div');
     inner.setAttribute('fill', fillColor)
@@ -221,7 +235,6 @@ function insertSvg(key, w, h, x, y, fillColor = 'none', strokeColor = '#333', sh
     } else {
         svg.setAttribute('viewBox', shapeXmls[key].viewBox)
     }
-    svg.setAttribute('stroke-width', 1);
     svg.setAttribute('width', w);
     svg.setAttribute('height', h);
     svg.innerHTML = inner.outerHTML;
