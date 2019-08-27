@@ -931,10 +931,12 @@ Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, resu
  * 删除页面
  * @param {object} ele 当前的节点
  */
-Sidebar.prototype.deletePage = function(ele) {
+Sidebar.prototype.deletePage = function (ele, pageType) {
     // 删除后应该显示的页面
-    const pageType = this.editorUi.editor.currentType;
+    // const pageType = this.editorUi.editor.currentType;
+    console.log(pageType)
     const restList = this.editorUi.editor.pagesRank[pageType]
+    console.log(restList)
     if (restList.length <= 1) {
         // alert('至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
         tipDialog(this.editorUi,'至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
@@ -1174,12 +1176,13 @@ Sidebar.prototype.createPageContextMenu = function(type) {
                 ele.insertAfter(ele.next())
                 break;
             case 'delete':
-                this.deletePage(ele)
+                this.deletePage(ele, pageType)
                 break;
             case 'rename':
                 this.renameNode(element, pageType)
                 break;
             case 'copy':
+                this.editorUi.editor.setXml();
                 this.copyPage(element,pageType)
                 break;
             case 'homepage':
@@ -1254,7 +1257,7 @@ function createPageList(editorUi, el, data, id) {
             var nextTitle = target.parentElement.getAttribute('data-pageid');
             // 已选中节点
             if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {
-                editorUi.editor.setXml();
+                // editorUi.editor.setXml();
             }
             // 切换到新的页面
             $(".currentPage").removeClass('currentPage')
@@ -1264,8 +1267,8 @@ function createPageList(editorUi, el, data, id) {
             } else {
                 target.parentNode.className += " currentPage"
             }
-            // var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml)
-            // editorUi.editor.setGraphXml(doc.documentElement)
+            var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml)
+            editorUi.editor.setGraphXml(doc.documentElement)
             VueEvent.$emit('pageTabEvent', id == 'normalPages' ? 0 : 1)
             if (id == 'dialogPages'){
                 VueEvent.$emit('initDialogPos')

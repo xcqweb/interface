@@ -118,6 +118,7 @@ export default {
         },
         addPageType(type) {
             // 1添加页面 2添加弹窗
+            this.myEditorUi.editor.setXml();
             this.modelshow = true
             this.alertTitleName = addPageTypeName[type]
             let data = {
