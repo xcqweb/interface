@@ -6770,12 +6770,14 @@ if (typeof mxVertexHandler != 'undefined')
         var mxCellEditorStartEditing = mxCellEditor.prototype.startEditing;
         mxCellEditor.prototype.startEditing = function(cell, trigger)
         {
-            debugger
             mxCellEditorStartEditing.apply(this, arguments);
 			
             // Overrides class in case of HTML content to add
             // dashed borders for divs and table cells
             var state = this.graph.view.getState(cell);
+            if (state != null && state.style.image) { //不可输入的 禁用
+                this.textarea.setAttribute('contenteditable', false)
+            }
             if (state != null && state.style['html'] == 1)
             {
                 this.textarea.className = 'mxCellEditor geContentEditable';
@@ -6943,7 +6945,6 @@ if (typeof mxVertexHandler != 'undefined')
 		
         mxCellEditor.prototype.toggleViewMode = function()
         {
-            debugger
             var state = this.graph.view.getState(this.editingCell);
             var nl2Br = state != null && mxUtils.getValue(state.style, 'nl2Br', '1') != '0';
             var tmp = this.saveSelection();

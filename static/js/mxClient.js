@@ -15323,10 +15323,15 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 {
 	let selectCell = this.graph.getSelectionCell()
 	let selectCount = this.graph.getSelectionCount()
+	// console.log(selectCount)
 	let shapeName = ''
+	// console.log(selectCell)
+	// console.log(selectCount)
 	if (selectCell) {
 		shapeName = this.graph.view.getState(selectCell).style.shape;
 	}
+	// console.log(shapeName)
+	// console.log(typeof this.graph.getModel().getValue(selectCell))
 	if (typeof this.graph.getModel().getValue(selectCell) === 'object') {
 		if (this.graph.getModel().getValue(selectCell)) {
 			let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') || undefined // 获取到元素
@@ -15368,6 +15373,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 
 	parent = parent || this;
 	this.itemCount++;
+	// console.log(parent)
 	// Smart separators only added if element contains items
 	if (parent.willAddSeparator)
 	{
@@ -15431,7 +15437,6 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	if (active != false && enabled != false)
 	{
 		var currentSelection = null;
-		
 		mxEvent.addGestureListeners(tr,
 			mxUtils.bind(this, function(evt)
 			{
@@ -15727,16 +15732,24 @@ mxPopupMenu.prototype.showMenu = function()
  */
 mxPopupMenu.prototype.hideMenu = function()
 {
-	if (this.div != null)
-	{
-		if (this.div.parentNode != null)
-		{
-			this.div.parentNode.removeChild(this.div);
-		}
-		
-		this.hideSubmenu(this);
-		this.containsItems = false;
-		this.fireEvent(new mxEventObject(mxEvent.HIDE));
+	// 在这里存选择图片dom
+	let selectCell = this.graph.getSelectionCell()
+	let shapeName = ''
+	if (selectCell) {
+		shapeName = this.graph.view.getState(selectCell).style.shape;
+	}
+	if (shapeName === 'image') { // 图片 不走hideMenu 要不然不能上传
+	} else {
+		if (this.div != null)
+			{
+				if (this.div.parentNode != null)
+				{
+					this.div.parentNode.removeChild(this.div);
+				}
+				this.hideSubmenu(this);
+				this.containsItems = false;
+				this.fireEvent(new mxEventObject(mxEvent.HIDE));
+			}
 	}
 };
 
