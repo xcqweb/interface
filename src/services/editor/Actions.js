@@ -1165,54 +1165,58 @@ Actions.prototype.init = function()
         // dlg.init()
         // 本地图片
         var localImage;
-        document.getElementsByClassName('imageRadio')[0].addEventListener('click', function (e) {
-            document.getElementById('checkedImage') ? document.getElementById('checkedImage').id = '' : null;
-        })
-        document.getElementById('chooseImage').addEventListener('change', function (e) {
-            //创建new FileReader()对象
-            return new Promise(function (resolve, reject) {
-                var fr = new FileReader();
-                fr.onload = (function (file) {
-                    resolve(file)
-                    removeImageRadio();
-                })(e.target.files[0]);
-                fr.onerror = function () {
-                    reject('上传失败');
-                };
-                fr.readAsDataURL(e.target.files[0])
-            }).then((res) => {
-                localImage = res
-                // 更换图片
-                var select = null;
-                var cells = graph.getSelectionCells();
-                var updateImg = function (newValue) {
-                    let prefix = `${newValue.host}/`
-                    let newValuenew = newValue.filePath
-                    newValue = prefix + newValuenew
-                    graph.getModel().beginUpdate();
-                    try {
-                        graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
-                    }
-                    finally {
-                        graph.getModel().endUpdate();
-                    }
-                    if (select != null) {
-                        graph.setSelectionCells(select);
-                        graph.scrollCellToVisible(select[0]);
-                    }
-                }
-                if (localImage) {
-                    var formData = new FormData();
-                    formData.append('file', localImage);
-                    ui.editor.uploadFile(ui, '/api/upload/file', 'POST', formData, function (res) {
-                        let newValue = res;
-                        updateImg(newValue)
-                    })
-                } 
-            }).catch((meg) => {
-                console.log(meg)
+        if (document.getElementsByClassName('imageRadio')[0]) {
+            document.getElementsByClassName('imageRadio')[0].addEventListener('click', function (e) {
+                document.getElementById('checkedImage') ? document.getElementById('checkedImage').id = '' : null;
             })
-        })
+            document.getElementById('chooseImage').addEventListener('change', function (e) {
+                //创建new FileReader()对象
+                return new Promise(function (resolve, reject) {
+                    var fr = new FileReader();
+                    fr.onload = (function (file) {
+                        resolve(file)
+                        removeImageRadio();
+                    })(e.target.files[0]);
+                    fr.onerror = function () {
+                        reject('上传失败');
+                    };
+                    fr.readAsDataURL(e.target.files[0])
+                }).then((res) => {
+                    localImage = res
+                    // 更换图片
+                    var select = null;
+                    var cells = graph.getSelectionCells();
+                    var updateImg = function (newValue) {
+                        let prefix = `${newValue.host}/`
+                        let newValuenew = newValue.filePath
+                        newValue = prefix + newValuenew
+                        graph.getModel().beginUpdate();
+                        try {
+                            graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
+                        }
+                        finally {
+                            graph.getModel().endUpdate();
+                        }
+                        if (select != null) {
+                            graph.setSelectionCells(select);
+                            graph.scrollCellToVisible(select[0]);
+                        }
+                    }
+                    if (localImage) {
+                        var formData = new FormData();
+                        formData.append('file', localImage);
+                        ui.editor.uploadFile(ui, '/api/upload/file', 'POST', formData, function (res) {
+                            let newValue = res;
+                            updateImg(newValue)
+                        })
+                    } 
+                }).catch((meg) => {
+                    console.log(meg)
+                })
+            })
+        } else {
+            removeImageRadio()
+        }
     })
     // 下拉列表
     this.addAction('selectProp', function() {

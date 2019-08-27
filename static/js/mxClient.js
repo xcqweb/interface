@@ -15410,26 +15410,28 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	if (this.labels)
 	{
 		var col2 = document.createElement('td');
+		if (title === '图片') { // 选择图片... 扩大点击范围 调出上传图片框
+			col2.setAttribute('colspan', 2)
+		}
 		col2.className = 'mxPopupMenuItem' +
 			((enabled != null && !enabled) ? ' mxDisabled' : '');
-		// console.log(title)
 		mxUtils.write(col2, title);
 		col2.align = 'left';
 		tr.appendChild(col2);
-	
-		var col3 = document.createElement('td');
-		col3.className = 'mxPopupMenuItem' +
-			((enabled != null && !enabled) ? ' mxDisabled' : '');
-		col3.style.textAlign = 'right';
-		col3.style.paddingRight = '15px';
-		col3.style.fontSize = '12px';
-		
-		tr.appendChild(col3);
-		
-		if (parent.div == null)
-		{
+		if (title === '图片') {
+		} else {
+			var col3 = document.createElement('td');
+			col3.className = 'mxPopupMenuItem' +
+				((enabled != null && !enabled) ? ' mxDisabled' : '');
+			col3.style.textAlign = 'right';
+			col3.style.paddingRight = '15px';
+			col3.style.fontSize = '12px';
+			tr.appendChild(col3);
+		}
+		if (parent.div == null) {
 			this.createSubmenu(parent);
 		}
+		
 	}
 	
 	parent.tbody.appendChild(tr);
