@@ -64,7 +64,7 @@ export default {
         .dataSource-right-content{
             flex:1;
             background: #fff;
-            padding: 10px;
+            padding: 10px 0 0;
         }
     }
 }

@@ -23,7 +23,9 @@ function Sidebar(editorUi, container, container2)
     this.graph = editorUi.createTemporaryGraph(this.editorUi.editor.graph.getStylesheet());
     this.graph.cellRenderer.antiAlias = false;
     this.graph.foldingEnabled = false;
+    console.log(this.graph.container)
     this.graph.container.style.visibility = 'hidden';
+    // this.graph.container2.style.visibility = 'hidden';
     document.body.appendChild(this.graph.container);
 	
     this.pointerUpHandler = mxUtils.bind(this, function()
@@ -1077,7 +1079,10 @@ Sidebar.prototype.addTemplate = async function(type) {
     let svgImage = this.editorUi.editor.graph.getSvg(null, null, null, true, null, true, null, null, null, false)
     let imageurl = await this.svgPng(svgImage)
     if (imageurl) {
+        console.log(this.editorUi.editor.pages)
+        console.log(this.editorUi.editor.currentPage)
         var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
+        console.log(currentPage)
         let data = {
             content: JSON.stringify(currentPage),
             pic: imageurl,
@@ -1087,10 +1092,11 @@ Sidebar.prototype.addTemplate = async function(type) {
             if (res.picUrl) {
                 tipDialog(this.editorUi, `添加${type === 'normal' ? '页面模版成功' : '弹窗模版成功' }`)
             }
+        }).catch(() => {
+            tipDialog(this.editorUi, `添加${type === 'normal' ? '页面模版失败' : '弹窗模版失败'}`)
         })
     } else {
         tipDialog(this.editorUi, `您未拖入组件，不能添加为模版！`)
-        // alert('您未拖入组件，不能添加为模版！')
     }
 }
 
@@ -1688,8 +1694,8 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
         elt.style.height = '33px';
     } else {
         if (type === 'layout' || type === 'lineChart' || type === 'gaugeChart') {
-            elt.style.width = '50px'
-            elt.style.height = '50px'
+            // elt.style.width = '50px'
+            // elt.style.height = '50px'
             elt.style.backgroundImage = `url(${imageurl})`;
         } else {
             elt.style.backgroundImage = 'url(/static/stencils/basic/' + shapeName + '.png)';
@@ -1896,7 +1902,7 @@ Sidebar.prototype.createDropHandler = function(cells, allowSplit, allowCellsInse
 	
                         if (allowCellsInserted)
                         {
-                            debugger
+                            // debugger
                             graph.fireEvent(new mxEventObject('cellsInserted', 'cells', select));
                         }
                     }

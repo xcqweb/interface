@@ -39,7 +39,7 @@ export default {
         border:1px solid #d4d4d4;
         border-radius: 2px;
         background-size:16px 16px;
-        background-image: url("../../../assets/images/material/searchicon.png");
+        background-image: url("../../assets/images/material/searchicon.png");
         background-color: #fff;
         background-repeat: no-repeat;
     }
