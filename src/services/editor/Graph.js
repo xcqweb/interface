@@ -2315,7 +2315,6 @@ Graph.prototype.connectVertex = function(source, direction, length, evt, forceCl
 		
         if (edge != null)
         {
-            debugger
             this.fireEvent(new mxEventObject('cellsInserted', 'cells', [edge]));
         }
     }

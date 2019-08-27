@@ -65,7 +65,6 @@ window.Editor = function(chromeless, themes, model, graph, editable)
 	
     this.graph.getModel().addListener(mxEvent.CHANGE, mxUtils.bind(this, function()
     {
-        console.log()
         this.graphChangeListener.apply(this, arguments);
     }));
 
@@ -805,7 +804,6 @@ Editor.prototype.editAsNew = function(xml, title)
  */
 Editor.prototype.createGraph = function(themes, model)
 {
-    console.log("graph--create")
     var graph = new Graph(null, model, null, null, themes);
     graph.transparentBackground = false;
 	
@@ -826,7 +824,6 @@ Editor.prototype.createGraph = function(themes, model)
  */
 Editor.prototype.resetGraph = function()
 {
-    console.log("reset--graph")
     this.graph.gridEnabled = !this.isChromelessView() || urlParams['grid'] == '1';
     this.graph.graphHandler.guidesEnabled = true;
     this.graph.setTooltips(true);
@@ -922,7 +919,6 @@ Editor.prototype.readGraphState = function(node)
  */
 Editor.prototype.setGraphXml = function(node)
 {
-    console.log('set--view--data')
     if (node != null)
     {
         var dec = new mxCodec(node.ownerDocument);
@@ -988,7 +984,6 @@ Editor.prototype.setGraphXml = function(node)
  */
 Editor.prototype.getGraphXml = function(ignoreSelection)
 {
-    console.log('get--view--data')
     ignoreSelection = (ignoreSelection != null) ? ignoreSelection : true;
     var node = null;
     if (ignoreSelection)
