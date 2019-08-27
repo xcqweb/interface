@@ -23,9 +23,7 @@ function Sidebar(editorUi, container, container2)
     this.graph = editorUi.createTemporaryGraph(this.editorUi.editor.graph.getStylesheet());
     this.graph.cellRenderer.antiAlias = false;
     this.graph.foldingEnabled = false;
-    console.log(this.graph.container)
     this.graph.container.style.visibility = 'hidden';
-    // this.graph.container2.style.visibility = 'hidden';
     document.body.appendChild(this.graph.container);
 	
     this.pointerUpHandler = mxUtils.bind(this, function()
@@ -1256,7 +1254,7 @@ function createPageList(editorUi, el, data, id) {
             var nextTitle = target.parentElement.getAttribute('data-pageid');
             // 已选中节点
             if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {
-                editorUi.editor.setXml()
+                editorUi.editor.setXml();
             }
             // 切换到新的页面
             $(".currentPage").removeClass('currentPage')
@@ -1266,8 +1264,8 @@ function createPageList(editorUi, el, data, id) {
             } else {
                 target.parentNode.className += " currentPage"
             }
-            var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml)
-            editorUi.editor.setGraphXml(doc.documentElement)
+            // var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml)
+            // editorUi.editor.setGraphXml(doc.documentElement)
             VueEvent.$emit('pageTabEvent', id == 'normalPages' ? 0 : 1)
             if (id == 'dialogPages'){
                 VueEvent.$emit('initDialogPos')

@@ -410,7 +410,6 @@ window.EditorUi = function(editor, container, lightbox)
 
     let dblClickFn = graph.dblClick;
     graph.dblClick = (evt, cell) => {
-        console.log(123)
         let state = graph.view.getState(cell);
         if (!state) {return false;}
         if (state.style.shape === 'image') {

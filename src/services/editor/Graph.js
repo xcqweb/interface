@@ -3613,7 +3613,7 @@ HoverIcons.prototype.repaint = function()
                 var checkCollision = mxUtils.bind(this, function(cell, arrow)
                 {
                     var geo = this.graph.model.isVertex(cell) && this.graph.getCellGeometry(cell);
-					
+					console.log(777)
                     // Ignores collision if vertex is more than 3 times the size of this vertex
                     if (cell != null && !this.graph.model.isAncestor(cell, this.currentState.cell) &&
 						(geo == null || currentGeo == null || (geo.height < 6 * currentGeo.height &&
@@ -5430,7 +5430,6 @@ if (typeof mxVertexHandler != 'undefined')
 		 */
         Graph.prototype.dblClick = function(evt, cell)
         {
-            console.log(666)
             if (this.isEnabled())
             {
                 var pt = mxUtils.convertPoint(this.container, mxEvent.getClientX(evt), mxEvent.getClientY(evt));
@@ -6777,7 +6776,6 @@ if (typeof mxVertexHandler != 'undefined')
             // Overrides class in case of HTML content to add
             // dashed borders for divs and table cells
             var state = this.graph.view.getState(cell);
-	
             if (state != null && state.style['html'] == 1)
             {
                 this.textarea.className = 'mxCellEditor geContentEditable';
@@ -6792,10 +6790,14 @@ if (typeof mxVertexHandler != 'undefined')
 			
             // Stores current selection range when switching between markup and code
             this.switchSelectionState = null;
-			
             // Selects editing cell
             this.graph.setSelectionCell(cell);
-
+            var state3 = this.graph.getView().getState(cell);
+            console.log(state3.text)
+            if (state3.text) {
+                this.textNode = state3.text.node;
+                this.textNode.style.visibility = 'hidden';
+            }
             // Enables focus outline for edges and edge labels
             var parent = this.graph.getModel().getParent(cell);
             var geo = this.graph.getCellGeometry(cell);
@@ -6999,7 +7001,6 @@ if (typeof mxVertexHandler != 'undefined')
 			    
                 content = this.graph.sanitizeHtml((nl2Br) ? content.replace(/\n/g, '<br/>') : content, true)
                 this.textarea.className = 'mxCellEditor geContentEditable';
-				
                 var size = mxUtils.getValue(state.style, mxConstants.STYLE_FONTSIZE, mxConstants.DEFAULT_FONTSIZE);
                 var family = mxUtils.getValue(state.style, mxConstants.STYLE_FONTFAMILY, mxConstants.DEFAULT_FONTFAMILY);
                 var align = mxUtils.getValue(state.style, mxConstants.STYLE_ALIGN, mxConstants.ALIGN_LEFT);

@@ -47397,10 +47397,12 @@ mxCellEditor.prototype.startEditing = function(cell, trigger)
 		{
 			// Prefers blinking cursor over no selected text if empty
 			this.textarea.focus();
-			
 			if (this.isSelectText() && this.textarea.innerHTML.length > 0 &&
 				(this.textarea.innerHTML != this.getEmptyLabelText() || !this.clearOnChange))
 			{
+				// debugger
+				this.textNode = state.text.node;
+				this.textNode.style.visibility = 'hidden';
 				document.execCommand('selectAll', false, null);
 			}
 		}
@@ -48595,7 +48597,6 @@ mxCellRenderer.prototype.installListeners = function(state)
 		mxEvent.addListener(state.shape.node, 'dblclick',
 			mxUtils.bind(this, function(evt)
 			{
-				console.log(77)
 				if (this.isShapeEvent(state, evt))
 				{
 					graph.dblClick(evt, state.cell);
