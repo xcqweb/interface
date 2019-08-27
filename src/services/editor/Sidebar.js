@@ -1693,7 +1693,8 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
         elt.style.width = '33px';
         elt.style.height = '33px';
     } else {
-                        elt.style.backgroundImage = `url(${imageurl})`;
+        if (type === 'layout' || type === 'lineChart' || type === 'gaugeChart') {
+            elt.style.backgroundImage = `url(${imageurl})`;
         } else {
             elt.style.backgroundImage = 'url(/static/stencils/basic/' + shapeName + '.png)';
         }
