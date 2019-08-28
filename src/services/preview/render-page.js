@@ -17,7 +17,7 @@ let configSvg = ['drop', 'circle', 'diamond', 'square', 'pentagram']
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
 
 
-import {removeEle,destroyWs,insertImage,inserEdge,insertSvg,bindEvent} from './util'
+import {removeEle,destroyWs,insertImage,inserEdge,insertSvg,bindEvent,dealProgress,dealPipeline} from './util'
 import {createWsReal,createWsAlarm} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -257,6 +257,12 @@ class PreviewPage {
                         endArrow = getNodeInfo.getStyles('endArrow')
                         obj.startArrow = startArrow
                         obj.endArrow = endArrow
+                    }else if(shapeName == 'progress') {
+                        let progressProps = item.getAttribute('progressProps')
+                        obj.progressProps = progressProps
+                    }else if(shapeName.includes('pipeline')) {
+                        let pipelineProps = item.getAttribute('pipelineProps')
+                        obj.pipelineProps = pipelineProps
                     }
                     // 组合节点
                     obj.children = getNode(id);
@@ -406,12 +412,19 @@ class PreviewPage {
         } else if (configSvg.includes(shapeName)) {
             // svg图
             cellHtml = insertSvg(shapeName, cell.width, cell.height, cell.x, cell.y, cell.fillColor, cell.strokeColor, shapeXlms)
-        }  
+        }  else if(shapeName === 'progress') {
+            cellHtml = dealProgress(cell)
+        } else if (shapeName.includes('pipeline')) {
+            cellHtml = dealPipeline(cell)
+        }
         else {
             // 其他
             cellHtml = document.createElement('p');
             if(shapeName === 'ellipse') {
                 cellHtml.style.borderRadius = "50%"
+            } else if (shapeName == 'light') {
+                cellHtml.style.background = `url(${cell.image}) no-repeat`
+                cellHtml.style.backgroundSize = '100% 100%'
             }
             cellHtml.innerHTML = cell.value;
         }
@@ -424,10 +437,14 @@ class PreviewPage {
                 cellHtml.style.lineHeight = cell.height + 'px';
             }
             cellHtml.style.textAlign = cell.align;
-            cellHtml.style.backgroundColor = cell.fillColor; // 原来的写法
+            
             if (cell.children.length > 0 && cell.fillColor === '#FFFFFF') {
                 cellHtml.style.backgroundColor = 'transparent';
-            } // 组合生成的背景为透明
+            } else if(shapeName.includes('pipeline')) {
+                cellHtml.style.backgroundColor = 'transparent';
+            }else {
+                cellHtml.style.backgroundColor = cell.fillColor; // 原来的写法
+            }
         } else {
             cellHtml.style.lineHeight = 0;
         }

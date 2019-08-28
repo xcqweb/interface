@@ -1661,7 +1661,8 @@ Graph.prototype.getPageLayout = function()
         var w0 = Math.ceil((x + w) / size.width) - x0;
         var h0 = Math.ceil((y + h) / size.height) - y0;
 		
-        return new mxRectangle(x0, y0, w0, h0);
+        //return new mxRectangle(x0, y0, w0, h0); // 控件超出边界 固定宽高
+         return new mxRectangle(0, 0, 1, 1);
     }
 };
 

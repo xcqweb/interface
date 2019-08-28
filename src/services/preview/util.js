@@ -428,6 +428,107 @@ function showTips(flag = true, title = '请求') {
     msg.innerHTML = `${title}${flag ? '成功' : '失败'}`
 }
 
+//插入进度条
+function dealProgress(cell) {
+    let con = document.createElement('div')
+    let {progressProps} = cell
+    let progressPropsObj
+    let percent = 0.8
+    let text = ''
+    if(progressProps) {
+        progressPropsObj = JSON.parse(progressProps)
+        percent = progressPropsObj.val / (+progressPropsObj.max - (+progressPropsObj.min)).toFixed(2)
+        if(progressPropsObj.type == 'real') {
+            text = progressPropsObj.val
+        }else{
+            text = percent
+        }
+    }
+    let progressTop = -(cell.height + 4)
+    let progress = `<div class="progressbar-wrap" style="width:${cell.width}px;">
+            <div class="progressbar-common progressbar-back" style="height:${cell.height}px;"></div> 
+            <div class="progressbar-common progressbar progress" style="height:${cell.height}px;top:${progressTop}px;width:${percent * 100}%;">${text}</div> 
+        </div>`
+    con.innerHTML = progress
+    let root = document.documentElement
+    root.style.setProperty('--progressPercent',`${percent * 100}%`)
+    return con
+}
+
+function dealPipeline(cell) {
+    console.log(cell)
+    let con = document.createElement('div')
+    let pipelineProps = cell.pipelineProps
+    let dasharray = 0
+    let dashoffset = 16
+    let pipelinePropsObj
+    if (pipelineProps) {
+        pipelinePropsObj = JSON.parse(pipelineProps)
+        dasharray = 8
+        if(pipelinePropsObj.flow == 'back') {
+            dashoffset = -16
+        }
+    }
+    let pipeline2 = `<svg 
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        width="${cell.width}px" height="${cell.height}px" viewbox="0 0 25 24">
+        <style type="text/css">
+            .flow2 {
+                stroke-dasharray: ${dasharray};
+                animation: dash2 0.5s linear;
+                animation-iteration-count: infinite; 
+            }
+            @keyframes dash2 {
+                to{
+                    stroke-dashoffset: ${dashoffset}; 
+                }
+            }
+        </style>
+        <path fill-rule="evenodd"  stroke="rgb(125, 125, 125)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="rgb(203, 203, 203)"
+        d="M24.000,2.007 L13.541,2.003 L13.521,2.003 C13.348,1.999 13.177,1.999 13.008,2.003 L12.349,2.042 C2.964,2.042 2.003,4.370 2.003,12.993 C2.003,13.229 2.000,13.463 2.010,13.696 L2.010,22.000 L12.000,22.000 L12.000,16.000 C12.000,14.266 11.844,12.000 13.000,12.000 L22.000,12.000 L24.000,12.000 L24.000,2.007 Z"/>
+        
+        <path fill-rule="evenodd"  stroke="rgb(255, 255, 255)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="none"
+        d="M24.000,6.007 L13.541,6.003 L13.521,6.003 C13.348,5.999 13.177,5.999 13.008,6.003 L12.000,6.000 C5.951,6.000 6.002,8.456 6.002,14.993 C6.002,15.229 6.000,15.463 6.011,15.696 L6.011,23.000 " class="flow2"/>
+        <path fill-rule="evenodd"  fill="rgb(125, 125, 125)"
+        d="M22.999,-0.000 C23.552,-0.000 24.000,0.448 24.000,1.000 L24.000,13.000 C24.000,13.552 23.552,14.000 22.999,14.000 C22.448,14.000 22.000,13.552 22.000,13.000 L22.000,1.000 C22.000,0.448 22.448,-0.000 22.999,-0.000 Z"/>
+        <path fill-rule="evenodd"  fill="rgb(125, 125, 125)"
+        d="M1.001,21.000 L13.000,21.000 C13.552,21.000 13.999,21.448 13.999,22.000 C13.999,22.552 13.552,23.000 13.000,23.000 L1.001,23.000 C0.448,23.000 -0.000,22.552 -0.000,22.000 C-0.000,21.448 0.448,21.000 1.001,21.000 Z"/>
+        </svg>`
+    let pipeline1 = `<svg 
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        width="${cell.width}px" height="${cell.height}px" viewbox="0 0 29.5 14.5">
+         <style type="text/css">
+            .flow1{
+                stroke-dasharray: ${dasharray};
+                animation: dash1 0.5s linear;
+                animation-iteration-count: infinite; 
+            }
+            @keyframes dash1 {
+                to{
+                    stroke-dashoffset: ${-dashoffset}; 
+                }
+            }
+        </style>
+        <path fill-rule="evenodd"  stroke="rgb(125, 125, 125)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="rgb(203, 203, 203)"
+        d="M0.500,2.000 L28.500,2.000 L28.500,12.000 L0.500,12.000 L0.500,2.000 Z"/>
+        <path fill-rule="evenodd"  stroke="rgb(255, 255, 255)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="rgb(255, 255, 255)"
+        d="M2.500,7.000 L26.500,7.000 " class="flow1"/>
+        <path fill-rule="evenodd"  fill="rgb(125, 125, 125)"
+        d="M27.500,-0.000 C28.052,-0.000 28.500,0.448 28.500,1.000 L28.500,13.000 C28.500,13.552 28.052,14.000 27.500,14.000 C26.947,14.000 26.500,13.552 26.500,13.000 L26.500,1.000 C26.500,0.448 26.947,-0.000 27.500,-0.000 Z"/>
+        <path fill-rule="evenodd"  fill="rgb(125, 125, 125)"
+        d="M1.500,-0.000 C2.052,-0.000 2.499,0.448 2.499,1.000 L2.499,13.000 C2.499,13.552 2.052,14.000 1.500,14.000 C0.947,14.000 0.500,13.552 0.500,13.000 L0.500,1.000 C0.500,0.448 0.947,-0.000 1.500,-0.000 Z"/>
+        </svg>`
+    if(cell.image.includes('pipeline1')) {
+        con.innerHTML = pipeline1
+    }else{
+        con.innerHTML = pipeline2
+    }
+    return con
+}
+
 export {
-    removeEle, destroyWs, geAjax, insertImage, inserEdge, insertSvg, bindEvent, setCellStatus, showTips
+    removeEle, destroyWs, geAjax, insertImage, inserEdge, insertSvg, bindEvent, setCellStatus, showTips,
+    dealProgress, dealPipeline
 }
