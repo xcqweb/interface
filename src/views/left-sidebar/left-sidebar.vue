@@ -168,7 +168,7 @@ export default {
         },
         alertAddPage(typePage, listNumber) {
             const pagesRank = this.myEditorUi.editor.pagesRank
-            let targetArr = [...pagesRank.normal, ...pagesRank.dialog]
+            const pages = this.myEditorUi.editor.pages
             let nameArr = null
             let namebefore = ''
             if (+typePage === 0) {
@@ -179,11 +179,15 @@ export default {
                 namebefore = `弹窗`
                 nameArr = [...pagesRank.dialog]
             }
-            let getMax = targetArr.length
             let nameMax = nameArr.length
-            let id = `pageid_${getMax + 1}`
             let titleText = `${namebefore}${nameMax + 1}`
             let page = null
+            let id = 1;
+            for (let pageid in pages) {
+                const idNum = parseInt(pageid.match(/^pageid_([0-9]+)/)[1]);
+                id < idNum && (id = idNum);
+            }
+            id = 'pageid_' + (id + 1);
             if (+listNumber === 0) {
                 let xml = this.myEditorUi.editor.defaultXml[typePage];
                 page = {
@@ -205,6 +209,7 @@ export default {
                 };
             }
             let _li = document.createElement('li');
+            // _li.setAttribute('data-pageid', id);
             _li.setAttribute('data-pageid', id);
             _li.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${titleText}</span><span class="right-icon-dolt"></span>`;
             this.myEditorUi.editor.pages[id] = page
