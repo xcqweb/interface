@@ -678,7 +678,8 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                         this.addMenuItem(menu, 'selectProp', null, evt).firstChild.innerHTML = '属性...';
                     } else if (shapeName == 'image') {
                         // 编辑图片
-                        this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = '选择图片...';
+                        this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = '<label class="imageRadio" style="margin:1px 0"><input type="file" id="chooseImage" title="" accept=".jpg,.jpge,.gif,.png"/>选择图片...</label>';
+                        // this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = '选择图片...';
                     } else if (shapeName == 'menuCell') {
                         // 菜单
                         this.addMenuItems(menu, ['insertMenuBefore', 'insertMenuAfter', 'delete'], null, evt);

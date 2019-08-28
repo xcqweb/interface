@@ -877,6 +877,7 @@ let ImageDialog = function(editorUi, cell) {
             var fr = new FileReader();
             // 获取图片信息
             localImage = e.target.files[0];
+            console.log(localImage)
             //将图片读取为DataURL
             // fr.readAsDataURL(localImage);
             // fr.onload = function() {}
@@ -925,8 +926,10 @@ let ImageDialog = function(editorUi, cell) {
 		var select = null;
 		var cells = graph.getSelectionCells();
 		var updateImg = function (newValue) {
-			let prefix = 'getechFileSystem/'
-			newValue =  prefix + newValue
+			// let prefix = 'getechFileSystem/'
+            let prefix = newValue.host + '/'
+            let newValuenew = newValue.filePath
+            newValue = prefix + newValuenew
             graph.getModel().beginUpdate();
             try {
                 graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
@@ -947,7 +950,8 @@ let ImageDialog = function(editorUi, cell) {
             var formData = new FormData();
             formData.append('file', localImage);
             editorUi.editor.uploadFile(editorUi, '/api/upload/file', 'POST', formData, function(res) {
-                newValue = res.filePath;
+                // newValue = res.filePath;
+                newValue = res;
                 updateImg(newValue)
             })
         } else if (document.getElementById('checkedImage') && document.getElementById('checkedImage').getAttribute('data-layout')) {

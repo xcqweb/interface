@@ -14,14 +14,18 @@ import {
     ConfigLinkDialog,
     ChangePrimitiveDialog
 } from '../editor/Dialogs'
-let mxUtils = window.mxUtils
+import {mxUtils}  from '../mxGlobal'
 function Actions(editorUi)
 {
     this.editorUi = editorUi;
     this.actions = new Object();
     this.init();
 }
-
+function removeImageRadio() {
+    if (document.querySelector('.mxPopupMenu')) {
+        document.querySelector('.mxPopupMenu').remove()
+    }
+}
 /**
  * Adds the default actions.
  */
@@ -368,8 +372,14 @@ Actions.prototype.init = function()
     // 编辑操作
     this.addAction('undo', function() { ui.undo(); }, null, 'sprite-undo', Editor.ctrlKey + '+Z');
     this.addAction('redo', function() { ui.redo(); }, null, 'sprite-redo', (!mxClient.IS_WIN) ? Editor.ctrlKey + '+Shift+Z' : Editor.ctrlKey + '+Y');
-    this.addAction('cut', function() { mxClipboard.cut(graph); }, null, 'sprite-cut', Editor.ctrlKey + '+X');
-    this.addAction('copy', function() { mxClipboard.copy(graph); }, null, 'sprite-copy', Editor.ctrlKey + '+C');
+    this.addAction('cut', function() { 
+        mxClipboard.cut(graph);
+        removeImageRadio();
+    }, null, 'sprite-cut', Editor.ctrlKey + '+X');
+    this.addAction('copy', function() {
+        mxClipboard.copy(graph);
+        removeImageRadio();
+    }, null, 'sprite-copy', Editor.ctrlKey + '+C');
     this.addAction('paste', function()
     {
         if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent()))
@@ -453,6 +463,7 @@ Actions.prototype.init = function()
         setTimeout(() => {
             newSetCellAttrs('hide', flag)
         })
+        removeImageRadio();
     }, null, 'sprite-resetHide',null);
     function newSetCellAttrs(key, value) {
         var cell = graph.getSelectionCell();
@@ -517,6 +528,7 @@ Actions.prototype.init = function()
     this.addAction('delete', function(evt)
     {
         deleteCells(evt != null && mxEvent.isShiftDown(evt));
+        removeImageRadio();
     }, null, null, 'Delete');
     this.addAction('deleteAll', function()
     {
@@ -564,8 +576,14 @@ Actions.prototype.init = function()
     this.addAction('expand', function() { graph.foldCells(false); }, null, null, Editor.ctrlKey + '+End');
 	
     // Arrange actions
-    this.addAction('toFront', function() { graph.orderCells(false); }, null, null, Editor.ctrlKey + '+Shift+F');
-    this.addAction('toBack', function() { graph.orderCells(true); }, null, null, Editor.ctrlKey + '+Shift+B');
+    this.addAction('toFront', function() {
+        removeImageRadio();
+        graph.orderCells(false); 
+    }, null, null, Editor.ctrlKey + '+Shift+F');
+    this.addAction('toBack', function() {
+        removeImageRadio(); 
+        graph.orderCells(true); 
+    }, null, null, Editor.ctrlKey + '+Shift+B');
     this.addAction('group', function()
     {
         if (graph.getSelectionCount() == 1)
@@ -1141,10 +1159,64 @@ Actions.prototype.init = function()
 	
     // 编辑图片
     this.addAction('image', function(e) {
-        var cell = graph.getSelectionCell();
-        var dlg = new ImageDialog(ui, cell)
-        ui.showDialog(dlg.container, 410, 370, true, false, null, null, '选择图片');
-        dlg.init()
+        // var cell = graph.getSelectionCell();
+        // var dlg = new ImageDialog(ui, cell)
+        // ui.showDialog(dlg.container, 410, 370, true, false, null, null, '选择图片');
+        // dlg.init()
+        // 本地图片
+        var localImage;
+        if (document.getElementsByClassName('imageRadio')[0]) {
+            document.getElementsByClassName('imageRadio')[0].addEventListener('click', function (e) {
+                document.getElementById('checkedImage') ? document.getElementById('checkedImage').id = '' : null;
+            })
+            document.getElementById('chooseImage').addEventListener('change', function (e) {
+                //创建new FileReader()对象
+                return new Promise(function (resolve, reject) {
+                    var fr = new FileReader();
+                    fr.onload = (function (file) {
+                        resolve(file)
+                        removeImageRadio();
+                    })(e.target.files[0]);
+                    fr.onerror = function () {
+                        reject('上传失败');
+                    };
+                    fr.readAsDataURL(e.target.files[0])
+                }).then((res) => {
+                    localImage = res
+                    // 更换图片
+                    var select = null;
+                    var cells = graph.getSelectionCells();
+                    var updateImg = function (newValue) {
+                        let prefix = `${newValue.host}/`
+                        let newValuenew = newValue.filePath
+                        newValue = prefix + newValuenew
+                        graph.getModel().beginUpdate();
+                        try {
+                            graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
+                        }
+                        finally {
+                            graph.getModel().endUpdate();
+                        }
+                        if (select != null) {
+                            graph.setSelectionCells(select);
+                            graph.scrollCellToVisible(select[0]);
+                        }
+                    }
+                    if (localImage) {
+                        var formData = new FormData();
+                        formData.append('file', localImage);
+                        ui.editor.uploadFile(ui, '/api/upload/file', 'POST', formData, function (res) {
+                            let newValue = res;
+                            updateImg(newValue)
+                        })
+                    } 
+                }).catch((meg) => {
+                    console.log(meg)
+                })
+            })
+        } else {
+            removeImageRadio()
+        }
     })
     // 下拉列表
     this.addAction('selectProp', function() {

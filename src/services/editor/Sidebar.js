@@ -11,6 +11,7 @@ import requestUtil from '../request'
 import Urls from '../../constants/url'
 import VueEvent from '../VueEvent'
 import { tipDialog, sureDialog } from '../Utils'
+import canvg from "canvg";
 var basicXmlFns = [];
 function Sidebar(editorUi, container, container2)
 {
@@ -934,7 +935,7 @@ Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, resu
 Sidebar.prototype.deletePage = function (ele, pageType) {
     // 删除后应该显示的页面
     // const pageType = this.editorUi.editor.currentType;
-    console.log(pageType)
+    // console.log(pageType)
     const restList = this.editorUi.editor.pagesRank[pageType]
     console.log(restList)
     if (restList.length <= 1) {
@@ -1056,9 +1057,10 @@ Sidebar.prototype.svgPng = function (ele) {
     let ImgBase64 = ''
     return new Promise((resolve, reject) => {
         const s = new XMLSerializer().serializeToString(svg);
-        const src = `data:image/svg+xml;base64,${window.btoa(s)}`;
+        const src = `data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(s)))}`;
         const img = new Image(); // 创建图片容器承载过渡
         img.src = src;
+        img.crossOrigin = 'Anonymous';
         img.onload = function() {
             // 图片创建后再执行，转Base64过程
             const canvas = document.createElement('canvas');
@@ -1080,10 +1082,7 @@ Sidebar.prototype.addTemplate = async function(type) {
     let svgImage = this.editorUi.editor.graph.getSvg(null, null, null, true, null, true, null, null, null, false)
     let imageurl = await this.svgPng(svgImage)
     if (imageurl) {
-        console.log(this.editorUi.editor.pages)
-        console.log(this.editorUi.editor.currentPage)
         var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
-        console.log(currentPage)
         let data = {
             content: JSON.stringify(currentPage),
             pic: imageurl,
@@ -1202,6 +1201,7 @@ Sidebar.prototype.createPageContextMenu = function(type) {
                 currentnode.className += ' left-sidebar-homepage'
                 break
             case 'addTemplate':
+                this.editorUi.editor.setXml();
                 this.addTemplate(pageType)
                 break;
             default:
@@ -1258,7 +1258,7 @@ function createPageList(editorUi, el, data, id) {
             var nextTitle = target.parentElement.getAttribute('data-pageid');
             // 已选中节点
             if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {
-                // editorUi.editor.setXml();
+                editorUi.editor.setXml();
             }
             // 切换到新的页面
             $(".currentPage").removeClass('currentPage')
@@ -1378,7 +1378,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             60,
             20,
             // 类似链接一样设置
-            '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">输入文本</span>',
+            '输入文本',
             // 'text',
             "文字"
         ),

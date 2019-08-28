@@ -6776,6 +6776,9 @@ if (typeof mxVertexHandler != 'undefined')
             // Overrides class in case of HTML content to add
             // dashed borders for divs and table cells
             var state = this.graph.view.getState(cell);
+            if (state != null && state.style.image) { //不可输入的 禁用
+                this.textarea.setAttribute('contenteditable', false)
+            }
             if (state != null && state.style['html'] == 1)
             {
                 this.textarea.className = 'mxCellEditor geContentEditable';
