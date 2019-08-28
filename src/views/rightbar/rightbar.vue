@@ -12,11 +12,12 @@
     </div>
     <div class="geSidebarContainer geFormatContainer">
       <PageStyle
-        v-if="$store.state.main.type===0 && !showWidgetStyle"
+        v-if="$store.state.main.type===0 && !showWidgetStyle && inited"
         ref="pageStyle"
+        :key="refresh"
       />
       <DialogStyle
-        v-if="$store.state.main.type===1 && !showWidgetStyle"
+        v-if="$store.state.main.type===1 && !showWidgetStyle && inited"
         :key="refresh"
       />
       <WidgetStyleMain v-if="showWidgetStyle" />
@@ -37,14 +38,13 @@ export default {
         return {
             showWidgetStyle:false,
             refresh:100,
+            inited:false,
         }
     },
     created() {},
     mounted() {
-        VueEvent.$on('pageTabEvent',(type)=>{
+        VueEvent.$on('refreshCurrentPage',(type)=>{
             this.$store.dispatch('pageTabIndex',type)
-        })
-        VueEvent.$on('initDialogPos',()=>{
             this.refresh++
         })
     },
@@ -106,7 +106,7 @@ export default {
                     this.$store.commit('widgetChange',new Date().getTime())
                 }
             }
-            this.$refs.pageStyle.init()
+            this.inited = true
         },
     }
 };

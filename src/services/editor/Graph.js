@@ -1661,7 +1661,8 @@ Graph.prototype.getPageLayout = function()
         var w0 = Math.ceil((x + w) / size.width) - x0;
         var h0 = Math.ceil((y + h) / size.height) - y0;
 		
-        return new mxRectangle(x0, y0, w0, h0);
+        //return new mxRectangle(x0, y0, w0, h0); // 控件超出边界 固定宽高
+         return new mxRectangle(0, 0, 1, 1);
     }
 };
 
@@ -6770,7 +6771,6 @@ if (typeof mxVertexHandler != 'undefined')
         var mxCellEditorStartEditing = mxCellEditor.prototype.startEditing;
         mxCellEditor.prototype.startEditing = function(cell, trigger)
         {
-            debugger
             mxCellEditorStartEditing.apply(this, arguments);
 			
             // Overrides class in case of HTML content to add
@@ -6943,7 +6943,6 @@ if (typeof mxVertexHandler != 'undefined')
 		
         mxCellEditor.prototype.toggleViewMode = function()
         {
-            debugger
             var state = this.graph.view.getState(this.editingCell);
             var nl2Br = state != null && mxUtils.getValue(state.style, 'nl2Br', '1') != '0';
             var tmp = this.saveSelection();

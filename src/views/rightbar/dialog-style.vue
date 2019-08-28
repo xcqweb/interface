@@ -120,7 +120,7 @@
     <div
       class="item-container"
       style="position:relative;"
-      :style="{backgroundColor:bgColor,backgroundImage:bgImage}"
+      :style="{backgroundColor:bgColor}"
       @click="pickColor"
     />
     <div
@@ -146,7 +146,6 @@ export default {
             fontText:12,
             bgColor:'#fff',
             fontColor:'#333333',
-            bgImage:'',
             alignIndex1:2,
             alignIndex2:2,
             canvasOffsetTop:0,

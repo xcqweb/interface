@@ -95,8 +95,8 @@ export default {
         return {
             pageDesc:"",
             showScale:false,
-            solidHeight: 768,
-            solidWidth: 1366, // 需求 宽度固定1366 不可修改
+            solidHeight: 800,
+            solidWidth: 1280, // 需求 宽度固定1366 不可修改
             scaleText:'1280*800',
             bgColor:'#fff',
             bgImage:'',
@@ -114,18 +114,23 @@ export default {
     created() {
     },
     mounted() {
-        
+        this.init()
     },
     methods: {
         init() {
-            let myEditor = this.myEditorUi.editor
-            let graph = myEditor.graph
-            backgroundColor = graph.background
+            let graph = this.myEditorUi.editor.graph
+            this.bgColor = backgroundColor = graph.background
+            let {width,height} = graph.pageFormat
+            this.solidWidth = width
+            this.solidHeight = height
+            this.scaleText = width + '*' + height
         },
         changeScale(d,e) {
             this.scaleText = d;
             this.showScale = false;
-            let arr = d.split("*");
+            let arr = d.split("*")
+            this.solidWidth = arr[0]
+            this.solidHeight = arr[1]
             this.myEditorUi.setPageFormat(
                 {
                     height: arr[1],
@@ -140,15 +145,7 @@ export default {
         },
         centerCanvas() {//居中画布
             let graph = this.myEditorUi.editor.graph
-            let con = graph.container
-            let conWidth = con.clientWidth
-            let conHeight = con.clientHeight
-            let {clientWidth,clientHeight} = con.children[1] //svg
-            let canvasView = con.children[0]//画布
-            this.canvasOffsetTop = canvasView.offsetTop
-            this.canvasOffsetLeft = canvasView.offsetLeft
-            con.scrollLeft = (clientWidth - conWidth) / 2
-            con.scrollTop = (clientHeight - conHeight - 36) / 2
+            graph.center(true,true,0.5,0.5)//将画布放到容器中间
         },
         changeScaleInput() {
             this.myEditorUi.setPageFormat(
@@ -177,7 +174,7 @@ export default {
                 return false;
             }
             // 预览图片
-            var reader = new FileReader();
+            let reader = new FileReader();
             reader.readAsDataURL(e.target.files[0]);
             reader.onload = evt => that.setBg(evt.target.result);
         },

@@ -1138,9 +1138,8 @@ function convertsToXml(graph, cell) {
 }
 var SelectPropDialog = function(editorUi, cell) {
     var graph = editorUi.editor.graph;
-    var value = convertsToXml(graph, cell)
     // 获取选中节点
-    var cellInfo = graph.getModel().getValue(cell);
+    var cellInfo = graph.getModel().getValue(cell)
     if (!mxUtils.isNode(cellInfo))
     {
         var doc = mxUtils.createXmlDocument();

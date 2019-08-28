@@ -412,7 +412,7 @@
               style="justify-content:space-between;position:relative;width:100%;"
               @click="progressDialog=true"
             >
-              {{ progressText }}
+              {{ progressTypeText }}
               <img src="../../../assets/images/menu/down_ic.png">
               <ul
                 v-if="progressDialog"
@@ -599,6 +599,7 @@ import {sureDialog} from '../../../services/Utils'
 let newFontColor = "#000000",newBgColor = "#ffffff",newBorderColor = "#000000",name
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
+let picShapeList = ['image','pipeline2','pipeline1','progress','light','lineChart','gaugeChart']
 export default {
     data() {
         return {
@@ -639,11 +640,13 @@ export default {
             pipelineFlow:false,//指示灯下拉框
             pipelineFlowText:'无指示',
             pipelineFlowList:[{name:'无指示',value:'none'},{name:'正向流动',value:'forward'},{name:'反向流动',value:'back'}],
+            pipelineFlowVal:'none',
             progressMax:100,
             progressMin:0,
             progressDialog:false,
-            progressText:'百分比',
-            progressDialogList:[{name:'百分比',value:'percent'},{name:'实际数值',value:'realValue'}],
+            progressTypeText:'百分比',
+            progressTypeVal:'percent',
+            progressDialogList:[{name:'百分比',value:'percent'},{name:'实际数值',value:'real'}],
             chartTitle:true,
             chartLegend:false,
             chartGrid:false,//chart网格线
@@ -692,11 +695,38 @@ export default {
         this.borderLineCls = this.$store.state.main.widgetInfo.borderLineCls
         if(this.shapeName == 'beeline') {
             this.arrowCls = this.$store.state.main.widgetInfo.arrowCls
-        }
-        if(this.shapeName == 'tableBox') {
+        }else if(this.shapeName == 'tableBox') {
             let res = this.getRowColNum(graph)
             this.tableRow = res[0]
             this.tableCol = res[1]
+        }else if(this.shapeName === 'progress') {
+            let progressProps = this.getWidgetProps('progressProps')
+            if(progressProps) {
+                this.progressMax = progressProps.max
+                this.progressMin = progressProps.min
+                if(progressProps.type) {
+                    let findCurrent = this.progressDialogList.find((item)=>{
+                        return item.value == progressProps.type
+                    })
+                    this.progressTypeText = findCurrent.name
+                    this.progressTypeVal = findCurrent.value
+                }
+            }
+        }else if(this.shapeName.includes('pipeline')) {
+            let pipelineProps = this.getWidgetProps('pipelineProps')
+            console.log(pipelineProps)
+            if(pipelineProps) {
+                let findCurrent = this.pipelineFlowList.find((item)=>{
+                    return item.value == pipelineProps.flow
+                })
+                this.pipelineFlowText = findCurrent.name
+                this.pipelineFlowVal = findCurrent.value
+            }
+        }
+        if(picShapeList.includes(this.shapeName)) {
+            graph.setCellStyles(mxConstants.STYLE_ASPECT, 'fixed', graph.getSelectionCells());
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],
+                'values', ['fixed'], 'cells', graph.getSelectionCells()));
         }
     },
     methods: {
@@ -906,18 +936,22 @@ export default {
         },
         changePipelineFlow(d,e) {//管道
             this.pipelineFlowText = d.name
+            this.pipelineFlowVal = d.value
             this.pipelineFlow = false
+            this.setWidgetProps('pipelineProps',{flow:this.pipelineFlowVal})
             e.stopPropagation()
         },
         changeProgress() {
-
+            this.setWidgetProps('progressProps',{max:this.progressMax,val:'',min:this.progressMin})
         },
         hideProgressDialogFun() {
             this.progressDialog = false
         },
         changeProgressTypeDialog(d,e) {//数值范围
-            this.progressText = d.name
+            this.progressTypeText = d.name
+            this.progressTypeVal = d.value
             this.progressDialog = false
+            this.setWidgetProps('progressProps',{type:this.progressTypeVal,val:''})
             e.stopPropagation()
         },
         pickBgChartColor() {//chart 设置背景色
@@ -975,6 +1009,30 @@ export default {
             }
             modelInfo.setAttribute('actionsInfo', JSON.stringify(actions))
             graph.getModel().setValue(cell, modelInfo)
+        },
+        getCellInfo() {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let cellInfo = graph.getModel().getValue(cell)
+            return cellInfo
+        },
+        setWidgetProps(widgetProp,props) {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let cellInfo = graph.getModel().getValue(cell)
+            let attrObj = this.getWidgetProps(widgetProp)
+            let newAttr = JSON.stringify(Object.assign({},attrObj,props))
+            cellInfo.setAttribute(widgetProp,newAttr)
+            graph.getModel().setValue(cell, cellInfo)
+        },
+        getWidgetProps(widgetProp) {
+            let cellInfo = this.getCellInfo()
+            let attr = cellInfo.getAttribute(widgetProp)
+            let attrObj = null
+            if(attr) {
+                attrObj = JSON.parse(attr)
+            }
+            return attrObj
         },
     }
 };

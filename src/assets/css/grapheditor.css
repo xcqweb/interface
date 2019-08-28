@@ -1,3 +1,4 @@
+:root{--progressPercent:10%;}
 .geEditor {
  	position: relative;
 	height:100%;
@@ -1569,6 +1570,12 @@ button.buttonTag, input.inputTag {
 	color: #fff !important;
 }
 
+.round-progress{
+	background:#fff;
+	border:solid 6px #7D7D7D;
+	text-align:center;
+}
+
 /* 组态动画效果 */
 .animate-blink{
 	animation: blink 1s ease infinite;
@@ -1580,4 +1587,31 @@ button.buttonTag, input.inputTag {
 	100% {
 		opacity:1;
 	}
+}
+ .progressbar-wrap {
+ 	position: relative;
+ 	width: 100px;
+ 	z-index: 2;
+ }
+ .progressbar-wrap .progressbar-common {
+ 	border: solid 4px #7D7D7D;
+ 	height: 24px;
+ 	border-radius: 20%;
+ }
+ .progressbar-wrap .progressbar-back {
+ 	background: #fff; 
+ 	width: 100%;
+ }
+ .progressbar-wrap .progressbar {
+ 	position: relative;
+ 	background: #7D7D7D;
+ 	top: -32px;
+ 	width: 100%;
+ }
+ .progressbar-wrap .progress {
+ 	animation: progress 1s;
+ }
+ @keyframes progress {
+  from { width: 0%; }
+  to { width: var(--progressPercent); }
 }
