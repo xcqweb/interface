@@ -66,18 +66,24 @@
     </div>
     <div
       class="item-container"
-      style="position:relative;"
+      style="position:relative;margin-bottom:4px;"
       :style="{backgroundColor:bgColor,backgroundImage:bgImage}"
       @click="pickColor"
     />
     <div
       class="item-container setBackgroundImg"
-      style="justify-content:center;height:90px;margin-top:4px;"
+      style="justify-content:center;height:98px;padding:0;"
       @click="setBackgroundImg"
     >
       <div style="text-align:center;">
-        <img src="../../assets/images/rightsidebar/bg_ic_widget.png">
-        <div>选择背景图案</div>
+        <img
+          :src="bgPic"
+          :style="bgPicStyle"
+          style="width:100%;"
+        >
+        <div v-show="isShowBgText">
+          选择背景图案
+        </div>
         <input
           ref="chooseImg"
           style="display:none;"
@@ -89,7 +95,9 @@
   </div>
 </template>
 <script>
-let backgroundColor
+import {mxClient} from '../../services/mxGlobal'
+import {tipDialog} from '../../services/Utils'
+let backgroundColor,localImage
 export default {
     data() {
         return {
@@ -109,6 +117,9 @@ export default {
                 '1024*768',
                 '2560*1600',
             ],
+            bgPic:require('../../assets/images/rightsidebar/bg_ic_widget.png'),
+            isShowBgText:true,
+            bgPicStyle:{height:'auto'}
         }
     },
     created() {
@@ -118,8 +129,13 @@ export default {
     },
     methods: {
         init() {
-            let graph = this.myEditorUi.editor.graph
+            let editor = this.myEditorUi.editor
+            let graph = editor.graph
             this.bgColor = backgroundColor = graph.background
+            let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
+            if(bgUrl) {
+                this.changeBg()
+            }
             let {width,height} = graph.pageFormat
             this.solidWidth = width
             this.solidHeight = height
@@ -162,21 +178,38 @@ export default {
         setBackgroundImg() {
             this.$refs.chooseImg.click();
         },
+        changeBg(url) {
+            mxClient.IS_ADD_IMG = true
+            mxClient.IS_ADD_IMG_SRC = url
+            this.bgPic = url
+            this.bgPicStyle = {height:'94px'}
+            this.isShowBgText = false
+            this.myEditorUi.editor.graph.view.validateBackground()
+        },
         setBg(url) {
-            window.mxClient.IS_ADD_IMG = true;
-            window.mxClient.IS_ADD_IMG_SRC = url;
-            this.myEditorUi.editor.graph.view.validateBackground();
+            this.changeBg(url)
+            let editor = this.myEditorUi.editor
+            //上传背景图片
+
+            let formData = new FormData()
+            formData.append('file', localImage)
+            formData.append('materialLibraryId',"");
+            this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, function(res) {
+                editor.pages[editor.currentPage].style.backgroundUrl = `url('${res.picUrl}')`
+            })
         },
         fileChange(e) {
-            let that = this;
-            if (e.target.files[0].size >= 10485760) {
-                // alert("warn", "背景图片大小不得超过10M");
-                return false;
+            if(e.target.files && e.target.files.length) {
+                if (e.target.files[0].size >= 5 * 1024 * 1024) {
+                    tipDialog(this.myEditorUi,`背景图片大小不得超过5M`)
+                    return false
+                }
+                // 预览图片
+                let reader = new FileReader()
+                localImage = e.target.files[0]
+                reader.readAsDataURL(localImage)
+                reader.onload = evt => this.setBg(evt.target.result)
             }
-            // 预览图片
-            let reader = new FileReader();
-            reader.readAsDataURL(e.target.files[0]);
-            reader.onload = evt => that.setBg(evt.target.result);
         },
         pickColor() {
             this.myEditorUi.pickColor(backgroundColor || 'none',color=>{

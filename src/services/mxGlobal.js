@@ -15,7 +15,8 @@ let mxResources = window.mxResources
 let mxEventObject = window.mxEventObject
 let mxGraphView = window.mxGraphView
 let mxPopupMenu = window.mxPopupMenu
+let mxClient = window.mxClient
 export {
     Graph, Editor, EditorUi, Toolbar, mxUtils, mxEvent, Menu, mxConstants, mxCell, mxGeometry, Dialog,
-    mxRectangle, mxResources, mxEventObject, mxGraphView, mxPopupMenu
+    mxRectangle, mxResources, mxEventObject, mxGraphView, mxPopupMenu, mxClient
 }

@@ -288,22 +288,40 @@ function actionClose(action, applyData) {
  * 触发事件
  * @param {object} action 
  */
-function effectEvent(action, mainProcess,applyData) {
+function effectEvent(action, mainProcess, applyData) {
     switch (action.effectAction) {
         case 'show':
-            actionShow(action, mainProcess);
+            actionShow(action, mainProcess)
             break;
         case 'hide':
-            actionHide(action, applyData);
+            actionHide(action, applyData)
             break;
         case 'open':
-            actionOpen(action, mainProcess);
+            actionOpen(action, mainProcess)
             break;
         case 'close':
-            actionClose(action, applyData);
+            actionClose(action, applyData)
+            break;
+        case 'change'://控件切换状态
+            actionChange(action)
             break;
         default:
             break;
+    }
+}
+/**
+ * 把目标控件切换 为选中的状态
+ * @param {*} action 
+ * @param {*} cellInfo 
+ */
+function actionChange(action) {
+    let cellCon = document.getElementById('palette_' + action.link)
+    let {stateInfo} = action
+    if (stateInfo.animateCls) {
+        cellCon.classList.add(stateInfo.animateCls)
+    }
+    for (let key in stateInfo.style) {
+        cellCon.style[key] = stateInfo.style[key]
     }
 }
 
@@ -322,11 +340,12 @@ function actionHide(action, applyData) {
 }
 
 /**
- * 绑定事件
+ * 绑定事件 （2019.8.30 版本后，mouseEvent只有click事件了，为了兼容以前的生产版本上的应用，暂时留着其他的事件）
  * @param {object} ele DOM节点
  * @param {Array} ele DOM节点
  */
-function bindEvent(ele, actionsInfo, mainProcess) {
+function bindEvent(ele, cellInfo, mainProcess, applyData) {
+    let {actionsInfo} = cellInfo
     if (actionsInfo) {
         for (let action of actionsInfo) {
             if (action.mouseEvent !== 'unset' && action.effectAction !== 'unset' && action.link) {
@@ -334,18 +353,18 @@ function bindEvent(ele, actionsInfo, mainProcess) {
                     // 单选、复选的选中和取消选中事件
                     ele.addEventListener('click', function() {
                         if (ele.checked && action.mouseEvent === 'select') {
-                            effectEvent(action, mainProcess);
+                            effectEvent(action, mainProcess, applyData);
                         } else if (!ele.checked && action.mouseEvent === 'unselect') {
-                            effectEvent(action, mainProcess);
+                            effectEvent(action, mainProcess, applyData);
                         }
                     })
                 } else if ((action.mouseEvent === 'select' || action.mouseEvent === 'unselect') && ele.nodeName == 'SELECT') {
                     // 下拉框的选中和取消选中事件
                     ele.addEventListener('change', function() {
                         if (ele.value !== '请选择' && action.mouseEvent === 'select') {
-                            effectEvent(action, mainProcess);
+                            effectEvent(action, mainProcess, applyData);
                         } else if (ele.value === '请选择' && action.mouseEvent === 'unselect') {
-                            effectEvent(action, mainProcess);
+                            effectEvent(action, mainProcess, applyData);
                         }
                     })
                 } else {
@@ -357,7 +376,7 @@ function bindEvent(ele, actionsInfo, mainProcess) {
                             e.cancelBubble = true;
                         }
                         // 触发事件
-                        effectEvent(action, mainProcess);
+                        effectEvent(action, mainProcess, applyData);
                     })
                 }
             }
@@ -546,22 +565,9 @@ function dealCharts(cell) {
     })
     return con
 }
-function bindState(cellCon,statesInfo) {
-    cellCon.addEventListener('click',()=>{
-        if(!statesInfo) {
-            return
-        }
-        let checkState = statesInfo.find((item)=>{//获取选中的state
-            return item.check
-        })
-        cellCon.classList.add(checkState.animateCls)
-        for (let key in checkState.style) {
-            cellCon.style[key] = checkState.style[key]
-        }
-    })
-}
+ 
 
 export {
     removeEle, destroyWs, geAjax, insertImage, inserEdge, insertSvg, bindEvent, setCellStatus, showTips,
-    dealProgress, dealPipeline, dealCharts, bindState
+    dealProgress, dealPipeline, dealCharts
 }

@@ -933,12 +933,9 @@ Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, resu
  */
 Sidebar.prototype.deletePage = function (ele, pageType) {
     // 删除后应该显示的页面
-    // const pageType = this.editorUi.editor.currentType;
-    // console.log(pageType)
+   
     const restList = this.editorUi.editor.pagesRank[pageType]
-    console.log(restList)
     if (restList.length <= 1) {
-        // alert('至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
         tipDialog(this.editorUi,'至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
         return;
     } else {

@@ -17,7 +17,7 @@ let configSvg = ['drop', 'circle', 'diamond', 'square', 'pentagram']
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
 
 
-import {removeEle,destroyWs,insertImage,inserEdge,insertSvg,bindEvent,dealProgress,dealPipeline,dealCharts,bindState} from './util'
+import {removeEle,destroyWs,insertImage,inserEdge,insertSvg,bindEvent,dealProgress,dealPipeline,dealCharts} from './util'
 import {createWsReal,createWsAlarm} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -42,34 +42,52 @@ class PreviewPage {
         return Object.keys(this.content);
     }
     // 生成弹窗
-    createDialog(id, pagetitle) {
+    createDialog(page) {
+        let {id,title,xml} = page
+        const xmlDoc = mxUtils.parseXml(xml).documentElement
+        let contentBgColor = xmlDoc.getAttribute('background')
+        let contentWidth = xmlDoc.getAttribute('pageWidth')
+        let contentHeight = xmlDoc.getAttribute('pageHeight')
+
+        let {fontSize,color,lineHeight,textAlign,background} = page.style
+
+        if(!lineHeight) {
+            lineHeight = '36px'
+        }
+        if(!textAlign) {
+            textAlign = 'center'
+        }
         let bg = document.createElement('div')
         bg.className = 'bg';
         bg.id = 'bg_' + id;
         document.getElementById('geDialogs').appendChild(bg)
         let dialog = document.createElement('div');
         dialog.className = 'geDialog';
-        dialog.style.width = pageWidth + 'px';
-        dialog.style.height = pageHeight + 'px';
+        dialog.style.width = contentWidth + 'px';
+        dialog.style.height = contentHeight + 'px';
         dialog.id = id;
         // 标题
-        let title = document.createElement('p');
-        title.className = 'geDialogTitle';
-        title.innerHTML = pagetitle;
-        dialog.appendChild(title);
+        let titleEl = document.createElement('p')
+        titleEl.className = 'geDialogTitle'
+        titleEl.style.cssText = `width:${contentWidth}px;text-align:${textAlign};line-height:${lineHeight};
+            font-size:${fontSize};color:${color};background:${background};`
+        titleEl.innerHTML = title
+        dialog.appendChild(titleEl)
         // 点击关闭弹窗
-        title.addEventListener('click', () => {
+        titleEl.addEventListener('click', () => {
             removeEle(dialog);
             removeEle(bg);
             // 关闭websocket
             destroyWs(applyData, id);
         })
         // 弹窗正文
-        let content = document.createElement('div');
+        let content = document.createElement('div')
+
         content.className = 'geDialogContent'
-        dialog.appendChild(content);
-        document.getElementById('geDialogs').appendChild(dialog);
-        return content;
+        content.style.cssText = `width:${contentWidth}px;height:${contentHeight}px;background:${contentBgColor};`
+        dialog.appendChild(content)
+        document.getElementById('geDialogs').appendChild(dialog)
+        return content
     }
     // 解析所有控件节点
     parseCells(root) {
@@ -323,7 +341,7 @@ class PreviewPage {
             this.gePreview.style.height = pageHeight + 'px'
         } else {
             // 弹窗页面
-            let layerContent = this.createDialog(page.id, page.title)
+            let layerContent = this.createDialog(page)
             layerContent.innerHTML = ``;
             this.renderPages(cells, layerContent, fileSystem, shapeXlms)
         }
@@ -362,6 +380,7 @@ class PreviewPage {
 
     // 渲染控件节点
     renderCell(cell, fileSystem, shapeXlms) {
+        console.log(cell)
         const shapeName = cell.shapeName;
         let cellHtml;
         if (shapeName === 'image') {
@@ -481,9 +500,7 @@ class PreviewPage {
         cellHtml.style.top = cell.y + 'px';
         cellHtml.id = `palette_${cell.id}`
         // 绑定事件
-        bindEvent(cellHtml, cell.actionsInfo, this.mainProcess)
-        //绑定状态
-        bindState(cellHtml,cell.statesInfo)
+        bindEvent(cellHtml, cell, this.mainProcess, applyData)
         // 浮窗
         if (cell.bindData && cell.bindData.point && cell.bindData.params.length > 0) {
             if (cell.bindData.fillVariable) {

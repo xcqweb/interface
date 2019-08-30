@@ -61,7 +61,7 @@ import {mxUtils} from '../../../services/mxGlobal'
 let cells,graph
 let currentStateItem,currentWidgetItem
 export default{
-    props:['currentPageWidgets','currentEditItem','bindActions'],
+    props:['currentPageWidgets','bindActions'],
     data() {
         return {
             isWidgetClick:false,
@@ -71,8 +71,29 @@ export default{
     mounted() {
         graph = this.myEditorUi.editor.graph
         cells = graph.getModel().cells
+        
     },
     methods: {
+        checkCurrent(currentEditItem) { //当前控件和状态选中
+            this.isWidgetClick = true
+            this.currentPageWidgets.forEach(d=>{
+                if(d.id == currentEditItem.id) {
+                    d.selected = true
+                    this.currentWidgetItem = d
+                }else{
+                    d.selected = false
+                }
+            })
+            this.states = this.getWidgetStatesById(this.currentWidgetItem.id)
+            this.states.forEach((d)=>{
+                if(d.id == currentEditItem.stateId) {
+                    d.check = true
+                    this.currentStateItem = d
+                }else{
+                    d.check = false
+                }
+            })
+        },
         hide() {
             this.$emit("submitMutual")
         },
@@ -92,7 +113,7 @@ export default{
                 tipDialog(this.myEditorUi,`该控件已经绑定了${currentStateItem.name}状态`)
                 return
             } 
-            this.$emit("submitMutual",{mutualType:3,id:currentWidgetItem.id,stateId:currentStateItem.id,stateName:currentStateItem.name,innerType:"palette"})
+            this.$emit("submitMutual",{mutualType:3,id:currentWidgetItem.id,innerType:"palette",stateInfo:currentStateItem})
         },
         checkWidget(item) {
             currentWidgetItem = item

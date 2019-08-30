@@ -623,31 +623,15 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
         if (state != null)
         {
             var shapeName = state.style.shape;
-            console.log(shapeName)
-            // if (graph.getSelectionCount() > 1 && shapeName !== 'menuCell' && shapeName !== 'menulist')
-            // {
-            //     // 选择多个节点，增加组合操作
-            //     menu.addSeparator();
-            //     this.addMenuItems(menu, ['group'], null, evt);
-            // }
-            // else if (graph.getSelectionCount() == 1 && !graph.getModel().isEdge(cell) && !graph.isSwimlane(cell) &&
-			// 		graph.getModel().getChildCount(cell) > 0 && shapeName !== 'menulist')
-            // {
-            //     // 选择组合内的节点，增加取消组合操作
-            //     menu.addSeparator();
-            //     this.addMenuItems(menu, ['ungroup'], null, evt);
-            // }
             // 选中单个节点,展示不同的右键菜单
             if (graph.getSelectionCount() == 1)
             {
                 if (!graph.getModel().isEdge(cell) && !graph.isSwimlane(cell) && graph.getModel().getChildCount(cell) > 0 && shapeName !== 'menulist') {
                     // 选择组合内的节点，增加取消组合操作
                     menu.addSeparator();
-                    // this.addMenuItems(menu, ['ungroup'], null, evt);
                     this.addMenuItems(menu, ['copy', 'cut', 'paste', '-', 'toFront', 'toBack', '-', 'group', 'ungroup', '-', 'resetHide', 'delete'], null, evt);
                 } else {
                     if (shapeName == "menulist") { // 菜单
-                        // this.addMenuItems(menu, ['delete', '-'], null, evt);
                         this.addMenuItems(menu, ['copy', 'cut', 'paste', '-'], null, evt);
                     } else if (shapeName == "menuCell"){
 
@@ -659,8 +643,6 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                     let cellArray = ['menuCell', 'tableCell']
                     if (!cellArray.includes(shapeName)) {
                         this.addMenuItems(menu, ['toFront', 'toBack', '-','group', 'ungroup', '-'], null, evt);
-                        // menu.addSeparator();
-                        // this.addMenuItems(menu, [], null, evt);
                     }
                     menu.addSeparator();
                     let arr = ['rectangle', 'ellipse', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag', 'text', 'light', 'progress', 'pipeline1', 'pipeline2', 'userimage', 'gaugeChart', 'lineChart']
@@ -672,14 +654,12 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                         this.addMenuItem(menu, 'configLink', null, evt).firstChild.innerHTML = '配置...';
                     } else if (shapeName == 'rectangle') {
                         // 矩形
-                        // this.addMenuItem(menu, 'paletteData', null, evt);
                     } else if (shapeName === 'select') {
                         // 下拉列表
                         this.addMenuItem(menu, 'selectProp', null, evt).firstChild.innerHTML = '属性...';
                     } else if (shapeName == 'image') {
                         // 编辑图片
                         this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = '<label class="imageRadio" style="margin:1px 0"><input type="file" id="chooseImage" title="" accept=".jpg,.jpge,.gif,.png"/>选择图片...</label>';
-                        // this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = '选择图片...';
                     } else if (shapeName == 'menuCell') {
                         // 菜单
                         this.addMenuItems(menu, ['insertMenuBefore', 'insertMenuAfter', 'delete'], null, evt);
