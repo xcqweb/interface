@@ -6,7 +6,8 @@
       class="left-sidebar-model"
       :title="datasouresAlertName"
       :mask-closable="false"
-      @on-cancel="cancel"
+      @on-cancel="cancelHandle"
+      @on-ok="saveHandle"
     >
       <div class="content-top">
         <div class="content-top-common contnt-top-form1">
@@ -17,10 +18,18 @@
             <FormItem
               :label="dataName"
             >
-              <DataSourceSelect
-                :datalist="deviceNameArr"
-                :modelvalue="modelvalue2"
-              />
+              <Select
+                v-model="modelvalue1"
+                style="height:24px"
+              >
+                <Option 
+                  v-for="(item, index) in dataNameArr"
+                  :key="index"
+                  :value="item.value"
+                >
+                  {{ item.label }}
+                </Option>
+              </Select>
             </FormItem>
           </Form>
         </div>
@@ -32,10 +41,19 @@
             <FormItem
               :label="deviceType"
             >
-              <DataSourceSelect
-                :datalist="deviceNameArr"
-                :modelvalue="modelvalue2"
-              />
+              <Select
+                v-model="modelvalue2"
+                style="height:24px"
+                @on-change="deviceTypeChange"
+              >
+                <Option 
+                  v-for="(item, index) in deviceNameArr"
+                  :key="index"
+                  :value="item.deviceTypeId"
+                >
+                  {{ item.deviceTypeName }}
+                </Option>
+              </Select>
             </FormItem>
           </Form>
         </div>
@@ -43,12 +61,15 @@
           <Button 
             type="primary"
             size="small"
+            style="height:24px"
+            @click.stop.prevent="selectDeviceType"
           >
             {{ selectText }}
           </Button>
           <Button
             small
             size="small"
+            style="height:24px"
             @click.stop.prevent="resetHandle"
           >
             {{ resetText }}
@@ -59,8 +80,11 @@
         <div class="content-common content-left">
           <div class="content-common-top">
             <Input
+              v-model="inputParamName"
+              class="inputParamName"
               :placeholder="placeTextArr[0]"
               suffix="ios-search"
+              @on-focus="focusHandle"
             />
           </div>
           <div class="content-common-center">
@@ -75,10 +99,10 @@
                 <Checkbox
                   v-for="(item, index) in paramsNameList"
                   :key="index"
-                  :label="item.id"
+                  :label="item.paramId"
                   size="small"
                 >
-                  <span>{{ item.name }}</span>
+                  <span>{{ item.paramName }}</span>
                 </Checkbox>
               </CheckboxGroup>
             </div>
@@ -100,14 +124,15 @@
                 :value="checkAllArr[1]"
                 @click.prevent.native="handleCheckAll(1)"
               >
-                全选
+                {{ selectAll }}
               </Checkbox>
             </div>
             <div class="data-botton-right">
               <template v-if="paramsNameList.length">
                 <Page 
-                  :current="1" 
-                  :total="50" 
+                  :current="1"
+                  :page-size="paramNumber"
+                  :total="paramTotal" 
                   simple
                 />
               </template>
@@ -117,8 +142,11 @@
         <div class="content-common content-right">
           <div class="content-common-top">
             <Input 
+              v-model="inputDeviceName"
               :placeholder="placeTextArr[1]"
+              class="inputDeviceName"
               suffix="ios-search"
+              @on-focus="focusHandle"
             />
           </div>
           <div class="content-common-center">
@@ -133,10 +161,10 @@
                 <Checkbox
                   v-for="(item, index) in deviceNameList"
                   :key="index"
-                  :label="item.id"
+                  :label="item.deviceId"
                   size="small"
                 >
-                  <span>{{ item.name }}</span>
+                  <span>{{ item.deviceName }}</span>
                 </Checkbox>
               </CheckboxGroup>
             </div>
@@ -158,14 +186,15 @@
                 :value="checkAllArr[2]"
                 @click.prevent.native="handleCheckAll(2)"
               >
-                全选
+                {{ selectAll }}
               </Checkbox>
             </div>
             <div class="data-botton-right">
               <template v-if="deviceNameList.length">
                 <Page 
                   :current="1" 
-                  :total="50" 
+                  :page-size="deviceNumber"
+                  :total="deviceTotal" 
                   simple
                 />
               </template>
@@ -177,21 +206,23 @@
   </div>
 </template> 
 <script>
-import {Modal, Form,FormItem, Button,Checkbox,CheckboxGroup, Page, Input} from 'iview'
-import DataSourceSelect from './dataSource-select'
+import {Modal, Form,FormItem, Button,Checkbox,CheckboxGroup, Page, Input, Select,Option, Message} from 'iview'
+// import DataSourceSelect from './dataSource-select'
 import NoData from './nodata'
+import {Promise} from 'q';
 export default{
     components: {
         Modal,
         Form,
         FormItem,
-        DataSourceSelect,
         Button,
         Input,
         Checkbox,
         CheckboxGroup,
         NoData,
-        Page
+        Page,
+        Select,
+        Option
     },
     data() {
         return {
@@ -201,49 +232,72 @@ export default{
             derectionArr: ['right', 'right'],
             dataName: '数据源',
             deviceType: '设备类型',
+            selectAll: '全选',
             dataNameArr: [
                 {
                     value: '1',
                     label: 'IOT平台'
                 }
             ],
-            deviceNameArr:[
-                {
-                    value: '1',
-                    label: '深圳'
-                }
-            ],
+            deviceNameArr:[],
             modelvalue1:'1',
-            modelvalue2:'1',
+            modelvalue2:'',
             formValidate: {
                 datasource: ''
             },
             selectText: '搜索',
             resetText: '重置',
-            paramsNameList:[
-                {
-                    name: 'fkafkfks342-y',
-                    id:'321312'
-                },
-                {
-                    name: 'etwiyweuwe-y',
-                    id:'855345'
-                }
-            ],
+            paramsNameList:[],
             deviceNameList:[],
             paramsNameListArr: [],
             deviceNameListArr: [],
             indeterminateArr: ['',false, false],
             checkAllArr: ['',false, false],
             nodata:'暂无数据',
+            paramTotal: '10',
+            paramNumber: '10',
+            deviceNumber: '10',
+            inputParamName: '',
+            inputDeviceName: '',
+            paramIdArr: [],
+            deviceIdArr: []
         }
     },
     created() {
     },
+    mounted() {
+        this.init();
+        let InputEle1 = document.querySelector('.inputParamName input');
+        let InputEle2 = document.querySelector('.inputDeviceName input')
+        InputEle1.oninput = this.debounce(this.InputSelectHandle, 1000 , 1)
+        InputEle2.oninput = this.debounce(this.InputSelectHandle, 1000, 2)
+    },
     methods: {
+        init() {
+            this.requestUtil.get(this.urls.devicetypelist.url).then((res) => {
+                this.deviceNameArr = res || []
+            }).catch(() => {
+                Message.error('系统繁忙，请稍后再试试')
+                return false
+            })
+        },
         // 取消事件
-        cancel() {
+        cancelHandle() {
             this.$emit('triggerCancel')
+        },
+        saveHandle() {
+            let studioId = sessionStorage.getItem("applyId") || ''
+            let objData = {
+                studioId,
+                deviceTypeId: this.modelvalue2,
+                deviceIds: this.deviceIdArr,
+                paramIds: this.paramIdArr
+            }
+            // importDataSource
+            this.requestUtil.post(this.urls.importDataSource.url,objData).then((res) => {
+                console.log(res)
+            })
+
         },
         handleCheckAll(number) {
             if (this.indeterminateArr[number]) {
@@ -256,9 +310,9 @@ export default{
             if (this.checkAllArr[number]) {
                 dataArr.forEach((item) => {
                     if (number === 1) {
-                        this.paramsNameListArr.push(item.id)
+                        this.paramsNameListArr.push(item.paramId)
                     } else {
-                        this.deviceNameListArr.push(item.id)
+                        this.deviceNameListArr.push(item.deviceId)
                     }
                 })
             } else {
@@ -279,18 +333,104 @@ export default{
                 this.indeterminateArr[number] = false;
                 this.checkAllArr[number] = false;
             }
-            
+            if (+number === 1) {
+                this.paramIdArr = data
+            } else if(+number === 2) {
+                this.deviceIdArr = data
+            }
+        },
+        focusHandle() {
+            if (!this.modelvalue2) {
+                Message.warning(`请选择设备类型`)
+            } 
+        },
+        InputSelectHandle(value, type) {
+            if (!this.modelvalue2) {
+                Message.warning(`请选择设备类型`)
+            } else {
+                let objData = {
+                    deviceTypeId : this.modelvalue2
+                }
+                if (+type === 1) {
+                    objData.paramName = value.trim()
+                }
+                if (+type === 2) {
+                    objData.deviceName = value.trim()
+                }
+                let newUrl = +type === 1 ? this.urls.deviceParamList.url : this.urls.deviceEquipList.url
+                this.requestUtil.post(newUrl,objData).then((res) => {
+                    if (+type === 1) {
+                        this.paramsNameList = res.records || []
+                    } else {
+                        this.deviceNameList = res.records || []
+                    }
+                })
+            }
+        },
+        debounce(handle, deLay, type) {
+            var timer = null
+            return function() {
+                clearTimeout(timer)
+                timer = setTimeout(() => {
+                    handle.call(this, this.value, type)
+                }, deLay);
+            }
+        },
+        // 搜素事件
+        async selectDeviceType() {
+            if (!this.modelvalue2) {
+                Message.warning(`${this.deviceType}不能为空`)
+            } else { // 搜素
+                let objData = {
+                    deviceTypeId: this.modelvalue2
+                }
+                const [pramsName, deviceName] = await Promise.all([
+                    this.requestUtil.post(this.urls.deviceParamList.url, objData),
+                    this.requestUtil.post(this.urls.deviceEquipList.url, objData)
+                ])
+                this.paramsNameList = pramsName.records || []
+                this.deviceNameList = deviceName.records || []
+                this.paramTotal = pramsName.total || 10
+                this.deviceTotal = deviceName.total || 10
+                this.paramNumber = pramsName.size || 10
+                this.deviceNumber = deviceName.size || 10
+            }
+        },
+        deviceTypeChange() {
+            this.paramsNameList = []
+            this.deviceNameList = []
         },
         // 重置事件
         resetHandle() {
             this.paramsNameList = []
             this.deviceNameList = []
+            this.modelvalue2 = ''
         }
     }
 }
 </script>
 <style lang="less" scoped>
   .left-sidebar-model{
+      /deep/.ivu-select{
+        .ivu-select-selection{
+          height:24px;
+        }
+        .ivu-select-placeholder{
+          height:24px;
+          line-height:24px;
+        }
+        .ivu-select-selected-value{
+            height:24px;
+            line-height:22px;
+        }
+        .ivu-select-dropdown{
+          .ivu-select-dropdown-list{
+            .ivu-select-item{
+              padding: 0 16px 0;
+            }
+          }
+        }
+      }
     /deep/.ivu-modal{
             /deep/.ivu-modal-content{
                 background-color:#f5f5f5 !important;
@@ -334,7 +474,7 @@ export default{
                         margin-left:10px;
                       }
                       &.contnt-top-form3{
-                        padding-top: 11px;
+                        padding-top: 12px;
                         padding-left:10px;
                       }
                     }

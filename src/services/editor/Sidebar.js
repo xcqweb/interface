@@ -1016,6 +1016,7 @@ Sidebar.prototype.renameNode = function(ele, pageType) {
 }
 /*复制页面*/
 Sidebar.prototype.copyPage = function (ele,pageType) {
+
  let  id = '';
  const currtitle = ele.innerText
  var xml = this.editorUi.editor.defaultXml[pageType];
@@ -1031,6 +1032,7 @@ Sidebar.prototype.copyPage = function (ele,pageType) {
     type: pageType
   };
   let _li = document.createElement('li');
+    console.log(pageType)
   let resPage = this.editorUi.editor.addPage(page,pageType);
   _li.setAttribute('data-pageid', resPage.id);
     _li.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${titleText}</span><span class="right-icon-dolt"></span>`;
@@ -1377,7 +1379,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             60,
             20,
             // 类似链接一样设置
-            '输入文本',
+            '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">输入文本</span>',
             // 'text',
             "文字"
         ),

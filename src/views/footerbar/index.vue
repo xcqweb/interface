@@ -63,8 +63,8 @@ export default {
     },
     methods: {
         close() {
-            this.bottom = BOTTOM
-            mainContainer.style.height = mainContainerOriginHeight + 'px'
+            // this.bottom = BOTTOM
+            // mainContainer.style.height = mainContainerOriginHeight + 'px'
         },
         init() {
             mainContainer = document.querySelector(".geDiagramContainer")
