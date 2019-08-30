@@ -138,6 +138,7 @@ export default{
                 id:item.id,
                 title:item.title,
                 selected:false,
+                hide:true,
             }
         })
         let graph = this.myEditorUi.editor.graph

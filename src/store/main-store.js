@@ -9,9 +9,7 @@ const mutations = {
         state.type = type
     },
     getWidgetInfo(state,graph) {
-        let widgetInfo = {
-
-        }
+        let widgetInfo = {}
         let cell = graph.getSelectionCell()
         let stateWidget = graph.view.getState(cell);
         let shapeInfo = stateWidget && stateWidget.style;
@@ -20,9 +18,11 @@ const mutations = {
         let cellInfo = graph.getModel().getValue(cell);
         let widgetName = cellInfo && cellInfo.attributes && cellInfo.attributes['palettename'] && cellInfo.attributes['palettename'].nodeValue || '' //控件名称
         widgetInfo.widgetName = widgetName
-        
-        let geo = graph.getCellGeometry(cell)
-        widgetInfo.geo = geo
+        if (stateWidget) {
+            widgetInfo.geo = stateWidget.cellBounds
+        }else{
+            widgetInfo.geo = {}
+        }
 
         let {mxUtils,mxConstants} = require('../services/mxGlobal')
         let fontSize = 12
@@ -35,7 +35,7 @@ const mutations = {
             color = mxUtils.getValue(stateWidget.style, 'fontColor', null)
             bgColor = mxUtils.getValue(stateWidget.style, 'fillColor', null)
             borderColor = mxUtils.getValue(stateWidget.style, 'strokeColor', null)
-            if(shapeInfo.shape == 'image') {
+            if(shapeInfo.shape.includes('image')) {
                 borderColor = mxUtils.getValue(stateWidget.style, 'imageBorder', "#000000")
             }
             borderBold = mxUtils.getValue(stateWidget.style, 'strokeWidth', 1)

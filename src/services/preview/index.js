@@ -10,6 +10,7 @@ let shapeXlms, applyInfo, fileSystem
 let gePreview
 // 浮窗节点
 let formatLayer
+let ev//自定义事件，echart dom 渲染后，通知初始化echarts
 /**
  * 加载控件的xml配置文档
  */
@@ -43,6 +44,8 @@ class Main {
 
     // 初始化
     async init() {
+        ev = document.createEvent('CustomEvent')
+        ev.initCustomEvent('initEcharts', false, true)
         gePreview = document.getElementById('gePreview')
         formatLayer = document.getElementById('formatLayer')
         let idArr = /id=(.+?)$/.exec(location.search)
@@ -79,12 +82,14 @@ class Main {
     renderNormal() {
         let pageContent = this.previewPage.content[this.pageId];
         this.previewPage.parsePage(pageContent, fileSystem, shapeXlms)
+        document.dispatchEvent(ev)
     }
 
     // 渲染弹窗
     renderDialog(id) {
         let pageContent = this.previewPage.content[id];
         this.previewPage.parsePage(pageContent, fileSystem, shapeXlms)
+        document.dispatchEvent(ev)
     }
 
     // 渲染浮窗

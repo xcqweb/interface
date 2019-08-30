@@ -108,7 +108,7 @@ export default{
             ]
         }
     },
-    mounted() {
+    mounted() { 
     },
     methods: {
         tabsSwitchData(index) {

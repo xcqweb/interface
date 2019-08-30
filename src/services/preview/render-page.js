@@ -17,7 +17,7 @@ let configSvg = ['drop', 'circle', 'diamond', 'square', 'pentagram']
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
 
 
-import {removeEle,destroyWs,insertImage,inserEdge,insertSvg,bindEvent,dealProgress,dealPipeline} from './util'
+import {removeEle,destroyWs,insertImage,inserEdge,insertSvg,bindEvent,dealProgress,dealPipeline,dealCharts,bindState} from './util'
 import {createWsReal,createWsAlarm} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -62,7 +62,7 @@ class PreviewPage {
             removeEle(dialog);
             removeEle(bg);
             // 关闭websocket
-            destroyWs(id);
+            destroyWs(applyData, id);
         })
         // 弹窗正文
         let content = document.createElement('div');
@@ -83,11 +83,13 @@ class PreviewPage {
                 // 节点id
                 let id = item.getAttribute('id');
                 // 节点交互
-                let actionsInfo = JSON.parse(item.getAttribute('actionsInfo'));
+                let actionsInfo = JSON.parse(item.getAttribute('actionsInfo'))
+                // 节点状态
+                let statesInfo = JSON.parse(item.getAttribute('statesInfo'))
                 // 数据绑定
-                let bindData = JSON.parse(item.getAttribute('bindData'));
+                let bindData = JSON.parse(item.getAttribute('bindData'))
                 // 链接
-                let smartBiLink = item.getAttribute('smartBiLink');
+                let smartBiLink = item.getAttribute('smartBiLink')
                 // mxcell节点
                 if (tagName == 'object') {
                     node = item.childNodes[0];
@@ -102,7 +104,6 @@ class PreviewPage {
                 if (parentId == tId && id) {
                     // 节点参数信息
                     let getNodeInfo = new GetNodeInfo(node);
-                    console.log(getNodeInfo)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape');
                     let x, y, width, height, fillColor, strokeColor,strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, selectProps, defaultProp, points, rotation, flipH, flipV,startArrow,endArrow
@@ -117,7 +118,7 @@ class PreviewPage {
                     align = getNodeInfo.getStyles('align') || 'center';
                     fontSize = getNodeInfo.getStyles('fontSize') || '12';
                     strokeStyle = getNodeInfo.getStyles('dashed')
-                    strokeColor = (shapeName == 'image' ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
+                    strokeColor = (shapeName.includes('image') ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
                     // 图片地址
                     image = getNodeInfo.getStyles('image') || null;
                     x = parseFloat(node.childNodes[0].getAttribute('x')) || 0;
@@ -241,6 +242,7 @@ class PreviewPage {
                         image,
                         smartBiLink,
                         actionsInfo,
+                        statesInfo,
                         bindData,
                         hide,
                         verticalAlign,
@@ -263,6 +265,9 @@ class PreviewPage {
                     }else if(shapeName.includes('pipeline')) {
                         let pipelineProps = item.getAttribute('pipelineProps')
                         obj.pipelineProps = pipelineProps
+                    }else if(shapeName.includes('Chart')) {
+                        let chartProps = item.getAttribute('chartProps')
+                        obj.chartProps = chartProps
                     }
                     // 组合节点
                     obj.children = getNode(id);
@@ -304,7 +309,7 @@ class PreviewPage {
         if (page.type === 'normal') {
             // 清除全部websocket
             for (let key in applyData) {
-                destroyWs(key)
+                destroyWs(applyData, key)
             }
             pointData = Object.assign({});
             document.getElementById('geDialogs').innerHTML = ''
@@ -416,6 +421,8 @@ class PreviewPage {
             cellHtml = dealProgress(cell)
         } else if (shapeName.includes('pipeline')) {
             cellHtml = dealPipeline(cell)
+        } else if (shapeName.includes('Chart')) {
+            cellHtml = dealCharts(cell)
         }
         else {
             // 其他
@@ -475,6 +482,8 @@ class PreviewPage {
         cellHtml.id = `palette_${cell.id}`
         // 绑定事件
         bindEvent(cellHtml, cell.actionsInfo, this.mainProcess)
+        //绑定状态
+        bindState(cellHtml,cell.statesInfo)
         // 浮窗
         if (cell.bindData && cell.bindData.point && cell.bindData.params.length > 0) {
             if (cell.bindData.fillVariable) {
