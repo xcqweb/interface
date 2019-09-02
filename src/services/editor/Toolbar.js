@@ -57,59 +57,7 @@ Toolbar.prototype.staticElements = null;
  */
 Toolbar.prototype.init = function()
 {
-    // 新建、保存
-    //this.addItems(['new', 'save'], this.containerList[0]);
-    // 重置视图百分比
-    //this.addItems(['zoomIn'], this.containerList[1]);
-    /* var viewMenu = this.addMenu('', mxResources.get('zoom') + ' (Alt+Mousewheel)', true, 'pageScale', this.containerList[1], true);
-    viewMenu.showDisabled = true;
-    viewMenu.style.whiteSpace = 'nowrap';
-    viewMenu.style.position = 'relative';
-    viewMenu.style.overflow = 'hidden';
-    if (EditorUi.compactUi)
-    {
-        viewMenu.style.width = (mxClient.IS_QUIRKS) ? '58px' : '50px';
-    }
-    else
-    {
-        viewMenu.style.width = (mxClient.IS_QUIRKS) ? '62px' : '36px';
-    } */
-
-    // 放大缩小
-    //this.addItems(['zoomOut'], this.containerList[1]);
-    //this.addItems(['fullScreen'], this.containerList[1]);
-    // 如果缩放后，更新标签
-    /* this.updateZoom = mxUtils.bind(this, function()
-    {
-        viewMenu.innerHTML = Math.round(this.editorUi.editor.graph.view.scale * 100) + '%' +
-			this.dropdownImageHtml;
-
-        if (EditorUi.compactUi)
-        {
-            viewMenu.getElementsByTagName('img')[0].style.right = '1px';
-            viewMenu.getElementsByTagName('img')[0].style.top = '5px';
-        }
-    }); */
-
-    //this.editorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
-    //this.editorUi.editor.addListener('resetGraphView', this.updateZoom);
-    // 复制、粘贴
-    //this.addItems(['copy', 'paste', 'cut', 'duplicate', 'undo', 'redo', 'delete'], this.containerList[2]);
-    // 排版
-    //this.addItems([ 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'], this.containerList[3]);
-    // 置前
-    //this.addItems([ 'toFront', 'toBack'], this.containerList[4]);
-    // 组合
-    //this.addItems([ 'group', 'ungroup'], this.containerList[5]);
-    // 旋转
-    //this.addItems([ 'turn', 'flipV', 'flipH'], this.containerList[6]);
-    let role_auth = JSON.parse(localStorage.getItem('roleAuth')) || [];
-    // 链接发布
-    //let link_pub = ['previewapply'];
-   /*  if (role_auth.indexOf('ADMIN') !== -1 || role_auth.indexOf('SYS_VIEWTOOL_PUSH') !== -1) {
-        link_pub.push('publish');
-    } */
-    //this.addItems(link_pub, this.containerList[7]);
+     
 };
 
 
@@ -298,7 +246,6 @@ Toolbar.prototype.addEnabledState = function(elt)
         }
         else
         {
-            // debugger
             elt.className = classname + ' mxDisabled';
         }
     };
