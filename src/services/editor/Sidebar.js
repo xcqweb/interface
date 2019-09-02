@@ -11,7 +11,6 @@ import requestUtil from '../request'
 import Urls from '../../constants/url'
 import VueEvent from '../VueEvent'
 import { tipDialog, sureDialog } from '../Utils'
-import canvg from "canvg";
 var basicXmlFns = [];
 function Sidebar(editorUi, container, container2)
 {

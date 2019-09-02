@@ -747,6 +747,8 @@ export default {
                                 return false
                             })
                         }
+                    }else {
+                        ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
                     }
                 }
                 this.addListHandle()

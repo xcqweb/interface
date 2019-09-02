@@ -18,7 +18,10 @@
       </div>
     </div>
     <MPage v-show="isPage" />
-    <MDataS v-show="!isPage" />
+    <MDataS 
+      v-if="!isPage" 
+      ref="dataSoucreTab" 
+    />
   </div>
 </template>
 
@@ -33,7 +36,8 @@ export default {
         return{
             tab:1,
             isPage:true,
-            bindDatas: []
+            bindDatas: [],
+            tabShow: true
         }
     },
     created() {
@@ -46,6 +50,14 @@ export default {
         changeTab(index) {
             this.tab = index
             this.isPage = this.tab == 1
+            if (index === 2 && this.tabShow) {
+                this.$nextTick(() => {
+                    this.$refs.dataSoucreTab.getDeviceType()
+                    this.tabShow = false
+                })
+            } else if (index === 1) {
+                this.tabShow = true
+            }
         },
     }
 };

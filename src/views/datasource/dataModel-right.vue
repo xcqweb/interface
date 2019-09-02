@@ -1,20 +1,49 @@
 <template>
   <div class="datamodel-right-wrap">
+    <!--设备类型-->
     <dataRightColum
       :title="titleArr[0]"
       :widthlen="widthlenArr[0]"
       :showtitle="showtitleArr[0]"
     >
       <div class="dataSource-right-content">
-        4
+        <ul
+          v-if="deviceTypeArr.length"
+          class="deviceType-ullist"
+        >
+          <li
+            v-for="(item, index) in deviceTypeArr"
+            :key="index"
+            class="deviceType"
+            :class="numberlistIndex === index ? 'currentList' : ''"
+          >
+            <span 
+              class="deviceType-left"
+              @click="clickDeviceTypeListHandle($event,item.deviceTypeId, index)"
+            >
+              {{ item.deviceTypeName }}
+            </span>
+          </li>
+        </ul>
+        <div 
+          v-else
+          class="no-data-wrap"
+        >
+          <NoData
+            :text="nodata"
+          />
+        </div>
       </div>
     </dataRightColum>
+    <!--模型列表-->
     <dataRightColum
       :title="titleArr[1]"
       :widthlen="widthlenArr[1]"
       :showtitle="showtitleArr[1]"
     >
-      <div class="dataSource-right-content">
+      <div 
+        class="dataSource-right-content"
+      >
         <div class="dataSource-addModel add-condition">
           <span 
             @click.stop.prevent="addModelHandle"
@@ -22,23 +51,40 @@
             {{ addModelText }}
           </span>
         </div>
+        <div class="addMolel-List">
+          <ul id="addModelLisetWaper">
+            <li
+              v-for="(item, index) in ModelNameArr"
+              :key="item.sourceId"
+              :class="modelNumber === index ? 'currentModelList' : ''"
+              @click.stop.prevent="clickModelHandle($event,item.sourceId, item.modelName,item.formula,item.descript,index)"
+              @mouseenter="MouseEnterHandle($event, index)"
+              @mousemove="MouseMoveHandle($event, index)"
+            >
+              {{ item.modelName }}
+            </li>
+          </ul>
+        </div>
       </div>
     </dataRightColum>
+    <!--描述侧-->
     <dataRightColum
+      v-show="ModelNameArr.length" 
       :title="titleArr[2]"
       :widthlen="widthlenArr[2]"
       :showtitle="showtitleArr[2]"
     >
-      <div 
-        class="dataSource-right-content" 
+      <div
+        class="dataSource-right-content"
         style="padding-top:0px;display:flex;flex-direction: column"
       >
         <div class="dataSource-title">
           {{ descript }}
         </div>
         <div class="textare-wrap">
-          <Input 
-            v-model="textareValue" 
+          <Input
+            v-model="textareValue"
+            :disabled="isediting" 
             type="textarea" 
             :placeholder="descriptText"
             :autosize="{maxRows: 3,minRows: 3}" 
@@ -71,12 +117,12 @@
                     >
                       <span class="span-wrap-span1 span-wrap-select">
                         <Select 
-                          v-model="conditionSign" 
+                          v-model="conditionLogicalSelect" 
                           style="width:64px;height:24px;line-height:24px;"
                           :disabled="isediting"
                         >
                           <Option 
-                            v-for="item in conditionSignList" 
+                            v-for="item in conditionLogical" 
                             :key="item.value" 
                             :value="item.value"
                           >
@@ -121,7 +167,10 @@
                       <span class="span-wrap span-wrap-common">
                         <span class="span-wrap-span1">
                           <span class="delete-number">{{ key + 1 }}</span>
-                          <span class="delete-icon" />
+                          <span 
+                            v-if="alldata.data.length > 1"
+                            class="delete-icon" 
+                          />
                         </span>
                         <span 
                           v-if="data.length > 1"
@@ -161,30 +210,32 @@
                     >
                       <template 
                         slot="one" 
-                        slot-scope="{ row }"
+                        slot-scope="{ row, index }"
                       >
                         <Select
                           v-model="row.paramName" 
                           style="width:120px;"
                           :disabled="isediting"
+                          @on-change="treeSelectParamHandle(row.paramName,index, key)"
                         >
                           <Option 
                             v-for="item in conditionSignList" 
-                            :key="item.value" 
-                            :value="item.value"
+                            :key="item.paramId" 
+                            :value="item.paramId"
                           >
-                            {{ item.label }}
+                            {{ item.paramName }}
                           </Option>
                         </Select>
                       </template>
-                      <template 
+                      <template
                         slot="two" 
-                        slot-scope="{ row }"
+                        slot-scope="{ row, index}"
                       >
                         <Select
                           v-model="row.logical" 
                           style="width:80px;"
                           :disabled="isediting"
+                          @on-change="treeSelectLogicalHandle(row.logical,index, key)"
                         >
                           <Option 
                             v-for="item in LogicalSignList" 
@@ -197,7 +248,7 @@
                       </template>
                       <template 
                         slot="three" 
-                        slot-scope="{ row }"
+                        slot-scope="{ row, index}"
                       >
                         <div 
                           v-if="row.logical === '1' || row.logical === '2' "
@@ -207,12 +258,14 @@
                             v-model="row.minValue"
                             class="input-twp-left"
                             :disabled="isediting"
+                            @on-blur="treeMinvalueHandle(row.minValue, index, key)"
                           />
                           <span style="width:10px;text-align:center;">-</span>
                           <Input
                             v-model="row.maxValue"
                             class="input-twp-right" 
                             :disabled="isediting"
+                            @on-blur="treeMaxvalueHandle(row.maxValue, index, key)"
                           />
                         </div>
                         <div
@@ -221,8 +274,9 @@
                         >
                           <Input
                             v-model="row.fixedValue"
-                            placeholder="请输入..."
+                            placeholder="请输入"
                             :disabled="isediting"
+                            @on-blur="treeFixedvalueHandle(row.fixedValue, index, key)"
                           />
                         </div>
                       </template>
@@ -240,6 +294,7 @@
                           添加
                         </Button>
                         <Button
+                          v-if="data.length > 1"
                           size="small"
                           class="condition-icon condition-delete-icon"
                           :disabled="isediting"
@@ -266,91 +321,108 @@
         </div>
       </div>
     </dataRightColum>
+    <SuspensionList
+      v-if="ifShowSuspension"
+      :datalist="SuspensionListName"
+      :style="{left: LeftWidth, top: TopHeight}"
+      @ChildMouseLeaveHandle="ChildMouseLeaveHandle"
+      @renameHandle="renameModelHandle"
+      @deleteHandle="deleteModelHandle"
+      @clickHandleList="clickHandleList"
+    />
   </div>
 </template>
 
 <script>
 import dataRightColum from './data-rightcolum'
-import {Input, Button, Table, Select,Option} from 'iview'
+import SuspensionList from './suspensionList'
+import VueEvent from '../../services/VueEvent.js'
+import NoData from './nodata'
+import {Input, Button, Table, Select,Option, Message} from 'iview'
 const defaultValue = {
     paramName: '',
     logical: '',
-    fixedValue: ''
+    fixedValue: '',
+    minValue: '',
+    maxValue: '',
 }
 export default {
     components: {
         dataRightColum,
+        SuspensionList,
         Input,
         Button,
         Table,
         Select,
-        Option
+        Option,
+        NoData
+    },
+    props:{
+        numberlistindex: {
+            type: Number,
+            default: 0
+        }
     },
     data() {
         return {
-            titleArr:['设备类型','参数列表',''],
+            titleArr:['设备类型','模型列表',''],
             widthlenArr: [200,200,652],
             showtitleArr: [true, true, false],
             descript: '描述',
             descriptText: '描述内容',
             textareValue: '',
             condition: '条件',
-            saveModelText:'保存模型',
+            saveModelText:'编辑模型',
             addConditionText: '添加条件',
             addModelText: '添加模型',
+            ModelNameArr:[],
             heightLen: null,
+            nodata: '暂无数据',
+            numberlistIndex: 0,
+            modelNumber: 0,
+            deviceTypeArr:[],
+            currentDeviceTypeId:'',
+            currenModelId:'',
+            currenModelName:'',
             alldata: {
                 data: [
                     [
                         {
-                            paramName: '1',
-                            logical: '1'
+                            paramName: '',
+                            logical: '',
+                            minValue: '',
+                            maxValue: '',
+                            fixedValue: '',
+                            conditionLogic: ''
                         },
-                        {
-                            paramName: '2',
-                            logical: '3'
-                        }
-                    ],
-                    [
-                        {
-                            paramName: '3',
-                            logical: '4'
-                        },
-                        {
-                            paramName: '4',
-                            logical: '4'
-                        },
-                        {
-                            paramName: '5',
-                            logical: '5'
-                        }
                     ]
                 ]
             },
             columns: [
                 {
-                    title: '参数1',
+                    title: '第一列',
                     width: 125,
                     slot: 'one'
                 },
                 {
-                    title: '参数2',
+                    title: '逻辑',
                     width: 85,
                     slot: 'two'
                 },
                 {
-                    title: '参数3',
+                    title: '区间值',
+                    width: 130,
                     slot: 'three'
                 },
                 {
-                    title: '参数4',
+                    title: '操作',
                     width:80,
                     slot: 'flour'
                 }
             ],
             tdheight: 30,
-            conditionSign: '1',
-            conditionSignList:[
+            conditionLogicalSelect: '',
+            conditionLogical:[
                 {
                     value: '1',
                     label: 'And'
@@ -358,20 +430,9 @@ export default {
                 {
                     value: '2',
                     label: 'Or'
-                },
-                {
-                    value: '3',
-                    label: 'Or'
-                },
-                {
-                    value: '4',
-                    label: 'Or'
-                },
-                {
-                    value: '5',
-                    label: 'Or'
                 }
             ],
+            conditionSignList:[],
             LogicalSignList: [
                 {
                     value: '1',
@@ -406,7 +467,22 @@ export default {
                     label: '小于等于'
                 }
             ],
-            isediting: true
+            isediting: true,
+            studioIdNew:'',
+            SuspensionListName: [
+                {
+                    id: '1',
+                    name: '重命名'
+                },
+                {
+                    id: '2',
+                    name: '删除'
+                }
+            ],
+            ifShowSuspension: false,
+            currentMouseIndex: null,
+            LeftWidth: 0,
+            TopHeight:0
         }
     },
     watch: {
@@ -426,31 +502,133 @@ export default {
                         }
                     }
                 })
-                console.log(this.heightLen)
             }
+        },
+        numberlistindex(value) {
+            this.numberlistIndex = value
+            let deviceId = this.deviceTypeArr[this.numberlistIndex].deviceTypeId
+            this.currentDeviceTypeId = deviceId
+            this.getModelInit(deviceId)
         }
     },
+    created() {
+        this.studioIdNew = sessionStorage.getItem("applyId") || ''
+    },
     mounted() {
+        this.numberlistIndex = this.numberlistindex
         this.heightLen = 0
         this.alldata.data.forEach((item) => {
             this.heightLen += (item.length * this.tdheight) / 2
         })
+        let _that = this
+        VueEvent.$on('StartDeviceTypeArr', function(value) {
+            _that.deviceTypeArr = value
+            if (_that.deviceTypeArr.length) {
+                let deviceId = _that.deviceTypeArr[_that.numberlistIndex].deviceTypeId
+                _that.currentDeviceTypeId = deviceId // 拿到最新的
+                _that.getModelInit(deviceId)
+            }
+        })
+        VueEvent.$on('StartparamsNameArr', function(value) {
+            _that.conditionSignList = value
+        })
     },
     methods: {
+        // 模型列表
+        getModelInit(deviceid) {
+            let objData = {
+                studioId: this.studioIdNew,
+                deviceTypeId:deviceid
+            }
+            this.requestUtil.post(this.urls.getModelList.url, objData).then((res) => {
+                this.ModelNameArr = res.returnObj || []
+                if (this.ModelNameArr.length) {
+                    this.clickModelHandle('', this.ModelNameArr[0].sourceId, this.ModelNameArr[0].modelName,this.ModelNameArr[0].formula,this.ModelNameArr[0].descript, 0)
+                }
+            }).catch(() => {
+                Message.error('系统繁忙，请稍后再试')
+                return false
+            })
+        },
+        // 获取参数列表 modelId设备id
+        getParamList(modelId) {
+            let objData = {
+                studioId:sessionStorage.getItem("applyId") || '',
+                deviceTypeId: modelId
+            }
+            this.requestUtil.post(this.urls.deviceParamList.url, objData).then((res) => {
+                this.conditionSignList = res.records
+            })
+        },
         saveModelHandle() {
-            console.log('保存为模型')
+            if (this.isediting) {
+                this.saveModelText = `保存模型`
+                this.isediting = false
+            } else {
+                this.saveModelText = `编辑模型`
+                if (this.treeCheckRule(this.alldata.data)) {
+                    // 组装数据  保存模型 
+                    let objData = {}
+                    objData.studioId = this.studioIdNew
+                    objData.deviceTypeId = this.currentDeviceTypeId
+                    objData.viewContent = ''
+                    objData.descript = this.textareValue
+                    objData.sourceId = this.currenModelId
+                    objData.modelName = this.currenModelName
+                    objData.formula = JSON.stringify(this.alldata.data)
+                    this.requestUtil.put(this.urls.addModelList.url,objData).then((res) => {
+                        if (res.sourceId) {
+                            Message.success('保存模型成功')
+                            this.isediting = true
+                        }
+                    }).catch(() => {
+                        Message.error('系统繁忙，请稍后再试！')
+                        return false
+                    })
+                    
+                }
+            }
         },
         addConditionHandle() {
-            console.log('添加条件')
+            if (this.isediting) {
+                Message.warning('非编辑状态，不能添加条件')
+                return false
+            }
             this.alldata.data.push([
                 {
-                    paramName: '3',
-                    logical: '3'
+                    paramName: '',
+                    logical: '',
+                    minValue: '',
+                    maxValue: '',
+                    fixedValue: '',
+                    conditionLogic:""
                 }
             ])
         },
         addModelHandle() {
-            console.log('添加模型')
+            if (!this.currentDeviceTypeId) {
+                Message.warning('您未选中设备类型')
+                return false
+            }
+            let num = this.ModelNameArr.length + 1
+            let name = `新建模型${num}`
+            let objData = {
+                studioId: this.studioIdNew,
+                deviceTypeId: this.currentDeviceTypeId,
+                formula: '',
+                viewContent: '',
+                descript: '',
+                modelName: name
+            }
+            this.requestUtil.post(this.urls.addModelList.url, objData).then((res) => {
+                Message.success('添加模型成功')
+                this.ModelNameArr.push(res)
+                this.clickModelHandle('', res.sourceId, res.modelName,res.formula,res.descript,this.ModelNameArr.length - 1)
+                return false
+            }).catch(() => {
+                Message.error('系统繁忙，请稍后再试')
+                return false
+            })
         },
         removedata(key) {
             this.alldata.data[key].shift()
@@ -460,6 +638,234 @@ export default {
         },
         adddata(key) {
             this.alldata.data[key].push(defaultValue)
+        },
+        clickDeviceTypeListHandle(evt, modelId, index) {
+            this.numberlistIndex = index
+            this.currentDeviceTypeId = modelId
+            let liCLassName = evt.target.parentNode.className || 'can'
+            if (!liCLassName.includes('currentList')) {
+                VueEvent.$emit('clickChangeParamList', index, modelId)
+            }
+        },
+        // 渲染最右侧表格
+        clickModelHandle(evt, modelId, modelName,formula,descript, index) {
+            let data = formula ? JSON.parse(formula) : [[{paramName: '',logical:'',minValue:'',maxValue:'',fixedValue:''}]]
+            this.alldata.data = data
+            this.textareValue = descript || ''
+            this.modelNumber = index
+            this.currenModelId = modelId
+            this.currenModelName = modelName
+            this.conditionLogicalSelect = this.alldata.data[0][0].conditionLogic || ''
+        },
+        MouseEnterHandle(evt,index) {
+            evt.stopPropagation()
+            let widthLen = evt.target.offsetLeft + evt.target.offsetWidth - 20
+            if (evt.clientX >= widthLen) {
+                this.ifShowSuspension = true
+                this.currentMouseIndex = index
+                let classnameList = evt.target.className
+                if (!classnameList.includes('currentModelList')) {
+                    evt.target.className += classnameList ? ' currentModelList' : 'currentModelList'
+                }
+                let LIArr = evt.target.parentNode.children
+                for(var i = 0; i < LIArr.length; i++) {
+                    if (i !== this.modelNumber && i !== index) {
+                        LIArr[i].className = ''
+                    }
+                }
+                this.LeftWidth = evt.target.offsetLeft + evt.target.offsetWidth - 116 / 2 + 'px';
+                this.TopHeight = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 'px';
+            } else {
+                let LIArr = evt.target.parentNode.children
+                for(var j = 0; j < LIArr.length; j++) {
+                    if (j !== this.modelNumber && j !== index) {
+                        LIArr[j].className = ''
+                    }
+                }
+            }
+        },
+        MouseMoveHandle(evt, index) {
+            let widthLen = evt.target.offsetLeft + evt.target.offsetWidth - 20
+            if (evt.clientX >= widthLen && evt.clientX <= widthLen + 18) {
+                this.ifShowSuspension = true
+                this.currentMouseIndex = index
+                let classnameList = evt.target.className
+                if (!classnameList.includes('currentModelList')) {
+                    evt.target.className += classnameList ? ' currentModelList' : 'currentModelList'
+                }
+                let LIArr = evt.target.parentNode.children
+                for(var i = 0; i < LIArr.length; i++) {
+                    if (i !== this.modelNumber && i !== index) {
+                        LIArr[i].className = ''
+                    }
+                }
+                this.LeftWidth = evt.target.offsetLeft + evt.target.offsetWidth - 116 / 2 + 'px';
+                this.TopHeight = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 'px';
+            }else {
+                this.ifShowSuspension = false
+            }
+        },
+        ChildMouseLeaveHandle() {
+            if (this.currentMouseIndex !== this.modelNumber) {
+                let liArrEle = document.querySelectorAll('#addModelLisetWaper li')[this.currentMouseIndex]
+                liArrEle.className = ''
+            }
+            this.ifShowSuspension = false
+        },
+        clickHandleList() {
+            // this.ifShowSuspension = false
+        },
+        renameModelHandle() {
+            let ele = document.querySelectorAll('#addModelLisetWaper li')[this.currentMouseIndex]
+            let editInput = document.createElement('input');
+            editInput.id = 'editPageInput'
+            let oldVal = ele.innerText
+            editInput.value = oldVal
+            ele.innerText = ''
+            ele.appendChild(editInput)
+            editInput.focus()
+            let newMousHandele = this.mounseHandle()
+            newMousHandele(editInput, 'blur', () => {
+                this.saveEditRename(editInput,ele,oldVal)
+            })
+        },
+        // 删除模型
+        deleteModelHandle() {
+            this.requestUtil.delete(`${this.urls.addModelList.url}/${this.ModelNameArr[this.currentMouseIndex].sourceId}`).then((res) => {
+                console.log(res)
+                if (this.modelNumber === this.currentMouseIndex) {
+                    let index = this.currentMouseIndex
+                    let _len = this.ModelNameArr.length - 1
+                    if (this.ModelNameArr.length) {
+                        if (this.currentMouseIndex === _len) {
+                            this.clickModelHandle('', this.ModelNameArr[_len].sourceId, this.ModelNameArr[_len].modelName,this.ModelNameArr[_len].formula,this.ModelNameArr[_len].descript, _len)
+                        } else {
+                            this.clickModelHandle('', this.ModelNameArr[index].sourceId, this.ModelNameArr[index].modelName,this.ModelNameArr[index].formula,this.ModelNameArr[index].descript, _len)
+                        }
+                    }
+                } else {
+                    this.ModelNameArr.splice(this.currentMouseIndex, 1)
+                }
+            })
+        },
+        saveEditRename(editInput, ele, oldVal) {
+            let name = editInput.value.trim()
+            document.body.removeEventListener('click', () => {
+                this.saveEditRename(editInput,ele,oldVal)
+            })
+            if (!name || name.length > 20 || name === oldVal) {
+                ele.innerHTML = `${oldVal}`
+                if (!name) {Message.error(`名称不能为空`)}
+                if (name.length > 20) {Message.error(`名称不能超过20个字符`)}
+            } else {
+                // 请求接口
+                let objData = {}
+                objData.studioId = this.studioIdNew
+                objData.deviceTypeId = this.currentDeviceTypeId
+                objData.viewContent = ''
+                objData.descript = this.textareValue
+                objData.sourceId = this.currenModelId
+                objData.modelName = name
+                objData.formula = this.ModelNameArr[this.currentMouseIndex].formula
+                this.requestUtil.put(this.urls.addModelList.url,objData).then((res) => {
+                    if (res.sourceId) {
+                        Message.success(`修改成功`)
+                        ele.innerHTML = `${name}`
+                        // 如果重命名的 和当前选中的 相同 则重置名字
+                        if (this.modelNumber === this.currentMouseIndex) {
+                            this.currenModelName = name
+                        }
+                    }
+                }).catch(() => {
+                    Message.success(`系统繁忙， 请稍后再试`)
+                    ele.innerHTML = `${name}`
+                })
+            }
+        },
+        mounseHandle() {
+            if(window.addEventListener) { // 对浏览器兼容的判断
+                return function(el, type, fn, capture) {
+                    el.addEventListener(type, fn, capture)
+                }
+            } else if(window.attachEvent) {
+                return function(el, type, fn, capture) {
+                    el.attachEvent(type, fn, capture)
+                }
+            }
+        },
+        // 双向触发数据更新
+        treeSelectParamHandle(value, index, key) {
+            this.alldata.data[key][index].paramName = value
+            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata.data)
+        },
+        treeSelectLogicalHandle(value, index, key) {
+            this.alldata.data[key][index].logical = value
+            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata.data)
+        },
+        treeMinvalueHandle(value, index,key) {
+            this.alldata.data[key][index].minValue = value
+            this.alldata.data[key][index].fixedValue = ''
+            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata.data)
+        },
+        treeMaxvalueHandle(value, index,key) {
+            this.alldata.data[key][index].maxValue = value
+            this.alldata.data[key][index].fixedValue = ''
+            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata.data)
+        },
+        treeFixedvalueHandle(value, index,key) {
+            this.alldata.data[key][index].fixedValue = value
+            this.alldata.data[key][index].maxValue = ''
+            this.alldata.data[key][index].minValue = ''
+            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata.data)
+        },
+        // 保存模型校验
+        treeCheckRule(data) {
+            let treeData = data || []
+            let result = null
+            let logicalTypeArr = ['1','2']
+            let conditionSelect = this.conditionLogicalSelect || '' 
+            if (data.length > 1) {
+                if (!conditionSelect) {
+                    Message.warning(`第一列不能为空`)
+                    result = false
+                    return
+                }
+            }
+            for (let i = 0; i <= treeData.length - 1 ; i++) {
+                for(let j = 0; j <= treeData[i].length - 1 ; j++) {
+                    treeData[i][j].conditionLogic = conditionSelect
+                    if (!treeData[i][j].paramName) {
+                        Message.warning(`条件${i + 1}第${j + 1}行参数不能为空`)
+                        result = false
+                        return 
+                    }
+                    if (!treeData[i][j].logical) {
+                        Message.warning(`条件${i + 1}第${j + 1}行条件不能为空`)
+                        result = false
+                        return 
+                    }
+                    if (logicalTypeArr.includes(treeData[i][j].logical)) {
+                        if (!treeData[i][j].minValue) { // 
+                            Message.warning(`条件${i + 1}第${j + 1}行区间最小值不能为空`)
+                            result = false
+                            return 
+                        }
+                        if (!treeData[i][j].maxValue) {
+                            Message.warning(`条件${i + 1}第${j + 1}行区间最大值不能为空`)
+                            result = false
+                            return 
+                        }
+                    } else {
+                        if (!treeData[i][j].fixedValue) { // 
+                            Message.warning(`条件${i + 1}第${j + 1}行值不能为空`)
+                            result = false
+                            return 
+                        }
+                    }
+                }
+            }
+            result = true
+            return result
         }
     }
 }
@@ -469,6 +875,26 @@ export default {
     height:100%;
     display:flex;
     .dataSource-right-content{
+      .deviceType-ullist{
+        li{
+          height:24px;
+          line-height: 24px;
+          padding-left: 10px;
+          padding-right:5px;
+          display: flex;
+          .deviceType-left{
+            cursor: pointer;
+            flex:1;
+          }
+          &.currentList{
+            color:#ffffff;
+            background-color: #3D91F7;
+            .delete-icon{
+              background:url('../../assets/images/datasource/delete2.png') no-repeat center center;
+            }
+          }
+        }
+      }
       .dataSource-title{
         height:36px;
         line-height: 4;
@@ -526,6 +952,38 @@ export default {
         flex:1;
         padding-top:10px;
       }
+      .addMolel-List{
+        li{
+          height:24px;
+          line-height: 24px;
+          padding-left: 10px;
+          padding-right:5px;
+          display: flex;
+          /deep/#editPageInput{
+            width:90% !important;
+            border:none;
+            height:25px;
+            width:100%;
+          }
+          &.currentModelList{
+            color:#ffffff;
+            background-color: #3D91F7;
+            background-size:16px 16px;
+            background:#3D91F7 url('../../assets/images/leftsidebar/more1_ic.png') no-repeat right center;
+          }
+          &:hover{
+            color:#ffffff;
+            background-size:16px 16px;
+            background:#3D91F7 url('../../assets/images/leftsidebar/more1_ic.png') no-repeat right center;
+          }
+        }
+      }
+      .no-data-wrap{
+        height:100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
     }
 }
 .wrapper{
@@ -534,11 +992,14 @@ export default {
   .left{
     width:85px;
     display: flex;
-    /* background:red; */
+    /deep/ .ivu-select-placeholder{
+      height:24px;
+      line-height:24px;
+    }
   }
   .right-wrapper{
     flex:1;
-    /* background:#acacac */
+    // float:left;
   }
   .right-wrap{
     display: flex;
@@ -644,6 +1105,9 @@ export default {
     height:1.5px;
     /* margin-top:-4px; */
     background: #acacac;
+  }
+  .ivu-input[disabled]{
+      color:#515a6e !important;
   }
   .right{
     flex:1;
