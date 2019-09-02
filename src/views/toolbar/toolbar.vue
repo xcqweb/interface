@@ -193,7 +193,6 @@ export default{
             this.tab = index
         },
         zoom(type) {
-            console.log(this.myEditorUi)
             let myEditor = this.myEditorUi.editor
             let graph = myEditor.graph
             if(type === 'in') {
@@ -229,7 +228,6 @@ export default{
             this.isShowScale = false
         },
         addAction(key) {
-            console.log(key)
             let action = this.myEditorUi.actions.get(key);
             action.funct()
         },
@@ -269,7 +267,6 @@ export default{
             }
         },
         materialLab() {
-            // console.log(this.myEditorUi.sidebar)
             this.ifshowmarerial = true
             this.$nextTick(() => {
                 this.$refs.materialroom.init()
