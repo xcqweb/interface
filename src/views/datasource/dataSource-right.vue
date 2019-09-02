@@ -324,6 +324,7 @@ export default {
             // 默认取第一条数据的参数和名称
             this.requestUtil.get(this.urls.hasImportDeviceType.url,objData).then((res) => {
                 this.deviceTypeArr = res || []
+                // 设备类型
                 VueEvent.$emit('StartDeviceTypeArr', this.deviceTypeArr)
                 this.$emit('dataSourceShow',this.deviceTypeArr)
                 this.$emit('nowClickNumber',this.numberlistIndex )

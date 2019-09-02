@@ -39,7 +39,6 @@ export default {
         }
     },
     mounted() {
-        console.log(this.datalist)
     },
     methods: {
     }

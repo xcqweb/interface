@@ -731,6 +731,8 @@ export default {
         },
         // 删除模型
         deleteModelHandle() {
+            console.log(this.ModelNameArr)
+            console.log(this.currentMouseIndex)
             this.requestUtil.delete(`${this.urls.addModelList.url}/${this.ModelNameArr[this.currentMouseIndex].sourceId}`).then((res) => {
                 console.log(res)
                 if (this.modelNumber === this.currentMouseIndex) {

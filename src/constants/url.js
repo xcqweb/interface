@@ -15,5 +15,5 @@ export default {
     deleteDeviceList: {url: 'api/iot-cds/cds/dataSourceDevice', 'desc': '删除数据源下设备'},
     deleteDeviceType: {url: 'api/iot-cds/cds/dataSourceDeviceType/', 'desc': '删除数据源设备类型'},
     getModelList: {url: 'api/iot-cds/cds/model/deviceType', 'desc':"设备类型下模型列表"},
-    addModelList: {url: 'api/iot-cds/cds/model', 'desc':'新增模型'}
+    addModelList: {url: 'api/iot-cds/cds/model', 'desc':'新增修改模型'}
 }

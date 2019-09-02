@@ -6,19 +6,41 @@
           {{ dataName }}
         </span>
       </div>
-      <DataSource
-        :datalist="dataNameArr"
-        :modelvalue="modelvalue1"
-      />
+      <div>
+        <Select
+          v-model="modelvalue1"
+          :clearable="ifclearSelect"
+          style="height:24px"
+        >
+          <Option
+            v-for="(item, index) in dataNameArr"
+            :key="index"
+            :value="item.value"
+          >
+            {{ item.label }}
+          </Option>
+        </Select>
+      </div>
       <div class="data-sources-listname">
         <span>
           {{ deviceType }}
         </span>
       </div>
-      <DataSource
-        :datalist="deviceNameArr"
-        :modelvalue="modelvalue2"
-      />
+      <div>
+        <Select
+          v-model="modelvalue2"
+          :clearable="ifclearSelect"
+          style="height:24px"
+        >
+          <Option 
+            v-for="(item, index) in deviceNameArr"
+            :key="index"
+            :value="item.deviceTypeId"
+          >
+            {{ item.deviceTypeName }}
+          </Option>
+        </Select>
+      </div>
       <div class="data-sources-listname">
         <span>
           {{ deviceName }}
@@ -50,15 +72,20 @@
             </Checkbox>
           </li>
         </ul>
-        <div v-else>
-          {{ nodata }}
+        <div 
+          v-else
+          class="no-data-wrap"
+        >
+          <NoData
+            :text="nodata"
+          />
         </div>
       </div> 
       <div class="devicename-page-wrap">
-        <template>
+        <template v-if="deviceNameList.length">
           <Page 
             :current="1" 
-            :total="50" 
+            :total="deviceListTotal" 
             simple
           />
         </template>
@@ -76,16 +103,18 @@
 </template>
 
 <script>
-import DataSource from '../../datasource/dataSource-select'
 import Input from '../../datasource/input-select'
-import {Button, Page, Checkbox} from 'iview'
+import NoData from '../../datasource/nodata'
+import {Button,Page,Checkbox,Message,Select,Option} from 'iview'
 export default{
     components: {
-        DataSource,
         Button,
         Input,
         Page,
-        Checkbox
+        Checkbox,
+        Select,
+        Option,
+        NoData
     },
     data() {
         return {
@@ -101,32 +130,51 @@ export default{
                     label: 'IOT平台'
                 }
             ],
-            deviceNameArr:[
-                {
-                    value: '1',
-                    label: '深圳'
-                }
-            ],
-            deviceNameList:[
-                {
-                    name: 'fkafkfks342-y',
-                    id:'321312'
-                },
-                {
-                    name: 'etwiyweuwe-y',
-                    id:'855345'
-                }
-            ],
+            deviceNameArr:[],
+            deviceNameList:[],
             single: false,
             buttonName: '绑定',
             modelvalue1:'1',
-            modelvalue2:'1'
+            modelvalue2:'',
+            ifclearSelect:true,
+            deviceListTotal:10
         }
     },
     mounted() {
+        this.init()
     },
     methods: {
-        
+        init() {
+            let objData = {
+                studioId:sessionStorage.getItem("applyId") || ''
+            }
+            this.requestUtil.get(this.urls.hasImportDeviceType.url,objData).then((res) => {
+                this.deviceNameArr = res || []
+                if (this.deviceNameArr.length) {
+                    this.modelvalue2 = this.deviceNameArr[0].deviceTypeId
+                    let objDataNew = {
+                        studioId:this.studioIdNew,
+                        deviceTypeId: this.deviceNameArr[0].deviceTypeId
+                    }
+                    return Promise.all([
+                        this.requestUtil.post(this.urls.deviceParamList.url, objDataNew)
+                    ]).catch(() => {
+                        Message.error('系统繁忙，请稍后再试')
+                        return false
+                    })
+                } else {
+                    this.deviceNameList = []
+                    return [[]]
+                }
+            }).then((res) => {
+                const [firstDeviceNameList] = res
+                this.deviceNameList = firstDeviceNameList.records || []
+                this.deviceListTotal = firstDeviceNameList.total || 10
+            }).catch(() => {
+                Message.error('系统繁忙，请稍后再试试')
+                return false
+            })
+        }
     },      
 }
 </script>
@@ -194,5 +242,31 @@ export default{
         }
       }
     }
+    /deep/.ivu-select{
+        .ivu-select-selection{
+          height:24px;
+        }
+        .ivu-select-placeholder{
+          height:24px;
+          line-height:24px;
+        }
+        .ivu-select-selected-value{
+            height:24px;
+            line-height:22px;
+        }
+        .ivu-select-dropdown{
+          .ivu-select-dropdown-list{
+            .ivu-select-item{
+              padding: 0 16px 0;
+            }
+          }
+        }
+    }
+    .no-data-wrap{
+          height:100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
   }
 </style>
