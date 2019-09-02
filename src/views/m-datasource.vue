@@ -1,7 +1,10 @@
 <template>
-  <div class="data-top">
+  <div
+    class="data-top"
+  >
     <div class="tool-bar">
       <span class="tool-bar-left" />
+      <!--导入数据源-->
       <span class="datasour-icon-wrap">
         <span 
           v-show="dataType === 1" 
@@ -24,7 +27,7 @@
             :label="dataSource"
           >
             <ul
-              v-if="dataSourceList.length"
+              v-if="dataSourceList.length && deviceTypeArr.length"
               class="dataSources-ullist"
             >
               <li
@@ -33,15 +36,26 @@
                 class="dataSource currentList"
               >
                 <span class="dataSources-left">{{ item.name }}</span>
-                <span class="delete-icon" />
+                <!-- <span 
+                    class="delete-icon"
+                    @click.stop.prevent="deleteDataSource" 
+                  /> -->
               </li>
             </ul>
+            <div 
+              v-else
+              class="no-data-wrap"
+            >
+              <NoData
+                :text="nodata"
+              />
+            </div>
           </TabPane>
           <TabPane
             :label="datamodel"
           >
             <ul
-              v-if="dataSourceList.length"
+              v-if="dataSourceList.length && deviceTypeArr.length"
               class="dataSources-ullist"
             >
               <li
@@ -50,31 +64,46 @@
                 class="dataSource currentList"
               >
                 <span class="dataSources-left">{{ item.name }}</span>
-                <span class="delete-icon" />
               </li>
             </ul>
+            <div 
+              v-else
+              class="no-data-wrap"
+            >
+              <NoData
+                :text="nodata"
+              />
+            </div>
           </TabPane>
         </Tabs>
       </div>
       <div class="data-main-right">
         <div
-          v-if="+dataType === 1"
+          v-show="+dataType === 1"
           class="dataSource-right"
         >
-          <DataSourceRight />
+          <DataSourceRight
+            ref="datasourceright"
+            @dataSourceShow="dataSourceShow"
+            @nowClickNumber="nowClickNumber"
+          />
         </div>
         <div
-          v-else
+          v-show="+dataType === 2"
           class="datamodel-right"
         >
-          <DataModelRight />
+          <DataModelRight
+            ref="dataModelRightEle"
+            :numberlistindex="numberlistIndex"
+          />
         </div>
       </div>
     </div>
     <DataDataModal
       v-if="ifShowImportData"
       ref="importdataModel"
-      @triggerCancel="triggerCancel" 
+      @saveHandleToUpdata="getDeviceType"
+      @triggerCancel="triggerCancel"
     />
   </div>
 </template>
@@ -84,13 +113,15 @@ import {Tabs, TabPane} from 'iview'
 import DataSourceRight from './datasource/dataSource-right'
 import DataModelRight from './datasource/dataModel-right'
 import DataDataModal from './datasource/importdata-model'
+import NoData from './datasource/nodata'
 export default{
     components:{
         Tabs,
         TabPane,
         DataModelRight,
         DataSourceRight,
-        DataDataModal
+        DataDataModal,
+        NoData
     },
     data() {
         return {
@@ -98,19 +129,26 @@ export default{
             dataSource:'数据源',
             datamodel: '数据模型',
             importdataSource:'导入数据源',
+            numberlistIndex: 0,
+            deviceTypeArr: [],
+            nodata:'暂无数据',
             dataType: 1, // dataType 数据源 2: 数据模型
             ifShowImportData: false,
             dataSourceList: [
                 {
-                    name: '数据源',
+                    name: 'IOT平台',
                     id: '1233'
                 }
             ]
         }
     },
-    mounted() { 
+    mounted() {
+
     },
     methods: {
+        getDataSource() { // 获取数据源
+
+        },
         tabsSwitchData(index) {
             this.dataType = +index + 1
         },
@@ -119,6 +157,21 @@ export default{
         },
         triggerCancel() {
             this.ifShowImportData = false
+        },
+        getDeviceType() { // 两个地方去更新
+            // this.$nextTick(() => {
+            this.$refs.datasourceright.initData()
+            // })
+        },
+        deleteDataSource() {
+
+        },
+        nowClickNumber(value) {
+            this.numberlistIndex = value
+        },
+        dataSourceShow(value) {
+            this.deviceTypeArr = value
+            console.log(this.deviceTypeArr)
         }
     },      
 }
@@ -178,6 +231,21 @@ export default{
     .data-main-left{
       width:208px;
       background:#F2F2F2;
+      .ivu-tabs{
+        height:100%;
+        /deep/.ivu-tabs-content{
+          height:calc(100% - 48px);
+          .ivu-tabs-tabpane{
+            height:100%;
+          }
+        }
+      }
+      .no-data-wrap{
+        height:100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
       /deep/.ivu-tabs-nav{
         width:100% !important;
         .ivu-tabs-tab{

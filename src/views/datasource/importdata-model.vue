@@ -1,13 +1,13 @@
 <template>
   <div class="inport-model">
     <Modal
+      ref="model"
       v-model="showdatasoures"
       width="660px"
       class="left-sidebar-model"
       :title="datasouresAlertName"
       :mask-closable="false"
       @on-cancel="cancelHandle"
-      @on-ok="saveHandle"
     >
       <div class="content-top">
         <div class="content-top-common contnt-top-form1">
@@ -44,14 +44,15 @@
               <Select
                 v-model="modelvalue2"
                 style="height:24px"
+                :clearable="ifclearSelect"
                 @on-change="deviceTypeChange"
               >
                 <Option 
                   v-for="(item, index) in deviceNameArr"
                   :key="index"
-                  :value="item.deviceTypeId"
+                  :value="item.typeId"
                 >
-                  {{ item.deviceTypeName }}
+                  {{ item.typeName }}
                 </Option>
               </Select>
             </FormItem>
@@ -202,6 +203,24 @@
           </div>
         </div>
       </div>
+      <div slot="footer">
+        <Button
+          size="small"
+          style="height:28px;width:84px"
+          @click.stop.prevent="cancelHandle"
+        >
+          取消
+        </Button> 
+        <Button
+          type="primary"
+          size="small"
+          style="height:28px;width:84px"
+          :loading="loading"
+          @click.stop.prevent="saveHandle"
+        >
+          确认
+        </Button> 
+      </div>
     </Modal>
   </div>
 </template> 
@@ -259,8 +278,10 @@ export default{
             deviceNumber: '10',
             inputParamName: '',
             inputDeviceName: '',
+            loading: false,
             paramIdArr: [],
-            deviceIdArr: []
+            deviceIdArr: [],
+            ifclearSelect: true
         }
     },
     created() {
@@ -275,7 +296,8 @@ export default{
     methods: {
         init() {
             this.requestUtil.get(this.urls.devicetypelist.url).then((res) => {
-                this.deviceNameArr = res || []
+                this.deviceNameArr = res.returnObj || []
+                console.log(this.deviceNameArr)
             }).catch(() => {
                 Message.error('系统繁忙，请稍后再试试')
                 return false
@@ -286,6 +308,14 @@ export default{
             this.$emit('triggerCancel')
         },
         saveHandle() {
+            if (!this.modelvalue2) {
+                Message.warning(`请选择设备类型`)
+                return
+            }
+            if (!this.deviceIdArr.length && !this.paramIdArr.length) {
+                Message.warning(`请勾选参数名或者设备名称`)
+                return false
+            }
             let studioId = sessionStorage.getItem("applyId") || ''
             let objData = {
                 studioId,
@@ -293,9 +323,20 @@ export default{
                 deviceIds: this.deviceIdArr,
                 paramIds: this.paramIdArr
             }
-            // importDataSource
+            this.loading = true
             this.requestUtil.post(this.urls.importDataSource.url,objData).then((res) => {
-                console.log(res)
+                if (res.code === '0') {
+                    Message.success(`导入${this.dataName}成功`)
+                    this.loading = false
+                    this.$emit('saveHandleToUpdata')
+                    this.$emit('triggerCancel')
+                    return false
+                }
+                
+            }).catch(() => {
+                this.loading = false
+                Message.error('系统繁忙，请稍后再试')
+                return false
             })
 
         },
@@ -321,8 +362,9 @@ export default{
                 } else {
                     this.deviceNameListArr = [];
                 }
-                
             }
+            this.paramIdArr = this.paramsNameListArr
+            this.deviceIdArr = this.deviceNameListArr
         },
         checkAllGroupChange(data, number) {
             let deviceNameListLen = (number === 1 ? this.paramsNameList.length : this.deviceNameList.length)
@@ -432,136 +474,136 @@ export default{
         }
       }
     /deep/.ivu-modal{
-            /deep/.ivu-modal-content{
-                background-color:#f5f5f5 !important;
-                .ivu-modal-header{
-                    height: 36px;
-                    padding:0;
-                    /deep/.ivu-modal-header-inner{
-                        text-align: center;
-                        height: 36px;
-                        line-height: 36px;
-                        color:#252525;
-                        font-size: 12px;
-                        background: linear-gradient(0deg,#d8d8d8,#e4e3e4);
-                        font-weight: normal;
-                        border-top-left-radius: 6px;
-                        border-top-right-radius: 6px;
-                    }
-                }
-                .ivu-modal-body{
-                  padding: 0 24px;
-                  height:350px;
-                  display:flex;
-                  flex-direction: column;
-                  .content-top{
-                    height: 48px;
-                    display:flex;
-                    .content-top-common{
-                      padding-top:7px;
-                      width:218px;
-                      .ivu-form{
-                        height:34px;
-                        .ivu-form-item{
-                          margin-bottom:0;
-                        }
-                        .ivu-form-item-label{
-                          padding-right:0;
-                          text-align: left;
-                        }
-                      }
-                      &.contnt-top-form2{
-                        margin-left:10px;
-                      }
-                      &.contnt-top-form3{
-                        padding-top: 12px;
-                        padding-left:10px;
-                      }
-                    }
+      /deep/.ivu-modal-content{
+          background-color:#f5f5f5 !important;
+          .ivu-modal-header{
+              height: 36px;
+              padding:0;
+              /deep/.ivu-modal-header-inner{
+                  text-align: center;
+                  height: 36px;
+                  line-height: 36px;
+                  color:#252525;
+                  font-size: 12px;
+                  background: linear-gradient(0deg,#d8d8d8,#e4e3e4);
+                  font-weight: normal;
+                  border-top-left-radius: 6px;
+                  border-top-right-radius: 6px;
+              }
+          }
+          .ivu-modal-body{
+            padding: 0 24px;
+            height:350px;
+            display:flex;
+            flex-direction: column;
+            .content-top{
+              height: 48px;
+              display:flex;
+              .content-top-common{
+                padding-top:7px;
+                width:218px;
+                .ivu-form{
+                  height:34px;
+                  .ivu-form-item{
+                    margin-bottom:0;
                   }
-                  .content-wrap{
-                    // height:280px;
-                    flex:1;
-                    display:flex;
-                    justify-content: space-between;
-                    .content-common{
-                      width:300px;
-                      border:1px solid #D4D4D4;
-                      border-radius: 2px;
-                      background:#fff;
-                      padding: 10px 0 0;
-                      display: flex;
-                      flex-direction: column;
-                      .content-common-top{
-                        height:24px;
-                        padding: 0 10px 0;
-                        .ivu-input-suffix{
-                          .ivu-icon{
-                            line-height:24px;
-                          }
-                        }
-                        .ivu-input {
-                          height:24px;
-                        }
-                      }
-                      .content-common-center{
-                        flex:1;
-                        padding: 8px 10px 0;
-                        .devicename-listUl{
-                          label{
-                            display:block;
-                            width:100%;
-                          }
-                        }
-                        .no-data-wrap{
-                          height:100%;
-                          display: flex;
-                          justify-content: center;
-                          align-items: center;
-                        }
-                      }
-                      .content-common-botton{
-                        height:25px;
-                        // padding: 0px 10px 0;
-                        border-top:1px solid #D4D4D4;
-                        display:flex;
-                        .data-botton-left{
-                          width:80px;
-                          padding-left: 10px;
-                          padding-top:2px;
-                        }
-                        .data-botton-right{
-                          flex:1;
-                          text-align: right;
-                          padding-right:5px;
-                          .ivu-page-simple-pager{
-                            input {
-                              height:20px;
-                              padding: 5px 0px;
-                              margin:0;
-                            }
-                          }
-                        }
-                      }
-                    }
+                  .ivu-form-item-label{
+                    padding-right:0;
+                    text-align: left;
                   }
                 }
-                .ivu-modal-close{
-                    position: absolute;
-                    top:10px;
-                    width:16px;
-                    height:16px;
-                    background: url(../../assets/images/default/closeDialog.png) no-repeat center center;
-                    background-size: 16px 16px;
-                    .ivu-icon{
-                        display:none;
-                    }
+                &.contnt-top-form2{
+                  margin-left:10px;
                 }
-                .ivu-modal-footer{
-                  padding: 10px 18px;
-                  border-top: none
+                &.contnt-top-form3{
+                  padding-top: 12px;
+                  padding-left:10px;
                 }
+              }
             }
-        }
+            .content-wrap{
+              // height:280px;
+              flex:1;
+              display:flex;
+              justify-content: space-between;
+              .content-common{
+                width:300px;
+                border:1px solid #D4D4D4;
+                border-radius: 2px;
+                background:#fff;
+                padding: 10px 0 0;
+                display: flex;
+                flex-direction: column;
+                .content-common-top{
+                  height:24px;
+                  padding: 0 10px 0;
+                  .ivu-input-suffix{
+                    .ivu-icon{
+                      line-height:24px;
+                    }
+                  }
+                  .ivu-input {
+                    height:24px;
+                  }
+                }
+                .content-common-center{
+                  flex:1;
+                  padding: 8px 10px 0;
+                  .devicename-listUl{
+                    label{
+                      display:block;
+                      width:100%;
+                    }
+                  }
+                  .no-data-wrap{
+                    height:100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                  }
+                }
+                .content-common-botton{
+                  height:25px;
+                  // padding: 0px 10px 0;
+                  border-top:1px solid #D4D4D4;
+                  display:flex;
+                  .data-botton-left{
+                    width:80px;
+                    padding-left: 10px;
+                    padding-top:2px;
+                  }
+                  .data-botton-right{
+                    flex:1;
+                    text-align: right;
+                    padding-right:5px;
+                    .ivu-page-simple-pager{
+                      input {
+                        height:20px;
+                        padding: 5px 0px;
+                        margin:0;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          .ivu-modal-close{
+              position: absolute;
+              top:10px;
+              width:16px;
+              height:16px;
+              background: url(../../assets/images/default/closeDialog.png) no-repeat center center;
+              background-size: 16px 16px;
+              .ivu-icon{
+                  display:none;
+              }
+          }
+          .ivu-modal-footer{
+            padding: 10px 18px;
+            border-top: none
+          }
+      }
+    }
   }
 </style>
