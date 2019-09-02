@@ -86,6 +86,7 @@
       />
       <Change
         v-show="typeTab===3"
+        ref="change"
         :bind-actions="bindActions"
         :current-page-widgets="currentPageWidgets"
         @submitMutual="editEventDone"
@@ -138,6 +139,7 @@ export default{
                 id:item.id,
                 title:item.title,
                 selected:false,
+                hide:true,
             }
         })
         let graph = this.myEditorUi.editor.graph
@@ -214,8 +216,7 @@ export default{
                 action.effectAction = hide
             }else if(data.mutualType == 3) {
                 action.effectAction = 'change'
-                action.stateId = data.stateId
-                action.stateName = data.stateName
+                action.stateInfo = data.stateInfo
             }
             this.setActionInfos(action)
         },
@@ -228,18 +229,30 @@ export default{
         },
         setEvents(actionsInfo) {
             this.events.splice(0)
-            actionsInfo.forEach(item=>{
-                let tempObj = {
-                    type:item.mutualType,
-                    title:this.findTitle(item),
-                    innerType:item.innerType,
-                    id:item.link//控件或者页面或者弹窗ID
+            let oldLen = actionsInfo.length
+            for(let i = 0;i < oldLen;i++) {
+                let item = actionsInfo[i]
+                let title = this.findTitle(item)
+                if(title) {
+                    let tempObj = {
+                        type:item.mutualType,
+                        title:title,
+                        innerType:item.innerType,
+                        id:item.link//控件或者页面或者弹窗ID
+                    }
+                    if(item.stateInfo) {
+                        tempObj.stateName = item.stateInfo.name
+                        tempObj.stateId = item.stateInfo.stateId
+                    }
+                    this.events.push(tempObj)
+                } else {//表示绑定交互的页面或弹窗或控件已被删除
+                    actionsInfo.splice(i,1)
                 }
-                if(item.stateId) {
-                    tempObj.stateName = item.stateName
-                }
-                this.events.push(tempObj)
-            })
+            }
+            //判断是否有移除action，如果有，要设置到节点model中去
+            if(actionsInfo.length != oldLen) {
+                this.setModeInfoActions(actionsInfo)
+            }
         },
         findTitle(item) {
             let tempList = this.pages
@@ -250,9 +263,14 @@ export default{
                     tempList = this.dialogs
                 }
             }
-            return tempList.filter(d=>{
+            let res = tempList.find(d=>{
                 return d.id == item.link
-            })[0].title
+            })
+            let title = ""
+            if(res) {
+                title = res.title
+            }
+            return title
         },
         getActions(graph) {
             let actions = []
@@ -299,11 +317,11 @@ export default{
             evet.stopPropagation()
             sureDialog(this.myEditorUi,`确定要删除交互事件${index + 1}吗`,()=>{
                 this.events.splice(index,1)
-                let {id} = event
-                this.removeActions(id)//控件或者页面id
+                let {id,stateInfo} = event
+                this.removeActions(id,stateInfo)//控件或者页面id
             },)
         },
-        removeActions(id) {
+        removeActions(id,stateInfo) {
             let graph = this.myEditorUi.editor.graph
             let actions = this.getActions(graph)
             for(let i = 0;i < actions.length;i++) {
@@ -312,7 +330,25 @@ export default{
                     break;
                 }
             }
+            if(stateInfo) { //删除交互为状态切换时候，将绑定的状态置为false
+                let graph = this.myEditorUi.editor.graph
+                let states = this.getStates(graph)
+                for(let i = 0;i < states.length;i++) {
+                    if(states[i].id === stateInfo.stateId) {
+                        states[i].check = false
+                        break;
+                    }
+                }
+                this.setModeInfoStates(states)//存入当前节点信息中
+            }
             this.setModeInfoActions(actions)
+        },
+        setModeInfoStates(states) {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let modelInfo = graph.getModel().getValue(cell)
+            modelInfo.setAttribute('statesInfo', JSON.stringify(states))
+            graph.getModel().setValue(cell, modelInfo)
         },
         editEvent(e) {
             let tempList = this.pages
@@ -324,15 +360,17 @@ export default{
                     tempList = this.dialogs
                     this.visibleTypeTab = 1
                 }
+                tempList.forEach(item=>{
+                    if(item.id === e.id) {
+                        this.currentEditItem = item
+                        item.selected = true
+                    }else{
+                        item.selected = false
+                    }
+                })
+            }else if(e.type == 3) {
+                this.$refs.change.checkCurrent(e)
             }
-            tempList.forEach(item=>{
-                if(item.id === e.id) {
-                    this.currentEditItem = item
-                    item.selected = true
-                }else{
-                    item.selected = false
-                }
-            })
             this.isEdit = true
             this.changeTab(e.type)
         },

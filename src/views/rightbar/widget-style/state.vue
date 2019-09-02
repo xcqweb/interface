@@ -118,10 +118,10 @@ export default{
             }]
             let modelInfo = graph.getModel().getValue(cell)
             if (!mxUtils.isNode(modelInfo)) {
-                var doc = mxUtils.createXmlDocument();
-                var obj = doc.createElement('object');
-                obj.setAttribute('label', modelInfo || '');
-                modelInfo = obj;
+                var doc = mxUtils.createXmlDocument()
+                var obj = doc.createElement('object')
+                obj.setAttribute('label', modelInfo || '')
+                modelInfo = obj
             }
             let statesAttr = modelInfo.getAttribute('statesInfo')
             if(statesAttr) {
@@ -158,8 +158,8 @@ export default{
             evet.stopPropagation()
             sureDialog(this.myEditorUi,`确定要删除${state.name}吗`,()=>{
                 let graph = this.myEditorUi.editor.graph
-                this.states.splice(index,1)
                 let states = this.getStates(graph)
+                this.states.splice(index,1)
                 for(let i = 0;i < states.length;i++) {
                     if(states[i].id === state.id) {
                         states.splice(i,1)

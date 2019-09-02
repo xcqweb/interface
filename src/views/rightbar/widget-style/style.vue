@@ -96,20 +96,8 @@
         size="small"
       />
     </div>
-    <div v-if="shapeName.includes('Chart')">
-      <div
-        class="item-title"
-        style="display:flex;justify-content:space-between;"
-      >
-        标题
-        <i-switch
-          v-model="chartTitle"
-          size="small"
-        />
-      </div>
-    </div>
     <div
-      v-if="shapeName!='image' && selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && chartTitle && shapeName!='linkTag'"
+      v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && shapeName!='linkTag' && !shapeName.includes('Chart') && !shapeName.includes('image')"
       class="titleSet"
     >
       <div class="item-title">
@@ -187,41 +175,6 @@
             />
           </div>
         </div>
-      </div>
-    </div>
-    <div v-if="shapeName.includes('Chart')">
-      <div
-        v-if="shapeName=='lineChart'"
-        class="item-title"
-        style="display:flex;justify-content:space-between;"
-      >
-        图例
-        <i-switch
-          v-model="chartLegend"
-          size="small"
-        />
-      </div>
-      <div
-        v-if="shapeName=='lineChart'"
-        class="item-title"
-        style="display:flex;justify-content:space-between;"
-      >
-        网格线
-        <i-switch
-          v-model="chartGrid"
-          size="small"
-        />
-      </div>
-      <div>
-        <p style="margin-top:10px;">
-          背景颜色
-        </p>
-        <div
-          class="item-container"
-          style="position:relative;"
-          :style="{backgroundColor:bgChartColor}"
-          @click="pickBgChartColor"
-        />
       </div>
     </div>
     <div v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text'">
@@ -365,7 +318,7 @@
         </div>
       </div>
     </div>
-    <div v-if="shapeName=='progress' || shapeName=='gaugeChart'">
+    <div v-if="shapeName=='progress'">
       <div class="item-title">
         数值范围
       </div>
@@ -395,7 +348,7 @@
           > 
         </div>
       </div>
-      <div v-if="shapeName!='gaugeChart'">
+      <div>
         <div
           class="item-title"
           style="border:none;"
@@ -433,154 +386,6 @@
         </div>
       </div>
     </div>
-    <div v-if="shapeName=='lineChart'">
-      <div
-        class="item-title"
-        style="display:flex;justify-content:space-between;"
-      >
-        指标
-        <div
-          v-if="!isAddMark"
-          style="display:flex;align-items:center;"
-          @click="addMark"
-        >
-          <img src="../../../assets/images/rightsidebar/plus_ic.png"> 添加
-        </div>
-      </div>
-      <div
-        v-if="isAddMark"
-        class="addMark-con"
-      >
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          名称 <input
-            v-model="markName"
-            style="width:82%;padding-left:4px;"
-          >
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-          数值 <input
-            v-model="markValue"
-            style="width:82%;padding-left:4px;"
-          >
-        </div>
-        <div style="display:flex;margin-top:10px;"> 
-          <div style="margin-right:5.5%;">
-            线条
-          </div>
-          <div
-            class="setColor"
-            style="flex:1;margin-right:6px;"
-            :style="{backgroundColor:borderColor}"
-            @click="pickChartBorderColor"
-          />
-          <div
-            v-clickOutSide="hideBorderLine"
-            class="item-container fontSet"
-            style="justify-content:space-between;position:relative;flex:1;"
-            @click="showBorderLine=true"
-          >
-            <div :class="borderLineCls" />
-            <img src="../../../assets/images/menu/down_ic.png">
-            <ul
-              v-if="showBorderLine"
-              class="font-dialog"
-              @mouseleave="showBorderLine=false"
-              @blur="showBorderLine=false"
-            >
-              <li
-                v-for="(d,index) in borderLineList"
-                :key="index"
-                @click="changeChartBorderLine(d,$event)"
-              >
-                <div style="width:100%;height:4px;display:inline-block;vertical-align:middle;">
-                  <div :class="d" />
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div
-            v-clickOutSide="hideBorderLineBold"
-            class="item-container fontSet"
-            style="justify-content:space-between;position:relative;flex:1;margin:0;"
-            @click="showBorderLineBold=true"
-          >
-            <div>{{ borderLineBoldText }}</div>
-            <img src="../../../assets/images/menu/down_ic.png">
-            <ul
-              v-if="showBorderLineBold"
-              class="font-dialog"
-              style="height:100px;overflow:auto;"
-              @mouseleave="showBorderLineBold=false"
-              @blur="showBorderLineBold=false"
-            >
-              <li
-                v-for="(d,index) in borderLineBoldList"
-                :key="index"
-                @click="changeChartBorderLineBold(d,$event)"
-              >
-                {{ d }}
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div style="display:flex;justify-content:space-between;margin-top:10px;">
-          <button
-            class="mutual-btn"
-            @click="cancel()"
-          >
-            取消
-          </button>
-          <button
-            class="mutual-btn selected"
-            @click="submit()"
-          >
-            提交
-          </button>
-        </div>
-      </div>
-      <div
-        v-if="!isAddMark"
-      >
-        <div
-          v-for="(item,index) in markLineList"
-          :key="index"
-          class="markline-item"
-        >
-          <div
-            style="display:flex;justify-content:space-between;"
-            @click="delMark(item,index)"
-          >
-            名称-{{ item.markName }}
-            <img src="../../../assets/images/rightsidebar/dele_ic.png">
-          </div>
-          <p style="margin:10px 0;">
-            数值-{{ item.markValue }}
-          </p>
-          <div style="display:flex;margin-top:10px;"> 
-            <div style="margin-right:5.5%;">
-              线条
-            </div>
-            <div
-              class="setColor"
-              style="flex:1;margin-right:6px;"
-              :style="{backgroundColor:item.borderColor}"
-            />
-            <div
-              class="item-container fontSet"
-              style="justify-content:space-between;position:relative;flex:1;"
-            >
-              <div :class="item.borderLineCls" />
-            </div>
-            <div
-              class="item-container fontSet"
-              style="justify-content:space-between;position:relative;flex:1;margin:0;"
-            >
-              {{ item.borderLineBoldText }}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <div v-if="shapeName=='linkTag'">
       <div class="item-title">
         链接地址
@@ -591,16 +396,25 @@
         @keyup.enter="addLinkUrl"
       >
     </div>
+    <Chart
+      v-if="isChartShow"
+      :shape-name="shapeName"
+      :bind-chart-props="bindChartProps"
+      @hideChartDialog="hideChartDialog"
+    />
   </div>
 </template>
 <script>
+import Chart from '../../charts/chart'
 import {mxConstants,mxEventObject} from '../../../services/mxGlobal'
-import {sureDialog} from '../../../services/Utils'
 let newFontColor = "#000000",newBgColor = "#ffffff",newBorderColor = "#000000",name
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
-let picShapeList = ['image','pipeline2','pipeline1','progress','light','lineChart','gaugeChart']
+let picShapeList = ['image','pipeline2','progress','light','lineChart','gaugeChart','userimage']
 export default {
+    components:{
+        Chart
+    },
     data() {
         return {
             showFont:false,
@@ -617,24 +431,12 @@ export default {
             borderLineList:['border-line','border-dash'],
             borderLineCls:'border-line',
             showArrowDialog:false,
-            fontList:[
-                12,
-                13,
-                14,
-                15,
-                16,
-                17,
-                18,
-                19,
-                20
-            ],
+            fontList:[12,13,14,15,16,17,18,19,20],
             borderLineBoldText:1,
-            borderLineBoldList:[
-                1,2,3,4,5,6,7,8,9,10
-            ],
+            borderLineBoldList:[1,2,3,4,5,6,7,8,9,10],
             arrowClsList:['arrow-empty','arrow-left','arrow-right','arrow-double'],
             arrowCls:'arrow-empty',
-            fillStyleList:['beeline','image'],
+            fillStyleList:['beeline','image','userimage'],
             tableRow:3,
             tableCol:3,
             pipelineFlow:false,//指示灯下拉框
@@ -647,15 +449,9 @@ export default {
             progressTypeText:'百分比',
             progressTypeVal:'percent',
             progressDialogList:[{name:'百分比',value:'percent'},{name:'实际数值',value:'real'}],
-            chartTitle:true,
-            chartLegend:false,
-            chartGrid:false,//chart网格线
-            bgChartColor:"#fff",
-            markLineList:[],//标线 line-chart
-            isAddMark:false,
-            markName:'指标1',
-            markValue:0,
             linkUrl:"",
+            isChartShow:false,
+            bindChartProps:null,
         }
     },
     computed: {
@@ -714,7 +510,6 @@ export default {
             }
         }else if(this.shapeName.includes('pipeline')) {
             let pipelineProps = this.getWidgetProps('pipelineProps')
-            console.log(pipelineProps)
             if(pipelineProps) {
                 let findCurrent = this.pipelineFlowList.find((item)=>{
                     return item.value == pipelineProps.flow
@@ -722,11 +517,24 @@ export default {
                 this.pipelineFlowText = findCurrent.name
                 this.pipelineFlowVal = findCurrent.value
             }
+        }else if(this.shapeName.includes('Chart')) {
+            this.bindChartProps = this.getWidgetProps('chartProps')
         }
         if(picShapeList.includes(this.shapeName)) {
             graph.setCellStyles(mxConstants.STYLE_ASPECT, 'fixed', graph.getSelectionCells());
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],
                 'values', ['fixed'], 'cells', graph.getSelectionCells()));
+        }
+        let dblClickFn = graph.dblClick
+        graph.dblClick = (evt, cell) => {
+            let state = graph.view.getState(cell)
+            if (!state) {return false;}
+            if (state.style.shape.includes('Chart')) {
+                this.isChartShow = true
+                this.bindChartProps = this.getWidgetProps('chartProps')
+            }else{
+                dblClickFn.call(graph,evt, cell)
+            }
         }
     },
     methods: {
@@ -811,7 +619,7 @@ export default {
                 this.borderColor = color
                 let graph = this.myEditorUi.editor.graph
                 let key = 'strokeColor'
-                if(this.shapeName == 'image') {
+                if(this.shapeName.includes('image')) {
                     key = 'imageBorder'
                 }
                 graph.setCellStyles(key, color, graph.getSelectionCells());
@@ -954,50 +762,6 @@ export default {
             this.setWidgetProps('progressProps',{type:this.progressTypeVal,val:''})
             e.stopPropagation()
         },
-        pickBgChartColor() {//chart 设置背景色
-            this.myEditorUi.pickColor('#fff',color=>{
-                this.bgChartColor = color
-            })
-        },
-        addMark() {//折线chart 添加标线
-            this.isAddMark = true
-            this.markName = `指标${this.markLineList.length + 1}`
-        },
-        pickChartBorderColor() {//chart mark-line
-            this.myEditorUi.pickColor('#fff',color=>{
-                this.borderColor = color
-            })
-        },
-        changeChartBorderLine(d,e) {
-            this.borderLineCls = d
-            this.showBorderLine = false
-            e.stopPropagation()
-        },
-        changeChartBorderLineBold(d,e) {
-            this.borderLineBoldText = d
-            this.showBorderLineBold = false;
-            e.stopPropagation()
-        },
-        cancel() {
-            this.isAddMark = false
-        },
-        submit() {
-            this.markLineList.push(
-                {
-                    markName:this.markName,
-                    markValue:this.markValue,
-                    borderColor:this.borderColor,
-                    borderLineCls:this.borderLineCls,
-                    borderLineBoldText:this.borderLineBoldText,
-                }
-            )
-            this.isAddMark = false
-        },
-        delMark(d,index) {
-            sureDialog(this.myEditorUi,`确定要删除${d.markName}吗`,()=>{
-                this.markLineList.splice(index,1)
-            },)
-        },
         addLinkUrl() {
             let actions = [{"type":"out","link":this.linkUrl,"innerType":"page","mouseEvent":"click","effectAction":"open"}]
             let graph = this.myEditorUi.editor.graph
@@ -1033,6 +797,10 @@ export default {
                 attrObj = JSON.parse(attr)
             }
             return attrObj
+        },
+        hideChartDialog(options) {
+            this.isChartShow = false
+            this.setWidgetProps('chartProps',options)
         },
     }
 };
@@ -1203,12 +971,6 @@ export default {
     .setBackgroundImg {
         cursor: pointer;
     }
-    .color-dialog{
-        position:absolute;
-        left:0;
-        top:24px;
-        border:solid 1px red;
-    }
     .arrow-empty::after{
       content:'无';
     }
@@ -1245,18 +1007,6 @@ export default {
       border:dashed 1px #000;
       height:1px;
       width:40px;
-    }
-    .addMark-con{
-      margin-top:10px;
-      border:1px solid rgba(212,212,212,1);
-      border-radius:2px;
-      padding:8px 4px;
-    }
-    .markline-item{
-      margin-top:10px;
-      border:1px solid rgba(212,212,212,1);
-      border-radius:2px;
-      padding:4px;
     }
 }
 </style>

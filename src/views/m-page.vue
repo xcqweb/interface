@@ -47,7 +47,8 @@ export default {
     data() {
         return{
             isPage:true,
-            bindDatas: []
+            bindDatas: [],
+            isInited:false,
         }
     },
     created() {

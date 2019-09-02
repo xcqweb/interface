@@ -6796,7 +6796,6 @@ if (typeof mxVertexHandler != 'undefined')
             // Selects editing cell
             this.graph.setSelectionCell(cell);
             var state3 = this.graph.getView().getState(cell);
-            console.log(state3.text)
             if (state3.text) {
                 this.textNode = state3.text.node;
                 this.textNode.style.visibility = 'hidden';

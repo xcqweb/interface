@@ -7239,7 +7239,7 @@ var mxUtils =
 	 * Defines the rectangle for the A4 portrait page format. The dimensions
 	 * of this page format are 826x1169 pixels.
 	 */
-	PAGE_FORMAT_A4_PORTRAIT: new mxRectangle(0, 0, 800, 1280),
+	PAGE_FORMAT_A4_PORTRAIT: new mxRectangle(0, 0, 1280, 800),
 
 	/**
 	 * Variable: PAGE_FORMAT_A4_PORTRAIT
@@ -24703,6 +24703,7 @@ var mxMarker =
 		
 		return function(canvas, shape, type, pe, unitX, unitY, size, source, sw, filled)
 		{
+			debugger
 			// The angle of the forward facing arrow sides against the x axis is
 			// 26.565 degrees, 1/sin(26.565) = 2.236 / 2 = 1.118 ( / 2 allows for
 			// only half the strokewidth is processed ).
@@ -28207,7 +28208,6 @@ mxConnector.prototype.createMarker = function(c, pts, source)
 		
 		result = mxMarker.createMarker(c, this, type, pe, unitX, unitY, size, source, this.strokewidth, filled);
 	}
-	
 	return result;
 };
 
@@ -47879,7 +47879,7 @@ mxCellRenderer.registerShape('light', mxImageShape);
 mxCellRenderer.registerShape('progress', mxImageShape);
 mxCellRenderer.registerShape('pipeline1', mxImageShape);
 mxCellRenderer.registerShape('pipeline2', mxImageShape);
-mxCellRenderer.registerShape('userimage', mxImageShape);
+mxCellRenderer.registerShape('layoutimage', mxImageShape);
 mxCellRenderer.registerShape('lineChart', mxImageShape);//注册类型
 mxCellRenderer.registerShape('gaugeChart', mxImageShape);
 mxCellRenderer.registerShape(mxConstants.SHAPE_LABEL, mxLabel);

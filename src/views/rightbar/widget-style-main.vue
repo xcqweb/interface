@@ -35,14 +35,16 @@
     </div>
     <Style
       v-show="tab==1"
+      :key="refresh+1"
     />
     <State
       v-if="tab==2 && stateList.includes(shapeName)"
-      :key="refresh"
+      ref="stateRef"
+      :key="refresh+2"
     />
     <MutualMain
       v-if="tab==3 && actionList.includes(shapeName)"
-      :key="refresh+1"
+      :key="refresh+3"
     />
     <Data v-if="tab==4 && dataList.includes(shapeName)" />
   </div>
@@ -82,7 +84,7 @@ export default{
     methods: {
         changeTab(index) {
             this.tab = index
-        }
+        },
     },      
 }
 </script>

@@ -933,12 +933,9 @@ Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, resu
  */
 Sidebar.prototype.deletePage = function (ele, pageType) {
     // 删除后应该显示的页面
-    // const pageType = this.editorUi.editor.currentType;
-    // console.log(pageType)
+   
     const restList = this.editorUi.editor.pagesRank[pageType]
-    console.log(restList)
     if (restList.length <= 1) {
-        // alert('至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
         tipDialog(this.editorUi,'至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
         return;
     } else {
@@ -1454,14 +1451,14 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         //     cell.edge = true;
         //     return this.createEdgeTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '曲线');
 	 	// })),
-        // 管道2
-        this.createVertexTemplateEntry('shape=pipeline2;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/npipeline2.svg', 72, 72, '', '管道2'),
         // 指示灯
         this.createVertexTemplateEntry('shape=light;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/light2.svg', 72, 72, '', '指示灯'),
         // 进度条
         this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/progress2.svg', 72, 36, '', '进度条'),
         // 管道1
-        this.createVertexTemplateEntry('shape=pipeline1;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/npipeline1.svg', 72, 44, '', '管道1'),
+        this.createVertexTemplateEntry('shape=pipeline1;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/npipeline1.svg', 72, 36, '', '管道1'),
+        // 管道2
+        this.createVertexTemplateEntry('shape=pipeline2;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/npipeline2.svg', 72, 72, '', '管道2'),
         // 链接
         this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
     ];
@@ -1484,9 +1481,7 @@ Sidebar.prototype.addLayoutPalette = function (expand) {
         data.forEach((item) => {
             Array1.push(that.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${item.picUrl}`, 300, 170, '', 'layout图', '', '', '', 'layout', `${item.picUrl}`))
         })
-        // if (Array1.length) {
         this.addPaletteFunctions('layout', 'layout控件', false, Array1);
-        // }
     })
 }
 /*

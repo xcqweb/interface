@@ -1,4 +1,6 @@
 import {getCookie, setCookie} from '../Utils'
+import {data1,data2} from '../../constants/chart-default-data'
+import echarts from 'echarts'
 /**
  * 移除dom节点
  * @param {object} ele 
@@ -274,11 +276,11 @@ function actionOpen(action, mainProcess) {
 /**
  * 关闭事件
  */
-function actionClose(action) {
+function actionClose(action, applyData) {
     if (action.innerType === 'page' && action.type === 'in' && document.getElementById(action.link)) {
         removeEle(document.getElementById(action.link));
         removeEle(document.getElementById('bg_' + action.link));
-        destroyWs(action.link);
+        destroyWs(applyData,action.link);
     }
 }
 
@@ -286,45 +288,64 @@ function actionClose(action) {
  * 触发事件
  * @param {object} action 
  */
-function effectEvent(action, mainProcess) {
+function effectEvent(action, mainProcess, applyData) {
     switch (action.effectAction) {
         case 'show':
-            actionShow(action, mainProcess);
+            actionShow(action, mainProcess)
             break;
         case 'hide':
-            actionHide(action);
+            actionHide(action, applyData)
             break;
         case 'open':
-            actionOpen(action, mainProcess);
+            actionOpen(action, mainProcess)
             break;
         case 'close':
-            actionClose(action);
+            actionClose(action, applyData)
+            break;
+        case 'change'://控件切换状态
+            actionChange(action)
             break;
         default:
             break;
+    }
+}
+/**
+ * 把目标控件切换 为选中的状态
+ * @param {*} action 
+ * @param {*} cellInfo 
+ */
+function actionChange(action) {
+    let cellCon = document.getElementById('palette_' + action.link)
+    let {stateInfo} = action
+    if (stateInfo.animateCls) {
+        cellCon.classList.add(stateInfo.animateCls)
+    }
+    for (let key in stateInfo.style) {
+        cellCon.style[key] = stateInfo.style[key]
     }
 }
 
 /**
  * 隐藏事件
  */
-function actionHide(action) {
+function actionHide(action, applyData) {
     if (action.innerType === 'palette') {
         document.getElementById('palette_' + action.link).style.display = 'none';
     } else if (document.getElementById(action.link)) {
         removeEle(document.getElementById(action.link));
         removeEle(document.getElementById('bg_' + action.link));
         // 断开websocket
-        destroyWs(action.link);
+        destroyWs(applyData,action.link);
     }
 }
 
 /**
- * 绑定事件
+ * 绑定事件 （2019.8.30 版本后，mouseEvent只有click事件了，为了兼容以前的生产版本上的应用，暂时留着其他的事件）
  * @param {object} ele DOM节点
  * @param {Array} ele DOM节点
  */
-function bindEvent(ele, actionsInfo, mainProcess) {
+function bindEvent(ele, cellInfo, mainProcess, applyData) {
+    let {actionsInfo} = cellInfo
     if (actionsInfo) {
         for (let action of actionsInfo) {
             if (action.mouseEvent !== 'unset' && action.effectAction !== 'unset' && action.link) {
@@ -332,18 +353,18 @@ function bindEvent(ele, actionsInfo, mainProcess) {
                     // 单选、复选的选中和取消选中事件
                     ele.addEventListener('click', function() {
                         if (ele.checked && action.mouseEvent === 'select') {
-                            effectEvent(action, mainProcess);
+                            effectEvent(action, mainProcess, applyData);
                         } else if (!ele.checked && action.mouseEvent === 'unselect') {
-                            effectEvent(action, mainProcess);
+                            effectEvent(action, mainProcess, applyData);
                         }
                     })
                 } else if ((action.mouseEvent === 'select' || action.mouseEvent === 'unselect') && ele.nodeName == 'SELECT') {
                     // 下拉框的选中和取消选中事件
                     ele.addEventListener('change', function() {
                         if (ele.value !== '请选择' && action.mouseEvent === 'select') {
-                            effectEvent(action, mainProcess);
+                            effectEvent(action, mainProcess, applyData);
                         } else if (ele.value === '请选择' && action.mouseEvent === 'unselect') {
-                            effectEvent(action, mainProcess);
+                            effectEvent(action, mainProcess, applyData);
                         }
                     })
                 } else {
@@ -355,7 +376,7 @@ function bindEvent(ele, actionsInfo, mainProcess) {
                             e.cancelBubble = true;
                         }
                         // 触发事件
-                        effectEvent(action, mainProcess);
+                        effectEvent(action, mainProcess, applyData);
                     })
                 }
             }
@@ -456,7 +477,6 @@ function dealProgress(cell) {
 }
 
 function dealPipeline(cell) {
-    console.log(cell)
     let con = document.createElement('div')
     let pipelineProps = cell.pipelineProps
     let dasharray = 0
@@ -498,7 +518,7 @@ function dealPipeline(cell) {
     let pipeline1 = `<svg 
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
-        width="${cell.width}px" height="${cell.height}px" viewbox="0 0 29.5 14.5">
+        width="${cell.width}px" height="${cell.height}px" viewbox="0 0 29.5 11.5">
          <style type="text/css">
             .flow1{
                 stroke-dasharray: ${dasharray};
@@ -511,16 +531,14 @@ function dealPipeline(cell) {
                 }
             }
         </style>
-        <path fill-rule="evenodd"  stroke="rgb(125, 125, 125)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="rgb(203, 203, 203)"
-        d="M0.500,2.000 L28.500,2.000 L28.500,12.000 L0.500,12.000 L0.500,2.000 Z"/>
-        <path fill-rule="evenodd"  stroke="rgb(255, 255, 255)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="rgb(255, 255, 255)"
-        d="M2.500,7.000 L26.500,7.000 " class="flow1"/>
-        <path fill-rule="evenodd"  fill="rgb(125, 125, 125)"
-        d="M27.500,-0.000 C28.052,-0.000 28.500,0.448 28.500,1.000 L28.500,13.000 C28.500,13.552 28.052,14.000 27.500,14.000 C26.947,14.000 26.500,13.552 26.500,13.000 L26.500,1.000 C26.500,0.448 26.947,-0.000 27.500,-0.000 Z"/>
-        <path fill-rule="evenodd"  fill="rgb(125, 125, 125)"
-        d="M1.500,-0.000 C2.052,-0.000 2.499,0.448 2.499,1.000 L2.499,13.000 C2.499,13.552 2.052,14.000 1.500,14.000 C0.947,14.000 0.500,13.552 0.500,13.000 L0.500,1.000 C0.500,0.448 0.947,-0.000 1.500,-0.000 Z"/>
+          <path fill-rule="evenodd"  fill="rgb(203, 203, 203)"
+            d="M0.500,0.500 L28.500,0.500 L28.500,10.500 L0.500,10.500 L0.500,0.500 Z"/>
+            <path fill-rule="evenodd"  stroke="rgb(125, 125, 125)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="rgb(203, 203, 203)"
+            d="M28.500,10.500 L0.500,10.500 M0.500,0.500 L28.500,0.500 "/> 
+            <path fill-rule="evenodd"  stroke="rgb(255, 255, 255)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="rgb(255, 255, 255)"
+            d="M0.499,4.500 L28.500,4.500 "  class="flow1"/>
         </svg>`
-    if(cell.image.includes('pipeline1')) {
+    if(cell.shapeName == 'pipeline1') {
         con.innerHTML = pipeline1
     }else{
         con.innerHTML = pipeline2
@@ -528,7 +546,28 @@ function dealPipeline(cell) {
     return con
 }
 
+function dealCharts(cell) {
+    let con = document.createElement('div')
+    let chartAttr = cell.chartProps
+    let options = {}
+    if (chartAttr) {
+        options = JSON.parse(chartAttr)
+    }else{
+        if(cell.shapeName == 'lineChart') {
+            options = data1
+        }else{
+            options = data2
+        }
+    }
+    document.addEventListener("initEcharts",()=>{
+        let myEchart = echarts.init(con)
+        myEchart.setOption(options)
+    })
+    return con
+}
+ 
+
 export {
     removeEle, destroyWs, geAjax, insertImage, inserEdge, insertSvg, bindEvent, setCellStatus, showTips,
-    dealProgress, dealPipeline
+    dealProgress, dealPipeline, dealCharts
 }
