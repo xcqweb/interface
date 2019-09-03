@@ -446,10 +446,14 @@ function dealProgress(cell) {
     let text = ''
     if(progressProps) {
         progressPropsObj = JSON.parse(progressProps)
-        percent = progressPropsObj.val / (+progressPropsObj.max - (+progressPropsObj.min)).toFixed(2)
         if(progressPropsObj.type == 'real') {
             text = progressPropsObj.val
         }else{
+            if(!progressPropsObj.val) {
+                percent = 0
+            }else{
+                percent = progressPropsObj.val / (+progressPropsObj.max - (+progressPropsObj.min)).toFixed(2)
+            }
             text = percent
         }
     }
@@ -465,7 +469,7 @@ function dealProgress(cell) {
 }
 
 function dealPipeline(cell) {
-    let pipeline1ImgUrl = 'static/stencils/basic/pipeline_forward.svg'
+    let pipeline1ImgUrl = 'static/stencils/basic/npipeline1.svg'
     let con = document.createElement('div')
     let pipelineProps = cell.pipelineProps
     let dasharray = 0
@@ -474,6 +478,7 @@ function dealPipeline(cell) {
     if (pipelineProps) {
         pipelinePropsObj = JSON.parse(pipelineProps)
         dasharray = 8
+        pipeline1ImgUrl = 'static/stencils/basic/pipeline_forward.svg'
         if(pipelinePropsObj.flow == 'back') {
             dashoffset = -16
             pipeline1ImgUrl = 'static/stencils/basic/pipeline_back.svg'

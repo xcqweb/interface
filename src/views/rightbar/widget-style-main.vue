@@ -69,7 +69,6 @@ export default{
     },
     computed: {
         shapeName() {
-            console.log(this.$store.state.main.widgetInfo.shapeInfo.shape)
             return this.$store.state.main.widgetInfo.shapeInfo.shape
         },
         rand() {

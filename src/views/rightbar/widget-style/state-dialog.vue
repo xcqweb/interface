@@ -21,17 +21,21 @@
           <div style="flex:3">
             <div class="state-con">
               <div
-                v-if="shapeName!='image'"
+                v-if="shapeName=='image'"
+                class="image"
+                :class="animateCls"
+              />
+              <div
+                v-if="shapeName=='light'"
+                class="image_light"
+              />
+              <div
+                v-else
                 class="text"
                 :class="animateCls"
               >
                 文本
               </div>
-              <div
-                v-if="shapeName=='image'"
-                class="image"
-                :class="animateCls"
-              />
             </div>
             <i-checkbox
               v-model="animateCheck"
@@ -69,7 +73,7 @@
                 图片
               </div>
               <div
-                v-if="!picList.includes(shapeName)"
+                v-if="!picList.includes(shapeName) || shapeName=='light'"
                 class="type-tab"
                 :class="{'selected':typeTab==1}"
                 style="border-top-left-radius:2px;border-bottom-left-radius:2px;"
@@ -78,6 +82,7 @@
                 填充
               </div>
               <div
+                v-if=" shapeName!=='light'"
                 class="type-tab"
                 :class="{'selected':typeTab==2}"
                 @click="changeTab(2)"
@@ -85,7 +90,7 @@
                 边框
               </div>
               <div
-                v-if="!picList.includes(shapeName)"
+                v-if="!picList.includes(shapeName)&&shapeName!=='light'"
                 class="type-tab"
                 style="border-top-right-radius:2px;border-bottom-right-radius:2px;"
                 :class="{'selected':typeTab==3}"
@@ -181,6 +186,9 @@ export default{
                 this.stateDesc = ''
             }
             style = editStateTemp.style
+            if(editStateTemp.imgInfo) {
+                this.setBg(editStateTemp.imgInfo.url)
+            }
         }else{
             let graph = this.myEditorUi.editor.graph
             let states = this.$parent.getStates(graph)
@@ -301,6 +309,13 @@ export default{
     background:url('../../../assets/images/menu/rightbar/bg_ic2x.png') no-repeat center center;
     background-size:contain;
   }
+  .image_light{
+    height:56px;
+    width:56px;
+    background:url('../../../../static/stencils/basic/light.png') no-repeat center center;
+    background-size:contain;
+  }
+  
 }
 .image-con{
   width:100%;

@@ -33,12 +33,21 @@
               :style="{background:state.style.background || '#ECEFF4'}"
             />
           </template>
-          <span style="margin-left:15px;">边框</span>
-          <li
-            class="rect"
-            :style="{background:state.style.borderColor || '#7D7D7D'}"
-          />
-          <template v-if="!picList.includes(shapeName)">
+          <template v-if="picList.includes(shapeName) && state.imgInfo">
+            <span>图片</span>
+            <img
+              :src="state.imgInfo.url"
+              style="height:32px;margin:4px 0 0 4px;"
+            >
+          </template>
+          <template v-if="shapeName!='light'">
+            <span :style="{marginLeft:picList.includes(shapeName) && !state.imgInfo ? 0 : '15px'}">边框</span>
+            <li
+              class="rect"
+              :style="{background:state.style.borderColor || '#7D7D7D'}"
+            />
+          </template>
+          <template v-if="!picList.includes(shapeName) && shapeName!='light'">
             <span style="margin-left:15px;">
               文本
             </span>
@@ -96,6 +105,7 @@ export default{
                 'imgInfo':data.imgInfo,
                 'check':false
             }
+            console.log(state)
             if(data.id) {
                 state.id = data.id
             }
@@ -139,7 +149,7 @@ export default{
             }
             return states
         },
-        setStateInfos(state) {//是否要重置列表
+        setStateInfos(state) {
             let graph = this.myEditorUi.editor.graph
             let states = this.getStates(graph)
             if(!state.id) {
