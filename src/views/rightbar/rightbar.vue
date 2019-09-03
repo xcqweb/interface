@@ -106,9 +106,9 @@ export default {
                     this.$store.commit('widgetChange',new Date().getTime())
                 }
                 if( graph.getSelectionCount() > 1) {
-                    VueEvent.$emit('isShowFootBar',false)
+                    VueEvent.$emit('isShowFootBar',{show:false})
                 }else{
-                    VueEvent.$emit('isShowFootBar',this.showWidgetStyle)
+                    VueEvent.$emit('isShowFootBar',{show:this.showWidgetStyle})
                 }
             }
             this.inited = true

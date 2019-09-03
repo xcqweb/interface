@@ -24703,7 +24703,6 @@ var mxMarker =
 		
 		return function(canvas, shape, type, pe, unitX, unitY, size, source, sw, filled)
 		{
-			debugger
 			// The angle of the forward facing arrow sides against the x axis is
 			// 26.565 degrees, 1/sin(26.565) = 2.236 / 2 = 1.118 ( / 2 allows for
 			// only half the strokewidth is processed ).
@@ -47409,7 +47408,6 @@ mxCellEditor.prototype.startEditing = function(cell, trigger)
 			if (this.isSelectText() && this.textarea.innerHTML.length > 0 &&
 				(this.textarea.innerHTML != this.getEmptyLabelText() || !this.clearOnChange))
 			{
-				// debugger
 				this.textNode = state.text.node;
 				this.textNode.style.visibility = 'hidden';
 				document.execCommand('selectAll', false, null);
@@ -84152,7 +84150,6 @@ mxEditor.prototype.configure = function (node)
 {
 	if (node != null)
 	{
-		debugger
 		// Creates a decoder for the XML data
 		// and uses it to configure the editor
 		var dec = new mxCodec(node.ownerDocument);

@@ -105,7 +105,6 @@ export default{
                 'imgInfo':data.imgInfo,
                 'check':false
             }
-            console.log(state)
             if(data.id) {
                 state.id = data.id
             }
