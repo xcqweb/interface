@@ -155,7 +155,7 @@
 </template>
 
 <script>
-import {Tabs,TabPane, Table,Select, Option, Button} from 'iview'
+import {Tabs,TabPane, Table,Select, Option, Button, Message} from 'iview'
 import NoData from '../datasource/nodata'
 import VerticalToggle from './vertical-toggle.js'
 import VueEvent from '../../services/VueEvent.js'
@@ -201,31 +201,10 @@ export default {
                     key: 'actions',
                 }
             ],
-            dataSource: [
-                // {
-                //     name: dataSourceForm,
-                //     typeName: '123',
-                //     deviceName: 'New York No. 1 Lake Park'
-                // },
-                // {
-                //     name: dataSourceForm,
-                //     typeName: '123',
-                //     deviceName: 'London No. 1 Lake Park'
-                // },
-                // {
-                //     name: dataSourceForm,
-                //     typeName: '123',
-                //     deviceName: 'Sydney No. 1 Lake Park'
-                // }
-            ],
+            dataSource: [],
             heightlen: '190',
             ParamsSelect: '',
-            ParamsSelectList: [
-                {
-                    value: '1',
-                    label:'terry'
-                }
-            ],
+            ParamsSelectList: [],
             paramsListArr: [
                 {
                     paramsSelect: ''
@@ -248,6 +227,19 @@ export default {
         })
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
+            // 出始化
+            let startBindData = this.getCellModelInfo('bindData2')
+            if (!startBindData) {
+                this.setCellModelInfo('dataSource',value)
+            } else {
+                if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
+                    this.newSetDataModel(startBindData, value)
+                } else {
+                    return false
+                }
+            }
+            this.getTableData(value)
+            Message.success('绑定成功')
             bindObj = value
             this.initModelList()
         })
@@ -364,6 +356,40 @@ export default {
                 }
             }
             return bindData
+        },
+        getTableData(data) {
+            if (data.deviceNameChild && data.deviceNameChild.length) {
+                data.deviceNameChild.forEach((item) => {
+                    let obj = {}
+                    obj.name = data.dataSourceChild.name || ''
+                    obj.typeName = data.deviceTypeChild.name || ''
+                    obj.deviceName = item.name || ''
+                    this.dataSource.push(obj)
+                })
+            }
+        },
+        checkDetDataModel(oldValue, newValue) {
+            let oldDeviceNameChild = oldValue.dataSource.deviceNameChild 
+            let newDeviceNameChild = newValue.deviceNameChild
+            let flag = ''
+            for(let i = 0; i <= oldDeviceNameChild.length - 1; i++) {
+                for(let j = 0; j <= newDeviceNameChild.length - 1; j++) {
+                    if (oldDeviceNameChild[i].id === newDeviceNameChild[j].id) {
+                        Message.success(`不允许重复绑定`)
+                        flag = false
+                        return false
+                    }
+                }
+            }
+            flag = true
+            return flag
+        },
+        newSetDataModel(oldValue, newValue) {
+            let obj = {}
+            obj.dataSourceChild = oldValue.dataSource.dataSourceChild
+            obj.deviceTypeChild = oldValue.dataSource.deviceTypeChild
+            obj.deviceNameChild = [...oldValue.dataSource.deviceNameChild, ...newValue.deviceNameChild]
+            this.setDataModel('dataSource',obj)
         },
         setCellModelInfo(key,data) {
             let graph = this.myEditorUi.editor.graph
