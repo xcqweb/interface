@@ -86,7 +86,7 @@ export default{
         changeTab(index) {
             this.tab = index
             if (this.tab === 4) {
-                VueEvent.$emit('isShowFootBar',true)
+                VueEvent.$emit('isShowFootBar',{show:true,isUp:true})
             }
         },
     },      

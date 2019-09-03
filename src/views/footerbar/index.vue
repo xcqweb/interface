@@ -257,8 +257,11 @@ export default {
         }
     },
     mounted() {
-        VueEvent.$on('isShowFootBar', (value) => {
-            this.footerContentHandle(value)
+        VueEvent.$on('isShowFootBar', ({show,isUp}) => {
+            if(isUp) {
+                this.ifShowArrow = true
+            }
+            this.footerContentHandle(show)
         })
     },
     methods:{
@@ -266,10 +269,10 @@ export default {
             this.ifShowArrow = !this.ifShowArrow
         },
         footerContentHandle(data) {
-            if (data && !this.footerContent) {
+            if (data) {
                 let graph = this.myEditorUi.editor.graph
-                let cell = graph.getSelectionCell();
-                let state = graph.view.getState(cell);
+                let cell = graph.getSelectionCell()
+                let state = graph.view.getState(cell)
                 let shapeName = state.style.shape
                 if(allShapes.includes(shapeName)) {
                     this.footerContent = true
