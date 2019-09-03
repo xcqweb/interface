@@ -117,12 +117,12 @@
                   :key="index"
                 >
                   <div
-                    v-if="stateList.length % 3 !== 2"
                     class="footerTabs2-list-wrap"
                   >
                     <span class="footerTabs2-list-top">{{ item.name }}</span>
                     <span class="footerTabs2-list-content">
                       <Select
+                        v-model="modelVals[index]"
                         style="width:240px;height:24px;line-height:24px;"
                         @on-change="(val)=>modelSelectChange(val,index)"
                       > 
@@ -136,10 +136,6 @@
                       </Select>
                     </span>
                   </div>
-                  <div
-                    v-else
-                    style="flex:1;"
-                  />
                 </li>
               </ul>
             </div>
@@ -163,7 +159,7 @@ import {Tabs,TabPane, Table,Select, Option, Button} from 'iview'
 import NoData from '../datasource/nodata'
 import VerticalToggle from './vertical-toggle.js'
 import VueEvent from '../../services/VueEvent.js'
-let bindObj = null
+let bindObj = null,isInitModelList = false
 const allShapes = ['image','userimage','tableBox','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
 // const dataSourceForm = 'IOT平台'
 export default {
@@ -239,6 +235,7 @@ export default {
             modelList:[],
             selectEle: false,
             footerContent: false,
+            modelVals:[],//状态列表下的每个模型列表当前的v-model
         }
     },
     mounted() {
@@ -257,38 +254,65 @@ export default {
     },
     methods:{
         init() {
-            let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
-            let modelInfo = graph.getModel().getValue(cell)
-            let tempStateList = this.getCellModelInfo("statesInfo",modelInfo)
+            let tempStateList = this.getCellModelInfo("statesInfo")
             if(tempStateList) {
                 this.stateList = tempStateList
             }else{
                 this.stateList = []
             }
+            this.initModelList()
         },
         initModelList() {
             //模型列表
+            if(isInitModelList) {
+                return
+            }
+            let deviceTypeId = null
             if(bindObj) {
+                deviceTypeId = bindObj.deviceTypeChild.id
+            }else{
+                deviceTypeId = this.findByBind()
+            }
+            if(deviceTypeId) {
                 let objData = {
                     studioId: sessionStorage.getItem("applyId"),
-                    deviceTypeId:bindObj.deviceTypeChild.id
+                    deviceTypeId:deviceTypeId
                 }
                 this.requestUtil.post(this.urls.getModelList.url, objData).then((res) => {
-                    console.log(res)
                     if(res.returnObj) {
                         this.modelList = res.returnObj
+                        isInitModelList = true
+                        this.stateList.forEach((item)=>{
+                            if(item.modelFormInfo) {//如果状态绑定的有公式，就选中该项公式
+                                let modelIndex = this.modelList.findIndex((model)=>{
+                                    return item.modelFormInfo.sourceId == model.sourceId
+                                })
+                                if(modelIndex != -1) {
+                                    this.$set(this.modelVals,modelIndex,modelIndex)
+                                }
+                            }
+                        })
                     }
                 })
             }else{
                 this.modelList = []
             }
         },
+        findByBind() {
+            let res = null
+            for(let i = 0;i < this.stateList.length;i++) {
+                if(this.stateList[i].modelFormInfo) {
+                    res = this.stateList[i].modelFormInfo.deviceTypeId
+                    break
+                }
+            }
+            return res
+        },
         modelSelectChange(modelIndex,stateIndex) {
             //将模型公式绑定在对应的状态上
             let currentModel = this.modelList[modelIndex]
             this.stateList[stateIndex].modelFormInfo = currentModel
-            this.setCellModelInfo('statesInfo',Object.assign({},this.stateList))
+            this.setCellModelInfo('statesInfo',[...this.stateList])
         },
         clickHandle() {
             this.ifShowArrow = !this.ifShowArrow
@@ -313,6 +337,9 @@ export default {
             if(!this.ifShowArrow) {
                 this.ifShowArrow = true
             }
+            if(this.TabsNumber == 2) {
+                this.initModelList()
+            }
         },
         deleteFooterHandle(data, index) {
             console.log(data, index)
@@ -325,7 +352,10 @@ export default {
         removedataHandle(index) {
             this.paramsListArr.splice(index , 1)
         },
-        getCellModelInfo(key,modelInfo) {
+        getCellModelInfo(key) {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let modelInfo = graph.getModel().getValue(cell)
             let bindData = null
             if(modelInfo) {
                 let bindAttr = modelInfo.getAttribute(key)
