@@ -117,19 +117,22 @@
                   :key="index"
                 >
                   <div
-                    v-if="item.name"
+                    v-if="stateList.length % 3 !== 2"
                     class="footerTabs2-list-wrap"
                   >
                     <span class="footerTabs2-list-top">{{ item.name }}</span>
                     <span class="footerTabs2-list-content">
                       <Select
                         style="width:240px;height:24px;line-height:24px;"
+                        @on-change="(val)=>modelSelectChange(val,index)"
                       > 
                         <Option 
-                          v-for="d in modelList" 
-                          :key="d.value" 
-                          :value="d.name"
-                        />
+                          v-for="(d,i) in modelList" 
+                          :key="i" 
+                          :value="i"
+                        >
+                          {{ d.modelName }}
+                        </Option>
                       </Select>
                     </span>
                   </div>
@@ -160,7 +163,7 @@ import {Tabs,TabPane, Table,Select, Option, Button, Message} from 'iview'
 import NoData from '../datasource/nodata'
 import VerticalToggle from './vertical-toggle.js'
 import VueEvent from '../../services/VueEvent.js'
-let deviceid = ''
+let bindObj = null
 const allShapes = ['image','userimage','tableBox','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
 // const dataSourceForm = 'IOT平台'
 export default {
@@ -215,7 +218,6 @@ export default {
             modelList:[],
             selectEle: false,
             footerContent: false,
-            showWidgetStyle: false
         }
     },
     mounted() {
@@ -229,9 +231,9 @@ export default {
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
             // 出始化
-            let startBindData = this.getModelInfo('bindData2')
+            let startBindData = this.getCellModelInfo('bindData2')
             if (!startBindData) {
-                this.setDataModel('dataSource',value)
+                this.setCellModelInfo('dataSource',value)
             } else {
                 if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
                     this.newSetDataModel(startBindData, value)
@@ -241,17 +243,31 @@ export default {
             }
             this.getTableData(value)
             Message.success('绑定成功')
+            bindObj = value
+            this.initModelList()
         })
     },
     methods:{
         init() {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let modelInfo = graph.getModel().getValue(cell)
+            let tempStateList = this.getCellModelInfo("statesInfo",modelInfo)
+            if(tempStateList) {
+                this.stateList = tempStateList
+            }else{
+                this.stateList = []
+            }
+        },
+        initModelList() {
             //模型列表
-            if(deviceid) {
+            if(bindObj) {
                 let objData = {
-                    studioId: this.studioIdNew,
-                    deviceTypeId:deviceid
+                    studioId: sessionStorage.getItem("applyId"),
+                    deviceTypeId:bindObj.deviceTypeChild.id
                 }
                 this.requestUtil.post(this.urls.getModelList.url, objData).then((res) => {
+                    console.log(res)
                     if(res.returnObj) {
                         this.modelList = res.returnObj
                     }
@@ -259,24 +275,15 @@ export default {
             }else{
                 this.modelList = []
             }
-            let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
-            let modelInfo = graph.getModel().getValue(cell)
-            let tempStateList = this.getModelInfo("statesInfo",modelInfo)
-            if(tempStateList) {
-                this.stateList = tempStateList
-            }else{
-                this.stateList = []
-            }
-            if(this.stateList.length % 3 == 2) {
-                this.stateList.push({})
-            }
+        },
+        modelSelectChange(modelIndex,stateIndex) {
+            //将模型公式绑定在对应的状态上
+            let currentModel = this.modelList[modelIndex]
+            this.stateList[stateIndex].modelFormInfo = currentModel
+            this.setCellModelInfo('statesInfo',Object.assign({},this.stateList))
         },
         clickHandle() {
             this.ifShowArrow = !this.ifShowArrow
-            if(this.ifShowArrow) {
-                this.init()
-            }
         },
         footerContentHandle(data) {
             if (data) {
@@ -310,19 +317,7 @@ export default {
         removedataHandle(index) {
             this.paramsListArr.splice(index , 1)
         },
-        setDataModel(attr,msgInfo) {
-            let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
-            let modelInfo = graph.getModel().getValue(cell)
-            let bindData = {}
-            bindData[attr] = msgInfo
-            modelInfo.setAttribute('bindData2', JSON.stringify(bindData))
-            graph.getModel().setValue(cell, modelInfo)
-        },
-        getModelInfo(key) {
-            let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
-            let modelInfo = graph.getModel().getValue(cell)
+        getCellModelInfo(key,modelInfo) {
             let bindData = null
             if(modelInfo) {
                 let bindAttr = modelInfo.getAttribute(key)
@@ -365,7 +360,14 @@ export default {
             obj.deviceTypeChild = oldValue.dataSource.deviceTypeChild
             obj.deviceNameChild = [...oldValue.dataSource.deviceNameChild, ...newValue.deviceNameChild]
             this.setDataModel('dataSource',obj)
-        }
+        },
+        setCellModelInfo(key,data) {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let modelInfo = graph.getModel().getValue(cell)
+            modelInfo.setAttribute(key, JSON.stringify(data))
+            graph.getModel().setValue(cell, modelInfo)
+        },
     }
 }
 </script>
