@@ -9,19 +9,41 @@
           {{ dataName }}
         </span>
       </div>
-      <DataSource
-        :datalist="dataNameArr"
-        :modelvalue="modelvalue1"
-      />
+      <div>
+        <Select
+          v-model="modelvalue1"
+          :clearable="ifclearSelect"
+          style="height:24px"
+        >
+          <Option
+            v-for="(item, index) in dataNameArr"
+            :key="index"
+            :value="item.value"
+          >
+            {{ item.label }}
+          </Option>
+        </Select>
+      </div>
       <div class="data-sources-listname">
         <span>
           {{ deviceType }}
         </span>
       </div>
-      <DataSource
-        :datalist="deviceNameArr"
-        :modelvalue="modelvalue2"
-      />
+      <div>
+        <Select
+          v-model="modelvalue2"
+          :clearable="ifclearSelect"
+          style="height:24px"
+        >
+          <Option 
+            v-for="(item, index) in deviceNameArr"
+            :key="index"
+            :value="item.deviceTypeId"
+          >
+            {{ item.deviceTypeName }}
+          </Option>
+        </Select>
+      </div>
       <div class="data-sources-listname">
         <span>
           {{ deviceName }}
@@ -38,30 +60,39 @@
       <div
         class="devicename-list-wrap"
       >
-        <ul
+        <div
           v-if="deviceNameList.length"
-          class="devicename-listUl"
         >
-          <li 
-            v-for="(item, index) in deviceNameList"
-            :key="index"
+          <CheckboxGroup
+            v-model="deviceNameListArr"
+            class="devicename-listUl"
+            @on-change="checkAllGroupChange"
           >
             <Checkbox
+              v-for="(item, index) in deviceNameList"
+              :key="index"
+              :label="item.deviceId"
               size="small"
             >
-              {{ item.name }}
+              <span>{{ item.deviceName }}</span>
             </Checkbox>
-          </li>
-        </ul>
-        <div v-else>
-          {{ nodata }}
+          </CheckboxGroup>
+        </div>
+        <div 
+          v-else
+          class="no-data-wrap"
+        >
+          <NoData
+            :text="nodata"
+          />
         </div>
       </div> 
       <div class="devicename-page-wrap">
-        <template>
+        <template v-if="deviceNameList.length">
           <Page 
             :current="1" 
-            :total="50" 
+            :page-size="deviceNamePageNumber"
+            :total="deviceListTotal" 
             simple
           />
         </template>
@@ -71,6 +102,8 @@
       <Button 
         type="primary"
         long
+        :disabled="!deviceIdArr.length"
+        @click.stop.prevent="bindDeviceNameHandle"
       >
         {{ buttonName }}
       </Button>
@@ -79,16 +112,19 @@
 </template>
 
 <script>
-import DataSource from '../../datasource/dataSource-select'
 import Input from '../../datasource/input-select'
-import {Button, Page, Checkbox} from 'iview'
+import NoData from '../../datasource/nodata'
+import {Button,Page,Checkbox,Message,Select,Option, CheckboxGroup} from 'iview'
 export default{
     components: {
-        DataSource,
         Button,
         Input,
         Page,
-        Checkbox
+        Checkbox,
+        Select,
+        Option,
+        NoData,
+        CheckboxGroup
     },
     data() {
         return {
@@ -104,32 +140,63 @@ export default{
                     label: 'IOT平台'
                 }
             ],
-            deviceNameArr:[
-                {
-                    value: '1',
-                    label: '深圳'
-                }
-            ],
-            deviceNameList:[
-                {
-                    name: 'fkafkfks342-y',
-                    id:'321312'
-                },
-                {
-                    name: 'etwiyweuwe-y',
-                    id:'855345'
-                }
-            ],
+            deviceNameArr:[],
+            deviceNameList:[],
             single: false,
             buttonName: '绑定',
             modelvalue1:'1',
-            modelvalue2:'1'
+            modelvalue2:'',
+            ifclearSelect:true,
+            deviceNamePageNumber: 1,
+            deviceListTotal:10,
+            studioIdNew:'',
+            deviceNameListArr:[],
+            deviceIdArr:[]
         }
     },
     mounted() {
+        this.studioIdNew = sessionStorage.getItem("applyId") || ''
+        this.init()
     },
     methods: {
-        
+        init() {
+            let objData = {
+                studioId:this.studioIdNew
+            }
+            this.requestUtil.get(this.urls.hasImportDeviceType.url,objData).then((res) => {
+                this.deviceNameArr = res || []
+                if (this.deviceNameArr.length) {
+                    this.modelvalue2 = this.deviceNameArr[0].deviceTypeId
+                    let objDataNew = {
+                        studioId:this.studioIdNew,
+                        deviceTypeId: this.deviceNameArr[0].deviceTypeId
+                    }
+                    return Promise.all([
+                        this.requestUtil.post(this.urls.deviceEquipList.url, objDataNew)
+                    ]).catch(() => {
+                        Message.error('系统繁忙，请稍后再试')
+                        return false
+                    })
+                } else {
+                    this.deviceNameList = []
+                    return [[]]
+                }
+            }).then((res) => {
+                const [firstDeviceNameList] = res
+                this.deviceNameList = firstDeviceNameList.records || []
+                this.deviceListTotal = firstDeviceNameList.total || 10
+            }).catch(() => {
+                Message.error('系统繁忙，请稍后再试试')
+                return false
+            })
+        },
+        checkAllGroupChange(data) {
+            this.deviceIdArr = data
+            console.log(this.deviceIdArr)
+        },
+        bindDeviceNameHandle() {
+
+        }
     },      
 }
 </script>
@@ -169,12 +236,6 @@ export default{
             height:26px;
             display: flex;
             align-items: center;
-            /deep/.ivu-checkbox-checked {
-                .ivu-checkbox-inner::after{
-                  top:2px !important;
-                  left:4px !important;
-                }
-            }
           }
         }
       }
@@ -188,13 +249,44 @@ export default{
       padding-top:12px;
       button{
         height:24px;
-        line-height: 22px;
+        line-height: 20px;
         padding:0;
         span{
           display: inline-block;
           height:24px;
-          line-height: 22px;
         }
+      }
+    }
+    /deep/.ivu-select{
+        .ivu-select-selection{
+          height:24px;
+        }
+        .ivu-select-placeholder{
+          height:24px;
+          line-height:24px;
+        }
+        .ivu-select-selected-value{
+            height:24px;
+            line-height:22px;
+        }
+        .ivu-select-dropdown{
+          .ivu-select-dropdown-list{
+            .ivu-select-item{
+              padding: 0 16px 0;
+            }
+          }
+        }
+    }
+    .no-data-wrap{
+          height:100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+    }
+    /deep/.ivu-checkbox-inner{
+      &:after{
+        top:2px !important;
+        left:5px !important;
       }
     }
   }

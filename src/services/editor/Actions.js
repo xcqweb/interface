@@ -1164,6 +1164,10 @@ Actions.prototype.init = function()
         // ui.showDialog(dlg.container, 410, 370, true, false, null, null, '选择图片');
         // dlg.init()
         // 本地图片
+        let timer = setTimeout(() => {
+            removeImageRadio();
+            clearTimeout(timer)
+        },200)
         var localImage;
         if (document.getElementsByClassName('imageRadio')[0]) {
             document.getElementsByClassName('imageRadio')[0].addEventListener('click', function (e) {

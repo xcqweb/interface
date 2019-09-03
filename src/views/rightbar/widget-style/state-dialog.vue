@@ -158,14 +158,14 @@ export default{
             animateCls:'',
             animateCheck:false,
             shapeName:'',
-            picList:['image','light'],
+            picList:['image'],
             bgPic:require('../../../assets/images/rightsidebar/bg_ic_widget.png'),
             isShowBgText:true,
             bgPicStyle:{height:'auto'}
         }
     },
     mounted() {
-        const component = this.$mount();
+        const component = this.$mount()
         document.querySelector('body').appendChild(component.$el)
         this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
         if (this.shapeName == 'image') {

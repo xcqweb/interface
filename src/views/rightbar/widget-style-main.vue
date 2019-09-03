@@ -55,6 +55,7 @@ import Style from './widget-style/style'
 import MutualMain from './widget-style/mutual-main'
 import State from './widget-style/state'
 import Data from './widget-style/data'
+import VueEvent from '../../services/VueEvent.js'
 export default{
     components:{Style,MutualMain,State,Data},
     data() {
@@ -63,11 +64,12 @@ export default{
             refresh:0,//切换控件刷新子组件
             stateList:['rectangle','image','tableCell','light','ellipse'],
             actionList:['menuCell','rectangle','image','button','tableCell','ellipse','text'],
-            dataList:['rectangle','image','tableCell','light','progress','lineChart','gaugeChart','ellipse'],
+            dataList:['image','userimage','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart'],
         }
     },
     computed: {
         shapeName() {
+            console.log(this.$store.state.main.widgetInfo.shapeInfo.shape)
             return this.$store.state.main.widgetInfo.shapeInfo.shape
         },
         rand() {
@@ -84,6 +86,9 @@ export default{
     methods: {
         changeTab(index) {
             this.tab = index
+            if (this.tab === 4) {
+                VueEvent.$emit('clickFooterHandle')
+            }
         },
     },      
 }

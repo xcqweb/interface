@@ -1,119 +1,425 @@
 <template>
-  <div
-    v-clickOutSide="close"
-    class="geFootbarContainer"
-  >
-    <div
-      class="collapse-menu"
-      :style="{transform: rotate}"
-      @click="toggle"
-    />
-    <ul class="tab">
-      <li 
-        :class="{active:componentId === 'DataSource'}"
-        @click="componentId='DataSource'"
-      >
-        数据源
-      </li>
-      <li 
-        :class="{active:componentId === 'ShowData'}"
-        @click="componentId='ShowData'"
-      >
-        数据显示
-      </li>
-      <li 
-        :class="{active:componentId === 'ModelState'}"
-        @click="componentId='ModelState'"
-      >
-        状态模型
-      </li>
-      <p class="clearFix" />
-    </ul>
-    <component
-      :is="componentId"
-      v-if="showFoot"
-      style="height:75px;"
-    />
+  <div class="newfooter-wraper">
+    <div>
+      <div class="title-tabs">
+        <div class="Collapse-title-wrap">
+          <div class="Collapse-title-left">
+            <Tabs
+              type="card" 
+              :animated="false"
+              @on-click="switchTabHandle"
+            >
+              <TabPane
+                :label="dataSourceName[0]"
+              />
+              <TabPane
+                :label="dataSourceName[1]"
+              />
+              <TabPane
+                :label="dataSourceName[2]"
+              />
+            </Tabs>
+          </div>
+          <div 
+            class="Collapse-title-right"
+            :class="ifShowArrow ? 'collapse-active' : ''"
+            @click="clickHandle"
+          />
+        </div>
+      </div>
+      <VerticalToggle>
+        <div 
+          v-show="ifShowArrow"
+          class="footer-content"
+        >
+          <div
+            v-show="TabsNumber === 0"
+            class="footer-common dataSourceList"
+          >
+            <template>
+              <Table
+                border
+                :columns="columns7"
+                :data="dataSource"
+                :max-height="heightlen"
+              >
+                <template
+                  slot="actions"
+                  slot-scope="{ row, index }" 
+                >
+                  <span
+                    class="icon-delete"
+                    @click.stop.prevent="deleteFooterHandle(row,index)"
+                  />
+                </template>
+              </Table>
+            </template>
+          </div>
+          <div
+            v-show="TabsNumber === 1"
+            class="footer-common dataDisplayList"
+          > 
+            <ul class="dataDisplayListUl">
+              <li 
+                v-for="(items, index) in paramsListArr"
+                :key="index"
+              >
+                <div>
+                  <span>
+                    <Select
+                      v-model="items.paramsSelect"
+                      style="width:240px;height:24px;line-height:24px;"
+                    >
+                      <Option 
+                        v-for="item in ParamsSelectList" 
+                        :key="item.value" 
+                        :value="item.value"
+                      >
+                        {{ item.label }}
+                      </Option>
+                    </Select>
+                  </span>
+                  <span>
+                    <Button
+                      v-if="index === 0"
+                      size="small"
+                      class="condition-icon condition-add-icon"
+                      @click.stop.prevent="adddataHandle(index)"
+                    >
+                      {{ buttonText[0] }}
+                    </Button>
+                    <Button
+                      v-if="paramsListArr.length > 1"
+                      size="small"
+                      class="condition-icon condition-delete-icon"
+                      @click.stop.prevent="removedataHandle(index)"
+                    >
+                      {{ buttonText[1] }}
+                    </Button>
+                  </span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div
+            v-show="TabsNumber === 2"
+            class="footer-common stateList"
+          >
+            <ul class="footerTabs2Ul">
+              <li 
+                v-for="(items, index) in modelSelectArr"
+                :key="index"
+              >
+                <div class="footerTabs2-list-wrap">
+                  <span class="footerTabs2-list-top">状态{{ index + 1 }}</span>
+                  <span class="footerTabs2-list-content">
+                    <Select
+                      v-model="items.modelSelect"
+                      style="width:240px;height:24px;line-height:24px;"
+                    > 
+                      <Option 
+                        v-for="item in ModelSelectList" 
+                        :key="item.value" 
+                        :value="item.value"
+                      >
+                        {{ item.label }}
+                      </Option>
+                    </Select>
+                  </span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </VerticalToggle>
+    </div>
   </div>
 </template>
 
 <script>
-import conponents from './components'
+// import {mxEvent} from '../../services/mxGlobal'
+import {Tabs,TabPane, Table,Select, Option, Button} from 'iview'
+import VerticalToggle from './vertical-toggle.js'
+import VueEvent from '../../services/VueEvent.js'
 export default {
-    components: {...conponents},
+    components:{
+        Tabs,
+        TabPane,
+        Table,
+        VerticalToggle,
+        Select,
+        Option,
+        Button
+    },
     data() {
         return {
-            componentId: 'DataSource',
-            showFoot:false,
-        };
+            value1: '1',
+            dataSourceName:['数据源','数据显示','状态模型'],
+            buttonText:['添加参数', '删除'],
+            ifShowArrow: false,
+            TabsNumber: 0,
+            columns7:[
+                {
+                    title: '数据源',
+                    key: 'age'
+                },
+                {
+                    title: '类型',
+                    key: 'typeName'
+                },
+                {
+                    title: '名称',
+                    key: 'deviceName'
+                },
+                {
+                    title: '操作',
+                    width: '80',
+                    slot: 'actions',
+                    key: 'actions',
+                }
+            ],
+            dataSource: [
+                {
+                    age: 18,
+                    typeName: '123',
+                    deviceName: 'New York No. 1 Lake Park'
+                },
+                {
+                    age: 24,
+                    typeName: '123',
+                    deviceName: 'London No. 1 Lake Park'
+                },
+                {
+                    age: 30,
+                    typeName: '123',
+                    deviceName: 'Sydney No. 1 Lake Park'
+                }
+            ],
+            heightlen: '190',
+            ParamsSelect: '',
+            ParamsSelectList: [
+                {
+                    value: '1',
+                    label:'terry'
+                }
+            ],
+            paramsListArr: [
+                {
+                    paramsSelect: ''
+                }
+            ],
+            modelSelectArr:[
+                {
+                    modelSelect: '1'
+                },
+                {
+                    modelSelect: '2'
+                },
+                {
+                    modelSelect: '2'
+                },
+                {
+                    modelSelect: '2'
+                },
+                {
+                    modelSelect: '2'
+                }
+            ],
+            ModelSelectList:[
+                {
+                    value: '1',
+                    label:'terry'
+                }
+            ],
+            selectEle: false
+        }
     },
     computed: {
-        rotate() {
-            return this.showFoot ? `rotateZ(180deg)` : `rotateZ(0)`
+        shapeName() {
+            console.log(this.$store.state.main.widgetInfo.shapeInfo.shape)
+            return this.$store.state.main.widgetInfo.shapeInfo.shape
         }
     },
     mounted() {
-       
+        let _that = this
+        VueEvent.$on('clickFooterHandle', () => {
+            _that.ifShowArrow = true
+        })
     },
-    methods: {
-        close() {
-            this.showFoot = false
+    methods:{
+        init() {
+            // let graph = this.myEditorUi.editor.graph
+            // console.log(graph)
+            // graph.getModel().addListener(mxEvent.CHANGE,()=>{
+            //     this.$store.commit('getWidgetInfo',graph)
+            // })
+            // let cell = graph.getSelectionCell();
+            // let state = graph.view.getState(cell);
+            // console.log(cell)
+            // console.log(state)
+            // if(graph.isSelectionEmpty())
+            // if (this.$store.state.main.widgetInfo.shapeInfo.shape) {
+            //     console.log(this.$store.state.main.widgetInfo.shapeInfo.shape)
+            // }
         },
-        toggle() {
-            this.showFoot = !this.showFoot
+        
+        clickHandle() {
+            this.ifShowArrow = !this.ifShowArrow
+        },
+        switchTabHandle(type) {
+            this.TabsNumber = +type
+        },
+        deleteFooterHandle(data, index) {
+            console.log(data, index)
+        },
+        adddataHandle() {
+            this.paramsListArr.unshift({
+                paramsSelect: ''
+            })
+        },
+        removedataHandle(index) {
+            this.paramsListArr.splice(index , 1)
         }
+
     }
-};
+}
 </script>
 
 <style lang="less" scoped>
-.geFootbarContainer {
+.newfooter-wraper {
+  width: calc(100% - 458px);
   position: absolute;
-  left: 208px;
-  right:250px;
+  left: 209px;
   bottom: 0;
   z-index: 100;
   background: #fff;
-  .collapse-menu {
-    width: 16px;
-    height: 16px;
-    background-image: url("../../assets/images/footer/foot-collapse.png");
-    background-repeat: no-repeat;
-    background-size: contain;
-    position: absolute;
-    right: 2px;
-    top: 5px;
-    cursor: pointer;
-  }
-  .tab {
-    border-bottom: 1px solid rgba(204, 204, 204, 1);
-    border-top: 1px solid rgba(204, 204, 204, 1);
-    border-right: 1px solid rgba(204, 204, 204, 1);
+  .Collapse-title-wrap{
+    background: #F2F2F2;
+    width:100%;
     display: flex;
-    align-items: center;
-    user-select: none;
-    background: rgba(242, 242, 242, 1);
-    & > li {
-      width: 72px;
-      height: 24px;
+    border-top:1px solid #CCCCCC;
+    border-bottom: 1px solid #CCCCCC;
+    .Collapse-title-left{
+      flex: 1;
+    }
+    .Collapse-title-right{
+      width: 50px;
+      height:24px;
       line-height: 24px;
-      text-align: center;
-      font-size: 12px;
-      font-family: MicrosoftYaHei;
-      font-weight: 400;
-      color: rgba(37, 37, 37, 1);
-      float: left;
-      background-color: #fff;
-      border-right: 1px solid rgba(204, 204, 204, 1);
-      border-left: 1px solid rgba(204, 204, 204, 1);
-      cursor: pointer;
+      padding-right:10px;
+      background: url("../../assets/images/footer/foot-collapse.png") no-repeat right center;
+      background-size:16px 16px;
+      border-right:1px solid rgb(204, 204, 204);
     }
-    & > li:nth-child(2) {
-      border-right: none;
-      border-left: none;
+    /deep/.ivu-tabs{
+      .ivu-tabs-nav{
+        height:24px;
+        overflow: hidden;
+      }
+      height:24px;
+      .ivu-tabs-tab{
+        height:24px;
+        line-height: 24px;
+        padding:0px 16px;
+        margin-right:0px;
+        border:none;
+      }
     }
-    .active {
-      background-color: #f2f2f2;
+  }
+  .footer-content{
+    height:200px;
+    background:#F2F2F2;
+    border-right:1px solid rgb(204, 204, 204);
+    .footer-common{
+      padding: 5px;
+      .ivu-table-wrapper{
+        // border: none;
+        border-right:none;
+        /deep/.ivu-table-header{
+          height:24px;
+          line-height: 24px;
+          th{
+            height:24px;
+            background:#ffffff;
+            border-right:none;
+            color:#252525;
+            font-weight: 400;
+          }
+        }
+        /deep/.ivu-table-tbody{
+          tr {
+            td{
+              height: 24px;
+              border-right:none;
+              background: #F2F2F2;
+            }
+            &.ivu-table-row-hover{
+              td{
+                background:#D9E6F6
+              }
+            }
+          }
+          
+        }
+      }
+      .icon-delete{
+        width:20px;
+        height: 20px;
+        background: url('../../assets/images/datasource/delete.png') no-repeat center center;
+        background-size:16px 16px;
+        display: inline-block;
+        cursor: pointer;
+        vertical-align: middle;
+      }
+      /deep/.ivu-select-dropdown-list{
+          .ivu-select-item{
+            padding: 0 16px 0;
+          }
+      }
+      /deep/.ivu-select-selection{
+        height:26px;
+        /deep/.ivu-select-selected-value{
+          height:24px;
+          line-height:24px;
+        }
+        /deep/ .ivu-select-placeholder{
+          height:24px;
+          line-height:24px;
+        }
+      }
+      .dataDisplayListUl{
+        li{
+          margin-bottom:5px;
+        }
+      }
+      /deep/.ivu-table{
+        &::before{
+          height:0px
+        }
+        &::after{
+          width:0px
+        }
+      }
+      .footerTabs2Ul{
+        display: flex;
+        flex-wrap:wrap;
+        li {
+          flex:1;
+          margin-bottom:5px;
+          .footerTabs2-list-wrap{
+            display: flex;
+            height:44px;
+            flex-direction: column;
+            .footerTabs2-list-top{
+              height:20px;
+              padding-left:8px;
+            }
+            .footerTabs2-list-content{
+              flex:1
+            }
+          }
+        }
+      }
     }
   }
 }

@@ -2891,6 +2891,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
         this.formatContainer.style.height = sidebarHeight + 'px';
         this.rightBarContainer.style.height = sidebarHeight + 'px';
         this.diagramContainer.style.width = (this.hsplit&&this.hsplit.parentNode != null) ? Math.max(0, w - this.sidebarWidth - this.splitSize - fw) + 'px' : w + 'px';
+        console.log(this.footerHeight)
         var diagramHeight = Math.max(0, h - this.footerHeight - this.menubarHeight - this.toolbarHeight);
 
         if (this.tabContainer != null)
