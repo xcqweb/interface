@@ -261,14 +261,17 @@ export default {
                         this.modelList = res.returnObj
                     }
                 })
+            }else{
+                this.modelList = []
             }
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
             let modelInfo = graph.getModel().getValue(cell)
             let tempStateList = this.getModelInfo("statesInfo",modelInfo)
-            console.log(tempStateList)
             if(tempStateList) {
                 this.stateList = tempStateList
+            }else{
+                this.stateList = []
             }
             if(this.stateList.length % 3 == 2) {
                 this.stateList.push({})
