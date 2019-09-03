@@ -113,32 +113,36 @@
             >
               <ul class="footerTabs2Ul">
                 <li 
-                  v-for="(items, index) in modelSelectArr"
+                  v-for="(item,index) in stateList"
                   :key="index"
                 >
-                  <div class="footerTabs2-list-wrap">
-                    <span class="footerTabs2-list-top">状态{{ index + 1 }}</span>
+                  <div
+                    v-if="item.name"
+                    class="footerTabs2-list-wrap"
+                  >
+                    <span class="footerTabs2-list-top">{{ item.name }}</span>
                     <span class="footerTabs2-list-content">
                       <Select
-                        v-model="items.modelSelect"
                         style="width:240px;height:24px;line-height:24px;"
                       > 
                         <Option 
-                          v-for="item in ModelSelectList" 
-                          :key="item.value" 
-                          :value="item.value"
-                        >
-                          {{ item.label }}
-                        </Option>
+                          v-for="d in modelList" 
+                          :key="d.value" 
+                          :value="d.name"
+                        />
                       </Select>
                     </span>
                   </div>
+                  <div
+                    v-else
+                    style="flex:1;"
+                  />
                 </li>
               </ul>
             </div>
           </div>
           <div
-            v-else
+            v-if="!footerContent || TabsNumber === 2&&stateList.length===0"
             class="no-data-wrap"
           >
             <NoData
@@ -152,11 +156,11 @@
 </template>
 
 <script>
-// import {mxEvent} from '../../services/mxGlobal'
 import {Tabs,TabPane, Table,Select, Option, Button} from 'iview'
 import NoData from '../datasource/nodata'
 import VerticalToggle from './vertical-toggle.js'
 import VueEvent from '../../services/VueEvent.js'
+let deviceid = ''
 const allShapes = ['image','userimage','tableBox','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
 // const dataSourceForm = 'IOT平台'
 export default {
@@ -228,29 +232,8 @@ export default {
                     paramsSelect: ''
                 }
             ],
-            modelSelectArr:[
-                {
-                    modelSelect: '1'
-                },
-                {
-                    modelSelect: '2'
-                },
-                {
-                    modelSelect: '2'
-                },
-                {
-                    modelSelect: '2'
-                },
-                {
-                    modelSelect: '2'
-                }
-            ],
-            ModelSelectList:[
-                {
-                    value: '1',
-                    label:'terry'
-                }
-            ],
+            stateList:[],
+            modelList:[],
             selectEle: false,
             footerContent: false,
             showWidgetStyle: false
@@ -261,12 +244,41 @@ export default {
             if(isUp) {
                 this.ifShowArrow = true
             }
+            this.init()
             this.footerContentHandle(show)
         })
     },
     methods:{
+        init() {
+            //模型列表
+            if(deviceid) {
+                let objData = {
+                    studioId: this.studioIdNew,
+                    deviceTypeId:deviceid
+                }
+                this.requestUtil.post(this.urls.getModelList.url, objData).then((res) => {
+                    if(res.returnObj) {
+                        this.modelList = res.returnObj
+                    }
+                })
+            }
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let modelInfo = graph.getModel().getValue(cell)
+            let tempStateList = this.getModelInfo("statesInfo",modelInfo)
+            console.log(tempStateList)
+            if(tempStateList) {
+                this.stateList = tempStateList
+            }
+            if(this.stateList.length % 3 == 2) {
+                this.stateList.push({})
+            }
+        },
         clickHandle() {
             this.ifShowArrow = !this.ifShowArrow
+            if(this.ifShowArrow) {
+                this.init()
+            }
         },
         footerContentHandle(data) {
             if (data) {
@@ -285,6 +297,9 @@ export default {
         },
         switchTabHandle(type) {
             this.TabsNumber = +type
+            if(!this.ifShowArrow) {
+                this.ifShowArrow = true
+            }
         },
         deleteFooterHandle(data, index) {
             console.log(data, index)
@@ -296,8 +311,26 @@ export default {
         },
         removedataHandle(index) {
             this.paramsListArr.splice(index , 1)
-        }
-
+        },
+        setDataModel(attr,msgInfo) {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let modelInfo = graph.getModel().getValue(cell)
+            let bindData = this.getModelInfo('bindData',modelInfo)
+            bindData[attr] = msgInfo
+            modelInfo.setAttribute('bindData', JSON.stringify(bindData))
+            graph.getModel().setValue(cell, modelInfo)
+        },
+        getModelInfo(key,modelInfo) {
+            let bindData = null
+            if(modelInfo) {
+                let bindAttr = modelInfo.getAttribute(key)
+                if(bindAttr) {
+                    bindData = JSON.parse(bindAttr)
+                }
+            }
+            return bindData
+        },
     }
 }
 </script>
@@ -425,16 +458,17 @@ export default {
       .footerTabs2Ul{
         display: flex;
         flex-wrap:wrap;
+        overflow: auto;
         li {
           flex:1;
-          margin-bottom:5px;
+          margin-bottom:10px;
           .footerTabs2-list-wrap{
             display: flex;
             height:44px;
             flex-direction: column;
             .footerTabs2-list-top{
               height:20px;
-              padding-left:8px;
+              padding-left:4px;
             }
             .footerTabs2-list-content{
               flex:1

@@ -9,7 +9,7 @@
     <RightBar
       ref="rightbar"
     />     
-    <FooterBar />
+    <FooterBar v-if="isInited" />
   </div>
 </template>
 
@@ -69,6 +69,7 @@ export default {
                 }
                 Vue.prototype.myEditorUi = myEditorUi
                 this.init()
+                this.isInited = true
             })
         })
     },
