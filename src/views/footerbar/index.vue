@@ -2,7 +2,6 @@
   <div
     v-clickOutSide="close"
     class="geFootbarContainer"
-    :style="{bottom:bottom+'px'}"
   >
     <div
       class="collapse-menu"
@@ -30,32 +29,27 @@
       </li>
       <p class="clearFix" />
     </ul>
-    <keep-alive>
-      <component :is="componentId" />
-    </keep-alive>
+    <component
+      :is="componentId"
+      v-if="showFoot"
+      style="height:75px;"
+    />
   </div>
 </template>
 
 <script>
 import conponents from './components'
-const BOTTOM = -75
-let mainContainerOriginHeight,mainContainer
 export default {
     components: {...conponents},
-    props: {
-        bindDatas: {
-            type: Array
-        }
-    },
     data() {
         return {
-            bottom: BOTTOM,
             componentId: 'DataSource',
+            showFoot:false,
         };
     },
     computed: {
         rotate() {
-            return this.bottom === 0 ? `rotateZ(180deg)` : `rotateZ(0)`
+            return this.showFoot ? `rotateZ(180deg)` : `rotateZ(0)`
         }
     },
     mounted() {
@@ -63,22 +57,10 @@ export default {
     },
     methods: {
         close() {
-            // this.bottom = BOTTOM
-            // mainContainer.style.height = mainContainerOriginHeight + 'px'
-        },
-        init() {
-            mainContainer = document.querySelector(".geDiagramContainer")
-            mainContainerOriginHeight = mainContainer.offsetHeight
-            window.onresize = ()=> mainContainerOriginHeight = mainContainer.offsetHeight
+            this.showFoot = false
         },
         toggle() {
-            if(this.bottom === 0) {
-                this.bottom = BOTTOM
-                mainContainer.style.height = mainContainerOriginHeight + 'px'
-            }else{
-                this.bottom = 0
-                mainContainer.style.height = mainContainerOriginHeight + BOTTOM + 'px'
-            }
+            this.showFoot = !this.showFoot
         }
     }
 };
@@ -86,10 +68,9 @@ export default {
 
 <style lang="less" scoped>
 .geFootbarContainer {
-  width: calc(100% - 458px);
-  height: 100px;
   position: absolute;
   left: 208px;
+  right:250px;
   bottom: 0;
   z-index: 100;
   background: #fff;

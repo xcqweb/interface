@@ -11,11 +11,11 @@ const mutations = {
     getWidgetInfo(state,graph) {
         let widgetInfo = {}
         let cell = graph.getSelectionCell()
-        let stateWidget = graph.view.getState(cell);
-        let shapeInfo = stateWidget && stateWidget.style;
+        let stateWidget = graph.view.getState(cell)
+        let shapeInfo = stateWidget && stateWidget.style
         widgetInfo.shapeInfo = shapeInfo
 
-        let cellInfo = graph.getModel().getValue(cell);
+        let cellInfo = graph.getModel().getValue(cell)
         let widgetName = cellInfo && cellInfo.attributes && cellInfo.attributes['palettename'] && cellInfo.attributes['palettename'].nodeValue || '' //控件名称
         widgetInfo.widgetName = widgetName
         if (stateWidget) {

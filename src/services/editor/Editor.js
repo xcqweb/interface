@@ -590,7 +590,11 @@ Editor.prototype.palettesInfo = {
     },
     userimage: {
         name: '用户图',
-        name:0
+        num: 0
+    },
+    groupNum: {
+        name:'组合',
+        num:0,
     }
 }
 /**

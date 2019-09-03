@@ -97,7 +97,7 @@
       />
     </div>
     <div
-      v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && shapeName!='linkTag' && !shapeName.includes('Chart') && !shapeName.includes('image')"
+      v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && shapeName!='linkTag' && !shapeName.includes('Chart') && !shapeName.includes('image') && shapeName!='beeline'"
       class="titleSet"
     >
       <div class="item-title">
@@ -541,9 +541,9 @@ export default {
         changeName() {
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
-            let cellInfo = graph.getModel().getValue(cell);
-            cellInfo.setAttribute('palettename',name);
-            graph.getModel().setValue(cell, cellInfo);
+            let cellInfo = graph.getModel().getValue(cell)
+            cellInfo.setAttribute('palettename',name)
+            graph.getModel().setValue(cell, cellInfo)
             this.$store.commit('getWidgetInfo',graph)
         },
         changePositionSize() {

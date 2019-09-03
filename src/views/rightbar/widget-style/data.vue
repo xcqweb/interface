@@ -1,7 +1,10 @@
 <template>
   <div class="data-sources">
     <div class="data-sources-top">
-      <div class="data-sources-listname">
+      <div
+        class="data-sources-listname"
+        style="height:auto;padding-top:5px;"
+      >
         <span>
           {{ dataName }}
         </span>

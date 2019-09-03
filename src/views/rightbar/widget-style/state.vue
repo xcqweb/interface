@@ -26,21 +26,27 @@
           描述：{{ state.desc || '暂无描述' }}
         </div>
         <ul style="display:flex;align-items:center;">
-          填充
-          <li
-            class="rect"
-            :style="{background:state.style.background || '#ECEFF4'}"
-          />
+          <template v-if="!picList.includes(shapeName)">
+            <span>填充</span>
+            <li
+              class="rect"
+              :style="{background:state.style.background || '#ECEFF4'}"
+            />
+          </template>
           <span style="margin-left:15px;">边框</span>
           <li
             class="rect"
             :style="{background:state.style.borderColor || '#7D7D7D'}"
           />
-          <span style="margin-left:15px;">文本</span>
-          <li
-            class="rect"
-            :style="{background:state.style.color || '#252525'}"
-          />
+          <template v-if="!picList.includes(shapeName)">
+            <span style="margin-left:15px;">
+              文本
+            </span>
+            <li
+              class="rect"
+              :style="{background:state.style.color || '#252525'}"
+            />
+          </template>
         </ul>
       </div>
     </template>
@@ -63,6 +69,8 @@ export default{
             isAdd:false,
             states:[],
             editState:null,
+            shapeName:'',
+            picList:['image'],
         }
     },
     mounted() {
@@ -85,6 +93,7 @@ export default{
                 "desc":data.desc,
                 "style":data.style,
                 'animateCls':data.animateCls,
+                'imgInfo':data.imgInfo,
                 'check':false
             }
             if(data.id) {
@@ -98,6 +107,7 @@ export default{
             if(states.length) {
                 this.setStates(states)
             }
+            this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
         },
         setStates(states) {
             this.states = states

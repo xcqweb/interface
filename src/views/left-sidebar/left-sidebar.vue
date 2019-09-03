@@ -247,6 +247,7 @@ export default {
         }
     }
     .left-geSidebarContainer{
+        border-bottom: solid 1px #ccc;
         .ivu-tabs{
             // overflow: auto;
             height:100%;
