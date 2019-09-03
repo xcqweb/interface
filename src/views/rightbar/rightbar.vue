@@ -105,7 +105,11 @@ export default {
                     this.$store.commit('getWidgetInfo',graph)
                     this.$store.commit('widgetChange',new Date().getTime())
                 }
-                VueEvent.$emit('websoketSelectElemnt',this.showWidgetStyle)
+                if( graph.getSelectionCount() > 1) {
+                    VueEvent.$emit('isShowFootBar',false)
+                }else{
+                    VueEvent.$emit('isShowFootBar',this.showWidgetStyle)
+                }
             }
             this.inited = true
         },

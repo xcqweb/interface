@@ -23,7 +23,7 @@
           <div 
             class="Collapse-title-right"
             :class="ifShowArrow ? 'collapse-active' : ''"
-            @click="clickHandle($event, )"
+            @click="clickHandle()"
           />
         </div>
       </div>
@@ -157,7 +157,7 @@ import {Tabs,TabPane, Table,Select, Option, Button} from 'iview'
 import NoData from '../datasource/nodata'
 import VerticalToggle from './vertical-toggle.js'
 import VueEvent from '../../services/VueEvent.js'
-const FirbiddArr = ['image','userimage','tableBox','rectangle','ellipse','light','progress','lineChart','gaugeChart']
+const allShapes = ['image','userimage','tableBox','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
 // const dataSourceForm = 'IOT平台'
 export default {
     components:{
@@ -257,34 +257,24 @@ export default {
         }
     },
     mounted() {
-        let _that = this
-        VueEvent.$on('clickFooterHandle', () => {
-            _that.clickHandle('',true)
-        })
-        VueEvent.$on('websoketSelectElemnt', (value) => {
-            _that.footerContentHandle(value)
+        VueEvent.$on('isShowFootBar', (value) => {
+            this.footerContentHandle(value)
         })
     },
     methods:{
-        init() {
-        },
-        clickHandle(evt,bool) {
-            if (bool) {
-                this.ifShowArrow = true
-            } else {
-                this.ifShowArrow = !this.ifShowArrow
-            }
+        clickHandle() {
+            this.ifShowArrow = !this.ifShowArrow
         },
         footerContentHandle(data) {
-            if (data) {
-                if (!this.footerContent) {
-                    let graph = this.myEditorUi.editor.graph
-                    let cell = graph.getSelectionCell();
-                    let state = graph.view.getState(cell);
-                    let shapeName = state.style.shape
-                    if(FirbiddArr.includes(shapeName)) {
-                        this.footerContent = true
-                    }
+            if (data && !this.footerContent) {
+                let graph = this.myEditorUi.editor.graph
+                let cell = graph.getSelectionCell();
+                let state = graph.view.getState(cell);
+                let shapeName = state.style.shape
+                if(allShapes.includes(shapeName)) {
+                    this.footerContent = true
+                }else{
+                    this.footerContent = false
                 }
             } else {
                 this.footerContent = false
