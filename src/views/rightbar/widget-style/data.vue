@@ -57,21 +57,24 @@
       <div
         class="devicename-list-wrap"
       >
-        <ul
+        <div
           v-if="deviceNameList.length"
-          class="devicename-listUl"
         >
-          <li 
-            v-for="(item, index) in deviceNameList"
-            :key="index"
+          <CheckboxGroup
+            v-model="deviceNameListArr"
+            class="devicename-listUl"
+            @on-change="checkAllGroupChange"
           >
             <Checkbox
+              v-for="(item, index) in deviceNameList"
+              :key="index"
+              :label="item.deviceId"
               size="small"
             >
-              {{ item.name }}
+              <span>{{ item.deviceName }}</span>
             </Checkbox>
-          </li>
-        </ul>
+          </CheckboxGroup>
+        </div>
         <div 
           v-else
           class="no-data-wrap"
@@ -85,6 +88,7 @@
         <template v-if="deviceNameList.length">
           <Page 
             :current="1" 
+            :page-size="deviceNamePageNumber"
             :total="deviceListTotal" 
             simple
           />
@@ -95,6 +99,8 @@
       <Button 
         type="primary"
         long
+        :disabled="!deviceIdArr.length"
+        @click.stop.prevent="bindDeviceNameHandle"
       >
         {{ buttonName }}
       </Button>
@@ -105,7 +111,7 @@
 <script>
 import Input from '../../datasource/input-select'
 import NoData from '../../datasource/nodata'
-import {Button,Page,Checkbox,Message,Select,Option} from 'iview'
+import {Button,Page,Checkbox,Message,Select,Option, CheckboxGroup} from 'iview'
 export default{
     components: {
         Button,
@@ -114,7 +120,8 @@ export default{
         Checkbox,
         Select,
         Option,
-        NoData
+        NoData,
+        CheckboxGroup
     },
     data() {
         return {
@@ -137,16 +144,21 @@ export default{
             modelvalue1:'1',
             modelvalue2:'',
             ifclearSelect:true,
-            deviceListTotal:10
+            deviceNamePageNumber: 1,
+            deviceListTotal:10,
+            studioIdNew:'',
+            deviceNameListArr:[],
+            deviceIdArr:[]
         }
     },
     mounted() {
+        this.studioIdNew = sessionStorage.getItem("applyId") || ''
         this.init()
     },
     methods: {
         init() {
             let objData = {
-                studioId:sessionStorage.getItem("applyId") || ''
+                studioId:this.studioIdNew
             }
             this.requestUtil.get(this.urls.hasImportDeviceType.url,objData).then((res) => {
                 this.deviceNameArr = res || []
@@ -157,7 +169,7 @@ export default{
                         deviceTypeId: this.deviceNameArr[0].deviceTypeId
                     }
                     return Promise.all([
-                        this.requestUtil.post(this.urls.deviceParamList.url, objDataNew)
+                        this.requestUtil.post(this.urls.deviceEquipList.url, objDataNew)
                     ]).catch(() => {
                         Message.error('系统繁忙，请稍后再试')
                         return false
@@ -174,6 +186,13 @@ export default{
                 Message.error('系统繁忙，请稍后再试试')
                 return false
             })
+        },
+        checkAllGroupChange(data) {
+            this.deviceIdArr = data
+            console.log(this.deviceIdArr)
+        },
+        bindDeviceNameHandle() {
+
         }
     },      
 }
@@ -214,12 +233,6 @@ export default{
             height:26px;
             display: flex;
             align-items: center;
-            /deep/.ivu-checkbox-checked {
-                .ivu-checkbox-inner::after{
-                  top:2px !important;
-                  left:4px !important;
-                }
-            }
           }
         }
       }
@@ -233,12 +246,11 @@ export default{
       padding-top:12px;
       button{
         height:24px;
-        line-height: 22px;
+        line-height: 20px;
         padding:0;
         span{
           display: inline-block;
           height:24px;
-          line-height: 22px;
         }
       }
     }
@@ -267,6 +279,12 @@ export default{
           display: flex;
           justify-content: center;
           align-items: center;
-        }
+    }
+    /deep/.ivu-checkbox-inner{
+      &:after{
+        top:2px !important;
+        left:5px !important;
+      }
+    }
   }
 </style>
