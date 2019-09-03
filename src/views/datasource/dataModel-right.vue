@@ -120,6 +120,7 @@
                           v-model="conditionLogicalSelect" 
                           style="width:64px;height:24px;line-height:24px;"
                           :disabled="isediting"
+                          @on-change="conditionLogicalSelectHandle"
                         >
                           <Option 
                             v-for="item in conditionLogical" 
@@ -481,7 +482,7 @@ export default {
                 }
             ],
             ifShowSuspension: false,
-            currentMouseIndex: null,
+            currentMouseIndex: 0,
             LeftWidth: 0,
             TopHeight:0
         }
@@ -490,19 +491,21 @@ export default {
         'alldata.data': {
             deep: true,
             handler: function(newV) {
-                let maxlen = newV.length
-                this.heightLen = 0
-                newV.forEach((item, index) => {
-                    if (maxlen <= 2) {
-                        this.heightLen += (item.length * this.tdheight) / 2
-                    } else {
-                        if (index === 0 || index === maxlen - 1) {
+                if (Array.isArray(newV)) {
+                    let maxlen = newV.length
+                    this.heightLen = 0
+                    newV.forEach((item, index) => {
+                        if (maxlen <= 2) {
                             this.heightLen += (item.length * this.tdheight) / 2
                         } else {
-                            this.heightLen += (item.length * this.tdheight)
+                            if (index === 0 || index === maxlen - 1) {
+                                this.heightLen += (item.length * this.tdheight) / 2
+                            } else {
+                                this.heightLen += (item.length * this.tdheight)
+                            }
                         }
-                    }
-                })
+                    })
+                }
             }
         },
         numberlistindex(value) {
@@ -576,7 +579,7 @@ export default {
                     objData.descript = this.textareValue
                     objData.sourceId = this.currenModelId
                     objData.modelName = this.currenModelName
-                    objData.formula = JSON.stringify(this.alldata.data)
+                    objData.formula = JSON.stringify(this.alldata)
                     this.requestUtil.put(this.urls.addModelList.url,objData).then((res) => {
                         if (res.sourceId) {
                             Message.success('保存模型成功')
@@ -606,7 +609,14 @@ export default {
                 }
             ])
         },
+        conditionLogicalSelectHandle(data) {
+            this.alldata.conditionLogic = data
+        },
         addModelHandle() {
+            if (!this.isediting) {
+                Message.warning('您还有未保存的模型')
+                return false
+            }
             if (!this.currentDeviceTypeId) {
                 Message.warning('您未选中设备类型')
                 return false
@@ -649,14 +659,15 @@ export default {
             }
         },
         // 渲染最右侧表格
-        clickModelHandle(evt, modelId, modelName,formula,descript, index) {
-            let data = formula ? JSON.parse(formula) : [[{paramName: '',logical:'',minValue:'',maxValue:'',fixedValue:''}]]
-            this.alldata.data = data
+        clickModelHandle(evt, modelId, modelName,formula,descript,index) {
+            let data = formula ? JSON.parse(formula) : {conditionLogic: '',data:[[{paramName: '',logical:'',minValue:'',maxValue:'',fixedValue:''}]]}
+            this.alldata.data = data.data
+            this.alldata.conditionLogic = data.conditionLogic || ''
             this.textareValue = descript || ''
             this.modelNumber = index
             this.currenModelId = modelId
             this.currenModelName = modelName
-            this.conditionLogicalSelect = this.alldata.data[0][0].conditionLogic || ''
+            this.conditionLogicalSelect = data.conditionLogic || ''
         },
         MouseEnterHandle(evt,index) {
             evt.stopPropagation()
@@ -732,8 +743,6 @@ export default {
         },
         // 删除模型
         deleteModelHandle() {
-            console.log(this.ModelNameArr)
-            console.log(this.currentMouseIndex)
             this.requestUtil.delete(`${this.urls.addModelList.url}/${this.ModelNameArr[this.currentMouseIndex].sourceId}`).then((res) => {
                 console.log(res)
                 if (this.modelNumber === this.currentMouseIndex) {
@@ -799,27 +808,27 @@ export default {
         // 双向触发数据更新
         treeSelectParamHandle(value, index, key) {
             this.alldata.data[key][index].paramName = value
-            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata.data)
+            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata)
         },
         treeSelectLogicalHandle(value, index, key) {
             this.alldata.data[key][index].logical = value
-            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata.data)
+            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata)
         },
         treeMinvalueHandle(value, index,key) {
             this.alldata.data[key][index].minValue = value
             this.alldata.data[key][index].fixedValue = ''
-            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata.data)
+            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata)
         },
         treeMaxvalueHandle(value, index,key) {
             this.alldata.data[key][index].maxValue = value
             this.alldata.data[key][index].fixedValue = ''
-            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata.data)
+            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata)
         },
         treeFixedvalueHandle(value, index,key) {
             this.alldata.data[key][index].fixedValue = value
             this.alldata.data[key][index].maxValue = ''
             this.alldata.data[key][index].minValue = ''
-            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata.data)
+            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata)
         },
         // 保存模型校验
         treeCheckRule(data) {
@@ -836,7 +845,7 @@ export default {
             }
             for (let i = 0; i <= treeData.length - 1 ; i++) {
                 for(let j = 0; j <= treeData[i].length - 1 ; j++) {
-                    treeData[i][j].conditionLogic = conditionSelect
+                    // treeData[i][j].conditionLogic = conditionSelect
                     if (!treeData[i][j].paramName) {
                         Message.warning(`条件${i + 1}第${j + 1}行参数不能为空`)
                         result = false
