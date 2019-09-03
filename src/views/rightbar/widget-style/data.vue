@@ -235,20 +235,21 @@ export default{
             })
             let ObjData = {}
             ObjData.dataSourceChild = DataSourceID
-            ObjData.deviceNameChild = {
+            ObjData.deviceTypeChild = {
                 id: this.deviceNameArr[DeviceIndex].deviceTypeId,
                 name: this.deviceNameArr[DeviceIndex].deviceTypeName || ''
             }
-            ObjData.deviceTypeChild = []
+            // deviceNameChild
+            ObjData.deviceNameChild = []
             this.deviceIdArr.forEach((items, key) => {
                 this.deviceNameList.forEach((item, index) => {
                     if (item.deviceId === items) {
                         deviceNameIndex = index
                     }
                 }) 
-                ObjData.deviceTypeChild[key] = {}
-                ObjData.deviceTypeChild[key].id = items
-                ObjData.deviceTypeChild[key].name = this.deviceNameList[deviceNameIndex].deviceName || ''
+                ObjData.deviceNameChild[key] = {}
+                ObjData.deviceNameChild[key].id = items
+                ObjData.deviceNameChild[key].name = this.deviceNameList[deviceNameIndex].deviceName || ''
             })
             if (ObjData) {
                 VueEvent.$emit('emitDataSourceFooter', ObjData)
