@@ -17,7 +17,18 @@ let configSvg = ['drop', 'circle', 'diamond', 'square', 'pentagram']
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
 
 
-import {removeEle,destroyWs,insertImage,inserEdge,insertSvg,bindEvent,dealProgress,dealPipeline,dealCharts} from './util'
+import {
+    removeEle,
+    destroyWs,
+    insertImage,
+    inserEdge,
+    insertSvg,
+    bindEvent,
+    dealProgress,
+    dealPipeline,
+    dealCharts,
+    dealLight
+} from './util'
 import {createWsReal,createWsAlarm} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -97,7 +108,7 @@ class PreviewPage {
             let list = [];
             for (let item of root) {
                 // 节点类型：object有属性，mxcell无属性
-                let node, value, tagName = item.tagName;
+                let node, value, tagName = item.tagName
                 // 节点id
                 let id = item.getAttribute('id');
                 // 节点交互
@@ -124,7 +135,7 @@ class PreviewPage {
                     let getNodeInfo = new GetNodeInfo(node);
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape');
-                    let x, y, width, height, fillColor, strokeColor,strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, selectProps, defaultProp, points, rotation, flipH, flipV,startArrow,endArrow
+                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, selectProps, defaultProp, points, rotation, flipH, flipV, startArrow, endArrow, strokeWidth
                     styles = node.getAttribute('style');
                     isGroup = styles.indexOf('group') != -1;
                     fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF';
@@ -136,6 +147,7 @@ class PreviewPage {
                     align = getNodeInfo.getStyles('align') || 'center';
                     fontSize = getNodeInfo.getStyles('fontSize') || '12';
                     strokeStyle = getNodeInfo.getStyles('dashed')
+                    strokeWidth = getNodeInfo.getStyles('strokeWidth') || 1
                     strokeColor = (shapeName.includes('image') ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
                     // 图片地址
                     image = getNodeInfo.getStyles('image') || null;
@@ -253,6 +265,7 @@ class PreviewPage {
                         fillColor,
                         strokeColor,
                         strokeStyle,
+                        strokeWidth,
                         value,
                         isGroup,
                         fontColor,
@@ -294,16 +307,16 @@ class PreviewPage {
             }
             return list;
         };
-        let cells = getNode();
+        let cells = getNode()
         cells.map(cell => {
             // 修正最外层节点的定位信息
-            cell.x -= minX - 20;
-            cell.y -= minY - 20;
+            cell.x -= minX - 20
+            cell.y -= minY - 20
             // 计算页面高度
             pageWidth = ((cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth) + 20;
             pageHeight = ((cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight) + 20;
         })
-        return cells;
+        return cells
     }
     // 清空页面内容
     clearPage() {
@@ -442,15 +455,14 @@ class PreviewPage {
             cellHtml = dealPipeline(cell)
         } else if (shapeName.includes('Chart')) {
             cellHtml = dealCharts(cell)
+        } else if (shapeName == 'light') {
+            cellHtml = dealLight(cell)
         }
         else {
             // 其他
             cellHtml = document.createElement('p');
             if(shapeName === 'ellipse') {
                 cellHtml.style.borderRadius = "50%"
-            } else if (shapeName == 'light') {
-                cellHtml.style.background = `url(${cell.image}) no-repeat`
-                cellHtml.style.backgroundSize = '100% 100%'
             }
             cellHtml.innerHTML = cell.value;
         }
@@ -480,7 +492,7 @@ class PreviewPage {
             if(cell.strokeStyle) {
                 borderStyle = 'dashed'
             }
-            cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `1px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
+            cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
             cellHtml.style.width = cell.width + 'px';
             cellHtml.style.height = cell.height + 'px';
         }

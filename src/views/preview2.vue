@@ -59,16 +59,19 @@ export default {
             var graph = new window.mxGraph(container);
             graph.setCellsEditable(false); 
             console.log(this.currentPage.xml)
-            var doc = window.mxUtils.parseXml(`<mxGraphModel dx="868" dy="452" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3300" pageHeight="4681" math="0" shadow="0">
-  <root>
-    <mxCell id="0"/>
-    <mxCell id="1" parent="0"/>
-    <mxCell id="66yXgANq4Rs35wKDr7wg-14" value="2233" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;gradientColor=#ffffff;" vertex="1" parent="1">
-      <mxGeometry x="350" y="110" width="120" height="60" as="geometry"/>
-    </mxCell>
-  </root>
-</mxGraphModel>
-`);
+            var doc = window.mxUtils.parseXml(`<mxGraphModel dx="840" dy="524" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff">
+              <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="52" value="" style="endArrow=classic;html=1;" edge="1" parent="1">
+                  <mxGeometry width="50" height="50" relative="1" as="geometry">
+                    <mxPoint x="160" y="240" as="sourcePoint"/>
+                    <mxPoint x="210" y="190" as="targetPoint"/>
+                  </mxGeometry>
+                </mxCell>
+              </root>
+            </mxGraphModel>
+            `);
             var codec = new window.mxCodec(doc);
             console.log(codec.decode(doc.documentElement, graph.getModel()));
 

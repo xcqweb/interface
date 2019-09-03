@@ -979,17 +979,6 @@ Sidebar.prototype.renameNode = function(ele, pageType) {
             tipDialog(this.editorUi, `${pageType === 'normal' ? '页面' : '弹窗'}名称不能超过20个字符`);
             ele.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${oldVal}</span><span class="right-icon-dolt"></span>`;
         } else {
-            // 去除重名
-            // if (name !== oldVal) {
-            //     for (let key in this.editorUi.editor.pages) {
-            //         if (this.editorUi.editor.pages[key].title === name) {
-            //             // mxUtils.alert('页面名称不能重复');
-            //             tipDialog(this.editorUi, `${pageType === 'normal' ? '页面' : '弹窗'}名称不能重复`);
-            //             ele.innerHTML = oldVal;
-            //             return;
-            //         }
-            //     }
-            // }
             this.editorUi.editor.pages[ele.getAttribute('data-pageid')].title = name;
             $(".dialog-title-m").html(name)
             ele.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${name}</span><span class="right-icon-dolt"></span>`;

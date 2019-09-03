@@ -67,7 +67,7 @@
     <div
       class="item-container"
       style="position:relative;margin-bottom:4px;"
-      :style="{backgroundColor:bgColor,backgroundImage:bgImage}"
+      :style="{backgroundColor:bgColor}"
       @click="pickColor"
     />
     <div
@@ -107,7 +107,6 @@ export default {
             solidWidth: 1280, // 需求 宽度固定1366 不可修改
             scaleText:'1280*800',
             bgColor:'#fff',
-            bgImage:'',
             scaleList:[
                 '1920*1080',
                 '1440*900',
@@ -134,7 +133,7 @@ export default {
             this.bgColor = backgroundColor = graph.background
             let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
             if(bgUrl) {
-                this.changeBg()
+                this.changeBg(bgUrl)
             }
             let {width,height} = graph.pageFormat
             this.solidWidth = width
@@ -176,7 +175,7 @@ export default {
             this.centerCanvas()
         },
         setBackgroundImg() {
-            this.$refs.chooseImg.click();
+            this.$refs.chooseImg.click()
         },
         changeBg(url) {
             mxClient.IS_ADD_IMG = true
@@ -195,7 +194,7 @@ export default {
             formData.append('file', localImage)
             formData.append('materialLibraryId',"");
             this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, function(res) {
-                editor.pages[editor.currentPage].style.backgroundUrl = `url('${res.picUrl}')`
+                editor.pages[editor.currentPage].style.backgroundUrl = `${res.picUrl}`
             })
         },
         fileChange(e) {

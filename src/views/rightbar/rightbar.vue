@@ -63,7 +63,7 @@ export default {
                     40,
                     20,
                     // 类似链接一样设置
-                    '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">text</span>',
+                    '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">输入文本</span>',
                     "文字",true,true
                 ),
                 //直线
@@ -100,7 +100,7 @@ export default {
                 ele.appendChild(shortCutWidgets[i](ele));
             }
             this.myEditorUi.format.refresh = ()=>{
-                this.showWidgetStyle = !(graph.isSelectionEmpty() || graph.getSelectionCount() > 1)
+                this.showWidgetStyle = !(graph.isSelectionEmpty())
                 if(this.showWidgetStyle) {
                     this.$store.commit('getWidgetInfo',graph)
                     this.$store.commit('widgetChange',new Date().getTime())

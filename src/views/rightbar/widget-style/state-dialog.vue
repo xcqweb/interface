@@ -21,6 +21,16 @@
           <div style="flex:3">
             <div class="state-con">
               <div
+                v-if="shapeName=='image'"
+                class="image"
+                :class="animateCls"
+              />
+              <div
+                v-if="shapeName=='light'"
+                class="image_light"
+              />
+              <div
+                v-else
                 class="text"
                 :class="animateCls"
               >
@@ -54,6 +64,16 @@
           >
             <div class="type-tab-con">
               <div
+                v-if="picList.includes(shapeName)"
+                class="type-tab"
+                style="border-top-right-radius:2px;border-bottom-right-radius:2px;"
+                :class="{'selected':typeTab==4}"
+                @click="changeTab(4)"
+              >
+                图片
+              </div>
+              <div
+                v-if="!picList.includes(shapeName) || shapeName=='light'"
                 class="type-tab"
                 :class="{'selected':typeTab==1}"
                 style="border-top-left-radius:2px;border-bottom-left-radius:2px;"
@@ -62,6 +82,7 @@
                 填充
               </div>
               <div
+                v-if=" shapeName!=='light'"
                 class="type-tab"
                 :class="{'selected':typeTab==2}"
                 @click="changeTab(2)"
@@ -69,6 +90,7 @@
                 边框
               </div>
               <div
+                v-if="!picList.includes(shapeName)&&shapeName!=='light'"
                 class="type-tab"
                 style="border-top-right-radius:2px;border-bottom-right-radius:2px;"
                 :class="{'selected':typeTab==3}"
@@ -77,7 +99,32 @@
                 文本
               </div>
             </div>
-            <div class="state-color-con" />
+            <div
+              v-show="typeTab!=4"
+              class="state-color-con"
+            />
+            <div
+              v-if="typeTab == 4"
+              class="image-con"
+              @click="setPic"
+            >
+              <div style="text-align:center;">
+                <img
+                  :src="bgPic"
+                  :style="bgPicStyle"
+                  style="width:100%;"
+                >
+                <div v-show="isShowBgText">
+                  选择图片
+                </div>
+                <input
+                  ref="chooseImg"
+                  style="display:none;"
+                  type="file"
+                  @change="fileChange"
+                >
+              </div>
+            </div>
           </div>
         </div>
         <div
@@ -103,8 +150,9 @@
 
 <script>
 import {ColorDialog} from '../../../services/editor/Dialogs'
+import {tipDialog} from '../../../services/Utils'
 let style = {'background':'#ffffff','borderColor':'#000000','color':'#000000'},inputs
-let tabArr = ['background','borderColor','color'],editStateTemp
+let tabArr = ['background','borderColor','color'],editStateTemp,localImage
 export default{
     props:['editState'],
     data() {
@@ -114,11 +162,20 @@ export default{
             typeTab:1,
             animateCls:'',
             animateCheck:false,
+            shapeName:'',
+            picList:['image'],
+            bgPic:require('../../../assets/images/rightsidebar/bg_ic_widget.png'),
+            isShowBgText:true,
+            bgPicStyle:{height:'auto'}
         }
     },
     mounted() {
-        const component = this.$mount();
+        const component = this.$mount()
         document.querySelector('body').appendChild(component.$el)
+        this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
+        if (this.shapeName == 'image') {
+            this.typeTab = 4
+        }
         if(this.editState) {
             editStateTemp = JSON.parse(JSON.stringify(this.editState))//深拷贝 
             this.stateName = editStateTemp.name
@@ -129,6 +186,9 @@ export default{
                 this.stateDesc = ''
             }
             style = editStateTemp.style
+            if(editStateTemp.imgInfo) {
+                this.setBg(editStateTemp.imgInfo.url)
+            }
         }else{
             let graph = this.myEditorUi.editor.graph
             let states = this.$parent.getStates(graph)
@@ -137,24 +197,29 @@ export default{
         }
         this.$nextTick(()=>{
             let dlg = new ColorDialog(this.myEditorUi,style.background, null,null,false)
-            document.querySelector(".state-color-con").appendChild(dlg.container)
-            setTimeout(()=>{
-                inputs = $(".state-color-con").find("input")
-                $(inputs[1]).change((e)=>{
-                    let {value} = e.target
-                    style[tabArr[this.typeTab - 1]] = value
-                    $(inputs[1]).val(value)
-                    $(inputs[0]).css('background',value)
-                })
-            },1000)
+            let el = document.querySelector(".state-color-con")
+            if(el) {
+                el.appendChild(dlg.container)
+                setTimeout(()=>{
+                    inputs = $(".state-color-con").find("input")
+                    $(inputs[1]).change((e)=>{
+                        let {value} = e.target
+                        style[tabArr[this.typeTab - 1]] = value
+                        $(inputs[1]).val(value)
+                        $(inputs[0]).css('background',value)
+                    })
+                },1000)
+            }
         })
     },  
     methods: {
         changeTab(index) {
             this.typeTab = index
-            let value = style[tabArr[this.typeTab - 1]]
-            $(inputs[1]).val(value)
-            $(inputs[0]).css('background',value)
+            if(index != 4) {
+                let value = style[tabArr[this.typeTab - 1]]
+                $(inputs[1]).val(value)
+                $(inputs[0]).css('background',value)
+            }
         },
         hideState() {
             this.$emit("closeStateDialog")
@@ -163,13 +228,27 @@ export default{
             let data = {
                 name:this.stateName,
                 desc:this.stateDesc,
-                style:style,
+                style:Object.assign({},style),
                 animateCls:this.animateCls,
             }
             if(editStateTemp) {
                 data.id = editStateTemp.id
             }
-            this.$emit("closeStateDialog",data)
+            if(localImage) {
+                let formData = new FormData()
+                formData.append('file', localImage)
+                formData.append('materialLibraryId',"");
+                this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, (res)=> {
+                    data.imgInfo = {
+                        url:res.picUrl,
+                        width:res.picWidth,
+                        height:res.picHeight
+                    }
+                    this.$emit("closeStateDialog",data)
+                })
+            }else{
+                this.$emit("closeStateDialog",data)
+            }
             editStateTemp = null//置空，防止下次编辑时候干扰列表信息
         },
         changeAnimate(status) {
@@ -178,7 +257,28 @@ export default{
             }else{
                 this.animateCls = ''
             }
-        }
+        },
+        setPic() {
+            this.$refs.chooseImg.click()
+        },
+        fileChange(e) {
+            if(e.target.files && e.target.files.length) {
+                if (e.target.files[0].size >= 2 * 1024 * 1024) {
+                    tipDialog(this.myEditorUi,`背景图片大小不得超过2M`)
+                    return false
+                }
+                // 预览图片
+                let reader = new FileReader()
+                localImage = e.target.files[0]
+                reader.readAsDataURL(localImage)
+                reader.onload = evt => this.setBg(evt.target.result)
+            }
+        },
+        setBg(url) {
+            this.bgPic = url
+            this.bgPicStyle = {height:'94px'}
+            this.isShowBgText = false
+        },
     },      
 }
 </script>
@@ -203,6 +303,29 @@ export default{
     background:rgba(236,239,244,1);
     border:1px solid rgba(125,125,125,1);
   }
+  .image{
+    height:56px;
+    width:56px;
+    background:url('../../../assets/images/menu/rightbar/bg_ic2x.png') no-repeat center center;
+    background-size:contain;
+  }
+  .image_light{
+    height:56px;
+    width:56px;
+    background:url('../../../../static/stencils/basic/light.png') no-repeat center center;
+    background-size:contain;
+  }
+  
+}
+.image-con{
+  width:100%;
+  height:98px;
+  margin-top:6px;
+  border-radius: 2px;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dadada;
 }
 .state-desc{
   height:235px;
@@ -239,8 +362,6 @@ export default{
     background:#fff;
     border:1px solid rgba(212,212,212,1);
     border-radius:2px 0px 0px 2px;
-    margin: 0 2px;
-    width: calc(100% - 9px);
     .type-tab{
       flex:1;
       text-align:center;

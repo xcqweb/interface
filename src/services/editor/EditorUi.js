@@ -864,27 +864,30 @@ window.EditorUi = function(editor, container, lightbox)
         var cells = evt.getProperty('cells');
         // 转换类型
         for (let cell of cells) {
-            if (cell.style !== 'group') {
-                let cellInfo = graph.getModel().getValue(cell);
-				if (cell.style && cell.style.indexOf('shape') !== -1) {
-                let shapeName = /shape=(.+?);/.exec(cell.style)[1];
-                shapeName = this.sidebar.primitives.includes(shapeName) ? 'primitive' : shapeName;
-                if (!mxUtils.isNode(cellInfo))
-                {
-                    let doc = mxUtils.createXmlDocument();
-                    let obj = doc.createElement('object');
-                    obj.setAttribute('label', cellInfo || '');
-                    cellInfo = obj;
-					};
-                this.editor.palettesInfo[shapeName].num++;
-                cellInfo.setAttribute('palettename', this.editor.palettesInfo[shapeName].name + this.editor.palettesInfo[shapeName].num);
-                graph.getModel().setValue(cell, cellInfo);
-				}
+            let cellInfo = graph.getModel().getValue(cell)
+            if (!mxUtils.isNode(cellInfo)) {
+                let doc = mxUtils.createXmlDocument()
+                let obj = doc.createElement('object')
+                obj.setAttribute('label', cellInfo || '')
+                cellInfo = obj
             }
+            if (cell.style !== 'group') {
+				if (cell.style && cell.style.indexOf('shape') !== -1) {
+                    let shapeName = /shape=(.+?);/.exec(cell.style)[1]
+                    shapeName = this.sidebar.primitives.includes(shapeName) ? 'primitive' : shapeName
+                    this.editor.palettesInfo[shapeName].num++
+                    cellInfo.setAttribute('palettename', this.editor.palettesInfo[shapeName].name + this.editor.palettesInfo[shapeName].num)
+				}
+            }else{
+                this.editor.palettesInfo['groupNum'].num++
+                cellInfo.setAttribute('palettename', this.editor.palettesInfo['groupNum'].name + this.editor.palettesInfo['groupNum'].num)
+            }
+            graph.getModel().setValue(cell, cellInfo)
         }
         var parent = evt.getProperty('parent');
         if (graph.getModel().isLayer(parent) && !graph.isCellVisible(parent) && cells != null && cells.length > 0)
         {
+            console.log("gg-bbb")
             graph.getModel().setVisible(parent, true);
         }
     }.bind(this));
@@ -2888,7 +2891,6 @@ EditorUi.prototype.refresh = function(sizeDidChange)
         this.formatContainer.style.height = sidebarHeight + 'px';
         this.rightBarContainer.style.height = sidebarHeight + 'px';
         this.diagramContainer.style.width = (this.hsplit&&this.hsplit.parentNode != null) ? Math.max(0, w - this.sidebarWidth - this.splitSize - fw) + 'px' : w + 'px';
-        console.log(this.footerHeight)
         var diagramHeight = Math.max(0, h - this.footerHeight - this.menubarHeight - this.toolbarHeight);
 
         if (this.tabContainer != null)
@@ -3470,7 +3472,7 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
 /**
  * 保存成功
  */
-EditorUi.prototype.saveSuccess = function(res) {
+EditorUi.prototype.saveSuccess = function (res, hideDialog) {
     this.editor.setFilename(res.studioName)
     this.editor.setDescribe(res.descript)
     this.editor.setApplyId(res.studioId)
@@ -3479,16 +3481,20 @@ EditorUi.prototype.saveSuccess = function(res) {
     }
     setTimeout(() => {
         this.hideDialog();
-        this.editor.tipInfo(this, true, '保存');
+        if (!hideDialog){
+            this.editor.tipInfo(this, true, '保存');
+        }
     }, 350);
 }
 /**
  * 保存失败
  */
-EditorUi.prototype.saveError = function(res) {
+EditorUi.prototype.saveError = function (res, hideDialog) {
     setTimeout(() => {
         this.hideDialog();
-        this.editor.tipInfo(this, null, res.message);
+        if (!hideDialog){
+            this.editor.tipInfo(this, null, res.message);
+        }
     }, 350);
 }
 /**
@@ -3521,18 +3527,18 @@ EditorUi.prototype.save = function(name, des,hideDialog=false)
                     // 编辑保存
                     data.studioId = id
                     editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
-                        this.saveSuccess(res);
+                        this.saveSuccess(res, hideDialog);
                         resolve(res);
                     }, (res) => {
-                        this.saveError(res.responseJSON);
+                        this.saveError(res.responseJSON,hideDialog);
                         reject(res);
                     },'加载中···',hideDialog)
                 } else {
                     editor.ajax(ui, urls.preview.url, 'POST', data,(res) => {
-                        this.saveSuccess(res);
+                        this.saveSuccess(res,hideDialog);
                         resolve(res);
                     }, (res) => {
-                        this.saveError(res.responseJSON);
+                        this.saveError(res.responseJSON, hideDialog);
                         reject(res);
                     },'加载中···',hideDialog)
                 }

@@ -9,10 +9,7 @@
     <RightBar
       ref="rightbar"
     />     
-    <FooterBar
-      ref="footbar"
-      :bind-datas="bindDatas"
-    />
+    <FooterBar />
   </div>
 </template>
 
@@ -47,7 +44,6 @@ export default {
     data() {
         return{
             isPage:true,
-            bindDatas: [],
             isInited:false,
         }
     },
@@ -88,31 +84,16 @@ export default {
     methods: {
         init() {
             this.myEditorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
-            this.myEditorUi.editor.graph.addListener(mxEvent.CLICK, this.selectCell,false);
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
             this.$refs.leftsidebar.init();
             this.$refs.rightbar.init()
-            this.$refs.footbar.init();
             timer = setInterval(()=> {
                 this.myEditorUi.saveFile(true,true)
             },1000 * 60 * 3)//3分钟自动保存一次
         },
         updateZoom() {
             this.$refs.toolbar.updateZoom();
-        },
-        selectCell() {
-            this.bindDatas = []
-            let cells = this.myEditorUi.editor.graph.getSelectionCells();
-            if (cells.length > 1) {
-                return;
-            }
-            for (let i = 0; i < cells.length; i++) {
-                let val = (cells[i].value && cells[i].value.attributes && cells[i].value.attributes.bindData) ? JSON.parse(cells[i].value.attributes.bindData.value) : ''
-                if (val) {
-                    this.bindDatas.push(val)
-                }
-            }
         },
     }
 };

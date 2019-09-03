@@ -152,6 +152,7 @@
 </template>
 
 <script>
+// import {mxEvent} from '../../services/mxGlobal'
 import {Tabs,TabPane, Table,Select, Option, Button} from 'iview'
 import NoData from '../datasource/nodata'
 import VerticalToggle from './vertical-toggle.js'

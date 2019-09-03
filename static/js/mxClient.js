@@ -84152,6 +84152,7 @@ mxEditor.prototype.configure = function (node)
 {
 	if (node != null)
 	{
+		debugger
 		// Creates a decoder for the XML data
 		// and uses it to configure the editor
 		var dec = new mxCodec(node.ownerDocument);
