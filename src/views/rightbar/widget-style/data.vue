@@ -71,7 +71,7 @@
             <Checkbox
               v-for="(item, index) in deviceNameList"
               :key="index"
-              :label="item.deviceId"
+              :label="item"
               size="small"
             >
               <span>{{ item.deviceName }}</span>
@@ -115,6 +115,8 @@
 import Input from '../../datasource/input-select'
 import NoData from '../../datasource/nodata'
 import {Button,Page,Checkbox,Message,Select,Option, CheckboxGroup} from 'iview'
+const singleDeviceName = ['image','userimage','tableBox','rectangle','ellipse','light','progress']
+// const multipleDeviceName = ['lineChart','gaugeChart']
 export default{
     components: {
         Button,
@@ -151,7 +153,8 @@ export default{
             deviceListTotal:10,
             studioIdNew:'',
             deviceNameListArr:[],
-            deviceIdArr:[]
+            deviceIdArr:[],
+            shapeName: null
         }
     },
     mounted() {
@@ -160,6 +163,8 @@ export default{
     },
     methods: {
         init() {
+            this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
+            console.log(this.shapeName)
             let objData = {
                 studioId:this.studioIdNew
             }
@@ -195,7 +200,10 @@ export default{
             console.log(this.deviceIdArr)
         },
         bindDeviceNameHandle() {
-            console.log('绑定')
+            if (singleDeviceName.includes(this.shapeName) && this.deviceIdArr.length > 1) { // 绑定单个
+                Message.warning('此控件不允许绑定多个设备名称')
+                return false
+            }
         }
     },      
 }

@@ -157,7 +157,7 @@ import {Tabs,TabPane, Table,Select, Option, Button} from 'iview'
 import NoData from '../datasource/nodata'
 import VerticalToggle from './vertical-toggle.js'
 import VueEvent from '../../services/VueEvent.js'
-const FirbiddArr = ['image','userimage','tableBox','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
+const FirbiddArr = ['image','userimage','tableBox','rectangle','ellipse','light','progress','lineChart','gaugeChart']
 // const dataSourceForm = 'IOT平台'
 export default {
     components:{
