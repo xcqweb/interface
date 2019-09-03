@@ -23,7 +23,7 @@
           <div 
             class="Collapse-title-right"
             :class="ifShowArrow ? 'collapse-active' : ''"
-            @click="clickHandle"
+            @click="clickHandle($event, )"
           />
         </div>
       </div>
@@ -32,103 +32,118 @@
           v-show="ifShowArrow"
           class="footer-content"
         >
-          <div
-            v-show="TabsNumber === 0"
-            class="footer-common dataSourceList"
+          <div 
+            v-if="footerContent"
           >
-            <template>
-              <Table
-                border
-                :columns="columns7"
-                :data="dataSource"
-                :max-height="heightlen"
-              >
-                <template
-                  slot="actions"
-                  slot-scope="{ row, index }" 
+            <!--数据源-->
+            <div
+              v-show="TabsNumber === 0"
+              class="footer-common dataSourceList"
+            >
+              <template>
+                <Table
+                  border
+                  :columns="columns7"
+                  :data="dataSource"
+                  :max-height="heightlen"
                 >
-                  <span
-                    class="icon-delete"
-                    @click.stop.prevent="deleteFooterHandle(row,index)"
-                  />
-                </template>
-              </Table>
-            </template>
-          </div>
-          <div
-            v-show="TabsNumber === 1"
-            class="footer-common dataDisplayList"
-          > 
-            <ul class="dataDisplayListUl">
-              <li 
-                v-for="(items, index) in paramsListArr"
-                :key="index"
-              >
-                <div>
-                  <span>
-                    <Select
-                      v-model="items.paramsSelect"
-                      style="width:240px;height:24px;line-height:24px;"
-                    >
-                      <Option 
-                        v-for="item in ParamsSelectList" 
-                        :key="item.value" 
-                        :value="item.value"
+                  <template
+                    slot="actions"
+                    slot-scope="{ row, index }" 
+                  >
+                    <span
+                      class="icon-delete"
+                      @click.stop.prevent="deleteFooterHandle(row,index)"
+                    />
+                  </template>
+                </Table>
+              </template>
+            </div>
+            <!--数据显示-->
+            <div
+              v-show="TabsNumber === 1"
+              class="footer-common dataDisplayList"
+            > 
+              <ul class="dataDisplayListUl">
+                <li 
+                  v-for="(items, index) in paramsListArr"
+                  :key="index"
+                >
+                  <div>
+                    <span>
+                      <Select
+                        v-model="items.paramsSelect"
+                        style="width:240px;height:24px;line-height:24px;"
                       >
-                        {{ item.label }}
-                      </Option>
-                    </Select>
-                  </span>
-                  <span>
-                    <Button
-                      v-if="index === 0"
-                      size="small"
-                      class="condition-icon condition-add-icon"
-                      @click.stop.prevent="adddataHandle(index)"
-                    >
-                      {{ buttonText[0] }}
-                    </Button>
-                    <Button
-                      v-if="paramsListArr.length > 1"
-                      size="small"
-                      class="condition-icon condition-delete-icon"
-                      @click.stop.prevent="removedataHandle(index)"
-                    >
-                      {{ buttonText[1] }}
-                    </Button>
-                  </span>
-                </div>
-              </li>
-            </ul>
+                        <Option 
+                          v-for="item in ParamsSelectList" 
+                          :key="item.value" 
+                          :value="item.value"
+                        >
+                          {{ item.label }}
+                        </Option>
+                      </Select>
+                    </span>
+                    <span>
+                      <Button
+                        v-if="index === 0"
+                        size="small"
+                        class="condition-icon condition-add-icon"
+                        @click.stop.prevent="adddataHandle(index)"
+                      >
+                        {{ buttonText[0] }}
+                      </Button>
+                      <Button
+                        v-if="paramsListArr.length > 1"
+                        size="small"
+                        class="condition-icon condition-delete-icon"
+                        @click.stop.prevent="removedataHandle(index)"
+                      >
+                        {{ buttonText[1] }}
+                      </Button>
+                    </span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <!--状态模型-->
+            <div
+              v-show="TabsNumber === 2"
+              class="footer-common stateList"
+            >
+              <ul class="footerTabs2Ul">
+                <li 
+                  v-for="(items, index) in modelSelectArr"
+                  :key="index"
+                >
+                  <div class="footerTabs2-list-wrap">
+                    <span class="footerTabs2-list-top">状态{{ index + 1 }}</span>
+                    <span class="footerTabs2-list-content">
+                      <Select
+                        v-model="items.modelSelect"
+                        style="width:240px;height:24px;line-height:24px;"
+                      > 
+                        <Option 
+                          v-for="item in ModelSelectList" 
+                          :key="item.value" 
+                          :value="item.value"
+                        >
+                          {{ item.label }}
+                        </Option>
+                      </Select>
+                    </span>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
           <div
-            v-show="TabsNumber === 2"
-            class="footer-common stateList"
+            v-else
+            class="no-data-wrap"
           >
-            <ul class="footerTabs2Ul">
-              <li 
-                v-for="(items, index) in modelSelectArr"
-                :key="index"
-              >
-                <div class="footerTabs2-list-wrap">
-                  <span class="footerTabs2-list-top">状态{{ index + 1 }}</span>
-                  <span class="footerTabs2-list-content">
-                    <Select
-                      v-model="items.modelSelect"
-                      style="width:240px;height:24px;line-height:24px;"
-                    > 
-                      <Option 
-                        v-for="item in ModelSelectList" 
-                        :key="item.value" 
-                        :value="item.value"
-                      >
-                        {{ item.label }}
-                      </Option>
-                    </Select>
-                  </span>
-                </div>
-              </li>
-            </ul>
+            <NoData
+              :text="nodata"
+            />
           </div>
         </div>
       </VerticalToggle>
@@ -138,8 +153,11 @@
 
 <script>
 import {Tabs,TabPane, Table,Select, Option, Button} from 'iview'
+import NoData from '../datasource/nodata'
 import VerticalToggle from './vertical-toggle.js'
 import VueEvent from '../../services/VueEvent.js'
+const FirbiddArr = ['image','userimage','tableBox','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
+// const dataSourceForm = 'IOT平台'
 export default {
     components:{
         Tabs,
@@ -148,7 +166,8 @@ export default {
         VerticalToggle,
         Select,
         Option,
-        Button
+        Button,
+        NoData
     },
     data() {
         return {
@@ -157,10 +176,11 @@ export default {
             buttonText:['添加参数', '删除'],
             ifShowArrow: false,
             TabsNumber: 0,
+            nodata: '暂无数据',
             columns7:[
                 {
                     title: '数据源',
-                    key: 'age'
+                    key: 'name'
                 },
                 {
                     title: '类型',
@@ -178,21 +198,21 @@ export default {
                 }
             ],
             dataSource: [
-                {
-                    age: 18,
-                    typeName: '123',
-                    deviceName: 'New York No. 1 Lake Park'
-                },
-                {
-                    age: 24,
-                    typeName: '123',
-                    deviceName: 'London No. 1 Lake Park'
-                },
-                {
-                    age: 30,
-                    typeName: '123',
-                    deviceName: 'Sydney No. 1 Lake Park'
-                }
+                // {
+                //     name: dataSourceForm,
+                //     typeName: '123',
+                //     deviceName: 'New York No. 1 Lake Park'
+                // },
+                // {
+                //     name: dataSourceForm,
+                //     typeName: '123',
+                //     deviceName: 'London No. 1 Lake Park'
+                // },
+                // {
+                //     name: dataSourceForm,
+                //     typeName: '123',
+                //     deviceName: 'Sydney No. 1 Lake Park'
+                // }
             ],
             heightlen: '190',
             ParamsSelect: '',
@@ -230,32 +250,44 @@ export default {
                     label:'terry'
                 }
             ],
-            selectEle: false
-        }
-    },
-    computed: {
-        shapeName() {
-            return this.$store.state.main.widgetInfo.shapeInfo.shape
+            selectEle: false,
+            footerContent: false,
+            showWidgetStyle: false
         }
     },
     mounted() {
-       
         let _that = this
         VueEvent.$on('clickFooterHandle', () => {
-            _that.ifShowArrow = true
+            _that.clickHandle('',true)
+        })
+        VueEvent.$on('websoketSelectElemnt', (value) => {
+            _that.footerContentHandle(value)
         })
     },
     methods:{
         init() {
-            // let graph = this.myEditorUi.editor.graph
-            // console.log(graph)
-            // if(graph.isSelectionEmpty())
-            // if (this.$store.state.main.widgetInfo.shapeInfo.shape) {
-            //     console.log(this.$store.state.main.widgetInfo.shapeInfo.shape)
-            // }
         },
-        clickHandle() {
-            this.ifShowArrow = !this.ifShowArrow
+        clickHandle(evt,bool) {
+            if (bool) {
+                this.ifShowArrow = true
+            } else {
+                this.ifShowArrow = !this.ifShowArrow
+            }
+        },
+        footerContentHandle(data) {
+            if (data) {
+                if (!this.footerContent) {
+                    let graph = this.myEditorUi.editor.graph
+                    let cell = graph.getSelectionCell();
+                    let state = graph.view.getState(cell);
+                    let shapeName = state.style.shape
+                    if(FirbiddArr.includes(shapeName)) {
+                        this.footerContent = true
+                    }
+                }
+            } else {
+                this.footerContent = false
+            }
         },
         switchTabHandle(type) {
             this.TabsNumber = +type
@@ -352,6 +384,11 @@ export default {
           }
           
         }
+        /deep/.ivu-table-tip{
+          td{
+            background:#F2F2F2
+          }
+        }
       }
       .icon-delete{
         width:20px;
@@ -410,6 +447,15 @@ export default {
             }
           }
         }
+      }
+    }
+    .no-data-wrap{
+      height:100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .no-data{
+        margin-top:0px;
       }
     }
   }

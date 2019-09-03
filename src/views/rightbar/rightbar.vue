@@ -105,6 +105,7 @@ export default {
                     this.$store.commit('getWidgetInfo',graph)
                     this.$store.commit('widgetChange',new Date().getTime())
                 }
+                VueEvent.$emit('websoketSelectElemnt',this.showWidgetStyle)
             }
             this.inited = true
         },

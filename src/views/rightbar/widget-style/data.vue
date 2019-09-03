@@ -192,7 +192,7 @@ export default{
             console.log(this.deviceIdArr)
         },
         bindDeviceNameHandle() {
-
+            console.log('绑定')
         }
     },      
 }
