@@ -34,6 +34,7 @@
           v-model="modelvalue2"
           :clearable="ifclearSelect"
           style="height:24px"
+          @on-change="deviceTypeHandle"
         >
           <Option 
             v-for="(item, index) in deviceNameArr"
@@ -71,7 +72,7 @@
             <Checkbox
               v-for="(item, index) in deviceNameList"
               :key="index"
-              :label="item"
+              :label="item.deviceId"
               size="small"
             >
               <span>{{ item.deviceName }}</span>
@@ -113,10 +114,15 @@
 
 <script>
 import Input from '../../datasource/input-select'
+import VueEvent from '../../../services/VueEvent.js'
 import NoData from '../../datasource/nodata'
 import {Button,Page,Checkbox,Message,Select,Option, CheckboxGroup} from 'iview'
 const singleDeviceName = ['image','userimage','tableBox','rectangle','ellipse','light','progress']
 // const multipleDeviceName = ['lineChart','gaugeChart']
+const DataSourceID = {
+    id: '123',
+    name:'IOT平台'
+}
 export default{
     components: {
         Button,
@@ -197,12 +203,56 @@ export default{
         },
         checkAllGroupChange(data) {
             this.deviceIdArr = data
-            console.log(this.deviceIdArr)
+        },
+        deviceTypeHandle(data) {
+            // 清空之前勾选的
+            this.deviceNameListArr = []
+            this.deviceIdArr = []
+            let objData = {
+                studioId:this.studioIdNew,
+                deviceTypeId: data
+            }
+            this.requestUtil.post(this.urls.deviceEquipList.url, objData).then((res) => {
+                this.deviceNameList = res.records || []
+                this.deviceListTotal = res.total || 10
+            }).catch(() => {
+                Message.error('系统繁忙，请稍后再试')
+                return false
+            })
         },
         bindDeviceNameHandle() {
             if (singleDeviceName.includes(this.shapeName) && this.deviceIdArr.length > 1) { // 绑定单个
                 Message.warning('此控件不允许绑定多个设备名称')
                 return false
+            }
+            // 组装数据 绑定
+            let DeviceIndex = null
+            let deviceNameIndex = null
+            this.deviceNameArr.forEach((item, index) => {
+                if (item.deviceTypeId === this.modelvalue2) {
+                    DeviceIndex = index
+                }
+            })
+            let ObjData = []
+            this.deviceIdArr.forEach((items, key) => {
+                this.deviceNameList.forEach((item, index) => {
+                    if (item.deviceId === items) {
+                        deviceNameIndex = index
+                    }
+                }) 
+                ObjData[key] = {}
+                ObjData[key].dataSourceChild = DataSourceID
+                ObjData[key].deviceTypeChild = {
+                    id: this.deviceNameArr[DeviceIndex].deviceTypeId || '',
+                    name: this.deviceNameArr[DeviceIndex].deviceTypeName || ''
+                }
+                ObjData[key].deviceNameChild = {
+                    id: items,
+                    name: this.deviceNameList[deviceNameIndex].deviceName || ''
+                }
+            })
+            if (ObjData.length) {
+                VueEvent.$emit('emitDataSourceFooter', ObjData)
             }
         }
     },      

@@ -260,6 +260,10 @@ export default {
         VueEvent.$on('isShowFootBar', (value) => {
             this.footerContentHandle(value)
         })
+        // 绑定数据源
+        VueEvent.$on('emitDataSourceFooter', (value) => {
+            console.log(value)
+        })
     },
     methods:{
         clickHandle() {

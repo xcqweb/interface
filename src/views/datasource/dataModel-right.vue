@@ -385,6 +385,7 @@ export default {
             currenModelId:'',
             currenModelName:'',
             alldata: {
+                conditionLogic: '',
                 data: [
                     [
                         {
