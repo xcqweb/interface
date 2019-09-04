@@ -253,6 +253,8 @@ export default{
             })
             if (ObjData) {
                 VueEvent.$emit('emitDataSourceFooter', ObjData)
+                this.deviceNameListArr = []
+                this.deviceIdArr = []
             }
         }
     },      
