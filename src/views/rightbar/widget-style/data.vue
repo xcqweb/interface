@@ -55,6 +55,7 @@
       <div class="devicename-input-wrap">
         <Input 
           :placetext="placeText"
+          class="inputDeviceName"
           :derection="derection"
         />
       </div>
@@ -164,6 +165,8 @@ export default{
     },
     mounted() {
         this.studioIdNew = sessionStorage.getItem("applyId") || ''
+        let InputEle1 = document.querySelector('.inputDeviceName input');
+        InputEle1.oninput = this.debounce(this.InputSelectHandle, 1000)
         this.init()
     },
     methods: {
@@ -281,6 +284,30 @@ export default{
             }
             return bindData
         },
+        debounce(handle, deLay, type) {
+            var timer = null
+            return function() {
+                clearTimeout(timer)
+                timer = setTimeout(() => {
+                    handle.call(this, this.value, type)
+                }, deLay);
+            }
+        },
+        InputSelectHandle(value) {
+            if (!this.modelvalue2) {
+                Message.warning(`请选择设备类型`)
+            } else {
+                let objData = {
+                    deviceTypeId : this.modelvalue2,
+                    deviceName: value.trim(),
+                    studioId: this.studioIdNew,
+                    size:1
+                }
+                this.requestUtil.post(this.urls.deviceEquipList.url,objData).then((res) => {
+                    this.deviceNameList = res.records || []
+                })
+            }
+        }
     },      
 }
 </script>

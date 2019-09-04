@@ -226,14 +226,14 @@ export default {
     mounted() {
         VueEvent.$on('isShowFootBar', ({show,isUp}) => {
             this.footerContentHandle(show)
-            this.ifShowArrow = !!isUp
+            if (isUp) {
+                this.ifShowArrow = isUp
+            }
         })
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
             // 拿到之前绑定的 bindData2
             let startBindData = this.getCellModelInfo('bindData2')
-            console.log(startBindData)
-            console.log(value)
             if (!startBindData) {
                 this.setCellModelInfo('bindData2',{dataSource:value})
                 if (this.ifShowArrow) {

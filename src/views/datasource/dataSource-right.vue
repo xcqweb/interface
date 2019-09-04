@@ -57,7 +57,7 @@
         <div class="dataSource-right-top">
           <Input
             v-model="inputParamName"
-            class="inputParamName"
+            class="inputParamName2"
             :placeholder="placeTextArr[0]"
             suffix="ios-search"
           />
@@ -136,7 +136,7 @@
         <div class="dataSource-right-top">
           <Input 
             v-model="inputDeviceName"
-            class="inputDeviceName"
+            class="inputDeviceName2"
             :placeholder="placeTextArr[1]"
             suffix="ios-search"
           />
@@ -306,8 +306,8 @@ export default {
     mounted() {
         this.studioIdNew = sessionStorage.getItem("applyId") || ''
         this.$nextTick(() => {
-            let InputEle1 = document.querySelector('.inputParamName input');
-            let InputEle2 = document.querySelector('.inputDeviceName input')
+            let InputEle1 = document.querySelector('.inputParamName2 input');
+            let InputEle2 = document.querySelector('.inputDeviceName2 input')
             InputEle1.oninput = this.debounce(this.InputSelectHandle, 1000 , 1)
             InputEle2.oninput = this.debounce(this.InputSelectHandle, 1000, 2)
         })

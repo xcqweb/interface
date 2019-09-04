@@ -288,7 +288,7 @@ export default{
     },
     mounted() {
         this.init();
-        let InputEle1 = document.querySelector('.inputParamName input');
+        let InputEle1 = document.querySelector('.inputParamName input')
         let InputEle2 = document.querySelector('.inputDeviceName input')
         InputEle1.oninput = this.debounce(this.InputSelectHandle, 1000 , 1)
         InputEle2.oninput = this.debounce(this.InputSelectHandle, 1000, 2)
@@ -399,6 +399,7 @@ export default{
                 if (+type === 2) {
                     objData.deviceName = value.trim()
                 }
+                console.log(objData)
                 let newUrl = +type === 1 ? this.urls.deviceParamList.url : this.urls.deviceEquipList.url
                 this.requestUtil.post(newUrl,objData).then((res) => {
                     if (+type === 1) {
