@@ -117,8 +117,7 @@ import Input from '../../datasource/input-select'
 import VueEvent from '../../../services/VueEvent.js'
 import NoData from '../../datasource/nodata'
 import {Button,Page,Checkbox,Message,Select,Option, CheckboxGroup} from 'iview'
-const singleDeviceName = ['image','userimage','tableBox','rectangle','ellipse','light','progress']
-// const multipleDeviceName = ['lineChart','gaugeChart']
+const singleDeviceName = ['image','userimage','tableBox','rectangle','ellipse','light','progress','gaugeChart']
 const DataSourceID = {
     id: '123',
     name:'IOT平台'
@@ -170,7 +169,6 @@ export default{
     methods: {
         init() {
             this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
-            console.log(this.shapeName)
             let objData = {
                 studioId:this.studioIdNew
             }
@@ -221,9 +219,23 @@ export default{
             })
         },
         bindDeviceNameHandle() {
+            let startBindData2 = this.getCellModelInfo('bindData2')
+            console.log(startBindData2)
             if (singleDeviceName.includes(this.shapeName) && this.deviceIdArr.length > 1) { // 绑定单个
                 Message.warning('此控件不允许绑定多个设备名称')
                 return false
+            } else {
+                if (startBindData2 && startBindData2.dataSource && startBindData2.dataSource.deviceNameChild) {
+                    Message.warning('此控件已经绑定设备名称')
+                    return false
+                }
+            }
+            if (startBindData2 && startBindData2.dataSource) {
+                let deviceTypeData = startBindData2.dataSource.deviceTypeChild || {}
+                if (deviceTypeData.id && deviceTypeData.id !== this.modelvalue2) {
+                    Message.warning('此控件不允许绑定多个设备类型')
+                    return false
+                }
             }
             // 组装数据 绑定
             let DeviceIndex = null
@@ -256,7 +268,20 @@ export default{
                 this.deviceNameListArr = []
                 this.deviceIdArr = []
             }
-        }
+        },
+        getCellModelInfo(key) {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let modelInfo = graph.getModel().getValue(cell)
+            let bindData = null
+            if(modelInfo) {
+                let bindAttr = modelInfo.getAttribute(key)
+                if(bindAttr) {
+                    bindData = JSON.parse(bindAttr)
+                }
+            }
+            return bindData
+        },
     },      
 }
 </script>
