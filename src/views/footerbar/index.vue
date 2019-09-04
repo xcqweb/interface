@@ -240,7 +240,7 @@ export default {
                     return false
                 }
             }
-            this.getTableData(value)
+            this.getTableData(false,value)
             bindObj = value
             this.initModelList()
             Message.success('绑定成功')
@@ -297,9 +297,10 @@ export default {
         initDataSource(bool) {
             if (bool) {
                 let startBindData2 = this.getCellModelInfo('bindData2')
-                console.log(startBindData2)
                 if (startBindData2 && startBindData2.dataSource) {
-                    this.getTableData(startBindData2.dataSource)
+                    this.getTableData(true,startBindData2.dataSource)
+                }else{
+                    this.dataSource = []
                 }
             }
         },
@@ -328,6 +329,7 @@ export default {
                 let cell = graph.getSelectionCell()
                 let state = graph.view.getState(cell)
                 let shapeName = state.style.shape
+                console.log(shapeName)
                 if(allShapes.includes(shapeName)) {
                     this.footerContent = true
                 }else{
@@ -379,6 +381,7 @@ export default {
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
             let modelInfo = graph.getModel().getValue(cell)
+            console.log(modelInfo)
             let bindData = null
             if(modelInfo) {
                 let bindAttr = modelInfo.getAttribute(key)
@@ -388,8 +391,13 @@ export default {
             }
             return bindData
         },
-        getTableData(data) {
-            this.dataSource = []
+        /*
+          @bool : 是否清空dataSource
+        */
+        getTableData(bool,data) {
+            if (bool) {
+                this.dataSource = []
+            }
             if (data.deviceNameChild && data.deviceNameChild.length) {
                 data.deviceNameChild.forEach((item) => {
                     let obj = {}
