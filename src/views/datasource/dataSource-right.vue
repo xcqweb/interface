@@ -97,9 +97,11 @@
         <div class="dataSource-right-bottom">
           <template v-if="paramsNameList.length">
             <Page 
-              :current="1" 
+              :current="PAGE_CURRENT" 
               :total="paramListTotal" 
+              :page-size="PAGE_SIZE"
               simple
+              @on-change="paramPageChangeHandle"
             />
           </template>
         </div>
@@ -176,9 +178,11 @@
         <div class="dataSource-right-bottom">
           <template v-if="deviceNameList.length">
             <Page 
-              :current="1" 
-              :total="deviceListTotal" 
+              :current="PAGE_CURRENT" 
+              :total="deviceListTotal"
+              :page-size="PAGE_SIZE" 
               simple
+              @on-change="devicePageChangeHandle"
             />
           </template>
         </div>
@@ -284,8 +288,8 @@ export default {
             alldelete: '批量删除',
             selectAll: '全选',
             numberlistIndex: 0,
-            paramListTotal: 10,
-            deviceListTotal: 10,
+            paramListTotal: 1,
+            deviceListTotal: 1,
             studioIdNew: null,
             modalParam: {
                 titleText: '删除',
@@ -300,7 +304,9 @@ export default {
             deleteName: '',
             inputDeviceName:'',
             inputParamName:'',
-            currentDeviceTypeId: ''
+            currentDeviceTypeId: '',
+            PAGE_CURRENT: 1,
+            PAGE_SIZE:1
         }
     },
     mounted() {
@@ -331,7 +337,9 @@ export default {
                 if (this.deviceTypeArr.length) {
                     let objDataNew = {
                         studioId:this.studioIdNew,
-                        deviceTypeId: this.deviceTypeArr[0].deviceTypeId
+                        deviceTypeId: this.deviceTypeArr[0].deviceTypeId,
+                        current: this.PAGE_CURRENT,
+                        size:this.PAGE_SIZE
                     }
                     this.currentDeviceTypeId = objDataNew.deviceTypeId
                     return Promise.all([
@@ -369,7 +377,9 @@ export default {
             if (!evt || !classNameStr.includes('currentList')) {
                 let objDataNew = {
                     studioId:this.studioIdNew,
-                    deviceTypeId: deviceTypeId
+                    deviceTypeId: deviceTypeId,
+                    current: this.PAGE_CURRENT,
+                    size:this.PAGE_SIZE
                 }
                 const [ParamNameList, DeviceNameList] = await Promise.all([
                     this.requestUtil.post(this.urls.deviceParamList.url, objDataNew),
@@ -642,6 +652,28 @@ export default {
                 }
             })
         },
+        paramPageChangeHandle(value) {
+            this.PageChangeHandle(value, 1)
+        },
+        devicePageChangeHandle(value) {
+            this.PageChangeHandle(value, 2)
+        },
+        PageChangeHandle(value, type) {
+            let objData = {
+                deviceTypeId: this.currentDeviceTypeId,
+                current:value,
+                size:this.PAGE_SIZE,
+                studioId: this.studioIdNew
+            }
+            let NewUrl = type === 1 ? this.urls.deviceParamList.url : this.urls.deviceEquipList.url
+            this.requestUtil.post(NewUrl, objData).then((res) => {
+                if (type === 1) {
+                    this.paramsNameList = res.records || []
+                } else {
+                    this.deviceNameList = res.records || []
+                }
+            })
+        }
     }
 }
 </script>
