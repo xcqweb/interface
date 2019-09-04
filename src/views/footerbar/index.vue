@@ -37,7 +37,7 @@
           >
             <!--数据源-->
             <div
-              v-show="TabsNumber === 0"
+              v-show="tabsNum === 0"
               class="footer-common dataSourceList"
             >
               <template>
@@ -61,26 +61,27 @@
             </div>
             <!--数据显示-->
             <div
-              v-show="TabsNumber === 1"
+              v-show="tabsNum === 1"
               class="footer-common dataDisplayList"
             > 
               <ul class="dataDisplayListUl">
                 <li 
-                  v-for="(items, index) in paramsListArr"
+                  v-for="(item, index) in paramOutterList"
                   :key="index"
                 >
                   <div>
                     <span>
                       <Select
-                        v-model="items.paramsSelect"
+                        v-model="paramVals[index]"
                         style="width:240px;height:24px;line-height:24px;"
+                        @on-change="(val)=>paramSelectChange(val,index)"
                       >
                         <Option 
-                          v-for="item in ParamsSelectList" 
-                          :key="item.value" 
-                          :value="item.value"
+                          v-for="(d,i) in paramsList" 
+                          :key="i" 
+                          :value="i"
                         >
-                          {{ item.label }}
+                          {{ item.name }}
                         </Option>
                       </Select>
                     </span>
@@ -89,15 +90,15 @@
                         v-if="index === 0"
                         size="small"
                         class="condition-icon condition-add-icon"
-                        @click.stop.prevent="adddataHandle(index)"
+                        @click.stop.prevent="addParamHandle(index)"
                       >
                         {{ buttonText[0] }}
                       </Button>
                       <Button
-                        v-if="paramsListArr.length > 1"
+                        v-if="paramOutterList.length > 1"
                         size="small"
                         class="condition-icon condition-delete-icon"
-                        @click.stop.prevent="removedataHandle(index)"
+                        @click.stop.prevent="removeParamHandle(index)"
                       >
                         {{ buttonText[1] }}
                       </Button>
@@ -108,7 +109,7 @@
             </div>
             <!--状态模型-->
             <div
-              v-show="TabsNumber === 2"
+              v-show="tabsNum === 2"
               class="footer-common stateList"
             >
               <ul class="footerTabs2Ul">
@@ -141,7 +142,7 @@
             </div>
           </div>
           <div
-            v-if="!footerContent || TabsNumber === 2&&stateList.length===0"
+            v-if="!footerContent || tabsNum === 2&&stateList.length===0"
             class="no-data-wrap"
           >
             <NoData
@@ -159,7 +160,7 @@ import {Tabs,TabPane, Table,Select, Option, Button, Message} from 'iview'
 import NoData from '../datasource/nodata'
 import VerticalToggle from './vertical-toggle.js'
 import VueEvent from '../../services/VueEvent.js'
-let bindObj = null,isInitModelList = false
+let bindObj = null,isInitModelList = false,isInitParamList = false,deviceTypeIdG
 const allShapes = ['image','userimage','tableBox','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
 // const dataSourceForm = 'IOT平台'
 export default {
@@ -179,7 +180,7 @@ export default {
             dataSourceName:['数据源','数据显示','状态模型'],
             buttonText:['添加参数', '删除'],
             ifShowArrow: false,
-            TabsNumber: 0,
+            tabsNum: 0,
             nodata: '暂无数据',
             columns7:[
                 {
@@ -203,18 +204,14 @@ export default {
             ],
             dataSource: [],
             heightlen: '190',
-            ParamsSelect: '',
-            ParamsSelectList: [],
-            paramsListArr: [
-                {
-                    paramsSelect: ''
-                }
-            ],
+            paramsList: [],
+            paramOutterList: [''],
             stateList:[],
             modelList:[],
             selectEle: false,
             footerContent: false,
             modelVals:[],//状态列表下的每个模型列表当前的v-model
+            paramVals:[],//参数列表，每个参数input当前的v-model
         }
     },
     mounted() {
@@ -242,6 +239,7 @@ export default {
             Message.success('绑定成功')
             bindObj = value
             this.initModelList()
+            this.initParamsList()
         })
     },
     methods:{
@@ -252,7 +250,9 @@ export default {
             }else{
                 this.stateList = []
             }
-            this.initModelList()
+            this.initModelList()//初始化模型列表
+
+            this.initParamsList()//初始化参数列表
         },
         initModelList() {
             //模型列表
@@ -263,7 +263,7 @@ export default {
             if(bindObj) {
                 deviceTypeId = bindObj.deviceTypeChild.id
             }else{
-                deviceTypeId = this.findByBind()
+                deviceTypeId = this.findDeviceTypeByBindModel()
             }
             if(deviceTypeId) {
                 let objData = {
@@ -290,7 +290,7 @@ export default {
                 this.modelList = []
             }
         },
-        findByBind() {
+        findDeviceTypeByBindModel() {
             let res = null
             for(let i = 0;i < this.stateList.length;i++) {
                 if(this.stateList[i].modelFormInfo) {
@@ -299,6 +299,40 @@ export default {
                 }
             }
             return res
+        },
+        initParamsList() {
+            if(isInitParamList) {
+                return
+            }
+            let deviceTypeId = null
+            let tempObj = this.getCellModelInfo('bindData2')
+            if(bindObj) {
+                deviceTypeId = bindObj.deviceTypeChild.id
+            }else{
+                if(tempObj && tempObj.params) {
+                    deviceTypeId = tempObj.params.deviceTypeId
+                }
+            }
+            if(deviceTypeId) {
+                deviceTypeIdG = deviceTypeId
+                let param = {
+                    studioId:sessionStorage.getItem("applyId"),
+                    deviceTypeId: deviceTypeId
+                }
+                this.requestUtil.post(this.urls.deviceParamList.url, param).then((res) => {
+                    this.paramsList = res.records
+                    isInitParamList = true
+                })
+            }else{
+                this.paramsList = []
+            }
+            if(tempObj && tempObj.params) {
+                let bindParamsList = tempObj.params.list
+                this.paramOutterList = new Array(bindParamsList.length)
+                bindParamsList.forEach((item,index)=>{
+                    this.$set(this.paramVals,index,item.index)
+                })
+            }
         },
         modelSelectChange(modelIndex,stateIndex) {
             //将模型公式绑定在对应的状态上
@@ -325,24 +359,60 @@ export default {
             }
         },
         switchTabHandle(type) {
-            this.TabsNumber = +type
+            this.tabsNum = +type
             if(!this.ifShowArrow) {
                 this.ifShowArrow = true
             }
-            if(this.TabsNumber == 2) {
+            if(this.tabsNum == 1) {
+                this.initParamsList()
+            }
+            if(this.tabsNum == 2) {
                 this.initModelList()
             }
         },
         deleteFooterHandle(data, index) {
             console.log(data, index)
         },
-        adddataHandle() {
-            this.paramsListArr.unshift({
-                paramsSelect: ''
-            })
+        addParamHandle() {
+            this.paramOutterList.unshift('')
         },
-        removedataHandle(index) {
-            this.paramsListArr.splice(index , 1)
+        removeParamHandle(index) {
+            this.paramOutterList.splice(index , 1)
+            let tempObj = this.getCellModelInfo('bindData2')
+            let list = [ ]
+            if(tempObj && tempObj.params) {
+                list = tempObj.params.list
+            }
+            if(list.length) {
+                let res = list.findIndex((item)=>{
+                    return item.index == index
+                })
+                if(res != -1) {
+                    list.splice(index,1)
+                    tempObj.params.list = list
+                    this.setCellModelInfo('bindData2',tempObj)
+                }
+            }
+        },
+        paramSelectChange(val,index) {
+            let tempObj = this.getCellModelInfo('bindData2')
+            let list = [ ]
+            if(tempObj && tempObj.params) {
+                list = tempObj.params.list
+            }
+            list.push({
+                id:this.paramsList[val].paramId,
+                name:this.paramsList[val].paramName,
+                index:index
+            })
+            if(!tempObj) {
+                tempObj = { }
+            }
+            tempObj.parmas = {
+                deviceTypeId:deviceTypeIdG,
+                list:list
+            }
+            this.setCellModelInfo('bindData2',tempObj)
         },
         getCellModelInfo(key) {
             let graph = this.myEditorUi.editor.graph
