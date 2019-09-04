@@ -301,9 +301,6 @@ export default {
         },
         initParamsList() {
             let tempObj = this.getCellModelInfo('bindData2')
-            if(tempObj && tempObj.params) {
-                deviceTypeId = tempObj.params.deviceTypeId
-            }
             if(deviceTypeId) {
                 let param = {
                     studioId:sessionStorage.getItem("applyId"),
@@ -315,7 +312,7 @@ export default {
             }else{
                 this.paramsList = []
             }
-            if(tempObj) {
+            if(tempObj && tempObj.params) {
                 let bindParamsList = tempObj.params
                 this.paramOutterList = new Array(bindParamsList.length)
                 bindParamsList.forEach((item,index)=>{
