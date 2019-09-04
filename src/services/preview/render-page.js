@@ -8,9 +8,7 @@ let applyData = {}
 // 正常的最小x、y偏移量
 let minX, minY
 // 接收的点位数据
-let pointData = {}
 let pointParams = []
-let layerData = null
 // 配置好的svg图
 let configSvg = ['drop', 'circle', 'diamond', 'square', 'pentagram']
 // 默认样式
@@ -29,11 +27,11 @@ import {
     dealCharts,
     dealLight
 } from './util'
-import {createWsReal,createWsAlarm} from './bind-data'
+import {createWsReal} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
 class PreviewPage {
-    constructor(data, mainProcess, gePreview, formatLayer) {
+    constructor(data, mainProcess, gePreview) {
         let {
             content,
             studioId,
@@ -45,7 +43,6 @@ class PreviewPage {
         this.wsParams = []
         this.mainProcess = mainProcess
         this.gePreview = gePreview
-        this.formatLayer = formatLayer
     }
 
     // 页面数量
@@ -111,12 +108,11 @@ class PreviewPage {
                 let node, value, tagName = item.tagName
                 // 节点id
                 let id = item.getAttribute('id');
+                let bindData = JSON.parse(item.getAttribute('bindData'))
                 // 节点交互
                 let actionsInfo = JSON.parse(item.getAttribute('actionsInfo'))
                 // 节点状态
                 let statesInfo = JSON.parse(item.getAttribute('statesInfo'))
-                // 数据绑定
-                let bindData = JSON.parse(item.getAttribute('bindData'))
                 // 链接
                 let smartBiLink = item.getAttribute('smartBiLink')
                 // mxcell节点
@@ -135,7 +131,7 @@ class PreviewPage {
                     let getNodeInfo = new GetNodeInfo(node);
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape');
-                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, selectProps, defaultProp, points, rotation, flipH, flipV, startArrow, endArrow, strokeWidth
+                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, points, rotation, flipH, flipV, startArrow, endArrow, strokeWidth
                     styles = node.getAttribute('style');
                     isGroup = styles.indexOf('group') != -1;
                     fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF';
@@ -156,8 +152,6 @@ class PreviewPage {
                     width = parseFloat(node.childNodes[0].getAttribute('width'));
                     hide = item.getAttribute('hide');
                     height = parseFloat(node.childNodes[0].getAttribute('height'));
-                    selectProps = item.getAttribute('selectProps') || '';
-                    defaultProp = item.getAttribute('defaultProp') || '';
                     // edge获取路径节点
                     if (shapeName === 'endarrow' || shapeName === 'beeline' || shapeName === 'curve') {
                         const childNodes = node.getElementsByTagName('mxGeometry')[0].childNodes;
@@ -257,6 +251,7 @@ class PreviewPage {
                     (y < minY || minY === null) && (minY = y);
                     let obj = {
                         id,
+                        bindData,
                         shapeName,
                         x,
                         y,
@@ -274,12 +269,9 @@ class PreviewPage {
                         smartBiLink,
                         actionsInfo,
                         statesInfo,
-                        bindData,
                         hide,
                         verticalAlign,
                         align,
-                        selectProps,
-                        defaultProp,
                         points,
                         rotation,
                         flipH,
@@ -342,7 +334,6 @@ class PreviewPage {
             for (let key in applyData) {
                 destroyWs(applyData, key)
             }
-            pointData = Object.assign({});
             document.getElementById('geDialogs').innerHTML = ''
             // 正常的最小x、y偏移量
             minX = minY = null
@@ -359,27 +350,25 @@ class PreviewPage {
             this.renderPages(cells, layerContent, fileSystem, shapeXlms)
         }
         applyData[page.id] = {
-            ws_real: '',
-            ws_alarm: '',
+            wsReal: '',
             data: {},
             wsParams: this.wsParams,
             lockWs: false
         };
 
-        applyData[page.id].ws_real = createWsReal(page.id, pointData, pointParams, applyData, layerData, this.mainProcess)
-        applyData[page.id].ws_alarm = createWsAlarm(page.id, pointParams, applyData), layerData, this.mainProcess
+        applyData[page.id].wsReal = createWsReal(page.id,pointParams, applyData)
         return cells;
     }
     // 渲染页面
     renderPages(cells, ele = this.gePreview, fileSystem, shapeXlms) {
         for (let cell of cells) {
             if (cell.bindData) {
-                this.wsParams.push({
+                /*  this.wsParams.push({
                     pointId: cell.bindData.point,
                     params: cell.bindData.params.map(val => {
                         return val.name
                     }).join()
-                })
+                }) */
                 pointParams = this.wsParams
             }
             let cellHtml = this.renderCell(cell, fileSystem, shapeXlms);
@@ -411,27 +400,7 @@ class PreviewPage {
             // 菜单
             cellHtml = document.createElement('div');
             cellHtml.innerHTML = cell.value;
-        } else if (shapeName === 'select') {
-            // 下拉框
-            cellHtml = document.createElement('select');
-            const selectProps = cell.selectProps.split(',');
-            cellHtml.innerHTML = `
-        <option>请选择</option>
-        ${
-    selectProps.map(prop => `
-            <option ${prop === cell.defaultProp ? 'selected' : ''}>${prop}</option>
-          `).join('')
-}
-      `
-        } else if (shapeName === 'singleCheck') {
-            // 单选框
-            cellHtml = document.createElement('input');
-            cellHtml.setAttribute('type', 'radio');
-        } else if (shapeName === 'multipleCheck') {
-            // 多选框
-            cellHtml = document.createElement('input');
-            cellHtml.setAttribute('type', 'checkbox');
-        } else if (shapeName === 'text') {
+        }  else if (shapeName === 'text') {
             // 文本
             cellHtml = document.createElement('span');
             cellHtml.innerHTML = cell.value;
@@ -457,8 +426,7 @@ class PreviewPage {
             cellHtml = dealCharts(cell)
         } else if (shapeName == 'light') {
             cellHtml = dealLight(cell)
-        }
-        else {
+        } else {
             // 其他
             cellHtml = document.createElement('p');
             if(shapeName === 'ellipse') {
@@ -513,66 +481,14 @@ class PreviewPage {
         cellHtml.id = `palette_${cell.id}`
         // 绑定事件
         bindEvent(cellHtml, cell, this.mainProcess, applyData)
-        // 浮窗
-        if (cell.bindData && cell.bindData.point && cell.bindData.params.length > 0) {
-            if (cell.bindData.fillVariable) {
-                // 需要填充数据
-                cellHtml.className += ` ${cell.bindData.point} ${cell.bindData.point}_text`
-                cellHtml.setAttribute('data-filltext', cell.bindData.params.map(item => {
-                    return item.name
-                }).join(","));
-                cellHtml.innerHTML = ''
-            } else {
-                // 根据接收数据
-                cellHtml.className += ` ${cell.bindData.point}`
-            }
-            cellHtml.setAttribute('data-defaultFill', cell.fillColor)
-            // 显示
-            cellHtml.addEventListener('mousemove', (e) => {
-                const bodyScrollTop = document.getElementsByTagName('body')[0].scrollTop// body滚动
-                const bodyScrollLeft = document.getElementsByTagName('body')[0].scrollLeft
-                const htmlScrollTop = document.getElementsByTagName('html')[0].scrollTop// 最外层滚动
-                const htmlScrollLeft = document.getElementsByTagName('html')[0].scrollLeft
-                layerData = cell.bindData
-                this.renderLayer()
-                this.formatLayer.style.left = e.clientX + bodyScrollLeft + htmlScrollLeft + 5 + 'px'
-                this.formatLayer.style.top = e.clientY + bodyScrollTop + htmlScrollTop + 5 + 'px'
-                this.formatLayer.style.opacity = '1'
-            })
-            // 隐藏
-            cellHtml.addEventListener('mouseleave', () => {
-                this.formatLayer.style.opacity = 0
-                layerData = null
+        if (cell.statesInfo) {//给绑定模型公式的控件添加class标识
+            cell.statesInfo.forEach((item) => {
+                if (item.modelFormInfo) {
+                    cellHtml.className += ` ${item.modelFormInfo}`
+                }
             })
         }
-        return cellHtml;
-    }
-    // 渲染浮窗
-    renderLayer() {
-        this.formatLayer.innerHTML = ''
-        const data = Object.assign({}, pointData[layerData.point]);
-        if (!Object.keys(data).length) {
-            return
-        }
-        let params = [{
-            name: 'timestamp'
-        }].concat(layerData.params)
-        let leftKeys = document.createElement('ul')
-        leftKeys.id = 'leftKeys'
-        let rightKeys = document.createElement('ul')
-        rightKeys.id = 'rightKeys'
-        // 填充内容
-        for (let param of params) {
-            let leftInfo = document.createElement('li')
-            leftInfo.innerHTML = `${param.name}=`;
-            let rightInfo = document.createElement('li')
-            rightInfo.innerHTML = data[param.name]
-            rightInfo.innerHTML = param.name === 'timestamp' ? data[param.name] : data[param.name] !== undefined ? data[param.name] : 'NaN'
-            leftKeys.appendChild(leftInfo)
-            rightKeys.appendChild(rightInfo)
-        }
-        this.formatLayer.appendChild(leftKeys)
-        this.formatLayer.appendChild(rightKeys)
+        return cellHtml
     }
 }
 

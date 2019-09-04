@@ -8,8 +8,6 @@ let mainProcess
 let shapeXlms, applyInfo, fileSystem
 // 正常页面渲染地方
 let gePreview
-// 浮窗节点
-let formatLayer
 let ev//自定义事件，echart dom 渲染后，通知初始化echarts
 /**
  * 加载控件的xml配置文档
@@ -47,7 +45,6 @@ class Main {
         ev = document.createEvent('CustomEvent')
         ev.initCustomEvent('initEcharts', false, true)
         gePreview = document.getElementById('gePreview')
-        formatLayer = document.getElementById('formatLayer')
         let idArr = /id=(.+?)$/.exec(location.search)
         let id
         if (idArr) {
@@ -63,7 +60,7 @@ class Main {
         }
         document.getElementsByTagName('title')[0].innerHTML = applyInfo.studioName
         // 设置默认页面
-        this.previewPage = new PreviewPage(applyInfo, this, gePreview, formatLayer)
+        this.previewPage = new PreviewPage(applyInfo, this, gePreview)
         this.pageId = this.previewPage.pagesRank.normal[0]
         // 渲染页面
         this.renderNormal()

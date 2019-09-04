@@ -219,7 +219,7 @@ export default{
             })
         },
         bindDeviceNameHandle() {
-            let startBindData2 = this.getCellModelInfo('bindData2')
+            let startBindData2 = this.getCellModelInfo('bindData')
             if (singleDeviceName.includes(this.shapeName) && this.deviceIdArr.length > 1) { // 绑定单个
                 Message.warning('此控件不允许绑定多个设备名称')
                 return false
@@ -244,26 +244,26 @@ export default{
                     DeviceIndex = index
                 }
             })
-            let ObjData = {}
-            ObjData.dataSourceChild = DataSourceID
-            ObjData.deviceTypeChild = {
+            let objData = {}
+            objData.dataSourceChild = DataSourceID
+            objData.deviceTypeChild = {
                 id: this.deviceNameArr[DeviceIndex].deviceTypeId,
                 name: this.deviceNameArr[DeviceIndex].deviceTypeName || ''
             }
             // deviceNameChild
-            ObjData.deviceNameChild = []
+            objData.deviceNameChild = []
             this.deviceIdArr.forEach((items, key) => {
                 this.deviceNameList.forEach((item, index) => {
                     if (item.deviceId === items) {
                         deviceNameIndex = index
                     }
                 }) 
-                ObjData.deviceNameChild[key] = {}
-                ObjData.deviceNameChild[key].id = items
-                ObjData.deviceNameChild[key].name = this.deviceNameList[deviceNameIndex].deviceName || ''
+                objData.deviceNameChild[key] = {}
+                objData.deviceNameChild[key].id = items
+                objData.deviceNameChild[key].name = this.deviceNameList[deviceNameIndex].deviceName || ''
             })
-            if (ObjData) {
-                VueEvent.$emit('emitDataSourceFooter', ObjData)
+            if (objData) {
+                VueEvent.$emit('emitDataSourceFooter', objData)
                 this.deviceNameListArr = []
                 this.deviceIdArr = []
             }

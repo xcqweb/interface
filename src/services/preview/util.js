@@ -336,84 +336,16 @@ function bindEvent(ele, cellInfo, mainProcess, applyData) {
     let {actionsInfo} = cellInfo
     if (actionsInfo) {
         for (let action of actionsInfo) {
-            if (action.mouseEvent !== 'unset' && action.effectAction !== 'unset' && action.link) {
-                if ((action.mouseEvent === 'select' || action.mouseEvent === 'unselect') && ele.nodeName !== 'SELECT') {
-                    // 单选、复选的选中和取消选中事件
-                    ele.addEventListener('click', function() {
-                        if (ele.checked && action.mouseEvent === 'select') {
-                            effectEvent(action, mainProcess, applyData);
-                        } else if (!ele.checked && action.mouseEvent === 'unselect') {
-                            effectEvent(action, mainProcess, applyData);
-                        }
-                    })
-                } else if ((action.mouseEvent === 'select' || action.mouseEvent === 'unselect') && ele.nodeName == 'SELECT') {
-                    // 下拉框的选中和取消选中事件
-                    ele.addEventListener('change', function() {
-                        if (ele.value !== '请选择' && action.mouseEvent === 'select') {
-                            effectEvent(action, mainProcess, applyData);
-                        } else if (ele.value === '请选择' && action.mouseEvent === 'unselect') {
-                            effectEvent(action, mainProcess, applyData);
-                        }
-                    })
+            ele.addEventListener(action.mouseEvent, function(e) {
+                e = e || window.event;
+                if (e.stopPropagation) {
+                    e.stopPropagation();
                 } else {
-                    ele.addEventListener(action.mouseEvent, function(e) {
-                        e = e || window.event;
-                        if (e.stopPropagation) {
-                            e.stopPropagation();
-                        } else {
-                            e.cancelBubble = true;
-                        }
-                        // 触发事件
-                        effectEvent(action, mainProcess, applyData);
-                    })
+                    e.cancelBubble = true;
                 }
-            }
-        }
-    }
-}
-
-/**
- * 设置节点属性
- * @param {string} id 
- * @param {number} alarm 
- */
-function setCellStatus(id, alarm, data) {
-    // 该参数全部DOM
-    let doms = document.getElementsByClassName(id);
-    let color = null;
-    switch (alarm) {
-        case 1:
-            // 预警黄
-            color = '#FFDA05';
-            break;
-        case 2:
-            // 告警红
-            color = '#FF5542';
-            break;
-        case 3:
-            // 异常灰
-            color = '#A1B0B5';
-            break;
-        default:
-            color = null;
-            break;
-    }
-    for (let dom of doms) {
-        if (dom.childElementCount == 0) {
-            let dataFillText = dom.getAttribute('data-filltext');
-            let arr;
-            if (dataFillText) {
-                arr = dataFillText.split(",")
-                for (let d in data) {
-                    if (arr.indexOf(d) != -1) {
-                        dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
-                    }
-                }
-            } else {
-                dom.style.backgroundColor = color || dom.getAttribute('data-defaultFill');
-            }
-        } else {
-            dom.getElementsByTagName('svg')[0].firstChild.setAttribute('fill', color || dom.getAttribute('data-defaultFill'));
+                // 触发事件
+                effectEvent(action, mainProcess, applyData);
+            })
         }
     }
 }
@@ -568,6 +500,6 @@ function dealLight(cell) {
 }
 
 export {
-    removeEle, destroyWs, geAjax, insertImage, inserEdge, insertSvg, bindEvent, setCellStatus, showTips,
+    removeEle, destroyWs, geAjax, insertImage, inserEdge, insertSvg, bindEvent, showTips,
     dealProgress, dealPipeline, dealCharts, dealLight
 }

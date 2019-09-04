@@ -170,6 +170,7 @@ export default{
         }
     },
     mounted() {
+        style = {'background':'#ffffff','borderColor':'#000000','color':'#000000'}
         const component = this.$mount()
         document.querySelector('body').appendChild(component.$el)
         this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape

@@ -230,12 +230,12 @@ export default {
         })
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
-            // 拿到之前绑定的 bindData2
-            let startBindData = this.getCellModelInfo('bindData2')
+            // 拿到之前绑定的 bindData
+            let startBindData = this.getCellModelInfo('bindData')
             console.log(startBindData)
             console.log(value)
             if (!startBindData) {
-                this.setCellModelInfo('bindData2',{dataSource:value})
+                this.setCellModelInfo('bindData',{dataSource:value})
                 if (this.ifShowArrow) {
                     this.initDataSource()
                 }
@@ -244,7 +244,7 @@ export default {
                 if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
                     let deviceNameChild = startBindData.dataSource.deviceNameChild
                     startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
-                    this.setCellModelInfo('bindData2',startBindData)
+                    this.setCellModelInfo('bindData',startBindData)
                     if (this.ifShowArrow) {
                         this.initDataSource()
                     }
@@ -269,7 +269,7 @@ export default {
         },
         // 初始化数据源数据
         initDataSource() {
-            let startBindData2 = this.getCellModelInfo('bindData2')
+            let startBindData2 = this.getCellModelInfo('')
             if (startBindData2 && startBindData2.dataSource) {
                 let deviceNameChild = startBindData2.dataSource.deviceNameChild
                 deviceTypeId = startBindData2.dataSource.deviceTypeChild.id//拿到deviceTypeId暂存全局
@@ -296,7 +296,7 @@ export default {
                         this.stateList.forEach((item)=>{
                             if(item.modelFormInfo) {//如果状态绑定的有公式，就选中该项公式
                                 let modelIndex = this.modelList.findIndex((model)=>{
-                                    return item.modelFormInfo.sourceId == model.sourceId
+                                    return item.modelFormInfo == model.sourceId
                                 })
                                 if(modelIndex != -1) {
                                     this.$set(this.modelVals,modelIndex,modelIndex)
@@ -310,7 +310,7 @@ export default {
             }
         },
         initParamsList() {
-            let tempObj = this.getCellModelInfo('bindData2')
+            let tempObj = this.getCellModelInfo('bindData')
             if(deviceTypeId) {
                 let param = {
                     studioId:sessionStorage.getItem("applyId"),
@@ -333,7 +333,7 @@ export default {
         modelSelectChange(modelIndex,stateIndex) {
             //将模型公式绑定在对应的状态上
             let currentModel = this.modelList[modelIndex]
-            this.stateList[stateIndex].modelFormInfo = currentModel
+            this.stateList[stateIndex].modelFormInfo = currentModel.soursourceId
             this.setCellModelInfo('statesInfo',[...this.stateList])
         },
         footerContentHandle(show) {
@@ -358,7 +358,7 @@ export default {
             }
         },
         deleteFooterHandle(data, index) {
-            let startBindData2 = this.getCellModelInfo('bindData2')
+            let startBindData2 = this.getCellModelInfo('bindData')
             let newDataSource = JSON.parse(JSON.stringify(this.dataSourceList))
             sureDialog(this.myEditorUi,`确定要删除数据源-${data.name}吗`,()=>{
                 this.dataSourceList.splice(index, 1)
@@ -372,7 +372,7 @@ export default {
                     startBindData2.dataSource.deviceNameChild = objArr
                 }
                 console.log(startBindData2)
-                this.setCellModelInfo('bindData2',startBindData2)
+                this.setCellModelInfo('bindData',startBindData2)
             })
         },
         addParamHandle() {
@@ -380,7 +380,7 @@ export default {
         },
         removeParamHandle(index) {
             this.paramOutterList.splice(index , 1)
-            let tempObj = this.getCellModelInfo('bindData2')
+            let tempObj = this.getCellModelInfo('bindData')
             let list = [ ]
             if(tempObj) {
                 list = tempObj.params
@@ -392,12 +392,12 @@ export default {
                 if(res != -1) {
                     list.splice(index,1)
                     tempObj.params = list
-                    this.setCellModelInfo('bindData2',tempObj)
+                    this.setCellModelInfo('bindData',tempObj)
                 }
             }
         },
         paramSelectChange(val,index) {
-            let tempObj = this.getCellModelInfo('bindData2')
+            let tempObj = this.getCellModelInfo('bindData')
             let list = [ ]
             if(tempObj) {
                 list = tempObj.params
@@ -411,7 +411,7 @@ export default {
                 tempObj = { }
             }
             tempObj.parmas = list
-            this.setCellModelInfo('bindData2',tempObj)
+            this.setCellModelInfo('bindData',tempObj)
         },
         checkDetDataModel(oldValue, newValue) {
             let oldDeviceNameChild = oldValue.dataSource.deviceNameChild 

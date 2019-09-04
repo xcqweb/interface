@@ -654,10 +654,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                         this.addMenuItem(menu, 'configLink', null, evt).firstChild.innerHTML = '配置...';
                     } else if (shapeName == 'rectangle') {
                         // 矩形
-                    } else if (shapeName === 'select') {
-                        // 下拉列表
-                        this.addMenuItem(menu, 'selectProp', null, evt).firstChild.innerHTML = '属性...';
-                    } else if (shapeName == 'image') {
+                    }   else if (shapeName == 'image') {
                         // 编辑图片
                         this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = '<label class="imageRadio" style="margin:1px 0"><input type="file" id="chooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/>选择图片...</label>';
                     } else if (shapeName == 'menuCell') {
