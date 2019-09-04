@@ -43,7 +43,7 @@
               <template>
                 <Table
                   border
-                  :columns="columns7"
+                  :columns="tablTitles"
                   :data="dataSource"
                   :max-height="heightlen"
                 >
@@ -160,9 +160,10 @@ import {Tabs,TabPane, Table,Select, Option, Button, Message} from 'iview'
 import NoData from '../datasource/nodata'
 import VerticalToggle from './vertical-toggle.js'
 import VueEvent from '../../services/VueEvent.js'
+
+import {sureDialog} from '../../services/Utils'
 let bindObj = null,isInitModelList = false,isInitParamList = false,deviceTypeIdG
 const allShapes = ['image','userimage','tableBox','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
-// const dataSourceForm = 'IOT平台'
 export default {
     components:{
         Tabs,
@@ -182,7 +183,7 @@ export default {
             ifShowArrow: false,
             tabsNum: 0,
             nodata: '暂无数据',
-            columns7:[
+            tablTitles:[
                 {
                     title: '数据源',
                     key: 'name'
@@ -219,15 +220,16 @@ export default {
             if(isUp) {
                 this.ifShowArrow = true
             }
-            this.init()
+            this.init(show)
             this.footerContentHandle(show)
         })
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
-            // 出始化
+            // 出始拿到 bindData2
             let startBindData = this.getCellModelInfo('bindData2')
+            let objData = {dataSource:value}
             if (!startBindData) {
-                this.setCellModelInfo('dataSource',value)
+                this.setCellModelInfo('bindData2',objData)
             } else {
                 if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
                     this.newSetDataModel(startBindData, value)
@@ -236,14 +238,12 @@ export default {
                 }
             }
             this.getTableData(value)
-            Message.success('绑定成功')
             bindObj = value
             this.initModelList()
-            this.initParamsList()
-        })
+            this.initParamsList()        })
     },
     methods:{
-        init() {
+        init(bool) {
             let tempStateList = this.getCellModelInfo("statesInfo")
             if(tempStateList) {
                 this.stateList = tempStateList
@@ -253,6 +253,7 @@ export default {
             this.initModelList()//初始化模型列表
 
             this.initParamsList()//初始化参数列表
+            this.initDataSource(bool)
         },
         initModelList() {
             //模型列表
@@ -290,8 +291,17 @@ export default {
                 this.modelList = []
             }
         },
-        findDeviceTypeByBindModel() {
-            let res = null
+        // 初始化数据源数据
+        initDataSource(bool) {
+            if (bool) {
+                let startBindData2 = this.getCellModelInfo('bindData2')
+                console.log(startBindData2)
+                if (startBindData2 && startBindData2.dataSource) {
+                    this.getTableData(startBindData2.dataSource)
+                }
+            }
+        },
+        findDeviceTypeByBindModel() {            let res = null
             for(let i = 0;i < this.stateList.length;i++) {
                 if(this.stateList[i].modelFormInfo) {
                     res = this.stateList[i].modelFormInfo.deviceTypeId
@@ -371,7 +381,21 @@ export default {
             }
         },
         deleteFooterHandle(data, index) {
-            console.log(data, index)
+            let startBindData2 = this.getCellModelInfo('bindData2')
+            let newDataSource = JSON.parse(JSON.stringify(this.dataSource))
+            sureDialog(this.myEditorUi,`确定要删除数据源-${data.name}吗`,()=>{
+                this.dataSource.splice(index, 1)
+                let objArr = startBindData2.dataSource.deviceNameChild || []
+                let deleteEle = newDataSource[index].deviceName || ''
+                let resIndex = objArr.findIndex((item)=>{
+                    return item.name == deleteEle
+                })
+                if(resIndex != -1) {
+                    objArr.splice(resIndex,1)
+                    startBindData2.dataSource.deviceNameChild = objArr
+                }
+                this.setCellModelInfo('bindData2',startBindData2)
+            })
         },
         addParamHandle() {
             this.paramOutterList.unshift('')
@@ -428,6 +452,7 @@ export default {
             return bindData
         },
         getTableData(data) {
+            this.dataSource = []
             if (data.deviceNameChild && data.deviceNameChild.length) {
                 data.deviceNameChild.forEach((item) => {
                     let obj = {}
@@ -441,25 +466,23 @@ export default {
         checkDetDataModel(oldValue, newValue) {
             let oldDeviceNameChild = oldValue.dataSource.deviceNameChild 
             let newDeviceNameChild = newValue.deviceNameChild
-            let flag = ''
             for(let i = 0; i <= oldDeviceNameChild.length - 1; i++) {
                 for(let j = 0; j <= newDeviceNameChild.length - 1; j++) {
                     if (oldDeviceNameChild[i].id === newDeviceNameChild[j].id) {
                         Message.success(`不允许重复绑定`)
-                        flag = false
                         return false
                     }
                 }
             }
-            flag = true
-            return flag
+            return true
         },
         newSetDataModel(oldValue, newValue) {
-            let obj = {}
+            let obj = {},objData = {}
             obj.dataSourceChild = oldValue.dataSource.dataSourceChild
             obj.deviceTypeChild = oldValue.dataSource.deviceTypeChild
             obj.deviceNameChild = [...oldValue.dataSource.deviceNameChild, ...newValue.deviceNameChild]
-            this.setDataModel('dataSource',obj)
+            objData.dataSource = obj
+            this.setCellModelInfo('bindData2',objData)
         },
         setCellModelInfo(key,data) {
             let graph = this.myEditorUi.editor.graph
