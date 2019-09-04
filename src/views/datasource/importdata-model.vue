@@ -63,9 +63,10 @@
             type="primary"
             size="small"
             style="height:24px"
+            :loading="btnLoading"
             @click.stop.prevent="selectDeviceType"
           >
-            {{ selectText }}
+            {{ titleText[0] }}
           </Button>
           <Button
             small
@@ -73,7 +74,7 @@
             style="height:24px"
             @click.stop.prevent="resetHandle"
           >
-            {{ resetText }}
+            {{ titleText[1] }}
           </Button>
         </div>
       </div>
@@ -131,10 +132,11 @@
             <div class="data-botton-right">
               <template v-if="paramsNameList.length">
                 <Page 
-                  :current="1"
-                  :page-size="paramNumber"
-                  :total="paramTotal" 
+                  :current="PAGE_CURREN"
+                  :page-size="PAGE_SIZE"
+                  :total="paramNumber"
                   simple
+                  @on-change="paramPageChangeHandle"
                 />
               </template>
             </div>
@@ -193,10 +195,11 @@
             <div class="data-botton-right">
               <template v-if="deviceNameList.length">
                 <Page 
-                  :current="1" 
-                  :page-size="deviceNumber"
-                  :total="deviceTotal" 
+                  :current="PAGE_CURREN"
+                  :page-size="PAGE_SIZE"
+                  :total="deviceNumber"
                   simple
+                  @on-change="devicePageChangeHandle"
                 />
               </template>
             </div>
@@ -209,7 +212,7 @@
           style="height:28px;width:84px"
           @click.stop.prevent="cancelHandle"
         >
-          取消
+          {{ titleText[2] }}
         </Button> 
         <Button
           type="primary"
@@ -218,7 +221,7 @@
           :loading="loading"
           @click.stop.prevent="saveHandle"
         >
-          确认
+          {{ titleText[3] }}
         </Button> 
       </div>
     </Modal>
@@ -248,6 +251,7 @@ export default{
             showdatasoures: true,
             datasouresAlertName: '导入数据源',
             placeTextArr: ['输入参数名称', '输入设备名称'],
+            titleText:['搜索', '重置', '取消', '确认'],
             derectionArr: ['right', 'right'],
             dataName: '数据源',
             deviceType: '设备类型',
@@ -264,8 +268,6 @@ export default{
             formValidate: {
                 datasource: ''
             },
-            selectText: '搜索',
-            resetText: '重置',
             paramsNameList:[],
             deviceNameList:[],
             paramsNameListArr: [],
@@ -273,31 +275,32 @@ export default{
             indeterminateArr: ['',false, false],
             checkAllArr: ['',false, false],
             nodata:'暂无数据',
-            paramTotal: '10',
-            paramNumber: '10',
-            deviceNumber: '10',
+            PAGE_CURREN: 1,
+            PAGE_SIZE: 1,
             inputParamName: '',
             inputDeviceName: '',
             loading: false,
             paramIdArr: [],
             deviceIdArr: [],
-            ifclearSelect: true
+            ifclearSelect: true,
+            deviceNumber: '',
+            paramNumber: ''
         }
     },
     created() {
     },
     mounted() {
         this.init();
-        let InputEle1 = document.querySelector('.inputParamName input');
+        let InputEle1 = document.querySelector('.inputParamName input')
         let InputEle2 = document.querySelector('.inputDeviceName input')
         InputEle1.oninput = this.debounce(this.InputSelectHandle, 1000 , 1)
         InputEle2.oninput = this.debounce(this.InputSelectHandle, 1000, 2)
     },
     methods: {
+        // 拿到设备类型列表
         init() {
             this.requestUtil.get(this.urls.devicetypelist.url).then((res) => {
                 this.deviceNameArr = res.returnObj || []
-                console.log(this.deviceNameArr)
             }).catch(() => {
                 Message.error('系统繁忙，请稍后再试试')
                 return false
@@ -399,6 +402,7 @@ export default{
                 if (+type === 2) {
                     objData.deviceName = value.trim()
                 }
+                console.log(objData)
                 let newUrl = +type === 1 ? this.urls.deviceParamList.url : this.urls.deviceEquipList.url
                 this.requestUtil.post(newUrl,objData).then((res) => {
                     if (+type === 1) {
@@ -424,18 +428,18 @@ export default{
                 Message.warning(`${this.deviceType}不能为空`)
             } else { // 搜素
                 let objData = {
-                    deviceTypeId: this.modelvalue2
+                    deviceTypeId: this.modelvalue2,
+                    current:this.PAGE_CURREN,
+                    size:this.PAGE_SIZE
                 }
                 const [pramsName, deviceName] = await Promise.all([
                     this.requestUtil.post(this.urls.deviceParamList.url, objData),
                     this.requestUtil.post(this.urls.deviceEquipList.url, objData)
                 ])
                 this.paramsNameList = pramsName.records || []
+                this.paramNumber = pramsName.total || 10
                 this.deviceNameList = deviceName.records || []
-                this.paramTotal = pramsName.total || 10
-                this.deviceTotal = deviceName.total || 10
-                this.paramNumber = pramsName.size || 10
-                this.deviceNumber = deviceName.size || 10
+                this.deviceNumber = deviceName.total || 10
             }
         },
         deviceTypeChange() {
@@ -447,6 +451,29 @@ export default{
             this.paramsNameList = []
             this.deviceNameList = []
             this.modelvalue2 = ''
+        },
+        // 参数名称
+        paramPageChangeHandle(value) {
+            this.pageChangeHandle(value, 1)
+        },
+        // 翻页设备名称
+        devicePageChangeHandle(value) {
+            this.pageChangeHandle(value, 2)
+        },
+        pageChangeHandle(value, type) {
+            let objData = {
+                deviceTypeId: this.modelvalue2,
+                current:value,
+                size:this.PAGE_SIZE
+            }
+            let NewUrl = type === 1 ? this.urls.deviceParamList.url : this.urls.deviceEquipList.url
+            this.requestUtil.post(NewUrl, objData).then((res) => {
+                if (type === 1) {
+                    this.paramsNameList = res.records || []
+                } else {
+                    this.deviceNameList = res.records || []
+                }
+            })
         }
     }
 }

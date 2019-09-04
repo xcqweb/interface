@@ -55,6 +55,7 @@
       <div class="devicename-input-wrap">
         <Input 
           :placetext="placeText"
+          class="inputDeviceName"
           :derection="derection"
         />
       </div>
@@ -91,10 +92,11 @@
       <div class="devicename-page-wrap">
         <template v-if="deviceNameList.length">
           <Page 
-            :current="1" 
-            :page-size="deviceNamePageNumber"
-            :total="deviceListTotal" 
+            :current="PAGE_CURRENT" 
+            :page-size="PAGE_SIZE"
+            :total="deviceListTotal"
             simple
+            @on-change="PageChangeHandle"
           />
         </template>
       </div>
@@ -159,11 +161,15 @@ export default{
             studioIdNew:'',
             deviceNameListArr:[],
             deviceIdArr:[],
-            shapeName: null
+            shapeName: null,
+            PAGE_CURRENT: 1,
+            PAGE_SIZE: 10,
         }
     },
     mounted() {
         this.studioIdNew = sessionStorage.getItem("applyId") || ''
+        let InputEle1 = document.querySelector('.inputDeviceName input');
+        InputEle1.oninput = this.debounce(this.InputSelectHandle, 1000)
         this.init()
     },
     methods: {
@@ -178,7 +184,9 @@ export default{
                     this.modelvalue2 = this.deviceNameArr[0].deviceTypeId
                     let objDataNew = {
                         studioId:this.studioIdNew,
-                        deviceTypeId: this.deviceNameArr[0].deviceTypeId
+                        deviceTypeId: this.deviceNameArr[0].deviceTypeId,
+                        size:this.PAGE_SIZE,
+                        current:this.PAGE_CURRENT
                     }
                     return Promise.all([
                         this.requestUtil.post(this.urls.deviceEquipList.url, objDataNew)
@@ -281,6 +289,46 @@ export default{
             }
             return bindData
         },
+        debounce(handle, deLay, type) {
+            var timer = null
+            return function() {
+                clearTimeout(timer)
+                timer = setTimeout(() => {
+                    handle.call(this, this.value, type)
+                }, deLay);
+            }
+        },
+        InputSelectHandle(value) {
+            if (!this.modelvalue2) {
+                Message.warning(`请选择设备类型`)
+            } else {
+                let objData = {
+                    deviceTypeId : this.modelvalue2,
+                    deviceName: value.trim(),
+                    studioId: this.studioIdNew
+                }
+                this.requestUtil.post(this.urls.deviceEquipList.url,objData).then((res) => {
+                    this.deviceNameList = res.records || []
+                })
+            }
+        },
+        PageChangeHandle(value) {
+            let objData = {
+                deviceTypeId: this.modelvalue2,
+                studioId: this.studioIdNew,
+                current: value,
+                size:this.PAGE_SIZE
+            }
+            this.PageChangeAjax(objData)
+        },
+        PageChangeAjax(objData) {
+            this.requestUtil.post(this.urls.deviceEquipList.url, objData).then((res) => {
+                this.deviceNameList = res.records || []
+            }).catch(() => {
+                Message.error('系统繁忙，请稍后再试')
+                return false
+            })
+        }
     },      
 }
 </script>
