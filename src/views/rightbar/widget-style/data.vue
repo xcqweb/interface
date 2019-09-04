@@ -220,12 +220,11 @@ export default{
         },
         bindDeviceNameHandle() {
             let startBindData2 = this.getCellModelInfo('bindData2')
-            console.log(startBindData2)
             if (singleDeviceName.includes(this.shapeName) && this.deviceIdArr.length > 1) { // 绑定单个
                 Message.warning('此控件不允许绑定多个设备名称')
                 return false
             } else {
-                if (startBindData2 && startBindData2.dataSource && startBindData2.dataSource.deviceNameChild) {
+                if (singleDeviceName.includes(this.shapeName) && startBindData2 && startBindData2.dataSource && startBindData2.dataSource.deviceNameChild.length) {
                     Message.warning('此控件已经绑定设备名称')
                     return false
                 }

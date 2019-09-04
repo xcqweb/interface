@@ -232,15 +232,25 @@ export default {
         VueEvent.$on('emitDataSourceFooter', (value) => {
             // 拿到之前绑定的 bindData2
             let startBindData = this.getCellModelInfo('bindData2')
+            console.log(startBindData)
+            console.log(value)
             if (!startBindData) {
                 this.setCellModelInfo('bindData2',{dataSource:value})
+                if (this.ifShowArrow) {
+                    this.initDataSource()
+                }
+                
             } else {
                 if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
                     let deviceNameChild = startBindData.dataSource.deviceNameChild
                     startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
                     this.setCellModelInfo('bindData2',startBindData)
+                    if (this.ifShowArrow) {
+                        this.initDataSource()
+                    }
                 }
             }
+           
         })
     },
     methods:{
@@ -361,6 +371,7 @@ export default {
                     objArr.splice(resIndex,1)
                     startBindData2.dataSource.deviceNameChild = objArr
                 }
+                console.log(startBindData2)
                 this.setCellModelInfo('bindData2',startBindData2)
             })
         },
@@ -444,6 +455,7 @@ export default {
                 obj.setAttribute('label', modelInfo || '')
                 modelInfo = obj
             }
+            console.log(data)
             modelInfo.setAttribute(key, JSON.stringify(data))
             graph.getModel().setValue(cell, modelInfo)
         },
