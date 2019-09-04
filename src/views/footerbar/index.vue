@@ -349,9 +349,9 @@ export default {
         },
         deleteFooterHandle(data, index) {
             let startBindData2 = this.getCellModelInfo('bindData2')
-            let newDataSource = JSON.parse(JSON.stringify(this.dataSource))
+            let newDataSource = JSON.parse(JSON.stringify(this.dataSourceList))
             sureDialog(this.myEditorUi,`确定要删除数据源-${data.name}吗`,()=>{
-                this.dataSource.splice(index, 1)
+                this.dataSourceList.splice(index, 1)
                 let objArr = startBindData2.dataSource.deviceNameChild || []
                 let deleteEle = newDataSource[index].deviceName || ''
                 let resIndex = objArr.findIndex((item)=>{
