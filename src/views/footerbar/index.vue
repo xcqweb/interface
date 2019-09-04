@@ -23,7 +23,7 @@
           <div 
             class="Collapse-title-right"
             :class="ifShowArrow ? 'collapse-active' : ''"
-            @click="clickHandle()"
+            @click="ifShowArrow=!ifShowArrow"
           />
         </div>
       </div>
@@ -44,7 +44,7 @@
                 <Table
                   border
                   :columns="tablTitles"
-                  :data="dataSource"
+                  :data="dataSourceList"
                   :max-height="heightlen"
                 >
                   <template
@@ -157,13 +157,14 @@
 
 <script>
 import {Tabs,TabPane, Table,Select, Option, Button, Message} from 'iview'
+import {mxUtils} from '../../services/mxGlobal'
 import NoData from '../datasource/nodata'
 import VerticalToggle from './vertical-toggle.js'
 import VueEvent from '../../services/VueEvent.js'
 
 import {sureDialog} from '../../services/Utils'
-let bindObj = null,isInitModelList = false,isInitParamList = false,deviceTypeIdG
 const allShapes = ['image','userimage','tableBox','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
+let deviceTypeId = null
 export default {
     components:{
         Tabs,
@@ -203,7 +204,7 @@ export default {
                     key: 'actions',
                 }
             ],
-            dataSource: [],
+            dataSourceList: [],
             heightlen: '190',
             paramsList: [],
             paramOutterList: [''],
@@ -215,57 +216,65 @@ export default {
             paramVals:[],//参数列表，每个参数input当前的v-model
         }
     },
+    watch: {
+        ifShowArrow(val) {
+            if(val) {
+                this.initData()
+            }
+        }
+    },
     mounted() {
         VueEvent.$on('isShowFootBar', ({show,isUp}) => {
-            if(isUp) {
-                this.ifShowArrow = true
-            }
-            this.init(show)
             this.footerContentHandle(show)
+            this.ifShowArrow = !!isUp
         })
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
-            // 出始拿到 bindData2
+            // 拿到之前绑定的 bindData2
             let startBindData = this.getCellModelInfo('bindData2')
-            let objData = {dataSource:value}
             if (!startBindData) {
-                this.setCellModelInfo('bindData2',objData)
+                this.setCellModelInfo('bindData2',{dataSource:value})
             } else {
                 if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
-                    this.newSetDataModel(startBindData, value)
-                } else {
-                    return false
+                    let deviceNameChild = startBindData.dataSource.deviceNameChild
+                    startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
+                    this.setCellModelInfo('bindData2',startBindData)
                 }
             }
-            this.getTableData(value)
-            bindObj = value
-            this.initModelList()
-            this.initParamsList()        })
+        })
     },
     methods:{
-        init(bool) {
+        initData() {
+            //初始化状态列表
             let tempStateList = this.getCellModelInfo("statesInfo")
             if(tempStateList) {
                 this.stateList = tempStateList
             }else{
                 this.stateList = []
             }
+            this.initDataSource()//初始化数据源列表
             this.initModelList()//初始化模型列表
-
             this.initParamsList()//初始化参数列表
-            this.initDataSource(bool)
+           
+        },
+        // 初始化数据源数据
+        initDataSource() {
+            let startBindData2 = this.getCellModelInfo('bindData2')
+            if (startBindData2 && startBindData2.dataSource) {
+                let deviceNameChild = startBindData2.dataSource.deviceNameChild
+                deviceTypeId = startBindData2.dataSource.deviceTypeChild.id//拿到deviceTypeId暂存全局
+                this.dataSourceList = []
+                deviceNameChild.forEach((item) => {
+                    let obj = {}
+                    obj.name = startBindData2.dataSource.dataSourceChild.name
+                    obj.typeName = startBindData2.dataSource.deviceTypeChild.name 
+                    obj.deviceName = item.name
+                    this.dataSourceList.push(obj)
+                })
+            }
         },
         initModelList() {
             //模型列表
-            if(isInitModelList) {
-                return
-            }
-            let deviceTypeId = null
-            if(bindObj) {
-                deviceTypeId = bindObj.deviceTypeChild.id
-            }else{
-                deviceTypeId = this.findDeviceTypeByBindModel()
-            }
             if(deviceTypeId) {
                 let objData = {
                     studioId: sessionStorage.getItem("applyId"),
@@ -274,7 +283,6 @@ export default {
                 this.requestUtil.post(this.urls.getModelList.url, objData).then((res) => {
                     if(res.returnObj) {
                         this.modelList = res.returnObj
-                        isInitModelList = true
                         this.stateList.forEach((item)=>{
                             if(item.modelFormInfo) {//如果状态绑定的有公式，就选中该项公式
                                 let modelIndex = this.modelList.findIndex((model)=>{
@@ -291,47 +299,18 @@ export default {
                 this.modelList = []
             }
         },
-        // 初始化数据源数据
-        initDataSource(bool) {
-            if (bool) {
-                let startBindData2 = this.getCellModelInfo('bindData2')
-                console.log(startBindData2)
-                if (startBindData2 && startBindData2.dataSource) {
-                    this.getTableData(startBindData2.dataSource)
-                }
-            }
-        },
-        findDeviceTypeByBindModel() {            let res = null
-            for(let i = 0;i < this.stateList.length;i++) {
-                if(this.stateList[i].modelFormInfo) {
-                    res = this.stateList[i].modelFormInfo.deviceTypeId
-                    break
-                }
-            }
-            return res
-        },
         initParamsList() {
-            if(isInitParamList) {
-                return
-            }
-            let deviceTypeId = null
             let tempObj = this.getCellModelInfo('bindData2')
-            if(bindObj) {
-                deviceTypeId = bindObj.deviceTypeChild.id
-            }else{
-                if(tempObj && tempObj.params) {
-                    deviceTypeId = tempObj.params.deviceTypeId
-                }
+            if(tempObj && tempObj.params) {
+                deviceTypeId = tempObj.params.deviceTypeId
             }
             if(deviceTypeId) {
-                deviceTypeIdG = deviceTypeId
                 let param = {
                     studioId:sessionStorage.getItem("applyId"),
                     deviceTypeId: deviceTypeId
                 }
                 this.requestUtil.post(this.urls.deviceParamList.url, param).then((res) => {
                     this.paramsList = res.records
-                    isInitParamList = true
                 })
             }else{
                 this.paramsList = []
@@ -350,11 +329,8 @@ export default {
             this.stateList[stateIndex].modelFormInfo = currentModel
             this.setCellModelInfo('statesInfo',[...this.stateList])
         },
-        clickHandle() {
-            this.ifShowArrow = !this.ifShowArrow
-        },
-        footerContentHandle(data) {
-            if (data) {
+        footerContentHandle(show) {
+            if (show) {
                 let graph = this.myEditorUi.editor.graph
                 let cell = graph.getSelectionCell()
                 let state = graph.view.getState(cell)
@@ -372,12 +348,6 @@ export default {
             this.tabsNum = +type
             if(!this.ifShowArrow) {
                 this.ifShowArrow = true
-            }
-            if(this.tabsNum == 1) {
-                this.initParamsList()
-            }
-            if(this.tabsNum == 2) {
-                this.initModelList()
             }
         },
         deleteFooterHandle(data, index) {
@@ -433,35 +403,10 @@ export default {
                 tempObj = { }
             }
             tempObj.parmas = {
-                deviceTypeId:deviceTypeIdG,
+                deviceTypeId:deviceTypeId,
                 list:list
             }
             this.setCellModelInfo('bindData2',tempObj)
-        },
-        getCellModelInfo(key) {
-            let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
-            let modelInfo = graph.getModel().getValue(cell)
-            let bindData = null
-            if(modelInfo) {
-                let bindAttr = modelInfo.getAttribute(key)
-                if(bindAttr) {
-                    bindData = JSON.parse(bindAttr)
-                }
-            }
-            return bindData
-        },
-        getTableData(data) {
-            this.dataSource = []
-            if (data.deviceNameChild && data.deviceNameChild.length) {
-                data.deviceNameChild.forEach((item) => {
-                    let obj = {}
-                    obj.name = data.dataSourceChild.name || ''
-                    obj.typeName = data.deviceTypeChild.name || ''
-                    obj.deviceName = item.name || ''
-                    this.dataSource.push(obj)
-                })
-            }
         },
         checkDetDataModel(oldValue, newValue) {
             let oldDeviceNameChild = oldValue.dataSource.deviceNameChild 
@@ -476,18 +421,35 @@ export default {
             }
             return true
         },
-        newSetDataModel(oldValue, newValue) {
-            let obj = {},objData = {}
-            obj.dataSourceChild = oldValue.dataSource.dataSourceChild
-            obj.deviceTypeChild = oldValue.dataSource.deviceTypeChild
-            obj.deviceNameChild = [...oldValue.dataSource.deviceNameChild, ...newValue.deviceNameChild]
-            objData.dataSource = obj
-            this.setCellModelInfo('bindData2',objData)
+        getCellModelInfo(key) {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let modelInfo = graph.getModel().getValue(cell)
+            let bindData = null
+            if (!mxUtils.isNode(modelInfo)) {
+                let doc = mxUtils.createXmlDocument()
+                let obj = doc.createElement('object')
+                obj.setAttribute('label', modelInfo || '')
+                modelInfo = obj
+            }
+            if(modelInfo) {
+                let bindAttr = modelInfo.getAttribute(key)
+                if(bindAttr) {
+                    bindData = JSON.parse(bindAttr)
+                }
+            }
+            return bindData
         },
         setCellModelInfo(key,data) {
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
             let modelInfo = graph.getModel().getValue(cell)
+            if (!mxUtils.isNode(modelInfo)) {
+                let doc = mxUtils.createXmlDocument()
+                let obj = doc.createElement('object')
+                obj.setAttribute('label', modelInfo || '')
+                modelInfo = obj
+            }
             modelInfo.setAttribute(key, JSON.stringify(data))
             graph.getModel().setValue(cell, modelInfo)
         },

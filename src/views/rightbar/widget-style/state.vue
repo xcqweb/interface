@@ -170,6 +170,12 @@ export default{
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
             let modelInfo = graph.getModel().getValue(cell)
+            if (!mxUtils.isNode(modelInfo)) {
+                var doc = mxUtils.createXmlDocument()
+                var obj = doc.createElement('object')
+                obj.setAttribute('label', modelInfo || '')
+                modelInfo = obj
+            }
             modelInfo.setAttribute('statesInfo', JSON.stringify(states))
             graph.getModel().setValue(cell, modelInfo)
         },

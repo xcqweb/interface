@@ -30,7 +30,7 @@
                 class="image_light"
               />
               <div
-                v-else
+                v-if="shapeName!='image' && shapeName!='light' "
                 class="text"
                 :class="animateCls"
               >

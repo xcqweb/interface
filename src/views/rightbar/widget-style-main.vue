@@ -63,8 +63,8 @@ export default{
             tab:1,
             refresh:0,//切换控件刷新子组件
             stateList:['rectangle','image','tableCell','light','ellipse'],
-            actionList:['menuCell','rectangle','image','button','tableCell','ellipse','text'],
-            dataList:['image','userimage','rectangle','ellipse','tableBox','light','progress','lineChart','gaugeChart'],
+            actionList:['menuCell','rectangle','image','button','ellipse','text','tableCell'],
+            dataList:['image','userimage','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart'],
         }
     },
     computed: {
