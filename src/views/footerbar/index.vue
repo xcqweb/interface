@@ -240,7 +240,8 @@ export default {
             this.getTableData(false,value)
             bindObj = value
             this.initModelList()
-            this.initParamsList()        })
+            this.initParamsList()        
+        })
     },
     methods:{
         init(bool) {
