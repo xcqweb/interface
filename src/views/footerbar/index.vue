@@ -163,7 +163,7 @@ import VerticalToggle from './vertical-toggle.js'
 import VueEvent from '../../services/VueEvent.js'
 
 import {sureDialog} from '../../services/Utils'
-const allShapes = ['image','userimage','tableBox','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
+const allShapes = ['image','userimage','tableCell','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
 let deviceTypeId = null
 export default {
     components:{
@@ -315,8 +315,8 @@ export default {
             }else{
                 this.paramsList = []
             }
-            if(tempObj && tempObj.params) {
-                let bindParamsList = tempObj.params.list
+            if(tempObj) {
+                let bindParamsList = tempObj.params
                 this.paramOutterList = new Array(bindParamsList.length)
                 bindParamsList.forEach((item,index)=>{
                     this.$set(this.paramVals,index,item.index)
@@ -374,8 +374,8 @@ export default {
             this.paramOutterList.splice(index , 1)
             let tempObj = this.getCellModelInfo('bindData2')
             let list = [ ]
-            if(tempObj && tempObj.params) {
-                list = tempObj.params.list
+            if(tempObj) {
+                list = tempObj.params
             }
             if(list.length) {
                 let res = list.findIndex((item)=>{
@@ -383,7 +383,7 @@ export default {
                 })
                 if(res != -1) {
                     list.splice(index,1)
-                    tempObj.params.list = list
+                    tempObj.params = list
                     this.setCellModelInfo('bindData2',tempObj)
                 }
             }
@@ -391,8 +391,8 @@ export default {
         paramSelectChange(val,index) {
             let tempObj = this.getCellModelInfo('bindData2')
             let list = [ ]
-            if(tempObj && tempObj.params) {
-                list = tempObj.params.list
+            if(tempObj) {
+                list = tempObj.params
             }
             list.push({
                 id:this.paramsList[val].paramId,
@@ -402,10 +402,7 @@ export default {
             if(!tempObj) {
                 tempObj = { }
             }
-            tempObj.parmas = {
-                deviceTypeId:deviceTypeId,
-                list:list
-            }
+            tempObj.parmas = list
             this.setCellModelInfo('bindData2',tempObj)
         },
         checkDetDataModel(oldValue, newValue) {
