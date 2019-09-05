@@ -317,133 +317,6 @@ Format.prototype.clear = function()
 	
     this.panels = [];
 };
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-/* Format.prototype.refresh = function()
-{
-    /* if (this.container.style.width == '0px')
-    {
-        return;
-    }
-    this.clear(); */
-   /*  var ui = this.editorUi;
-    var graph = ui.editor.graph;
- */
-    /* var div = document.createElement('div');
-    div.style.whiteSpace = 'nowrap';
-    div.style.cursor = 'default';
-	
-    var label = document.createElement('div');
-    label.style.border = '1px solid #CCCCCC';
-    label.style.borderWidth = '1px 0px 1px 0px';
-    label.style.textAlign = 'center';
-    label.className = "geTitle";
-    label.style.padding = 0;
-    label.style.margin = 0;
-    label.style.overflow = 'hidden';
-    label.style.float = 'left';
-    label.style.height = '34px';
-    label.style.lineHeight = '32px';
-    label.style.width = '100%';
-    this.container.appendChild(div); 
-    if (graph.isSelectionEmpty() || graph.getSelectionCount() > 1) {
-        // 不选择控件时
-        mxUtils.write(label, mxResources.get('style'));
-        div.appendChild(label);
-        var pageSetPanel = div.cloneNode(false);
-        pageSetPanel.className = 'formatPannel'
-        new PageSetPanel(this, ui, pageSetPanel)
-        // let container = new PageSetupDialog(ui).container;
-        this.container.appendChild(pageSetPanel);
-    } else {
-        // 选择控件时
-        var containsLabel = this.getSelectionState().containsLabel;
-        var currentLabel = null;
-        var currentPanel = null;
-        var addClickHandler = mxUtils.bind(this, function(elt, panel, index)
-        {
-            var clickHandler = mxUtils.bind(this, function(evt)
-            {
-                if (currentLabel != elt)
-                {
-                    if (containsLabel)
-                    {
-                        this.labelIndex = index;
-                    }
-                    else
-                    {
-                        this.currentIndex = index;
-                    }
-					
-                    if (currentLabel != null)
-                    {
-                        currentLabel.style.backgroundColor = '#FAFAFA';	
-                        currentLabel.style.color = '#000000';
-                    }
-					
-                    currentLabel = elt;
-                    currentLabel.style.color = '#FFFFFF';
-                    currentLabel.style.backgroundColor = '#3D91F7';
-					
-                    if (currentPanel != panel)
-                    {
-                        if (currentPanel != null)
-                        {
-                            currentPanel.style.display = 'none';
-                        }
-						
-                        currentPanel = panel;
-                        currentPanel.style.display = '';
-                    }
-                }
-            });
-			
-            mxEvent.addListener(elt, 'click', clickHandler);
-			
-            if (index == ((containsLabel) ? this.labelIndex : this.currentIndex))
-            {
-                // Invokes handler directly as a workaround for no click on DIV in KHTML.
-                clickHandler();
-            }
-        });
-		
-        var idx = 0;
-        label.style.width = '50%';
-        var label2 = label.cloneNode(false);
-	
-        // tab标签页
-        // 交互
-        mxUtils.write(label2, mxResources.get('interaction'));
-        div.appendChild(label2);
-	
-        var propertiesPanel = div.cloneNode(false);
-        propertiesPanel.className = 'formatPannel'
-        propertiesPanel.style.display = 'none';
-        this.panels.push(new ActionsPanel(this, ui, propertiesPanel));
-        this.container.appendChild(propertiesPanel);
-		
-        // 样式
-        mxUtils.write(label, mxResources.get('style'));
-        div.appendChild(label);
-		
-        var arrangePanel = div.cloneNode(false);
-        arrangePanel.className = 'formatPannel'
-        arrangePanel.style.display = 'none';
-        arrangePanel.style.paddingLeft = '10px';
-        this.panels.push(new ArrangePanel(this, ui, arrangePanel));
-        this.container.appendChild(arrangePanel);
-	
-        addClickHandler(label2, propertiesPanel, idx++);
-        addClickHandler(label, arrangePanel, idx++);
-    }
-	
-}; */
-
-/**
- * Base class for format panels.
- */
 var BaseFormatPanel = function(format, editorUi, container)
 {
     this.format = format;
@@ -452,19 +325,6 @@ var BaseFormatPanel = function(format, editorUi, container)
     this.listeners = [];
 };
 window.BaseFormatPanel = BaseFormatPanel
-/**
- * 获取全部控件
- */
-BaseFormatPanel.prototype.getCells = function(graph) {
-    var cells = graph.getModel().cells;
-    var res = [];
-    for (var key in cells) {
-        if (cells[key].id != '0' && cells[key].id != '1') {
-            res.push(cells[key])
-        }
-    }
-    return res;
-}
 /**
  * 按钮背景颜色
  */
@@ -1110,63 +970,6 @@ BaseFormatPanel.prototype.createCellColorOption = function(label, colorKey, defa
             graph.getModel().removeListener(this.listener);
         }
     }, callbackFn, true);
-};
-
-/**
- * 
- */
-BaseFormatPanel.prototype.addArrow = function(elt, height)
-{
-    height = (height != null) ? height : 10;
-	
-    var arrow = document.createElement('div');
-    arrow.style.display = (mxClient.IS_QUIRKS) ? 'inline' : 'inline-block';
-    arrow.style.padding = '6px';
-    arrow.style.paddingRight = '4px';
-	
-    var m = (10 - height);
-	
-    if (m == 2)
-    {
-        arrow.style.paddingTop = 6 + 'px';
-    }
-    else if (m > 0)
-    {
-        arrow.style.paddingTop = (6 - m) + 'px';
-    }
-    else
-    {
-        arrow.style.marginTop = '-2px';
-    }
-	
-    arrow.style.height = height + 'px';
-    arrow.style.borderLeft = '1px solid #a0a0a0';
-    arrow.innerHTML = '<img border="0" src="' + ((mxClient.IS_SVG) ? 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAHBJREFUeNpidHB2ZyAGsACxDRBPIKCuA6TwCBB/h2rABu4A8SYmKCcXiP/iUFgAxL9gCi8A8SwsirZCMQMTkmANEH9E4v+CmsaArvAdyNFI/FlQ92EoBIE+qCRIUz168DBgsU4OqhinQpgHMABAgAEALY4XLIsJ20oAAAAASUVORK5CYII=' :
-        IMAGE_PATH + '/dropdown.png') + '" style="margin-bottom:4px;">';
-    mxUtils.setOpacity(arrow, 70);
-	
-    var symbol = elt.getElementsByTagName('div')[0];
-	
-    if (symbol != null)
-    {
-        symbol.style.paddingRight = '6px';
-        symbol.style.marginLeft = '4px';
-        symbol.style.marginTop = '-1px';
-        symbol.style.display = (mxClient.IS_QUIRKS) ? 'inline' : 'inline-block';
-        mxUtils.setOpacity(symbol, 60);
-    }
-
-    mxUtils.setOpacity(elt, 100);
-    elt.style.border = '1px solid #a0a0a0';
-    elt.style.backgroundColor = this.buttonBackgroundColor;
-    elt.style.backgroundImage = 'none';
-    elt.style.width = 'auto';
-    elt.className += ' geColorBtn';
-    mxUtils.setPrefixedStyle(elt.style, 'borderRadius', '3px');
-	
-    elt.appendChild(arrow);
-	
-    return symbol;
 };
 
 /**
@@ -3021,32 +2824,6 @@ PaletteManagePanel.prototype.addFoldingHandler = function(elt, content) {
             elt.parentNode.style.height = '';
         }
     }.bind(this))
-}
-
-/**
- * 刷新列表内容
- */
-PaletteManagePanel.prototype.refresh = function() {
-    this.clear();	
-    // 获取全部节点
-    var graph =  this.editorUi.editor.graph
-    this.cells = this.getCells(graph);
-
-    var title = this.createTitle('控件', 'paletteManageTitle');
-    this.container.appendChild(title);
-
-    var content = this.createContent(this.container);
-    if (this.editorUi.editor.colSpanPaletteManagePanel) {
-        content.style.display = '';
-        title.style.backgroundImage = 'url(' + this.expandImage + ')';
-        title.parentNode.style.flex = '';
-        title.parentNode.style.height = '';
-    } else {
-        content.style.display = 'none';
-        title.style.backgroundImage = 'url(' + this.colspanImage + ')';
-        title.parentNode.style.flex = 'none';
-    }
-    this.addFoldingHandler(title, content);
 }
 /**
  * 清除控件列表内容
