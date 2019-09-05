@@ -61,7 +61,7 @@
             </div>
             <!--数据显示-->
             <div
-              v-show="tabsNum === 1"
+              v-show="tabsNum === 1 && ifShowDataFlag"
               class="footer-common dataDisplayList"
             > 
               <ul class="dataDisplayListUl">
@@ -81,7 +81,7 @@
                           :key="i" 
                           :value="i"
                         >
-                          {{ item.name }}
+                          {{ d.paramName }}
                         </Option>
                       </Select>
                     </span>
@@ -89,6 +89,7 @@
                       <Button
                         v-if="index === 0"
                         size="small"
+                        :disabled="ifCanAddParamFlag"
                         class="condition-icon condition-add-icon"
                         @click.stop.prevent="addParamHandle(index)"
                       >
@@ -142,7 +143,7 @@
             </div>
           </div>
           <div
-            v-if="!footerContent || tabsNum === 2&&stateList.length===0"
+            v-if="!footerContent || (tabsNum === 2&&stateList.length===0) || (tabsNum === 1 && !ifShowDataFlag)"
             class="no-data-wrap"
           >
             <NoData
@@ -164,6 +165,10 @@ import VueEvent from '../../services/VueEvent.js'
 
 import {sureDialog} from '../../services/Utils'
 const allShapes = ['image','userimage','tableCell','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
+// 支持显示参数
+const SupportDataShow = ['rectangle','ellipse','tableCell','progress','lineChart', 'gaugeChart']
+// 支持单个数据显示参数
+const singleDataShow = ['progress','lineChart', 'gaugeChart']
 let deviceTypeId = null
 export default {
     components:{
@@ -214,16 +219,11 @@ export default {
             footerContent: false,
             modelVals:[],//状态列表下的每个模型列表当前的v-model
             paramVals:[],//参数列表，每个参数input当前的v-model
-            isInitFlag: false
+            isInitFlag: false,
+            ifShowDataFlag: true, // 判断是否显示数据显示tab
+            ifCanAddParamFlag: true
         }
     },
-    // watch: {
-    //     ifShowArrow(val) {
-    //         if(val) {
-    //             this.initData()
-    //         }
-    //     }
-    // },
     mounted() {
         this.initData()
         VueEvent.$on('isShowFootBar', ({show,isUp}) => {
@@ -239,16 +239,17 @@ export default {
         VueEvent.$on('emitDataSourceFooter', (value) => {
             // 拿到之前绑定的 bindData
             let startBindData = this.getCellModelInfo('bindData')
-            if (!startBindData) {
+            if (!startBindData || (startBindData && JSON.stringify(startBindData.dataSource) === "{}")) {
                 this.setCellModelInfo('bindData',{dataSource:value})
                 if (this.ifShowArrow) {
                     this.initDataSource()
                 }
             } else {
                 if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
-                    let deviceNameChild = startBindData.dataSource.deviceNameChild
+                    let deviceNameChild = startBindData.dataSource.deviceNameChild || []
                     startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
-                    
+                    startBindData.dataSource.dataSourceChild = value.dataSourceChild
+                    startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
                     this.setCellModelInfo('bindData',startBindData)
                     if (this.ifShowArrow) {
                         this.initDataSource()
@@ -280,8 +281,11 @@ export default {
         initDataSource() {
             let startBindData = this.getCellModelInfo('bindData')
             if (startBindData && startBindData.dataSource) {
-                let deviceNameChild = startBindData.dataSource.deviceNameChild
-                deviceTypeId = startBindData.dataSource.deviceTypeChild.id//拿到deviceTypeId暂存全局
+                let deviceNameChild = startBindData.dataSource.deviceNameChild || []
+                deviceTypeId = startBindData.dataSource.deviceTypeChild ? startBindData.dataSource.deviceTypeChild.id : '' //拿到deviceTypeId暂存全局
+                if(!this.paramsList.length && deviceTypeId) { // 当最开始有 再删除数据源 再绑定一个 收东获取参数
+                    this.initParamsList()
+                }
                 this.dataSourceList = []
                 deviceNameChild.forEach((item) => {
                     let obj = {}
@@ -310,7 +314,6 @@ export default {
                         this.stateList.forEach((item)=>{
                             if(item.modelFormInfo) {//如果状态绑定的有公式，就选中该项公式
                                 let modelIndex = this.modelList.findIndex((model)=>{
-                                     
                                     return item.modelFormInfo == model.sourceId
                                 })
                                 if(modelIndex != -1) {
@@ -326,10 +329,12 @@ export default {
         },
         initParamsList() {
             let tempObj = this.getCellModelInfo('bindData')
+            console.log(tempObj,deviceTypeId)
             if(deviceTypeId) {
                 let param = {
                     studioId:sessionStorage.getItem("applyId"),
-                    deviceTypeId: deviceTypeId
+                    deviceTypeId: deviceTypeId,
+                    type:1
                 }
                 this.requestUtil.post(this.urls.deviceParamList.url, param).then((res) => {
                     this.paramsList = res.records
@@ -337,8 +342,8 @@ export default {
             }else{
                 this.paramsList = []
             }
-            if(tempObj && tempObj.params) {
-                let bindParamsList = tempObj.params
+            if(tempObj && tempObj.parmas) {
+                let bindParamsList = tempObj.parmas
                 this.paramOutterList = new Array(bindParamsList.length)
                 bindParamsList.forEach((item,index)=>{
                     this.$set(this.paramVals,index,item.index)
@@ -348,8 +353,7 @@ export default {
         modelSelectChange(modelIndex,stateIndex) {
             //将模型公式绑定在对应的状态上
             let currentModel = this.modelList[modelIndex]
-             
-            this.stateList[stateIndex].modelFormInfo = currentModel.soursourceId
+            this.stateList[stateIndex].modelFormInfo = currentModel.sourceId
             this.setCellModelInfo('statesInfo',[...this.stateList])
         },
         footerContentHandle(show) {
@@ -358,7 +362,17 @@ export default {
                 let cell = graph.getSelectionCell()
                 let state = graph.view.getState(cell)
                 let shapeName = state.style.shape
-                if(allShapes.includes(shapeName)) {
+                if (singleDataShow.includes(shapeName)) { // flag 增加参数按钮显示
+                    this.ifCanAddParamFlag = true
+                } else {
+                    this.ifCanAddParamFlag = false
+                }
+                if (!SupportDataShow.includes(shapeName)) { // flag 是否数据显示
+                    this.ifShowDataFlag = false
+                } else {
+                    this.ifShowDataFlag = true
+                }
+                if(allShapes.includes(shapeName)) { // 底部内容显示
                     this.footerContent = true
                 }else{
                     this.footerContent = false
@@ -374,7 +388,6 @@ export default {
             }
         },
         deleteFooterHandle(data, index) {
-            
             let startBindData = this.getCellModelInfo('bindData')
             let newDataSource = JSON.parse(JSON.stringify(this.dataSourceList))
             sureDialog(this.myEditorUi,`确定要删除数据源-${data.name}吗`,()=>{
@@ -386,9 +399,21 @@ export default {
                 })
                 if(resIndex != -1) {
                     objArr.splice(resIndex,1)
-                    startBindData.dataSource.deviceNameChild = objArr
+                    if (!objArr.length) { // 清空了数据源 要把数据显示和状态模型都清空
+                        startBindData.dataSource = {}
+                        startBindData.params = []
+                        this.setCellModelInfo('statesInfo', [])
+                        this.dataSourceList = []
+                        this.paramsList = []
+                        this.stateList = []
+                        this.modelList = []
+                    } else {
+                        startBindData.dataSource.deviceNameChild = objArr
+                    }
                 }
                 this.setCellModelInfo('bindData',startBindData)
+                console.log(this.paramsList)
+                console.log(this.getCellModelInfo('bindData'))
             })
         },
         addParamHandle() {
@@ -396,7 +421,6 @@ export default {
         },
         removeParamHandle(index) {
             this.paramOutterList.splice(index , 1)
-            
             let tempObj = this.getCellModelInfo('bindData')
             let list = [ ]
             if(tempObj) {
@@ -415,12 +439,12 @@ export default {
             }
         },
         paramSelectChange(val,index) {
-            
             let tempObj = this.getCellModelInfo('bindData')
-            let list = [ ]
-            if(tempObj) {
+            let list = []
+            if(tempObj && tempObj.params) {
                 list = tempObj.params
             }
+            console.log(list)
             list.push({
                 id:this.paramsList[val].paramId,
                 name:this.paramsList[val].paramName,
@@ -434,8 +458,8 @@ export default {
             this.setCellModelInfo('bindData',tempObj)
         },
         checkDetDataModel(oldValue, newValue) {
-            let oldDeviceNameChild = oldValue.dataSource.deviceNameChild 
-            let newDeviceNameChild = newValue.deviceNameChild
+            let oldDeviceNameChild = oldValue.dataSource.deviceNameChild || []
+            let newDeviceNameChild = newValue.deviceNameChild || []
             for(let i = 0; i <= oldDeviceNameChild.length - 1; i++) {
                 for(let j = 0; j <= newDeviceNameChild.length - 1; j++) {
                     if (oldDeviceNameChild[i].id === newDeviceNameChild[j].id) {
@@ -475,7 +499,6 @@ export default {
                 obj.setAttribute('label', modelInfo || '')
                 modelInfo = obj
             }
-            console.log(data)
             modelInfo.setAttribute(key, JSON.stringify(data))
             graph.getModel().setValue(cell, modelInfo)
         },
@@ -574,20 +597,25 @@ export default {
         cursor: pointer;
         vertical-align: middle;
       }
-      /deep/.ivu-select-dropdown-list{
-          .ivu-select-item{
-            padding: 0 16px 0;
-          }
-      }
-      /deep/.ivu-select-selection{
-        height:26px;
-        /deep/.ivu-select-selected-value{
+      /deep/.ivu-select{
+        .ivu-select-selection{
+          height:24px;
+        }
+        .ivu-select-placeholder{
           height:24px;
           line-height:24px;
         }
-        /deep/ .ivu-select-placeholder{
-          height:24px;
-          line-height:24px;
+        .ivu-select-selected-value{
+            height:24px;
+            line-height:22px;
+        }
+        .ivu-select-dropdown{
+          .ivu-select-dropdown-list{
+            .ivu-select-item{
+              padding: 0 16px 0;
+              margin-bottom:0;
+            }
+          }
         }
       }
       .dataDisplayListUl{

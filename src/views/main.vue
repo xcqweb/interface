@@ -52,6 +52,9 @@ export default {
             this.isPage = this.tab == 1
             if (index === 2 && this.tabShow) {
                 this.$nextTick(() => {
+                    if (!sessionStorage.getItem('applyId')) {
+                        this.myEditorUi.saveFile(true,true)
+                    }
                     this.$refs.dataSoucreTab.getDeviceType()
                     this.tabShow = false
                 })

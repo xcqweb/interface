@@ -86,7 +86,6 @@ export default{
         this.initStates()
         console.log(this.isAdd,"tttt")
     },
-
     methods: {
         addStateFun() {
             this.editState = null

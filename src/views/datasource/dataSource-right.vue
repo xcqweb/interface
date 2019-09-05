@@ -339,7 +339,8 @@ export default {
                         studioId:this.studioIdNew,
                         deviceTypeId: this.deviceTypeArr[0].deviceTypeId,
                         current: this.PAGE_CURRENT,
-                        size:this.PAGE_SIZE
+                        size:this.PAGE_SIZE,
+                        type: 1
                     }
                     this.currentDeviceTypeId = objDataNew.deviceTypeId
                     return Promise.all([
@@ -663,7 +664,8 @@ export default {
                 deviceTypeId: this.currentDeviceTypeId,
                 current:value,
                 size:this.PAGE_SIZE,
-                studioId: this.studioIdNew
+                studioId: this.studioIdNew,
+                type:1
             }
             let NewUrl = type === 1 ? this.urls.deviceParamList.url : this.urls.deviceEquipList.url
             this.requestUtil.post(NewUrl, objData).then((res) => {

@@ -394,8 +394,7 @@ export default {
                             logical: '',
                             minValue: '',
                             maxValue: '',
-                            fixedValue: '',
-                            conditionLogic: ''
+                            fixedValue: ''
                         },
                     ]
                 ]
@@ -558,7 +557,8 @@ export default {
         getParamList(modelId) {
             let objData = {
                 studioId:sessionStorage.getItem("applyId") || '',
-                deviceTypeId: modelId
+                deviceTypeId: modelId,
+                type:1
             }
             this.requestUtil.post(this.urls.deviceParamList.url, objData).then((res) => {
                 this.conditionSignList = res.records
@@ -604,8 +604,7 @@ export default {
                     logical: '',
                     minValue: '',
                     maxValue: '',
-                    fixedValue: '',
-                    conditionLogic:""
+                    fixedValue: ''
                 }
             ])
         },

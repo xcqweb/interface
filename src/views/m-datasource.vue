@@ -171,7 +171,6 @@ export default{
         },
         dataSourceShow(value) {
             this.deviceTypeArr = value
-            console.log(this.deviceTypeArr)
         }
     },      
 }
