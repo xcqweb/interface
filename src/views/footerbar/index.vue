@@ -214,35 +214,36 @@ export default {
             footerContent: false,
             modelVals:[],//状态列表下的每个模型列表当前的v-model
             paramVals:[],//参数列表，每个参数input当前的v-model
+            isInitFlag: false
         }
     },
-    watch: {
-        ifShowArrow(val) {
-            if(val) {
-                this.initData()
-            }
-        }
-    },
+    // watch: {
+    //     ifShowArrow(val) {
+    //         if(val) {
+    //             this.initData()
+    //         }
+    //     }
+    // },
     mounted() {
+        this.initData()
         VueEvent.$on('isShowFootBar', ({show,isUp}) => {
+            this.isInitFlag = false
+            this.initData()
             this.footerContentHandle(show) 
             if (isUp) {
                 this.ifShowArrow = isUp
             }
+            
         })
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
-           
             // 拿到之前绑定的 bindData
             let startBindData = this.getCellModelInfo('bindData')
-             
             if (!startBindData) {
-               
                 this.setCellModelInfo('bindData',{dataSource:value})
                 if (this.ifShowArrow) {
                     this.initDataSource()
                 }
-                
             } else {
                 if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
                     let deviceNameChild = startBindData.dataSource.deviceNameChild
@@ -259,6 +260,9 @@ export default {
     },
     methods:{
         initData() {
+            if (this.isInitFlag) {
+                return 
+            }
             //初始化状态列表
             let tempStateList = this.getCellModelInfo("statesInfo")
             if(tempStateList) {
@@ -269,6 +273,7 @@ export default {
             this.initDataSource()//初始化数据源列表
             this.initModelList()//初始化模型列表
             this.initParamsList()//初始化参数列表
+            this.isInitFlag = true
            
         },
         // 初始化数据源数据
@@ -285,6 +290,11 @@ export default {
                     obj.deviceName = item.name
                     this.dataSourceList.push(obj)
                 })
+            } else {
+                this.dataSourceList = []
+                this.paramsList = []
+                this.stateList = []
+                this.modelList = []
             }
         },
         initModelList() {
@@ -315,7 +325,6 @@ export default {
             }
         },
         initParamsList() {
-            
             let tempObj = this.getCellModelInfo('bindData')
             if(deviceTypeId) {
                 let param = {
@@ -379,8 +388,6 @@ export default {
                     objArr.splice(resIndex,1)
                     startBindData.dataSource.deviceNameChild = objArr
                 }
-                console.log(startBindData)
-                
                 this.setCellModelInfo('bindData',startBindData)
             })
         },
