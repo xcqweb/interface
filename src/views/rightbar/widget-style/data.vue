@@ -227,18 +227,18 @@ export default{
             })
         },
         bindDeviceNameHandle() {
-            let startBindData2 = this.getCellModelInfo('bindData')
+            let startBindData = this.getCellModelInfo('bindData')
             if (singleDeviceName.includes(this.shapeName) && this.deviceIdArr.length > 1) { // 绑定单个
                 Message.warning('此控件不允许绑定多个设备名称')
                 return false
             } else {
-                if (singleDeviceName.includes(this.shapeName) && startBindData2 && startBindData2.dataSource && startBindData2.dataSource.deviceNameChild.length) {
+                if (singleDeviceName.includes(this.shapeName) && startBindData && startBindData.dataSource && startBindData.dataSource.deviceNameChild.length) {
                     Message.warning('此控件已经绑定设备名称')
                     return false
                 }
             }
-            if (startBindData2 && startBindData2.dataSource) {
-                let deviceTypeData = startBindData2.dataSource.deviceTypeChild || {}
+            if (startBindData && startBindData.dataSource) {
+                let deviceTypeData = startBindData.dataSource.deviceTypeChild || {}
                 if (deviceTypeData.id && deviceTypeData.id !== this.modelvalue2) {
                     Message.warning('此控件不允许绑定多个设备类型')
                     return false

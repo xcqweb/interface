@@ -6,11 +6,8 @@
  * Constructs the actions object for the given UI.
  */
 import {
-    PublishDialog,
     addPageDialog,
-    ImageDialog,
     PaletteDataDialog,
-    SelectPropDialog,
     ConfigLinkDialog,
     ChangePrimitiveDialog
 } from '../editor/Dialogs'
@@ -205,11 +202,6 @@ Actions.prototype.init = function()
     // 预览
     this.addAction('previewapply', function() {	
     }, true, null, 'Ctrl+Shift+L');
-    // 发布
- /*    this.addAction('publish', function() {
-        var dlg = new PublishDialog(ui, '')
-        ui.showDialog(dlg.container, 410, 160, true, false, null, null, '发布');
-    }, true, null, 'Ctrl+Shift+O'); */
     // 配置链接
     this.addAction('configLink', function() {
         var dlg = new ConfigLinkDialog(ui, '', '应用', function(val, desc) {
@@ -1222,13 +1214,7 @@ Actions.prototype.init = function()
             removeImageRadio()
         }
     })
-    // 下拉列表
-    this.addAction('selectProp', function() {
-        var cell = graph.getSelectionCell();
-        var dlg = new SelectPropDialog(ui, cell)
-        ui.showDialog(dlg.container, 410, 340, true, false, null, null, '属性');
-        dlg.init()
-    })
+    
     // 数据弹窗
     this.addAction('paletteData', function() {
         var cell = graph.getSelectionCell();

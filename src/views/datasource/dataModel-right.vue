@@ -222,7 +222,7 @@
                           <Option 
                             v-for="item in conditionSignList" 
                             :key="item.paramId" 
-                            :value="item.paramId"
+                            :value="item.paramName"
                           >
                             {{ item.paramName }}
                           </Option>
@@ -239,7 +239,7 @@
                           @on-change="treeSelectLogicalHandle(row.logical,index, key)"
                         >
                           <Option 
-                            v-for="item in LogicalSignList" 
+                            v-for="item in logicalSignList" 
                             :key="item.value" 
                             :value="item.value"
                           >
@@ -340,6 +340,7 @@ import SuspensionList from './suspensionList'
 import VueEvent from '../../services/VueEvent.js'
 import NoData from './nodata'
 import {Input, Button, Table, Select,Option, Message} from 'iview'
+import {conditionLogical,logicalSignList} from '../../constants/model-form-logic'
 const defaultValue = {
     paramName: '',
     logical: '',
@@ -424,51 +425,9 @@ export default {
             ],
             tdheight: 30,
             conditionLogicalSelect: '',
-            conditionLogical:[
-                {
-                    value: '1',
-                    label: 'And'
-                },
-                {
-                    value: '2',
-                    label: 'Or'
-                }
-            ],
             conditionSignList:[],
-            LogicalSignList: [
-                {
-                    value: '1',
-                    label: '介于'
-                },
-                {
-                    value: '2',
-                    label: '未介于'
-                },
-                {
-                    value: '3',
-                    label: '等于'
-                },
-                {
-                    value: '4',
-                    label: '不等于'
-                },
-                {
-                    value: '5',
-                    label: '大于'
-                },
-                {
-                    value: '6',
-                    label: '小于'
-                },
-                {
-                    value: '7',
-                    label: '大于等于'
-                },
-                {
-                    value: '8',
-                    label: '小于等于'
-                }
-            ],
+            conditionLogical:conditionLogical,
+            logicalSignList:logicalSignList,
             isediting: true,
             studioIdNew:'',
             SuspensionListName: [

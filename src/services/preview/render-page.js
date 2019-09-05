@@ -7,8 +7,6 @@ let pageWidth = 0,pageHeight = 0
 let applyData = {}
 // 正常的最小x、y偏移量
 let minX, minY
-// 接收的点位数据
-let pointParams = []
 // 配置好的svg图
 let configSvg = ['drop', 'circle', 'diamond', 'square', 'pentagram']
 // 默认样式
@@ -27,9 +25,11 @@ import {
     dealCharts,
     dealLight
 } from './util'
-import {createWsReal} from './bind-data'
+import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
+import requestUtil from '../../services/request'
+import urls from '../../constants/url'
 class PreviewPage {
     constructor(data, mainProcess, gePreview) {
         let {
@@ -355,22 +355,15 @@ class PreviewPage {
             wsParams: this.wsParams,
             lockWs: false
         };
-
-        applyData[page.id].wsReal = createWsReal(page.id,pointParams, applyData)
-        return cells;
+        setTimeout(() => {
+            createWsReal(page.id,applyData)
+            getLastData(this.wsParams) //低频数据 通过调用最后一笔数据显示
+        }, 3000);
+        return cells
     }
     // 渲染页面
     renderPages(cells, ele = this.gePreview, fileSystem, shapeXlms) {
         for (let cell of cells) {
-            if (cell.bindData) {
-                /*  this.wsParams.push({
-                    pointId: cell.bindData.point,
-                    params: cell.bindData.params.map(val => {
-                        return val.name
-                    }).join()
-                }) */
-                pointParams = this.wsParams
-            }
             let cellHtml = this.renderCell(cell, fileSystem, shapeXlms);
             ele.appendChild(cellHtml);
             // 组内资源
@@ -481,13 +474,56 @@ class PreviewPage {
         cellHtml.id = `palette_${cell.id}`
         // 绑定事件
         bindEvent(cellHtml, cell, this.mainProcess, applyData)
-        if (cell.statesInfo) {//给绑定模型公式的控件添加class标识
-            cell.statesInfo.forEach((item) => {
-                if (item.modelFormInfo) {
-                    cellHtml.className += ` ${item.modelFormInfo}`
-                }
-            })
+        if (cell.bindData) {
+            let devices = cell.bindData.dataSource.deviceNameChild
+            let paramShow = []
+            if (cell.bindData.params) {
+                cell.bindData.params.forEach((item)=>{
+                    paramShow.push(item.name)
+                })
+            }
+            $(cellHtml).data("paramShow", paramShow)
+            let resParams = []
+            let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
+            let modelIdsParam = []
+            if(cell.statesInfo) {
+                let statesInfo = cell.statesInfo
+                cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
+                statesInfo.forEach((item)=>{
+                    if (item.modelFormInfo) {
+                        cellStateInfoHasModel.push(item)
+                        modelIdsParam.push(item.modelFormInfo)
+                    }
+                })
+                requestUtil.post(urls.getModelByIds.url, modelIdsParam).then((res) => {
+                    res.returnObj.forEach((item, index) => {
+                        cellStateInfoHasModel[index + 1].modelFormInfo = item
+                        let formulaAttr
+                        if (item.formula) {
+                            formulaAttr = JSON.parse(item.formula)
+                        }
+                        let flatFormulaAttr = []
+                        if (formulaAttr) {
+                            formulaAttr.data.forEach((item)=>{
+                                flatFormulaAttr = flatFormulaAttr.concat(...item)
+                            })
+                            flatFormulaAttr.forEach((d) => {
+                                resParams.push(d.paramName)
+                            })
+                        }
+                    })
+                    $(cellHtml).data("stateModels", cellStateInfoHasModel)
+                    devices.forEach((item) => {
+                        cellHtml.className += ` point_${item.id}`
+                        this.wsParams.push({
+                            pointId: item.id,
+                            params: Array.from(new Set(resParams.concat(paramShow)))
+                        })
+                    })
+                })
+            }
         }
+
         return cellHtml
     }
 }

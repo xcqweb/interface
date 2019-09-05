@@ -84,7 +84,6 @@ export default{
     },
     mounted() {
         this.initStates()
-        console.log(this.isAdd,"tttt")
     },
 
     methods: {

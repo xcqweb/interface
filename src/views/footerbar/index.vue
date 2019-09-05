@@ -81,7 +81,7 @@
                           :key="i" 
                           :value="i"
                         >
-                          {{ item.name }}
+                          {{ d.paramName }}
                         </Option>
                       </Select>
                     </span>
@@ -300,7 +300,6 @@ export default {
                         this.stateList.forEach((item)=>{
                             if(item.modelFormInfo) {//如果状态绑定的有公式，就选中该项公式
                                 let modelIndex = this.modelList.findIndex((model)=>{
-                                     
                                     return item.modelFormInfo == model.sourceId
                                 })
                                 if(modelIndex != -1) {
@@ -339,8 +338,7 @@ export default {
         modelSelectChange(modelIndex,stateIndex) {
             //将模型公式绑定在对应的状态上
             let currentModel = this.modelList[modelIndex]
-             
-            this.stateList[stateIndex].modelFormInfo = currentModel.soursourceId
+            this.stateList[stateIndex].modelFormInfo = currentModel.sourceId
             this.setCellModelInfo('statesInfo',[...this.stateList])
         },
         footerContentHandle(show) {
@@ -392,7 +390,7 @@ export default {
             
             let tempObj = this.getCellModelInfo('bindData')
             let list = [ ]
-            if(tempObj) {
+            if(tempObj && tempObj.params) {
                 list = tempObj.params
             }
             if(list.length) {
@@ -408,10 +406,9 @@ export default {
             }
         },
         paramSelectChange(val,index) {
-            
             let tempObj = this.getCellModelInfo('bindData')
-            let list = [ ]
-            if(tempObj) {
+            let list = []
+            if(tempObj && tempObj.params) {
                 list = tempObj.params
             }
             list.push({
@@ -422,8 +419,7 @@ export default {
             if(!tempObj) {
                 tempObj = { }
             }
-            tempObj.parmas = list
-            
+            tempObj.params = list
             this.setCellModelInfo('bindData',tempObj)
         },
         checkDetDataModel(oldValue, newValue) {
@@ -468,7 +464,6 @@ export default {
                 obj.setAttribute('label', modelInfo || '')
                 modelInfo = obj
             }
-            console.log(data)
             modelInfo.setAttribute(key, JSON.stringify(data))
             graph.getModel().setValue(cell, modelInfo)
         },
