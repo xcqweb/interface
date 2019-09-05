@@ -329,7 +329,6 @@ export default {
         },
         initParamsList() {
             let tempObj = this.getCellModelInfo('bindData')
-            console.log(tempObj,deviceTypeId)
             if(deviceTypeId) {
                 let param = {
                     studioId:sessionStorage.getItem("applyId"),
@@ -412,8 +411,6 @@ export default {
                     }
                 }
                 this.setCellModelInfo('bindData',startBindData)
-                console.log(this.paramsList)
-                console.log(this.getCellModelInfo('bindData'))
             })
         },
         addParamHandle() {
@@ -444,7 +441,6 @@ export default {
             if(tempObj && tempObj.params) {
                 list = tempObj.params
             }
-            console.log(list)
             list.push({
                 id:this.paramsList[val].paramId,
                 name:this.paramsList[val].paramName,
