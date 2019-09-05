@@ -720,7 +720,7 @@ export default {
                                 })
                             } else if (type === 'right') {
                                 this.requestUtil.put(this.urls.materialRightList.url,data2).then((res) => {
-                                    if (res.libraryName) {
+                                    if (res.descript) {
                                         Message.info('修改成功')
                                         ele.innerHTML = `<span class="left-assembly-left">${name}</span><span class="right-spots"></span>`
                                     }
@@ -771,6 +771,8 @@ export default {
         },
         deleteHandle(ele, actionType, type,index, materialId) {
             let materialLibraryId = this.uploadData.materialLibraryId
+            console.log(this.tabNumeber)
+            console.log(type)
             if (+this.tabNumeber === 0) {
                 if (type === this.POSITION_LEFT) {
                     this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
@@ -785,13 +787,17 @@ export default {
                         Message.warning('删除失败')
                     })
                 } else if (type === this.POSITION_RIGHT) {
+                    console.log(88)
                     this.requestUtil.delete(this.urls.materialRightList.url + `/${materialId}`,).then((res) => {
+                        console.log(this.isactive)
                         if (this.arrListTables[index].materialId === materialId && res.code === '0') {
                             this.arrListTables.splice(index,1)
+                            this.$set(this.arrListTables)
                             Message.warning('删除成功')
                         }
                     }).catch(() => {
                         Message.warning('删除失败')
+                        return false
                     })
                 }
             } else if (+this.tabNumeber === 1) {

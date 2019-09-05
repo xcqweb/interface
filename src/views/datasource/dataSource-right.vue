@@ -306,7 +306,7 @@ export default {
             inputParamName:'',
             currentDeviceTypeId: '',
             PAGE_CURRENT: 1,
-            PAGE_SIZE:1
+            PAGE_SIZE:10
         }
     },
     mounted() {

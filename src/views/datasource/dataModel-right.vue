@@ -290,7 +290,7 @@
                           size="small"
                           class="condition-icon condition-add-icon"
                           :disabled="isediting"
-                          @click.stop.prevent="adddata(key)"
+                          @click.stop.prevent="adddata(key,index)"
                         >
                           添加
                         </Button>
@@ -299,7 +299,7 @@
                           size="small"
                           class="condition-icon condition-delete-icon"
                           :disabled="isediting"
-                          @click.stop.prevent="removedata(key)"
+                          @click.stop.prevent="removedata(key, index)"
                         >
                           删除
                         </Button>
@@ -641,14 +641,14 @@ export default {
                 return false
             })
         },
-        removedata(key) {
-            this.alldata.data[key].shift()
-            if (!this.alldata.data[key].length) {
-                this.alldata.data.splice(key, 1)
-            }
+        removedata(key, index) {
+            if (this.alldata.data[key].length) {
+                this.alldata.data[key].splice(index, 1)
+            }  
         },
         adddata(key) {
-            this.alldata.data[key].push(defaultValue)
+            let newDefaultValue = JSON.parse(JSON.stringify(defaultValue))
+            this.alldata.data[key].unshift(newDefaultValue)
         },
         clickDeviceTypeListHandle(evt, modelId, index) {
             this.numberlistIndex = index
@@ -698,9 +698,10 @@ export default {
         },
         MouseMoveHandle(evt, index) {
             let widthLen = evt.target.offsetLeft + evt.target.offsetWidth - 20
+            let HeightLen = evt.target.offsetTop  + 2
+            this.currentMouseIndex = index
             if (evt.clientX >= widthLen && evt.clientX <= widthLen + 18) {
                 this.ifShowSuspension = true
-                this.currentMouseIndex = index
                 let classnameList = evt.target.className
                 if (!classnameList.includes('currentModelList')) {
                     evt.target.className += classnameList ? ' currentModelList' : 'currentModelList'
@@ -714,6 +715,15 @@ export default {
                 this.LeftWidth = evt.target.offsetLeft + evt.target.offsetWidth - 116 / 2 + 'px';
                 this.TopHeight = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 'px';
             }else {
+                if (this.modelNumber !== this.currentMouseIndex) {
+                    evt.target.className = ''
+                }
+                this.ifShowSuspension = false
+            }
+            if (evt.clientY < HeightLen) {
+                if (this.modelNumber !== this.currentMouseIndex) {
+                    evt.target.className = ''
+                }
                 this.ifShowSuspension = false
             }
         },
@@ -743,8 +753,7 @@ export default {
         },
         // 删除模型
         deleteModelHandle() {
-            this.requestUtil.delete(`${this.urls.addModelList.url}/${this.ModelNameArr[this.currentMouseIndex].sourceId}`).then((res) => {
-                console.log(res)
+            this.requestUtil.delete(`${this.urls.addModelList.url}/${this.ModelNameArr[this.currentMouseIndex].sourceId}`).then(() => {
                 if (this.modelNumber === this.currentMouseIndex) {
                     let index = this.currentMouseIndex
                     let _len = this.ModelNameArr.length - 1

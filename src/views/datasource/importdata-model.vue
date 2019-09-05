@@ -63,7 +63,6 @@
             type="primary"
             size="small"
             style="height:24px"
-            :loading="btnLoading"
             @click.stop.prevent="selectDeviceType"
           >
             {{ titleText[0] }}
@@ -276,7 +275,7 @@ export default{
             checkAllArr: ['',false, false],
             nodata:'暂无数据',
             PAGE_CURREN: 1,
-            PAGE_SIZE: 1,
+            PAGE_SIZE: 10,
             inputParamName: '',
             inputDeviceName: '',
             loading: false,
