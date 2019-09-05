@@ -85,7 +85,6 @@ export default{
     mounted() {
         this.initStates()
     },
-
     methods: {
         addStateFun() {
             this.editState = null

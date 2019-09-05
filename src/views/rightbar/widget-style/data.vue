@@ -186,7 +186,8 @@ export default{
                         studioId:this.studioIdNew,
                         deviceTypeId: this.deviceNameArr[0].deviceTypeId,
                         size:this.PAGE_SIZE,
-                        current:this.PAGE_CURRENT
+                        current:this.PAGE_CURRENT,
+                        type: 1
                     }
                     return Promise.all([
                         this.requestUtil.post(this.urls.deviceEquipList.url, objDataNew)
@@ -232,8 +233,7 @@ export default{
                 Message.warning('此控件不允许绑定多个设备名称')
                 return false
             } else {
-                if (singleDeviceName.includes(this.shapeName) && startBindData && startBindData.dataSource && startBindData.dataSource.deviceNameChild.length) {
-                    Message.warning('此控件已经绑定设备名称')
+               if (singleDeviceName.includes(this.shapeName) && startBindData2 && startBindData2.dataSource && startBindData2.dataSource.deviceNameChild && startBindData2.dataSource.deviceNameChild.length) {                    Message.warning('此控件已经绑定设备名称')
                     return false
                 }
             }
@@ -317,7 +317,8 @@ export default{
                 deviceTypeId: this.modelvalue2,
                 studioId: this.studioIdNew,
                 current: value,
-                size:this.PAGE_SIZE
+                size:this.PAGE_SIZE,
+                type:1
             }
             this.PageChangeAjax(objData)
         },
@@ -363,6 +364,9 @@ export default{
         background: #fff;
         flex:1;
         .devicename-listUl{
+          label{
+            width:100%
+          }
           padding: 5px 0;
           li{
             height:26px;

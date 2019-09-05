@@ -10,6 +10,7 @@
           :key="item.id"
           :class="numberIndex === 0 ? 'currentList' : ''"
           @click="clickHandle(item.id, index)"
+          @mouseleave="mouseLeaveHandle"
         >
           {{ item.name }}
         </li>

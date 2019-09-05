@@ -7,7 +7,7 @@
  */
 import {
     addPageDialog,
-    PaletteDataDialog,
+    // PaletteDataDialog,
     ConfigLinkDialog,
     ChangePrimitiveDialog
 } from '../editor/Dialogs'
@@ -1214,14 +1214,13 @@ Actions.prototype.init = function()
             removeImageRadio()
         }
     })
-    
-    // 数据弹窗
-    this.addAction('paletteData', function() {
-        var cell = graph.getSelectionCell();
-        var dlg = new PaletteDataDialog(ui, cell)
-        ui.showDialog(dlg.container, 410, 450, true, false, null, null, '绑定数据源');
-        dlg.init()
-    })
+        // 数据弹窗
+    // this.addAction('paletteData', function() {
+    //     var cell = graph.getSelectionCell();
+    //     var dlg = new PaletteDataDialog(ui, cell)
+    //     ui.showDialog(dlg.container, 410, 450, true, false, null, null, '绑定数据源');
+    //     dlg.init()
+    // })
 	
     this.addAction('images', function()
     {

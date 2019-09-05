@@ -63,7 +63,6 @@
             type="primary"
             size="small"
             style="height:24px"
-            :loading="btnLoading"
             @click.stop.prevent="selectDeviceType"
           >
             {{ titleText[0] }}
@@ -276,7 +275,7 @@ export default{
             checkAllArr: ['',false, false],
             nodata:'暂无数据',
             PAGE_CURREN: 1,
-            PAGE_SIZE: 1,
+            PAGE_SIZE: 10,
             inputParamName: '',
             inputDeviceName: '',
             loading: false,
@@ -430,7 +429,9 @@ export default{
                 let objData = {
                     deviceTypeId: this.modelvalue2,
                     current:this.PAGE_CURREN,
-                    size:this.PAGE_SIZE
+                    size:this.PAGE_SIZE,
+                    studioId: sessionStorage.getItem("applyId") || '',
+                    type: 0
                 }
                 const [pramsName, deviceName] = await Promise.all([
                     this.requestUtil.post(this.urls.deviceParamList.url, objData),
@@ -464,7 +465,9 @@ export default{
             let objData = {
                 deviceTypeId: this.modelvalue2,
                 current:value,
-                size:this.PAGE_SIZE
+                size:this.PAGE_SIZE,
+                studioId: sessionStorage.getItem("applyId") || '',
+                type: 0
             }
             let NewUrl = type === 1 ? this.urls.deviceParamList.url : this.urls.deviceEquipList.url
             this.requestUtil.post(NewUrl, objData).then((res) => {

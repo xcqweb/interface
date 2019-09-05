@@ -307,7 +307,7 @@ export default{
   .image{
     height:56px;
     width:56px;
-    background:url('../../../assets/images/menu/rightbar/bg_ic2x.png') no-repeat center center;
+    background:url('../../../assets/images/menu/rightBar/bg_ic2x.png') no-repeat center center;
     background-size:contain;
   }
   .image_light{
