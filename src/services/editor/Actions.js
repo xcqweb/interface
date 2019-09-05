@@ -9,7 +9,7 @@ import {
     PublishDialog,
     addPageDialog,
     ImageDialog,
-    PaletteDataDialog,
+    // PaletteDataDialog,
     SelectPropDialog,
     ConfigLinkDialog,
     ChangePrimitiveDialog
@@ -1223,19 +1223,19 @@ Actions.prototype.init = function()
         }
     })
     // 下拉列表
-    this.addAction('selectProp', function() {
-        var cell = graph.getSelectionCell();
-        var dlg = new SelectPropDialog(ui, cell)
-        ui.showDialog(dlg.container, 410, 340, true, false, null, null, '属性');
-        dlg.init()
-    })
+    // this.addAction('selectProp', function() {
+    //     var cell = graph.getSelectionCell();
+    //     var dlg = new SelectPropDialog(ui, cell)
+    //     ui.showDialog(dlg.container, 410, 340, true, false, null, null, '属性');
+    //     dlg.init()
+    // })
     // 数据弹窗
-    this.addAction('paletteData', function() {
-        var cell = graph.getSelectionCell();
-        var dlg = new PaletteDataDialog(ui, cell)
-        ui.showDialog(dlg.container, 410, 450, true, false, null, null, '绑定数据源');
-        dlg.init()
-    })
+    // this.addAction('paletteData', function() {
+    //     var cell = graph.getSelectionCell();
+    //     var dlg = new PaletteDataDialog(ui, cell)
+    //     ui.showDialog(dlg.container, 410, 450, true, false, null, null, '绑定数据源');
+    //     dlg.init()
+    // })
 	
     this.addAction('images', function()
     {

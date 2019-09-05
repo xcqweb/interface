@@ -662,7 +662,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                         this.addMenuItems(menu, ['insertMenuBefore', 'insertMenuAfter', 'delete'], null, evt);
                     } else if (this.editorUi.sidebar.primitives.indexOf(shapeName) != -1) {
                         // 图元
-                        this.addMenuItems(menu, ['changePrimitive', 'paletteData'], null, evt);
+                        // this.addMenuItems(menu, ['changePrimitive', 'paletteData'], null, evt);
                     } else if (shapeName == 'tableCell') {
                         // 单元格
                         this.addMenuItems(menu, ['addUpRow', 'addLowerRow', 'deleteRow','-', 'addLeftCol', 'addRightCol', 'deleteCol'], null, evt);
