@@ -66,7 +66,7 @@
                     <template v-if="+isactive >= 2">
                       <li 
                         v-for="(item, index) in arrListTables"
-                        :key="index"
+                        :key="item.materialId"
                         class="user-uploadimage"
                       >
                         <div>
@@ -344,7 +344,6 @@ export default {
             materialArrayName: ['页面模版', '弹窗模版'],
             uploadData:{},
             DIR_: `../../../static/stencils/basic/`,
-            // bacPicUrl: `http://10.74.20.26:8009/`,
             baseAssembly: [
                 {image:'text2.svg', name :'文字'},
                 {image:'rectangle2.svg',name :'矩形'},
@@ -386,8 +385,8 @@ export default {
             pageMaterial: [],
             alertMaterial: [],
             nodata: '暂无数据',
-            leftshowIf: true,
-            ifselectFrom: false,
+            leftshowIf: true, // 搜索素材 展示左侧素材库列表
+            ifselectFrom: false, // 是否来自搜索
             userMaterialAll: [],
             newArr: [],
             newArr2: []
@@ -482,6 +481,7 @@ export default {
                     type: 'dialog'
                 }
             }
+            console.log(data)
             if ((this.pageMaterial.length && +index === 0) || (this.alertMaterial.length && +index === 1)) {
                 return false
             }
@@ -613,7 +613,6 @@ export default {
         },
         MiddassemblyListHandle(evt,type,index,materialId) {
             this.isactive3 = index
-            console.log(materialId)
             this.assemblyListHandle(evt,type,index,materialId)
         },
         assemblyListHandle(evt, type,index, materialId) {
@@ -679,6 +678,10 @@ export default {
             $('.left-side-listactive .right-spots').css({'pointer-events': 'auto'})
             $('#materialModelMenu').hide()
         },
+        /*
+          @tabNumeber 0组件库; 1模版库
+          @type left素材库列表 right右侧素材列表
+        */
         renameHandle(ele, actionType, type,index, materialId) {
             let editInput = document.createElement('input');
             editInput.id = 'editPageInput'
@@ -771,8 +774,6 @@ export default {
         },
         deleteHandle(ele, actionType, type,index, materialId) {
             let materialLibraryId = this.uploadData.materialLibraryId
-            console.log(this.tabNumeber)
-            console.log(type)
             if (+this.tabNumeber === 0) {
                 if (type === this.POSITION_LEFT) {
                     this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
@@ -787,12 +788,9 @@ export default {
                         Message.warning('删除失败')
                     })
                 } else if (type === this.POSITION_RIGHT) {
-                    console.log(88)
                     this.requestUtil.delete(this.urls.materialRightList.url + `/${materialId}`,).then((res) => {
-                        console.log(this.isactive)
                         if (this.arrListTables[index].materialId === materialId && res.code === '0') {
                             this.arrListTables.splice(index,1)
-                            this.$set(this.arrListTables)
                             Message.warning('删除成功')
                         }
                     }).catch(() => {
