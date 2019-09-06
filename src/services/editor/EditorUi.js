@@ -3522,7 +3522,7 @@ EditorUi.prototype.save = function(name, des,hideDialog=false)
                     applyCon: editor.pagesNameList().join(),
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                 }
-                var id = editor.getApplyId()
+                var id = editor.getApplyId() || sessionStorage.getItem('applyId')
                 if (id) {
                     // 编辑保存
                     data.studioId = id

@@ -70,7 +70,7 @@ export default {
                 Vue.prototype.myEditorUi = myEditorUi
                 this.init()
                 this.isInited = true
-                this.myEditorUi.saveFile(true,true)
+                //this.myEditorUi.saveFile(true,true)
             })
         })
     },

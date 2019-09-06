@@ -140,6 +140,7 @@ export default {
             this.solidHeight = height
             this.myEditorUi.setPageFormat({height:height,width:width,x:0,Y:0},true)
             this.scaleText = width + '*' + height
+            this.centerCanvas()
         },
         changeScale(d,e) {
             this.scaleText = d;
@@ -156,12 +157,21 @@ export default {
                 },
                 true
             )
+            //this.centerCanvas()
             e.stopPropagation()
         },
-        /* centerCanvas() {//居中画布
+        centerCanvas() {//居中画布
             let graph = this.myEditorUi.editor.graph
-            graph.center(true,true,0.5,0.5)//将画布放到容器中间
-        }, */
+            let con = graph.container
+            let conWidth = con.clientWidth
+            let conHeight = con.clientHeight
+            let {clientWidth,clientHeight} = con.children[1] //svg
+            let canvasView = con.children[0]//画布
+            this.canvasOffsetTop = canvasView.offsetTop
+            this.canvasOffsetLeft = canvasView.offsetLeft
+            con.scrollLeft = (clientWidth - conWidth) / 2
+            con.scrollTop = (clientHeight - conHeight - 36) / 2
+        },
         changeScaleInput() {
             this.myEditorUi.setPageFormat(
                 {
@@ -172,6 +182,7 @@ export default {
                 },
                 true
             )
+            //this.centerCanvas()
         },
         setBackgroundImg() {
             this.$refs.chooseImg.click()
