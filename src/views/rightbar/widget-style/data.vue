@@ -232,11 +232,10 @@ export default{
             if (singleDeviceName.includes(this.shapeName) && this.deviceIdArr.length > 1) { // 绑定单个
                 Message.warning('此控件不允许绑定多个设备名称')
                 return false
-            } else {
-                if (singleDeviceName.includes(this.shapeName) && startBindData && startBindData.dataSource && startBindData.dataSource.deviceNameChild && startBindData.dataSource.deviceNameChild.length) {      
-                    Message.warning('此控件已经绑定设备名称')
-                    return false
-                }
+            }  
+            if (singleDeviceName.includes(this.shapeName) && startBindData && startBindData.dataSource && startBindData.dataSource.deviceNameChild) {                    
+                Message.warning('此控件已经绑定设备名称')
+                return false
             }
             if (startBindData && startBindData.dataSource) {
                 let deviceTypeData = startBindData.dataSource.deviceTypeChild || {}
