@@ -46,7 +46,7 @@ async function geAjax(url, method = 'GET', data = null) {
             setCookie('refreshToken', res.refreshToken);
         })
     } else if (now > rExp * 1000) {
-        showTips(true,'登陆失效，请重新登陆系统！')
+        showTips(true,'登录失效，请重新登录系统！')
         return;
     }
 
@@ -114,7 +114,7 @@ async function geAjax(url, method = 'GET', data = null) {
             xmlhttp.setRequestHeader("Authorization", "Bearer " + getCookie('token'));
             xmlhttp.send(data);
         } else {
-            reject('登陆失效')
+            reject('登录失效')
         }
     })
 }

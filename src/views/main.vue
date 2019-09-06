@@ -28,6 +28,9 @@
 <script>
 import MPage from './m-page'
 import MDataS from './m-datasource'
+const alertTip = '您还有未保存的模型,请先保存'
+import VueEvent from '../services/VueEvent.js'
+import {Message} from 'iview'
 export default {
     components:{
         MPage,MDataS
@@ -40,6 +43,11 @@ export default {
             tabShow: true
         }
     },
+    computed:{
+        modelEditing() {
+            return this.$store.state.main.modelEditing
+        }
+    },
     created() {
         
     },
@@ -48,13 +56,15 @@ export default {
     },
     methods: {
         changeTab(index) {
+            if (!this.modelEditing && index === 1) {
+                Message.warning(alertTip)
+                return false
+            }
             this.tab = index
             this.isPage = this.tab == 1
             if (index === 2 && this.tabShow) {
                 this.$nextTick(() => {
-                    if (!sessionStorage.getItem('applyId')) {
-                        this.myEditorUi.saveFile(true,true)
-                    }
+                    VueEvent.$emit('rightBarTabSwitch')
                     this.$refs.dataSoucreTab.getDeviceType()
                     this.tabShow = false
                 })

@@ -380,7 +380,8 @@ export default {
                     studioId:this.studioIdNew,
                     deviceTypeId: deviceTypeId,
                     current: this.PAGE_CURRENT,
-                    size:this.PAGE_SIZE
+                    size:this.PAGE_SIZE,
+                    type:1
                 }
                 const [ParamNameList, DeviceNameList] = await Promise.all([
                     this.requestUtil.post(this.urls.deviceParamList.url, objDataNew),

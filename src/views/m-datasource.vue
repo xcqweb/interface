@@ -25,6 +25,7 @@
         >
           <TabPane
             :label="dataSource"
+            :disabled="!modelEditing"
           >
             <ul
               v-if="dataSourceList.length && deviceTypeArr.length"
@@ -139,17 +140,38 @@ export default{
                     name: 'IOT平台',
                     id: '1233'
                 }
-            ]
+            ],
+        }
+    },
+    computed:{
+        modelEditing() {
+            return this.$store.state.main.modelEditing
         }
     },
     mounted() {
-
     },
     methods: {
         getDataSource() { // 获取数据源
 
         },
         tabsSwitchData(index) {
+            // this.$nextTick(() => {
+            //     let arrIndex = [0 , 1]
+            //     if (!this.modelEditing) {
+            //         // if (tabsArr[+index].className.includes('ivu-tabs-tab-active')) {
+            //         //     return false
+            //         // }
+            //         this.tabsArr[+index].className = 'ivu-tabs-tab'
+            //         if (+index === arrIndex[1]) {
+            //             this.tabsArr[index - 1].className = 'ivu-tabs-tab ivu-tabs-tab-active ivu-tabs-tab-focused'
+            //         } else if (+index === arrIndex[0]) {
+            //             this.tabsArr[index + 1].className = 'ivu-tabs-tab ivu-tabs-tab-active ivu-tabs-tab-focused'
+            //         }
+            //         this.tabsArr = document.querySelectorAll('.data-main-left .ivu-tabs-tab')
+            //         Message.warning(alertTip)
+            //         return false
+            //     }
+            // })
             this.dataType = +index + 1
         },
         importDataHander() {
@@ -159,9 +181,7 @@ export default{
             this.ifShowImportData = false
         },
         getDeviceType() { // 两个地方去更新
-            // this.$nextTick(() => {
             this.$refs.datasourceright.initData()
-            // })
         },
         deleteDataSource() {
 
@@ -171,6 +191,9 @@ export default{
         },
         dataSourceShow(value) {
             this.deviceTypeArr = value
+        },
+        closeHandle() {
+            console.log(88)
         }
     },      
 }
