@@ -3613,7 +3613,6 @@ HoverIcons.prototype.repaint = function()
                 var checkCollision = mxUtils.bind(this, function(cell, arrow)
                 {
                     var geo = this.graph.model.isVertex(cell) && this.graph.getCellGeometry(cell);
-					console.log(777)
                     // Ignores collision if vertex is more than 3 times the size of this vertex
                     if (cell != null && !this.graph.model.isAncestor(cell, this.currentState.cell) &&
 						(geo == null || currentGeo == null || (geo.height < 6 * currentGeo.height &&

@@ -945,7 +945,7 @@ Sidebar.prototype.deletePage = function (ele, pageType) {
             if (ele.prev().length) {
                 target = ele.prev().children('.spanli');
             } else if (ele.next().length) {
-                target = ele.next().children('.spanli');
+                target = ele.next().addClass('left-sidebar-homepage').children('.spanli');
             } else if (type == 'dialog' && !!$("#normalPages li").first()) {
                 target = $("#normalPages li").first().children('.spanli');
             } else if (type == 'noraml' && !!$("#dialogPages li").first()) {
@@ -1662,13 +1662,8 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
     elt.className = 'geItem';
     elt.style.overflow = 'hidden';
     var border = (mxClient.IS_QUIRKS) ? 8 + 2 * this.thumbPadding : 2 * this.thumbBorder;
-    // elt.style.width = (this.thumbWidth + border + 14) + 'px';
-    // elt.style.height = (this.thumbHeight + border + 20) + 'px';
     elt.style.width = '46px'
     elt.style.height = '46px'
-    // elt.style.marginRight = '5px'
-    // elt.style.marginBottom = '5px'
-    // elt.style.padding = this.thumbPadding + 'px';
     var shapeName = /shape=(.+?);/.exec(cells[0].style)[1];
     if (!title) {
         // 图元列表
