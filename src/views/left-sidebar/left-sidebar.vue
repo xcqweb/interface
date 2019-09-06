@@ -274,7 +274,7 @@ export default {
                     line-height: 24px;
                     padding-left:18px;
                     display: flex;
-                    background:url(../../assets/images/material/page1_ic.png) no-repeat left center;
+                    background:url(../../assets/images/material/page2_ic.png) no-repeat left center;
                     background-size:16px 16px;
                     &.currentPage{
                         color:#fff;
@@ -303,12 +303,12 @@ export default {
                     }
                 }
                 #dialogPages>li{
-                    background:url('../../assets/images/leftsidebar/popup2_ic .png') no-repeat left center;
+                    background:url('../../assets/images/leftsidebar/popup2_ic.png') no-repeat left center;
                     background-size:16px 16px;
                     &.currentPage{
                         color:#fff;
                         background-color:#3d91f7;
-                        background: #3d91f7 url('../../assets/images/leftsidebar/popup2_ic .png') no-repeat left center;
+                        background: #3d91f7 url('../../assets/images/leftsidebar/popup1_ic.png') no-repeat left center;
                         background-size:16px 16px;
                     }
                 }

@@ -14,6 +14,7 @@
           :animated="false"
           @on-click="tabsSwitch"
         >
+          <!--组件库-->
           <TabPane 
             label="组件库"
           >
@@ -171,24 +172,15 @@
             <div class="material-wrapper commom-wrapper">
               <div class="material-left materialtabs-left">
                 <ul
-                  v-for="(item,index) in materialArrayName"
-                  :key="index"
                   class="material-list"
                 >
                   <li
-                    v-if="index === 0"
+                    v-for="(item,index) in materialArrayName"
+                    :key="index"
                     class="material-icon left-page-icon"
                     :class="index === isactive2 ? 'left-side-listactive' : ''"
-                    @click="selectMaterialList(0)"
-                  >
-                    {{ item }}
-                  </li>
-                  <li 
-                    v-if="index === 1"
-                    class="material-icon left-alert-icon"
-                    :class="index === isactive2 ? 'left-side-listactive' : ''"
-                    @click="selectMaterialList(1)"
-                  >
+                    @click="selectMaterialList(index)"
+                  > 
                     {{ item }}
                   </li>
                 </ul>
@@ -311,7 +303,7 @@
 </template>
 <script>
 import {Tabs,TabPane,Modal, Upload, Message, Button} from 'iview'
-// import {tipDialog} from '../../services/Utils'
+import {sureDialog} from '../../services/Utils'
 const ROOT_LEN = 2 // 新增组件时计算长度使用
 export default {
     components: {
@@ -778,11 +770,14 @@ export default {
                 if (type === this.POSITION_LEFT) {
                     this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
                         if (res.code === '0') {
-                            this.assemblyArrayName.splice(index ,1)
-                            let lastLen = this.assemblyArrayName.length - 1
-                            let materialLibraryid = this.assemblyArrayName[lastLen].materialLibraryId
-                            this.selectAssemblyList('',lastLen,materialLibraryid)
-                            Message.warning('删除成功')
+                            // console.log(this.myEditorUi)
+                            sureDialog(this.myEditorUi, `确定要删除组件库-${ele.innerText}吗`, () => {
+                                this.assemblyArrayName.splice(index ,1)
+                                let lastLen = this.assemblyArrayName.length - 1
+                                let materialLibraryid = this.assemblyArrayName[lastLen].materialLibraryId
+                                this.selectAssemblyList('',lastLen,materialLibraryid)
+                                Message.warning('删除成功')
+                            })
                         }
                     }).catch(() => {
                         Message.warning('删除失败')
@@ -790,8 +785,10 @@ export default {
                 } else if (type === this.POSITION_RIGHT) {
                     this.requestUtil.delete(this.urls.materialRightList.url + `/${materialId}`,).then((res) => {
                         if (this.arrListTables[index].materialId === materialId && res.code === '0') {
-                            this.arrListTables.splice(index,1)
-                            Message.warning('删除成功')
+                            sureDialog(this.myEditorUi, `确定要删除组件-${ele.innerText}吗`, () => {
+                                this.arrListTables.splice(index,1)
+                                Message.warning('删除成功')
+                            })
                         }
                     }).catch(() => {
                         Message.warning('删除失败')
@@ -800,13 +797,16 @@ export default {
                 }
             } else if (+this.tabNumeber === 1) {
                 this.requestUtil.delete(this.urls.addTemplate.url + `/${materialId}`,).then((res) => {
+                    let textDelete = +this.isactive2 === 1 ? '弹窗模版' : '页面模版'
                     if (res.code === '0') {
-                        Message.warning('删除成功')
-                        if (+this.isactive2 === 1) {
-                            this.alertMaterial.splice(index, 1)
-                        } else if(+this.isactive2 === 0) {
-                            this.pageMaterial.splice(index, 1)
-                        }
+                        sureDialog(this.myEditorUi, `确定要删除${textDelete}-${ele.innerText}吗`, () => {
+                            if (+this.isactive2 === 1) {
+                                this.alertMaterial.splice(index, 1)
+                            } else if(+this.isactive2 === 0) {
+                                this.pageMaterial.splice(index, 1)
+                            }
+                            Message.warning('删除成功')
+                        })
                     }
                 }).catch(() => {
                     Message.warning('删除失败')
@@ -967,7 +967,7 @@ export default {
                                                 }
                                             }
                                             .material-list {
-                                                &>li{
+                                                &>li:first-child{
                                                     &.material-icon{
                                                         width:100%;
                                                         height: 24px;
@@ -976,15 +976,29 @@ export default {
                                                         font-size: 12px;
                                                         color:#252525;
                                                         &.left-page-icon {
-                                                            background: url(../../assets/images/material/page1_ic.png) no-repeat left center;
+                                                            background: url(../../assets/images/material/page2_ic.png) no-repeat left center;
                                                             background-size: 16px 16px;
                                                         }
-                                                        &.left-alert-icon {
+                                                        &.left-side-listactive{
+                                                            background: #277AE0 url(../../assets/images/material/page1_ic.png) no-repeat left center;
+                                                            color:#fff;
+                                                        }
+                                                    }
+                                                }
+                                                &>li:last-child{
+                                                  &.material-icon{
+                                                        width:100%;
+                                                        height: 24px;
+                                                        padding-left:18px;
+                                                        line-height: 24px;
+                                                        font-size: 12px;
+                                                        color:#252525;
+                                                        &.left-page-icon {
                                                             background: url(../../assets/images/material/popup2_ic.png) no-repeat left center;
                                                             background-size: 16px 16px;
                                                         }
                                                         &.left-side-listactive{
-                                                            background-color: #277AE0;
+                                                            background: #277AE0 url(../../assets/images/leftsidebar/popup1_ic.png) no-repeat left center;
                                                             color:#fff;
                                                         }
                                                     }
