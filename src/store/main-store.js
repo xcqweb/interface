@@ -21,6 +21,7 @@ const mutations = {
         widgetInfo.widgetName = widgetName
         if (stateWidget) {
             widgetInfo.geo = stateWidget.cellBounds
+            console.log(stateWidget.cellBounds)
         }else{
             widgetInfo.geo = {}
         }

@@ -345,23 +345,23 @@ export default {
             uploadData:{},
             DIR_: `../../../static/stencils/basic/`,
             baseAssembly: [
-                {image:'text2.svg', name :'文字'},
-                {image:'rectangle2.svg',name :'矩形'},
-                {image:'ellipse2.svg',name : '椭圆'},
-                {image:'line2.svg', name :'直线'},
+                {image:'text.svg', name :'文字'},
+                {image:'rectangle.svg',name :'矩形'},
+                {image:'ellipse.svg',name : '椭圆'},
+                {image:'line.svg', name :'直线'},
                 {image:'button.png', name :'按钮'},
                 {image:'menulist.png',name :'菜单'},
-                {image:'tableBox2.svg', name :'表格'},
-                {image:'image2.svg', name :'图片'},
-                {image:'linkTag2.svg',name : 'Link'},
-                {image:'light2.svg', name :'指示灯'},
-                {image:'progress2.svg', name :'进度条'},
-                {image:'npipeline1.svg', name :'管道1'},
-                {image:'npipeline2.svg',name :'管道2'}
+                {image:'tableBox.svg', name :'表格'},
+                {image:'image.svg', name :'图片'},
+                {image:'linkTag.svg',name : 'Link'},
+                {image:'light.svg', name :'指示灯'},
+                {image:'progress.svg', name :'进度条'},
+                {image:'pipeline1.svg', name :'管道1'},
+                {image:'pipeline2.svg',name :'管道2'}
             ],
             tablesAssembly: [
-                {image:'lineChart2.svg',name :'趋势图'},
-                {image:'gaugeChart2.svg',name :'仪表盘'}
+                {image:'lineChart.svg',name :'趋势图'},
+                {image:'gaugeChart.svg',name :'仪表盘'}
             ],
             arrListTables: [],
             emptyArray: [],
@@ -1024,10 +1024,6 @@ export default {
                                                             display: block;
                                                             width:72px;
                                                             height: 72px;
-                                                            &.right-background-size{
-                                                              background-size:50px 50px !important;
-                                                            }
-                                                            // border: 1px dashed #E1E1E1;
                                                         }
                                                     }
                                                     &>span{

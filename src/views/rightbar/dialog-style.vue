@@ -12,6 +12,7 @@
     <textarea
       v-model="dialogDesc"
       rows="3"
+      maxlength="50"
       @blur="descChange"
     />
     <div class="item-title">

@@ -446,8 +446,6 @@ div.mxWindow .geButton {
 	display:inline-block;
 	background-repeat:no-repeat;
 	background-position: 50% 0;
-	background-size: 36px 36px;
-	/* border:1px solid transparent; */
 	border-radius:2px;
 	cursor: move;
 	display:flex;

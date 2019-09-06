@@ -228,7 +228,7 @@ export default{
             this.isShowScale = false
         },
         addAction(key) {
-            let action = this.myEditorUi.actions.get(key);
+            let action = this.myEditorUi.actions.get(key)
             action.funct()
         },
         changeAlign(d) {

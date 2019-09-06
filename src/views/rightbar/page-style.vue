@@ -10,6 +10,7 @@
     </p>
     <textarea
       v-model="pageDesc"
+      maxlength="50"
       rows="3"
     />
     <div class="item-title">
@@ -88,6 +89,7 @@
           ref="chooseImg"
           style="display:none;"
           type="file"
+          accept="image/jpg,image/png,image/jpeg,image/gif,image/svg"
           @change="fileChange"
         >
       </div>
@@ -134,6 +136,8 @@ export default {
             let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
             if(bgUrl) {
                 this.changeBg(bgUrl)
+            }else{
+                mxClient.IS_ADD_IMG = false
             }
             let {width,height} = graph.pageFormat
             this.solidWidth = width
@@ -209,10 +213,24 @@ export default {
         },
         fileChange(e) {
             if(e.target.files && e.target.files.length) {
-                if (e.target.files[0].size >= 5 * 1024 * 1024) {
+                let file = e.target.files[0]
+                if (file.size >= 5 * 1024 * 1024) {
                     tipDialog(this.myEditorUi,`背景图片大小不得超过5M`)
-                    return false
+                    return
                 }
+                let  fileTypes = ['jpg','png','jpeg','gif','bmp','svg']
+                let typeFlag = false
+                for(let i = 0;i < fileTypes.length;i++) {
+                    if(file.type.includes(fileTypes[i])) {
+                        typeFlag = true
+                        break
+                    }
+                }
+                if(!typeFlag) {
+                    tipDialog(this.myEditorUi,`请选择图片文件`)
+                    return
+                }
+                
                 // 预览图片
                 let reader = new FileReader()
                 localImage = e.target.files[0]
