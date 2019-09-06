@@ -2,6 +2,7 @@ const state = {
     type:0,//0=页面 1=弹窗 2=普通控件
     widgetInfo:{},//当前组件信息
     rand:0,//监听控件切换的刷新 随机数字
+    modelEditing: true
 }
 
 const mutations = {
@@ -78,6 +79,9 @@ const mutations = {
     widgetChange(state,rand) {
         state.rand = rand
     },
+    modelEditing(state, modelEditing) {
+        state.modelEditing = modelEditing
+    }
 }
 
 const actions = {

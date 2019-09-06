@@ -81,6 +81,9 @@ export default{
         },
     },
     mounted() {
+        VueEvent.$on('rightBarTabSwitch',()=>{
+            this.changeTab(1)
+        })
     },
     methods: {
         changeTab(index) {

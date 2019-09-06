@@ -61,7 +61,7 @@
             </div>
             <!--数据显示-->
             <div
-              v-show="tabsNum === 1 && ifShowDataFlag"
+              v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length"
               class="footer-common dataDisplayList"
             > 
               <ul class="dataDisplayListUl">
@@ -143,7 +143,7 @@
             </div>
           </div>
           <div
-            v-if="!footerContent || (tabsNum === 2&&stateList.length===0) || (tabsNum === 1 && !ifShowDataFlag)"
+            v-if="!footerContent || (tabsNum === 2&&stateList.length===0) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
             class="no-data-wrap"
           >
             <NoData
@@ -233,7 +233,9 @@ export default {
             if (isUp) {
                 this.ifShowArrow = isUp
             }
-            
+        })
+        VueEvent.$on('rightBarTabSwitch',()=>{
+            this.ifShowArrow = false
         })
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
@@ -366,10 +368,11 @@ export default {
                 } else {
                     this.ifCanAddParamFlag = false
                 }
-                if (!SupportDataShow.includes(shapeName)) { // flag 是否数据显示
-                    this.ifShowDataFlag = false
-                } else {
+                if (SupportDataShow.includes(shapeName)) { // flag 是否数据显示
                     this.ifShowDataFlag = true
+                } else {
+                    console.log(7)
+                    this.ifShowDataFlag = false
                 }
                 if(allShapes.includes(shapeName)) { // 底部内容显示
                     this.footerContent = true

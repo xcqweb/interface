@@ -84,9 +84,10 @@
         <div class="textare-wrap">
           <Input
             v-model="textareValue"
-            :disabled="isediting" 
+            :disabled="modelEditing" 
             type="textarea" 
             :placeholder="descriptText"
+            class="descript-color"
             :autosize="{maxRows: 3,minRows: 3}" 
           />
         </div>
@@ -119,7 +120,7 @@
                         <Select 
                           v-model="conditionLogicalSelect" 
                           style="width:64px;height:24px;line-height:24px;"
-                          :disabled="isediting"
+                          :disabled="modelEditing"
                           @on-change="conditionLogicalSelectHandle"
                         >
                           <Option 
@@ -216,7 +217,7 @@
                         <Select
                           v-model="row.paramName" 
                           style="width:120px;"
-                          :disabled="isediting"
+                          :disabled="modelEditing"
                           @on-change="treeSelectParamHandle(row.paramName,index, key)"
                         >
                           <Option 
@@ -235,7 +236,7 @@
                         <Select
                           v-model="row.logical" 
                           style="width:80px;"
-                          :disabled="isediting"
+                          :disabled="modelEditing"
                           @on-change="treeSelectLogicalHandle(row.logical,index, key)"
                         >
                           <Option 
@@ -258,14 +259,16 @@
                           <Input
                             v-model="row.minValue"
                             class="input-twp-left"
-                            :disabled="isediting"
+                            :disabled="modelEditing"
+                            type="number" 
                             @on-blur="treeMinvalueHandle(row.minValue, index, key)"
                           />
                           <span style="width:10px;text-align:center;">-</span>
                           <Input
                             v-model="row.maxValue"
                             class="input-twp-right" 
-                            :disabled="isediting"
+                            :disabled="modelEditing"
+                            type="number" 
                             @on-blur="treeMaxvalueHandle(row.maxValue, index, key)"
                           />
                         </div>
@@ -276,7 +279,8 @@
                           <Input
                             v-model="row.fixedValue"
                             placeholder="请输入"
-                            :disabled="isediting"
+                            :disabled="modelEditing"
+                            type="number" 
                             @on-blur="treeFixedvalueHandle(row.fixedValue, index, key)"
                           />
                         </div>
@@ -289,7 +293,7 @@
                           v-if="index === 0"
                           size="small"
                           class="condition-icon condition-add-icon"
-                          :disabled="isediting"
+                          :disabled="modelEditing"
                           @click.stop.prevent="adddata(key,index)"
                         >
                           添加
@@ -298,7 +302,7 @@
                           v-if="data.length > 1"
                           size="small"
                           class="condition-icon condition-delete-icon"
-                          :disabled="isediting"
+                          :disabled="modelEditing"
                           @click.stop.prevent="removedata(key, index)"
                         >
                           删除
@@ -312,6 +316,14 @@
           </div>
         </div>
         <div class="dataSource-condition-bottom">
+          <Button
+            size="small"
+            style="width:69px;"
+            :disabled="modelEditing"
+            @click.stop.prevent="CancelModelHandle"
+          >
+            {{ cancelModelText }}
+          </Button>
           <Button
             type="primary"
             size="small"
@@ -341,12 +353,13 @@ import VueEvent from '../../services/VueEvent.js'
 import NoData from './nodata'
 import {Input, Button, Table, Select,Option, Message} from 'iview'
 import {conditionLogical,logicalSignList} from '../../constants/model-form-logic'
+const alertTip = '您还有未保存的模型,请先保存'
 const defaultValue = {
     paramName: '',
     logical: '',
     fixedValue: '',
     minValue: '',
-    maxValue: '',
+    maxValue: ''
 }
 export default {
     components: {
@@ -357,7 +370,7 @@ export default {
         Table,
         Select,
         Option,
-        NoData
+        NoData,
     },
     props:{
         numberlistindex: {
@@ -375,6 +388,7 @@ export default {
             textareValue: '',
             condition: '条件',
             saveModelText:'编辑模型',
+            cancelModelText: '取消',
             addConditionText: '添加条件',
             addModelText: '添加模型',
             ModelNameArr:[],
@@ -427,7 +441,6 @@ export default {
             conditionSignList:[],
             conditionLogical:conditionLogical,
             logicalSignList:logicalSignList,
-            isediting: true,
             studioIdNew:'',
             SuspensionListName: [
                 {
@@ -442,7 +455,15 @@ export default {
             ifShowSuspension: false,
             currentMouseIndex: 0,
             LeftWidth: 0,
-            TopHeight:0
+            TopHeight:0,
+            snapshot:null, // 记录初始值
+            snapDescript: null, // 记录初始值
+            ifCanClickCancelFlag: true
+        }
+    },
+    computed:{
+        modelEditing() {
+            return this.$store.state.main.modelEditing
         }
     },
     watch: {
@@ -524,13 +545,17 @@ export default {
             })
         },
         saveModelHandle() {
-            if (this.isediting) {
+            if (this.modelEditing) {
+                this.snapshot = JSON.parse(JSON.stringify(this.alldata))
+                this.snapDescript = this.textareValue
                 this.saveModelText = `保存模型`
-                this.isediting = false
+                this.$store.commit('modelEditing', false)
             } else {
-                this.saveModelText = `编辑模型`
+                
                 if (this.treeCheckRule(this.alldata.data)) {
                     // 组装数据  保存模型 
+                    console.log(5)
+                    this.saveModelText = `编辑模型`
                     let objData = {}
                     objData.studioId = this.studioIdNew
                     objData.deviceTypeId = this.currentDeviceTypeId
@@ -542,7 +567,7 @@ export default {
                     this.requestUtil.put(this.urls.addModelList.url,objData).then((res) => {
                         if (res.sourceId) {
                             Message.success('保存模型成功')
-                            this.isediting = true
+                            this.$store.commit('modelEditing', true)
                         }
                     }).catch(() => {
                         Message.error('系统繁忙，请稍后再试！')
@@ -552,8 +577,16 @@ export default {
                 }
             }
         },
+        // 取消
+        CancelModelHandle() {
+            this.alldata = this.snapshot
+            this.conditionLogicalSelect = this.snapshot.conditionLogic
+            this.textareValue = this.snapDescript
+            this.saveModelText = `编辑模型`
+            this.$store.commit('modelEditing', true)
+        },
         addConditionHandle() {
-            if (this.isediting) {
+            if (this.modelEditing) {
                 Message.warning('非编辑状态，不能添加条件')
                 return false
             }
@@ -571,8 +604,8 @@ export default {
             this.alldata.conditionLogic = data
         },
         addModelHandle() {
-            if (!this.isediting) {
-                Message.warning('您还有未保存的模型')
+            if (!this.modelEditing) {
+                Message.warning(alertTip)
                 return false
             }
             if (!this.currentDeviceTypeId) {
@@ -609,6 +642,10 @@ export default {
             this.alldata.data[key].unshift(newDefaultValue)
         },
         clickDeviceTypeListHandle(evt, modelId, index) {
+            if (!this.modelEditing && this.numberlistIndex !== index) {
+                Message.warning(alertTip)
+                return false
+            }
             this.numberlistIndex = index
             this.currentDeviceTypeId = modelId
             let liCLassName = evt.target.parentNode.className || 'can'
@@ -618,6 +655,10 @@ export default {
         },
         // 渲染最右侧表格
         clickModelHandle(evt, modelId, modelName,formula,descript,index) {
+            if (!this.modelEditing && this.modelNumber !== index) {
+                Message.warning(alertTip)
+                return false
+            }
             let data = formula ? JSON.parse(formula) : {conditionLogic: '',data:[[{paramName: '',logical:'',minValue:'',maxValue:'',fixedValue:''}]]}
             this.alldata.data = data.data
             this.alldata.conditionLogic = data.conditionLogic || ''
@@ -964,6 +1005,11 @@ export default {
         align-items: center;
       }
     }
+    /deep/.descript-color{
+      textarea{
+        color:#252525 !important
+      }
+    }
 }
 .wrapper{
     display:flex;
@@ -1154,6 +1200,7 @@ export default {
       /deep/.ivu-input{
         height:25px;
         line-height: 25px;
+        color:#252525;
       }
     }
     .condition-icon{
@@ -1162,16 +1209,6 @@ export default {
       font-size:12px;
       height:26px;
       line-height: 22px;
-      // height:24px;
-      // display:inline-block;
-      // background-size:16px 16px;
-      // cursor: pointer;
-      // &.condition-add-icon{
-      //   background:url('../../assets/images/leftsidebar/addpage.png') no-repeat center center;
-      // }
-      // &.condition-delete-icon{
-      //   background:url('../../assets/images/datasource/delete.png') no-repeat center center;
-      // }
     }
   }
   .left-center{

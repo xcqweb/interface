@@ -233,7 +233,8 @@ export default{
                 Message.warning('此控件不允许绑定多个设备名称')
                 return false
             } else {
-               if (singleDeviceName.includes(this.shapeName) && startBindData2 && startBindData2.dataSource && startBindData2.dataSource.deviceNameChild && startBindData2.dataSource.deviceNameChild.length) {                    Message.warning('此控件已经绑定设备名称')
+                if (singleDeviceName.includes(this.shapeName) && startBindData && startBindData.dataSource && startBindData.dataSource.deviceNameChild && startBindData.dataSource.deviceNameChild.length) {      
+                    Message.warning('此控件已经绑定设备名称')
                     return false
                 }
             }
