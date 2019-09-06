@@ -3523,6 +3523,7 @@ EditorUi.prototype.save = function(name, des,hideDialog=false)
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                 }
                 var id = editor.getApplyId() || sessionStorage.getItem('applyId')
+                console.log("id--",id)
                 if (id) {
                     // 编辑保存
                     data.studioId = id

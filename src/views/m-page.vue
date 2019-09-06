@@ -70,7 +70,6 @@ export default {
                 Vue.prototype.myEditorUi = myEditorUi
                 this.init()
                 this.isInited = true
-                //this.myEditorUi.saveFile(true,true)
             })
         })
     },
@@ -90,6 +89,10 @@ export default {
             this.$refs.toolbar.init();
             this.$refs.leftsidebar.init();
             this.$refs.rightbar.init()
+            let applyId = sessionStorage.getItem('applyId')
+            if(!applyId) {
+                this.myEditorUi.saveFile(true,true)
+            }
             timer = setInterval(()=> {
                 this.myEditorUi.saveFile(true,true)
             },1000 * 60 * 3)//3分钟自动保存一次
