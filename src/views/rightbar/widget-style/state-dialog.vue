@@ -38,6 +38,7 @@
               </div>
             </div>
             <i-checkbox
+              v-if="shapeName!='light'"
               v-model="animateCheck"
               style="width:100%;text-align:center;margin-top:8px;"
               @on-change="changeAnimate"

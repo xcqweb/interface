@@ -131,7 +131,7 @@
   </div>
 </template>
 <script>
-//import VueEvent from '../../services/VueEvent.js'
+import {mxClient} from '../../services/mxGlobal'
 let newBackgroundColor,newFontColor
 let alignArr = ['left','center','right']
 let valignArr = [],dialogStyle
@@ -189,6 +189,10 @@ export default {
                 this.dialogDesc = editor.pages[editor.currentPage].desc
                 this.titleName =  editor.pages[editor.currentPage].title
             },50)
+            let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
+            if(!bgUrl) {
+                mxClient.IS_ADD_IMG = false
+            }
         },
         descChange() {
             let editor = this.myEditorUi.editor

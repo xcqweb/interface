@@ -57,23 +57,50 @@ async function getSubscribeInfos(pointParams) {
 //绑定数据&切换状态的处理方法
 function setterRealData(res) {
     res.forEach((item)=>{
-        //let els = document.querySelectorAll(`.point_${item.pointId}`)
-        let els = document.querySelectorAll(`.point_db9e97be561075b2c3985826f536ec16`)
+        let els = document.querySelectorAll(`.point_${item.pointId}`)
         for(let i = 0;i < els.length;i++) {
+            let shapeName = $(els[i]).data("shapeName")
             let paramShow = $(els[i]).data("paramShow")
-            $(els[i]).html(paramShow.map((item) => {
-                return '<p>' + item + '</p>'
-            }).join(''))
+            let realVal = item[paramShow[0]]
+            if(shapeName == 'progress') {//进度条
+                let progressPropsObj = $(els[i]).data("progressPropsObj")
+                let {max,min,type} = progressPropsObj
+                let percentVal = (realVal / (max - min)).toFixed(4)
+                let text = `${percentVal * 100}%`
+                if(type == 'real') {
+                    text = realVal
+                }
+                let target = $(els[i]).find(".progressbar-common.progressbar")
+                let background = "linear-gradient(to right,#FF280F,#FFA963)"
+                if (percentVal * 100 > 75) {
+                    background = "linear-gradient(to right,#D4D7FF,#175FFF)"
+                }else if (percentVal * 100 > 50) {
+                    background = "linear-gradient(to right,#BDFFBA,#12FF1A)"
+                } else if (percentVal * 100 > 25) {
+                    background = "linear-gradient(to right,#FFF7B3,#FFEF17)"
+                }
+                target.css("background", background)
+                target.animate({"width":`${percentVal * 100}%`})
+                target.html(text)
+            }else if(shapeName.includes('Chart')) {
+
+            }else{
+                $(els[i]).html(paramShow.map((d) => {
+                    return `<p>${d}=${item[d]}</p>`
+                }).join(''))
+            }
 
             let stateModels = $(els[i]).data("stateModels")
-            let stateIndex = 0
-            for (let j = 1; j < stateModels.length;j++) {
-                if (dealStateFormula(stateModels[j].modelFormInfo.formula, item)) {
-                    stateIndex = j
-                    break
+            if(stateModels) {
+                let stateIndex = 0
+                for (let j = 1; j < stateModels.length;j++) {
+                    if (dealStateFormula(stateModels[j].modelFormInfo.formula, item)) {
+                        stateIndex = j
+                        break
+                    }
                 }
+                changeEleState(els[i], stateModels[stateIndex])
             }
-            changeEleState(els[i], stateModels[stateIndex])
         }
     })
 }
@@ -83,9 +110,14 @@ function setterRealData(res) {
  * @param {} data 公式中参数的实际值
  */
 function dealStateFormula(formula, data) {
+    formula = JSON.parse(formula)
     let res1 = true,breakFlag = false,res2 = false
     let logics = formula.data
-    if (formula.conditionLogic == 1) {// 顶级条件是and，有一个为false，就返回false
+    console.log(formula, formula.data, "tt-aa")
+    if(!logics) {
+        return
+    }
+    if (!formula.conditionLogic || formula.conditionLogic == 1) { // 顶级条件是and，有一个为false，就返回false
         for(let i = 0;i < logics.length;i++) {
             for(let j = 0;j < logics[i].length;j++) {
                 if (!dealLogic(logics[i][j],data)) {//子级条件有一个为false，整体为false

@@ -507,6 +507,8 @@ export default {
                     this.progressTypeText = findCurrent.name
                     this.progressTypeVal = findCurrent.value
                 }
+            }else{
+                this.setWidgetProps('progressProps',{max:this.progressMax,min:this.progressMin,type:this.progressTypeVal})
             }
         }else if(this.shapeName.includes('pipeline')) {
             let pipelineProps = this.getWidgetProps('pipelineProps')
@@ -750,7 +752,7 @@ export default {
             e.stopPropagation()
         },
         changeProgress() {
-            this.setWidgetProps('progressProps',{max:this.progressMax,val:'',min:this.progressMin})
+            this.setWidgetProps('progressProps',{max:this.progressMax,min:this.progressMin,type:this.progressTypeVal})
         },
         hideProgressDialogFun() {
             this.progressDialog = false
@@ -759,7 +761,7 @@ export default {
             this.progressTypeText = d.name
             this.progressTypeVal = d.value
             this.progressDialog = false
-            this.setWidgetProps('progressProps',{type:this.progressTypeVal,val:''})
+            this.setWidgetProps('progressProps',{max:this.progressMax,min:this.progressMin,type:this.progressTypeVal})
             e.stopPropagation()
         },
         addLinkUrl() {

@@ -138,6 +138,7 @@ export default {
             let {width,height} = graph.pageFormat
             this.solidWidth = width
             this.solidHeight = height
+            this.myEditorUi.setPageFormat({height:height,width:width,x:0,Y:0},true)
             this.scaleText = width + '*' + height
         },
         changeScale(d,e) {
@@ -154,14 +155,13 @@ export default {
                     y: 0
                 },
                 true
-            );
-            this.centerCanvas()       
+            )
             e.stopPropagation()
         },
-        centerCanvas() {//居中画布
+        /* centerCanvas() {//居中画布
             let graph = this.myEditorUi.editor.graph
             graph.center(true,true,0.5,0.5)//将画布放到容器中间
-        },
+        }, */
         changeScaleInput() {
             this.myEditorUi.setPageFormat(
                 {
@@ -171,8 +171,7 @@ export default {
                     y: 0
                 },
                 true
-            );
-            this.centerCanvas()
+            )
         },
         setBackgroundImg() {
             this.$refs.chooseImg.click()

@@ -305,6 +305,11 @@ function effectEvent(action, mainProcess, applyData) {
 function actionChange(action) {
     let cellCon = document.getElementById('palette_' + action.link)
     let {stateInfo} = action
+    let shapeName = $(cellCon).data("shapeName")
+    if (shapeName == 'light') {
+        dealLightFill(cellCon,stateInfo.style.background)
+        return
+    }
     if (stateInfo.animateCls) {
         cellCon.classList.add(stateInfo.animateCls)
     }
@@ -368,35 +373,18 @@ function showTips(flag = true, title = '请求') {
     let msg = document.createElement('p')
     msg.innerHTML = `${title}${flag ? '成功' : '失败'}`
 }
-
 //插入进度条
 function dealProgress(cell) {
     let con = document.createElement('div')
     let {progressProps} = cell
-    let progressPropsObj
-    let percent = 0.8
-    let text = ''
-    if(progressProps) {
-        progressPropsObj = JSON.parse(progressProps)
-        if(progressPropsObj.type == 'real') {
-            text = progressPropsObj.val
-        }else{
-            if(!progressPropsObj.val) {
-                percent = 0
-            }else{
-                percent = progressPropsObj.val / (+progressPropsObj.max - (+progressPropsObj.min)).toFixed(2)
-            }
-            text = percent
-        }
-    }
-    let progressTop = -(cell.height + 4)
+    let progressPropsObj = JSON.parse(progressProps)
+    $(con).data("progressPropsObj", progressPropsObj)
+    let progressTop = -(cell.height - 2)
     let progress = `<div class="progressbar-wrap" style="width:${cell.width}px;">
             <div class="progressbar-common progressbar-back" style="height:${cell.height}px;"></div> 
-            <div class="progressbar-common progressbar progress" style="height:${cell.height}px;top:${progressTop}px;width:${percent * 100}%;">${text}</div> 
+            <div class="progressbar-common progressbar" style="height:${cell.height - 4}px;top:${progressTop}px;left:2px;width:0;border:0;"></div> 
         </div>`
     con.innerHTML = progress
-    let root = document.documentElement
-    root.style.setProperty('--progressPercent',`${percent * 100}%`)
     return con
 }
 
@@ -486,7 +474,7 @@ function dealLight(cell) {
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
         width="${cell.width}px" height="${cell.height}px" viewbox="0 0 27.5 26.5">
-        <path fill-rule="evenodd"  stroke="rgb(125, 125, 125)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="rgb(203, 203, 203)"
+        <path fill-rule="evenodd"  stroke="rgb(125, 125, 125)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="#CBCBCB"
         d="M13.000,8.000 C16.867,8.000 19.999,10.047 19.999,12.571 L19.999,24.000 L6.000,24.000 L6.000,12.571 C6.000,10.047 9.134,8.000 13.000,8.000 Z"/>
         <path fill-rule="evenodd"  fill="rgb(125, 125, 125)"
         d="M12.996,0.000 C14.536,0.000 14.212,1.592 14.212,3.017 C14.212,3.604 14.294,4.442 14.050,4.861 C13.888,5.113 13.564,5.364 13.240,5.364 C12.996,5.364 12.835,5.281 12.671,5.197 C11.861,4.778 12.105,3.520 12.105,2.263 C12.105,1.760 12.024,1.006 12.185,0.670 C12.266,0.252 12.589,0.168 12.996,0.000 L12.996,0.000 ZM5.292,2.682 C5.618,2.682 5.861,2.766 6.105,2.934 L7.645,4.861 C7.889,5.197 8.294,5.532 8.456,5.951 C8.699,6.538 8.375,7.125 7.969,7.292 C7.645,7.544 7.076,7.460 6.754,7.209 C6.429,6.957 6.105,6.454 5.861,6.035 L5.051,4.945 C4.564,4.442 3.916,3.856 4.564,3.101 C4.726,2.850 4.969,2.850 5.292,2.682 L5.292,2.682 ZM20.780,3.101 C21.591,3.101 22.321,3.688 21.996,4.610 C21.833,5.029 21.428,5.281 21.185,5.616 L20.132,6.789 C19.970,7.041 19.724,7.376 19.483,7.544 C19.240,7.711 18.672,7.795 18.348,7.628 C17.862,7.292 17.536,6.622 17.862,6.035 L18.915,4.861 C19.158,4.526 19.483,4.275 19.724,3.939 C19.889,3.688 20.132,3.436 20.374,3.269 L20.780,3.101 ZM0.915,9.891 C1.321,9.891 1.564,9.975 1.889,10.058 C2.456,10.142 3.104,10.310 3.672,10.394 C4.159,10.478 4.564,10.478 4.888,10.813 C5.212,11.064 5.375,11.735 5.131,12.154 C4.969,12.406 4.726,12.657 4.401,12.657 C4.077,12.741 3.753,12.573 3.429,12.573 L1.644,12.154 C1.159,12.070 0.672,11.986 0.348,11.735 C-0.057,11.400 -0.139,10.478 0.267,10.058 C0.510,9.975 0.672,9.975 0.915,9.891 L0.915,9.891 ZM24.834,10.394 C25.727,10.394 26.375,11.400 25.808,12.154 C25.482,12.573 24.997,12.573 24.348,12.657 C23.781,12.741 23.131,12.825 22.564,12.908 C22.321,12.992 21.915,13.076 21.591,12.992 C21.266,12.908 20.942,12.657 20.780,12.406 C20.537,11.819 20.861,11.148 21.266,10.981 C21.510,10.897 21.833,10.897 22.159,10.813 L23.942,10.478 C24.266,10.478 24.510,10.478 24.834,10.394 L24.834,10.394 Z">
@@ -498,7 +486,11 @@ function dealLight(cell) {
     con.innerHTML = light
     return con
 }
-
+function dealLightFill(ele,color) { //处理闪烁灯 填充色
+    let paths = $(ele).find("svg path")
+    $(paths[0]).attr("fill", color)
+    $(paths[1]).attr("fill", color)
+}
 export {
     removeEle, destroyWs, geAjax, insertImage, inserEdge, insertSvg, bindEvent, showTips,
     dealProgress, dealPipeline, dealCharts, dealLight

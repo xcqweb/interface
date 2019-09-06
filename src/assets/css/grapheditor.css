@@ -1592,24 +1592,13 @@ button.buttonTag, input.inputTag {
  	z-index: 2;
  }
  .progressbar-wrap .progressbar-common {
- 	border: solid 4px #7D7D7D;
+ 	border: solid 2px #7D7D7D;
  	height: 24px;
- 	border-radius: 20%;
  }
  .progressbar-wrap .progressbar-back {
- 	background: #fff; 
+ 	background: #CBCBCB; 
  	width: 100%;
  }
  .progressbar-wrap .progressbar {
  	position: relative;
- 	background: #7D7D7D;
- 	top: -32px;
- 	width: 100%;
  }
- .progressbar-wrap .progress {
- 	animation: progress 1s;
- }
- @keyframes progress {
-  from { width: 0%; }
-  to { width: var(--progressPercent); }
-}

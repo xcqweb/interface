@@ -34,12 +34,10 @@ class PreviewPage {
     constructor(data, mainProcess, gePreview) {
         let {
             content,
-            studioId,
         } = data
         let parseContent = JSON.parse(content)
         this.content = parseContent.pages
         this.pagesRank = parseContent.rank
-        this.renderPageId = studioId
         this.wsParams = []
         this.mainProcess = mainProcess
         this.gePreview = gePreview
@@ -317,9 +315,10 @@ class PreviewPage {
     // 解析页面
     parsePage(page, fileSystem, shapeXlms) {
         const xmlDoc = mxUtils.parseXml(page.xml).documentElement
+        let pageStyle = page.style
         const root = xmlDoc.getElementsByTagName('root')[0].childNodes
-        const bodyBackground = xmlDoc.getAttribute('background'); // 新增全背景色
-        document.body.setAttribute('style', `background:${bodyBackground}`)
+        const bodyBackground = xmlDoc.getAttribute('background'); // 新增背景色
+        document.body.style.backgroundColor = `${bodyBackground}`
         const list = []
         for (let i = 0; i < root.length; i++) {
             list.push(root[i])
@@ -327,7 +326,6 @@ class PreviewPage {
         // 页面宽度和高度
         pageWidth = pageHeight = 0
         let cells = this.parseCells(list)
-        this.renderPageId = page.id
         this.wsParams = [];
         if (page.type === 'normal') {
             // 清除全部websocket
@@ -343,6 +341,9 @@ class PreviewPage {
             this.renderPages(cells, this.gePreview, fileSystem, shapeXlms)
             this.gePreview.style.width = pageWidth + 'px'
             this.gePreview.style.height = pageHeight + 'px'
+            if (pageStyle.backgroundUrl) {
+                document.body.style.backgroundImage = `url(${pageStyle.backgroundUrl})`
+            }
         } else {
             // 弹窗页面
             let layerContent = this.createDialog(page)
@@ -474,6 +475,7 @@ class PreviewPage {
         cellHtml.id = `palette_${cell.id}`
         // 绑定事件
         bindEvent(cellHtml, cell, this.mainProcess, applyData)
+        $(cellHtml).data("shapeName",shapeName)
         if (cell.bindData) {
             let devices = cell.bindData.dataSource.deviceNameChild
             let paramShow = []
@@ -483,6 +485,7 @@ class PreviewPage {
                 })
             }
             $(cellHtml).data("paramShow", paramShow)
+            console.log("parm-s", paramShow)
             let resParams = []
             let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
             let modelIdsParam = []
