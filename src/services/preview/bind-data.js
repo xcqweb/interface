@@ -82,12 +82,8 @@ function setterRealData(res) {
                 target.css("background", background)
                 target.animate({"width":`${percentVal * 100}%`})
                 target.html(text)
-            }
-            // else if(shapeName.includes('Chart')) {
-
-            // }
-            else{
-                $(els[i]).html(paramShow.map((d) => {
+            }/*else if(shapeName.includes('Chart')) { 
+            }*/else{                 $(els[i]).html(paramShow.map((d) => {
                     return `<p>${d}=${item[d]}</p>`
                 }).join(''))
             }

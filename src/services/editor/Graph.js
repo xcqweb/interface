@@ -359,7 +359,6 @@ window.Graph = function(container, model, renderHint, stylesheet, themes)
 			    				
 			    				if (cursor != null)
 			    				{
-                                    console.log(125553)
 			    					state.setCursor(cursor);
 			    				}
 				    		}

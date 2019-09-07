@@ -36,7 +36,7 @@
 export default{
     data() {
         return {
-            scaleSizes:[0.25, 0.5, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4],
+            scaleSizes:[0.25, 0.5,0.8, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4],
             classTtype:[],
         }
     },

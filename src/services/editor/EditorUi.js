@@ -887,7 +887,6 @@ window.EditorUi = function(editor, container, lightbox)
         var parent = evt.getProperty('parent');
         if (graph.getModel().isLayer(parent) && !graph.isCellVisible(parent) && cells != null && cells.length > 0)
         {
-            console.log("gg-bbb")
             graph.getModel().setVisible(parent, true);
         }
     }.bind(this));
@@ -3523,7 +3522,6 @@ EditorUi.prototype.save = function(name, des,hideDialog=false)
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                 }
                 var id = editor.getApplyId() || sessionStorage.getItem('applyId')
-                console.log("id--",id)
                 if (id) {
                     // 编辑保存
                     data.studioId = id

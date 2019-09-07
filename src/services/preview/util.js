@@ -306,12 +306,12 @@ function actionChange(action) {
     let cellCon = document.getElementById('palette_' + action.link)
     let {stateInfo} = action
     let shapeName = $(cellCon).data("shapeName")
+    if (stateInfo.animateCls) {
+        cellCon.classList.add(stateInfo.animateCls)
+    }
     if (shapeName == 'light') {
         dealLightFill(cellCon,stateInfo.style.background)
         return
-    }
-    if (stateInfo.animateCls) {
-        cellCon.classList.add(stateInfo.animateCls)
     }
     for (let key in stateInfo.style) {
         cellCon.style[key] = stateInfo.style[key]
@@ -389,62 +389,32 @@ function dealProgress(cell) {
 }
 
 function dealPipeline(cell) {
-    let pipeline1ImgUrl = 'static/stencils/basic/npipeline1.svg'
+    let pipeline1ImgUrl = 'static/stencils/basic/pipeline1.svg'
+    let pipeline2ImgUrl = 'static/stencils/basic/pipeline2.svg'
     let con = document.createElement('div')
     let pipelineProps = cell.pipelineProps
-    let dasharray = 0
-    let dashoffset = 16
     let pipelinePropsObj
     if (pipelineProps) {
         pipelinePropsObj = JSON.parse(pipelineProps)
-        dasharray = 8
         pipeline1ImgUrl = 'static/stencils/basic/pipeline_forward.svg'
         if(pipelinePropsObj.flow == 'back') {
-            dashoffset = -16
             pipeline1ImgUrl = 'static/stencils/basic/pipeline_back.svg'
         }
     }
-    let pipeline2 = `<svg 
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        width="${cell.width}px" height="${cell.height}px" viewbox="0 0 25 24">
-        <style type="text/css">
-            .flow2 {
-                stroke-dasharray: ${dasharray};
-                animation: dash2 0.5s linear;
-                animation-iteration-count: infinite; 
-            }
-            @keyframes dash2 {
-                to{
-                    stroke-dashoffset: ${dashoffset}; 
-                }
-            }
-        </style>
-        <path fill-rule="evenodd"  stroke="rgb(125, 125, 125)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="rgb(203, 203, 203)"
-        d="M24.000,2.007 L13.541,2.003 L13.521,2.003 C13.348,1.999 13.177,1.999 13.008,2.003 L12.349,2.042 C2.964,2.042 2.003,4.370 2.003,12.993 C2.003,13.229 2.000,13.463 2.010,13.696 L2.010,22.000 L12.000,22.000 L12.000,16.000 C12.000,14.266 11.844,12.000 13.000,12.000 L22.000,12.000 L24.000,12.000 L24.000,2.007 Z"/>
-        
-        <path fill-rule="evenodd"  stroke="rgb(255, 255, 255)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="none"
-        d="M24.000,6.007 L13.541,6.003 L13.521,6.003 C13.348,5.999 13.177,5.999 13.008,6.003 L12.000,6.000 C5.951,6.000 6.002,8.456 6.002,14.993 C6.002,15.229 6.000,15.463 6.011,15.696 L6.011,23.000 " class="flow2"/>
-        <path fill-rule="evenodd"  fill="rgb(125, 125, 125)"
-        d="M22.999,-0.000 C23.552,-0.000 24.000,0.448 24.000,1.000 L24.000,13.000 C24.000,13.552 23.552,14.000 22.999,14.000 C22.448,14.000 22.000,13.552 22.000,13.000 L22.000,1.000 C22.000,0.448 22.448,-0.000 22.999,-0.000 Z"/>
-        <path fill-rule="evenodd"  fill="rgb(125, 125, 125)"
-        d="M1.001,21.000 L13.000,21.000 C13.552,21.000 13.999,21.448 13.999,22.000 C13.999,22.552 13.552,23.000 13.000,23.000 L1.001,23.000 C0.448,23.000 -0.000,22.552 -0.000,22.000 C-0.000,21.448 0.448,21.000 1.001,21.000 Z"/>
-        </svg>`
     let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     svg.setAttribute('width', cell.width)
     svg.setAttribute('height', cell.height)
 
     let image = document.createElementNS('http://www.w3.org/2000/svg', 'image')
-    image.setAttribute('href', pipeline1ImgUrl)
+    if(cell.shapeName == 'pipeline1') {
+        image.setAttribute('href', pipeline1ImgUrl)
+    }else{
+        image.setAttribute('href', pipeline2ImgUrl)
+    }
     image.setAttribute('width', cell.width)
     image.setAttribute('height', cell.height)
-
     svg.appendChild(image)
-    if(cell.shapeName == 'pipeline1') {
-        con.appendChild(svg)
-    }else{
-        con.innerHTML = pipeline2
-    }
+    con.appendChild(svg)
     return con
 }
 

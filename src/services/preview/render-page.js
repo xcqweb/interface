@@ -485,7 +485,6 @@ class PreviewPage {
                 })
             }
             $(cellHtml).data("paramShow", paramShow)
-            console.log("parm-s", paramShow)
             let resParams = []
             let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
             let modelIdsParam = []

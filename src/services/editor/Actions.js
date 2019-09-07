@@ -589,6 +589,7 @@ Actions.prototype.init = function()
     }, null, null, Editor.ctrlKey + '+G');
     this.addAction('ungroup', function()
     {
+         console.log("tt-why")
         if (graph.getSelectionCount() == 1 && graph.getModel().getChildCount(graph.getSelectionCell()) == 0)
         {
             graph.setCellStyles('container', '0');
@@ -1486,6 +1487,9 @@ Actions.prototype.deleteTableCell = function(type,selectionCell=null) {
  */
 Actions.prototype.addAction = function(key, funct, enabled, iconCls, shortcut)
 {
+    /* if(key =='ungroup'){
+        debugger
+    } */
     var title;
     if (key.substring(key.length - 3) == '...')
     {

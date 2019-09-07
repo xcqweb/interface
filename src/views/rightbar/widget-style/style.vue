@@ -135,7 +135,7 @@
           />
           <div
             class="setColor"
-            :style="{backgroundColor:fontColor}"
+            :style="{background:fontColor}"
             @click="pickFontColor"
           />
         </div>
@@ -188,7 +188,7 @@
         <div
           class="item-container"
           style="position:relative;"
-          :style="{backgroundColor:bgColor}"
+          :style="{background:bgColor}"
           @click="pickBgColor"
         />
       </div>
@@ -200,7 +200,7 @@
           <div
             class="setColor"
             style="flex:1;margin-right:6px;"
-            :style="{backgroundColor:borderColor}"
+            :style="{background:borderColor}"
             @click="pickBorderColor"
           />
           <div
@@ -284,7 +284,7 @@
       </div>
     </div>
     <div
-      v-if="shapeName.includes('pipeline')"
+      v-if="shapeName=='pipeline1'"
       class="titleSet"
     >
       <div class="item-title">
@@ -406,7 +406,7 @@
 </template>
 <script>
 import Chart from '../../charts/chart'
-import {mxConstants,mxEventObject} from '../../../services/mxGlobal'
+import {mxConstants,mxEventObject,Dialog} from '../../../services/mxGlobal'
 let newFontColor = "#000000",newBgColor = "#ffffff",newBorderColor = "#000000",name
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
@@ -426,8 +426,8 @@ export default {
             isSetBold:false,
             showBorderLineBold:false,
             selectMenu:true,
-            bgColor:'#277AE0',
-            borderColor:'#277AE0',
+            bgColor:'#fff',
+            borderColor:'#000',
             borderLineList:['border-line','border-dash'],
             borderLineCls:'border-line',
             showArrowDialog:false,
@@ -482,11 +482,12 @@ export default {
         let graph = this.myEditorUi.editor.graph
         this.fontText = this.$store.state.main.widgetInfo.fontSize
         this.isSetBold = this.$store.state.main.widgetInfo.isSetBold
-        this.fontColor =  this.$store.state.main.widgetInfo.color
+        this.fontColor =  this.$store.state.main.widgetInfo.color || `url(${Dialog.prototype.noColorImage})`
         this.alignIndex1 = alignArr.indexOf(this.$store.state.main.widgetInfo.align) + 1
         this.alignIndex2 = valignArr.indexOf(this.$store.state.main.widgetInfo.valign) + 1
-        this.bgColor =  this.$store.state.main.widgetInfo.bgColor
-        this.borderColor =  this.$store.state.main.widgetInfo.borderColor
+        this.bgColor =  this.$store.state.main.widgetInfo.bgColor || `url(${Dialog.prototype.noColorImage})`
+        
+        this.borderColor =  this.$store.state.main.widgetInfo.borderColor || `url(${Dialog.prototype.noColorImage})`
         this.borderLineBoldText =  this.$store.state.main.widgetInfo.borderBold
         this.borderLineCls = this.$store.state.main.widgetInfo.borderLineCls
         if(this.shapeName == 'beeline') {
@@ -599,7 +600,11 @@ export default {
         pickFontColor() {
             this.myEditorUi.pickColor(newFontColor || 'none',color=>{
                 newFontColor = color  
-                this.fontColor = color
+                if(color == 'none') {
+                    this.fontColor = `url(${Dialog.prototype.noColorImage})`
+                }else{
+                    this.fontColor = color
+                }
                 let graph = this.myEditorUi.editor.graph
                 let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells()
                 graph.setCellStyles('fontColor', color, ss);
@@ -609,7 +614,11 @@ export default {
         pickBgColor() {
             this.myEditorUi.pickColor(newBgColor || 'none',color=>{
                 newBgColor = color  
-                this.bgColor = color
+                if(color == 'none') {
+                    this.bgColor = `url(${Dialog.prototype.noColorImage})`
+                }else{
+                    this.bgColor = color
+                }
                 let graph = this.myEditorUi.editor.graph
                 graph.setCellStyles('fillColor', color, graph.getSelectionCells());
                 this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fillColor'],'values', [color], 'cells', graph.getSelectionCells()));
@@ -618,7 +627,11 @@ export default {
         pickBorderColor() {
             this.myEditorUi.pickColor(newBorderColor || 'none',color=>{
                 newBorderColor = color  
-                this.borderColor = color
+                if(color == 'none') {
+                    this.borderColor = `url(${Dialog.prototype.noColorImage})`
+                }else{
+                    this.borderColor = color
+                }
                 let graph = this.myEditorUi.editor.graph
                 let key = 'strokeColor'
                 if(this.shapeName.includes('image')) {
