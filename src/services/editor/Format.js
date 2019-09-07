@@ -2726,6 +2726,7 @@ PaletteManagePanel.prototype.createSearchInput = function(container) {
     // 键盘事件
     mxEvent.addListener(input, 'keyup', function(e)
     {
+        console.log(99)
         var keyCode = e.keyCode;
         e.stopPropagation()
         if ((48 <= keyCode && keyCode <= 57) || (65 <= keyCode && keyCode <= 90) || (96 <= keyCode && keyCode <= 111) || keyCode == 8 || keyCode == 46)

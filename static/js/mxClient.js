@@ -47877,7 +47877,8 @@ mxCellRenderer.registerShape('light', mxImageShape);
 mxCellRenderer.registerShape('progress', mxImageShape);
 mxCellRenderer.registerShape('pipeline1', mxImageShape);
 mxCellRenderer.registerShape('pipeline2', mxImageShape);
-mxCellRenderer.registerShape('layoutimage', mxImageShape);
+// mxCellRenderer.registerShape('layoutimage', mxImageShape);
+mxCellRenderer.registerShape('userimage', mxImageShape);
 mxCellRenderer.registerShape('lineChart', mxImageShape);//注册类型
 mxCellRenderer.registerShape('gaugeChart', mxImageShape);
 mxCellRenderer.registerShape(mxConstants.SHAPE_LABEL, mxLabel);

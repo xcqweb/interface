@@ -285,12 +285,14 @@
           <span>
             <Upload 
               action="api/iot-cds/sources/material"
-              :show-upload-list="false" 
+              :show-upload-list="false"
+              :with-credentials="true"
+              :headers="headers"
               :format="['jpg', 'svg', 'png', 'gif']"
               :max-size="500"
               :on-format-error="handleFormatError"
               :on-error="uploadErr"
-              :on-success="uploadSucc" 
+              :on-success="uploadSucc"
               :data="uploadData"
             >
               <Button type="primary">{{ madeltext[1] }}</Button>
@@ -303,7 +305,7 @@
 </template>
 <script>
 import {Tabs,TabPane,Modal, Upload, Message, Button} from 'iview'
-import {sureDialog} from '../../services/Utils'
+import {sureDialog, getCookie} from '../../services/Utils'
 const ROOT_LEN = 2 // 新增组件时计算长度使用
 export default {
     components: {
@@ -381,7 +383,10 @@ export default {
             ifselectFrom: false, // 是否来自搜索
             userMaterialAll: [],
             newArr: [],
-            newArr2: []
+            newArr2: [],
+            headers:{
+                'Authorization': `Bearer ${getCookie('token')}`
+            }
         }
     },
     created() {
