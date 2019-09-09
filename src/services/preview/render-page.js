@@ -107,7 +107,7 @@ class PreviewPage {
                 // 节点状态
                 let statesInfo = JSON.parse(item.getAttribute('statesInfo'))
                 // 链接
-                let smartBiLink = item.getAttribute('smartBiLink')
+                let link = item.getAttribute('link')
                 // mxcell节点
                 if (tagName == 'object') {
                     node = item.childNodes[0]
@@ -259,7 +259,7 @@ class PreviewPage {
                         fontSize,
                         fontWeight,
                         image,
-                        smartBiLink,
+                        link,
                         actionsInfo,
                         statesInfo,
                         hide,
@@ -377,12 +377,10 @@ class PreviewPage {
             cellHtml = insertImage(cell)
         } else if (shapeName === 'linkTag') {
             // smartBi链接iframe
-            cellHtml = document.createElement('iframe');
-            let curLink
-            if (cell.actionsInfo) {
-                curLink = cell.smartBiLink || cell.actionsInfo[0].link
-            }
-            cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(curLink) ? '' : 'http://' }${curLink}`);
+            cellHtml = document.createElement('iframe')
+            let curLinkStr  = cell.link
+            let curLink = JSON.parse(curLinkStr).url
+            cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(curLink) ? '' : 'http://' }${curLink}`)
         } else if (shapeName === 'menuCell' || shapeName === 'menulist') {
             // 菜单
             cellHtml = document.createElement('div')
