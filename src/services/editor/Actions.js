@@ -7,8 +7,6 @@
  */
 import {
     addPageDialog,
-    // PaletteDataDialog,
-    ConfigLinkDialog,
     ChangePrimitiveDialog
 } from '../editor/Dialogs'
 import {mxUtils}  from '../mxGlobal'
@@ -202,13 +200,6 @@ Actions.prototype.init = function()
     // 预览
     this.addAction('previewapply', function() {	
     }, true, null, 'Ctrl+Shift+L');
-    // 配置链接
-    this.addAction('configLink', function() {
-        var dlg = new ConfigLinkDialog(ui, '', '应用', function(val, desc) {
-            console.log(val, desc)
-        });
-        ui.showDialog(dlg.container, 410, 160, true, false, null, null, '链接');
-    }, true)
     // 文件操作
     this.addAction('new', function() { ui.actions.get('addPage').funct() });
     this.addAction('open', function()
@@ -1202,7 +1193,7 @@ Actions.prototype.init = function()
                     if (localImage) {
                         var formData = new FormData();
                         formData.append('file', localImage);
-                        ui.editor.uploadFile(ui, '/api/upload/file', 'POST', formData, function (res) {
+                        ui.editor.uploadFile(ui, '/api/console/upload/file', 'POST', formData, function (res) {
                             let newValue = res;
                             updateImg(newValue)
                         })

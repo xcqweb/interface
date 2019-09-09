@@ -335,7 +335,7 @@ class PreviewPage {
             this.gePreview.style.backgroundColor = viewBackground
             if (pageStyle.backgroundUrl) {
                 this.gePreview.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
-                this.gePreview.style.backgroundSize = "cover"
+                this.gePreview.style.backgroundSize = "100% 100%"
             }
         } else {
             // 弹窗页面
@@ -379,8 +379,10 @@ class PreviewPage {
             // smartBi链接iframe
             cellHtml = document.createElement('iframe')
             let curLinkStr  = cell.link
-            let curLink = JSON.parse(curLinkStr).url
-            cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(curLink) ? '' : 'http://' }${curLink}`)
+            if(cell.link) {
+                let curLink = JSON.parse(curLinkStr).url
+                cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(curLink) ? '' : 'http://' }${curLink}`)
+            }
         } else if (shapeName === 'menuCell' || shapeName === 'menulist') {
             // 菜单
             cellHtml = document.createElement('div')
