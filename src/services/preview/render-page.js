@@ -306,19 +306,23 @@ class PreviewPage {
             pageWidth = ((cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth) + 20;
             pageHeight = ((cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight) + 20;
         })
-        return cells
+        return cells    
     }
     // 清空页面内容
     clearPage() {
         this.gePreview.innerHTML = ''
     }
     // 解析页面
-    parsePage(page, fileSystem, shapeXlms) {
+    parsePage(page,shapeXlms) {
         const xmlDoc = mxUtils.parseXml(page.xml).documentElement
         let pageStyle = page.style
+        let bodyWidth = xmlDoc.getAttribute('pageWidth')
+        let bodyHeight = xmlDoc.getAttribute('pageHeight')
         const root = xmlDoc.getElementsByTagName('root')[0].childNodes
-        const bodyBackground = xmlDoc.getAttribute('background'); // 新增背景色
+        const bodyBackground = xmlDoc.getAttribute('background') // 新增背景色
         document.body.style.backgroundColor = `${bodyBackground}`
+        document.body.style.width = `${bodyWidth}px`
+        document.body.style.height = `${bodyHeight}px`
         const list = []
         for (let i = 0; i < root.length; i++) {
             list.push(root[i])
@@ -338,17 +342,17 @@ class PreviewPage {
             // 清空页面内容
             this.clearPage()
             // 正常页面      
-            this.renderPages(cells, this.gePreview, fileSystem, shapeXlms)
+            this.renderPages(cells, this.gePreview,shapeXlms)
             this.gePreview.style.width = pageWidth + 'px'
             this.gePreview.style.height = pageHeight + 'px'
             if (pageStyle.backgroundUrl) {
-                document.body.style.backgroundImage = `url(${pageStyle.backgroundUrl})`
+                document.body.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
             }
         } else {
             // 弹窗页面
             let layerContent = this.createDialog(page)
             layerContent.innerHTML = ``;
-            this.renderPages(cells, layerContent, fileSystem, shapeXlms)
+            this.renderPages(cells, layerContent,shapeXlms)
         }
         applyData[page.id] = {
             wsReal: '',
@@ -363,25 +367,25 @@ class PreviewPage {
         return cells
     }
     // 渲染页面
-    renderPages(cells, ele = this.gePreview, fileSystem, shapeXlms) {
+    renderPages(cells, ele = this.gePreview,shapeXlms) {
         for (let cell of cells) {
-            let cellHtml = this.renderCell(cell, fileSystem, shapeXlms);
+            let cellHtml = this.renderCell(cell,shapeXlms);
             ele.appendChild(cellHtml);
             // 组内资源
             if (cell.children.length) {
-                this.renderPages(cell.children, cellHtml, fileSystem, shapeXlms);
+                this.renderPages(cell.children, cellHtml,shapeXlms);
             }
         }
     }
 
     // 渲染控件节点
-    renderCell(cell, fileSystem, shapeXlms) {
+    renderCell(cell,shapeXlms) {
         console.log(cell)
         const shapeName = cell.shapeName;
         let cellHtml;
         if (shapeName === 'image') {
             // 图片
-            cellHtml = insertImage(cell, fileSystem)
+            cellHtml = insertImage(cell)
         } else if (shapeName === 'linkTag') {
             // smartBi链接iframe
             cellHtml = document.createElement('iframe');

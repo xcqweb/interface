@@ -123,10 +123,11 @@ async function geAjax(url, method = 'GET', data = null) {
  * 插入图片
  * @param {object} cell 
  */
-function insertImage(cell, fileSystem) {
-    let con = document.createElement('div');
+function insertImage(cell) {
+    let con = document.createElement('div')
     if(cell.image) {
-        con.style.background = `url('${cell.image.replace(/getechFileSystem/, fileSystem)}')`
+        con.style.background = `url('${cell.image}') no-repeat`
+        con.style.backgroundPosition = "center center"
     }
     return con
 }

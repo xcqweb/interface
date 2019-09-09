@@ -5,7 +5,7 @@ import PreviewPage from './render-page'
 // 主函数
 let mainProcess
 // 控件xml解析信息
-let shapeXlms, applyInfo, fileSystem
+let shapeXlms, applyInfo
 // 正常页面渲染地方
 let gePreview
 let ev//自定义事件，echart dom 渲染后，通知初始化echarts
@@ -51,8 +51,6 @@ class Main {
             // 查看应用
             id = idArr[1]
         }
-        const host = await geAjax('/api/console/host/imageHost', 'GET')
-        fileSystem = host.host;
         applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudio/${id}`, 'GET')
         shapeXlms = await loadShapeXml();
         if (!applyInfo) {
@@ -78,14 +76,14 @@ class Main {
     // 渲染普通页面
     renderNormal() {
         let pageContent = this.previewPage.content[this.pageId];
-        this.previewPage.parsePage(pageContent, fileSystem, shapeXlms)
+        this.previewPage.parsePage(pageContent,shapeXlms)
         document.dispatchEvent(ev)
     }
 
     // 渲染弹窗
     renderDialog(id) {
         let pageContent = this.previewPage.content[id];
-        this.previewPage.parsePage(pageContent, fileSystem, shapeXlms)
+        this.previewPage.parsePage(pageContent,shapeXlms)
         document.dispatchEvent(ev)
     }
 
