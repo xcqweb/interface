@@ -128,6 +128,7 @@ function insertImage(cell) {
     if(cell.image) {
         con.style.background = `url('${cell.image}') no-repeat`
         con.style.backgroundPosition = "center center"
+        con.style.backgroundSize = "contain"
     }
     return con
 }

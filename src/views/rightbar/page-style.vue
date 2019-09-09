@@ -143,7 +143,7 @@ export default {
             this.solidHeight = height
             this.myEditorUi.setPageFormat({height:height,width:width,x:0,Y:0},true)
             this.scaleText = width + '*' + height
-            this.centerCanvas()
+            //this.centerCanvas()
         },
         changeScale(d,e) {
             this.scaleText = d;

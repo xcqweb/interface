@@ -151,7 +151,7 @@ class PreviewPage {
                     hide = item.getAttribute('hide');
                     height = parseFloat(node.childNodes[0].getAttribute('height'));
                     // edge获取路径节点
-                    if (shapeName === 'endarrow' || shapeName === 'beeline' || shapeName === 'curve') {
+                    if (shapeName === 'beeline') {
                         const childNodes = node.getElementsByTagName('mxGeometry')[0].childNodes;
                         points = {
                             points: []
@@ -363,7 +363,7 @@ class PreviewPage {
         setTimeout(() => {
             createWsReal(page.id,applyData)
             getLastData(this.wsParams) //低频数据 通过调用最后一笔数据显示
-        }, 3000);
+        }, 3000)
         return cells
     }
     // 渲染页面
@@ -383,7 +383,7 @@ class PreviewPage {
         console.log(cell)
         const shapeName = cell.shapeName;
         let cellHtml;
-        if (shapeName === 'image') {
+        if (shapeName.includes('image')) {
             // 图片
             cellHtml = insertImage(cell)
         } else if (shapeName === 'linkTag') {
@@ -410,7 +410,7 @@ class PreviewPage {
             // 按钮
             cellHtml = document.createElement('div');
             cellHtml.innerHTML = cell.value;
-        } else if (shapeName === 'endarrow' || shapeName === 'beeline' || shapeName === 'curve') {
+        } else if (shapeName === 'beeline') {
             // 箭头、直线，曲线
             cellHtml = inserEdge(cell)
         } else if (configSvg.includes(shapeName)) {
@@ -432,50 +432,44 @@ class PreviewPage {
             }
             cellHtml.innerHTML = cell.value;
         }
-        if (!['endarrow', 'beeline', 'curve','circle'].includes(shapeName)) {
-            if (cell.verticalAlign === 'top') {
-                cellHtml.style.lineHeight = cell.fontSize + 'px';
-            } else if (cell.verticalAlign === 'bottom') {
-                cellHtml.style.lineHeight = (cell.height * 2 - cell.fontSize) + 'px';
-            } else {
-                cellHtml.style.lineHeight = cell.height + 'px';
-            }
-            cellHtml.style.textAlign = cell.align;
-            
-            if (cell.children.length > 0 && cell.fillColor === '#FFFFFF') {
-                cellHtml.style.backgroundColor = 'transparent';
-            } else if(shapeName.includes('pipeline')) {
-                cellHtml.style.backgroundColor = 'transparent';
-            }else {
-                cellHtml.style.backgroundColor = cell.fillColor; // 原来的写法
-            }
+        if (cell.verticalAlign === 'top') {
+            cellHtml.style.lineHeight = cell.fontSize + 'px'
+        } else if (cell.verticalAlign === 'bottom') {
+            cellHtml.style.lineHeight = (cell.height * 2 - cell.fontSize) + 'px'
         } else {
-            cellHtml.style.lineHeight = 0;
+            cellHtml.style.lineHeight = cell.height + 'px'
         }
-        // 非Edge和svg控件
-        if (!['endarrow','curve', 'circle','beeline'].includes(shapeName) && !configSvg.includes(shapeName)) {
-            let borderStyle = 'solid'
-            if(cell.strokeStyle) {
-                borderStyle = 'dashed'
+        cellHtml.style.textAlign = cell.align
+        if(['image','userimage','pipeline1','pipeline2'].includes(shapeName)) {
+            cellHtml.style.backgroundColor = 'transparent'
+        }else{
+            if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none')) {
+                cellHtml.style.backgroundColor = 'transparent'
+            } else {
+                cellHtml.style.backgroundColor = cell.fillColor
             }
-            cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
-            cellHtml.style.width = cell.width + 'px';
-            cellHtml.style.height = cell.height + 'px';
         }
-        cellHtml.className = 'gePalette';
+        let borderStyle = 'solid'
+        if(cell.strokeStyle) {
+            borderStyle = 'dashed'
+        }
+        cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
+        cellHtml.style.width = cell.width + 'px'
+        cellHtml.style.height = cell.height + 'px'
+        cellHtml.className = 'gePalette'
         // 隐藏
         if (cell.hide == 'true') {
-            cellHtml.style.display = 'none';
+            cellHtml.style.display = 'none'
         }
         // 旋转
         cellHtml.style.transform = `rotate(${cell.rotation}deg) ${cell.flipV == 1 ? ' scaleY(-1)' : ''} ${cell.flipH == 1 ? ' scaleX(-1)' : ''}`;
         // 字体大小
-        cellHtml.style.fontSize = `${cell.fontSize}px`;
+        cellHtml.style.fontSize = `${cell.fontSize}px`
         // 字体颜色
-        cellHtml.style.color = `${cell.fontColor}`;
+        cellHtml.style.color = `${cell.fontColor}`
         // 定位
-        cellHtml.style.left = cell.x + 'px';
-        cellHtml.style.top = cell.y + 'px';
+        cellHtml.style.left = cell.x + 'px'
+        cellHtml.style.top = cell.y + 'px'
         cellHtml.id = `palette_${cell.id}`
         // 绑定事件
         bindEvent(cellHtml, cell, this.mainProcess, applyData)
