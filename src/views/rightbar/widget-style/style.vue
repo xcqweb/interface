@@ -526,7 +526,7 @@ export default {
         if(picShapeList.includes(this.shapeName)) {
             graph.setCellStyles(mxConstants.STYLE_ASPECT, 'fixed', graph.getSelectionCells());
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],
-                'values', ['fixed'], 'cells', graph.getSelectionCells()));
+                'values', ['fixed'], 'cells', graph.getSelectionCells()))
         }
         let dblClickFn = graph.dblClick
         graph.dblClick = (evt, cell) => {

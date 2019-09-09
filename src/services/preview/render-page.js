@@ -6,7 +6,6 @@ let pageWidth = 0,pageHeight = 0
 // websocket信息
 let applyData = {}
 // 配置好的svg图
-let configSvg = ['drop', 'circle', 'diamond', 'square', 'pentagram']
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
 
@@ -16,7 +15,6 @@ import {
     destroyWs,
     insertImage,
     inserEdge,
-    insertSvg,
     bindEvent,
     dealProgress,
     dealPipeline,
@@ -112,31 +110,32 @@ class PreviewPage {
                 let smartBiLink = item.getAttribute('smartBiLink')
                 // mxcell节点
                 if (tagName == 'object') {
-                    node = item.childNodes[0];
-                    value = item.getAttribute('label');
+                    node = item.childNodes[0]
+                    value = item.getAttribute('label')
                 } else {
                     node = item;
-                    value = node.getAttribute('value');
+                    value = node.getAttribute('value')
                 }
                 // 节点父节点
-                let parentId = node.getAttribute('parent');
+                let parentId = node.getAttribute('parent')
                 // 节点存在id，递归
                 if (parentId == tId && id) {
                     // 节点参数信息
-                    let getNodeInfo = new GetNodeInfo(node);
+                    let getNodeInfo = new GetNodeInfo(node)
                     // 节点类型
-                    let shapeName = getNodeInfo.getStyles('shape');
-                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, points, rotation, flipH, flipV, startArrow, endArrow, strokeWidth
-                    styles = node.getAttribute('style');
-                    isGroup = styles.indexOf('group') != -1;
-                    fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF';
-                    fontColor = getNodeInfo.getStyles('fontColor') || '#000000';
-                    verticalAlign = getNodeInfo.getStyles('verticalAlign') || 'middle';
-                    rotation = getNodeInfo.getStyles('rotation') || 0;
-                    flipH = getNodeInfo.getStyles('flipH') || 0;
-                    flipV = getNodeInfo.getStyles('flipV') || 0;
-                    align = getNodeInfo.getStyles('align') || 'center';
-                    fontSize = getNodeInfo.getStyles('fontSize') || '12';
+                    let shapeName = getNodeInfo.getStyles('shape')
+                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, points, rotation, flipH, flipV, startArrow, endArrow, strokeWidth,fontWeight
+                    styles = node.getAttribute('style')
+                    isGroup = styles.indexOf('group') != -1
+                    fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF'
+                    fontColor = getNodeInfo.getStyles('fontColor') || '#000000'
+                    verticalAlign = getNodeInfo.getStyles('verticalAlign') || 'middle'
+                    rotation = getNodeInfo.getStyles('rotation') || 0
+                    flipH = getNodeInfo.getStyles('flipH') || 0
+                    flipV = getNodeInfo.getStyles('flipV') || 0
+                    align = getNodeInfo.getStyles('align') || 'center'
+                    fontSize = getNodeInfo.getStyles('fontSize') || '12'
+                    fontWeight = getNodeInfo.getStyles('fontStyle') || 0
                     strokeStyle = getNodeInfo.getStyles('dashed')
                     strokeWidth = getNodeInfo.getStyles('strokeWidth') || 1
                     strokeColor = (shapeName.includes('image') ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
@@ -258,6 +257,7 @@ class PreviewPage {
                         isGroup,
                         fontColor,
                         fontSize,
+                        fontWeight,
                         image,
                         smartBiLink,
                         actionsInfo,
@@ -297,7 +297,6 @@ class PreviewPage {
             // 计算页面高度
             pageWidth = (cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth
             pageHeight = (cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight
-            console.log(cell.id,pageHeight)
         })
         return cells    
     }
@@ -306,12 +305,13 @@ class PreviewPage {
         this.gePreview.innerHTML = ''
     }
     // 解析页面
-    parsePage(page,shapeXlms) {
+    parsePage(page) {
         const xmlDoc = mxUtils.parseXml(page.xml).documentElement
         let pageStyle = page.style
         const root = xmlDoc.getElementsByTagName('root')[0].childNodes
-        const bodyBackground = xmlDoc.getAttribute('background') // 新增背景色
-        document.body.style.backgroundColor = `${bodyBackground}`
+        const viewBackground = xmlDoc.getAttribute('background')
+        let contentWidth = xmlDoc.getAttribute('pageWidth')
+        let contentHeight = xmlDoc.getAttribute('pageHeight')
         const list = []
         for (let i = 0; i < root.length; i++) {
             list.push(root[i])
@@ -329,17 +329,19 @@ class PreviewPage {
             // 清空页面内容
             this.clearPage()
             // 正常页面      
-            this.renderPages(cells, this.gePreview,shapeXlms)
-            this.gePreview.style.width = pageWidth + 'px'
-            this.gePreview.style.height = pageHeight + 'px'
+            this.renderPages(cells, this.gePreview)
+            this.gePreview.style.width = contentWidth + 'px'
+            this.gePreview.style.height = contentHeight + 'px'
+            this.gePreview.style.backgroundColor = viewBackground
             if (pageStyle.backgroundUrl) {
-                document.body.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
+                this.gePreview.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
+                this.gePreview.style.backgroundSize = "cover"
             }
         } else {
             // 弹窗页面
             let layerContent = this.createDialog(page)
             layerContent.innerHTML = '';
-            this.renderPages(cells, layerContent,shapeXlms)
+            this.renderPages(cells, layerContent)
         }
         applyData[page.id] = {
             wsReal: '',
@@ -354,19 +356,19 @@ class PreviewPage {
         return cells
     }
     // 渲染页面
-    renderPages(cells, ele = this.gePreview,shapeXlms) {
+    renderPages(cells, ele = this.gePreview) {
         for (let cell of cells) {
-            let cellHtml = this.renderCell(cell,shapeXlms)
+            let cellHtml = this.renderCell(cell)
             ele.appendChild(cellHtml);
             // 组内资源
             if (cell.children.length) {
-                this.renderPages(cell.children, cellHtml,shapeXlms)
+                this.renderPages(cell.children, cellHtml)
             }
         }
     }
 
     // 渲染控件节点
-    renderCell(cell,shapeXlms) {
+    renderCell(cell) {
         console.log(cell)
         const shapeName = cell.shapeName;
         let cellHtml
@@ -399,10 +401,7 @@ class PreviewPage {
         } else if (shapeName === 'beeline') {
             // 箭头、直线，曲线
             cellHtml = inserEdge(cell)
-        } else if (configSvg.includes(shapeName)) {
-            // svg图
-            cellHtml = insertSvg(shapeName, cell.width, cell.height, cell.x, cell.y, cell.fillColor, cell.strokeColor, shapeXlms)
-        }  else if(shapeName === 'progress') {
+        } else if(shapeName === 'progress') {
             cellHtml = dealProgress(cell)
         } else if (shapeName.includes('pipeline')) {
             cellHtml = dealPipeline(cell)
@@ -451,6 +450,7 @@ class PreviewPage {
         cellHtml.style.transform = `rotate(${cell.rotation}deg) ${cell.flipV == 1 ? ' scaleY(-1)' : ''} ${cell.flipH == 1 ? ' scaleX(-1)' : ''}`;
         // 字体大小
         cellHtml.style.fontSize = `${cell.fontSize}px`
+        cellHtml.style.fontWeight = `${cell.fontWeight == 1 ? 'bold' : 'normal'}`
         // 字体颜色
         cellHtml.style.color = `${cell.fontColor}`
         // 定位
