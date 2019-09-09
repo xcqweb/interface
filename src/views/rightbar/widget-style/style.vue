@@ -522,11 +522,13 @@ export default {
             }
         }else if(this.shapeName.includes('Chart')) {
             this.bindChartProps = this.getWidgetProps('chartProps')
+        }else if(this.shapeName == 'linkTag') {
+            this.linkUrl = this.getWidgetProps('link').url
         }
         if(picShapeList.includes(this.shapeName)) {
             graph.setCellStyles(mxConstants.STYLE_ASPECT, 'fixed', graph.getSelectionCells());
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],
-                'values', ['fixed'], 'cells', graph.getSelectionCells()));
+                'values', ['fixed'], 'cells', graph.getSelectionCells()))
         }
         let dblClickFn = graph.dblClick
         graph.dblClick = (evt, cell) => {
@@ -778,15 +780,10 @@ export default {
             e.stopPropagation()
         },
         addLinkUrl() {
-            let actions = [{"type":"out","link":this.linkUrl,"innerType":"page","mouseEvent":"click","effectAction":"open"}]
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
             let modelInfo = graph.getModel().getValue(cell)
-            let actionsAttr = modelInfo.getAttribute('actionsInfo')
-            if(actionsAttr) {
-                actions = JSON.parse(actionsAttr).concat(actions)
-            }
-            modelInfo.setAttribute('actionsInfo', JSON.stringify(actions))
+            modelInfo.setAttribute('link',JSON.stringify({url:this.linkUrl}))
             graph.getModel().setValue(cell, modelInfo)
         },
         getCellInfo() {

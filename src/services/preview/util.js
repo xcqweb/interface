@@ -128,7 +128,7 @@ function insertImage(cell) {
     if(cell.image) {
         con.style.background = `url('${cell.image}') no-repeat`
         con.style.backgroundPosition = "center center"
-        con.style.backgroundSize = "contain"
+        con.style.backgroundSize = "cover"
     }
     return con
 }
@@ -411,9 +411,9 @@ function dealPipeline(cell) {
     let image = document.createElementNS('http://www.w3.org/2000/svg', 'image')
     if(cell.shapeName == 'pipeline1') {
         image.setAttribute('href', pipeline1ImgUrl)
-    } else if (cell.shapeName == 'pipeline2') {
+    } else if(cell.shapeName == 'pipeline2') {
         image.setAttribute('href', pipeline2ImgUrl)
-    } else {
+    } else if(cell.shapeName == 'pipeline3') {
         image.setAttribute('href', pipeline3ImgUrl)
     }
     image.setAttribute('width', cell.width)

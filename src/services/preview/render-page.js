@@ -5,10 +5,7 @@
 let pageWidth = 0,pageHeight = 0
 // websocket信息
 let applyData = {}
-// 正常的最小x、y偏移量
-let minX, minY
 // 配置好的svg图
-let configSvg = ['drop', 'circle', 'diamond', 'square', 'pentagram']
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
 
@@ -18,7 +15,6 @@ import {
     destroyWs,
     insertImage,
     inserEdge,
-    insertSvg,
     bindEvent,
     dealProgress,
     dealPipeline,
@@ -45,7 +41,7 @@ class PreviewPage {
 
     // 页面数量
     pageCounts() {
-        return Object.keys(this.content);
+        return Object.keys(this.content)
     }
     // 生成弹窗
     createDialog(page) {
@@ -98,7 +94,6 @@ class PreviewPage {
     // 解析所有控件节点
     parseCells(root) {
         // 递归获取节点
-        minX = minY = 0;
         let getNode = (tId = 1) => {
             let list = [];
             for (let item of root) {
@@ -112,34 +107,35 @@ class PreviewPage {
                 // 节点状态
                 let statesInfo = JSON.parse(item.getAttribute('statesInfo'))
                 // 链接
-                let smartBiLink = item.getAttribute('smartBiLink')
+                let link = item.getAttribute('link')
                 // mxcell节点
                 if (tagName == 'object') {
-                    node = item.childNodes[0];
-                    value = item.getAttribute('label');
+                    node = item.childNodes[0]
+                    value = item.getAttribute('label')
                 } else {
                     node = item;
-                    value = node.getAttribute('value');
+                    value = node.getAttribute('value')
                 }
                 // 节点父节点
-                let parentId = node.getAttribute('parent');
+                let parentId = node.getAttribute('parent')
                 // 节点存在id，递归
                 if (parentId == tId && id) {
                     // 节点参数信息
-                    let getNodeInfo = new GetNodeInfo(node);
+                    let getNodeInfo = new GetNodeInfo(node)
                     // 节点类型
-                    let shapeName = getNodeInfo.getStyles('shape');
-                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, points, rotation, flipH, flipV, startArrow, endArrow, strokeWidth
-                    styles = node.getAttribute('style');
-                    isGroup = styles.indexOf('group') != -1;
-                    fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF';
-                    fontColor = getNodeInfo.getStyles('fontColor') || '#000000';
-                    verticalAlign = getNodeInfo.getStyles('verticalAlign') || 'middle';
-                    rotation = getNodeInfo.getStyles('rotation') || 0;
-                    flipH = getNodeInfo.getStyles('flipH') || 0;
-                    flipV = getNodeInfo.getStyles('flipV') || 0;
-                    align = getNodeInfo.getStyles('align') || 'center';
-                    fontSize = getNodeInfo.getStyles('fontSize') || '12';
+                    let shapeName = getNodeInfo.getStyles('shape')
+                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, points, rotation, flipH, flipV, startArrow, endArrow, strokeWidth,fontWeight
+                    styles = node.getAttribute('style')
+                    isGroup = styles.indexOf('group') != -1
+                    fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF'
+                    fontColor = getNodeInfo.getStyles('fontColor') || '#000000'
+                    verticalAlign = getNodeInfo.getStyles('verticalAlign') || 'middle'
+                    rotation = getNodeInfo.getStyles('rotation') || 0
+                    flipH = getNodeInfo.getStyles('flipH') || 0
+                    flipV = getNodeInfo.getStyles('flipV') || 0
+                    align = getNodeInfo.getStyles('align') || 'center'
+                    fontSize = getNodeInfo.getStyles('fontSize') || '12'
+                    fontWeight = getNodeInfo.getStyles('fontStyle') || 0
                     strokeStyle = getNodeInfo.getStyles('dashed')
                     strokeWidth = getNodeInfo.getStyles('strokeWidth') || 1
                     strokeColor = (shapeName.includes('image') ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
@@ -245,8 +241,6 @@ class PreviewPage {
                             }
                         }
                     }
-                    (x < minX || minX === null) && (minX = x);
-                    (y < minY || minY === null) && (minY = y);
                     let obj = {
                         id,
                         bindData,
@@ -263,8 +257,9 @@ class PreviewPage {
                         isGroup,
                         fontColor,
                         fontSize,
+                        fontWeight,
                         image,
-                        smartBiLink,
+                        link,
                         actionsInfo,
                         statesInfo,
                         hide,
@@ -299,12 +294,9 @@ class PreviewPage {
         };
         let cells = getNode()
         cells.map(cell => {
-            // 修正最外层节点的定位信息
-            cell.x -= minX - 20
-            cell.y -= minY - 20
             // 计算页面高度
-            pageWidth = ((cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth) + 20;
-            pageHeight = ((cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight) + 20;
+            pageWidth = (cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth
+            pageHeight = (cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight
         })
         return cells    
     }
@@ -313,16 +305,13 @@ class PreviewPage {
         this.gePreview.innerHTML = ''
     }
     // 解析页面
-    parsePage(page,shapeXlms) {
+    parsePage(page) {
         const xmlDoc = mxUtils.parseXml(page.xml).documentElement
         let pageStyle = page.style
-        let bodyWidth = xmlDoc.getAttribute('pageWidth')
-        let bodyHeight = xmlDoc.getAttribute('pageHeight')
         const root = xmlDoc.getElementsByTagName('root')[0].childNodes
-        const bodyBackground = xmlDoc.getAttribute('background') // 新增背景色
-        document.body.style.backgroundColor = `${bodyBackground}`
-        document.body.style.width = `${bodyWidth}px`
-        document.body.style.height = `${bodyHeight}px`
+        const viewBackground = xmlDoc.getAttribute('background')
+        let contentWidth = xmlDoc.getAttribute('pageWidth')
+        let contentHeight = xmlDoc.getAttribute('pageHeight')
         const list = []
         for (let i = 0; i < root.length; i++) {
             list.push(root[i])
@@ -337,22 +326,22 @@ class PreviewPage {
                 destroyWs(applyData, key)
             }
             document.getElementById('geDialogs').innerHTML = ''
-            // 正常的最小x、y偏移量
-            minX = minY = null
             // 清空页面内容
             this.clearPage()
             // 正常页面      
-            this.renderPages(cells, this.gePreview,shapeXlms)
-            this.gePreview.style.width = pageWidth + 'px'
-            this.gePreview.style.height = pageHeight + 'px'
+            this.renderPages(cells, this.gePreview)
+            this.gePreview.style.width = contentWidth + 'px'
+            this.gePreview.style.height = contentHeight + 'px'
+            this.gePreview.style.backgroundColor = viewBackground
             if (pageStyle.backgroundUrl) {
-                document.body.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
+                this.gePreview.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
+                this.gePreview.style.backgroundSize = "cover"
             }
         } else {
             // 弹窗页面
             let layerContent = this.createDialog(page)
-            layerContent.innerHTML = ``;
-            this.renderPages(cells, layerContent,shapeXlms)
+            layerContent.innerHTML = '';
+            this.renderPages(cells, layerContent)
         }
         applyData[page.id] = {
             wsReal: '',
@@ -367,56 +356,54 @@ class PreviewPage {
         return cells
     }
     // 渲染页面
-    renderPages(cells, ele = this.gePreview,shapeXlms) {
+    renderPages(cells, ele = this.gePreview) {
         for (let cell of cells) {
-            let cellHtml = this.renderCell(cell,shapeXlms);
+            let cellHtml = this.renderCell(cell)
             ele.appendChild(cellHtml);
             // 组内资源
             if (cell.children.length) {
-                this.renderPages(cell.children, cellHtml,shapeXlms);
+                this.renderPages(cell.children, cellHtml)
             }
         }
     }
 
     // 渲染控件节点
-    renderCell(cell,shapeXlms) {
+    renderCell(cell) {
         console.log(cell)
         const shapeName = cell.shapeName;
-        let cellHtml;
+        let cellHtml
         if (shapeName.includes('image')) {
             // 图片
             cellHtml = insertImage(cell)
         } else if (shapeName === 'linkTag') {
             // smartBi链接iframe
-            cellHtml = document.createElement('iframe');
-            let curLink
-            if (cell.actionsInfo) {
-                curLink = cell.smartBiLink || cell.actionsInfo[0].link
-            }
-            cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(curLink) ? '' : 'http://' }${curLink}`);
+            cellHtml = document.createElement('iframe')
+            let curLinkStr  = cell.link
+            let curLink = JSON.parse(curLinkStr).url
+            cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(curLink) ? '' : 'http://' }${curLink}`)
         } else if (shapeName === 'menuCell' || shapeName === 'menulist') {
             // 菜单
-            cellHtml = document.createElement('div');
+            cellHtml = document.createElement('div')
             cellHtml.innerHTML = cell.value;
         }  else if (shapeName === 'text') {
             // 文本
-            cellHtml = document.createElement('span');
-            cellHtml.innerHTML = cell.value;
-            // 还原位置与界面工具一样
-            if (cellHtml.firstChild && cellHtml.firstChild.style) {
-                cellHtml.firstChild.style.display = 'inline-block'
+            cellHtml = document.createElement('span')
+            let reg = />(.+)</
+            let textArr = cell.value.match(reg)
+            if(textArr && textArr.length) {
+                cellHtml.innerHTML = textArr[1]
+            }else{
+                cellHtml.innerHTML = cell.value
             }
         } else if (shapeName === 'button') {
             // 按钮
-            cellHtml = document.createElement('div');
-            cellHtml.innerHTML = cell.value;
+            cellHtml = document.createElement('div')
+            console.log(('<head>csdn</head>'.match(/<head>([\s\S]*?)<\/head>/)[1]))
+            cellHtml.innerHTML = cell.value
         } else if (shapeName === 'beeline') {
             // 箭头、直线，曲线
             cellHtml = inserEdge(cell)
-        } else if (configSvg.includes(shapeName)) {
-            // svg图
-            cellHtml = insertSvg(shapeName, cell.width, cell.height, cell.x, cell.y, cell.fillColor, cell.strokeColor, shapeXlms)
-        }  else if(shapeName === 'progress') {
+        } else if(shapeName === 'progress') {
             cellHtml = dealProgress(cell)
         } else if (shapeName.includes('pipeline')) {
             cellHtml = dealPipeline(cell)
@@ -440,7 +427,7 @@ class PreviewPage {
             cellHtml.style.lineHeight = cell.height + 'px'
         }
         cellHtml.style.textAlign = cell.align
-        if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3'].includes(shapeName)) {
+        if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart'].includes(shapeName)) {
             cellHtml.style.backgroundColor = 'transparent'
         }else{
             if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none')) {
@@ -449,11 +436,13 @@ class PreviewPage {
                 cellHtml.style.backgroundColor = cell.fillColor
             }
         }
-        let borderStyle = 'solid'
-        if(cell.strokeStyle) {
-            borderStyle = 'dashed'
+        if(shapeName != 'beeline') {
+            let borderStyle = 'solid'
+            if(cell.strokeStyle) {
+                borderStyle = 'dashed'
+            }
+            cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
         }
-        cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
         cellHtml.style.width = cell.width + 'px'
         cellHtml.style.height = cell.height + 'px'
         cellHtml.className = 'gePalette'
@@ -465,6 +454,7 @@ class PreviewPage {
         cellHtml.style.transform = `rotate(${cell.rotation}deg) ${cell.flipV == 1 ? ' scaleY(-1)' : ''} ${cell.flipH == 1 ? ' scaleX(-1)' : ''}`;
         // 字体大小
         cellHtml.style.fontSize = `${cell.fontSize}px`
+        cellHtml.style.fontWeight = `${cell.fontWeight == 1 ? 'bold' : 'normal'}`
         // 字体颜色
         cellHtml.style.color = `${cell.fontColor}`
         // 定位

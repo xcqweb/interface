@@ -30,15 +30,4 @@ export default {
 </style>
 
 <style lang="less">
-#app{
-  font-size:14px;
-  font-family:MicrosoftYaHei;
-  position: relative;
-  height:100%;
-}
-.main-contianer{
-  display:flex;
-  position: relative;
-  height:100%;
-} 
 </style>
