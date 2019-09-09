@@ -105,18 +105,17 @@ export default {
         return {
             pageDesc:"",
             showScale:false,
-            solidHeight: 800,
-            solidWidth: 1280, // 需求 宽度固定1366 不可修改
-            scaleText:'1280*800',
+            solidHeight: 768,
+            solidWidth: 1366,
+            scaleText:'1366*768',
             bgColor:'#fff',
             scaleList:[
+                '2560*1600',
                 '1920*1080',
                 '1440*900',
+                '1366*768',
                 '1280*800',
-                '1336*768',
-                '1336*768',
                 '1024*768',
-                '2560*1600',
             ],
             bgPic:require('../../assets/images/rightsidebar/bg_ic_widget.png'),
             isShowBgText:true,

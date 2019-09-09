@@ -7239,7 +7239,7 @@ var mxUtils =
 	 * Defines the rectangle for the A4 portrait page format. The dimensions
 	 * of this page format are 826x1169 pixels.
 	 */
-	PAGE_FORMAT_A4_PORTRAIT: new mxRectangle(0, 0, 1280, 800),
+	PAGE_FORMAT_A4_PORTRAIT: new mxRectangle(0, 0, 1366, 768),
 
 	/**
 	 * Variable: PAGE_FORMAT_A4_PORTRAIT
@@ -7247,7 +7247,7 @@ var mxUtils =
 	 * Defines the rectangle for the A4 portrait page format. The dimensions
 	 * of this page format are 826x1169 pixels.
 	 */
-	PAGE_FORMAT_A4_LANDSCAPE: new mxRectangle(0, 0, 1280, 800),
+	PAGE_FORMAT_A4_LANDSCAPE: new mxRectangle(0, 0, 1366, 768),
 
 	/**
 	 * Variable: PAGE_FORMAT_LETTER_PORTRAIT

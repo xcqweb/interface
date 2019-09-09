@@ -1443,7 +1443,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         // 指示灯
         this.createVertexTemplateEntry('shape=light;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/light.svg', 72, 72, '', '指示灯'),
         // 进度条
-        this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/progress.svg', 72, 36, '', '进度条'),
+        this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/progress.svg', 72, 16, '', '进度条'),
         // 管道1
         this.createVertexTemplateEntry('shape=pipeline1;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline1.svg', 72, 36, '', '管道1'),
         // 管道2
