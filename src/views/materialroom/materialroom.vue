@@ -351,7 +351,8 @@ export default {
                 {image:'light.svg', name :'指示灯'},
                 {image:'progress.svg', name :'进度条'},
                 {image:'pipeline1.svg', name :'管道1'},
-                {image:'pipeline2.svg',name :'管道2'}
+                {image:'pipeline2.svg',name :'管道2'},
+                {image:'pipeline3.svg',name :'管道3'}
             ],
             tablesAssembly: [
                 {image:'lineChart.svg',name :'趋势图'},

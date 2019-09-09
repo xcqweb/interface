@@ -15355,7 +15355,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 				ifshowPaste = true
 			}
 		} else {
-			let arr = ['rectangle', 'button','ellipse', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','light','progress','pipeline1','pipeline2', 'userimage', 'lineChart', 'gaugeChart'];
+			let arr = ['rectangle', 'button','ellipse', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','light','progress','pipeline1','pipeline2','pipeline3', 'userimage', 'lineChart', 'gaugeChart'];
 			let menulistArr = ['menulist','tableBox']; // 菜单 和 表格整体
 			let arr1 = ['粘贴','组合', '取消组合']
 			if (arr.includes(shapeName) && arr1.includes(title)) {
@@ -47877,6 +47877,7 @@ mxCellRenderer.registerShape('light', mxImageShape);
 mxCellRenderer.registerShape('progress', mxImageShape);
 mxCellRenderer.registerShape('pipeline1', mxImageShape);
 mxCellRenderer.registerShape('pipeline2', mxImageShape);
+mxCellRenderer.registerShape('pipeline3', mxImageShape);
 // mxCellRenderer.registerShape('layoutimage', mxImageShape);
 mxCellRenderer.registerShape('userimage', mxImageShape);
 mxCellRenderer.registerShape('lineChart', mxImageShape);//注册类型

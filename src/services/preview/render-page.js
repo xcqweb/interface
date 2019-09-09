@@ -440,7 +440,7 @@ class PreviewPage {
             cellHtml.style.lineHeight = cell.height + 'px'
         }
         cellHtml.style.textAlign = cell.align
-        if(['image','userimage','pipeline1','pipeline2'].includes(shapeName)) {
+        if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3'].includes(shapeName)) {
             cellHtml.style.backgroundColor = 'transparent'
         }else{
             if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none')) {

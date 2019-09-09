@@ -581,6 +581,10 @@ Editor.prototype.palettesInfo = {
         name: '管道2',
         num: 0
     },
+    pipeline3: {
+        name: '管道3',
+        num: 0
+    },
     lineChart: {
         name: '趋势图',
         num: 0
