@@ -1182,6 +1182,7 @@ export default {
           height:26px;
           line-height: 26px;
           padding: 4px 2px;
+          color: #252525;
         }
       }
       .input-twp-right{
@@ -1190,6 +1191,7 @@ export default {
           height:26px;
           line-height: 26px;
           padding: 4px 2px;
+          color: #252525;
         }
       }
     }

@@ -200,7 +200,8 @@ Actions.prototype.init = function()
     // 预览
     this.addAction('previewapply', function() {	
     }, true, null, 'Ctrl+Shift+L');
-    // 文件操作
+   
+     // 文件操作
     this.addAction('new', function() { ui.actions.get('addPage').funct() });
     this.addAction('open', function()
     {

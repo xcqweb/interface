@@ -586,7 +586,7 @@ export default {
         uploadErr() {
             setTimeout ( () => {
                 Message.info('上传失败')
-            }, 5000);
+            }, 500);
         },
         handleFormatError() {
             setTimeout ( () => {
