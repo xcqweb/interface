@@ -393,6 +393,7 @@ function dealProgress(cell) {
 function dealPipeline(cell) {
     let pipeline1ImgUrl = 'static/stencils/basic/pipeline1.svg'
     let pipeline2ImgUrl = 'static/stencils/basic/pipeline2.svg'
+    let pipeline3ImgUrl = 'static/stencils/basic/pipeline3.svg'
     let con = document.createElement('div')
     let pipelineProps = cell.pipelineProps
     let pipelinePropsObj
@@ -410,8 +411,10 @@ function dealPipeline(cell) {
     let image = document.createElementNS('http://www.w3.org/2000/svg', 'image')
     if(cell.shapeName == 'pipeline1') {
         image.setAttribute('href', pipeline1ImgUrl)
-    }else{
+    } else if(cell.shapeName == 'pipeline2') {
         image.setAttribute('href', pipeline2ImgUrl)
+    } else if(cell.shapeName == 'pipeline3') {
+        image.setAttribute('href', pipeline3ImgUrl)
     }
     image.setAttribute('width', cell.width)
     image.setAttribute('height', cell.height)

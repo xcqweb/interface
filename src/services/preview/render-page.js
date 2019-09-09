@@ -351,7 +351,7 @@ class PreviewPage {
         } else {
             // 弹窗页面
             let layerContent = this.createDialog(page)
-            layerContent.innerHTML = ``;
+            layerContent.innerHTML = '';
             this.renderPages(cells, layerContent,shapeXlms)
         }
         applyData[page.id] = {
@@ -369,11 +369,11 @@ class PreviewPage {
     // 渲染页面
     renderPages(cells, ele = this.gePreview,shapeXlms) {
         for (let cell of cells) {
-            let cellHtml = this.renderCell(cell,shapeXlms);
+            let cellHtml = this.renderCell(cell,shapeXlms)
             ele.appendChild(cellHtml);
             // 组内资源
             if (cell.children.length) {
-                this.renderPages(cell.children, cellHtml,shapeXlms);
+                this.renderPages(cell.children, cellHtml,shapeXlms)
             }
         }
     }
@@ -382,7 +382,7 @@ class PreviewPage {
     renderCell(cell,shapeXlms) {
         console.log(cell)
         const shapeName = cell.shapeName;
-        let cellHtml;
+        let cellHtml
         if (shapeName.includes('image')) {
             // 图片
             cellHtml = insertImage(cell)
@@ -396,20 +396,17 @@ class PreviewPage {
             cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(curLink) ? '' : 'http://' }${curLink}`);
         } else if (shapeName === 'menuCell' || shapeName === 'menulist') {
             // 菜单
-            cellHtml = document.createElement('div');
+            cellHtml = document.createElement('div')
             cellHtml.innerHTML = cell.value;
         }  else if (shapeName === 'text') {
             // 文本
-            cellHtml = document.createElement('span');
-            cellHtml.innerHTML = cell.value;
-            // 还原位置与界面工具一样
-            if (cellHtml.firstChild && cellHtml.firstChild.style) {
-                cellHtml.firstChild.style.display = 'inline-block'
-            }
+            cellHtml = document.createElement('span')
+            cellHtml.innerHTML = cell.value
         } else if (shapeName === 'button') {
             // 按钮
-            cellHtml = document.createElement('div');
-            cellHtml.innerHTML = cell.value;
+            cellHtml = document.createElement('div')
+            console.log(('<head>csdn</head>'.match(/<head>([\s\S]*?)<\/head>/)[1]))
+            cellHtml.innerHTML = cell.value
         } else if (shapeName === 'beeline') {
             // 箭头、直线，曲线
             cellHtml = inserEdge(cell)
