@@ -646,7 +646,8 @@ export default {
         InputSelectHandle(value, type) {
             let objData = {
                 deviceTypeId : this.currentDeviceTypeId || '',
-                studioId: this.studioIdNew
+                studioId: this.studioIdNew,
+                type: 1
             }
             if (+type === 1) {
                 objData.paramName = value.trim()

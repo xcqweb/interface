@@ -140,7 +140,7 @@ export default{
             dataName: '数据源',
             deviceType: '设备类型',
             deviceName: '设备名称',
-            placeText: '搜素设备名称',
+            placeText: '搜索设备名称',
             derection: 'right',
             nodata: '暂无数据',
             dataNameArr: [
@@ -305,7 +305,8 @@ export default{
                 let objData = {
                     deviceTypeId : this.modelvalue2,
                     deviceName: value.trim(),
-                    studioId: this.studioIdNew
+                    studioId: this.studioIdNew,
+                    type: 1
                 }
                 this.requestUtil.post(this.urls.deviceEquipList.url,objData).then((res) => {
                     this.deviceNameList = res.records || []
