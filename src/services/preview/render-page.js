@@ -5,8 +5,6 @@
 let pageWidth = 0,pageHeight = 0
 // websocket信息
 let applyData = {}
-// 正常的最小x、y偏移量
-let minX, minY
 // 配置好的svg图
 let configSvg = ['drop', 'circle', 'diamond', 'square', 'pentagram']
 // 默认样式
@@ -45,7 +43,7 @@ class PreviewPage {
 
     // 页面数量
     pageCounts() {
-        return Object.keys(this.content);
+        return Object.keys(this.content)
     }
     // 生成弹窗
     createDialog(page) {
@@ -98,7 +96,6 @@ class PreviewPage {
     // 解析所有控件节点
     parseCells(root) {
         // 递归获取节点
-        minX = minY = 0;
         let getNode = (tId = 1) => {
             let list = [];
             for (let item of root) {
@@ -245,8 +242,6 @@ class PreviewPage {
                             }
                         }
                     }
-                    (x < minX || minX === null) && (minX = x);
-                    (y < minY || minY === null) && (minY = y);
                     let obj = {
                         id,
                         bindData,
@@ -299,12 +294,10 @@ class PreviewPage {
         };
         let cells = getNode()
         cells.map(cell => {
-            // 修正最外层节点的定位信息
-            cell.x -= minX - 20
-            cell.y -= minY - 20
             // 计算页面高度
-            pageWidth = ((cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth) + 20;
-            pageHeight = ((cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight) + 20;
+            pageWidth = (cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth
+            pageHeight = (cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight
+            console.log(cell.id,pageHeight)
         })
         return cells    
     }
@@ -316,13 +309,9 @@ class PreviewPage {
     parsePage(page,shapeXlms) {
         const xmlDoc = mxUtils.parseXml(page.xml).documentElement
         let pageStyle = page.style
-        let bodyWidth = xmlDoc.getAttribute('pageWidth')
-        let bodyHeight = xmlDoc.getAttribute('pageHeight')
         const root = xmlDoc.getElementsByTagName('root')[0].childNodes
         const bodyBackground = xmlDoc.getAttribute('background') // 新增背景色
         document.body.style.backgroundColor = `${bodyBackground}`
-        document.body.style.width = `${bodyWidth}px`
-        document.body.style.height = `${bodyHeight}px`
         const list = []
         for (let i = 0; i < root.length; i++) {
             list.push(root[i])
@@ -337,8 +326,6 @@ class PreviewPage {
                 destroyWs(applyData, key)
             }
             document.getElementById('geDialogs').innerHTML = ''
-            // 正常的最小x、y偏移量
-            minX = minY = null
             // 清空页面内容
             this.clearPage()
             // 正常页面      
@@ -401,7 +388,9 @@ class PreviewPage {
         }  else if (shapeName === 'text') {
             // 文本
             cellHtml = document.createElement('span')
-            cellHtml.innerHTML = cell.value
+            let reg = />(.+)</
+            let textArr = cell.value.match(reg)
+            cellHtml.innerHTML = textArr[1]
         } else if (shapeName === 'button') {
             // 按钮
             cellHtml = document.createElement('div')
