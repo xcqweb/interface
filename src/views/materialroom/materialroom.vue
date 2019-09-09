@@ -201,7 +201,7 @@
                       <div>
                         <span style="display:flex;justify-content:center;align-items:center">
                           <img
-                            style="max-width:98px;max-height:90px"
+                            style="max-width:72px;max-height:72px"
                             :src="item.picUrl" 
                           >
                         </span>
@@ -242,7 +242,7 @@
                       <div>
                         <span style="display:flex;justify-content:center;align-items:center">
                           <img
-                            style="max-width:98px;max-height:90px"
+                            style="max-width:72px;max-height:72px"
                             :src="item.picUrl" 
                           >
                         </span>
@@ -285,12 +285,14 @@
           <span>
             <Upload 
               action="api/iot-cds/sources/material"
-              :show-upload-list="false" 
+              :show-upload-list="false"
+              :with-credentials="true"
+              :headers="headers"
               :format="['jpg', 'svg', 'png', 'gif']"
               :max-size="500"
               :on-format-error="handleFormatError"
               :on-error="uploadErr"
-              :on-success="uploadSucc" 
+              :on-success="uploadSucc"
               :data="uploadData"
             >
               <Button type="primary">{{ madeltext[1] }}</Button>
@@ -303,7 +305,7 @@
 </template>
 <script>
 import {Tabs,TabPane,Modal, Upload, Message, Button} from 'iview'
-import {sureDialog} from '../../services/Utils'
+import {sureDialog, getCookie} from '../../services/Utils'
 const ROOT_LEN = 2 // 新增组件时计算长度使用
 export default {
     components: {
@@ -381,7 +383,10 @@ export default {
             ifselectFrom: false, // 是否来自搜索
             userMaterialAll: [],
             newArr: [],
-            newArr2: []
+            newArr2: [],
+            headers:{
+                'Authorization': `Bearer ${getCookie('token')}`
+            }
         }
     },
     created() {
@@ -826,7 +831,7 @@ export default {
     .left-sidebar-model{
         /deep/.ivu-modal{
             /deep/.ivu-modal-content{
-                width:685px;
+                width:700px;
                 background-color:#f5f5f5 !important;
                 .ivu-modal-header{
                     height: 36px;
@@ -1073,8 +1078,8 @@ export default {
                                                       position: relative;
                                                       &>span{
                                                           display: block;
-                                                          width:80px;
-                                                          height: 80px;
+                                                          width:72px;
+                                                          height: 72px;
                                                           // border: 1px dashed #E1E1E1;
                                                       }
                                                       .right-spots-assemly{
@@ -1124,8 +1129,8 @@ export default {
                                                         align-items: center; 
                                                         &>span{
                                                             display: block;
-                                                            width:100px;
-                                                            height: 100px;
+                                                            width:72px;
+                                                            height: 72px;
                                                             // border: 1px dashed #E1E1E1;
                                                         }
                                                     }
@@ -1139,9 +1144,6 @@ export default {
                                                     }
                                                 }
                                                 &>li.user-uploadimage{
-                                                  // width:138px;
-                                                  // height:158px;
-                                                  // margin-right:2px;
                                                   &>div{
                                                       width:100px;
                                                       height: 100px;
@@ -1152,9 +1154,8 @@ export default {
                                                       position: relative;
                                                       &>span{
                                                           display: block;
-                                                          width:100px;
-                                                          height: 100px;
-                                                        //   border: 1px dashed #E1E1E1;
+                                                          width:720px;
+                                                          height: 72px;
                                                       }
                                                       .right-spots-assemly{
                                                         display: block;

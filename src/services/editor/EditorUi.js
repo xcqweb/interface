@@ -3738,7 +3738,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
     var editorUi = this;
     var graph = this.editor.graph;
     var keyHandler = new mxKeyHandler(graph);
-
+    console.log('entry')
     var isEventIgnored = keyHandler.isEventIgnored;
     keyHandler.isEventIgnored = function(evt)
     {

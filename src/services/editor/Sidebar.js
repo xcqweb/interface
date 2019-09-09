@@ -1018,7 +1018,6 @@ Sidebar.prototype.copyPage = function (ele,pageType) {
     type: pageType
   };
   let _li = document.createElement('li');
-    console.log(pageType)
   let resPage = this.editorUi.editor.addPage(page,pageType);
   _li.setAttribute('data-pageid', resPage.id);
     _li.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${titleText}</span><span class="right-icon-dolt"></span>`;
@@ -1468,7 +1467,7 @@ Sidebar.prototype.addLayoutPalette = function (expand) {
         let that = this
         let data = res.materialList || []
         data.forEach((item) => {
-            Array1.push(that.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${item.picUrl}`, 300, 170, '', 'layout图', '', '', '', 'layout', `${item.picUrl}`))
+            Array1.push(that.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${item.picUrl}`, item.picWidth ? (item.picWidth / 1.5) : 300, item.picHeight ? (item.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${item.picUrl}`))
         })
         this.addPaletteFunctions('layout', 'layout控件', false, Array1);
     })
@@ -1494,11 +1493,9 @@ Sidebar.prototype.addUserPalette = function (expand) {
                 let that = this
                 let data = res.materialList
                 data.forEach((item) => {
-                    Array1.push(that.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${item.picUrl}`, 300, 170, '', 'layout图', '', '', '', 'layout', `${item.picUrl}`))
+                    Array1.push(that.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${item.picUrl}`, item.picWidth ? (item.picWidth / 1.5) : 300, item.picHeight ? (item.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${item.picUrl}`))
                 })
-                // if (Array1.length) {
-                    this.addPaletteFunctions('user', `${item.name}`, false, Array1);
-                // }
+                this.addPaletteFunctions('user', `${item.name}`, false, Array1);
             })
         })
     })
@@ -1674,6 +1671,7 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
     } else {
         if (type === 'layout') {
             elt.style.backgroundImage = `url(${imageurl})`;
+            elt.style.backgroundSize = '40px 40px'
         } else {
             elt.style.backgroundImage = 'url(/static/stencils/basic/' + shapeName + '.png)';
         }
@@ -3009,7 +3007,6 @@ Sidebar.prototype.addClickHandler = function(elt, ds, cells)
 Sidebar.prototype.createVertexTemplateEntry = function(style, width, height, value, title, showLabel, showTitle, tags, type, imageurl)
 {
     tags = (tags != null && tags.length > 0) ? tags : title.toLowerCase();
-	
     return this.addEntry(tags, mxUtils.bind(this, function()
  	{
         return this.createVertexTemplate(style, width, height, value, title, showLabel, showTitle, '', type, imageurl);
@@ -3023,7 +3020,8 @@ Sidebar.prototype.createVertexTemplate = function (style, width, height, value, 
 {
     var cells = [new mxCell((value != null) ? value : '', new mxGeometry(0, 0, width, height), style)];
     cells[0].vertex = true;
-    return this.createVertexTemplateFromCells(cells, width, height, title, showLabel, showTitle, allowCellsInserted, type, imageurl);
+    
+    return this.createVertexTemplateFromCells(cells, width, height,title, showLabel, showTitle, allowCellsInserted, type, imageurl);
 };
 
 /**
