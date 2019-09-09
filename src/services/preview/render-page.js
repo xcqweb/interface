@@ -392,7 +392,11 @@ class PreviewPage {
             cellHtml = document.createElement('span')
             let reg = />(.+)</
             let textArr = cell.value.match(reg)
-            cellHtml.innerHTML = textArr[1]
+            if(textArr && textArr.length) {
+                cellHtml.innerHTML = textArr[1]
+            }else{
+                cellHtml.innerHTML = cell.value
+            }
         } else if (shapeName === 'button') {
             // 按钮
             cellHtml = document.createElement('div')
@@ -425,7 +429,7 @@ class PreviewPage {
             cellHtml.style.lineHeight = cell.height + 'px'
         }
         cellHtml.style.textAlign = cell.align
-        if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3'].includes(shapeName)) {
+        if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart'].includes(shapeName)) {
             cellHtml.style.backgroundColor = 'transparent'
         }else{
             if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none')) {
@@ -434,11 +438,13 @@ class PreviewPage {
                 cellHtml.style.backgroundColor = cell.fillColor
             }
         }
-        let borderStyle = 'solid'
-        if(cell.strokeStyle) {
-            borderStyle = 'dashed'
+        if(shapeName != 'beeline') {
+            let borderStyle = 'solid'
+            if(cell.strokeStyle) {
+                borderStyle = 'dashed'
+            }
+            cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
         }
-        cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
         cellHtml.style.width = cell.width + 'px'
         cellHtml.style.height = cell.height + 'px'
         cellHtml.className = 'gePalette'

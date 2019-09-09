@@ -730,7 +730,7 @@ let PreviewDialog = function(editorUi,callback) {
     var btnContent = editorUi.createDiv('btnContent');
     var genericBtn = mxUtils.button('保存并预览', function()
     {
-        editorUi.save(editorUi.editor.studioName || '新建应用', editorUi.editor.descript || '').then(res => {
+        editorUi.save(editorUi.editor.filename || '新建应用', editorUi.editor.describe || '').then(res => {
             callback(res.studioId)
             editorUi.hideDialog()
         })
@@ -926,7 +926,6 @@ let ImageDialog = function(editorUi, cell) {
 		var select = null;
 		var cells = graph.getSelectionCells();
 		var updateImg = function (newValue) {
-			// let prefix = 'getechFileSystem/'
             let prefix = newValue.host + '/'
             let newValuenew = newValue.filePath
             newValue = prefix + newValuenew

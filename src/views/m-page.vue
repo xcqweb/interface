@@ -95,7 +95,7 @@ export default {
             }
             timer = setInterval(()=> {
                 this.myEditorUi.saveFile(true,true)
-            },1000 * 60 * 3)//3分钟自动保存一次
+            },1000 * 60 * 1)//1分钟自动保存一次
         },
         updateZoom() {
             this.$refs.toolbar.updateZoom();
