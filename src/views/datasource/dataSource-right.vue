@@ -559,7 +559,9 @@ export default {
                         Message.success('删除成功')
                         if (this.modalParam.deleteAll) {
                             let paramsNameListNew = JSON.parse(JSON.stringify(this.paramsNameList))
-                            this.paramsNameList = this.handleData(this.paramIdArr ,paramsNameListNew)
+                            console.log(paramsNameListNew)
+                            this.paramsNameList = this.handleData(this.paramIdArr ,paramsNameListNew, 1)
+                            console.log(this.paramsNameList)
                         } else {
                             this.paramsNameList.splice(index,1)
                         }
@@ -575,7 +577,7 @@ export default {
                         Message.success('删除成功')
                         if (this.modalParam.deleteAll) {
                             let deviceNameListNew = JSON.parse(JSON.stringify(this.deviceNameList))
-                            this.deviceNameList = this.handleData(this.deviceIdArr ,deviceNameListNew)
+                            this.deviceNameList = this.handleData(this.deviceIdArr ,deviceNameListNew, 2)
                         } else {
                             this.deviceNameList.splice(index,1)
                         }
@@ -610,14 +612,20 @@ export default {
                 })
             }
         },
-        handleData(arr1, arr2) {
+        handleData(arr1, arr2, type) {
+            let _id = null
+            if (type === 1) {
+                _id = 'paramId'
+            } else {
+                _id = 'deviceId'
+            }
             let data = (function(arr1,arr2) {
                 let r = [];
                 (function fn(arr1, arr2) {
                     let l = arr1.shift() // 获取第一个元素 改变原数组
                     let newarr2 = [];
                     arr2.forEach(function(f) {
-                        newarr2.push(f.deviceId);
+                        newarr2.push(f[_id]);
                     });
                     if (newarr2.includes(l)) {
                         let _index = newarr2.findIndex(item => item === l )
@@ -632,6 +640,7 @@ export default {
                 })(arr1, arr2)
                 return r
             })(arr1, arr2)
+            console.log(data)
             return data
         },
         InputSelectHandle(value, type) {
