@@ -49,7 +49,7 @@ async function getSubscribeInfos(pointParams) {
         item.params = item.keys
         params.subscribeInfos.push(item)
     }
-    const data = await geAjax('/api/subscribe', 'POST', JSON.stringify(params))
+    const data = await geAjax('/api/pubsub/subscribe', 'POST', JSON.stringify(params))
     websocketUrlReal = data.data
     return data
 }

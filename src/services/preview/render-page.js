@@ -497,24 +497,34 @@ class PreviewPage {
                         modelIdsParam.push(item.modelFormInfo)
                     }
                 })
-                requestUtil.post(urls.getModelByIds.url, modelIdsParam).then((res) => {
-                    res.returnObj.forEach((item, index) => {
-                        cellStateInfoHasModel[index + 1].modelFormInfo = item
-                        let formulaAttr
-                        if (item.formula) {
-                            formulaAttr = JSON.parse(item.formula)
-                        }
-                        let flatFormulaAttr = []
-                        if (formulaAttr) {
-                            formulaAttr.data.forEach((item)=>{
-                                flatFormulaAttr = flatFormulaAttr.concat(...item)
+                if (modelIdsParam.length) {
+                    requestUtil.post(urls.getModelByIds.url, modelIdsParam).then((res) => {
+                        res.returnObj.forEach((item, index) => {
+                            cellStateInfoHasModel[index + 1].modelFormInfo = item
+                            let formulaAttr
+                            if (item.formula) {
+                                formulaAttr = JSON.parse(item.formula)
+                            }
+                            let flatFormulaAttr = []
+                            if (formulaAttr) {
+                                formulaAttr.data.forEach((item)=>{
+                                    flatFormulaAttr = flatFormulaAttr.concat(...item)
+                                })
+                                flatFormulaAttr.forEach((d) => {
+                                    resParams.push(d.paramName)
+                                })
+                            }
+                        })
+                        $(cellHtml).data("stateModels", cellStateInfoHasModel)
+                        devices.forEach((item) => {
+                            cellHtml.className += ` point_${item.id}`
+                            this.wsParams.push({
+                                pointId: item.id,
+                                params: Array.from(new Set(resParams.concat(paramShow)))
                             })
-                            flatFormulaAttr.forEach((d) => {
-                                resParams.push(d.paramName)
-                            })
-                        }
+                        })
                     })
-                    $(cellHtml).data("stateModels", cellStateInfoHasModel)
+                }else{
                     devices.forEach((item) => {
                         cellHtml.className += ` point_${item.id}`
                         this.wsParams.push({
@@ -522,10 +532,9 @@ class PreviewPage {
                             params: Array.from(new Set(resParams.concat(paramShow)))
                         })
                     })
-                })
+                }
             }
         }
-
         return cellHtml
     }
 }
