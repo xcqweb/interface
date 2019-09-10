@@ -812,7 +812,7 @@ let ImageDialog = function(editorUi, cell) {
         if (localImage) {
             var formData = new FormData();
             formData.append('file', localImage);
-            editorUi.editor.uploadFile(editorUi, '/api/upload/file', 'POST', formData, function(res) {
+            editorUi.editor.uploadFile(editorUi, '/api/console/upload/file', 'POST', formData, function (res) {
                 // newValue = res.filePath;
                 newValue = res;
                 updateImg(newValue)
