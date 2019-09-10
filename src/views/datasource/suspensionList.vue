@@ -32,7 +32,6 @@ export default{
     },
     methods: {
         clickHandle(id) {
-            console.log(id)
             switch(+id) {
                 case 1:
                     this.$emit('renameHandle')

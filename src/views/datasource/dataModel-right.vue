@@ -553,10 +553,8 @@ export default {
                 this.saveModelText = `保存模型`
                 this.$store.commit('modelEditing', false)
             } else {
-                
                 if (this.treeCheckRule(this.alldata.data)) {
-                    // 组装数据  保存模型 
-                    console.log(5)
+                    // 组装数据  保存模型
                     this.saveModelText = `编辑模型`
                     let objData = {}
                     objData.studioId = this.studioIdNew
@@ -570,6 +568,8 @@ export default {
                         if (res.sourceId) {
                             Message.success('保存模型成功')
                             this.$store.commit('modelEditing', true)
+                            this.ModelNameArr.splice(this.modelNumber, 1, res)
+                            console.log(this.ModelNameArr)
                         }
                     }).catch(() => {
                         Message.error('系统繁忙，请稍后再试！')
@@ -731,7 +731,9 @@ export default {
         ChildMouseLeaveHandle() {
             if (this.currentMouseIndex !== this.modelNumber) {
                 let liArrEle = document.querySelectorAll('#addModelLisetWaper li')[this.currentMouseIndex]
-                liArrEle.className = ''
+                if (liArrEle) {
+                    liArrEle.className = ''
+                }
             }
             this.ifShowSuspension = false
         },
@@ -756,14 +758,17 @@ export default {
         deleteModelHandle() {
             this.requestUtil.delete(`${this.urls.addModelList.url}/${this.ModelNameArr[this.currentMouseIndex].sourceId}`).then(() => {
                 if (this.modelNumber === this.currentMouseIndex) {
+                    let ModelNameArrCopy = JSON.parse(JSON.stringify(this.ModelNameArr))
                     let index = this.currentMouseIndex
-                    let _len = this.ModelNameArr.length - 1
+                    let _len = ModelNameArrCopy.length - 1
+                    this.ModelNameArr.splice(this.currentMouseIndex, 1)
                     if (this.ModelNameArr.length) {
                         if (this.currentMouseIndex === _len) {
-                            this.clickModelHandle('', this.ModelNameArr[_len].sourceId, this.ModelNameArr[_len].modelName,this.ModelNameArr[_len].formula,this.ModelNameArr[_len].descript, _len)
+                            this.clickModelHandle('', this.ModelNameArr[_len - 1].sourceId, this.ModelNameArr[_len - 1].modelName,this.ModelNameArr[_len - 1].formula,this.ModelNameArr[_len - 1].descript, _len - 1)
                         } else {
-                            this.clickModelHandle('', this.ModelNameArr[index].sourceId, this.ModelNameArr[index].modelName,this.ModelNameArr[index].formula,this.ModelNameArr[index].descript, _len)
+                            this.clickModelHandle('', this.ModelNameArr[index].sourceId, this.ModelNameArr[index].modelName,this.ModelNameArr[index].formula,this.ModelNameArr[index].descript, index)
                         }
+                        
                     }
                 } else {
                     this.ModelNameArr.splice(this.currentMouseIndex, 1)

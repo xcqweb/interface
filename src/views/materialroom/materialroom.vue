@@ -199,11 +199,15 @@
                       class="user-uploadimage"
                     >
                       <div>
-                        <span style="display:flex;justify-content:center;align-items:center">
-                          <img
+                        <!--eslint-disable-->
+                        <span 
+                          style="display:flex;justify-content:center;align-items:center"
+                          v-html="item.picUrl"
+                        >
+                          <!-- <img
                             style="max-width:72px;max-height:72px"
                             :src="item.picUrl" 
-                          >
+                          > -->
                         </span>
                         <label 
                           class="right-spots-assemly" 
@@ -240,11 +244,15 @@
                       class="user-uploadimage"
                     >
                       <div>
-                        <span style="display:flex;justify-content:center;align-items:center">
-                          <img
+                        <!--eslint-disable-->
+                        <span 
+                          style="display:flex;justify-content:center;align-items:center"
+                          v-html="item.picUrl"
+                        >
+                          <!-- <img
                             style="max-width:72px;max-height:72px"
                             :src="item.picUrl" 
-                          >
+                          > -->
                         </span>
                         <label 
                           class="right-spots-assemly" 
@@ -1157,6 +1165,7 @@ export default {
                                                           display: block;
                                                           width:720px;
                                                           height: 72px;
+                                                          overflow: hidden;
                                                       }
                                                       .right-spots-assemly{
                                                         display: block;

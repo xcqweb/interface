@@ -34,21 +34,21 @@ async function geAjax(url, method = 'GET', data = null) {
         showTips(true, '登陆失效，请重新登陆系统！')
         return;
     }
-    const tExp = window.jwt_decode(token).exp;
-    const rExp = window.jwt_decode(refreshToken).exp;
-    const now = new Date().valueOf();
-    if (now > tExp * 1000 && now < rExp * 1000) {
-        // 刷新token
-        await geHttp('/api/auth/refreshToken', 'POST', {
-            refreshToken
-        }).then(res => {
-            setCookie('token', res.token);
-            setCookie('refreshToken', res.refreshToken);
-        })
-    } else if (now > rExp * 1000) {
-        showTips(true,'登录失效，请重新登录系统！')
-        return;
-    }
+    // const tExp = window.jwt_decode(token).exp;
+    // const rExp = window.jwt_decode(refreshToken).exp;
+    // const now = new Date().valueOf();
+    // if (now > tExp * 1000 && now < rExp * 1000) {
+    //     // 刷新token
+    //     await geHttp('/api/auth/refreshToken', 'POST', {
+    //         refreshToken
+    //     }).then(res => {
+    //         setCookie('token', res.token);
+    //         setCookie('refreshToken', res.refreshToken);
+    //     })
+    // } else if (now > rExp * 1000) {
+    //     showTips(true,'登录失效，请重新登录系统！')
+    //     return;
+    // }
 
     /**
      * 原生http
@@ -99,13 +99,23 @@ async function geAjax(url, method = 'GET', data = null) {
                 xmlhttp = new window.ActiveXObject("Microsoft.XMLHttp")
             }
             // 监听readystate，执行回调
-            xmlhttp.onreadystatechange = function() {
+            xmlhttp.onreadystatechange = async function() {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                     // 服务器响应正确数据
                     resolve(JSON.parse(xmlhttp.responseText))
                 } else if (xmlhttp.readyState == 4) {
                     // 服务器响应错误数据
-                    reject(xmlhttp.responseText)
+                    if (xmlhttp.status === 418) {
+                        // 刷新token
+                        await geHttp('/api/auth/refreshToken', 'POST', {
+                            refreshToken
+                        }).then(res => {
+                            setCookie('token', res.token);
+                            setCookie('refreshToken', res.refreshToken);
+                        })
+                    } else {
+                        reject(xmlhttp.responseText)
+                    }
                 }
             }
             xmlhttp.open(method, url, true);

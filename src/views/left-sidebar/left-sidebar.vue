@@ -54,14 +54,17 @@
               <template v-if="index === 0">
                 <span />
               </template>
+              <!--eslint-disable-->
               <template v-if="index >= 1">
                 <span 
                   style="display:flex;justify-content:center;align-items:center"
+                  v-html="item.picUrl"
                 >
-                  <img 
+                  <!-- <img 
                     style="max-width:118px;max-height:70px"
                     :src="item.picUrl"
-                  >
+                  > -->
+                  <!-- {{ item.picUrl }} -->
                 </span>
               </template>
             </span>
@@ -141,12 +144,14 @@ export default {
                         this.alertModal.push(obj)
                     }
                 })
+                if (type === 1) {
+                    this.alertContent = this.pageModal
+                } else if (type === 2) {
+                    this.alertContent = this.alertModal
+                }
+                console.log(this.alertContent)
             })
-            if (type === 1) {
-                this.alertContent = this.pageModal
-            } else if (type === 2) {
-                this.alertContent = this.alertModal
-            }
+            
         },
         eventClickList(index) {
             this.isactive = index
@@ -375,6 +380,7 @@ export default {
                                 padding:5px;
                                 box-sizing: border-box;
                                 box-shadow:darkgrey 1px 1px 5px 1px;
+                                overflow: hidden;
                                 &.left-side-listactive{
                                     padding:3px;
                                     border:2px solid #3D91F7
