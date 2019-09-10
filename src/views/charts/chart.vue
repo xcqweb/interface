@@ -247,7 +247,6 @@
 <script>
 import {sureDialog} from '../../services/Utils'
 import {data1,data2} from '../../constants/chart-default-data'
-let timer
 export default{
     props:['shapeName','bindChartProps'],
     data() {
@@ -277,12 +276,9 @@ export default{
     mounted() {
         const component = this.$mount()
         document.body.appendChild(component.$el)
-        timer = setInterval(()=>{
-            this.options2.series.data[0].value = (Math.random() * 100).toFixed(2) - 0
-        },2000)
         if(this.bindChartProps) {
-            this.options = this.bindChartProps
             if(this.shapeName == 'lineChart') {
+                this.options1 = this.bindChartProps
                 let lineData = this.bindChartProps.series.markLine.data
                 if(lineData.length) {
                     lineData.forEach((item)=>{
@@ -298,38 +294,36 @@ export default{
             }else{
                 this.progressMin = this.options.series.min
                 this.progressMax = this.options.series.max
+                this.options2 = this.bindChartProps
             }
-        }else{
-            this.options = this.shapeName == 'lineChart' ? this.options1 : this.options2
         }
     },
     destoryed() {
-        if(timer) {
-            clearInterval(timer)
-            timer = null
-        }
     },
     methods: {
         hideChartDialog() {
             let options
             if(this.shapeName == 'lineChart') {
+                this.setMarkLineFun()
                 options = Object.assign({},this.options1)
-                options.series.markLine.data = []
-                this.markLineList.forEach((item)=>{
-                    options.series.markLine.data.push({
-                        lineStyle:{
-                            color:item.borderColor,
-                            type:item.borderLineCls === 'border-line' ? 'solid' : 'dashed',
-                            width:item.borderLineBoldText
-                        },
-                        label:item.markName,
-                        yAxis:item.markValue
-                    })
-                })
             }else{
                 options = Object.assign({},this.options2)
             }
             this.$emit("hideChartDialog",options)
+        },
+        setMarkLineFun() {
+            this.options1.series.markLine.data.splice(0)
+            this.markLineList.forEach((item)=>{
+                this.options1.series.markLine.data.push({
+                    lineStyle:{
+                        color:item.borderColor,
+                        type:item.borderLineCls === 'border-line' ? 'solid' : 'dashed',
+                        width:item.borderLineBoldText
+                    },
+                    label:item.markName,
+                    yAxis:item.markValue
+                })
+            })
         },
         changeProgress() {
             this.options2.series.min = this.progressMin
@@ -374,6 +368,7 @@ export default{
                     borderLineBoldText:this.borderLineBoldText,
                 }
             )
+            this.setMarkLineFun()
             this.isAddMark = false
         },
         hideBorderLineBold() {
@@ -383,6 +378,7 @@ export default{
             evet.stopPropagation()
             sureDialog(this.myEditorUi,`确定要删除${d.markName}吗`,()=>{
                 this.markLineList.splice(index,1)
+                this.setMarkLineFun()
             },)
         },
         editMarkLineFun(item,index,evet) {
@@ -397,14 +393,18 @@ export default{
             this.borderLineBoldText = item.borderLineBoldText
         },
         chooseLegend() {
-            this.options.legend = {show:this.chartLegend}
+            this.options1.legend = {show:this.chartLegend}
         },
         chooseTitle() {
-            this.options.title = {show:this.chartTitle}
+            if(this.shapeName == 'lineChart') {
+                console.log(this.chartTitle)
+                this.options1.title = {show:this.chartTitle}
+            }else{
+                this.options2.title = {show:this.chartTitle}
+            }
         },
         chooseGrid() {
-            this.options.grid = {show:this.chartGrid}
-            console.log(this.options)
+            this.options1.grid = {show:this.chartGrid}
         }
     },      
 }

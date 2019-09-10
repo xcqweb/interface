@@ -478,8 +478,8 @@ class PreviewPage {
             let resParams = []
             let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
             let modelIdsParam = []
-            if(cell.statesInfo) {
-                let statesInfo = cell.statesInfo
+            let statesInfo = cell.statesInfo
+            if (statesInfo && statesInfo.length) {
                 cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
                 statesInfo.forEach((item)=>{
                     if (item.modelFormInfo) {
