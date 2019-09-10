@@ -306,7 +306,9 @@ export default{
                     deviceTypeId : this.modelvalue2,
                     deviceName: value.trim(),
                     studioId: this.studioIdNew,
-                    type: 1
+                    type: 1,
+                    size:this.PAGE_SIZE,
+                    current:this.PAGE_CURRENT,
                 }
                 this.requestUtil.post(this.urls.deviceEquipList.url,objData).then((res) => {
                     this.deviceNameList = res.records || []

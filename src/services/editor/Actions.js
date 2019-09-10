@@ -1184,12 +1184,13 @@ Actions.prototype.init = function()
                     var select = null;
                     var cells = graph.getSelectionCells();
                     var updateImg = function (newValue) {
-                        let prefix = `${newValue.host}/`
-                        let newValuenew = newValue.filePath
-                        newValue = prefix + newValuenew
+                        // let prefix = `${newValue.host}/`
+                        // let newValuenew = newValue.filePath
+                        // newValue = prefix + newValuenew
+                        let newPicUrl = newValue.picUrl
                         graph.getModel().beginUpdate();
                         try {
-                            graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
+                            graph.setCellStyles(mxConstants.STYLE_IMAGE, (newPicUrl.length > 0) ? newPicUrl : null, cells);
                         }
                         finally {
                             graph.getModel().endUpdate();
@@ -1202,7 +1203,8 @@ Actions.prototype.init = function()
                     if (localImage) {
                         var formData = new FormData();
                         formData.append('file', localImage);
-                        ui.editor.uploadFile(ui, '/api/upload/file', 'POST', formData, function (res) {
+                        formData.append('materialLibraryId', '');
+                        ui.editor.uploadFile(ui, 'api/iot-cds/sources/material', 'POST', formData, function (res) {
                             let newValue = res;
                             updateImg(newValue)
                         })

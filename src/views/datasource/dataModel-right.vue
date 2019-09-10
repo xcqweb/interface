@@ -538,6 +538,8 @@ export default {
             let objData = {
                 studioId:sessionStorage.getItem("applyId") || '',
                 deviceTypeId: modelId,
+                size:this.PAGE_SIZE,
+                current:this.PAGE_CURRENT,
                 type:1
             }
             this.requestUtil.post(this.urls.deviceParamList.url, objData).then((res) => {
