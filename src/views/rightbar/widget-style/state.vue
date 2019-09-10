@@ -79,7 +79,7 @@ export default{
             states:[],
             editState:null,
             shapeName:'',
-            picList:['image'],
+            picList:['image','userimage'],
         }
     },
     mounted() {

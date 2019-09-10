@@ -315,8 +315,13 @@ function actionChange(action) {
         dealLightFill(cellCon,stateInfo.style.background)
         return
     }
+    let imgInfo = stateInfo.imgInfo
     for (let key in stateInfo.style) {
         cellCon.style[key] = stateInfo.style[key]
+    }
+    if(imgInfo) {
+        cellCon.style.background = `url(${imgInfo.url}) center center no-repeat`
+        cellCon.style.backgroundSize = '100% 100%'
     }
 }
 
