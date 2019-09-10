@@ -131,7 +131,6 @@ class PreviewPage {
                     fontColor = getNodeInfo.getStyles('fontColor') || '#000000'
                     verticalAlign = getNodeInfo.getStyles('verticalAlign') || 'middle'
                     rotation = getNodeInfo.getStyles('rotation') || 0
-                    console.log(rotation,"tt-sfd")
                     flipH = getNodeInfo.getStyles('flipH') || 0
                     flipV = getNodeInfo.getStyles('flipV') || 0
                     align = getNodeInfo.getStyles('align') || 'center'

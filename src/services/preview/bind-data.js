@@ -85,10 +85,11 @@ function setterRealData(res) {
                 console.log("tt")
             }else {
                 if (paramShow.length == 1) {
-                    $(els[i]).html(`<ul><p style="display:block;height:20px;">${paramShow[0]}</p></ul>`)
+                    $(els[i]).html(`${paramShow[0]}`)
                 } else{
-                    $(els[i]).html("<ul>" + paramShow.map((d) => {
-                        return `<li style="display:block;height:20px;">${d}=${item[d]}</span>`
+                    $(els[i]).css("line-height", "normal")
+                    $(els[i]).html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
+                        return `<li>${d}=${item[d]}`
                     }).join('') + "</ul>")
                 }              
             }
@@ -116,7 +117,6 @@ function dealStateFormula(formula, data) {
     formula = JSON.parse(formula)
     let res1 = true,breakFlag = false,res2 = false
     let logics = formula.data
-    console.log(formula, formula.data, "tt-aa")
     if(!logics) {
         return
     }
