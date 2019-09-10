@@ -505,23 +505,27 @@ class PreviewPage {
                             }
                         })
                         $(cellHtml).data("stateModels", cellStateInfoHasModel)
-                        devices.forEach((item) => {
-                            cellHtml.className += ` point_${item.id}`
-                            this.wsParams.push({
-                                pointId: item.id,
-                                params: Array.from(new Set(resParams.concat(paramShow)))
+                        if (devices) {
+                            devices.forEach((item) => {
+                                cellHtml.className += ` point_${item.id}`
+                                this.wsParams.push({
+                                    pointId: item.id,
+                                    params: Array.from(new Set(resParams.concat(paramShow)))
+                                })
                             })
-                        })
+                        }
                     })
                 }
             } else{
-                devices.forEach((item) => {
-                    cellHtml.className += ` point_${item.id}`
-                    this.wsParams.push({
-                        pointId: item.id,
-                        params: Array.from(new Set(resParams.concat(paramShow)))
+                if (devices) {
+                    devices.forEach((item) => {
+                        cellHtml.className += ` point_${item.id}`
+                        this.wsParams.push({
+                            pointId: item.id,
+                            params: Array.from(new Set(resParams.concat(paramShow)))
+                        })
                     })
-                })
+                }
             }
         }
         return cellHtml

@@ -20,7 +20,7 @@
     <MPage v-show="isPage" />
     <MDataS 
       v-if="!isPage" 
-      ref="dataSoucreTab" 
+      ref="dataSourceTab" 
     />
   </div>
 </template>
@@ -65,7 +65,7 @@ export default {
             if (index === 2 && this.tabShow) {
                 this.$nextTick(() => {
                     VueEvent.$emit('rightBarTabSwitch')
-                    this.$refs.dataSoucreTab.getDeviceType()
+                    this.$refs.dataSourceTab.getDeviceType()
                     this.tabShow = false
                 })
             } else if (index === 1) {
