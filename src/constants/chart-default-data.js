@@ -3,6 +3,10 @@ export let data1 = {
         data: ['图例'],
         bottom: 0,
     },
+    grid:{
+        top:10,
+        bottom:45,
+    },
     tooltip: {
         trigger: 'axis'
     },
@@ -33,6 +37,7 @@ export let data2 = {
     },
     series: {
         type: 'gauge',
+        radius:'100%',
         detail: {
             formatter: '{value}%'
         },

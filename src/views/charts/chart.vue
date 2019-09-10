@@ -18,20 +18,9 @@
         <v-chart
           :options="shapeName=='lineChart' ? options1 : options2"
           autoresize
-          style="height:320px;width:46%;"
+          style="height:300px;width:46%;"
         />
         <div style="width:46%">
-          <div
-            class="item-title"
-            style="display:flex;justify-content:space-between;"
-          >
-            标题
-            <i-switch
-              v-model="chartTitle"
-              size="small"
-              @on-change="chooseTitle"
-            />
-          </div>
           <div
             v-if="shapeName=='lineChart'"
             class="item-title"
@@ -44,18 +33,6 @@
               @on-change="chooseLegend"
             />
           </div>
-          <!--   <div
-            v-if="shapeName=='lineChart'"
-            class="item-title"
-            style="display:flex;justify-content:space-between;"
-          >
-            网格线
-            <i-switch
-              v-model="chartGrid"
-              size="small"
-              @on-change="chooseGrid"
-            />
-          </div> -->
           <div v-if="shapeName=='gaugeChart'">
             <div class="item-title">
               数值范围
@@ -255,9 +232,7 @@ export default{
             options2:data2,
             progressMax:100,
             progressMin:0,
-            chartTitle:true,
             chartLegend:true,
-            chartGrid:false,//chart网格线
             markLineList:[],//标线 line-chart
             isAddMark:false,
             markName:'指标1',
@@ -394,14 +369,6 @@ export default{
         },
         chooseLegend() {
             this.options1.legend = {show:this.chartLegend}
-        },
-        chooseTitle() {
-            if(this.shapeName == 'lineChart') {
-                console.log(this.chartTitle)
-                this.options1.title = {show:this.chartTitle}
-            }else{
-                this.options2.title = {show:this.chartTitle}
-            }
         },
         chooseGrid() {
             this.options1.grid = {show:this.chartGrid}

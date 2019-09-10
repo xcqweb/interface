@@ -85,7 +85,7 @@ function setterRealData(res) {
                 console.log("tt")
             }else {
                 if (paramShow.length == 1) {
-                    $(els[i]).html(`${paramShow[0]}`)
+                    $(els[i]).html(`${item[paramShow[0]]}`)
                 } else{
                     $(els[i]).css("line-height", "normal")
                     $(els[i]).html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {

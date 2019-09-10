@@ -415,7 +415,7 @@ Editor.prototype.InitEditor = function(editorUi) {
         let id
         if(idArr && idArr.length){
             id= idArr[1]
-            sessionStorage.setItem("applyId", applyId)
+            sessionStorage.setItem("applyId", id)
         }else{
             id = applyId
         }
