@@ -426,6 +426,7 @@ function dealPipeline(cell) {
 function dealCharts(cell) {
     let con = document.createElement('div')
     let chartAttr = cell.chartProps
+    console.log(chartAttr)
     let options = {}
     if (chartAttr) {
         options = JSON.parse(chartAttr)

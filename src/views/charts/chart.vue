@@ -282,9 +282,7 @@ export default{
         },2000)
         if(this.bindChartProps) {
             this.options = this.bindChartProps
-            this.chooseTitle = this.bindChartProps.title
             if(this.shapeName == 'lineChart') {
-                this.chooseLegend = this.bindChartProps.legend
                 let lineData = this.bindChartProps.series.markLine.data
                 if(lineData.length) {
                     lineData.forEach((item)=>{
