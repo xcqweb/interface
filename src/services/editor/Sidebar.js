@@ -1460,7 +1460,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
 
     let fnsChart=[
         this.createVertexTemplateEntry('shape=lineChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/lineChart.svg', 380, 200, '<span style="font-size:24px;">双击编辑</span>', '趋势图'),
-        this.createVertexTemplateEntry('shape=gaugeChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/gaugeChart.svg', 300, 270, '<span style="font-size:24px;">双击编辑</span>', '仪表盘'),
+        this.createVertexTemplateEntry('shape=gaugeChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/gaugeChart.svg', 270, 270, '<span style="font-size:24px;">双击编辑</span>', '仪表盘'),
     ]
     this.addPaletteFunctions('chart', '图表控件', false, fnsChart);
    };

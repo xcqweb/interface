@@ -21,7 +21,7 @@
           <div style="flex:3">
             <div class="state-con">
               <div
-                v-if="shapeName=='image'"
+                v-if="picList.includes(shapeName)"
                 class="image"
                 :class="animateCls"
               />
@@ -30,7 +30,7 @@
                 class="image_light"
               />
               <div
-                v-if="shapeName!='image' && shapeName!='light' "
+                v-if="!picList.includes(shapeName) && shapeName!='light' "
                 class="text"
                 :class="animateCls"
               >
@@ -163,7 +163,7 @@ export default{
             animateCls:'',
             animateCheck:false,
             shapeName:'',
-            picList:['image'],
+            picList:['image','userimage'],
             bgPic:require('../../../assets/images/rightsidebar/bg_ic_widget.png'),
             isShowBgText:true,
             bgPicStyle:{height:'auto'}
@@ -174,7 +174,7 @@ export default{
         const component = this.$mount()
         document.querySelector('body').appendChild(component.$el)
         this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
-        if (this.shapeName == 'image') {
+        if (this.picList.includes(this.shapeName)) {
             this.typeTab = 4
         }
         if(this.editState) {

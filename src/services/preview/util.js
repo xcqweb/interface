@@ -325,8 +325,13 @@ function actionChange(action) {
         dealLightFill(cellCon,stateInfo.style.background)
         return
     }
+    let imgInfo = stateInfo.imgInfo
     for (let key in stateInfo.style) {
         cellCon.style[key] = stateInfo.style[key]
+    }
+    if(imgInfo) {
+        cellCon.style.background = `url(${imgInfo.url}) center center no-repeat`
+        cellCon.style.backgroundSize = '100% 100%'
     }
 }
 
@@ -436,6 +441,7 @@ function dealPipeline(cell) {
 function dealCharts(cell) {
     let con = document.createElement('div')
     let chartAttr = cell.chartProps
+    console.log(chartAttr)
     let options = {}
     if (chartAttr) {
         options = JSON.parse(chartAttr)

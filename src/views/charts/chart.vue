@@ -18,20 +18,9 @@
         <v-chart
           :options="shapeName=='lineChart' ? options1 : options2"
           autoresize
-          style="height:320px;width:46%;"
+          style="height:300px;width:46%;"
         />
         <div style="width:46%">
-          <div
-            class="item-title"
-            style="display:flex;justify-content:space-between;"
-          >
-            标题
-            <i-switch
-              v-model="chartTitle"
-              size="small"
-              @on-change="chooseTitle"
-            />
-          </div>
           <div
             v-if="shapeName=='lineChart'"
             class="item-title"
@@ -44,18 +33,6 @@
               @on-change="chooseLegend"
             />
           </div>
-          <!--   <div
-            v-if="shapeName=='lineChart'"
-            class="item-title"
-            style="display:flex;justify-content:space-between;"
-          >
-            网格线
-            <i-switch
-              v-model="chartGrid"
-              size="small"
-              @on-change="chooseGrid"
-            />
-          </div> -->
           <div v-if="shapeName=='gaugeChart'">
             <div class="item-title">
               数值范围
@@ -247,7 +224,6 @@
 <script>
 import {sureDialog} from '../../services/Utils'
 import {data1,data2} from '../../constants/chart-default-data'
-let timer
 export default{
     props:['shapeName','bindChartProps'],
     data() {
@@ -256,9 +232,7 @@ export default{
             options2:data2,
             progressMax:100,
             progressMin:0,
-            chartTitle:true,
             chartLegend:true,
-            chartGrid:false,//chart网格线
             markLineList:[],//标线 line-chart
             isAddMark:false,
             markName:'指标1',
@@ -277,14 +251,9 @@ export default{
     mounted() {
         const component = this.$mount()
         document.body.appendChild(component.$el)
-        timer = setInterval(()=>{
-            this.options2.series.data[0].value = (Math.random() * 100).toFixed(2) - 0
-        },2000)
         if(this.bindChartProps) {
-            this.options = this.bindChartProps
-            this.chooseTitle = this.bindChartProps.title
             if(this.shapeName == 'lineChart') {
-                this.chooseLegend = this.bindChartProps.legend
+                this.options1 = this.bindChartProps
                 let lineData = this.bindChartProps.series.markLine.data
                 if(lineData.length) {
                     lineData.forEach((item)=>{
@@ -300,38 +269,36 @@ export default{
             }else{
                 this.progressMin = this.options.series.min
                 this.progressMax = this.options.series.max
+                this.options2 = this.bindChartProps
             }
-        }else{
-            this.options = this.shapeName == 'lineChart' ? this.options1 : this.options2
         }
     },
     destoryed() {
-        if(timer) {
-            clearInterval(timer)
-            timer = null
-        }
     },
     methods: {
         hideChartDialog() {
             let options
             if(this.shapeName == 'lineChart') {
+                this.setMarkLineFun()
                 options = Object.assign({},this.options1)
-                options.series.markLine.data = []
-                this.markLineList.forEach((item)=>{
-                    options.series.markLine.data.push({
-                        lineStyle:{
-                            color:item.borderColor,
-                            type:item.borderLineCls === 'border-line' ? 'solid' : 'dashed',
-                            width:item.borderLineBoldText
-                        },
-                        label:item.markName,
-                        yAxis:item.markValue
-                    })
-                })
             }else{
                 options = Object.assign({},this.options2)
             }
             this.$emit("hideChartDialog",options)
+        },
+        setMarkLineFun() {
+            this.options1.series.markLine.data.splice(0)
+            this.markLineList.forEach((item)=>{
+                this.options1.series.markLine.data.push({
+                    lineStyle:{
+                        color:item.borderColor,
+                        type:item.borderLineCls === 'border-line' ? 'solid' : 'dashed',
+                        width:item.borderLineBoldText
+                    },
+                    label:item.markName,
+                    yAxis:item.markValue
+                })
+            })
         },
         changeProgress() {
             this.options2.series.min = this.progressMin
@@ -376,6 +343,7 @@ export default{
                     borderLineBoldText:this.borderLineBoldText,
                 }
             )
+            this.setMarkLineFun()
             this.isAddMark = false
         },
         hideBorderLineBold() {
@@ -385,6 +353,7 @@ export default{
             evet.stopPropagation()
             sureDialog(this.myEditorUi,`确定要删除${d.markName}吗`,()=>{
                 this.markLineList.splice(index,1)
+                this.setMarkLineFun()
             },)
         },
         editMarkLineFun(item,index,evet) {
@@ -399,14 +368,10 @@ export default{
             this.borderLineBoldText = item.borderLineBoldText
         },
         chooseLegend() {
-            this.options.legend = {show:this.chartLegend}
-        },
-        chooseTitle() {
-            this.options.title = {show:this.chartTitle}
+            this.options1.legend = {show:this.chartLegend}
         },
         chooseGrid() {
-            this.options.grid = {show:this.chartGrid}
-            console.log(this.options)
+            this.options1.grid = {show:this.chartGrid}
         }
     },      
 }

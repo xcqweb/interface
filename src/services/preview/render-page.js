@@ -400,7 +400,6 @@ class PreviewPage {
         } else if (shapeName === 'button') {
             // 按钮
             cellHtml = document.createElement('div')
-            console.log(('<head>csdn</head>'.match(/<head>([\s\S]*?)<\/head>/)[1]))
             cellHtml.innerHTML = cell.value
         } else if (shapeName === 'beeline') {
             // 箭头、直线，曲线
@@ -478,8 +477,8 @@ class PreviewPage {
             let resParams = []
             let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
             let modelIdsParam = []
-            if(cell.statesInfo) {
-                let statesInfo = cell.statesInfo
+            let statesInfo = cell.statesInfo
+            if (statesInfo && statesInfo.length) {
                 cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
                 statesInfo.forEach((item)=>{
                     if (item.modelFormInfo) {
@@ -506,15 +505,19 @@ class PreviewPage {
                             }
                         })
                         $(cellHtml).data("stateModels", cellStateInfoHasModel)
-                        devices.forEach((item) => {
-                            cellHtml.className += ` point_${item.id}`
-                            this.wsParams.push({
-                                pointId: item.id,
-                                params: Array.from(new Set(resParams.concat(paramShow)))
+                        if (devices) {
+                            devices.forEach((item) => {
+                                cellHtml.className += ` point_${item.id}`
+                                this.wsParams.push({
+                                    pointId: item.id,
+                                    params: Array.from(new Set(resParams.concat(paramShow)))
+                                })
                             })
-                        })
+                        }
                     })
-                }else{
+                }
+            } else{
+                if (devices) {
                     devices.forEach((item) => {
                         cellHtml.className += ` point_${item.id}`
                         this.wsParams.push({

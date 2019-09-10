@@ -225,11 +225,15 @@ export default {
         }
     },
     mounted() {
-        this.initData()
+        if(this.footerContent) {
+            this.initData()
+        }
         VueEvent.$on('isShowFootBar', ({show,isUp}) => {
             this.isInitFlag = false
-            this.initData()
-            this.footerContentHandle(show) 
+            this.footerContentHandle(show)
+            if(show) {
+                this.initData()
+            }
             if (isUp) {
                 this.ifShowArrow = isUp
             }
@@ -267,6 +271,7 @@ export default {
                 return 
             }
             //初始化状态列表
+            this.paramVals.splice(0)
             let tempStateList = this.getCellModelInfo("statesInfo")
             if(tempStateList) {
                 this.stateList = tempStateList
@@ -285,9 +290,6 @@ export default {
             if (startBindData && startBindData.dataSource) {
                 let deviceNameChild = startBindData.dataSource.deviceNameChild || []
                 deviceTypeId = startBindData.dataSource.deviceTypeChild ? startBindData.dataSource.deviceTypeChild.id : '' //拿到deviceTypeId暂存全局
-                if(!this.paramsList.length && deviceTypeId) { // 当最开始有 再删除数据源 再绑定一个 收东获取参数
-                    this.initParamsList()
-                }
                 this.dataSourceList = []
                 deviceNameChild.forEach((item) => {
                     let obj = {}
@@ -298,9 +300,6 @@ export default {
                 })
             } else {
                 this.dataSourceList = []
-                this.paramsList = []
-                this.stateList = []
-                this.modelList = []
             }
         },
         initModelList() {
@@ -327,9 +326,11 @@ export default {
                 })
             }else{
                 this.modelList = []
+                this.stateList = []
             }
         },
         initParamsList() {
+            this.paramVals.splice(0)
             let tempObj = this.getCellModelInfo('bindData')
             if(deviceTypeId) {
                 let param = {
@@ -343,12 +344,14 @@ export default {
             }else{
                 this.paramsList = []
             }
-            if(tempObj && tempObj.parmas) {
-                let bindParamsList = tempObj.parmas
+            if(tempObj && tempObj.params) {
+                let bindParamsList = tempObj.params
                 this.paramOutterList = new Array(bindParamsList.length)
+                console.log(bindParamsList)
                 bindParamsList.forEach((item,index)=>{
                     this.$set(this.paramVals,index,item.index)
                 })
+                console.log(this.paramVals)
             }
         },
         modelSelectChange(modelIndex,stateIndex) {
@@ -394,8 +397,8 @@ export default {
             let newDataSource = JSON.parse(JSON.stringify(this.dataSourceList))
             sureDialog(this.myEditorUi,`确定要删除数据源-${data.name}吗`,()=>{
                 this.dataSourceList.splice(index, 1)
-                let objArr = startBindData.dataSource.deviceNameChild || []
-                let deleteEle = newDataSource[index].deviceName || ''
+                let objArr = startBindData.dataSource.deviceNameChild
+                let deleteEle = newDataSource[index].deviceName
                 let resIndex = objArr.findIndex((item)=>{
                     return item.name == deleteEle
                 })
@@ -433,12 +436,14 @@ export default {
                 if(res != -1) {
                     list.splice(index,1)
                     tempObj.params = list
-                    
                     this.setCellModelInfo('bindData',tempObj)
                 }
             }
         },
         paramSelectChange(val,index) {
+            if(!val) {
+                return
+            }
             let tempObj = this.getCellModelInfo('bindData')
             let list = []
             if(tempObj && tempObj.params) {

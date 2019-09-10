@@ -1,12 +1,12 @@
 export let data1 = {
-    title: {
-        text: '标题',
-    },
     legend: {
         data: ['图例'],
         bottom: 0,
     },
-    color: ['#3398DB'],
+    grid:{
+        top:10,
+        bottom:45,
+    },
     tooltip: {
         trigger: 'axis'
     },
@@ -32,22 +32,16 @@ export let data1 = {
 }
 
 export let data2 = {
-    title: {
-        text: '标题',
-    },
     tooltip: {
         formatter: "{a} <br/>{b} : {c}%"
     },
     series: {
-        name: '业务指标',
         type: 'gauge',
+        radius:'100%',
         detail: {
             formatter: '{value}%'
         },
-        data: [{
-            value: 50,
-            name: '完成率'
-        }],
+        data: [50],
         min: 0,
         max: 100,
     },

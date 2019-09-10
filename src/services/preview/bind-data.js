@@ -53,7 +53,6 @@ async function getSubscribeInfos(pointParams) {
     websocketUrlReal = data.data
     return data
 }
-
 //绑定数据&切换状态的处理方法
 function setterRealData(res) {
     res.forEach((item)=>{
@@ -82,11 +81,17 @@ function setterRealData(res) {
                 target.css("background", background)
                 target.animate({"width":`${percentVal * 100}%`})
                 target.html(text)
-            }/*else if(shapeName.includes('Chart')) { 
-            }*/else {                 
-                $(els[i]).html(paramShow.map((d) => {
-                    return `<p>${d}=${item[d]}</p>`
-                }).join(''))
+            }else if(shapeName.includes('Chart')) {
+                console.log("tt")
+            }else {
+                if (paramShow.length == 1) {
+                    $(els[i]).html(`${item[paramShow[0]]}`)
+                } else{
+                    $(els[i]).css("line-height", "normal")
+                    $(els[i]).html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
+                        return `<li>${d}=${item[d]}`
+                    }).join('') + "</ul>")
+                }              
             }
 
             let stateModels = $(els[i]).data("stateModels")
@@ -112,7 +117,6 @@ function dealStateFormula(formula, data) {
     formula = JSON.parse(formula)
     let res1 = true,breakFlag = false,res2 = false
     let logics = formula.data
-    console.log(formula, formula.data, "tt-aa")
     if(!logics) {
         return
     }
@@ -212,7 +216,7 @@ function reconnect(pageId,applyData) {
     // 3s重连
     setTimeout(function() {
         createWsReal(pageId,applyData)
-        applyData[pageId].lockWs = false;
+        applyData[pageId].lockWs = false
     }, 3000)
 }
 
