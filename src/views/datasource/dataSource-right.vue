@@ -647,6 +647,8 @@ export default {
             let objData = {
                 deviceTypeId : this.currentDeviceTypeId || '',
                 studioId: this.studioIdNew,
+                size:this.PAGE_SIZE,
+                current:this.PAGE_CURRENT,
                 type: 1
             }
             if (+type === 1) {
