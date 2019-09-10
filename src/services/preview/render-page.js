@@ -131,6 +131,7 @@ class PreviewPage {
                     fontColor = getNodeInfo.getStyles('fontColor') || '#000000'
                     verticalAlign = getNodeInfo.getStyles('verticalAlign') || 'middle'
                     rotation = getNodeInfo.getStyles('rotation') || 0
+                    console.log(rotation,"tt-sfd")
                     flipH = getNodeInfo.getStyles('flipH') || 0
                     flipV = getNodeInfo.getStyles('flipV') || 0
                     align = getNodeInfo.getStyles('align') || 'center'
@@ -400,7 +401,6 @@ class PreviewPage {
         } else if (shapeName === 'button') {
             // 按钮
             cellHtml = document.createElement('div')
-            console.log(('<head>csdn</head>'.match(/<head>([\s\S]*?)<\/head>/)[1]))
             cellHtml.innerHTML = cell.value
         } else if (shapeName === 'beeline') {
             // 箭头、直线，曲线
@@ -514,15 +514,15 @@ class PreviewPage {
                             })
                         })
                     })
-                }else{
-                    devices.forEach((item) => {
-                        cellHtml.className += ` point_${item.id}`
-                        this.wsParams.push({
-                            pointId: item.id,
-                            params: Array.from(new Set(resParams.concat(paramShow)))
-                        })
-                    })
                 }
+            } else{
+                devices.forEach((item) => {
+                    cellHtml.className += ` point_${item.id}`
+                    this.wsParams.push({
+                        pointId: item.id,
+                        params: Array.from(new Set(resParams.concat(paramShow)))
+                    })
+                })
             }
         }
         return cellHtml

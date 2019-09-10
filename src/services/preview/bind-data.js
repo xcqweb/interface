@@ -53,7 +53,6 @@ async function getSubscribeInfos(pointParams) {
     websocketUrlReal = data.data
     return data
 }
-
 //绑定数据&切换状态的处理方法
 function setterRealData(res) {
     res.forEach((item)=>{
@@ -84,10 +83,14 @@ function setterRealData(res) {
                 target.html(text)
             }else if(shapeName.includes('Chart')) {
                 console.log("tt")
-            }else {                 
-                $(els[i]).html(paramShow.map((d) => {
-                    return `<p>${d}=${item[d]}</p>`
-                }).join(''))
+            }else {
+                if (paramShow.length == 1) {
+                    $(els[i]).html(`<ul><p style="display:block;height:20px;">${paramShow[0]}</p></ul>`)
+                } else{
+                    $(els[i]).html("<ul>" + paramShow.map((d) => {
+                        return `<li style="display:block;height:20px;">${d}=${item[d]}</span>`
+                    }).join('') + "</ul>")
+                }              
             }
 
             let stateModels = $(els[i]).data("stateModels")
@@ -213,7 +216,7 @@ function reconnect(pageId,applyData) {
     // 3s重连
     setTimeout(function() {
         createWsReal(pageId,applyData)
-        applyData[pageId].lockWs = false;
+        applyData[pageId].lockWs = false
     }, 3000)
 }
 
