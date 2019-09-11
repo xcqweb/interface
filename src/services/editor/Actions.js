@@ -7,9 +7,11 @@
  */
 import {
     addPageDialog,
+	PreviewDialog,
     ChangePrimitiveDialog
 } from '../editor/Dialogs'
 import {mxUtils}  from '../mxGlobal'
+import router from '../../router'
 function Actions(editorUi)
 {
     this.editorUi = editorUi;
@@ -198,8 +200,18 @@ Actions.prototype.init = function()
         ui.showDialog(dlg.container, 410, 200, true, false, null, null, '链接');
     }, true)
     // 预览
-    this.addAction('previewapply', function() {	
-    }, true, null, 'Ctrl+Shift+L');
+    this.addAction('previewapply', function () {
+        let dlg = new PreviewDialog(ui, (id) => {
+            let page = router.resolve({
+                path: "/interface_preview",
+                query: {
+                    id: id
+                }
+            })
+            window.open(page.href, '_blank')
+        })
+        ui.showDialog(dlg.container, 410, 160, true, false, null, null, '预览')
+    }, true, null, Editor.ctrlKey + '+Shift+L');
    
      // 文件操作
     this.addAction('new', function() { ui.actions.get('addPage').funct() });

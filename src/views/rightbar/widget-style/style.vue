@@ -410,7 +410,7 @@ import {mxConstants,mxEventObject,Dialog} from '../../../services/mxGlobal'
 let newFontColor = "#000000",newBgColor = "#ffffff",newBorderColor = "#000000",name
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
-let picShapeList = ['pipeline2','pipeline3','progress','light','lineChart','gaugeChart','userimage']
+let picShapeList = ['pipeline2','pipeline3','light','lineChart','gaugeChart','userimage']
 export default {
     components:{
         Chart

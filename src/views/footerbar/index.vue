@@ -72,14 +72,14 @@
                   <div>
                     <span>
                       <Select
-                        v-model="paramVals[index]"
+                        v-model="item.model"
                         style="width:240px;height:24px;line-height:24px;"
-                        @on-change="(val)=>paramSelectChange(val,index)"
+                        @on-change="val=>paramSelectChange(val,index)"
                       >
                         <Option 
-                          v-for="(d,i) in paramsList" 
-                          :key="i" 
-                          :value="i"
+                          v-for="d in paramsList" 
+                          :key="d.paramId" 
+                          :value="d.paramId"
                         >
                           {{ d.paramName }}
                         </Option>
@@ -87,11 +87,11 @@
                     </span>
                     <span>
                       <Button
-                        v-if="index === 0"
+                        v-if="index === 0 && paramOutterList.length!==paramsList.length"
                         size="small"
                         :disabled="ifCanAddParamFlag"
                         class="condition-icon condition-add-icon"
-                        @click.stop.prevent="addParamHandle(index)"
+                        @click.stop.prevent="addParamHandle()"
                       >
                         {{ buttonText[0] }}
                       </Button>
@@ -99,7 +99,7 @@
                         v-if="paramOutterList.length > 1"
                         size="small"
                         class="condition-icon condition-delete-icon"
-                        @click.stop.prevent="removeParamHandle(index)"
+                        @click.stop.prevent="removeParamHandle(item.id,index)"
                       >
                         {{ buttonText[1] }}
                       </Button>
@@ -212,16 +212,15 @@ export default {
             dataSourceList: [],
             heightlen: '190',
             paramsList: [],
-            paramOutterList: [''],
+            paramOutterList: [{id:new Date().getTime(),model:""}],
             stateList:[],
             modelList:[],
             selectEle: false,
             footerContent: false,
             modelVals:[],//状态列表下的每个模型列表当前的v-model
-            paramVals:[],//参数列表，每个参数input当前的v-model
             isInitFlag: false,
             ifShowDataFlag: true, // 判断是否显示数据显示tab
-            ifCanAddParamFlag: true
+            ifCanAddParamFlag: true,
         }
     },
     mounted() {
@@ -245,7 +244,7 @@ export default {
         VueEvent.$on('emitDataSourceFooter', (value) => {
             // 拿到之前绑定的 bindData
             let startBindData = this.getCellModelInfo('bindData')
-            if (!startBindData || (startBindData && JSON.stringify(startBindData.dataSource) === "{}")) {
+            if (!startBindData) {
                 this.setCellModelInfo('bindData',{dataSource:value})
                 if (this.ifShowArrow) {
                     this.initDataSource()
@@ -271,7 +270,6 @@ export default {
                 return 
             }
             //初始化状态列表
-            this.paramVals.splice(0)
             let tempStateList = this.getCellModelInfo("statesInfo")
             if(tempStateList) {
                 this.stateList = tempStateList
@@ -312,13 +310,13 @@ export default {
                 this.requestUtil.post(this.urls.getModelList.url, objData).then((res) => {
                     if(res.returnObj) {
                         this.modelList = res.returnObj
-                        this.stateList.forEach((item)=>{
+                        this.stateList.forEach((item,index)=>{
                             if(item.modelFormInfo) {//如果状态绑定的有公式，就选中该项公式
                                 let modelIndex = this.modelList.findIndex((model)=>{
                                     return item.modelFormInfo == model.sourceId
                                 })
                                 if(modelIndex != -1) {
-                                    this.$set(this.modelVals,modelIndex,modelIndex)
+                                    this.$set(this.modelVals,index,modelIndex)
                                 }
                             }
                         })
@@ -330,7 +328,6 @@ export default {
             }
         },
         initParamsList() {
-            this.paramVals.splice(0)
             let tempObj = this.getCellModelInfo('bindData')
             if(deviceTypeId) {
                 let param = {
@@ -347,11 +344,11 @@ export default {
             if(tempObj && tempObj.params) {
                 let bindParamsList = tempObj.params
                 this.paramOutterList = new Array(bindParamsList.length)
-                console.log(bindParamsList)
                 bindParamsList.forEach((item,index)=>{
-                    this.$set(this.paramVals,index,item.index)
+                    this.$set(this.paramOutterList,index,{id:item.id,model:item.paramId})
                 })
-                console.log(this.paramVals)
+            }else{
+                this.paramOutterList = [{id:new Date().getTime(),model:""}]
             }
         },
         modelSelectChange(modelIndex,stateIndex) {
@@ -404,9 +401,8 @@ export default {
                 if(resIndex != -1) {
                     objArr.splice(resIndex,1)
                     if (!objArr.length) { // 清空了数据源 要把数据显示和状态模型都清空
-                        startBindData.dataSource = {}
-                        startBindData.params = []
-                        this.setCellModelInfo('statesInfo', [])
+                        startBindData = null
+                        this.clearStateModel()//清空状态里面的模型
                         this.dataSourceList = []
                         this.paramsList = []
                         this.stateList = []
@@ -418,10 +414,19 @@ export default {
                 this.setCellModelInfo('bindData',startBindData)
             })
         },
-        addParamHandle() {
-            this.paramOutterList.unshift('')
+        clearStateModel() {
+            let tempStateList = this.getCellModelInfo("statesInfo")
+            tempStateList.forEach((item)=>{
+                if(item.modelFormInfo) {
+                    item.modelFormInfo = null
+                }
+            })
+            this.setCellModelInfo('statesInfo',tempStateList)
         },
-        removeParamHandle(index) {
+        addParamHandle() {
+            this.paramOutterList.unshift({id:new Date().getTime(),model:""})
+        },
+        removeParamHandle(id,index) {
             this.paramOutterList.splice(index , 1)
             let tempObj = this.getCellModelInfo('bindData')
             let list = [ ]
@@ -429,11 +434,11 @@ export default {
                 list = tempObj.params
             }
             if(list.length) {
-                let res = list.findIndex((item)=>{
-                    return item.index == index
+                let resIndex = list.findIndex((item)=>{
+                    return item.id == id
                 })
-                if(res != -1) {
-                    list.splice(index,1)
+                if(resIndex != -1) {
+                    list.splice(resIndex,1)
                     tempObj.params = list
                     this.setCellModelInfo('bindData',tempObj)
                 }
@@ -447,16 +452,29 @@ export default {
             let list = []
             if(tempObj && tempObj.params) {
                 list = tempObj.params
-            }
-            list.push({
-                id:this.paramsList[val].paramId,
-                name:this.paramsList[val].paramName,
-                index:index
+            } 
+            let targetParam = this.paramsList.find((item)=>{
+                return item.paramId == val
             })
+            let obj = {
+                paramId:targetParam.paramId,
+                paramName:targetParam.paramName,
+                id:this.paramOutterList[index].id
+            }
+            let resIndex = list.findIndex((item)=>{
+                return item.id == this.paramOutterList[index].id
+            })
+            if(resIndex != -1) {
+                list[resIndex] = obj
+            }else{
+                list.unshift(obj)
+            }
             if(!tempObj) {
                 tempObj = { }
             }
-            tempObj.params = list
+            if(list.length) {
+                tempObj.params = list
+            }
             this.setCellModelInfo('bindData',tempObj)
         },
         checkDetDataModel(oldValue, newValue) {
