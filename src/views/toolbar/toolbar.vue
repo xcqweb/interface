@@ -140,7 +140,7 @@
         class="geButton"
         title="预览 (Ctrl+Shift+L)"
         style="margin-left:12px;"
-        @click.stop.prevent="preview"
+        @click.stop.prevent="addAction('previewapply')"
       >
         <div class="geSprite geSprite-preview" />
       </a>
