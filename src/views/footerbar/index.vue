@@ -492,8 +492,8 @@ export default {
             }
             if(list.length) {
                 tempObj.params = list
+                this.setCellModelInfo('bindData',tempObj)
             }
-            this.setCellModelInfo('bindData',tempObj)
         },
         checkDetDataModel(oldValue, newValue) {
             let oldDeviceNameChild = oldValue.dataSource.deviceNameChild || []
