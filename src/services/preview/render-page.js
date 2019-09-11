@@ -468,8 +468,7 @@ class PreviewPage {
         // 绑定事件
         bindEvent(cellHtml, cell, this.mainProcess, applyData)
         $(cellHtml).data("shapeName",shapeName)
-        console.log(cell.bindData)
-        if (cell.bindData) {
+        if (cell.bindData && cell.bindData.dataSource.deviceTypeChild) {
             let devices = cell.bindData.dataSource.deviceNameChild
             let paramShow = []
             if (cell.bindData.params) {
@@ -511,46 +510,27 @@ class PreviewPage {
                             }
                         })
                         $(cellHtml).data("stateModels", cellStateInfoHasModel)
-                        if (devices) {
-                            devices.forEach((item) => {
-                                cellHtml.className += ` point_${item.id}`
-                                let resArr = Array.from(new Set(resParams.concat(paramShow)))
-                                if(resArr.length) {
-                                    this.wsParams.push({
-                                        pointId: item.id,
-                                        params: resArr
-                                    })
-                                }
-                            })
-                        }
+                        initWsParams(this.wsParams, devices, resParams, paramShow)
                     })
                 }else{
-                    if (devices) {
-                        devices.forEach((item) => {
-                            cellHtml.className += ` point_${item.id}`
-                            let resArr = Array.from(new Set(resParams.concat(paramShow)))
-                            if (resArr.length) {
-                                this.wsParams.push({
-                                    pointId: item.id,
-                                    params: resArr
-                                })
-                            }
-                        })
-                    }
+                    initWsParams(this.wsParams, devices, resParams, paramShow)
                 }
             } else{
-                if (devices) {
-                    devices.forEach((item) => {
-                        cellHtml.className += ` point_${item.id}`
-                        let resArr = Array.from(new Set(resParams.concat(paramShow)))
-                        if (resArr.length) {
-                            this.wsParams.push({
-                                pointId: item.id,
-                                params: resArr
-                            })
-                        }
-                    })
-                }
+                initWsParams(this.wsParams,devices, resParams, paramShow)
+            }
+        }
+        function initWsParams(wsParams,devices, resParams, paramShow) {
+            if (devices) {
+                devices.forEach((item) => {
+                    cellHtml.className += ` point_${item.id}`
+                    let resArr = Array.from(new Set(resParams.concat(paramShow)))
+                    if (resArr.length) {
+                        wsParams.push({
+                            pointId: item.id,
+                            params: resArr
+                        })
+                    }
+                })
             }
         }
         return cellHtml
