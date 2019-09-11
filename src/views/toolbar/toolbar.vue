@@ -166,9 +166,7 @@
 import {mxUtils,mxConstants} from '../../services/mxGlobal'
 import ScaleView from './scale-view'
 import AlignDialog from './align-dialog'
-import {PreviewDialog} from '../../services/editor/Dialogs'
 import MaterialRoom from '../materialroom/materialroom'
-import router from '../../router'
 import VueEvent from '../../services/VueEvent.js'
 export default{
     components:{
@@ -279,19 +277,6 @@ export default{
         save() {
             this.myEditorUi.saveFile(true)
         },
-        preview() {
-            let ui = this.myEditorUi
-            let dlg = new PreviewDialog(ui,(id)=>{
-                let page = router.resolve({
-                    path: "/interface_preview",
-                    query: {
-                        id: id
-                    }
-                })
-                window.open(page.href, '_blank')
-            })
-            ui.showDialog(dlg.container, 410, 160, true, false, null, null, '预览')
-        }
     },      
 }
 </script>

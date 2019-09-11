@@ -306,6 +306,7 @@ export default {
         },
         initModelList() {
             //模型列表
+            this.modelVals.splice(0)
             if(deviceTypeId) {
                 let objData = {
                     studioId: sessionStorage.getItem("applyId"),
@@ -315,7 +316,6 @@ export default {
                     if(res.returnObj) {
                         this.modelList = res.returnObj
                         this.stateList.forEach((item,index)=>{
-                            console.log(item)
                             if(item.modelFormInfo) {//如果状态绑定的有公式，就选中该项公式
                                 let modelIndex = this.modelList.findIndex((model)=>{
                                     return item.modelFormInfo == model.sourceId
