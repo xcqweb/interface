@@ -3738,7 +3738,6 @@ EditorUi.prototype.createKeyHandler = function(editor)
     var editorUi = this;
     var graph = this.editor.graph;
     var keyHandler = new mxKeyHandler(graph);
-    console.log('entry')
     var isEventIgnored = keyHandler.isEventIgnored;
     keyHandler.isEventIgnored = function(evt)
     {
@@ -3752,6 +3751,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
     // Ignores graph enabled state but not chromeless state
     keyHandler.isEnabledForEvent = function(evt)
     {
+        // console.log(!mxEvent.isConsumed(evt), '----', this.isGraphEvent(evt), '-----', this.isEnabled(), '----', (editorUi.dialogs == null || editorUi.dialogs.length == 0))
         return (!mxEvent.isConsumed(evt) && this.isGraphEvent(evt) && this.isEnabled() &&
 			(editorUi.dialogs == null || editorUi.dialogs.length == 0));
     };

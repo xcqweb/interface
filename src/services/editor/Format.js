@@ -2731,6 +2731,7 @@ PaletteManagePanel.prototype.createSearchInput = function(container) {
         e.stopPropagation()
         if ((48 <= keyCode && keyCode <= 57) || (65 <= keyCode && keyCode <= 90) || (96 <= keyCode && keyCode <= 111) || keyCode == 8 || keyCode == 46)
         {
+            console.log(88)
             clearTimeout(timer)
             // 300ms的防抖
             timer = setTimeout(function() {

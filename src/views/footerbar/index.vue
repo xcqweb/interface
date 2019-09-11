@@ -374,7 +374,6 @@ export default {
                 if (SupportDataShow.includes(shapeName)) { // flag 是否数据显示
                     this.ifShowDataFlag = true
                 } else {
-                    console.log(7)
                     this.ifShowDataFlag = false
                 }
                 if(allShapes.includes(shapeName)) { // 底部内容显示
