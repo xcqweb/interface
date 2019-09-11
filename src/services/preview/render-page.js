@@ -2,12 +2,12 @@
  * 渲染页面
  */
 // 页面宽度和高度
-let pageWidth = 0,pageHeight = 0
+let pageWidth = 0, pageHeight = 0
 // websocket信息
 let applyData = {}
 // 配置好的svg图
 // 默认样式
-const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
+const defaultStyle = {align: 'center', verticalAlign: 'middle', strokeColor: '#000000', fillColor: '#FFFFFF', fontSize: '12px'}
 
 
 import {
@@ -21,7 +21,7 @@ import {
     dealCharts,
     dealLight
 } from './util'
-import {createWsReal,getLastData} from './bind-data'
+import {createWsReal, getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
 import requestUtil from '../../services/request'
@@ -45,18 +45,18 @@ class PreviewPage {
     }
     // 生成弹窗
     createDialog(page) {
-        let {id,title,xml} = page
+        let {id, title, xml} = page
         const xmlDoc = mxUtils.parseXml(xml).documentElement
         let contentBgColor = xmlDoc.getAttribute('background')
         let contentWidth = xmlDoc.getAttribute('pageWidth')
         let contentHeight = xmlDoc.getAttribute('pageHeight')
 
-        let {fontSize,color,lineHeight,textAlign,background} = page.style
+        let {fontSize, color, lineHeight, textAlign, background} = page.style
 
-        if(!lineHeight) {
+        if (!lineHeight) {
             lineHeight = '36px'
         }
-        if(!textAlign) {
+        if (!textAlign) {
             textAlign = 'center'
         }
         let bg = document.createElement('div')
@@ -66,7 +66,8 @@ class PreviewPage {
         let dialog = document.createElement('div');
         dialog.className = 'geDialog';
         dialog.style.width = contentWidth + 'px';
-        dialog.style.height = contentHeight + 'px';
+        // 内容高度要加上标题高度
+        dialog.style.height = (Math.ceil(contentHeight) + 36) + 'px';
         dialog.id = id;
         // 标题
         let titleEl = document.createElement('p')
@@ -124,7 +125,7 @@ class PreviewPage {
                     let getNodeInfo = new GetNodeInfo(node)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape')
-                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, points, rotation, flipH, flipV, startArrow, endArrow, strokeWidth,fontWeight
+                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, points, rotation, flipH, flipV, startArrow, endArrow, strokeWidth, fontWeight
                     styles = node.getAttribute('style')
                     isGroup = styles.indexOf('group') != -1
                     fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF'
@@ -275,13 +276,13 @@ class PreviewPage {
                         endArrow = getNodeInfo.getStyles('endArrow')
                         obj.startArrow = startArrow
                         obj.endArrow = endArrow
-                    }else if(shapeName == 'progress') {
+                    } else if (shapeName == 'progress') {
                         let progressProps = item.getAttribute('progressProps')
                         obj.progressProps = progressProps
-                    }else if(shapeName.includes('pipeline')) {
+                    } else if (shapeName.includes('pipeline')) {
                         let pipelineProps = item.getAttribute('pipelineProps')
                         obj.pipelineProps = pipelineProps
-                    }else if(shapeName.includes('Chart')) {
+                    } else if (shapeName.includes('Chart')) {
                         let chartProps = item.getAttribute('chartProps')
                         obj.chartProps = chartProps
                     }
@@ -298,7 +299,7 @@ class PreviewPage {
             pageWidth = (cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth
             pageHeight = (cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight
         })
-        return cells    
+        return cells
     }
     // 清空页面内容
     clearPage() {
@@ -350,7 +351,7 @@ class PreviewPage {
             lockWs: false
         };
         setTimeout(() => {
-            createWsReal(page.id,applyData)
+            createWsReal(page.id, applyData)
             getLastData(this.wsParams) //低频数据 通过调用最后一笔数据显示
         }, 3000)
         return cells
@@ -378,23 +379,23 @@ class PreviewPage {
         } else if (shapeName === 'linkTag') {
             // smartBi链接iframe
             cellHtml = document.createElement('iframe')
-            let curLinkStr  = cell.link
-            if(cell.link) {
+            let curLinkStr = cell.link
+            if (cell.link) {
                 let curLink = JSON.parse(curLinkStr).url
-                cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(curLink) ? '' : 'http://' }${curLink}`)
+                cellHtml.setAttribute('src', `${/^(https|http):\/\//.test(curLink) ? '' : 'http://'}${curLink}`)
             }
         } else if (shapeName === 'menuCell' || shapeName === 'menulist') {
             // 菜单
             cellHtml = document.createElement('div')
             cellHtml.innerHTML = cell.value;
-        }  else if (shapeName === 'text') {
+        } else if (shapeName === 'text') {
             // 文本
             cellHtml = document.createElement('span')
             let reg = />(.+)</
             let textArr = cell.value.match(reg)
-            if(textArr && textArr.length) {
+            if (textArr && textArr.length) {
                 cellHtml.innerHTML = textArr[1]
-            }else{
+            } else {
                 cellHtml.innerHTML = cell.value
             }
         } else if (shapeName === 'button') {
@@ -404,7 +405,7 @@ class PreviewPage {
         } else if (shapeName === 'beeline') {
             // 箭头、直线，曲线
             cellHtml = inserEdge(cell)
-        } else if(shapeName === 'progress') {
+        } else if (shapeName === 'progress') {
             cellHtml = dealProgress(cell)
         } else if (shapeName.includes('pipeline')) {
             cellHtml = dealPipeline(cell)
@@ -415,7 +416,7 @@ class PreviewPage {
         } else {
             // 其他
             cellHtml = document.createElement('p');
-            if(shapeName === 'ellipse') {
+            if (shapeName === 'ellipse') {
                 cellHtml.style.borderRadius = "50%"
             }
             cellHtml.innerHTML = cell.value;
@@ -428,18 +429,18 @@ class PreviewPage {
             cellHtml.style.lineHeight = cell.height + 'px'
         }
         cellHtml.style.textAlign = cell.align
-        if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart'].includes(shapeName)) {
+        if (['image', 'userimage', 'pipeline1', 'pipeline2', 'pipeline3', 'beeline', 'lineChart', 'gaugeChart'].includes(shapeName)) {
             cellHtml.style.backgroundColor = 'transparent'
-        }else{
+        } else {
             if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none')) {
                 cellHtml.style.backgroundColor = 'transparent'
             } else {
                 cellHtml.style.backgroundColor = cell.fillColor
             }
         }
-        if(shapeName != 'beeline') {
+        if (shapeName != 'beeline') {
             let borderStyle = 'solid'
-            if(cell.strokeStyle) {
+            if (cell.strokeStyle) {
                 borderStyle = 'dashed'
             }
             cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
@@ -464,13 +465,13 @@ class PreviewPage {
         cellHtml.id = `palette_${cell.id}`
         // 绑定事件
         bindEvent(cellHtml, cell, this.mainProcess, applyData)
-        $(cellHtml).data("shapeName",shapeName)
+        $(cellHtml).data("shapeName", shapeName)
         if (cell.bindData) {
             let devices = cell.bindData.dataSource.deviceNameChild
             let paramShow = []
             if (cell.bindData.params) {
-                cell.bindData.params.forEach((item)=>{
-                    paramShow.push(item.paramName)
+                cell.bindData.params.forEach((item) => {
+                    paramShow.push(item.name)
                 })
             }
             $(cellHtml).data("paramShow", paramShow)
@@ -480,7 +481,7 @@ class PreviewPage {
             let statesInfo = cell.statesInfo
             if (statesInfo && statesInfo.length) {
                 cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
-                statesInfo.forEach((item)=>{
+                statesInfo.forEach((item) => {
                     if (item.modelFormInfo) {
                         cellStateInfoHasModel.push(item)
                         modelIdsParam.push(item.modelFormInfo)
@@ -496,7 +497,7 @@ class PreviewPage {
                             }
                             let flatFormulaAttr = []
                             if (formulaAttr) {
-                                formulaAttr.data.forEach((item)=>{
+                                formulaAttr.data.forEach((item) => {
                                     flatFormulaAttr = flatFormulaAttr.concat(...item)
                                 })
                                 flatFormulaAttr.forEach((d) => {
@@ -516,7 +517,7 @@ class PreviewPage {
                         }
                     })
                 }
-            } else{
+            } else {
                 if (devices) {
                     devices.forEach((item) => {
                         cellHtml.className += ` point_${item.id}`
