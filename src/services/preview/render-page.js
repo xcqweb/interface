@@ -124,13 +124,14 @@ class PreviewPage {
                     let getNodeInfo = new GetNodeInfo(node)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape')
-                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, points, rotation, flipH, flipV, startArrow, endArrow, strokeWidth,fontWeight
+                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, points, rotation,direction,flipH, flipV, startArrow, endArrow, strokeWidth,fontWeight
                     styles = node.getAttribute('style')
                     isGroup = styles.indexOf('group') != -1
                     fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF'
                     fontColor = getNodeInfo.getStyles('fontColor') || '#000000'
                     verticalAlign = getNodeInfo.getStyles('verticalAlign') || 'middle'
                     rotation = getNodeInfo.getStyles('rotation') || 0
+                    direction = getNodeInfo.getStyles('direction')
                     flipH = getNodeInfo.getStyles('flipH') || 0
                     flipV = getNodeInfo.getStyles('flipV') || 0
                     align = getNodeInfo.getStyles('align') || 'center'
@@ -267,6 +268,7 @@ class PreviewPage {
                         align,
                         points,
                         rotation,
+                        direction,
                         flipH,
                         flipV
                     };
@@ -369,7 +371,6 @@ class PreviewPage {
 
     // 渲染控件节点
     renderCell(cell) {
-        console.log(cell)
         const shapeName = cell.shapeName;
         let cellHtml
         if (shapeName.includes('image')) {
