@@ -1,8 +1,8 @@
 import {geAjax} from './util'
 import {getCookie,throttle} from '../Utils'
-import echarts from 'echarts'
+/* import echarts from 'echarts'
 import requestUtil from '../../services/request'
-import urls from '../../constants/url'
+import urls from '../../constants/url' */
 
 //获取websocket连接信息
 let websocketUrlReal = ''
@@ -87,21 +87,21 @@ function setterRealData(res) {
                 target.html(text)
             }else if(shapeName.includes('Chart')) {
                 console.log(paramShow)
-                let echartsInstance = echarts.getInstanceByDom(els[i])
-                let deviceTypeId = $(els[i]).data('deviceTypeId')
-                let deviceNames = $(els[i]).data('deviceNames')
-                let chartData = [],chartDataLen = 0
-                requestUtil.get(`${urls.timeSelect.url}${deviceTypeId}`).then(res => {
-                    let checkItem = res.durations.find((item)=>{
+                //let echartsInstance = echarts.getInstanceByDom(els[i])
+                //let deviceTypeId = $(els[i]).data('deviceTypeId')
+                //let deviceNames = $(els[i]).data('deviceNames')
+                //let chartData = [],chartDataLen = 0
+                //requestUtil.get(`${urls.timeSelect.url}${deviceTypeId}`).then(res => {
+                /*  let checkItem = res.durations.find((item)=>{
                         return item.checked === true
-                    })
-                    chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
-                    let options = echartsInstance.getOption()
-                    //options.legend.data = deviceNames.map()
-                    paramShow.forEach((item)=>{
+                    }) */
+                //chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
+                //let options = echartsInstance.getOption()
+                //options.legend.data = deviceNames.map()
+                /*  paramShow.forEach((item)=>{
 
-                    })
-                })
+                    }) */
+                //})
             }else {
                 if (paramShow.length == 1) {
                     console.log(item, paramShow[0])
