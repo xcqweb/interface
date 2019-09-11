@@ -15325,13 +15325,9 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	let selectCount = this.graph.getSelectionCount()
 	// console.log(selectCount)
 	let shapeName = ''
-	// console.log(selectCell)
-	// console.log(selectCount)
 	if (selectCell) {
 		shapeName = this.graph.view.getState(selectCell).style.shape;
 	}
-	// console.log(shapeName)
-	// console.log(typeof this.graph.getModel().getValue(selectCell))
 	if (typeof this.graph.getModel().getValue(selectCell) === 'object') {
 		if (this.graph.getModel().getValue(selectCell)) {
 			let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') || undefined // 获取到元素
@@ -38592,7 +38588,6 @@ mxSwimlaneLayout.prototype.execute = function(parent, swimlanes)
 				model.setGeometry(parent, geo);
 			}
 		}
-
 		this.graph.removeCells(this.dummyVertices);
 	}
 	finally
@@ -55975,7 +55970,6 @@ mxGraph.prototype.graphModelChanged = function(changes)
 	{
 		this.processChange(changes[i]);
 	}
-	
 	this.removeSelectionCells(this.getRemovedCellsForChanges(changes));
 	
 	this.view.validate();
@@ -56417,7 +56411,6 @@ mxGraph.prototype.startEditingAtCell = function(cell, evt)
 			}
 		}
 		var shapeName = this.getCellStyle(cell).shape;
-		// console.log(shapeName)
 		if (cell != null && shapeName !== 'image' && shapeName !== 'select' && shapeName !== 'endarrow' && shapeName !== 'beeline')
 		{
 			this.fireEvent(new mxEventObject(mxEvent.START_EDITING,
@@ -57648,7 +57641,6 @@ mxGraph.prototype.alignCells = function(align, cells, param)
 			}
 			finally
 			{
-				// console.log(8888)
 				this.model.endUpdate();
 			}
 		}
@@ -64414,7 +64406,6 @@ mxGraph.prototype.isEditing = function(cell)
 	if (this.cellEditor != null)
 	{
 		var editingCell = this.cellEditor.getEditingCell();
-		
 		return (cell == null) ? editingCell != null : cell == editingCell;
 	}
 	
@@ -80762,7 +80753,8 @@ mxKeyHandler.prototype.getFunction = function(evt)
 mxKeyHandler.prototype.isGraphEvent = function(evt)
 {
 	var source = mxEvent.getSource(evt);
-	
+
+	// console.log(this.graph.cellEditor != null , '-----', this.graph.cellEditor.isEventSource(evt))
 	// Accepts events from the target object or
 	// in-place editing inside graph
 	if ((source == this.target || source.parentNode == this.target) ||
@@ -80789,8 +80781,12 @@ mxKeyHandler.prototype.isGraphEvent = function(evt)
  */
 mxKeyHandler.prototype.keyDown = function(evt)
 {
-	if (this.isEnabledForEvent(evt))
+	let cell = this.graph.getSelectionCell()
+	// console.log(evt.keyCode)
+	// 首次进来 按delete
+	if (this.isEnabledForEvent(evt) || (cell && (evt.keyCode === 8 || evt.keyCode === 46)))
 	{
+		// console.log(!this.isEventIgnored(evt), '---', this.isEventIgnored(evt))
 		// Cancels the editing if escape is pressed
 		if (evt.keyCode == 27 /* Escape */)
 		{
@@ -80826,6 +80822,7 @@ mxKeyHandler.prototype.keyDown = function(evt)
  */
 mxKeyHandler.prototype.isEnabledForEvent = function(evt)
 {
+	// console.log(this.graph.isEnabled(), '--', !mxEvent.isConsumed(evt), '----',this.isGraphEvent(evt), '---',this.isEnabled() )
 	return (this.graph.isEnabled() && !mxEvent.isConsumed(evt) &&
 		this.isGraphEvent(evt) && this.isEnabled());
 };
@@ -83731,7 +83728,7 @@ mxEditor.prototype.addActions = function ()
 			mxClipboard.paste(editor.graph);
 		}
 	});
-	
+	// 右键删除按钮
 	this.addAction('delete', function(editor)
 	{
 		if (editor.graph.isEnabled())

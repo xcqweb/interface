@@ -8006,7 +8006,6 @@ if (typeof mxVertexHandler != 'undefined')
 			
             if (this.rotationShape != null)
             {
-                console.log(this.rotationShape.node)
                 this.rotationShape.node.setAttribute('title', mxResources.get('rotateTooltip'));
             }
 			

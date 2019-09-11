@@ -254,7 +254,6 @@ export default {
     .left-geSidebarContainer{
         border-bottom: solid 1px #ccc;
         .ivu-tabs{
-            // overflow: auto;
             height:100%;
             /deep/.ivu-tabs-content{
                 height:100% !important;
