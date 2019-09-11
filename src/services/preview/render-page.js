@@ -372,6 +372,7 @@ class PreviewPage {
 
     // 渲染控件节点
     renderCell(cell) {
+        console.log(cell)
         const shapeName = cell.shapeName;
         let cellHtml
         if (shapeName.includes('image')) {
@@ -467,6 +468,7 @@ class PreviewPage {
         // 绑定事件
         bindEvent(cellHtml, cell, this.mainProcess, applyData)
         $(cellHtml).data("shapeName",shapeName)
+        console.log(cell.bindData)
         if (cell.bindData) {
             let devices = cell.bindData.dataSource.deviceNameChild
             let paramShow = []
@@ -476,6 +478,8 @@ class PreviewPage {
                 })
             }
             $(cellHtml).data("paramShow", paramShow)
+            $(cellHtml).data('deviceTypeId', cell.bindData.dataSource.deviceTypeChild.id)
+            $(cellHtml).data('deviceNames', cell.bindData.dataSource.deviceNameChild)
             let resParams = []
             let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
             let modelIdsParam = []
@@ -510,22 +514,41 @@ class PreviewPage {
                         if (devices) {
                             devices.forEach((item) => {
                                 cellHtml.className += ` point_${item.id}`
-                                this.wsParams.push({
-                                    pointId: item.id,
-                                    params: Array.from(new Set(resParams.concat(paramShow)))
-                                })
+                                let resArr = Array.from(new Set(resParams.concat(paramShow)))
+                                if(resArr.length) {
+                                    this.wsParams.push({
+                                        pointId: item.id,
+                                        params: resArr
+                                    })
+                                }
                             })
                         }
                     })
+                }else{
+                    if (devices) {
+                        devices.forEach((item) => {
+                            cellHtml.className += ` point_${item.id}`
+                            let resArr = Array.from(new Set(resParams.concat(paramShow)))
+                            if (resArr.length) {
+                                this.wsParams.push({
+                                    pointId: item.id,
+                                    params: resArr
+                                })
+                            }
+                        })
+                    }
                 }
             } else{
                 if (devices) {
                     devices.forEach((item) => {
                         cellHtml.className += ` point_${item.id}`
-                        this.wsParams.push({
-                            pointId: item.id,
-                            params: Array.from(new Set(resParams.concat(paramShow)))
-                        })
+                        let resArr = Array.from(new Set(resParams.concat(paramShow)))
+                        if (resArr.length) {
+                            this.wsParams.push({
+                                pointId: item.id,
+                                params: resArr
+                            })
+                        }
                     })
                 }
             }
