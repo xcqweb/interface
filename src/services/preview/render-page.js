@@ -470,7 +470,7 @@ class PreviewPage {
             let paramShow = []
             if (cell.bindData.params) {
                 cell.bindData.params.forEach((item)=>{
-                    paramShow.push(item.name)
+                    paramShow.push(item.paramName)
                 })
             }
             $(cellHtml).data("paramShow", paramShow)
