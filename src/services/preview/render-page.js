@@ -66,7 +66,8 @@ class PreviewPage {
         let dialog = document.createElement('div');
         dialog.className = 'geDialog';
         dialog.style.width = contentWidth + 'px';
-        dialog.style.height = contentHeight + 'px';
+        // 加上标题行高
+        dialog.style.height = (Math.ceil(contentHeight) + 36) + 'px';
         dialog.id = id;
         // 标题
         let titleEl = document.createElement('p')
