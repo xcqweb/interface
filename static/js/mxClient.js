@@ -55627,7 +55627,7 @@ mxGraph.prototype.panDy = 0;
  * Specifies the <mxImage> to indicate a collapsed state.
  * Default value is mxClient.imageBasePath + '/collapsed.gif'
  */
-mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/collapsed.gif', 9, 9);
+mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/default/collapsed.1.gif', 9, 9);
 
 /**
  * Variable: expandedImage
@@ -55635,7 +55635,7 @@ mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/collap
  * Specifies the <mxImage> to indicate a expanded state.
  * Default value is mxClient.imageBasePath + '/expanded.gif'
  */
-mxGraph.prototype.expandedImage = new mxImage(mxClient.imageBasePath + '/expanded.gif', 9, 9);
+mxGraph.prototype.expandedImage = new mxImage(mxClient.imageBasePath + '/default/expanded.1.gif', 9, 9);
 
 /**
  * Variable: warningImage
@@ -62593,7 +62593,9 @@ mxGraph.prototype.getFoldingImage = function(state)
 		
 		if (this.isCellFoldable(state.cell, !tmp))
 		{
-			return (tmp) ? this.collapsedImage : this.expandedImage;
+			// 对单个控件组合时候会产生展开收起的按钮，暂时取消
+			return null;
+			// return (tmp) ? this.collapsedImage : this.expandedImage;
 		}
 	}
 	

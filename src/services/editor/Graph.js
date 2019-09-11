@@ -7920,7 +7920,6 @@ if (typeof mxVertexHandler != 'undefined')
             var model = this.graph.getModel();
             var parent = model.getParent(state.cell);
             var geo = this.graph.getCellGeometry(state.cell);
-			
             if (model.isEdge(parent) && geo != null && geo.relative && state.width < 2 && state.height < 2 && state.text != null && state.text.boundingBox != null)
             {
                 var bbox = state.text.unrotatedBoundingBox || state.text.boundingBox;
@@ -7941,7 +7940,13 @@ if (typeof mxVertexHandler != 'undefined')
             var model = this.graph.getModel();
             var parent = model.getParent(this.state.cell);
             var geo = this.graph.getCellGeometry(this.state.cell);
-			
+            let cell = this.graph.getSelectionCell()
+            let state = this.graph.view.getState(cell)
+            let shapeName = state.style.shape
+            // 表格和菜单禁止旋转 
+            if (shapeName === 'menulist' || shapeName === 'tableBox'){
+                return false
+            }
             // Lets rotation events through
             var handle = this.getHandleForEvent(me);
 			
@@ -8001,6 +8006,7 @@ if (typeof mxVertexHandler != 'undefined')
 			
             if (this.rotationShape != null)
             {
+                console.log(this.rotationShape.node)
                 this.rotationShape.node.setAttribute('title', mxResources.get('rotateTooltip'));
             }
 			
@@ -8016,7 +8022,6 @@ if (typeof mxVertexHandler != 'undefined')
                 {
                     this.specialHandle.node.style.display = (this.graph.isEnabled() && this.graph.getSelectionCount() < this.graph.graphHandler.maxCells) ? '' : 'none';
                 }
-				
                 this.redrawHandles();
             });
 			

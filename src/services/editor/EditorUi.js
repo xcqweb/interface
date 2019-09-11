@@ -4088,6 +4088,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
         keyHandler.bindAction(67, true, 'copy'); // Ctrl+C
         keyHandler.bindAction(86, true, 'paste'); // Ctrl+V
         keyHandler.bindAction(71, true, 'group'); // Ctrl+G
+		keyHandler.bindAction(85, true, 'ungroup', true); // Ctrl+Shift+U
         keyHandler.bindKey(13, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // Enter
     }
 

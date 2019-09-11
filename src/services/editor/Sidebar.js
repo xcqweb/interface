@@ -1066,12 +1066,15 @@ Sidebar.prototype.svgPng = function (ele) {
 /*添加模版*/
 Sidebar.prototype.addTemplate = async function(type) {
     let svgImage = this.editorUi.editor.graph.getSvg(null, null, null, true, null, true, null, null, null, false)
-    let imageurl = await this.svgPng(svgImage)
-    if (imageurl) {
+    let widthlen = svgImage.getAttribute('width').substring(0, svgImage.getAttribute('width').length-2);
+    let heightLen = svgImage.getAttribute('height').substring(0, svgImage.getAttribute('width').length - 2);
+    svgImage.setAttribute('viewbox', `0 0 ${parseInt(widthlen * 1.8)} ${heightLen}`)
+    let svgImagePic = svgImage.outerHTML
+    if (svgImagePic) {
         var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
         let data = {
             content: JSON.stringify(currentPage),
-            pic: imageurl,
+            pic: svgImagePic,
             type: type
         }
         requestUtil.post(Urls.addTemplate.url, data).then((res) => {

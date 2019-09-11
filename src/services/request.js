@@ -1,6 +1,6 @@
 import axios from 'axios';
 import urls from '../constants/url';
-import {getCookie} from './Utils'
+import {getCookie, setCookie} from './Utils'
 axios.defaults.timeout = 60 * 1000 * 5; //响应超时时间          
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'; //配置请求头
 // axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded'; //配置请求头
@@ -10,6 +10,7 @@ if(isDev) {
 } else {
     axios.defaults.baseURL = urls.baseUrl.url;   //配置接口地址
 } 
+
 
 //请求拦截器
 axios.interceptors.request.use(
@@ -30,6 +31,15 @@ axios.interceptors.request.use(
 axios.interceptors.response.use((res) =>{
     return Promise.resolve(res);
 }, (error) => {
+    if (error.response) {
+        if (error.response.status == 418) {
+            let refreshToken = getCookie('refreshToken');
+            post('/api/auth/refreshToken', {refreshToken}).then(res => {
+                setCookie('token', res.data.token);
+                setCookie('refreshToken', res.data.refreshToken);
+            })
+        }
+    }
     if (error.response && error.response.data.result_msg) {
         console.log(error.response.data.result_msg)
     }
@@ -88,7 +98,6 @@ function put(url, params, isLoading = true) {
 function Delete(url, params, isLoading = true) {
     return dealRequest(url, {params}, "delete", isLoading);
 }
-
 export default {
     post,
     get,
