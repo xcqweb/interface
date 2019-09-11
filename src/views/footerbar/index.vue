@@ -126,7 +126,9 @@
                       <Select
                         v-model="modelVals[index]"
                         style="width:240px;height:24px;line-height:24px;"
+                        :clearable="true"
                         @on-change="(val)=>modelSelectChange(val,index)"
+                        @on-clear="clearStateBtn(index)"
                       > 
                         <Option 
                           v-for="(d,i) in modelList" 
@@ -313,6 +315,7 @@ export default {
                     if(res.returnObj) {
                         this.modelList = res.returnObj
                         this.stateList.forEach((item,index)=>{
+                            console.log(item)
                             if(item.modelFormInfo) {//如果状态绑定的有公式，就选中该项公式
                                 let modelIndex = this.modelList.findIndex((model)=>{
                                     return item.modelFormInfo == model.sourceId
@@ -355,9 +358,22 @@ export default {
         },
         modelSelectChange(modelIndex,stateIndex) {
             //将模型公式绑定在对应的状态上
+            if(!modelIndex && modelIndex !== 0) {
+                return
+            }
             let currentModel = this.modelList[modelIndex]
             this.stateList[stateIndex].modelFormInfo = currentModel.sourceId
             this.setCellModelInfo('statesInfo',[...this.stateList])
+        },
+        clearStateBtn(pos) {
+            let tempStateList = this.getCellModelInfo("statesInfo")
+            tempStateList.forEach((item,index)=>{
+                if(index == pos) {
+                    item.modelFormInfo = null
+                }
+                return
+            })
+            this.setCellModelInfo('statesInfo',tempStateList)
         },
         footerContentHandle(show) {
             if (show) {

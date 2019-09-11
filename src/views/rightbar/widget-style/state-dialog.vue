@@ -201,15 +201,14 @@ export default{
             let el = document.querySelector(".state-color-con")
             if(el) {
                 el.appendChild(dlg.container)
-                setTimeout(()=>{
-                    inputs = $(".state-color-con").find("input")
-                    $(inputs[1]).change((e)=>{
-                        let {value} = e.target
-                        style[tabArr[this.typeTab - 1]] = value
-                        $(inputs[1]).val(value)
-                        $(inputs[0]).css('background',value)
-                    })
-                },1000)
+                inputs = $(".state-color-con").find("input")
+                $(inputs[1]).change((e)=>{
+                    let {value} = e.target
+                    style[tabArr[this.typeTab - 1]] = value
+                    $(inputs[1]).val(value)
+                    $(inputs[0]).css('background',value)
+                })
+                
             }
         })
     },  
