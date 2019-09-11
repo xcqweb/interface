@@ -247,7 +247,8 @@ export default {
             if (!startBindData) {
                 this.setCellModelInfo('bindData',{dataSource:value})
                 if (this.ifShowArrow) {
-                    this.initDataSource()
+                    this.isInitFlag = false
+                    this.initData()
                 }
             } else {
                 if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
@@ -257,7 +258,8 @@ export default {
                     startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
                     this.setCellModelInfo('bindData',startBindData)
                     if (this.ifShowArrow) {
-                        this.initDataSource()
+                        this.isInitFlag = false
+                        this.initData()
                     }
                 }
             }
