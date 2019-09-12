@@ -32,7 +32,6 @@
       <div>
         <Select
           v-model="modelvalue2"
-          :clearable="ifclearSelect"
           style="height:24px"
           @on-change="deviceTypeHandle"
         >

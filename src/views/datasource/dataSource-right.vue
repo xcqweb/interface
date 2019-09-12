@@ -358,10 +358,21 @@ export default {
             }).then((res) => {
                 const [firstParamNameList, firstDeviceNameList] = res
                 this.paramsNameList = firstParamNameList.records || []
-                VueEvent.$emit('StartparamsNameArr', this.paramsNameList)
+                // VueEvent.$emit('StartparamsNameArr', this.paramsNameList)
                 this.deviceNameList = firstDeviceNameList.records || []
                 this.paramListTotal = firstParamNameList.total || 10
                 this.deviceListTotal = firstDeviceNameList.total || 10
+                // 要拿所有数据参数
+                let objDataNew2 = {
+                    studioId:this.studioIdNew,
+                    deviceTypeId: this.deviceTypeArr[0].deviceTypeId,
+                    current: this.PAGE_CURRENT,
+                    size:100000,
+                    type:1
+                }
+                this.requestUtil.post(this.urls.deviceParamList.url, objDataNew2).then((res) => {
+                    VueEvent.$emit('StartparamsNameArr', res.records || [])
+                })
             }).catch(() => {
                 Message.error('系统繁忙，请稍后再试试')
                 return false
@@ -383,6 +394,16 @@ export default {
                     size:this.PAGE_SIZE,
                     type:1
                 }
+                let objDataNew2 = {
+                    studioId:this.studioIdNew,
+                    deviceTypeId: deviceTypeId,
+                    current: this.PAGE_CURRENT,
+                    size:100000,
+                    type:1
+                }
+                this.requestUtil.post(this.urls.deviceParamList.url, objDataNew2).then((res) => {
+                    VueEvent.$emit('StartparamsNameArr', res.records || [])
+                })
                 const [ParamNameList, DeviceNameList] = await Promise.all([
                     this.requestUtil.post(this.urls.deviceParamList.url, objDataNew),
                     this.requestUtil.post(this.urls.deviceEquipList.url, objDataNew)
@@ -394,7 +415,7 @@ export default {
                 this.deviceNameList = DeviceNameList.records || []
                 this.paramListTotal = ParamNameList.total || 10
                 this.deviceListTotal = DeviceNameList.total || 10
-                VueEvent.$emit('StartparamsNameArr', this.paramsNameList)
+                
             }
         },
         handleCheckAll(number) {
