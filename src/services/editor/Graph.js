@@ -7940,13 +7940,6 @@ if (typeof mxVertexHandler != 'undefined')
             var model = this.graph.getModel();
             var parent = model.getParent(this.state.cell);
             var geo = this.graph.getCellGeometry(this.state.cell);
-            let cell = this.graph.getSelectionCell()
-            let state = this.graph.view.getState(cell)
-            let shapeName = state.style.shape
-            // 表格和菜单禁止旋转 
-            if (shapeName === 'menulist' || shapeName === 'tableBox'){
-                return false
-            }
             // Lets rotation events through
             var handle = this.getHandleForEvent(me);
 			
@@ -7960,14 +7953,22 @@ if (typeof mxVertexHandler != 'undefined')
         // Shows rotation handle for edge labels.
         mxVertexHandler.prototype.isRotationHandleVisible = function()
         {
-            return this.graph.isEnabled() && this.rotationEnabled && this.graph.isCellRotatable(this.state.cell) &&
-				(mxGraphHandler.prototype.maxCells <= 0 || this.graph.getSelectionCount() < mxGraphHandler.prototype.maxCells);
+             let cell = this.graph.getSelectionCell()
+             let state = this.graph.view.getState(cell)
+             let shapeName = state.style.shape
+             // 表格和菜单禁止旋转 
+             if (shapeName === 'menulist' || shapeName === 'tableBox' || shapeName === 'label') {
+                 return false
+             }
+             return this.graph.isEnabled() && this.rotationEnabled && this.graph.isCellRotatable(this.state.cell) &&
+			(mxGraphHandler.prototype.maxCells <= 0 || this.graph.getSelectionCount() < mxGraphHandler.prototype.maxCells);
         };
 	
         // Invokes turn on single click on rotation handle
         mxVertexHandler.prototype.rotateClick = function()
         {
-            this.state.view.graph.turnShapes([this.state.cell]);
+            return
+            // this.state.view.graph.turnShapes([this.state.cell]);
         };
 		
         var vertexHandlerMouseMove = mxVertexHandler.prototype.mouseMove;
