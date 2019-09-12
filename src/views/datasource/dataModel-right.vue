@@ -1181,7 +1181,7 @@ export default {
       &::after{
         width:0px
       }
-      /deep/.ivu-table-row{
+      .ivu-table-row{
         height:30px;
         td{
           height:30px;

@@ -33,38 +33,34 @@
           </div>
         </TabPane>
       </Tabs>
-      <Modal
-        v-model="modelshow"
-        class="left-sidebar-model"
-        :title="alertTitleName"
-        @on-ok="save"
-        @on-cancel="cancel"
-      >
-        <ul
-          class="left-sidebar-list"
+      <div>
+        <Modal
+          v-model="modelshow"
+          class="left-sidebar-model"
+          :title="alertTitleName"
+          @on-ok="save"
+          @on-cancel="cancel"
         >
-          <li
-            v-for="(item,index) in alertContent" 
-            :key="index" 
+          <ul
+            class="left-sidebar-list"
           >
-            <span 
-              :class="index === isactive ? 'left-side-listactive' : ''"
-              @click="eventClickList(index)"
+            <li
+              v-for="(item,index) in alertContent" 
+              :key="index" 
             >
-              <template v-if="index === 0">
-                <span />
-              </template>
-              <!--eslint-disable-->
+              <span 
+                :class="index === isactive ? 'left-side-listactive' : ''"
+                @click="eventClickList(index)"
+              >
+                <template v-if="index === 0">
+                  <span />
+                </template>
+                <!--eslint-disable-->
               <template v-if="index >= 1">
                 <span 
                   style="display:flex;justify-content:center;align-items:center"
                   v-html="item.picUrl"
                 >
-                  <!-- <img 
-                    style="max-width:118px;max-height:70px"
-                    :src="item.picUrl"
-                  > -->
-                  <!-- {{ item.picUrl }} -->
                 </span>
               </template>
             </span>
@@ -72,6 +68,7 @@
           </li>
         </ul>
       </Modal>
+      </div>
     </div>
     <div class="geSidebarContainer-bottom" />
     <div class="geSidebarContainer-bottom2" />
@@ -242,7 +239,6 @@ export default {
         width:208px;
         display:flex;
         flex-direction: column;
-        
         .geSidebarContainer-bottom{
             flex:1;
             overflow-y: auto;
@@ -250,203 +246,208 @@ export default {
         .geSidebarContainer-bottom2{
             height:30px;
         }
-    }
-    .left-geSidebarContainer{
-        border-bottom: solid 1px #ccc;
-        .ivu-tabs{
-            // overflow: auto;
-            height:100%;
-            /deep/.ivu-tabs-content{
-                height:100% !important;
-                // overflow: auto;
-                padding:0 6px;
-                .commonPages {
-                    height:180px;
-                    overflow-y: auto
-                }
-                .leftSidebar-addicon{
-                    width:100%;
-                    height: 24px;
-                    background: url(../../assets/images/leftsidebar/addpage.png) no-repeat left center;
-                    background-size: 16px 16px;
-                    padding-left:18px;
-                    line-height: 24px;
-                    font-size: 11px;
-                    color:#797979;
-                }
-                /deep/.pageList>li{
-                    height:24px;
-                    line-height: 24px;
-                    padding-left:18px;
-                    display: flex;
-                    background:url(../../assets/images/material/page2_ic.png) no-repeat left center;
-                    background-size:16px 16px;
-                    &.currentPage{
-                        color:#fff;
-                        background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
-                        background-size:16px 16px;
-                        &.left-sidebar-homepage{
-                           background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
+        .left-geSidebarContainer{
+            border-bottom: solid 1px #ccc;
+            /deep/.ivu-tabs{
+                height:100%;
+                .ivu-tabs-content{
+                    height:100% !important;
+                    padding:0 6px;
+                    .commonPages {
+                        height:180px;
+                        overflow-y: auto;
+                        .leftSidebar-addicon{
+                            width:100%;
+                            height: 24px;
+                            background: url(../../assets/images/leftsidebar/addpage.png) no-repeat left center;
+                            background-size: 16px 16px;
+                            padding-left:18px;
+                            line-height: 24px;
+                            font-size: 11px;
+                            color:#797979;
                         }
-                        .right-icon-dolt{
-                            display: block
-                        }
-                        #editPageInput{
-                            height: 25px;
-                            border:none;
-                        }
-                    }
-                    &.left-sidebar-homepage{
-                        background: url(../../assets/images/leftsidebar/homepage.png) no-repeat left center;
-                    }
-                    .right-icon-dolt{
-                        display: none;
-                        float:right;
-                        width:20px;
-                        height:24px;
-                        background: url('../../assets/images/leftsidebar/more1_ic.png') no-repeat left center;
-                        background-size:16px 16px;
-                        position: relative;
-                        z-index:100
-                    }
-                    &:hover{
-                        color:#fff;
-                        background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
-                        background-size:16px 16px;
-                        .right-icon-dolt{
-                            display: block
-                        }
-                        &.left-sidebar-homepage{
-                           background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
-                        }
-                        #editPageInput{
-                            height: 25px;
-                            border:none;
-                        }
-                    }
-                }
-                #dialogPages>li{
-                    background:url('../../assets/images/leftsidebar/popup2_ic.png') no-repeat left center;
-                    background-size:16px 16px;
-                    &.currentPage{
-                        color:#fff;
-                        background-color:#3d91f7;
-                        background: #3d91f7 url('../../assets/images/leftsidebar/popup1_ic.png') no-repeat left center;
-                        background-size:16px 16px;
-                    }
-                    &:hover{
-                        color:#fff;
-                        background: #3d91f7 url('../../assets/images/leftsidebar/popup1_ic.png') no-repeat left center;
-                        background-size:16px 16px;
-                        #editPageInput{
-                            height: 25px;
-                            border:none;
-                        }
-                    }
-                }
-            }
-        }
-        /deep/.ivu-tabs-nav{
-            width:100% !important;
-            .ivu-tabs-tab{
-                width:50%;
-                padding:0 !important;
-                border-radius: 0 !important;
-                margin-right:0 !important;
-                height: 32px;
-                line-height: 32px;
-                background: #fff;
-                border:none;
-                border-top:none;
-                text-align: center;
-                &.ivu-tabs-tab-active{
-                    background: #F2F2F2;
-                    color:#252525;
-                    border:none;
-                }
-            }
-            .ivu-tabs-tab:active {
-               color:#252525 !important;
-            }
-        }
-    }
-    .left-sidebar-model{
-        /deep/.ivu-modal{
-            /deep/.ivu-modal-content{
-                width:600px;
-                background-color:#f5f5f5 !important;
-                .ivu-modal-header{
-                    height: 36px;
-                    padding:0;
-                    /deep/.ivu-modal-header-inner{
-                        text-align: center;
-                        height: 36px;
-                        line-height: 36px;
-                        color:#252525;
-                        font-size: 12px;
-                        background: linear-gradient(0deg,#d8d8d8,#e4e3e4);
-                        font-weight: normal;
-                        border-top-left-radius: 6px;
-                        border-top-right-radius: 6px;
-                    }
-                }
-                .ivu-modal-body{
-                    height: 300px !important;
-                    overflow-y: auto;
-                    .left-sidebar-list{
-                        &>li{
-                            width:120px;
-                            height: 110px;
-                            float:left;
-                            margin-right:10px;
-                            &>span{
-                                display: inline-block;
-                                width:120px;
-                                height: 80px;
-                                background:#ffffff;
-                                padding:5px;
-                                box-sizing: border-box;
-                                box-shadow:darkgrey 1px 1px 5px 1px;
-                                overflow: hidden;
-                                &.left-side-listactive{
-                                    padding:3px;
-                                    border:2px solid #3D91F7
+                        .pageList>li{
+                            height:24px;
+                            line-height: 24px;
+                            padding-left:18px;
+                            display: flex;
+                            background:url(../../assets/images/material/page2_ic.png) no-repeat left center;
+                            background-size:16px 16px;
+                            &.currentPage{
+                                color:#fff;
+                                background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
+                                background-size:16px 16px;
+                                &.left-sidebar-homepage{
+                                background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
                                 }
+                                .right-icon-dolt{
+                                    display: block
+                                }
+                                #editPageInput{
+                                    height: 25px;
+                                    border:none;
+                                }
+                            }
+                            &.left-sidebar-homepage{
+                                background: url(../../assets/images/leftsidebar/homepage.png) no-repeat left center;
+                            }
+                            .right-icon-dolt{
+                                display: none;
+                                float:right;
+                                width:20px;
+                                height:24px;
+                                background: url('../../assets/images/leftsidebar/more1_ic.png') no-repeat left center;
+                                background-size:16px 16px;
+                                position: relative;
+                                z-index:100
+                            }
+                            &:hover{
+                                color:#fff;
+                                background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
+                                background-size:16px 16px;
+                                .right-icon-dolt{
+                                    display: block
+                                }
+                                &.left-sidebar-homepage{
+                                background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
+                                }
+                                #editPageInput{
+                                    height: 25px;
+                                    border:none;
+                                }
+                            }
+                        }
+                        #dialogPages>li{
+                            background:url('../../assets/images/leftsidebar/popup2_ic.png') no-repeat left center;
+                            background-size:16px 16px;
+                            &.currentPage{
+                                color:#fff;
+                                background-color:#3d91f7;
+                                background: #3d91f7 url('../../assets/images/leftsidebar/popup1_ic.png') no-repeat left center;
+                                background-size:16px 16px;
+                            }
+                            &:hover{
+                                color:#fff;
+                                background: #3d91f7 url('../../assets/images/leftsidebar/popup1_ic.png') no-repeat left center;
+                                background-size:16px 16px;
+                                #editPageInput{
+                                    height: 25px;
+                                    border:none;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            /deep/.ivu-tabs-nav{
+                width:100% !important;
+                .ivu-tabs-tab{
+                    width:50%;
+                    padding:0 !important;
+                    border-radius: 0 !important;
+                    margin-right:0 !important;
+                    height: 32px;
+                    line-height: 32px;
+                    background: #fff;
+                    border:none;
+                    border-top:none;
+                    text-align: center;
+                    &.ivu-tabs-tab-active{
+                        background: #F2F2F2;
+                        color:#252525;
+                        border:none;
+                    }
+                }
+                .ivu-tabs-tab:active {
+                color:#252525 !important;
+                }
+            }
+        }
+    }
+</style>
+<style lang="less">
+body{
+    .left-sidebar-model{
+        height:100%;
+        .ivu-modal-wrap{
+            .ivu-modal{
+                .ivu-modal-content{
+                    width:600px;
+                    background-color:#f5f5f5 !important;
+                    .ivu-modal-header{
+                        height: 36px;
+                        padding:0;
+                        .ivu-modal-header-inner{
+                            text-align: center;
+                            height: 36px;
+                            line-height: 36px;
+                            color:#252525;
+                            font-size: 12px;
+                            background: linear-gradient(0deg,#d8d8d8,#e4e3e4);
+                            font-weight: normal;
+                            border-top-left-radius: 6px;
+                            border-top-right-radius: 6px;
+                        }
+                    }
+                    .ivu-modal-body{
+                        height: 300px !important;
+                        overflow-y: auto;
+                        .left-sidebar-list{
+                            &>li{
+                                width:120px;
+                                height: 110px;
+                                float:left;
+                                margin-right:10px;
                                 &>span{
                                     display: inline-block;
-                                    width:100%;
-                                    height: 100%;
+                                    width:120px;
+                                    height: 80px;
+                                    background:#ffffff;
+                                    padding:5px;
+                                    box-sizing: border-box;
+                                    box-shadow:darkgrey 1px 1px 5px 1px;
+                                    overflow: hidden;
+                                    &.left-side-listactive{
+                                        padding:3px;
+                                        border:2px solid #3D91F7
+                                    }
+                                    &>span{
+                                        display: inline-block;
+                                        width:100%;
+                                        height: 100%;
+                                    }
                                 }
-                            }
-                            &>label{
-                                display: inline-block;
-                                width:120px;
-                                height:30px;
-                                text-align: center;
-                                line-height: 30px;
-                                font-size: 12px;
-                                color:#252525;
+                                &>label{
+                                    display: inline-block;
+                                    width:120px;
+                                    height:30px;
+                                    text-align: center;
+                                    line-height: 30px;
+                                    font-size: 12px;
+                                    color:#252525;
+                                }
                             }
                         }
                     }
-                }
-                .ivu-modal-close{
-                    position: absolute;
-                    top:10px;
-                    width:16px;
-                    height:16px;
-                    background: url(../../assets/images/default/closeDialog.png) no-repeat center center;
-                    background-size: 16px 16px;
-                    .ivu-icon{
-                        display:none;
+                    .ivu-modal-close{
+                        position: absolute;
+                        top:10px;
+                        width:16px;
+                        height:16px;
+                        background: url(../../assets/images/default/closeDialog.png) no-repeat center center;
+                        background-size: 16px 16px;
+                        .ivu-icon{
+                            display:none;
+                        }
                     }
-                }
-                .ivu-modal-footer{
-                    border-top:none;
+                    .ivu-modal-footer{
+                        border-top:none;
+                    }
                 }
             }
         }
     }
+}
 </style>
 
 

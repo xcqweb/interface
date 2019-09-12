@@ -4,7 +4,7 @@
       ref="model"
       v-model="showdatasoures"
       width="660px"
-      class="left-sidebar-model"
+      class="importdata-model"
       :title="datasouresAlertName"
       :mask-closable="false"
       @on-cancel="cancelHandle"
@@ -480,160 +480,162 @@ export default{
     }
 }
 </script>
-<style lang="less" scoped>
-  .left-sidebar-model{
-      /deep/.ivu-select{
-        .ivu-select-selection{
-          height:24px;
-        }
-        .ivu-select-input{
-          height:24px;
-          line-height:24px;
-        }
-        .ivu-select-placeholder{
-          height:24px;
-        }
-        .ivu-select-selected-value{
-            height:24px;
-            line-height:22px;
-        }
-        .ivu-select-dropdown{
-          .ivu-select-dropdown-list{
-            .ivu-select-item{
-              padding: 0 16px 0;
+<style lang="less">
+  .importdata-model{
+    .ivu-modal-wrap{
+      .ivu-modal{
+        .ivu-modal-content{
+            background-color:#f5f5f5 !important;
+            .ivu-modal-header{
+                height: 36px;
+                padding:0;
+                .ivu-modal-header-inner{
+                    text-align: center;
+                    height: 36px;
+                    line-height: 36px;
+                    color:#252525;
+                    font-size: 12px;
+                    background: linear-gradient(0deg,#d8d8d8,#e4e3e4);
+                    font-weight: normal;
+                    border-top-left-radius: 6px;
+                    border-top-right-radius: 6px;
+                }
             }
-          }
-        }
-      }
-    /deep/.ivu-modal{
-      /deep/.ivu-modal-content{
-          background-color:#f5f5f5 !important;
-          .ivu-modal-header{
-              height: 36px;
-              padding:0;
-              /deep/.ivu-modal-header-inner{
-                  text-align: center;
-                  height: 36px;
-                  line-height: 36px;
-                  color:#252525;
-                  font-size: 12px;
-                  background: linear-gradient(0deg,#d8d8d8,#e4e3e4);
-                  font-weight: normal;
-                  border-top-left-radius: 6px;
-                  border-top-right-radius: 6px;
-              }
-          }
-          .ivu-modal-body{
-            padding: 0 24px;
-            height:350px;
-            display:flex;
-            flex-direction: column;
-            .content-top{
-              height: 48px;
+            .ivu-modal-body{
+              padding: 0 24px;
+              height:350px;
               display:flex;
-              .content-top-common{
-                padding-top:7px;
-                width:218px;
-                .ivu-form{
-                  height:34px;
-                  .ivu-form-item{
-                    margin-bottom:0;
-                  }
-                  .ivu-form-item-label{
-                    padding-right:0;
-                    text-align: left;
-                  }
-                }
-                &.contnt-top-form2{
-                  margin-left:10px;
-                }
-                &.contnt-top-form3{
-                  padding-top: 12px;
-                  padding-left:10px;
-                }
-              }
-            }
-            .content-wrap{
-              flex:1;
-              display:flex;
-              justify-content: space-between;
-              .content-common{
-                width:300px;
-                border:1px solid #D4D4D4;
-                border-radius: 2px;
-                background:#fff;
-                padding: 10px 0 0;
-                display: flex;
-                flex-direction: column;
-                .content-common-top{
-                  height:24px;
-                  padding: 0 10px 0;
-                  .ivu-input-suffix{
-                    .ivu-icon{
-                      line-height:24px;
+              flex-direction: column;
+              .content-top{
+                height: 48px;
+                display:flex;
+                .content-top-common{
+                  padding-top:7px;
+                  width:218px;
+                  .ivu-form{
+                    height:34px;
+                    .ivu-form-item{
+                      margin-bottom:0;
+                    }
+                    .ivu-form-item-label{
+                      padding-right:0;
+                      text-align: left;
                     }
                   }
-                  .ivu-input {
+                  &.contnt-top-form2{
+                    margin-left:10px;
+                  }
+                  &.contnt-top-form3{
+                    padding-top: 12px;
+                    padding-left:10px;
+                  }
+                }
+              }
+              .content-wrap{
+                flex:1;
+                display:flex;
+                justify-content: space-between;
+                .content-common{
+                  width:300px;
+                  border:1px solid #D4D4D4;
+                  border-radius: 2px;
+                  background:#fff;
+                  padding: 10px 0 0;
+                  display: flex;
+                  flex-direction: column;
+                  .content-common-top{
                     height:24px;
-                  }
-                }
-                .content-common-center{
-                  flex:1;
-                  padding: 8px 10px 0;
-                  .devicename-listUl{
-                    label{
-                      display:block;
-                      width:100%;
+                    padding: 0 10px 0;
+                    .ivu-input-suffix{
+                      .ivu-icon{
+                        line-height:24px;
+                      }
+                    }
+                    .ivu-input {
+                      height:24px;
                     }
                   }
-                  .no-data-wrap{
-                    height:100%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                  }
-                }
-                .content-common-botton{
-                  height:25px;
-                  // padding: 0px 10px 0;
-                  border-top:1px solid #D4D4D4;
-                  display:flex;
-                  .data-botton-left{
-                    width:80px;
-                    padding-left: 10px;
-                    padding-top:2px;
-                  }
-                  .data-botton-right{
+                  .content-common-center{
                     flex:1;
-                    text-align: right;
-                    padding-right:5px;
-                    .ivu-page-simple-pager{
-                      input {
-                        height:20px;
-                        padding: 5px 0px;
-                        margin:0;
+                    padding: 8px 10px 0;
+                    .devicename-listUl{
+                      label{
+                        display:block;
+                        width:100%;
+                      }
+                    }
+                    .no-data-wrap{
+                      height:100%;
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                    }
+                  }
+                  .content-common-botton{
+                    height:25px;
+                    // padding: 0px 10px 0;
+                    border-top:1px solid #D4D4D4;
+                    display:flex;
+                    .data-botton-left{
+                      width:80px;
+                      padding-left: 10px;
+                      padding-top:2px;
+                    }
+                    .data-botton-right{
+                      flex:1;
+                      text-align: right;
+                      padding-right:5px;
+                      .ivu-page-simple-pager{
+                        input {
+                          height:20px;
+                          padding: 5px 0px;
+                          margin:0;
+                        }
                       }
                     }
                   }
                 }
               }
             }
+            .ivu-modal-close{
+                position: absolute;
+                top:10px;
+                width:16px;
+                height:16px;
+                background: url(../../assets/images/default/closeDialog.png) no-repeat center center;
+                background-size: 16px 16px;
+                .ivu-icon{
+                    display:none;
+                }
+            }
+            .ivu-modal-footer{
+              padding: 10px 18px;
+              border-top: none
+            }
+        }
+      }
+    }
+    .ivu-select{
+      .ivu-select-selection{
+        height:24px;
+      }
+      .ivu-select-input{
+        height:24px;
+        line-height:24px;
+      }
+      .ivu-select-placeholder{
+        height:24px;
+      }
+      .ivu-select-selected-value{
+          height:24px;
+          line-height:22px;
+      }
+      .ivu-select-dropdown{
+        .ivu-select-dropdown-list{
+          .ivu-select-item{
+            padding: 0 16px 0;
           }
-          .ivu-modal-close{
-              position: absolute;
-              top:10px;
-              width:16px;
-              height:16px;
-              background: url(../../assets/images/default/closeDialog.png) no-repeat center center;
-              background-size: 16px 16px;
-              .ivu-icon{
-                  display:none;
-              }
-          }
-          .ivu-modal-footer{
-            padding: 10px 18px;
-            border-top: none
-          }
+        }
       }
     }
   }
