@@ -61,14 +61,17 @@ function setterRealData(res) {
         for(let i = 0;i < els.length;i++) {
             let shapeName = $(els[i]).data("shapeName")
             let paramShow = $(els[i]).data("paramShow")
+            let val = item[paramShow[0]]
+            if(!val && val != 0) {
+                break
+            }
             if(shapeName == 'progress') {//进度条
-                let realVal = item[paramShow[0]]
                 let progressPropsObj = $(els[i]).data("progressPropsObj")
                 let {max,min,type} = progressPropsObj
-                let percentVal = realVal / (max - min)
+                let percentVal = val / (max - min)
                 let text = `${(percentVal * 100).toFixed(2)}%`
                 if(type == 'real') {
-                    text = realVal
+                    text = val
                 }
                 let target = $(els[i]).find(".progressbar-common.progressbar")
                 let background = "linear-gradient(to right,#FF280F,#FFA963)"
@@ -83,7 +86,6 @@ function setterRealData(res) {
                 target.animate({"width":`${percentVal * 100}%`})
                 target.html(text)
             }else if(shapeName.includes('Chart')) {
-                let val = item[paramShow[0]]
                 let echartsInstance = echarts.getInstanceByDom(els[i])
                 let options = echartsInstance.getOption()
                 if(shapeName == 'lineChart') {
@@ -101,9 +103,7 @@ function setterRealData(res) {
                     if(options.xAxis[0].data.length == chartDataLen) {
                         options.xAxis[0].data.shift()
                     }
-                    if (item.timestamp) {
-                        options.xAxis[0].data.push(item.timestamp)
-                    }
+                    options.xAxis[0].data.push(item.timestamp)
                 }else {
                     if (!val) {
                         val = 0
@@ -113,8 +113,7 @@ function setterRealData(res) {
                 echartsInstance.setOption(options)
             }else {
                 if (paramShow.length == 1) {
-                    console.log(item, paramShow[0])
-                    $(els[i]).html(`${item[paramShow[0]]}`)
+                    $(els[i]).html(`${val}`)
                 } else{
                     $(els[i]).css("line-height", "normal")
                     $(els[i]).html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
@@ -187,37 +186,37 @@ function dealStateFormula(formula, data) {
  */
 function dealLogic(logic,data) {
     let res = true
-    let operate = logic.logical
+    let operate = +logic.logical
     let param = logic.paramName
-    let fixed = logic.fixedValue
-    let min = logic.minValue
-    let max = logic.maxValue
+    let fixed = +logic.fixedValue
+    let min = +logic.minValue
+    let max = +logic.maxValue
+    let paramVal = + data[param]
     switch (operate) {
         case 1: // 介于
-            res = data[param] > min && data[param] < max
+            res = paramVal > min && paramVal < max
             break
         case 2: // 未介于
-            res = data[param] >= max && data[param] <= min
+            res = paramVal >= max && paramVal <= min
             break
         case 3: // 等于
-            res = data[param] == fixed
+            res = paramVal == fixed
             break
         case 4: // 不等于
-            res = data[param] != fixed
+            res = paramVal != fixed
             break
         case 5: // 大于
-            res = data[param] > fixed
+            res = paramVal > fixed
             break
         case 6: // 小于
-            res = data[param] < fixed
+            res = paramVal < fixed
             break
         case 7: // 大于等于
-            res = data[param] >= fixed
+            res = paramVal >= fixed
             break
         case 8: // 小于等于
-            res = data[param] <= fixed
+            res = paramVal <= fixed
             break
-              
     }
     return res
 }
