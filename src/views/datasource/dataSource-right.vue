@@ -363,7 +363,6 @@ export default {
                 this.deviceListTotal = firstDeviceNameList.total || 10
                 // 要拿所有数据参数 当参数第一页多余10条
                 if (this.paramsNameList.length >= this.PAGE_SIZE) {
-                    
                     let objDataNew2 = {
                         studioId:this.studioIdNew,
                         deviceTypeId: this.deviceTypeArr[0].deviceTypeId,
@@ -377,6 +376,8 @@ export default {
                         Message.error('系统繁忙，请稍后再试试')
                         return false
                     })
+                } else {
+                    VueEvent.$emit('StartparamsNameArr', this.paramsNameList)
                 }
             }).catch(() => {
                 Message.error('系统繁忙，请稍后再试试')
@@ -427,7 +428,8 @@ export default {
                         Message.error('系统繁忙，请稍后再试')
                         return false
                     })
-
+                } else {
+                    VueEvent.$emit('StartparamsNameArr', this.paramsNameList)
                 }
                 
             }
