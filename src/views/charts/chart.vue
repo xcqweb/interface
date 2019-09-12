@@ -284,6 +284,7 @@ export default{
             }else{
                 options = Object.assign({},this.options2)
             }
+            console.log(options)
             this.$emit("hideChartDialog",options)
         },
         setMarkLineFun() {
@@ -368,11 +369,8 @@ export default{
             this.borderLineBoldText = item.borderLineBoldText
         },
         chooseLegend() {
-            this.options1.legend = {show:this.chartLegend}
+            this.options1.legend.show = this.chartLegend
         },
-        chooseGrid() {
-            this.options1.grid = {show:this.chartGrid}
-        }
     },      
 }
 </script>

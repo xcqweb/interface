@@ -1,6 +1,9 @@
 import {geAjax} from './util'
 import {getCookie,throttle} from '../Utils'
-// import {conditionLogical,logicalSignList} from '../../constants/model-form-logic'
+/* import echarts from 'echarts'
+import requestUtil from '../../services/request'
+import urls from '../../constants/url' */
+
 //获取websocket连接信息
 let websocketUrlReal = ''
 //获取最后一笔数据
@@ -60,12 +63,13 @@ function setterRealData(res) {
         for(let i = 0;i < els.length;i++) {
             let shapeName = $(els[i]).data("shapeName")
             let paramShow = $(els[i]).data("paramShow")
+            console.log(paramShow)
             let realVal = item[paramShow[0]]
             if(shapeName == 'progress') {//进度条
                 let progressPropsObj = $(els[i]).data("progressPropsObj")
                 let {max,min,type} = progressPropsObj
-                let percentVal = (realVal / (max - min)).toFixed(4)
-                let text = `${percentVal * 100}%`
+                let percentVal = realVal / (max - min)
+                let text = `${(percentVal * 100).toFixed(2)}%`
                 if(type == 'real') {
                     text = realVal
                 }
@@ -82,29 +86,45 @@ function setterRealData(res) {
                 target.animate({"width":`${percentVal * 100}%`})
                 target.html(text)
             }else if(shapeName.includes('Chart')) {
-                console.log("tt")
+                console.log(paramShow)
+                //let echartsInstance = echarts.getInstanceByDom(els[i])
+                //let deviceTypeId = $(els[i]).data('deviceTypeId')
+                //let deviceNames = $(els[i]).data('deviceNames')
+                //let chartData = [],chartDataLen = 0
+                //requestUtil.get(`${urls.timeSelect.url}${deviceTypeId}`).then(res => {
+                /*  let checkItem = res.durations.find((item)=>{
+                        return item.checked === true
+                    }) */
+                //chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
+                //let options = echartsInstance.getOption()
+                //options.legend.data = deviceNames.map()
+                /*  paramShow.forEach((item)=>{
+
+                    }) */
+                //})
             }else {
                 if (paramShow.length == 1) {
+                    console.log(item, paramShow[0])
                     $(els[i]).html(`${item[paramShow[0]]}`)
                 } else{
                     $(els[i]).css("line-height", "normal")
                     $(els[i]).html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
                         return `<li>${d}=${item[d]}`
                     }).join('') + "</ul>")
-                }              
+                }         
+                let stateModels = $(els[i]).data("stateModels")
+                if(stateModels) {
+                    let stateIndex = 0
+                    for (let j = 1; j < stateModels.length;j++) {
+                        if (dealStateFormula(stateModels[j].modelFormInfo.formula, item)) {
+                            stateIndex = j
+                            break
+                        }
+                    }
+                    changeEleState(els[i], stateModels[stateIndex])
+                }
             }
 
-            let stateModels = $(els[i]).data("stateModels")
-            if(stateModels) {
-                let stateIndex = 0
-                for (let j = 1; j < stateModels.length;j++) {
-                    if (dealStateFormula(stateModels[j].modelFormInfo.formula, item)) {
-                        stateIndex = j
-                        break
-                    }
-                }
-                changeEleState(els[i], stateModels[stateIndex])
-            }
         }
     })
 }
@@ -202,8 +222,13 @@ function changeEleState(el, stateInfo) {
     if (stateInfo.animateCls) {
         el.classList.add(stateInfo.animateCls)
     }
+    let imgInfo = stateInfo.imgInfo
     for (let key in stateInfo.style) {
         el.style[key] = stateInfo.style[key]
+    }
+    if (imgInfo) {
+        el.style.background = `url(${imgInfo.url}) center center no-repeat`
+        el.style.backgroundSize = '100% 100%'
     }
 }
 /**
@@ -227,7 +252,10 @@ function initialWs(ws, pageId,applyData) {
     // 接收消息
     ws.onmessage = function(res) {
         let data = JSON.parse(res.data)
-        let dataArr = Object.keys(data)
+        if(!data || !data.length) {
+            return
+        }
+        let dataArr = Object.keys(data[0])
         if (dataArr[0] === 'rspCode' || dataArr[1] === 'rspMsg') {
             return
         }
@@ -250,8 +278,8 @@ function createWsReal(pageId,applyData) {
         if (pointParams.length === 0 || !websocketUrlReal) {
             return
         }
-        const token = getCookie('token');
-        let ws = new WebSocket(res.data, token); // 提交时使用这个
+        const token = getCookie('token')
+        let ws = new WebSocket(res.data, token) // 提交时使用这个
         initialWs(ws, pageId,applyData)
         applyData[pageId].wsReal = ws
     })

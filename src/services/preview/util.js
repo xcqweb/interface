@@ -17,8 +17,10 @@ function removeEle(ele) {
  * @param {string} pageId 
  */
 function destroyWs(applyData,pageId) {
-    (applyData[pageId].ws_real && applyData[pageId].ws_real.close()) || (applyData[pageId].ws_alarm && applyData[pageId].ws_alarm.close());
-    delete applyData[pageId];
+    if(applyData[pageId].wsReal) {
+        applyData[pageId].wsReal.close()
+        delete applyData[pageId]
+    }
 }
 
 /**
@@ -441,7 +443,6 @@ function dealPipeline(cell) {
 function dealCharts(cell) {
     let con = document.createElement('div')
     let chartAttr = cell.chartProps
-    console.log(chartAttr)
     let options = {}
     if (chartAttr) {
         options = JSON.parse(chartAttr)

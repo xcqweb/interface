@@ -126,7 +126,9 @@
                       <Select
                         v-model="modelVals[index]"
                         style="width:240px;height:24px;line-height:24px;"
+                        :clearable="true"
                         @on-change="(val)=>modelSelectChange(val,index)"
+                        @on-clear="clearStateBtn(index)"
                       > 
                         <Option 
                           v-for="(d,i) in modelList" 
@@ -304,6 +306,7 @@ export default {
         },
         initModelList() {
             //模型列表
+            this.modelVals.splice(0)
             if(deviceTypeId) {
                 let objData = {
                     studioId: sessionStorage.getItem("applyId"),
@@ -355,9 +358,22 @@ export default {
         },
         modelSelectChange(modelIndex,stateIndex) {
             //将模型公式绑定在对应的状态上
+            if(!modelIndex && modelIndex !== 0) {
+                return
+            }
             let currentModel = this.modelList[modelIndex]
             this.stateList[stateIndex].modelFormInfo = currentModel.sourceId
             this.setCellModelInfo('statesInfo',[...this.stateList])
+        },
+        clearStateBtn(pos) {
+            let tempStateList = this.getCellModelInfo("statesInfo")
+            tempStateList.forEach((item,index)=>{
+                if(index == pos) {
+                    item.modelFormInfo = null
+                }
+                return
+            })
+            this.setCellModelInfo('statesInfo',tempStateList)
         },
         footerContentHandle(show) {
             if (show) {
@@ -476,8 +492,8 @@ export default {
             }
             if(list.length) {
                 tempObj.params = list
+                this.setCellModelInfo('bindData',tempObj)
             }
-            this.setCellModelInfo('bindData',tempObj)
         },
         checkDetDataModel(oldValue, newValue) {
             let oldDeviceNameChild = oldValue.dataSource.deviceNameChild || []

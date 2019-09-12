@@ -1,5 +1,6 @@
 export let data1 = {
     legend: {
+        show:true,
         data: ['图例'],
         bottom: 0,
     },
