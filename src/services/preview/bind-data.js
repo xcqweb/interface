@@ -139,7 +139,6 @@ function setterRealData(res) {
  * @param {} data 公式中参数的实际值
  */
 function dealStateFormula(formula, data) {
-    debugger
     formula = JSON.parse(formula)
     let res1 = true,breakFlag = false,res2 = false
     let logics = formula.data
