@@ -445,9 +445,6 @@ export default{
         deviceTypeChange() {
             this.paramsNameList = []
             this.deviceNameList = []
-            console.log(this.modelvalue2)
-            console.log(this.modelvalue2.length)
-            // this.modelvalue2 = this.modelvalue2.trim()
         },
         // 重置事件
         resetHandle() {
