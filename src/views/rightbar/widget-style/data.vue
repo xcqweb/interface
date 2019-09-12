@@ -171,6 +171,9 @@ export default{
         InputEle1.oninput = this.debounce(this.InputSelectHandle, 1000)
         this.init()
     },
+    beforeDestroy() {
+        VueEvent.$off('emitDataSourceFooter')
+    },
     methods: {
         init() {
             this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape

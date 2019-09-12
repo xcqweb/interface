@@ -48,6 +48,9 @@ export default {
             this.refresh++
         })
     },
+    beforeDestroy() {
+        VueEvent.$off('isShowFootBar')
+    },
     methods: {
         init() {
             let that = this.myEditorUi.sidebar

@@ -322,6 +322,10 @@ export default {
             _that.clickDeviceTypeListHandle('', index,deviceTypeId)
         })
     },
+    beforeDestroy() {
+        VueEvent.$off('StartDeviceTypeArr')
+        VueEvent.$off('StartparamsNameArr')
+    },
     methods: {
         initData() {
             let objData = {

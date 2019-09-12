@@ -155,23 +155,6 @@ export default{
 
         },
         tabsSwitchData(index) {
-            // this.$nextTick(() => {
-            //     let arrIndex = [0 , 1]
-            //     if (!this.modelEditing) {
-            //         // if (tabsArr[+index].className.includes('ivu-tabs-tab-active')) {
-            //         //     return false
-            //         // }
-            //         this.tabsArr[+index].className = 'ivu-tabs-tab'
-            //         if (+index === arrIndex[1]) {
-            //             this.tabsArr[index - 1].className = 'ivu-tabs-tab ivu-tabs-tab-active ivu-tabs-tab-focused'
-            //         } else if (+index === arrIndex[0]) {
-            //             this.tabsArr[index + 1].className = 'ivu-tabs-tab ivu-tabs-tab-active ivu-tabs-tab-focused'
-            //         }
-            //         this.tabsArr = document.querySelectorAll('.data-main-left .ivu-tabs-tab')
-            //         Message.warning(alertTip)
-            //         return false
-            //     }
-            // })
             this.dataType = +index + 1
         },
         importDataHander() {
@@ -191,9 +174,6 @@ export default{
         },
         dataSourceShow(value) {
             this.deviceTypeArr = value
-        },
-        closeHandle() {
-            console.log(88)
         }
     },      
 }
