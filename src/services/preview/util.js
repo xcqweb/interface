@@ -154,7 +154,7 @@ function insertImage(cell) {
  * @param {Array<Array>} points 中间点 
  * @param {Array} target 结束点
  */
-function inserEdge(cell) {
+function insertEdge(cell) {
     let {
         source,
         points,
@@ -269,10 +269,10 @@ function actionOpen(action, mainProcess) {
         window.location.href = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
     } else if (action.innerType === 'page') {
         // 打开页面
-        const pageType = mainProcess.getPageType(action.link);
+        const pageType = mainProcess.getPageType(action.link)
         if (pageType === 'normal' && mainProcess.pageId !== action.link) {
-            mainProcess.pageId = action.link;
-            mainProcess.renderNormal();
+            mainProcess.pageId = action.link
+            mainProcess.renderNormal()
         } else if (pageType === 'dialog') {
             mainProcess.renderDialog(action.link)
         }
@@ -518,6 +518,6 @@ function dealLightFill(ele,color) { //处理闪烁灯 填充色
     $(paths[1]).attr("fill", color)
 }
 export {
-    removeEle, destroyWs, geAjax, insertImage, inserEdge, insertSvg, bindEvent, showTips,
+    removeEle, destroyWs, geAjax, insertImage, insertEdge, insertSvg, bindEvent, showTips,
     dealProgress, dealPipeline, dealCharts, dealLight
 }

@@ -5,7 +5,7 @@
 let pageWidth = 0,pageHeight = 0
 // websocket信息
 let applyData = {}
-// 配置好的svg图
+// let widgetCounts = 0,renderWidgetCount = 0 //widget总共的数量，已经render的widget的数量
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
 
@@ -14,7 +14,7 @@ import {
     removeEle,
     destroyWs,
     insertImage,
-    inserEdge,
+    insertEdge,
     bindEvent,
     dealProgress,
     dealPipeline,
@@ -35,13 +35,9 @@ class PreviewPage {
         this.content = parseContent.pages
         this.pagesRank = parseContent.rank
         this.wsParams = []
+        this.currentPageId = ''
         this.mainProcess = mainProcess
         this.gePreview = gePreview
-    }
-
-    // 页面数量
-    pageCounts() {
-        return Object.keys(this.content)
     }
     // 生成弹窗
     createDialog(page) {
@@ -295,7 +291,7 @@ class PreviewPage {
                 }
             }
             return list;
-        };
+        }
         let cells = getNode()
         cells.map(cell => {
             // 计算页面高度
@@ -353,17 +349,21 @@ class PreviewPage {
             wsParams: this.wsParams,
             lockWs: false
         };
-        setTimeout(() => {
-            createWsReal(page.id,applyData)
-            getLastData(this.wsParams) //低频数据 通过调用最后一笔数据显示
-        }, 3000)
+        this.currentPageId = page.id
+        setTimeout(()=>{
+            this.pubSubData()
+        },1500)
         return cells
+    }
+    pubSubData() {
+        createWsReal(this.currentPageId, applyData)
+        getLastData(this.wsParams) //低频数据 通过调用最后一笔数据显示
     }
     // 渲染页面
     renderPages(cells, ele = this.gePreview) {
         for (let cell of cells) {
             let cellHtml = this.renderCell(cell)
-            ele.appendChild(cellHtml);
+            ele.appendChild(cellHtml)
             // 组内资源
             if (cell.children.length) {
                 this.renderPages(cell.children, cellHtml)
@@ -374,7 +374,7 @@ class PreviewPage {
     // 渲染控件节点
     renderCell(cell) {
         console.log(cell)
-        const shapeName = cell.shapeName;
+        const shapeName = cell.shapeName
         let cellHtml
         if (shapeName.includes('image')) {
             // 图片
@@ -407,7 +407,7 @@ class PreviewPage {
             cellHtml.innerHTML = cell.value
         } else if (shapeName === 'beeline') {
             // 箭头、直线，曲线
-            cellHtml = inserEdge(cell)
+            cellHtml = insertEdge(cell)
         } else if(shapeName === 'progress') {
             cellHtml = dealProgress(cell)
         } else if (shapeName.includes('pipeline')) {
@@ -524,6 +524,7 @@ class PreviewPage {
                     cellHtml.className += ` point_${item.id}`
                     let resArr = Array.from(new Set(resParams.concat(paramShow)))
                     if (resArr.length) {
+                        console.log("wsparms--push")
                         wsParams.push({
                             pointId: item.id,
                             params: resArr

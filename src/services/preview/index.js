@@ -1,33 +1,13 @@
 import {geAjax} from './util'
-import {mxUtils} from '../../services/mxGlobal'
 import PreviewPage from './render-page'
 
 // 主函数
 let mainProcess
 // 控件xml解析信息
-let shapeXlms, applyInfo
+let applyInfo
 // 正常页面渲染地方
 let gePreview
 let ev//自定义事件，echart dom 渲染后，通知初始化echarts
-/**
- * 加载控件的xml配置文档
- */
-function loadShapeXml() {
-    return new Promise((resolve) => {
-        mxUtils.get('/static/stencils/preview.xml', function(res) {
-            let root = res.getXml();
-            let obj = {};
-            const shapes = root.documentElement.getElementsByTagName('shape');
-            for (let shape of shapes) {
-                obj[shape.getAttribute('name')] = {
-                    viewBox: shape.getAttribute('viewBox'),
-                    path: shape.childNodes[1]
-                };
-            }
-            resolve(obj)
-        })
-    })
-}
 
 /**
  * 执行渲染主函数
@@ -52,7 +32,6 @@ class Main {
             id = idArr[1]
         }
         applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudio/${id}`, 'GET')
-        shapeXlms = await loadShapeXml();
         if (!applyInfo) {
             return
         }
@@ -66,30 +45,25 @@ class Main {
     // 判断页面类型
     getPageType(id) {
         if (this.previewPage.pagesRank.normal.indexOf(id) !== -1) {
-            return 'normal';
-        } else if (this.previewPage.pagesRank.dialog.indexOf(id) !== -1) {
-            return 'dialog';
-        } else {
-            return null;
+            return 'normal'
+        } 
+        if (this.previewPage.pagesRank.dialog.indexOf(id) !== -1) {
+            return 'dialog'
         }
+        return null
     }
     // 渲染普通页面
     renderNormal() {
-        let pageContent = this.previewPage.content[this.pageId];
-        this.previewPage.parsePage(pageContent,shapeXlms)
+        let pageContent = this.previewPage.content[this.pageId]
+        this.previewPage.parsePage(pageContent)
         document.dispatchEvent(ev)
     }
 
     // 渲染弹窗
     renderDialog(id) {
         let pageContent = this.previewPage.content[id];
-        this.previewPage.parsePage(pageContent,shapeXlms)
+        this.previewPage.parsePage(pageContent)
         document.dispatchEvent(ev)
-    }
-
-    // 渲染浮窗
-    renderLayer() {
-        this.previewPage.renderLayer()
     }
 }
 mainProcess = new Main()
