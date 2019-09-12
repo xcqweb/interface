@@ -1,6 +1,9 @@
 import {getCookie, setCookie} from '../Utils'
 import {data1,data2} from '../../constants/chart-default-data'
 import echarts from 'echarts'
+import requestUtil from '../../services/request'
+import urls from '../../constants/url'
+
 /**
  * 移除dom节点
  * @param {object} ele 
@@ -455,6 +458,37 @@ function dealCharts(cell) {
     }
     document.addEventListener("initEcharts",()=>{
         let myEchart = echarts.init(con)
+        if (cell.bindData && cell.bindData.dataSource.deviceTypeChild) {
+            let deviceTypeId = cell.bindData.dataSource.deviceTypeChild.id
+            requestUtil.get(`${urls.timeSelect.url}${deviceTypeId}`).then(res => {
+                let checkItem = res.durations.find((item) => {
+                    return item.checked === true
+                })
+                let chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
+                $(con).data("chartDataLen", chartDataLen)
+            })
+            let devices = cell.bindData.dataSource.deviceNameChild
+            if (cell.shapeName == 'lineChart') {
+                options.yAxis.name = cell.bindData.params[0].paramName
+                let tempLegend = [],tempSeries = []
+                let markLine = options.series[0].markLine
+                devices.forEach((item)=>{
+                    tempLegend.push(item.name)
+                    tempSeries.push({
+                        type:'line',
+                        name:item.name,
+                        markLine:markLine,
+                        data:[],
+                        pointId:item.id,//设备id，额外添加的，匹配数据时候用
+                    })
+                })
+                options.legend.data = tempLegend
+                options.series = tempSeries
+                options.xAxis.data = []
+            }else {
+                options.series.data = [0]
+            }
+        }
         myEchart.setOption(options)
     })
     return con

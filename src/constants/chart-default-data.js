@@ -21,7 +21,7 @@ export let data1 = {
     yAxis: {
         type: 'value'
     },
-    series: {
+    series: [{
         name: '图例',
         type: 'line',
         data: [10, 52, 200, 334, 390, 330, 220],
@@ -29,7 +29,7 @@ export let data1 = {
             silent: true,
             data: []
         }
-    }
+    }]
 }
 
 export let data2 = {

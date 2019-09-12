@@ -1,8 +1,6 @@
 import {geAjax} from './util'
 import {getCookie,throttle} from '../Utils'
-/* import echarts from 'echarts'
-import requestUtil from '../../services/request'
-import urls from '../../constants/url' */
+import echarts from 'echarts'
 
 //获取websocket连接信息
 let websocketUrlReal = ''
@@ -63,9 +61,8 @@ function setterRealData(res) {
         for(let i = 0;i < els.length;i++) {
             let shapeName = $(els[i]).data("shapeName")
             let paramShow = $(els[i]).data("paramShow")
-            console.log(paramShow)
-            let realVal = item[paramShow[0]]
             if(shapeName == 'progress') {//进度条
+                let realVal = item[paramShow[0]]
                 let progressPropsObj = $(els[i]).data("progressPropsObj")
                 let {max,min,type} = progressPropsObj
                 let percentVal = realVal / (max - min)
@@ -86,22 +83,34 @@ function setterRealData(res) {
                 target.animate({"width":`${percentVal * 100}%`})
                 target.html(text)
             }else if(shapeName.includes('Chart')) {
-                console.log(paramShow)
-                //let echartsInstance = echarts.getInstanceByDom(els[i])
-                //let deviceTypeId = $(els[i]).data('deviceTypeId')
-                //let deviceNames = $(els[i]).data('deviceNames')
-                //let chartData = [],chartDataLen = 0
-                //requestUtil.get(`${urls.timeSelect.url}${deviceTypeId}`).then(res => {
-                /*  let checkItem = res.durations.find((item)=>{
-                        return item.checked === true
-                    }) */
-                //chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
-                //let options = echartsInstance.getOption()
-                //options.legend.data = deviceNames.map()
-                /*  paramShow.forEach((item)=>{
-
-                    }) */
-                //})
+                let val = item[paramShow[0]]
+                let echartsInstance = echarts.getInstanceByDom(els[i])
+                let options = echartsInstance.getOption()
+                if(shapeName == 'lineChart') {
+                    let chartDataLen = $(els[i]).data("chartDataLen")
+                    options.series.forEach((ser)=>{
+                        if (ser.pointId == item.pointId) {
+                            if(ser.data.length == chartDataLen) {
+                                ser.data.shift()
+                            }
+                            if (val || val == 0) {
+                                ser.data.push(val)
+                            }
+                        }
+                    })
+                    if(options.xAxis[0].data.length == chartDataLen) {
+                        options.xAxis[0].data.shift()
+                    }
+                    if (item.timestamp) {
+                        options.xAxis[0].data.push(item.timestamp)
+                    }
+                }else {
+                    if (!val) {
+                        val = 0
+                    }
+                    options.series.data = [ val]
+                }
+                echartsInstance.setOption(options)
             }else {
                 if (paramShow.length == 1) {
                     console.log(item, paramShow[0])
@@ -124,7 +133,6 @@ function setterRealData(res) {
                     changeEleState(els[i], stateModels[stateIndex])
                 }
             }
-
         }
     })
 }

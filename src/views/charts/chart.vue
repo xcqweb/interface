@@ -284,13 +284,12 @@ export default{
             }else{
                 options = Object.assign({},this.options2)
             }
-            console.log(options)
             this.$emit("hideChartDialog",options)
         },
         setMarkLineFun() {
-            this.options1.series.markLine.data.splice(0)
+            this.options1.series[0].markLine.data.splice(0)
             this.markLineList.forEach((item)=>{
-                this.options1.series.markLine.data.push({
+                this.options1.series[0].markLine.data.push({
                     lineStyle:{
                         color:item.borderColor,
                         type:item.borderLineCls === 'border-line' ? 'solid' : 'dashed',
