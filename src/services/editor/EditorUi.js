@@ -14,6 +14,7 @@ import {
 import {ChangePageSetup} from './Init'
 import {Format} from './Format'
 import urls from '../../constants/url'
+import {setCookie} from '../Utils'
 window.EditorUi = function(editor, container, lightbox)
 {
     mxEventSource.call(this);
@@ -3527,6 +3528,7 @@ EditorUi.prototype.save = function(name, des,hideDialog=false)
                     data.studioId = id
                     editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
                         this.saveSuccess(res, hideDialog);
+                        setCookie('saveIotCds', 'put');
                         resolve(res);
                     }, (res) => {
                         this.saveError(res.responseJSON,hideDialog);
@@ -3535,6 +3537,7 @@ EditorUi.prototype.save = function(name, des,hideDialog=false)
                 } else {
                     editor.ajax(ui, urls.preview.url, 'POST', data,(res) => {
                         this.saveSuccess(res,hideDialog);
+                        setCookie('saveIotCds', 'post');
                         resolve(res);
                     }, (res) => {
                         this.saveError(res.responseJSON, hideDialog);
