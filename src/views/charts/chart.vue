@@ -33,6 +33,19 @@
               @on-change="chooseLegend"
             />
           </div>
+          <div
+            v-if="shapeName=='lineChart'"
+            class="item-title"
+            style="display:flex;justify-content:space-between;"
+          >
+            样式
+            <div
+              class="setColor"
+              style="width:80%;"
+              :style="{backgroundColor:styleColorBg}"
+              @click="pickStyleColor"
+            />
+          </div>
           <div v-if="shapeName=='gaugeChart'">
             <div class="item-title">
               数值范围
@@ -246,6 +259,7 @@ export default{
             borderLineBoldList:[1,2,3,4,5],
             editMarkLine:null,
             editMarkLineIndex:0,
+            styleColorBg:'#333',
         }
     },
     mounted() {
@@ -254,7 +268,7 @@ export default{
         if(this.bindChartProps) {
             if(this.shapeName == 'lineChart') {
                 this.options1 = this.bindChartProps
-                let lineData = this.bindChartProps.series.markLine.data
+                let lineData = this.bindChartProps.series[0].markLine.data
                 if(lineData.length) {
                     lineData.forEach((item)=>{
                         this.markLineList.push({
@@ -266,6 +280,7 @@ export default{
                         })
                     })
                 }
+                this.styleColorBg = this.bindChartProps.yAxis.splitLine.lineStyle.color
             }else{
                 this.progressMin = this.options.series.min
                 this.progressMax = this.options.series.max
@@ -310,7 +325,7 @@ export default{
             this.markName = `指标${this.markLineList.length + 1}`
         },
         pickChartBorderColor() {//chart mark-line
-            this.myEditorUi.pickColor('#fff',color=>{
+            this.myEditorUi.pickColor(this.borderColor,color=>{
                 this.borderColor = color
             })
         },
@@ -369,6 +384,20 @@ export default{
         },
         chooseLegend() {
             this.options1.legend.show = this.chartLegend
+        },
+        pickStyleColor() {
+            this.myEditorUi.pickColor('#fff',color=>{
+                this.styleColorBg = color
+                let obj = {color:color}
+                this.options1.yAxis.splitLine.lineStyle = obj
+                this.options1.yAxis.axisLine.lineStyle = obj
+                this.options1.yAxis.axisTick.lineStyle = obj
+                this.options1.xAxis.axisLabel.lineStyle = obj
+                this.options1.xAxis.axisLine.lineStyle = obj
+                this.options1.xAxis.axisTick.lineStyle = obj
+                this.options1.xAxis.axisLabel.lineStyle = obj
+                this.options1.legend.textStyle = obj
+            })
         },
     },      
 }
