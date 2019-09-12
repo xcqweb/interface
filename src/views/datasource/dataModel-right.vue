@@ -172,6 +172,7 @@
                           <span 
                             v-if="alldata.data.length > 1"
                             class="delete-icon" 
+                            @click.stop.prevent="deleteAddtionHandle( key)"
                           />
                         </span>
                         <span 
@@ -353,6 +354,7 @@ import VueEvent from '../../services/VueEvent.js'
 import NoData from './nodata'
 import {Input, Button, Table, Select,Option, Message} from 'iview'
 import {conditionLogical,logicalSignList} from '../../constants/model-form-logic'
+import {sureDialog} from '../../services/Utils'
 const alertTip = '您还有未保存的模型,请先保存'
 const defaultValue = {
     paramName: '',
@@ -628,6 +630,9 @@ export default {
                 Message.success('添加模型成功')
                 this.ModelNameArr.push(res)
                 this.clickModelHandle('', res.sourceId, res.modelName,res.formula,res.descript,this.ModelNameArr.length - 1)
+                this.$store.commit('modelEditing', false)
+                this.saveModelText = `保存模型`
+                this.snapshot = JSON.parse(JSON.stringify(this.alldata))
                 return false
             }).catch(() => {
                 Message.error('系统繁忙，请稍后再试')
@@ -774,6 +779,17 @@ export default {
                     this.ModelNameArr.splice(this.currentMouseIndex, 1)
                 }
             })
+        },
+        deleteAddtionHandle(index) {
+            if (!this.modelEditing) {
+                sureDialog(this.myEditorUi, `确定要删除条件${index + 1}吗`, () => {
+                    this.alldata.data.splice(index, 1)
+                })
+            } else {
+                Message.warning(alertTip)
+                return false
+            }
+            
         },
         saveEditRename(editInput, ele, oldVal) {
             let name = editInput.value.trim()

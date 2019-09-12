@@ -36,7 +36,6 @@
         <div class="content-top-common contnt-top-form2">
           <Form
             :label-width="58"
-            :model="formValidate"
           >
             <FormItem
               :label="deviceType"
@@ -44,6 +43,7 @@
               <Select
                 v-model="modelvalue2"
                 style="height:24px"
+                filterable
                 :clearable="ifclearSelect"
                 @on-change="deviceTypeChange"
               >
@@ -51,9 +51,8 @@
                   v-for="(item, index) in deviceNameArr"
                   :key="index"
                   :value="item.typeId"
-                >
-                  {{ item.typeName }}
-                </Option>
+                  :label="item.typeName"
+                />
               </Select>
             </FormItem>
           </Form>
@@ -487,9 +486,12 @@ export default{
         .ivu-select-selection{
           height:24px;
         }
-        .ivu-select-placeholder{
+        .ivu-select-input{
           height:24px;
           line-height:24px;
+        }
+        .ivu-select-placeholder{
+          height:24px;
         }
         .ivu-select-selected-value{
             height:24px;
@@ -552,7 +554,6 @@ export default{
               }
             }
             .content-wrap{
-              // height:280px;
               flex:1;
               display:flex;
               justify-content: space-between;
@@ -636,4 +637,5 @@ export default{
       }
     }
   }
+
 </style>

@@ -254,6 +254,7 @@ export default {
     .left-geSidebarContainer{
         border-bottom: solid 1px #ccc;
         .ivu-tabs{
+            // overflow: auto;
             height:100%;
             /deep/.ivu-tabs-content{
                 height:100% !important;
@@ -285,7 +286,10 @@ export default {
                         background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
                         background-size:16px 16px;
                         &.left-sidebar-homepage{
-                        background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
+                           background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
+                        }
+                        .right-icon-dolt{
+                            display: block
                         }
                         #editPageInput{
                             height: 25px;
@@ -296,7 +300,7 @@ export default {
                         background: url(../../assets/images/leftsidebar/homepage.png) no-repeat left center;
                     }
                     .right-icon-dolt{
-                        display: block;
+                        display: none;
                         float:right;
                         width:20px;
                         height:24px;
@@ -304,6 +308,21 @@ export default {
                         background-size:16px 16px;
                         position: relative;
                         z-index:100
+                    }
+                    &:hover{
+                        color:#fff;
+                        background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
+                        background-size:16px 16px;
+                        .right-icon-dolt{
+                            display: block
+                        }
+                        &.left-sidebar-homepage{
+                           background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
+                        }
+                        #editPageInput{
+                            height: 25px;
+                            border:none;
+                        }
                     }
                 }
                 #dialogPages>li{
@@ -314,6 +333,15 @@ export default {
                         background-color:#3d91f7;
                         background: #3d91f7 url('../../assets/images/leftsidebar/popup1_ic.png') no-repeat left center;
                         background-size:16px 16px;
+                    }
+                    &:hover{
+                        color:#fff;
+                        background: #3d91f7 url('../../assets/images/leftsidebar/popup1_ic.png') no-repeat left center;
+                        background-size:16px 16px;
+                        #editPageInput{
+                            height: 25px;
+                            border:none;
+                        }
                     }
                 }
             }
@@ -388,7 +416,6 @@ export default {
                                     display: inline-block;
                                     width:100%;
                                     height: 100%;
-                                    // background:#acacac
                                 }
                             }
                             &>label{
@@ -420,7 +447,6 @@ export default {
             }
         }
     }
-    
 </style>
 
 
