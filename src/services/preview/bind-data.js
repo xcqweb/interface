@@ -101,9 +101,7 @@ function setterRealData(res) {
                     if(options.xAxis[0].data.length == chartDataLen) {
                         options.xAxis[0].data.shift()
                     }
-                    if (item.timestamp) {
-                        options.xAxis[0].data.push(item.timestamp)
-                    }
+                    options.xAxis[0].data.push(item.timestamp)
                 }else {
                     if (!val) {
                         val = 0
@@ -113,7 +111,6 @@ function setterRealData(res) {
                 echartsInstance.setOption(options)
             }else {
                 if (paramShow.length == 1) {
-                    console.log(item, paramShow[0])
                     $(els[i]).html(`${item[paramShow[0]]}`)
                 } else{
                     $(els[i]).css("line-height", "normal")
@@ -142,6 +139,7 @@ function setterRealData(res) {
  * @param {} data 公式中参数的实际值
  */
 function dealStateFormula(formula, data) {
+    debugger
     formula = JSON.parse(formula)
     let res1 = true,breakFlag = false,res2 = false
     let logics = formula.data
@@ -187,7 +185,7 @@ function dealStateFormula(formula, data) {
  */
 function dealLogic(logic,data) {
     let res = true
-    let operate = logic.logical
+    let operate = parseInt(logic.logical)
     let param = logic.paramName
     let fixed = logic.fixedValue
     let min = logic.minValue
