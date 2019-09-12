@@ -3,7 +3,7 @@
     <Modal
       v-model="showmarerial"
       width="720px"
-      class="left-sidebar-model"
+      class="materialroom-model"
       :title="materialAlertName"
       :mask-closable="false"
       @on-cancel="cancel"
@@ -836,116 +836,235 @@ export default {
     
 }
 </script>
-<style lang="less" scoped>
-    .left-sidebar-model{
-        /deep/.ivu-modal{
-            /deep/.ivu-modal-content{
-                width:700px;
-                background-color:#f5f5f5 !important;
-                .ivu-modal-header{
-                    height: 36px;
-                    padding:0;
-                    /deep/.ivu-modal-header-inner{
-                        text-align: center;
-                        height: 36px;
-                        line-height: 36px;
-                        color:#252525;
-                        font-size: 12px;
-                        background: linear-gradient(0deg,#d8d8d8,#e4e3e4);
-                        font-weight: normal;
-                        border-top-left-radius: 6px;
-                        border-top-right-radius: 6px;
-                    }
-                }
-                .ivu-modal-body{
-                    padding: 0;
-                    .materialtabs{
-                        position: relative;
-                        .ivu-tabs {
-                            padding:0px;
-                            display:flex;
-                            flex-direction:column;
-                            .ivu-tabs-bar{
-                                height: 38px;
-                                background: #d8d8d8;
-                                margin-bottom:0px;
-                                .ivu-tabs-nav-container{
-                                    padding-left:30px;
-                                    .ivu-tabs-nav{
-                                        height: 24px;
-                                        .ivu-tabs-ink-bar{
-                                            display:none;
-                                        }
-                                        .ivu-tabs-tab{
-                                            height: 24px;
-                                            line-height: 24px;
-                                            font-size: 12px;
-                                            text-align: center;
-                                            background: #fff;
-                                            border:none;
-                                            margin-right:0;
-                                            border-radius: 0;
-                                            padding:0;
-                                            width:80px;
-                                            &.ivu-tabs-tab-active{
-                                                background: #3D91F7;
-                                                color:#fff;
-                                            }
-                                        }
-                                    }
-                                    
-                                }
-                            }
-                            .ivu-tabs-content{
-                                flex:1;
-                                .ivu-tabs-tabpane{
-                                    height:100%;
-                                    .commom-wrapper{
-                                        display: flex;
-                                        height: 100%;
-                                        .materialtabs-left{
-                                            width:150px;
-                                            box-sizing: border-box;
-                                            border-right:1px solid #ccc;
-                                            padding:5px;
-                                            .assembly-seach-wrapper{
-                                                box-sizing: border-box;
-                                                .assembly-seach-icon{
-                                                    padding:0 16px 0 5px;
-                                                    width:100%;
-                                                    font-size: 12px;
-                                                    box-sizing: border-box;
-                                                    border:1px solid #d4d4d4;
-                                                    border-radius: 2px;
-                                                    background: #fff url("../../assets/images/material/searchicon.png") no-repeat right center;
-                                                    background-size:16px 16px;
-                                                }
-                                                .addassembly{
-                                                    width:100%;
-                                                    height: 24px;
-                                                    background: url(../../assets/images/leftsidebar/addpage.png) no-repeat left center;
-                                                    background-size: 16px 16px;
-                                                    padding-left:18px;
-                                                    line-height: 24px;
-                                                    font-size: 11px;
-                                                    color:#797979;
-                                                    cursor: pointer;
-                                                }
-                                                .left-max-height{
-                                                  height:240px;
-                                                  overflow-y: auto;
-                                                  .assembly-list{
-                                                      .assembly-icon{
+<style lang="less">
+body{
+    .materialroom-model{
+        .ivu-modal-wrap{
+          .ivu-modal{
+              .ivu-modal-content{
+                  width:700px;
+                  background-color:#f5f5f5 !important;
+                  .ivu-modal-header{
+                      height: 36px;
+                      padding:0;
+                      .ivu-modal-header-inner{
+                          text-align: center;
+                          height: 36px;
+                          line-height: 36px;
+                          color:#252525;
+                          font-size: 12px;
+                          background: linear-gradient(0deg,#d8d8d8,#e4e3e4);
+                          font-weight: normal;
+                          border-top-left-radius: 6px;
+                          border-top-right-radius: 6px;
+                      }
+                  }
+                  .ivu-modal-body{
+                      padding: 0;
+                      .materialtabs{
+                          position: relative;
+                          .ivu-tabs {
+                              padding:0px;
+                              display:flex;
+                              flex-direction:column;
+                              .ivu-tabs-bar{
+                                  height: 38px;
+                                  background: #d8d8d8;
+                                  margin-bottom:0px;
+                                  .ivu-tabs-nav-container{
+                                      padding-left:30px;
+                                      .ivu-tabs-nav{
+                                          height: 24px;
+                                          .ivu-tabs-ink-bar{
+                                              display:none;
+                                          }
+                                          .ivu-tabs-tab{
+                                              height: 24px;
+                                              line-height: 24px;
+                                              font-size: 12px;
+                                              text-align: center;
+                                              background: #fff;
+                                              border:none;
+                                              margin-right:0;
+                                              border-radius: 0;
+                                              padding:0;
+                                              width:80px;
+                                              &.ivu-tabs-tab-active{
+                                                  background: #3D91F7;
+                                                  color:#fff;
+                                              }
+                                          }
+                                      }
+                                      
+                                  }
+                              }
+                              .ivu-tabs-content{
+                                  flex:1;
+                                  .ivu-tabs-tabpane{
+                                      height:100%;
+                                      .commom-wrapper{
+                                          display: flex;
+                                          height: 100%;
+                                          .materialtabs-left{
+                                              width:150px;
+                                              box-sizing: border-box;
+                                              border-right:1px solid #ccc;
+                                              padding:5px;
+                                              .assembly-seach-wrapper{
+                                                  box-sizing: border-box;
+                                                  .assembly-seach-icon{
+                                                      padding:0 16px 0 5px;
+                                                      width:100%;
+                                                      font-size: 12px;
+                                                      box-sizing: border-box;
+                                                      border:1px solid #d4d4d4;
+                                                      border-radius: 2px;
+                                                      background: #fff url("../../assets/images/material/searchicon.png") no-repeat right center;
+                                                      background-size:16px 16px;
+                                                  }
+                                                  .addassembly{
+                                                      width:100%;
+                                                      height: 24px;
+                                                      background: url(../../assets/images/leftsidebar/addpage.png) no-repeat left center;
+                                                      background-size: 16px 16px;
+                                                      padding-left:18px;
+                                                      line-height: 24px;
+                                                      font-size: 11px;
+                                                      color:#797979;
+                                                      cursor: pointer;
+                                                  }
+                                                  .left-max-height{
+                                                    height:240px;
+                                                    overflow-y: auto;
+                                                    .assembly-list{
+                                                        .assembly-icon{
+                                                            width:100%;
+                                                            height: 24px;
+                                                            background: url(../../assets/images/material/subassembly2_ic.png) no-repeat left center;
+                                                            background-size: 16px 16px;
+                                                            padding-left:18px;
+                                                            line-height: 24px;
+                                                            font-size: 12px;
+                                                            color:#252525;
+                                                            cursor: pointer;
+                                                            display: flex;
+                                                            .left-assembly-left{
+                                                              width:100px;
+                                                              overflow:hidden;
+                                                              text-overflow:ellipsis;
+                                                              white-space: nowrap;
+                                                              flex:1;
+                                                              display:block;
+                                                            }
+                                                            &.left-side-listactive{
+                                                                background-color: #277AE0;
+                                                                color:#fff;
+                                                                .right-spots{
+                                                                    background: url('../../assets/images/leftsidebar/more1_ic.png') no-repeat center center;
+                                                                    background-size:16px 16px;
+                                                                }
+                                                                #editPageInput{
+                                                                  border:none;
+                                                                  height:25px;
+                                                                  width:100%;
+                                                                }
+                                                            }
+                                                            &>.right-spots{
+                                                                display:block;
+                                                                width:24px;
+                                                                height:24px;
+                                                                background: url(../../assets/images/material/more2_ic.png) no-repeat center center;
+                                                                background-size: 16px 16px;
+                                                                // float:right;
+                                                                position: relative;
+                                                            }
+                                                        }
+                                                    }
+                                                  }
+                                              }
+                                              .material-list {
+                                                  &>li:first-child{
+                                                      &.material-icon{
                                                           width:100%;
                                                           height: 24px;
-                                                          background: url(../../assets/images/material/subassembly2_ic.png) no-repeat left center;
-                                                          background-size: 16px 16px;
                                                           padding-left:18px;
                                                           line-height: 24px;
                                                           font-size: 12px;
                                                           color:#252525;
-                                                          cursor: pointer;
+                                                          &.left-page-icon {
+                                                              background: url(../../assets/images/material/page2_ic.png) no-repeat left center;
+                                                              background-size: 16px 16px;
+                                                          }
+                                                          &.left-side-listactive{
+                                                              background: #277AE0 url(../../assets/images/material/page1_ic.png) no-repeat left center;
+                                                              color:#fff;
+                                                          }
+                                                      }
+                                                  }
+                                                  &>li:last-child{
+                                                    &.material-icon{
+                                                          width:100%;
+                                                          height: 24px;
+                                                          padding-left:18px;
+                                                          line-height: 24px;
+                                                          font-size: 12px;
+                                                          color:#252525;
+                                                          &.left-page-icon {
+                                                              background: url(../../assets/images/material/popup2_ic.png) no-repeat left center;
+                                                              background-size: 16px 16px;
+                                                          }
+                                                          &.left-side-listactive{
+                                                              background: #277AE0 url(../../assets/images/leftsidebar/popup1_ic.png) no-repeat left center;
+                                                              color:#fff;
+                                                          }
+                                                      }
+                                                  }
+                                              }
+                                              
+                                          }
+                                          .materialtabs-right{
+                                              flex:1;
+                                              padding:5px;
+                                              height: 300px;
+                                              overflow-y: auto;
+                                              .right-nodata{
+                                                  height:100%;
+                                                  text-align: center;
+                                                  display:flex;
+                                                  justify-content: center;
+                                                  align-items: center;
+                                                  color:#acacac;
+                                              }
+                                              .assembly-right-wrapper{
+                                                  display: flex;
+                                                  flex-wrap:wrap;
+                                                  overflow-y:auto; 
+                                                  &>li{
+                                                      width:100px;
+                                                      height:130px;
+                                                      margin-right:5px;
+                                                      &>div{
+                                                          width:100px;
+                                                          height: 100px;
+                                                          border:1px solid #E1E1E1;
                                                           display: flex;
+                                                          justify-content: center;
+                                                          align-items: center; 
+                                                          &>span{
+                                                              display: block;
+                                                              width:72px;
+                                                              height: 72px;
+                                                          }
+                                                      }
+                                                      &>span{
+                                                          display: block;
+                                                          width:100px;
+                                                          height: 30px;
+                                                          text-align: center;
+                                                          line-height: 30px;
+                                                          color: #252525;
+                                                          display:flex;
+                                                          justify-content: center;
                                                           .left-assembly-left{
                                                             width:100px;
                                                             overflow:hidden;
@@ -954,90 +1073,9 @@ export default {
                                                             flex:1;
                                                             display:block;
                                                           }
-                                                          &.left-side-listactive{
-                                                              background-color: #277AE0;
-                                                              color:#fff;
-                                                              .right-spots{
-                                                                  background: url('../../assets/images/leftsidebar/more1_ic.png') no-repeat center center;
-                                                                  background-size:16px 16px;
-                                                              }
-                                                              #editPageInput{
-                                                                border:none;
-                                                                height:25px;
-                                                                width:100%;
-                                                              }
-                                                          }
-                                                          &>.right-spots{
-                                                              display:block;
-                                                              width:24px;
-                                                              height:24px;
-                                                              background: url(../../assets/images/material/more2_ic.png) no-repeat center center;
-                                                              background-size: 16px 16px;
-                                                              // float:right;
-                                                              position: relative;
-                                                          }
                                                       }
                                                   }
-                                                }
-                                            }
-                                            .material-list {
-                                                &>li:first-child{
-                                                    &.material-icon{
-                                                        width:100%;
-                                                        height: 24px;
-                                                        padding-left:18px;
-                                                        line-height: 24px;
-                                                        font-size: 12px;
-                                                        color:#252525;
-                                                        &.left-page-icon {
-                                                            background: url(../../assets/images/material/page2_ic.png) no-repeat left center;
-                                                            background-size: 16px 16px;
-                                                        }
-                                                        &.left-side-listactive{
-                                                            background: #277AE0 url(../../assets/images/material/page1_ic.png) no-repeat left center;
-                                                            color:#fff;
-                                                        }
-                                                    }
-                                                }
-                                                &>li:last-child{
-                                                  &.material-icon{
-                                                        width:100%;
-                                                        height: 24px;
-                                                        padding-left:18px;
-                                                        line-height: 24px;
-                                                        font-size: 12px;
-                                                        color:#252525;
-                                                        &.left-page-icon {
-                                                            background: url(../../assets/images/material/popup2_ic.png) no-repeat left center;
-                                                            background-size: 16px 16px;
-                                                        }
-                                                        &.left-side-listactive{
-                                                            background: #277AE0 url(../../assets/images/leftsidebar/popup1_ic.png) no-repeat left center;
-                                                            color:#fff;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            
-                                        }
-                                        .materialtabs-right{
-                                            flex:1;
-                                            padding:5px;
-                                            height: 300px;
-                                            overflow-y: auto;
-                                            .right-nodata{
-                                                height:100%;
-                                                text-align: center;
-                                                display:flex;
-                                                justify-content: center;
-                                                align-items: center;
-                                                color:#acacac;
-                                            }
-                                            .assembly-right-wrapper{
-                                                display: flex;
-                                                flex-wrap:wrap;
-                                                overflow-y:auto; 
-                                                &>li{
+                                                  &>li.user-uploadimage{
                                                     width:100px;
                                                     height:130px;
                                                     margin-right:5px;
@@ -1048,244 +1086,210 @@ export default {
                                                         display: flex;
                                                         justify-content: center;
                                                         align-items: center; 
-                                                        &>span{
-                                                            display: block;
-                                                            width:72px;
-                                                            height: 72px;
-                                                        }
-                                                    }
-                                                    &>span{
-                                                        display: block;
-                                                        width:100px;
-                                                        height: 30px;
-                                                        text-align: center;
-                                                        line-height: 30px;
-                                                        color: #252525;
-                                                        display:flex;
-                                                        justify-content: center;
-                                                        .left-assembly-left{
-                                                          width:100px;
-                                                          overflow:hidden;
-                                                          text-overflow:ellipsis;
-                                                          white-space: nowrap;
-                                                          flex:1;
-                                                          display:block;
-                                                        }
-                                                    }
-                                                }
-                                                &>li.user-uploadimage{
-                                                  width:100px;
-                                                  height:130px;
-                                                  margin-right:5px;
-                                                  &>div{
-                                                      width:100px;
-                                                      height: 100px;
-                                                      border:1px solid #E1E1E1;
-                                                      display: flex;
-                                                      justify-content: center;
-                                                      align-items: center; 
-                                                      position: relative;
-                                                      &>span{
-                                                          display: block;
-                                                          width:72px;
-                                                          height: 72px;
-                                                          // border: 1px dashed #E1E1E1;
-                                                      }
-                                                      .right-spots-assemly{
-                                                        display: block;
-                                                        width:30px;
-                                                        height:20px;
-                                                        background: url(../../assets/images/material/more2_ic.png) no-repeat right center;
-                                                        background-size: 16px 16px;
-                                                        position: absolute;
-                                                        right:0;
-                                                        bottom:0;
-                                                        cursor: pointer;
-                                                      }
-                                                    }
-                                                    &>span{
-                                                        display: flex;
-                                                        width:100px;
-                                                        height: 30px;
-                                                        text-align: center;
-                                                        line-height: 30px;
-                                                        color: #252525;
-                                                        &.right-list-listactive{
-                                                          &>#editPageInput{
-                                                            border:none;
-                                                            height:30px;
-                                                            text-align: center;
-                                                            width:100%;
-                                                          }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            .material-right-wrapper{
-                                                display: flex;
-                                                flex-wrap:wrap;
-                                                overflow-y:auto; 
-                                                &>li{
-                                                    width:100px;
-                                                    height:130px;
-                                                    margin-right:5px;
-                                                    &>div{
-                                                        width:100px;
-                                                        height: 100px;
-                                                        border:1px solid #E1E1E1;
-                                                        display: flex;
-                                                        justify-content: center;
-                                                        align-items: center; 
+                                                        position: relative;
                                                         &>span{
                                                             display: block;
                                                             width:72px;
                                                             height: 72px;
                                                             // border: 1px dashed #E1E1E1;
                                                         }
-                                                    }
-                                                    &>span{
-                                                        display: block;
-                                                        width:100px;
-                                                        height: 30px;
-                                                        text-align: center;
-                                                        line-height: 30px;
-                                                        color: #252525;
-                                                    }
-                                                }
-                                                &>li.user-uploadimage{
-                                                  &>div{
+                                                        .right-spots-assemly{
+                                                          display: block;
+                                                          width:30px;
+                                                          height:20px;
+                                                          background: url(../../assets/images/material/more2_ic.png) no-repeat right center;
+                                                          background-size: 16px 16px;
+                                                          position: absolute;
+                                                          right:0;
+                                                          bottom:0;
+                                                          cursor: pointer;
+                                                        }
+                                                      }
+                                                      &>span{
+                                                          display: flex;
+                                                          width:100px;
+                                                          height: 30px;
+                                                          text-align: center;
+                                                          line-height: 30px;
+                                                          color: #252525;
+                                                          &.right-list-listactive{
+                                                            &>#editPageInput{
+                                                              border:none;
+                                                              height:30px;
+                                                              text-align: center;
+                                                              width:100%;
+                                                            }
+                                                          }
+                                                      }
+                                                  }
+                                              }
+                                              .material-right-wrapper{
+                                                  display: flex;
+                                                  flex-wrap:wrap;
+                                                  overflow-y:auto; 
+                                                  &>li{
                                                       width:100px;
-                                                      height: 100px;
-                                                      border:1px solid #E1E1E1;
-                                                      display: flex;
-                                                      justify-content: center;
-                                                      align-items: center; 
-                                                      position: relative;
+                                                      height:130px;
+                                                      margin-right:5px;
+                                                      &>div{
+                                                          width:100px;
+                                                          height: 100px;
+                                                          border:1px solid #E1E1E1;
+                                                          display: flex;
+                                                          justify-content: center;
+                                                          align-items: center; 
+                                                          &>span{
+                                                              display: block;
+                                                              width:72px;
+                                                              height: 72px;
+                                                              // border: 1px dashed #E1E1E1;
+                                                          }
+                                                      }
                                                       &>span{
                                                           display: block;
-                                                          width:720px;
-                                                          height: 72px;
-                                                          overflow: hidden;
+                                                          width:100px;
+                                                          height: 30px;
+                                                          text-align: center;
+                                                          line-height: 30px;
+                                                          color: #252525;
                                                       }
-                                                      .right-spots-assemly{
-                                                        display: block;
-                                                        width:30px;
-                                                        height:20px;
-                                                        background: url(../../assets/images/material/more2_ic.png) no-repeat right center;
-                                                        background-size: 16px 16px;
-                                                        position: absolute;
-                                                        right:0;
-                                                        bottom:0;
-                                                        cursor: pointer;
-                                                      }
-                                                    }
-                                                    &>span{
-                                                        display: block;
+                                                  }
+                                                  &>li.user-uploadimage{
+                                                    &>div{
                                                         width:100px;
-                                                        height: 30px;
-                                                        text-align: center;
-                                                        line-height: 30px;
-                                                        color: #252525;
-                                                        &.right-list-listactive{
-                                                          &>#editPageInput{
-                                                            border:none;
-                                                            height:30px;
-                                                            text-align: center
-                                                          }
+                                                        height: 100px;
+                                                        border:1px solid #E1E1E1;
+                                                        display: flex;
+                                                        justify-content: center;
+                                                        align-items: center; 
+                                                        position: relative;
+                                                        &>span{
+                                                            display: block;
+                                                            width:720px;
+                                                            height: 72px;
+                                                            overflow: hidden;
                                                         }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        #materialModelMenu{
-                            width:115px;
-                            background: #F5F5F5;
-                            color:#252525;
-                            border:1px solid #CCCCCC;
-                            position: fixed;
-                            border-radius: 2px;
-                            z-index: 999999;
-                            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
-                            li{
-                                height: 24px;
-                                font-size: 14px;
-                                padding: 0 15px;
-                                cursor: default;
-                                line-height: 24px;
-                                &:hover{
-                                  background: #3d91f7;
-                                  color:#fff;
-                                }
-                            }
-                        }
-                    }
-                    .materialtabs-footer{
-                        border-top: 1px solid #e8eaec;
-                        height:76px;
-                        padding-right:24px;
-                        padding-top:24px;
-                        &>span{
-                          float:right;
-                        }
-                    }
-                    .left-sidebar-list{
-                        &>li{
-                            width:120px;
-                            height: 110px;
-                            float:left;
-                            margin-right:10px;
-                            &>span{
-                                display: inline-block;
-                                width:120px;
-                                height: 80px;
-                                background:#ffffff;
-                                padding:5px;
-                                box-sizing: border-box;
-                                box-shadow:darkgrey 1px 1px 5px 1px;
-                                &.left-side-listactive{
-                                    padding:3px;
-                                    border:2px solid #3D91F7
-                                }
-                                &>span{
-                                    display: inline-block;
-                                    width:100%;
-                                    height: 100%;
-                                    // background:#acacac
-                                }
-                            }
-                            &>label{
-                                display: inline-block;
-                                width:120px;
-                                height:30px;
-                                text-align: center;
-                                line-height: 30px;
-                                font-size: 12px;
-                                color:#252525;
-                            }
-                        }
-                    }
-                }
-                .ivu-modal-close{
-                    position: absolute;
-                    top:10px;
-                    width:16px;
-                    height:16px;
-                    background: url(../../assets/images/default/closeDialog.png) no-repeat center center;
-                    background-size: 16px 16px;
-                    .ivu-icon{
-                        display:none;
-                    }
-                }
-                .ivu-modal-footer{
-                    display:none;
-                }
-            }
+                                                        .right-spots-assemly{
+                                                          display: block;
+                                                          width:30px;
+                                                          height:20px;
+                                                          background: url(../../assets/images/material/more2_ic.png) no-repeat right center;
+                                                          background-size: 16px 16px;
+                                                          position: absolute;
+                                                          right:0;
+                                                          bottom:0;
+                                                          cursor: pointer;
+                                                        }
+                                                      }
+                                                      &>span{
+                                                          display: block;
+                                                          width:100px;
+                                                          height: 30px;
+                                                          text-align: center;
+                                                          line-height: 30px;
+                                                          color: #252525;
+                                                          &.right-list-listactive{
+                                                            &>#editPageInput{
+                                                              border:none;
+                                                              height:30px;
+                                                              text-align: center
+                                                            }
+                                                          }
+                                                      }
+                                                  }
+                                              }
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+                          #materialModelMenu{
+                              width:115px;
+                              background: #F5F5F5;
+                              color:#252525;
+                              border:1px solid #CCCCCC;
+                              position: fixed;
+                              border-radius: 2px;
+                              z-index: 999999;
+                              box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
+                              li{
+                                  height: 24px;
+                                  font-size: 14px;
+                                  padding: 0 15px;
+                                  cursor: default;
+                                  line-height: 24px;
+                                  &:hover{
+                                    background: #3d91f7;
+                                    color:#fff;
+                                  }
+                              }
+                          }
+                      }
+                      .materialtabs-footer{
+                          border-top: 1px solid #e8eaec;
+                          height:76px;
+                          padding-right:24px;
+                          padding-top:24px;
+                          &>span{
+                            float:right;
+                          }
+                      }
+                      .left-sidebar-list{
+                          &>li{
+                              width:120px;
+                              height: 110px;
+                              float:left;
+                              margin-right:10px;
+                              &>span{
+                                  display: inline-block;
+                                  width:120px;
+                                  height: 80px;
+                                  background:#ffffff;
+                                  padding:5px;
+                                  box-sizing: border-box;
+                                  box-shadow:darkgrey 1px 1px 5px 1px;
+                                  &.left-side-listactive{
+                                      padding:3px;
+                                      border:2px solid #3D91F7
+                                  }
+                                  &>span{
+                                      display: inline-block;
+                                      width:100%;
+                                      height: 100%;
+                                      // background:#acacac
+                                  }
+                              }
+                              &>label{
+                                  display: inline-block;
+                                  width:120px;
+                                  height:30px;
+                                  text-align: center;
+                                  line-height: 30px;
+                                  font-size: 12px;
+                                  color:#252525;
+                              }
+                          }
+                      }
+                  }
+                  .ivu-modal-close{
+                      position: absolute;
+                      top:10px;
+                      width:16px;
+                      height:16px;
+                      background: url(../../assets/images/default/closeDialog.png) no-repeat center center;
+                      background-size: 16px 16px;
+                      .ivu-icon{
+                          display:none;
+                      }
+                  }
+                  .ivu-modal-footer{
+                      display:none;
+                  }
+              }
+          }
         }
     }
+}
 </style>
 
 
