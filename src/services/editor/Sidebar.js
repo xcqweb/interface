@@ -1260,6 +1260,9 @@ function createPageList(editorUi, el, data, id, _that) {
                 }
             }
             $('#pageContextMenu').mouseleave(() => {
+                // 要重新获取一下 currentIndex
+                let getIdType = evt.target.parentNode.parentNode.id
+                let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
                 if (currentIndex !== CurrentMouseOver) {
                     if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
                         LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
@@ -1282,7 +1285,7 @@ function createPageList(editorUi, el, data, id, _that) {
                 }
             }
             let getIdType = evt.target.parentNode.parentNode.id
-            let currentIndex = getIdType == 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
+            let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
             if (evt.clientX >= widthLen && evt.clientX <= widthLen + (evt.target.offsetWidth - 2)) {
                 var menulist = document.getElementById('pageContextMenu');
                 var targetElement = document.querySelector("#pageContextMenu .rename")
@@ -1317,6 +1320,9 @@ function createPageList(editorUi, el, data, id, _that) {
 
                 }
                 $('#pageContextMenu').mouseleave(() => {
+                    // 要重新获取一下 currentIndex
+                    let getIdType = evt.target.parentNode.parentNode.id
+                    let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
                     if (currentIndex !== CurrentMouseOver) {
                         if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
                             LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
@@ -1374,27 +1380,23 @@ function createPageList(editorUi, el, data, id, _that) {
     if (id.includes('normal')) {
         $('.normalPages').on('click', '.pageList>li>.spanli', function (evt) {
             changePage(evt)
-            setTimeout(() => {
                 let normalArr = document.querySelectorAll('#normalPages li')
                 for (let j = 0; j <= normalArr.length - 1; j++) {
                     if (normalArr[j].className.includes('currentPage')) {
                         startCurrentPageIndex = j
                     }
                 }
-            })
         })
     }
     if (id.includes('dialog')) {
         $('.dialogPages').on('click', '.pageList>li>.spanli', function (evt) {
             changePage(evt)
-            setTimeout(() => {
                 let normalArr = document.querySelectorAll('#dialogPages li')
                 for (let j = 0; j <= normalArr.length - 1; j++) {
                     if (normalArr[j].className.includes('currentPage')) {
                         startCurrentDialogIndex = j
                     }
                 }
-            })
         })
     }
     mxEvent.addListener(pageListEle, 'contextmenu', function (evt) {

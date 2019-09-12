@@ -288,6 +288,9 @@ export default {
                         &.left-sidebar-homepage{
                            background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
                         }
+                        .right-icon-dolt{
+                            display: block
+                        }
                         #editPageInput{
                             height: 25px;
                             border:none;
@@ -297,7 +300,7 @@ export default {
                         background: url(../../assets/images/leftsidebar/homepage.png) no-repeat left center;
                     }
                     .right-icon-dolt{
-                        display: block;
+                        display: none;
                         float:right;
                         width:20px;
                         height:24px;
@@ -310,6 +313,9 @@ export default {
                         color:#fff;
                         background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
                         background-size:16px 16px;
+                        .right-icon-dolt{
+                            display: block
+                        }
                         &.left-sidebar-homepage{
                            background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
                         }
@@ -410,7 +416,6 @@ export default {
                                     display: inline-block;
                                     width:100%;
                                     height: 100%;
-                                    // background:#acacac
                                 }
                             }
                             &>label{
