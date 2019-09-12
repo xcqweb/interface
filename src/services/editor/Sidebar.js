@@ -12,6 +12,9 @@ import Urls from '../../constants/url'
 import VueEvent from '../VueEvent'
 import { tipDialog, sureDialog } from '../Utils'
 var basicXmlFns = [];
+let startCurrentPageIndex = null
+let startCurrentDialogIndex = null
+let CurrentMouseOver = null
 function Sidebar(editorUi, container, container2)
 {
     this.editorUi = editorUi;
@@ -1092,33 +1095,24 @@ Sidebar.prototype.addTemplate = async function(type) {
 /**
  * 页面右键菜单
  */
-Sidebar.prototype.createPageContextMenu = function(type) {
+Sidebar.prototype.createPageContextMenu = function (type) {
     var menulist = document.createElement('ul')
     if (document.querySelector('#pageContextMenu')) {
         document.querySelector('#pageContextMenu').remove()
     }
     menulist.id = 'pageContextMenu';
-    // var menus = {
-    //     'addPrev': '上方添加',
-    //     'addNext': '下方添加',
-    //     'movePrev': '上移',
-    //     'moveNext': '下移',
-    //     'rename': '重命名',
-    //     'copy': '复制',
-    //     'delete': '删除',
-    // }
     let menus = null
     if (+type === 1) { // 弹窗
         menus = {
             'copy': '复制弹窗',
-            'addTemplate':`添加到模版`,
+            'addTemplate': `添加到模版`,
             'rename': '重命名',
             'delete': '删除',
         }
     } else {
         menus = {
             'copy': '复制页面',
-            'addTemplate':`添加到模版`,
+            'addTemplate': `添加到模版`,
             'rename': '重命名',
             'delete': '删除',
         }
@@ -1132,22 +1126,24 @@ Sidebar.prototype.createPageContextMenu = function(type) {
     }
     document.body.appendChild(menulist);
     // 隐藏菜单
-    mxEvent.addGestureListeners(document, (evt) => {
-        if (evt.target.parentNode && evt.target.parentNode.id !== 'pageContextMenu') {
-            this.hidePageContextMenu();
-        }
-    });
-    mxEvent.addListener(menulist, 'click', function(evt) {
+    // mxEvent.addGestureListeners(document, (evt) => {
+    //     if (evt.target.parentNode && evt.target.parentNode.id !== 'pageContextMenu') {
+    //         this.hidePageContextMenu();
+    //     }
+    // });
+    mxEvent.addListener(menulist, 'click', function (evt) {
         evt.stopPropagation()
         var target = evt.target;
         var ele = $(".pageList .currentPage").eq(0);
         let pageType = null
+        let element = null
         if (ele.parent().attr('id') === 'normalPages') {
             pageType = 'normal'
+            element = document.querySelectorAll('#normalPages li')[CurrentMouseOver]
         } else {
             pageType = 'dialog'
+            element = document.querySelectorAll('#dialogPages li')[CurrentMouseOver]
         }
-        const element = document.querySelector('.pageList>li.currentPage')
         // 操作类型
         var actionType = target.getAttribute('data-type');
         // 添加页面
@@ -1157,11 +1153,11 @@ Sidebar.prototype.createPageContextMenu = function(type) {
         let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.data('pageid'))
         switch (actionType) {
             case 'movePrev':
-                this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems( this.editorUi.editor.pagesRank[pageType], index - 1, index);
+                this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems(this.editorUi.editor.pagesRank[pageType], index - 1, index);
                 ele.insertBefore(ele.prev())
                 break;
             case 'moveNext':
-				 this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems( this.editorUi.editor.pagesRank[pageType], index, index - 1);
+                this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems(this.editorUi.editor.pagesRank[pageType], index, index - 1);
                 ele.insertAfter(ele.next())
                 break;
             case 'delete':
@@ -1172,20 +1168,20 @@ Sidebar.prototype.createPageContextMenu = function(type) {
                 break;
             case 'copy':
                 this.editorUi.editor.setXml();
-                this.copyPage(element,pageType)
+                this.copyPage(element, pageType)
                 break;
             case 'homepage':
-                this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems( this.editorUi.editor.pagesRank[pageType], index - 1, index);
+                this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems(this.editorUi.editor.pagesRank[pageType], index - 1, index);
                 // var first = document.pageList
                 var targetEle = null
-                if (pageType ==='normal') {
+                if (pageType === 'normal') {
                     targetEle = document.querySelector('#normalPages')
                 } else {
                     targetEle = document.querySelector('#dialogPages')
                 }
                 const currentnode = document.querySelector('.currentPage')
                 const first = targetEle.firstChild
-                targetEle.insertBefore(currentnode,first)
+                targetEle.insertBefore(currentnode, first)
                 $('.left-sidebar-homepage').removeClass('left-sidebar-homepage')
                 currentnode.className += ' left-sidebar-homepage'
                 break
@@ -1197,12 +1193,12 @@ Sidebar.prototype.createPageContextMenu = function(type) {
                 addPage(actionType)
                 break;
         }
-        this.hidePageContextMenu();
+        // this.hidePageContextMenu();
     }.bind(this))
     return menulist;
 }
 
-function createPageList(editorUi, el, data, id) {
+function createPageList(editorUi, el, data, id, _that) {
     // 页面列表
     editorUi.editor.setCurrentType(id == 'normalPages' ? 'normal' : 'dialog');
     var pageListEle = document.createElement('ul');
@@ -1214,31 +1210,144 @@ function createPageList(editorUi, el, data, id) {
             page.className = 'left-sidebar-homepage'
         }
         page.setAttribute('data-pageid', data[i].id);
-        page.innerHTML =  `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${data[i].title}</span><span class="right-icon-dolt"></span>`;
+        page.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${data[i].title}</span><span class="right-icon-dolt"></span>`;
         pageListEle.appendChild(page)
     }
     el.appendChild(pageListEle)
-    $('.commonPages').on('mouseenter', '.pageList>li.currentPage>.right-icon-dolt',function(evt) {
-        evt.preventDefault();
-        // 右键菜单展示
-        var menulist = document.getElementById('pageContextMenu');
-        var targetElement = document.querySelector("#pageContextMenu .rename")
-        const textlen = menulist.firstChild.innerText
-        if (!$(this).parent().hasClass('left-sidebar-homepage') && textlen.indexOf('弹窗') === -1) {
-            if(!$('#pageContextMenu').children('.homepage').length) {
-                const Oli = document.createElement('li')
-                Oli.className = 'homepage'
-                Oli.innerText = '设为首页'
-                Oli.setAttribute('data-type', 'homepage')
-                menulist.insertBefore(Oli,targetElement)
+
+    $('.commonPages').on('mouseenter', '.pageList>li>.right-icon-dolt', function (evt) {
+        setTimeout(() => {
+            evt.preventDefault();
+            // 右键菜单展示
+            let LIArr = evt.target.parentNode.parentNode.children
+            for (var i = 0; i < LIArr.length; i++) {
+                if (LIArr[i] === evt.target.parentNode) {
+                    CurrentMouseOver = i
+                }
             }
-        } else {
-            $('.homepage').remove()
-        }
-        menulist.style.display = 'block';
-        menulist.style.left = mxEvent.getClientX(evt) + 'px';
-        menulist.style.top = mxEvent.getClientY(evt) + 'px';
-        $('.commonPages .pageList>li.currentPage>.right-icon-dolt').css({ 'pointer-events': 'none'})
+            var menulist = document.getElementById('pageContextMenu');
+            var targetElement = document.querySelector("#pageContextMenu .rename")
+            const textlen = menulist.firstChild.innerText
+            if (!$(this).parent().hasClass('left-sidebar-homepage') && textlen.indexOf('弹窗') === -1) {
+                if (!$('#pageContextMenu').children('.homepage').length) {
+                    const Oli = document.createElement('li')
+                    Oli.className = 'homepage'
+                    Oli.innerText = '设为首页'
+                    Oli.setAttribute('data-type', 'homepage')
+                    menulist.insertBefore(Oli, targetElement)
+                }
+            } else {
+                $('.homepage').remove()
+            }
+            menulist.style.display = 'block';
+            menulist.style.left = evt.target.offsetLeft + evt.target.offsetWidth - 100 / 2 + 'px';
+            menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 72 + 'px';
+
+            //
+            let classNameList = evt.target.parentNode.className
+            if (!classNameList.includes('currentPage')) {
+                evt.target.parentNode.className += classNameList ? ' currentPage' : 'currentPage'
+            }
+            let getIdType = evt.target.parentNode.parentNode.id
+            let currentIndex = getIdType == 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
+            for (var i = 0; i < LIArr.length; i++) {
+                if (i !== currentIndex && i !== CurrentMouseOver) {
+                    if (LIArr[i].className.includes('left-sidebar-homepage')) {
+                        LIArr[i].className = 'left-sidebar-homepage'
+                    } else {
+                        LIArr[i].className = ''
+                    }
+                }
+            }
+            $('#pageContextMenu').mouseleave(() => {
+                if (currentIndex !== CurrentMouseOver) {
+                    if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
+                        LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
+                    } else {
+                        LIArr[CurrentMouseOver].className = ''
+                    }
+                }
+                _that.hidePageContextMenu()
+            })
+        })
+    })
+    $('.commonPages').on('mousemove', '.pageList>li>.right-icon-dolt', function (evt) {
+        setTimeout(() => {
+            let widthLen = evt.target.offsetLeft
+            let HeightLen = evt.target.offsetTop + 72
+            let LIArr = evt.target.parentNode.parentNode.children
+            for (var i = 0; i < LIArr.length; i++) {
+                if (LIArr[i] === evt.target.parentNode) {
+                    CurrentMouseOver = i
+                }
+            }
+            let getIdType = evt.target.parentNode.parentNode.id
+            let currentIndex = getIdType == 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
+            if (evt.clientX >= widthLen && evt.clientX <= widthLen + (evt.target.offsetWidth - 2)) {
+                var menulist = document.getElementById('pageContextMenu');
+                var targetElement = document.querySelector("#pageContextMenu .rename")
+                const textlen = menulist.firstChild.innerText
+                if (!$(this).parent().hasClass('left-sidebar-homepage') && textlen.indexOf('弹窗') === -1) {
+                    if (!$('#pageContextMenu').children('.homepage').length) {
+                        const Oli = document.createElement('li')
+                        Oli.className = 'homepage'
+                        Oli.innerText = '设为首页'
+                        Oli.setAttribute('data-type', 'homepage')
+                        menulist.insertBefore(Oli, targetElement)
+                    }
+                } else {
+                    $('.homepage').remove()
+                }
+                menulist.style.display = 'block';
+                menulist.style.left = evt.target.offsetLeft + evt.target.offsetWidth - 100 / 2 + 'px';
+                menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 72 + 'px';
+
+                let classNameList = evt.target.parentNode.className
+                if (!classNameList.includes('currentPage')) {
+                    evt.target.parentNode.className += classNameList ? ' currentPage' : 'currentPage'
+                }
+                for (var i = 0; i < LIArr.length; i++) {
+                    if (i !== currentIndex && i !== CurrentMouseOver) {
+                        if (LIArr[i].className.includes('left-sidebar-homepage')) {
+                            LIArr[i].className = 'left-sidebar-homepage'
+                        } else {
+                            LIArr[i].className = ''
+                        }
+                    }
+
+                }
+                $('#pageContextMenu').mouseleave(() => {
+                    if (currentIndex !== CurrentMouseOver) {
+                        if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
+                            LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
+                        } else {
+                            LIArr[CurrentMouseOver].className = ''
+                        }
+                    }
+                    _that.hidePageContextMenu()
+                })
+            } else {
+                if (currentIndex !== CurrentMouseOver) {
+                    // 是主页 还是要设定为主页
+                    if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
+                        LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
+                    } else {
+                        LIArr[CurrentMouseOver].className = ''
+                    }
+                }
+                _that.hidePageContextMenu()
+            }
+            if (evt.clientY < HeightLen) {
+                if (currentIndex !== CurrentMouseOver) {
+                    if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
+                        LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
+                    } else {
+                        LIArr[CurrentMouseOver].className = ''
+                    }
+                }
+                _that.hidePageContextMenu()
+            }
+        })
     })
     function changePage(e) {
         let target = e.target
@@ -1259,23 +1368,38 @@ function createPageList(editorUi, el, data, id) {
             }
             var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml)
             editorUi.editor.setGraphXml(doc.documentElement)
-            VueEvent.$emit('refreshCurrentPage',id == 'normalPages' ? 0 : 1)
+            VueEvent.$emit('refreshCurrentPage', id == 'normalPages' ? 0 : 1)
         }
     }
     if (id.includes('normal')) {
         $('.normalPages').on('click', '.pageList>li>.spanli', function (evt) {
             changePage(evt)
+            setTimeout(() => {
+                let normalArr = document.querySelectorAll('#normalPages li')
+                for (let j = 0; j <= normalArr.length - 1; j++) {
+                    if (normalArr[j].className.includes('currentPage')) {
+                        startCurrentPageIndex = j
+                    }
+                }
+            })
         })
     }
     if (id.includes('dialog')) {
         $('.dialogPages').on('click', '.pageList>li>.spanli', function (evt) {
             changePage(evt)
+            setTimeout(() => {
+                let normalArr = document.querySelectorAll('#dialogPages li')
+                for (let j = 0; j <= normalArr.length - 1; j++) {
+                    if (normalArr[j].className.includes('currentPage')) {
+                        startCurrentDialogIndex = j
+                    }
+                }
+            })
         })
     }
-    mxEvent.addListener(pageListEle, 'contextmenu', function(evt) {
+    mxEvent.addListener(pageListEle, 'contextmenu', function (evt) {
         evt.preventDefault();
     })
-    
     return pageListEle;
 }
 Sidebar.prototype.hidePageContextMenu = function() {
@@ -1299,8 +1423,17 @@ Sidebar.prototype.addPagePalette = function() {
     }
     const normalPagesEl = document.querySelector('.normalPages')
     const dialogPagesEl = document.querySelector('.dialogPages')
-    createPageList(this.editorUi,normalPagesEl, normalPages, 'normalPages')
-    createPageList(this.editorUi, dialogPagesEl, dialogPages, 'dialogPages')
+    createPageList(this.editorUi,normalPagesEl, normalPages, 'normalPages', this)
+    createPageList(this.editorUi, dialogPagesEl, dialogPages, 'dialogPages', this)
+    // 得到最开始的currentpage
+    setTimeout(() => {
+        let normalArr = document.querySelectorAll('#normalPages li')
+        for (let j = 0; j <= normalArr.length - 1; j++) {
+            if (normalArr[j].className.includes('currentPage')) {
+                startCurrentPageIndex = j
+            }
+        }
+    })
     this.createPageContextMenu()
 }
 /**

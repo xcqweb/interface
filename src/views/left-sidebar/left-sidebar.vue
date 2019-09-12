@@ -254,6 +254,7 @@ export default {
     .left-geSidebarContainer{
         border-bottom: solid 1px #ccc;
         .ivu-tabs{
+            // overflow: auto;
             height:100%;
             /deep/.ivu-tabs-content{
                 height:100% !important;
@@ -285,7 +286,7 @@ export default {
                         background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
                         background-size:16px 16px;
                         &.left-sidebar-homepage{
-                        background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
+                           background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
                         }
                         #editPageInput{
                             height: 25px;
@@ -305,6 +306,18 @@ export default {
                         position: relative;
                         z-index:100
                     }
+                    &:hover{
+                        color:#fff;
+                        background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
+                        background-size:16px 16px;
+                        &.left-sidebar-homepage{
+                           background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
+                        }
+                        #editPageInput{
+                            height: 25px;
+                            border:none;
+                        }
+                    }
                 }
                 #dialogPages>li{
                     background:url('../../assets/images/leftsidebar/popup2_ic.png') no-repeat left center;
@@ -314,6 +327,15 @@ export default {
                         background-color:#3d91f7;
                         background: #3d91f7 url('../../assets/images/leftsidebar/popup1_ic.png') no-repeat left center;
                         background-size:16px 16px;
+                    }
+                    &:hover{
+                        color:#fff;
+                        background: #3d91f7 url('../../assets/images/leftsidebar/popup1_ic.png') no-repeat left center;
+                        background-size:16px 16px;
+                        #editPageInput{
+                            height: 25px;
+                            border:none;
+                        }
                     }
                 }
             }
@@ -420,7 +442,6 @@ export default {
             }
         }
     }
-    
 </style>
 
 
