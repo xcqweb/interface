@@ -110,7 +110,7 @@ class PreviewPage {
                     console.log(getNodeInfo)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape')
-                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, points, rotation,direction,flipH, flipV, startArrow, endArrow, strokeWidth,fontWeight
+                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, rotation, direction, flipH, flipV, startArrow, endArrow, strokeWidth, fontWeight,edgeProps
                     styles = node.getAttribute('style')
                     isGroup = styles.indexOf('group') != -1
                     fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF'
@@ -127,106 +127,19 @@ class PreviewPage {
                     strokeWidth = getNodeInfo.getStyles('strokeWidth') || 1
                     strokeColor = (shapeName.includes('image') ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
                     // 图片地址
-                    image = getNodeInfo.getStyles('image') || null;
-                    x = parseFloat(node.childNodes[0].getAttribute('x')) || 0;
-                    y = parseFloat(node.childNodes[0].getAttribute('y')) || 0;
-                    width = parseFloat(node.childNodes[0].getAttribute('width'));
+                    image = getNodeInfo.getStyles('image') || null
+                    x = parseFloat(node.childNodes[0].getAttribute('x')) || 0
+                    y = parseFloat(node.childNodes[0].getAttribute('y')) || 0
+                    width = parseFloat(node.childNodes[0].getAttribute('width'))
                     hide = item.getAttribute('hide');
-                    height = parseFloat(node.childNodes[0].getAttribute('height'));
-                    // edge获取路径节点
-                    if (shapeName === 'beeline') {
-                        const childNodes = node.getElementsByTagName('mxGeometry')[0].childNodes;
-                        points = {
-                            points: []
-                        };
-                        for (let childNode of childNodes) {
-                            let asText = childNode.getAttribute('as')
-                            if (asText === 'sourcePoint') {
-                                // 起点
-                                points.source = [parseFloat(childNode.getAttribute('x')) || 0, parseFloat(childNode.getAttribute('y')) || 0];
-                            } else if (asText === 'targetPoint') {
-                                // 终点
-                                points.target = [parseFloat(childNode.getAttribute('x')) || 0, parseFloat(childNode.getAttribute('y')) || 0];
-                            } else if (asText === 'points') {
-                                // 节点
-                                for (let point of childNode.childNodes) {
-                                    points.points.push([parseFloat(point.getAttribute('x')) || 0, parseFloat(point.getAttribute('y')) || 0])
-                                }
-                            }
-                        }
-                        let reviseX, reviseY = 0;
-                        // 最小左侧
-                        let leftList = [].concat(points.source[0], points.target[0])
-                        leftList = points.points.reduce((item, val) => {
-                            item.push(val[0])
-                            return item
-                        }, leftList);
-                        reviseX = Math.min.apply(null, leftList);
-                        let maxX = Math.max.apply(null, leftList);
-                        // // 最小顶部
-                        let topList = [].concat(points.source[1], points.target[1])
-                        topList = points.points.reduce((item, val) => {
-                            item.push(val[1])
-                            return item
-                        }, topList);
-                        reviseY = Math.min.apply(null, topList);
-                        let maxY = Math.max.apply(null, topList);
-                        // 修正定位
-                        points.source[0] -= reviseX;
-                        points.source[1] -= reviseY;
-                        points.target[0] -= reviseX;
-                        points.target[1] -= reviseY;
-                        points.points.map(val => {
-                            val[0] -= reviseX;
-                            val[1] -= reviseY;
-                        })
-                        x = reviseX;
-                        y = reviseY;
-                        width = Math.abs(maxX - reviseX);
-                        width = width < 10 ? 10 : width;
-                        height = Math.abs(maxY - reviseY);
-                        height = height < 10 ? 10 : height;
-                        if (shapeName !== 'curve') {
-                            if (shapeName === 'endarrow') {
-                                if (points.target[0] == 0 && points.target[1] == 0) {
-                                    if (points.source[0] < points.source[1]) {
-                                        points.target[0] = 4;
-                                        points.source[0] = 4;
-                                    } else {
-                                        points.target[1] = 4;
-                                        points.source[1] = 4;
-                                    }
-                                } else if (points.source[1] == 0 && points.target[0] == 0) {
-                                    if (points.source[0] > points.target[1]) {
-                                        points.target[1] -= 4;
-                                    } else {
-                                        points.target[0] = 4;
-                                        points.source[0] = 4;
-                                    }
-                                } else if (points.source[0] == 0 && points.target[1] == 0) {
-                                    if (points.source[1] > points.target[0]) {
-                                        points.target[0] -= 4;
-                                    } else {
-                                        points.target[1] = 4;
-                                        points.source[1] = 4;
-                                    }
-                                } else if (points.source[0] == 0 && points.source[1] == 0) {
-                                    if (points.target[1] > points.target[0]) {
-                                        points.target[0] -= 4;
-                                    } else {
-                                        points.target[1] -= 4;
-                                    }
-                                }
-                            }
-                            if (points.target[0] == 0 && points.source[0] == 0) {
-                                points.target[0] = 4;
-                                points.source[0] = 4;
-                            }
-                            if (points.target[1] == 0 && points.source[1] == 0) {
-                                points.target[1] = 4;
-                                points.source[1] = 4;
-                            }
-                        }
+                    height = parseFloat(node.childNodes[0].getAttribute('height'))
+                    if(shapeName == 'beeline') {
+                        edgeProps = item.getAttribute('edgeProps')
+                        edgeProps = JSON.parse(edgeProps)
+                        width = Math.abs(edgeProps.tx - edgeProps.sx)
+                        height = Math.abs(edgeProps.ty - edgeProps.sy)
+                        x = edgeProps.tx
+                        y = edgeProps.ty
                     }
                     let obj = {
                         id,
@@ -252,12 +165,12 @@ class PreviewPage {
                         hide,
                         verticalAlign,
                         align,
-                        points,
                         rotation,
                         direction,
                         flipH,
-                        flipV
-                    };
+                        flipV,
+                        edgeProps
+                    }
                     if (shapeName == 'beeline') {
                         startArrow = getNodeInfo.getStyles('startArrow')
                         endArrow = getNodeInfo.getStyles('endArrow')
@@ -274,11 +187,11 @@ class PreviewPage {
                         obj.chartProps = chartProps
                     }
                     // 组合节点
-                    obj.children = getNode(id);
-                    list.push(obj);
+                    obj.children = getNode(id)
+                    list.push(obj)
                 }
             }
-            return list;
+            return list
         }
         let cells = getNode()
         cells.map(cell => {
@@ -328,7 +241,7 @@ class PreviewPage {
         } else {
             // 弹窗页面
             let layerContent = this.createDialog(page)
-            layerContent.innerHTML = '';
+            layerContent.innerHTML = ''
             this.renderPages(cells, layerContent)
         }
         applyData[page.id] = {

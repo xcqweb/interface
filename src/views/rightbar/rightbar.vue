@@ -104,6 +104,15 @@ export default {
             }
             this.myEditorUi.format.refresh = ()=>{
                 this.showWidgetStyle = !(graph.isSelectionEmpty())
+                let cell = graph.getSelectionCell()
+                let stateWidget = graph.view.getState(cell)
+                if(stateWidget) {
+                    let shapeInfo = stateWidget.style
+                    let shapeName = shapeInfo.shape
+                    if(shapeName == 'menulist' || shapeName == 'tableBox') {
+                        this.showWidgetStyle = false
+                    }
+                }
                 if(this.showWidgetStyle) {
                     this.$store.commit('getWidgetInfo',graph)
                     this.$store.commit('widgetChange',new Date().getTime())

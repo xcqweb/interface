@@ -39,21 +39,21 @@ async function geAjax(url, method = 'GET', data = null) {
         showTips(true, '登陆失效，请重新登陆系统！')
         return;
     }
-    // const tExp = window.jwt_decode(token).exp;
-    // const rExp = window.jwt_decode(refreshToken).exp;
-    // const now = new Date().valueOf();
-    // if (now > tExp * 1000 && now < rExp * 1000) {
-    //     // 刷新token
-    //     await geHttp('/api/auth/refreshToken', 'POST', {
-    //         refreshToken
-    //     }).then(res => {
-    //         setCookie('token', res.token);
-    //         setCookie('refreshToken', res.refreshToken);
-    //     })
-    // } else if (now > rExp * 1000) {
-    //     showTips(true,'登录失效，请重新登录系统！')
-    //     return;
-    // }
+    const tExp = window.jwt_decode(token).exp
+    const rExp = window.jwt_decode(refreshToken).exp
+    const now = new Date().valueOf()
+    if (now > tExp * 1000 && now < rExp * 1000) {
+        // 刷新token
+        await geHttp('/api/auth/refreshToken', 'POST', {
+            refreshToken
+        }).then(res => {
+            setCookie('token', res.token)
+            setCookie('refreshToken', res.refreshToken)
+        })
+    } else if (now > rExp * 1000) {
+        showTips(true,'登录失效，请重新登录系统！')
+        return
+    }
 
     /**
      * 原生http
@@ -151,100 +151,22 @@ function insertImage(cell) {
 /**
  * 插入箭头结尾的svg
  * @param {Array} source 起始点
- * @param {Array<Array>} points 中间点 
  * @param {Array} target 结束点
  */
 function insertEdge(cell) {
-    let {
-        source,
-        points,
-        target,
-    } = cell.points;
-    console.log(source,points,target)
-    let {startArrow,
-        endArrow,
-        id,
-        strokeStyle} = cell
-    let svgContent = document.createElement('div');
+    let {edgeProps} = cell
+    
+    let {startArrow, endArrow, strokeStyle} = cell
+    console.log(startArrow,endArrow,strokeStyle)
+    let con = document.createElement('div')
     let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    svg.setAttribute('width', cell.width);
-    svg.setAttribute('height', cell.height);
-    svg.innerHTML = `
-    <defs>      
-        <marker id="arrow${id}end" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" refX="5" refY="2" orient="auto">
-            <path d="M6 2 L0 0 L2 2 L0 4 z" style="fill:#000000;"></path>
-        </marker>
-        <marker id="arrow${id}start" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" refX="1" refY="2" orient="auto">
-            <path d="M0 2 L6 0 L4 2 L6 4 z" style="fill:#000000;"></path>
-        </marker>
-    </defs>
-  `
-    let path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    let direct;
-    if (cell.shapeName === 'curve') {
-        direct = `M${source.join(' ')} C ${points.map(point => `${point.join()} `).join('')} ${target.join()}`
-    } else {
-        direct = `M${source.join(' ')} ${points.map(point => `T${point.join(' ')} `).join('')} T${target.join(' ')}`
-    }
-    const attrs = {
-        d: direct,
-        stroke: cell.strokeColor,
-        'stroke-width': 2,
-    };
-    if (strokeStyle) {
-        attrs['stroke-dasharray'] = '2.25 2.25'
-    }
-    if (cell.shapeName === 'endarrow') {
-        attrs['marker-end'] = "url(#arrow)";
-    }
-    if (cell.shapeName === 'curve') {
-        attrs.fill = 'none'
-    }
-    if (startArrow && startArrow == 'classic') {
-        attrs['marker-start'] = `url(#arrow${id}start)`;
-    }
-    if (endArrow && endArrow == 'classic') {
-        attrs['marker-end'] = `url(#arrow${id}end)`;
-    }
-    for (let item in attrs) {
-        path.setAttribute(item, attrs[item])
-    }
-    svg.appendChild(path);
-    svgContent.appendChild(svg);
-    return svgContent;
-}
-
-/**
- * 插入系统自带svg
- * @param {string} key 
- * @param {number} w 
- * @param {number} h 
- * @param {number} x 
- * @param {number} y 
- * @param {string} fillColor 
- * @param {string} strokeColor 
- */
-function insertSvg(key, w, h, x, y, fillColor = '#000', strokeColor = '#000', shapeXmls) {
-    let inner = shapeXmls[key].path;
-    let svgContent = document.createElement('div');
-    inner.setAttribute('fill', fillColor)
-    inner.setAttribute('stroke', strokeColor)
-    inner.setAttribute('stroke-width', 1);
-    let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.style.float = 'left';
-    if (key === 'circle') {
-        inner.setAttribute('cx', w / 2);
-        inner.setAttribute('cy', h / 2);
-        inner.setAttribute('rx', w / 2);
-        inner.setAttribute('ry', h / 2);
-    } else {
-        svg.setAttribute('viewBox', shapeXmls[key].viewBox)
-    }
-    svg.setAttribute('width', w);
-    svg.setAttribute('height', h);
-    svg.innerHTML = inner.outerHTML;
-    svgContent.appendChild(svg);
-    return svgContent;
+    svg.setAttribute('width', cell.width)
+    svg.setAttribute('height', cell.height)
+    let innerHTMLPath = `<path d="M ${edgeProps.sx} ${edgeProps.sy} L ${edgeProps.tx} ${edgeProps.ty}"
+    fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"></path>`
+    svg.innerHTML = innerHTMLPath
+    con.appendChild(svg)
+    return con
 }
 
 /**
@@ -524,6 +446,6 @@ function toDecimal2NoZero(x) {
     return s
 }
 export {
-    removeEle, destroyWs, geAjax, insertImage, insertEdge, insertSvg, bindEvent, showTips,
+    removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips,
     dealProgress, dealPipeline, dealCharts, dealLight,toDecimal2NoZero
 }
