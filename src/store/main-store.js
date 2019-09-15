@@ -13,6 +13,7 @@ const mutations = {
         let widgetInfo = {}
         let cell = graph.getSelectionCell()
         let stateWidget = graph.view.getState(cell)
+        let geo = graph.model.getGeometry(cell)
         let shapeInfo = stateWidget && stateWidget.style
         widgetInfo.shapeInfo = shapeInfo
 
@@ -20,7 +21,29 @@ const mutations = {
         let widgetName = cellInfo && cellInfo.attributes && cellInfo.attributes['palettename'] && cellInfo.attributes['palettename'].nodeValue || '' //控件名称
         widgetInfo.widgetName = widgetName
         if (stateWidget) {
-            widgetInfo.geo = stateWidget.cellBounds
+            if (graph.model.isEdge(cell)) {
+                let absolutePoints = stateWidget.absolutePoints
+                let translate = stateWidget.view.translate
+                absolutePoints = absolutePoints.map((item) => {
+                    return {
+                        x:item.x - translate.x,
+                        y:item.y - translate.y
+                    }
+                })
+                widgetInfo.geo = {
+                    sx: absolutePoints[0].x,
+                    sy: absolutePoints[0].y,
+                    tx: absolutePoints[1].x,
+                    ty: absolutePoints[1].y
+                }
+            }else{
+                widgetInfo.geo = {
+                    x:geo.x,
+                    y:geo.y,
+                    width:geo.width,
+                    height:geo.height
+                }
+            }
         }else{
             widgetInfo.geo = {}
         }

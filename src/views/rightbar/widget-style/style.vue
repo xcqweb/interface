@@ -13,7 +13,7 @@
     >
     <div class="item-line" />
     <div
-      v-if="shapeName!='menuCell' && shapeName!='tableCell'"
+      v-if="shapeName!='menuCell' && shapeName!='tableCell' && shapeName!='beeline' "
       style="display:flex;margin-top:4px;"
     >
       <div
@@ -38,7 +38,10 @@
         > 
       </div>
     </div>
-    <div style="display:flex;margin-top:2px;">
+    <div
+      v-if="shapeName!='beeline'"
+      style="display:flex;margin-top:2px;"
+    >
       <div
         class="item-container"
       >
@@ -59,6 +62,58 @@
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         > 
+      </div>
+    </div>
+    <div v-if="shapeName=='beeline'">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        起点
+        <div
+          class="item-container"
+          style="width:40%;"
+        >
+          <span style="color:#797979;margin:0 6px;">X</span>
+          <input
+            v-model="positionSize.sx"
+            style="border-left:none;border-right:none;"
+            @keyup.enter="changePositionSize"
+          > 
+        </div>
+        <div
+          class="item-container"
+          style="width:40%;"
+        >
+          <span style="color:#797979;margin:0 6px;">Y</span>
+          <input
+            v-model="positionSize.sy"
+            style="border-left:none;border-right:none;"
+            @keyup.enter="changePositionSize"
+          > 
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
+        终点
+        <div
+          class="item-container"
+          style="width:40%;"
+        >
+          <span style="color:#797979;margin:0 6px;">X</span>
+          <input
+            v-model="positionSize.tx"
+            style="border-left:none;border-right:none;"
+            @keyup.enter="changePositionSize"
+          > 
+        </div>
+        <div
+          class="item-container"
+          style="width:40%;"
+        >
+          <span style="color:#797979;margin:0 6px;">Y</span>
+          <input
+            v-model="positionSize.ty"
+            style="border-left:none;border-right:none;"
+            @keyup.enter="changePositionSize"
+          > 
+        </div>
       </div>
     </div>
     <div
@@ -468,13 +523,11 @@ export default {
             }
         },
         positionSize() {
-            let {x,y,width,height} = this.$store.state.main.widgetInfo.geo
-            return {
-                x:x,
-                y:y,
-                width:width,
-                height:height,
+            let geo = this.$store.state.main.widgetInfo.geo
+            if(this.shapeName == 'beeline') {
+                this.setWidgetProps('edgeProps',geo)
             }
+            return geo
         }
     },
     created() {},
@@ -482,12 +535,11 @@ export default {
         let graph = this.myEditorUi.editor.graph
         this.fontText = this.$store.state.main.widgetInfo.fontSize
         this.isSetBold = this.$store.state.main.widgetInfo.isSetBold
-        this.fontColor =  this.$store.state.main.widgetInfo.color || `url(${Dialog.prototype.noColorImage})`
+        this.fontColor = this.dealDefaultColor(this.$store.state.main.widgetInfo.color)
         this.alignIndex1 = alignArr.indexOf(this.$store.state.main.widgetInfo.align) + 1
         this.alignIndex2 = valignArr.indexOf(this.$store.state.main.widgetInfo.valign) + 1
-        this.bgColor =  this.$store.state.main.widgetInfo.bgColor || `url(${Dialog.prototype.noColorImage})`
-        
-        this.borderColor =  this.$store.state.main.widgetInfo.borderColor || `url(${Dialog.prototype.noColorImage})`
+        this.bgColor =  this.dealDefaultColor(this.$store.state.main.widgetInfo.bgColor)
+        this.borderColor =  this.dealDefaultColor(this.$store.state.main.widgetInfo.borderColor)
         this.borderLineBoldText =  this.$store.state.main.widgetInfo.borderBold
         this.borderLineCls = this.$store.state.main.widgetInfo.borderLineCls
         if(this.shapeName == 'beeline') {
@@ -543,6 +595,12 @@ export default {
         }
     },
     methods: {
+        dealDefaultColor(color) {
+            if(!color || color == 'none') {
+                return `url(${Dialog.prototype.noColorImage})`
+            }
+            return color
+        },
         changeName() {
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
@@ -747,7 +805,7 @@ export default {
                     }
                 }
             }finally {
-                graph.getModel().endUpdate();
+                graph.getModel().endUpdate()
             }
         },
         getCellLast(graph) {
