@@ -343,24 +343,20 @@ Editor.prototype.refreshToken = function(refreshToken) {
  * @param {Function} fn
  * @param {Function} errorfn
  */
-Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···',hideDialog=false) {
+Editor.prototype.ajax = async function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···',hideDialog=false) {
     var token = getCookie('token');
- var refreshToken = getCookie('refreshToken');
-    if (!token || !refreshToken) {
-        alert('登录失效，请重新登录系统！');
+    var refreshToken = getCookie('refreshToken')
+    let _that = this
+    const t_exp = jwt_decode(token).exp;
+    const r_exp = jwt_decode(refreshToken).exp
+    const now = new Date().valueOf();
+    if (now > t_exp * 1000 && now < r_exp * 1000) {
+        //刷新token
+        await this.refreshToken(refreshToken)
+    } else  if (now > r_exp * 1000) {
+        alert('登录失效，请重新登录系统！')
         return;
     }
-    let _that = this
-    // const t_exp = jwt_decode(token).exp;
-    // const r_exp = jwt_decode(refreshToken).exp;
-    // const now = new Date().valueOf();
-    // if (now > t_exp * 1000 && now < r_exp * 1000) {
-    //     //刷新token
-    //     await this.refreshToken(refreshToken);
-    // } else  if (now > r_exp * 1000) {
-    //     alert('登录失效，请重新登录系统！');
-    //     return;
-    // }
     var loadingBarInner
     if(!hideDialog){
         loadingBarInner = editorUi.actions.get('loading').funct(title);
