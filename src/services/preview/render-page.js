@@ -5,22 +5,10 @@
 let pageWidth = 0,pageHeight = 0
 // websocket信息
 let applyData = {}
-// let widgetCounts = 0,renderWidgetCount = 0 //widget总共的数量，已经render的widget的数量
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
 
-
-import {
-    removeEle,
-    destroyWs,
-    insertImage,
-    insertEdge,
-    bindEvent,
-    dealProgress,
-    dealPipeline,
-    dealCharts,
-    dealLight
-} from './util'
+import {removeEle, destroyWs, insertImage, insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight} from './util'
 import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -350,9 +338,9 @@ class PreviewPage {
             lockWs: false
         };
         this.currentPageId = page.id
-        setTimeout(()=>{
+        $(()=>{
             this.pubSubData()
-        },1500)
+        })
         return cells
     }
     pubSubData() {
@@ -524,7 +512,6 @@ class PreviewPage {
                     cellHtml.className += ` point_${item.id}`
                     let resArr = Array.from(new Set(resParams.concat(paramShow)))
                     if (resArr.length) {
-                        console.log("wsparms--push")
                         wsParams.push({
                             pointId: item.id,
                             params: resArr

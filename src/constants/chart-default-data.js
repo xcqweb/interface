@@ -3,6 +3,9 @@ export let data1 = {
         show:true,
         data: ['图例'],
         bottom: 0,
+        textStyle:{
+            
+        }
     },
     grid:{
         top:10,
@@ -14,12 +17,44 @@ export let data1 = {
     xAxis: {
         type: 'category',
         data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        axisLine: {
+            lineStyle: {
+
+            }
+        },
         axisTick: {
-            alignWithLabel: true
+            lineStyle: {
+
+            }
+        },
+        axisLabel: {
+            lineStyle: {
+
+            }
         }
     },
     yAxis: {
-        type: 'value'
+        type: 'value',
+        splitLine:{
+            lineStyle:{
+
+            }
+        },
+        axisLine:{
+            lineStyle:{
+
+            }
+        },
+        axisTick:{
+            lineStyle: {
+
+            }
+        },
+        axisLabel:{
+            lineStyle: {
+
+            }
+        }
     },
     series: [{
         name: '图例',
