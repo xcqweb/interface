@@ -343,59 +343,51 @@ Editor.prototype.refreshToken = function(refreshToken) {
  * @param {Function} fn
  * @param {Function} errorfn
  */
-Editor.prototype.ajax = async function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···',hideDialog=false) {
-    var token = getCookie('token');
-    var refreshToken = getCookie('refreshToken')
+Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···',hideDialog=false) {
     let _that = this
-    const t_exp = jwt_decode(token).exp;
-    const r_exp = jwt_decode(refreshToken).exp
-    const now = new Date().valueOf();
-    if (now > t_exp * 1000 && now < r_exp * 1000) {
-        //刷新token
-        await this.refreshToken(refreshToken)
-    } else  if (now > r_exp * 1000) {
-        alert('登录失效，请重新登录系统！')
-        return;
-    }
     var loadingBarInner
     if(!hideDialog){
         loadingBarInner = editorUi.actions.get('loading').funct(title);
     }   
-    $.ajax({
-        method,
-        headers: {
-            "Content-Type": 'application/json;charset=utf-8',
-            "Authorization": 'Bearer ' + token
-        },
-        beforeSend: function() {
-            if(!hideDialog){
-                loadingBarInner.style.width = '20%';
+    callAjax()
+    function callAjax(){
+        var token = getCookie('token');
+        var refreshToken = getCookie('refreshToken')
+        $.ajax({
+            method,
+            headers: {
+                "Content-Type": 'application/json;charset=utf-8',
+                "Authorization": 'Bearer ' + token
+            },
+            beforeSend: function() {
+                if(!hideDialog){
+                    loadingBarInner.style.width = '20%';
+                }
+            },
+            data: method == 'GET' ? data : data ? JSON.stringify(data) : '',
+            url,
+            success: function(res) {
+                if(!hideDialog){
+                    loadingBarInner.style.width = '100%';
+                }
+                setTimeout(() => {
+                    fn && fn(res);
+                }, 550)
+            },
+            error: async function(res) {
+                if (res.status == 418) {
+                    await _that.refreshToken(refreshToken)
+                    callAjax()
+                }
+                if(!hideDialog){
+                    loadingBarInner.style.width = '100%'
+                }
+                setTimeout(() => {
+                    errorfn && errorfn(res)
+                }, 550)
             }
-        },
-        data: method == 'GET' ? data : data ? JSON.stringify(data) : '',
-        url,
-        success: function(res) {
-            if(!hideDialog){
-                loadingBarInner.style.width = '100%';
-            }
-            setTimeout(() => {
-                fn && fn(res);
-                // resolve(res);
-            }, 550)
-        },
-        error: async function(res) {
-            if (res.status == 418) {
-                await _that.refreshToken(refreshToken);
-                return 
-            }
-            if(!hideDialog){
-                loadingBarInner.style.width = '100%';
-            }
-            setTimeout(() => {
-                errorfn && errorfn(res);
-            }, 550)
-        }
-    })
+        })
+    }
 }
 /**
  * 初始化进入
@@ -927,7 +919,7 @@ Editor.prototype.readGraphState = function(node)
 /**
  * Sets the XML node for the current diagram.
  */
-Editor.prototype.setGraphXml = function(node)
+Editor.prototype.setGraphXml = function(node,dis)
 {
     if (node != null)
     {
@@ -955,7 +947,7 @@ Editor.prototype.setGraphXml = function(node)
             }
             finally
             {
-                this.graph.model.endUpdate();
+                this.graph.model.endUpdate(dis);
             }
 	
             this.fireEvent(new mxEventObject('resetGraphView'));

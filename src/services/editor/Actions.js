@@ -593,7 +593,6 @@ Actions.prototype.init = function()
     }, null, null, Editor.ctrlKey + '+G');
     this.addAction('ungroup', function()
     {
-         console.log("tt-why")
         if (graph.getSelectionCount() == 1 && graph.getModel().getChildCount(graph.getSelectionCell()) == 0)
         {
             graph.setCellStyles('container', '0');

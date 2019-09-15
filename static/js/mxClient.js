@@ -41166,7 +41166,7 @@ mxGraphModel.prototype.beginUpdate = function()
  * function is invoked, that is, on undo and redo of
  * the edit.
  */
-mxGraphModel.prototype.endUpdate = function()
+mxGraphModel.prototype.endUpdate = function(dis)
 {
 	this.updateLevel--;
 	
@@ -41188,7 +41188,9 @@ mxGraphModel.prototype.endUpdate = function()
 				var tmp = this.currentEdit;
 				this.currentEdit = this.createUndoableEdit();
 				tmp.notify();
-				this.fireEvent(new mxEventObject(mxEvent.UNDO, 'edit', tmp));
+				if(dis !== true){
+					this.fireEvent(new mxEventObject(mxEvent.UNDO, 'edit', tmp));
+				}
 			}
 		}
 		finally

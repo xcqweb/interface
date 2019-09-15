@@ -19,24 +19,26 @@ axios.interceptors.request.use(
         if(token) {
             config.headers.Authorization = token
         }
-        return config;
+        return config
     },
     err => {
-        return Promise.reject(err);
+        return Promise.reject(err)
     }
 );
  
  
 //添加响应拦截器
 axios.interceptors.response.use((res) =>{
-    return Promise.resolve(res);
+    return Promise.resolve(res)
 }, (error) => {
     if (error.response) {
         if (error.response.status == 418) {
-            let refreshToken = getCookie('refreshToken');
+            let refreshToken = getCookie('refreshToken')
             post('/api/auth/refreshToken', {refreshToken}).then(res => {
-                setCookie('token', res.data.token);
-                setCookie('refreshToken', res.data.refreshToken);
+                setCookie('token', res.data.token)
+                setCookie('refreshToken', res.data.refreshToken)
+                error.response.config.headers.Authorization = 'Bearer ' + res.data.token
+                axios.request(error.response.config)
             })
         }
     }
