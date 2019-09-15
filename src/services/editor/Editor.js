@@ -927,7 +927,7 @@ Editor.prototype.readGraphState = function(node)
 /**
  * Sets the XML node for the current diagram.
  */
-Editor.prototype.setGraphXml = function(node)
+Editor.prototype.setGraphXml = function(node,dis)
 {
     if (node != null)
     {
@@ -955,7 +955,7 @@ Editor.prototype.setGraphXml = function(node)
             }
             finally
             {
-                this.graph.model.endUpdate();
+                this.graph.model.endUpdate(dis);
             }
 	
             this.fireEvent(new mxEventObject('resetGraphView'));
