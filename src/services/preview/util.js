@@ -39,21 +39,21 @@ async function geAjax(url, method = 'GET', data = null) {
         showTips(true, '登陆失效，请重新登陆系统！')
         return;
     }
-    // const tExp = window.jwt_decode(token).exp;
-    // const rExp = window.jwt_decode(refreshToken).exp;
-    // const now = new Date().valueOf();
-    // if (now > tExp * 1000 && now < rExp * 1000) {
-    //     // 刷新token
-    //     await geHttp('/api/auth/refreshToken', 'POST', {
-    //         refreshToken
-    //     }).then(res => {
-    //         setCookie('token', res.token);
-    //         setCookie('refreshToken', res.refreshToken);
-    //     })
-    // } else if (now > rExp * 1000) {
-    //     showTips(true,'登录失效，请重新登录系统！')
-    //     return;
-    // }
+    const tExp = window.jwt_decode(token).exp
+    const rExp = window.jwt_decode(refreshToken).exp
+    const now = new Date().valueOf()
+    if (now > tExp * 1000 && now < rExp * 1000) {
+        // 刷新token
+        await geHttp('/api/auth/refreshToken', 'POST', {
+            refreshToken
+        }).then(res => {
+            setCookie('token', res.token)
+            setCookie('refreshToken', res.refreshToken)
+        })
+    } else if (now > rExp * 1000) {
+        showTips(true,'登录失效，请重新登录系统！')
+        return
+    }
 
     /**
      * 原生http

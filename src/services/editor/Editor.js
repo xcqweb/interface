@@ -343,27 +343,29 @@ Editor.prototype.refreshToken = function(refreshToken) {
  * @param {Function} fn
  * @param {Function} errorfn
  */
-Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···',hideDialog=false) {
+Editor.prototype.ajax = async function(editorUi, url, method, data, fn = function () {}, errorfn = function () {}, title = '加载中···', hideDialog = false) {
     var token = getCookie('token');
- var refreshToken = getCookie('refreshToken');
-    if (!token || !refreshToken) {
-        alert('登录失效，请重新登录系统！');
-        return;
-    }
+    var refreshToken = getCookie('refreshToken');
     let _that = this
-    // const t_exp = jwt_decode(token).exp;
-    // const r_exp = jwt_decode(refreshToken).exp;
-    // const now = new Date().valueOf();
-    // if (now > t_exp * 1000 && now < r_exp * 1000) {
-    //     //刷新token
-    //     await this.refreshToken(refreshToken);
-    // } else  if (now > r_exp * 1000) {
-    //     alert('登录失效，请重新登录系统！');
-    //     return;
-    // }
+    const t_exp = jwt_decode(token).exp;
+    const r_exp = jwt_decode(refreshToken).exp;
+    const now = new Date().valueOf();
+    if (now > t_exp * 1000 && now < r_exp * 1000) {
+        //刷新token
+        // 刷新token
+        await geHttp('/api/auth/refreshToken', 'POST', {
+            refreshToken
+        }).then(res => {
+            setCookie('token', res.token)
+            setCookie('refreshToken', res.refreshToken)
+        })
+    } else  if (now > r_exp * 1000) {
+        alert('登录失效，请重新登录系统！')
+        return
+    }
     var loadingBarInner
     if(!hideDialog){
-        loadingBarInner = editorUi.actions.get('loading').funct(title);
+        loadingBarInner = editorUi.actions.get('loading').funct(title)
     }   
     $.ajax({
         method,
@@ -380,20 +382,19 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
         url,
         success: function(res) {
             if(!hideDialog){
-                loadingBarInner.style.width = '100%';
+                loadingBarInner.style.width = '100%'
             }
             setTimeout(() => {
                 fn && fn(res);
-                // resolve(res);
             }, 550)
         },
         error: async function(res) {
             if (res.status == 418) {
-                await _that.refreshToken(refreshToken);
+                await _that.refreshToken(refreshToken)
                 return 
             }
             if(!hideDialog){
-                loadingBarInner.style.width = '100%';
+                loadingBarInner.style.width = '100%'
             }
             setTimeout(() => {
                 errorfn && errorfn(res);
