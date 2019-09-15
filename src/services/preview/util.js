@@ -402,9 +402,10 @@ function dealProgress(cell) {
     let progressPropsObj = JSON.parse(progressProps)
     $(con).data("progressPropsObj", progressPropsObj)
     let progressTop = -(cell.height - 2)
-    let progress = `<div class="progressbar-wrap" style="width:${cell.width}px;">
+    let progress = `<div class="progressbar-wrap" style="width:${cell.width}px;height:${cell.height}px;">
             <div class="progressbar-common progressbar-back" style="height:${cell.height}px;"></div> 
-            <div class="progressbar-common progressbar" style="height:${cell.height - 4}px;top:${progressTop}px;left:2px;width:0;border:0;"></div> 
+            <div class="progressbar-common progressbar" style="height:${cell.height - 4}px;top:${progressTop}px;left:2px;width:0;border:0;"/>
+            <div class="progressbar-text" style="position:relative;width:${cell.width - 4}px;height:${cell.height - 4}px;line-height:${cell.height - 4}px;"></div>
         </div>`
     con.innerHTML = progress
     return con
@@ -517,7 +518,14 @@ function dealLightFill(ele,color) { //处理闪烁灯 填充色
     $(paths[0]).attr("fill", color)
     $(paths[1]).attr("fill", color)
 }
+
+//保留2位小数，如：2，还会保留2 不会补0
+function toDecimal2NoZero(x) {
+    var f = Math.round(x * 100) / 100
+    var s = f.toString()
+    return s
+}
 export {
     removeEle, destroyWs, geAjax, insertImage, insertEdge, insertSvg, bindEvent, showTips,
-    dealProgress, dealPipeline, dealCharts, dealLight
+    dealProgress, dealPipeline, dealCharts, dealLight,toDecimal2NoZero
 }
