@@ -794,23 +794,23 @@ window.Graph = function(container, model, renderHint, stylesheet, themes)
         var tapAndHoldSelection = null;
 		
         // Uses this event to process mouseDown to check the selection state before it is changed
-        this.addListener(mxEvent.FIRE_MOUSE_EVENT, mxUtils.bind(this, function(sender, evt)
-        {
-            if (evt.getProperty('eventName') == 'mouseDown')
-            {
-                var me = evt.getProperty('event');
-                var state = me.getState();
+        // this.addListener(mxEvent.FIRE_MOUSE_EVENT, mxUtils.bind(this, function(sender, evt)
+        // {
+        //     if (evt.getProperty('eventName') == 'mouseUp')
+        //     {
+        //         var me = evt.getProperty('event');
+        //         var state = me.getState();
 				
-                if (state != null && !this.isSelectionEmpty() && !this.isCellSelected(state.cell))
-                {
-                    tapAndHoldSelection = this.getSelectionCells();
-                }
-                else
-                {
-                    tapAndHoldSelection = null;
-                }
-            }
-        }));
+        //         if (state != null && !this.isSelectionEmpty() && !this.isCellSelected(state.cell))
+        //         {
+        //             tapAndHoldSelection = this.getSelectionCells();
+        //         }
+        //         else
+        //         {
+        //             tapAndHoldSelection = null;
+        //         }
+        //     }
+        // }));
 		
         // Tap and hold on background starts rubberband for multiple selected
         // cells the cell associated with the event is deselected
@@ -5417,7 +5417,6 @@ if (typeof mxVertexHandler != 'undefined')
         Graph.prototype.click = function(me)
         {
             mxGraph.prototype.click.call(this, me);
-			
             // Stores state and source for checking in dblClick
             this.firstClickState = me.getState();
             this.firstClickSource = me.getSource();

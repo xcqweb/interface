@@ -9690,7 +9690,6 @@ var mxEvent =
 				graph.fireMouseEvent(mxEvent.MOUSE_UP, new mxMouseEvent(evt, getState(evt)));
 			}
 		});
-
 		mxEvent.addListener(node, 'dblclick', function (evt)
 		{
 			if (dblClick != null)
@@ -11894,7 +11893,7 @@ mxWindow.prototype.init = function(x, y, width, height, style)
 	});
 	
 	mxEvent.addGestureListeners(this.title, activator);
-	mxEvent.addGestureListeners(this.table, activator);
+	mxEvent.addGestureListeners(this.table, activator); //xcq@@
 
 	this.hide();
 };
