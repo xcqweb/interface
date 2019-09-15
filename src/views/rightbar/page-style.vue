@@ -76,7 +76,10 @@
       style="justify-content:center;height:98px;padding:0;"
       @click="setBackgroundImg"
     >
-      <div style="text-align:center;">
+      <div
+        style="text-align:center;"
+        :style="bgPicStyle"
+      >
         <img
           :src="bgPic"
           :style="bgPicStyle"
@@ -194,7 +197,7 @@ export default {
             mxClient.IS_ADD_IMG = true
             mxClient.IS_ADD_IMG_SRC = url
             this.bgPic = url
-            this.bgPicStyle = {height:'94px'}
+            this.bgPicStyle = {height:'98px'}
             this.isShowBgText = false
             this.myEditorUi.editor.graph.view.validateBackground()
         },

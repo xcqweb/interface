@@ -353,9 +353,6 @@ Editor.prototype.ajax = async function(editorUi, url, method, data, fn = functio
     if (now > t_exp * 1000 && now < r_exp * 1000) {
         //刷新token
         await this.refreshToken(refreshToken)
-    } else  if (now > r_exp * 1000) {
-        alert('登录失效，请重新登录系统！')
-        return;
     }
     var loadingBarInner
     if(!hideDialog){

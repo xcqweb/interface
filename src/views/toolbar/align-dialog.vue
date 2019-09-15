@@ -41,7 +41,7 @@ export default{
                 {cls:'geSprite-right-align',text:'右对齐'},
                 {cls:'geSprite-top-align',text:'上对齐'},
                 {cls:'geSprite-bottom-align',text:'下对齐'},
-                {cls:'geSprite-vertical-center',text:'垂直居中对齐齐'},
+                {cls:'geSprite-vertical-center',text:'垂直居中对齐'},
                 {cls:'geSprite-horizon-center',text:'水平居中对齐'},
                 {cls:'geSprite-vertical-align',text:'垂直等间距'},
                 {cls:'geSprite-horizon-align',text:'水平等间距'},
