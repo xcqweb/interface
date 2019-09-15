@@ -518,6 +518,9 @@ export default {
             _that.conditionSignList = value
         })
     },
+    beforeDestroy() {
+        VueEvent.$off('clickChangeParamList')
+    },
     methods: {
         // 模型列表
         getModelInit(deviceid) {
@@ -748,7 +751,7 @@ export default {
         renameModelHandle() {
             let ele = document.querySelectorAll('#addModelLisetWaper li')[this.currentMouseIndex]
             let editInput = document.createElement('input');
-            editInput.id = 'editPageInput'
+            editInput.id = 'editPageInput2'
             let oldVal = ele.innerText
             editInput.value = oldVal
             ele.innerText = ''
@@ -1002,7 +1005,7 @@ export default {
           padding-left: 10px;
           padding-right:5px;
           display: flex;
-          /deep/#editPageInput{
+          /deep/#editPageInput2{
             width:90% !important;
             border:none;
             height:25px;
