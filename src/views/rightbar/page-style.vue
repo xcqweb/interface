@@ -143,7 +143,6 @@ export default {
             let graph = editor.graph
             this.bgColor = backgroundColor = graph.background
             let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
-            console.log(bgUrl)
             if(bgUrl && bgUrl !== 'none') {
                 this.changeBg(bgUrl)
             }else{
