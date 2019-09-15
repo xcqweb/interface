@@ -219,7 +219,10 @@ export default{
             this.deviceIdArr = []
             let objData = {
                 studioId:this.studioIdNew,
-                deviceTypeId: data
+                deviceTypeId: data,
+                size:this.PAGE_SIZE,
+                current:this.PAGE_CURRENT,
+                type: 1
             }
             this.requestUtil.post(this.urls.deviceEquipList.url, objData).then((res) => {
                 this.deviceNameList = res.records || []
