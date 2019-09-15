@@ -562,8 +562,10 @@ export default {
             graph.getModel().beginUpdate()
             graph.getModel().setGeometry(cell,geo)
             graph.getModel().endUpdate()
-            this.$store.commit('getWidgetInfo',graph)
-            
+            graph.refresh()
+            this.$nextTick(() => {
+                this.$store.commit('getWidgetInfo',graph)
+            })
         },
         changeFont(d,e) {
             this.fontText = d

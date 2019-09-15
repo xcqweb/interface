@@ -1261,16 +1261,22 @@ function createPageList(editorUi, el, data, id, _that) {
             }
             $('#pageContextMenu').mouseleave(() => {
                 // 要重新获取一下 currentIndex
-                let getIdType = evt.target.parentNode.parentNode.id
-                let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
-                if (currentIndex !== CurrentMouseOver) {
-                    if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
-                        LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
-                    } else {
-                        LIArr[CurrentMouseOver].className = ''
+                console.log(evt)
+                if (evt.target.parentNode) {
+                    let getIdType = evt.target.parentNode.parentNode.id || ''
+                    let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
+                    if (currentIndex !== CurrentMouseOver) {
+                        if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
+                            LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
+                        } else {
+                            LIArr[CurrentMouseOver].className = ''
+                        }
                     }
+                    _that.hidePageContextMenu()
+                } else {
+                    _that.hidePageContextMenu()
                 }
-                _that.hidePageContextMenu()
+                
             })
         })
     })
@@ -1321,16 +1327,20 @@ function createPageList(editorUi, el, data, id, _that) {
                 }
                 $('#pageContextMenu').mouseleave(() => {
                     // 要重新获取一下 currentIndex
-                    let getIdType = evt.target.parentNode.parentNode.id
-                    let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
-                    if (currentIndex !== CurrentMouseOver) {
-                        if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
-                            LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
-                        } else {
-                            LIArr[CurrentMouseOver].className = ''
+                    if (evt.target && evt.target.parentNode) {
+                        let getIdType = evt.target.parentNode.parentNode.id
+                        let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
+                        if (currentIndex !== CurrentMouseOver) {
+                            if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
+                                LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
+                            } else {
+                                LIArr[CurrentMouseOver].className = ''
+                            }
                         }
+                        _that.hidePageContextMenu()
+                    } else {
+                        _that.hidePageContextMenu()
                     }
-                    _that.hidePageContextMenu()
                 })
             } else {
                 if (currentIndex !== CurrentMouseOver) {

@@ -13,7 +13,7 @@ if(isDev) {
 
 
 //请求拦截器
-axios.interceptors.request.use(
+axios.interceptors.response.use(
     config => {
         const token = "Bearer " + getCookie('token');
         if(token) {
