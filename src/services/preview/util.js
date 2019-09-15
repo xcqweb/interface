@@ -163,6 +163,7 @@ function insertEdge(cell) {
     console.log(source,points,target)
     let {startArrow,
         endArrow,
+        id,
         strokeStyle} = cell
     let svgContent = document.createElement('div');
     let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
@@ -170,14 +171,11 @@ function insertEdge(cell) {
     svg.setAttribute('height', cell.height);
     svg.innerHTML = `
     <defs>      
-        <marker id="arrow" 
-            markerUnits="strokeWidth" 
-            markerWidth="10" 
-            markerHeight="10" 
-            refX="8"
-            refY="5" 
-            orient="auto">
-            <path d="M2,2 L8,5 L2,8 L5,5 Z" style="fill:${cell.strokeColor};"/>
+        <marker id="arrow${id}end" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" refX="5" refY="2" orient="auto">
+            <path d="M6 2 L0 0 L2 2 L0 4 z" style="fill:#000000;"></path>
+        </marker>
+        <marker id="arrow${id}start" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" refX="1" refY="2" orient="auto">
+            <path d="M0 2 L6 0 L4 2 L6 4 z" style="fill:#000000;"></path>
         </marker>
     </defs>
   `
@@ -203,10 +201,10 @@ function insertEdge(cell) {
         attrs.fill = 'none'
     }
     if (startArrow && startArrow == 'classic') {
-        attrs['marker-start'] = "url(#arrow)"
+        attrs['marker-start'] = `url(#arrow${id}start)`;
     }
     if (endArrow && endArrow == 'classic') {
-        attrs['marker-end'] = "url(#arrow)"
+        attrs['marker-end'] = `url(#arrow${id}end)`;
     }
     for (let item in attrs) {
         path.setAttribute(item, attrs[item])
@@ -402,9 +400,10 @@ function dealProgress(cell) {
     let progressPropsObj = JSON.parse(progressProps)
     $(con).data("progressPropsObj", progressPropsObj)
     let progressTop = -(cell.height - 2)
-    let progress = `<div class="progressbar-wrap" style="width:${cell.width}px;">
+    let progress = `<div class="progressbar-wrap" style="width:${cell.width}px;height:${cell.height}px;">
             <div class="progressbar-common progressbar-back" style="height:${cell.height}px;"></div> 
-            <div class="progressbar-common progressbar" style="height:${cell.height - 4}px;top:${progressTop}px;left:2px;width:0;border:0;"></div> 
+            <div class="progressbar-common progressbar" style="height:${cell.height - 4}px;top:${progressTop}px;left:2px;width:0;border:0;"/>
+            <div class="progressbar-text" style="position:relative;width:${cell.width - 4}px;height:${cell.height - 4}px;line-height:${cell.height - 4}px;"></div>
         </div>`
     con.innerHTML = progress
     return con
@@ -517,7 +516,14 @@ function dealLightFill(ele,color) { //处理闪烁灯 填充色
     $(paths[0]).attr("fill", color)
     $(paths[1]).attr("fill", color)
 }
+
+//保留2位小数，如：2，还会保留2 不会补0
+function toDecimal2NoZero(x) {
+    var f = Math.round(x * 100) / 100
+    var s = f.toString()
+    return s
+}
 export {
     removeEle, destroyWs, geAjax, insertImage, insertEdge, insertSvg, bindEvent, showTips,
-    dealProgress, dealPipeline, dealCharts, dealLight
+    dealProgress, dealPipeline, dealCharts, dealLight,toDecimal2NoZero
 }

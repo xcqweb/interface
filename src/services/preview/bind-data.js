@@ -1,4 +1,4 @@
-import {geAjax} from './util'
+import {geAjax,toDecimal2NoZero} from './util'
 import {getCookie,throttle} from '../Utils'
 import echarts from 'echarts'
 
@@ -69,11 +69,12 @@ function setterRealData(res) {
                 let progressPropsObj = $(els[i]).data("progressPropsObj")
                 let {max,min,type} = progressPropsObj
                 let percentVal = val / (max - min)
-                let text = `${(percentVal * 100).toFixed(2)}%`
+                let text = `${toDecimal2NoZero(percentVal) * 100}%`
                 if(type == 'real') {
                     text = val
                 }
                 let target = $(els[i]).find(".progressbar-common.progressbar")
+                let textEl = $(els[i]).find(".progressbar-text")
                 let background = "linear-gradient(to right,#FF280F,#FFA963)"
                 if (percentVal * 100 > 75) {
                     background = "linear-gradient(to right,#D4D7FF,#175FFF)"
@@ -84,7 +85,7 @@ function setterRealData(res) {
                 }
                 target.css("background", background)
                 target.animate({"width":`${percentVal * 100}%`})
-                target.html(text)
+                textEl.html(text)
             }else if(shapeName.includes('Chart')) {
                 let echartsInstance = echarts.getInstanceByDom(els[i])
                 let options = echartsInstance.getOption()
