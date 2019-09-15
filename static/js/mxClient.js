@@ -9690,6 +9690,7 @@ var mxEvent =
 				graph.fireMouseEvent(mxEvent.MOUSE_UP, new mxMouseEvent(evt, getState(evt)));
 			}
 		});
+
 		mxEvent.addListener(node, 'dblclick', function (evt)
 		{
 			if (dblClick != null)
@@ -9828,7 +9829,6 @@ var mxEvent =
 	 */
 	getSource: function(evt)
 	{
-		// console.log(evt)
 		return (evt.srcElement != null) ? evt.srcElement : evt.target;
 	},
 
@@ -11894,7 +11894,7 @@ mxWindow.prototype.init = function(x, y, width, height, style)
 	});
 	
 	mxEvent.addGestureListeners(this.title, activator);
-	mxEvent.addGestureListeners(this.table, activator); //xcq@@
+	mxEvent.addGestureListeners(this.table, activator);
 
 	this.hide();
 };
@@ -80753,11 +80753,11 @@ mxKeyHandler.prototype.getFunction = function(evt)
 mxKeyHandler.prototype.isGraphEvent = function(evt)
 {
 	var source = mxEvent.getSource(evt);
-	// console.log(source, '------', this.target, '------', this.graph.cellEditor != null , '-----', this.graph.cellEditor.isEventSource(evt))
+
+	// console.log(this.graph.cellEditor != null , '-----', this.graph.cellEditor.isEventSource(evt))
 	// Accepts events from the target object or
 	// in-place editing inside graph
-	// 首次进来 delete键盘
-	if ((source == this.target || source.parentNode == this.target || (source.tagName === 'A' && source.className.includes('geItem') && source.parentNode.className.includes('geSidebar'))) || 
+	if ((source == this.target || source.parentNode == this.target) ||
 		(this.graph.cellEditor != null && this.graph.cellEditor.isEventSource(evt)))
 	{
 		return true;
