@@ -9829,6 +9829,7 @@ var mxEvent =
 	 */
 	getSource: function(evt)
 	{
+		// console.log(evt)
 		return (evt.srcElement != null) ? evt.srcElement : evt.target;
 	},
 
@@ -80753,11 +80754,11 @@ mxKeyHandler.prototype.getFunction = function(evt)
 mxKeyHandler.prototype.isGraphEvent = function(evt)
 {
 	var source = mxEvent.getSource(evt);
-
-	// console.log(this.graph.cellEditor != null , '-----', this.graph.cellEditor.isEventSource(evt))
+	// console.log(source, '------', this.target, '------', this.graph.cellEditor != null , '-----', this.graph.cellEditor.isEventSource(evt))
 	// Accepts events from the target object or
 	// in-place editing inside graph
-	if ((source == this.target || source.parentNode == this.target) ||
+	// 首次进来 delete键盘
+	if ((source == this.target || source.parentNode == this.target || (source.tagName === 'A' && source.className.includes('geItem') && source.parentNode.className.includes('geSidebar'))) || 
 		(this.graph.cellEditor != null && this.graph.cellEditor.isEventSource(evt)))
 	{
 		return true;
