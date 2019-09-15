@@ -1261,16 +1261,22 @@ function createPageList(editorUi, el, data, id, _that) {
             }
             $('#pageContextMenu').mouseleave(() => {
                 // 要重新获取一下 currentIndex
-                let getIdType = evt.target.parentNode.parentNode.id
-                let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
-                if (currentIndex !== CurrentMouseOver) {
-                    if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
-                        LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
-                    } else {
-                        LIArr[CurrentMouseOver].className = ''
+                console.log(evt)
+                if (evt.target.parentNode) {
+                    let getIdType = evt.target.parentNode.parentNode.id || ''
+                    let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
+                    if (currentIndex !== CurrentMouseOver) {
+                        if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
+                            LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
+                        } else {
+                            LIArr[CurrentMouseOver].className = ''
+                        }
                     }
+                    _that.hidePageContextMenu()
+                } else {
+                    _that.hidePageContextMenu()
                 }
-                _that.hidePageContextMenu()
+                
             })
         })
     })
@@ -1321,16 +1327,20 @@ function createPageList(editorUi, el, data, id, _that) {
                 }
                 $('#pageContextMenu').mouseleave(() => {
                     // 要重新获取一下 currentIndex
-                    let getIdType = evt.target.parentNode.parentNode.id
-                    let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
-                    if (currentIndex !== CurrentMouseOver) {
-                        if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
-                            LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
-                        } else {
-                            LIArr[CurrentMouseOver].className = ''
+                    if (evt.target && evt.target.parentNode) {
+                        let getIdType = evt.target.parentNode.parentNode.id
+                        let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
+                        if (currentIndex !== CurrentMouseOver) {
+                            if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
+                                LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
+                            } else {
+                                LIArr[CurrentMouseOver].className = ''
+                            }
                         }
+                        _that.hidePageContextMenu()
+                    } else {
+                        _that.hidePageContextMenu()
                     }
-                    _that.hidePageContextMenu()
                 })
             } else {
                 if (currentIndex !== CurrentMouseOver) {
@@ -1355,7 +1365,7 @@ function createPageList(editorUi, el, data, id, _that) {
             }
         })
     })
-    function changePage(e) {
+    function changePage(e,dis) {
         let target = e.target
         if (((target.parentNode.nodeName === 'LI') && target.parentNode.className !== 'currentPage')) {
             // 目标页面名称
@@ -1373,13 +1383,13 @@ function createPageList(editorUi, el, data, id, _that) {
                 target.parentNode.className += " currentPage"
             }
             var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml)
-            editorUi.editor.setGraphXml(doc.documentElement)
+            editorUi.editor.setGraphXml(doc.documentElement,dis)
             VueEvent.$emit('refreshCurrentPage', id == 'normalPages' ? 0 : 1)
         }
     }
     if (id.includes('normal')) {
         $('.normalPages').on('click', '.pageList>li>.spanli', function (evt) {
-            changePage(evt)
+            changePage(evt,true)
                 let normalArr = document.querySelectorAll('#normalPages li')
                 for (let j = 0; j <= normalArr.length - 1; j++) {
                     if (normalArr[j].className.includes('currentPage')) {

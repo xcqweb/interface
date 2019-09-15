@@ -73,7 +73,7 @@
     />
     <div
       class="item-container setBackgroundImg"
-      style="justify-content:center;height:98px;padding:0;"
+      style="justify-content:center;height:98px;padding:0;position:relative;"
       @click="setBackgroundImg"
     >
       <div
@@ -96,12 +96,18 @@
           @change="fileChange"
         >
       </div>
+      <span 
+        v-if="deleteShowFlag"
+        class="delete-icon-top"
+        style="position:absolute;right:0;top:0;width:20px;height:20px;display:block"
+        @click.stop.prevent="deleteBgImgHandle"
+      />
     </div>
   </div>
 </template>
 <script>
 import {mxClient} from '../../services/mxGlobal'
-import {tipDialog} from '../../services/Utils'
+import {tipDialog, sureDialog} from '../../services/Utils'
 let backgroundColor,localImage
 export default {
     data() {
@@ -122,7 +128,8 @@ export default {
             ],
             bgPic:require('../../assets/images/rightsidebar/bg_ic_widget.png'),
             isShowBgText:true,
-            bgPicStyle:{height:'auto'}
+            bgPicStyle:{height:'auto'},
+            deleteShowFlag: false
         }
     },
     created() {
@@ -136,7 +143,8 @@ export default {
             let graph = editor.graph
             this.bgColor = backgroundColor = graph.background
             let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
-            if(bgUrl) {
+            console.log(bgUrl)
+            if(bgUrl && bgUrl !== 'none') {
                 this.changeBg(bgUrl)
             }else{
                 mxClient.IS_ADD_IMG = false
@@ -193,12 +201,26 @@ export default {
         setBackgroundImg() {
             this.$refs.chooseImg.click()
         },
+        deleteBgImgHandle() {
+            sureDialog(this.myEditorUi,`确定要删除背景图片吗`,()=>{
+                let editor = this.myEditorUi.editor
+                editor.pages[editor.currentPage].style.backgroundUrl = 'none'
+                this.bgPic = require('../../assets/images/rightsidebar/bg_ic_widget.png');
+                mxClient.IS_ADD_IMG = false
+                this.isShowBgText = true
+                this.bgPicStyle = {height:'auto'}
+                this.deleteShowFlag = false
+                this.myEditorUi.editor.graph.view.validateBackground()
+            },)
+        },
         changeBg(url) {
             mxClient.IS_ADD_IMG = true
             mxClient.IS_ADD_IMG_SRC = url
             this.bgPic = url
-            this.bgPicStyle = {height:'98px'}
-            this.isShowBgText = false
+            // 添加删除按钮
+            if (this.bgPic) {
+                this.deleteShowFlag = true
+            }            this.isShowBgText = false
             this.myEditorUi.editor.graph.view.validateBackground()
         },
         setBg(url) {
@@ -305,6 +327,10 @@ export default {
         font-weight:400;
         color:rgba(37,37,37,1);
         padding:0 6px;
+        .delete-icon-top{
+          background:url('../../assets/images/rightsidebar/deletepic_ic.png') no-repeat center center;
+          background-size:16px 16px;
+        }
     }
     .solidWidth {
         background: #f2f2f2;
