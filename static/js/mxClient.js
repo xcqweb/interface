@@ -80782,9 +80782,9 @@ mxKeyHandler.prototype.isGraphEvent = function(evt)
 mxKeyHandler.prototype.keyDown = function(evt)
 {
 	let cell = this.graph.getSelectionCell()
-	// console.log(evt.keyCode)
 	// 首次进来 按delete
-	if (this.isEnabledForEvent(evt) || (cell && (evt.keyCode === 8 || evt.keyCode === 46)))
+	// || (cell && (evt.keyCode === 8 || evt.keyCode === 46) &&)
+	if (this.isEnabledForEvent(evt))
 	{
 		// console.log(!this.isEventIgnored(evt), '---', this.isEventIgnored(evt))
 		// Cancels the editing if escape is pressed
