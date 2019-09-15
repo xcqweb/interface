@@ -116,6 +116,11 @@ export default {
                 if(this.showWidgetStyle) {
                     this.$store.commit('getWidgetInfo',graph)
                     this.$store.commit('widgetChange',new Date().getTime())
+                } else {
+                    // 图片控件 右键list消失
+                    if (document.querySelector('.mxPopupMenu')) {
+                        document.querySelector('.mxPopupMenu').remove()
+                    }
                 }
                 if( graph.getSelectionCount() > 1) {
                     VueEvent.$emit('isShowFootBar',{show:false})

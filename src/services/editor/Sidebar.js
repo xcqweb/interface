@@ -1573,7 +1573,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '表格');
         }),
         // 图片
-        this.createVertexTemplateEntry('shape=image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '', '图片'),
+        this.createVertexTemplateEntry('shape=image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '<input type="file" style="opacity:0;" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/></label>', '图片'),
         // 图元
         // this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', 50, 50, '', '图元'),
         // 曲线
