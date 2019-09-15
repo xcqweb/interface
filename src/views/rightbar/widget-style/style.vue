@@ -575,7 +575,9 @@ export default {
         }else if(this.shapeName.includes('Chart')) {
             this.bindChartProps = this.getWidgetProps('chartProps')
         }else if(this.shapeName == 'linkTag') {
-            this.linkUrl = this.getWidgetProps('link').url
+            if (this.getWidgetProps('link')) {
+                this.linkUrl = this.getWidgetProps('link').url
+            }
         }
         if(picShapeList.includes(this.shapeName)) {
             graph.setCellStyles(mxConstants.STYLE_ASPECT, 'fixed', graph.getSelectionCells());
@@ -589,7 +591,12 @@ export default {
             if (state.style.shape.includes('Chart')) {
                 this.isChartShow = true
                 this.bindChartProps = this.getWidgetProps('chartProps')
-            }else{
+            } else if (state.style.shape === 'image') {
+                document.querySelector('#dlbChooseImage').click()
+                document.querySelector('#dlbChooseImage').onchange = (evt) => {
+                    this.dblclickHandle(evt)
+                }
+            } else {
                 dblClickFn.call(graph,evt, cell)
             }
         }
@@ -600,6 +607,11 @@ export default {
                 return `url(${Dialog.prototype.noColorImage})`
             }
             return color
+        },
+        removeImageRadio() {
+            if (document.querySelector('.mxPopupMenu')) {
+                document.querySelector('.mxPopupMenu').remove()
+            }
         },
         changeName() {
             let graph = this.myEditorUi.editor.graph
@@ -863,7 +875,9 @@ export default {
         },
         getWidgetProps(widgetProp) {
             let cellInfo = this.getCellInfo()
+            console.log(cellInfo)
             let attr = cellInfo.getAttribute(widgetProp)
+            console.log(attr)
             let attrObj = null
             if(attr) {
                 attrObj = JSON.parse(attr)
@@ -874,6 +888,51 @@ export default {
             this.isChartShow = false
             this.setWidgetProps('chartProps',options)
         },
+        dblclickHandle(e) {
+            let graph = this.myEditorUi.editor.graph
+            var localImage;
+            return new Promise(function(resolve, reject) {
+                var fr = new FileReader();
+                fr.onload = (function(file) {
+                    resolve(file)
+                    this.removeImageRadio();
+                })(e.target.files[0]);
+                fr.onerror = function() {
+                    reject('上传失败');
+                };
+                fr.readAsDataURL(e.target.files[0])
+            }).then((res) => {
+                localImage = res
+                // 更换图片
+                var select = null;
+                var cells = graph.getSelectionCells();
+                let updateImg = function(newValue) {
+                    let newPicUrl = newValue.picUrl
+                    graph.getModel().beginUpdate();
+                    try {
+                        graph.setCellStyles(mxConstants.STYLE_IMAGE, (newPicUrl.length > 0) ? newPicUrl : null, cells);
+                    }
+                    finally {
+                        graph.getModel().endUpdate();
+                    }
+                    if (select != null) {
+                        graph.setSelectionCells(select);
+                        graph.scrollCellToVisible(select[0]);
+                    }
+                }
+                if (localImage) {
+                    var formData = new FormData();
+                    formData.append('file', localImage);
+                    formData.append('materialLibraryId', '');
+                    this.myEditorUi.editor.uploadFile(this.myEditorUi, 'api/iot-cds/sources/material', 'POST', formData, function(res) {
+                        let newValue = res;
+                        updateImg(newValue)
+                    })
+                } 
+            }).catch((meg) => {
+                console.log(meg)
+            })
+        }
     }
 };
 </script>

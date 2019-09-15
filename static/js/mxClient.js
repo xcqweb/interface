@@ -15347,20 +15347,23 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	if (selectCount === 1) { // 单个组件
 		if (!this.graph.getModel().isEdge(selectCell) && !this.graph.isSwimlane(selectCell) && this.graph.getModel().getChildCount(selectCell) > 0 && shapeName !== 'menulist') {
 			// 取消组合
-			let arr4 = ['粘贴', '组合']
+			let arr4 = ['粘贴', '组合', '取消组合']
 			if (arr4.includes(title)) {
 				ifshowPaste = true
 			}
 		} else {
 			let arr = ['rectangle', 'button','ellipse', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','light','progress','pipeline1','pipeline2','pipeline3', 'userimage', 'lineChart', 'gaugeChart'];
-			let menulistArr = ['menulist','tableBox']; // 菜单 和 表格整体
+			// let menulistArr = ['menulist','tableBox']; // 菜单 和 表格整体
 			let arr1 = ['粘贴','组合', '取消组合']
 			if (arr.includes(shapeName) && arr1.includes(title)) {
 				ifshowPaste = true
 			}
 		}
 	} else if (selectCount > 1 ) {
-	    let arr3 = ['粘贴', '取消组合', '设置隐藏']
+		if (title.includes('设置显示')) {
+			title = '设置隐藏'
+		}
+	    let arr3 = ['粘贴', '组合', '取消组合', '设置隐藏', '设置显示']
 		if (arr3.includes(title)) {
 			ifshowPaste = true
 		}
@@ -15370,7 +15373,6 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 
 	parent = parent || this;
 	this.itemCount++;
-	// console.log(parent)
 	// Smart separators only added if element contains items
 	if (parent.willAddSeparator)
 	{

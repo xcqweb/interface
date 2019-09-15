@@ -651,7 +651,8 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                     }
                     if(shapeName == 'linkTag') {
                         // 链接
-                        this.addMenuItem(menu, 'configLink', null, evt).firstChild.innerHTML = '配置...';
+                        // 注释掉右键功能
+                        // this.addMenuItem(menu, 'configLink', null, evt).firstChild.innerHTML = '配置...';
                     } else if (shapeName == 'rectangle') {
                         // 矩形
                     }   else if (shapeName == 'image') {
