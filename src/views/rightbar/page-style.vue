@@ -76,7 +76,10 @@
       style="justify-content:center;height:98px;padding:0;position:relative;"
       @click="setBackgroundImg"
     >
-      <div style="text-align:center;">
+      <div
+        style="text-align:center;"
+        :style="bgPicStyle"
+      >
         <img
           :src="bgPic"
           :style="bgPicStyle"
@@ -217,9 +220,7 @@ export default {
             // 添加删除按钮
             if (this.bgPic) {
                 this.deleteShowFlag = true
-            }
-            this.bgPicStyle = {height:'94px'}
-            this.isShowBgText = false
+            }            this.isShowBgText = false
             this.myEditorUi.editor.graph.view.validateBackground()
         },
         setBg(url) {

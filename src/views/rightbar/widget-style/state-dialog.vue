@@ -108,7 +108,10 @@
               class="image-con"
               @click="setPic"
             >
-              <div style="text-align:center;">
+              <div
+                style="text-align:center;"
+                :style="bgPicStyle"
+              >
                 <img
                   :src="bgPic"
                   :style="bgPicStyle"
@@ -276,7 +279,7 @@ export default{
         },
         setBg(url) {
             this.bgPic = url
-            this.bgPicStyle = {height:'94px'}
+            this.bgPicStyle = {height:'98px'}
             this.isShowBgText = false
         },
     },      

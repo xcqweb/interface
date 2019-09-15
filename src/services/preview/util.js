@@ -33,103 +33,35 @@ function destroyWs(applyData,pageId) {
  * @param {object} data 请求参数
  */
 async function geAjax(url, method = 'GET', data = null) {
-    const token = getCookie('token');
-    const refreshToken = getCookie('refreshToken');
-    if (!token || !refreshToken) {
-        showTips(true, '登陆失效，请重新登陆系统！')
-        return;
-    }
-    const tExp = window.jwt_decode(token).exp
-    const rExp = window.jwt_decode(refreshToken).exp
-    const now = new Date().valueOf()
-    if (now > tExp * 1000 && now < rExp * 1000) {
-        // 刷新token
-        await geHttp('/api/auth/refreshToken', 'POST', {
-            refreshToken
-        }).then(res => {
-            setCookie('token', res.token)
-            setCookie('refreshToken', res.refreshToken)
-        })
-    } else if (now > rExp * 1000) {
-        showTips(true,'登录失效，请重新登录系统！')
-        return
-    }
-
-    /**
-     * 原生http
-     * @param {string} url  请求地址
-     * @param {string} method 请求方法，默认GET方法
-     * @param {object} data 请求参数
-     */
-    function geHttp(url, method = 'GET', data = null) {
-        const token = getCookie('token');
-        const refreshToken = getCookie('refreshToken');
-        return new Promise((resolve, reject) => {
-            if (token && refreshToken) {
-                let xmlhttp;
-                if (window.XMLHttpRequest) {
-                    xmlhttp = new XMLHttpRequest();
-                } else {
-                    //针对IE
-                    xmlhttp = new window.ActiveXObject("Microsoft.XMLHttp")
-                }
-                // 监听readystate，执行回调
-                xmlhttp.onreadystatechange = function() {
-                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                        // 服务器响应正确数据
-                        resolve(JSON.parse(xmlhttp.responseText))
-                    } else if (xmlhttp.readyState == 4) {
-                        // 服务器响应错误数据
-                        reject(xmlhttp.responseText)
-                    }
-                }
-                xmlhttp.open(method, url, true);
-                // 设置请求头
-                xmlhttp.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-                xmlhttp.setRequestHeader("Authorization", "Bearer " + getCookie('token'));
-                xmlhttp.send(data);
-            } else {
-                reject('登录失效')
-            }
-        })
-    }
-
-    return new Promise((resolve, reject) => {
-        if (token && refreshToken) {
-            let xmlhttp;
-            if (window.XMLHttpRequest) {
-                xmlhttp = new XMLHttpRequest();
-            } else {
-                //针对IE
-                xmlhttp = new window.ActiveXObject("Microsoft.XMLHttp")
-            }
-            // 监听readystate，执行回调
-            xmlhttp.onreadystatechange = async function() {
-                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                    // 服务器响应正确数据
-                    resolve(JSON.parse(xmlhttp.responseText))
-                } else if (xmlhttp.readyState == 4) {
-                    // 服务器响应错误数据
-                    if (xmlhttp.status === 418) {
-                        // 刷新token
-                        await geHttp('/api/auth/refreshToken', 'POST', {
+    return new Promise((resolve,reject)=>{
+        callAjax()
+        function callAjax() {
+            var token = getCookie('token')
+            var refreshToken = getCookie('refreshToken')
+            $.ajax({
+                method,
+                headers: {
+                    "Content-Type": 'application/json;charset=utf-8',
+                    "Authorization": 'Bearer ' + token
+                },
+                data:data,
+                url,
+                success: function(res) {
+                    resolve(res)
+                },
+                error:function(res) {
+                    if (res.status == 418) {
+                        geAjax('/api/auth/refreshToken', 'POST', {
                             refreshToken
                         }).then(res => {
                             setCookie('token', res.token);
-                            setCookie('refreshToken', res.refreshToken);
+                            setCookie('refreshToken', res.refreshToken)
+                            callAjax()
                         })
-                    } else {
-                        reject(xmlhttp.responseText)
                     }
+                    reject(res)
                 }
-            }
-            xmlhttp.open(method, url, true);
-            // 设置请求头
-            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-            xmlhttp.setRequestHeader("Authorization", "Bearer " + getCookie('token'));
-            xmlhttp.send(data);
-        } else {
-            reject('登录失效')
+            })
         }
     })
 }
