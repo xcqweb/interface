@@ -163,6 +163,7 @@ function insertEdge(cell) {
     console.log(source,points,target)
     let {startArrow,
         endArrow,
+        id,
         strokeStyle} = cell
     let svgContent = document.createElement('div');
     let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
@@ -170,14 +171,11 @@ function insertEdge(cell) {
     svg.setAttribute('height', cell.height);
     svg.innerHTML = `
     <defs>      
-        <marker id="arrow" 
-            markerUnits="strokeWidth" 
-            markerWidth="10" 
-            markerHeight="10" 
-            refX="8"
-            refY="5" 
-            orient="auto">
-            <path d="M2,2 L8,5 L2,8 L5,5 Z" style="fill:${cell.strokeColor};"/>
+        <marker id="arrow${id}end" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" refX="5" refY="2" orient="auto">
+            <path d="M6 2 L0 0 L2 2 L0 4 z" style="fill:#000000;"></path>
+        </marker>
+        <marker id="arrow${id}start" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" refX="1" refY="2" orient="auto">
+            <path d="M0 2 L6 0 L4 2 L6 4 z" style="fill:#000000;"></path>
         </marker>
     </defs>
   `
@@ -203,10 +201,10 @@ function insertEdge(cell) {
         attrs.fill = 'none'
     }
     if (startArrow && startArrow == 'classic') {
-        attrs['marker-start'] = "url(#arrow)"
+        attrs['marker-start'] = `url(#arrow${id}start)`;
     }
     if (endArrow && endArrow == 'classic') {
-        attrs['marker-end'] = "url(#arrow)"
+        attrs['marker-end'] = `url(#arrow${id}end)`;
     }
     for (let item in attrs) {
         path.setAttribute(item, attrs[item])
