@@ -27,133 +27,131 @@
           />
         </div>
       </div>
-      <VerticalToggle>
+      <div 
+        v-show="ifShowArrow"
+        class="footer-content"
+      >
         <div 
-          v-show="ifShowArrow"
-          class="footer-content"
+          v-if="footerContent"
         >
-          <div 
-            v-if="footerContent"
-          >
-            <!--数据源-->
-            <div
-              v-show="tabsNum === 0"
-              class="footer-common dataSourceList"
-            >
-              <template>
-                <Table
-                  border
-                  :columns="tablTitles"
-                  :data="dataSourceList"
-                  :max-height="heightlen"
-                >
-                  <template
-                    slot="actions"
-                    slot-scope="{ row, index }" 
-                  >
-                    <span
-                      class="icon-delete"
-                      @click.stop.prevent="deleteFooterHandle(row,index)"
-                    />
-                  </template>
-                </Table>
-              </template>
-            </div>
-            <!--数据显示-->
-            <div
-              v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length"
-              class="footer-common dataDisplayList"
-            > 
-              <ul class="dataDisplayListUl">
-                <li 
-                  v-for="(item, index) in paramOutterList"
-                  :key="index"
-                >
-                  <div>
-                    <span>
-                      <Select
-                        v-model="item.model"
-                        style="width:240px;height:24px;line-height:24px;"
-                        @on-change="val=>paramSelectChange(val,index)"
-                      >
-                        <Option 
-                          v-for="d in paramsList" 
-                          :key="d.paramId" 
-                          :value="d.paramId"
-                        >
-                          {{ d.paramName }}
-                        </Option>
-                      </Select>
-                    </span>
-                    <span>
-                      <Button
-                        v-if="index === 0 && paramOutterList.length!==paramsList.length"
-                        size="small"
-                        :disabled="ifCanAddParamFlag"
-                        class="condition-icon condition-add-icon"
-                        @click.stop.prevent="addParamHandle()"
-                      >
-                        {{ buttonText[0] }}
-                      </Button>
-                      <Button
-                        v-if="paramOutterList.length > 1"
-                        size="small"
-                        class="condition-icon condition-delete-icon"
-                        @click.stop.prevent="removeParamHandle(item.id,index)"
-                      >
-                        {{ buttonText[1] }}
-                      </Button>
-                    </span>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <!--状态模型-->
-            <div
-              v-show="tabsNum === 2"
-              class="footer-common stateList"
-            >
-              <ul class="footerTabs2Ul">
-                <li 
-                  v-for="(item,index) in stateList"
-                  :key="index"
-                >
-                  <div
-                    class="footerTabs2-list-wrap"
-                  >
-                    <span class="footerTabs2-list-top">{{ item.name }}</span>
-                    <span class="footerTabs2-list-content">
-                      <Select
-                        v-model="modelVals[index]"
-                        style="width:240px;height:24px;line-height:24px;"
-                        :clearable="true"
-                        @on-change="(val)=>modelSelectChange(val,index)"
-                        @on-clear="clearStateBtn(index)"
-                      > 
-                        <Option 
-                          v-for="(d,i) in modelList" 
-                          :key="i" 
-                          :value="i"
-                        >
-                          {{ d.modelName }}
-                        </Option>
-                      </Select>
-                    </span>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <!--数据源-->
           <div
-            v-if="!footerContent || (tabsNum === 2&&stateList.length===0) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
-            class="no-data-wrap"
+            v-show="tabsNum === 0"
+            class="footer-common dataSourceList"
           >
-            <NoData
-              :text="nodata"
-            />
+            <template>
+              <Table
+                border
+                :columns="tablTitles"
+                :data="dataSourceList"
+                :max-height="heightlen"
+              >
+                <template
+                  slot="actions"
+                  slot-scope="{ row, index }" 
+                >
+                  <span
+                    class="icon-delete"
+                    @click.stop.prevent="deleteFooterHandle(row,index)"
+                  />
+                </template>
+              </Table>
+            </template>
+          </div>
+          <!--数据显示-->
+          <div
+            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length"
+            class="footer-common dataDisplayList"
+          > 
+            <ul class="dataDisplayListUl">
+              <li 
+                v-for="(item, index) in paramOutterList"
+                :key="index"
+              >
+                <div>
+                  <span>
+                    <Select
+                      v-model="item.model"
+                      style="width:240px;height:24px;line-height:24px;"
+                      @on-change="val=>paramSelectChange(val,index)"
+                    >
+                      <Option 
+                        v-for="d in paramsList" 
+                        :key="d.paramId" 
+                        :value="d.paramId"
+                      >
+                        {{ d.paramName }}
+                      </Option>
+                    </Select>
+                  </span>
+                  <span>
+                    <Button
+                      v-if="index === 0 && paramOutterList.length!==paramsList.length"
+                      size="small"
+                      :disabled="ifCanAddParamFlag"
+                      class="condition-icon condition-add-icon"
+                      @click.stop.prevent="addParamHandle()"
+                    >
+                      {{ buttonText[0] }}
+                    </Button>
+                    <Button
+                      v-if="paramOutterList.length > 1"
+                      size="small"
+                      class="condition-icon condition-delete-icon"
+                      @click.stop.prevent="removeParamHandle(item.id,index)"
+                    >
+                      {{ buttonText[1] }}
+                    </Button>
+                  </span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <!--状态模型-->
+          <div
+            v-show="tabsNum === 2"
+            class="footer-common stateList"
+          >
+            <ul class="footerTabs2Ul">
+              <li 
+                v-for="(item,index) in stateList"
+                :key="index"
+              >
+                <div
+                  class="footerTabs2-list-wrap"
+                >
+                  <span class="footerTabs2-list-top">{{ item.name }}</span>
+                  <span class="footerTabs2-list-content">
+                    <Select
+                      v-model="modelVals[index]"
+                      style="width:240px;height:24px;line-height:24px;"
+                      :clearable="true"
+                      @on-change="(val)=>modelSelectChange(val,index)"
+                      @on-clear="clearStateBtn(index)"
+                    > 
+                      <Option 
+                        v-for="(d,i) in modelList" 
+                        :key="i" 
+                        :value="i"
+                      >
+                        {{ d.modelName }}
+                      </Option>
+                    </Select>
+                  </span>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
-      </VerticalToggle>
+        <div
+          v-if="!footerContent || (tabsNum === 2&&stateList.length===0) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
+          class="no-data-wrap"
+        >
+          <NoData
+            :text="nodata"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -162,7 +160,6 @@
 import {Tabs,TabPane, Table,Select, Option, Button, Message} from 'iview'
 import {mxUtils} from '../../services/mxGlobal'
 import NoData from '../datasource/nodata'
-import VerticalToggle from './vertical-toggle.js'
 import VueEvent from '../../services/VueEvent.js'
 
 import {sureDialog} from '../../services/Utils'
@@ -177,7 +174,6 @@ export default {
         Tabs,
         TabPane,
         Table,
-        VerticalToggle,
         Select,
         Option,
         Button,
@@ -223,6 +219,18 @@ export default {
             isInitFlag: false,
             ifShowDataFlag: true, // 判断是否显示数据显示tab
             ifCanAddParamFlag: true,
+        }
+    },
+    watch:{
+        ifShowArrow(val) {
+            let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
+            let wh = document.documentElement.clientHeight
+            if(val) {
+                el.style.height = wh - 72 - 226 + 'px'
+            }else{
+                el.style.height = wh - 72 - 26 + 'px'
+                console.log(el.style.height)
+            }
         }
     },
     mounted() {
