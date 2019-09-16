@@ -84,7 +84,6 @@ export default{
         VueEvent.$off('rightBarTabSwitch')
         VueEvent.$on('rightBarTabSwitch',()=>{
             this.changeTab(1)
-            console.log(123)
         })
     },
     methods: {

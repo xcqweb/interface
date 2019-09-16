@@ -1560,7 +1560,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         // 管道2
         this.createVertexTemplateEntry('shape=pipeline2;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline2.svg', 72, 72, '', '管道2'),
         // 管道3
-        this.createVertexTemplateEntry('shape=pipeline3;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline3.svg', 72, 72, '', '管道3'),
+        this.createVertexTemplateEntry('shape=pipeline3;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline3.svg', 60, 40, '', '管道3'),
         // 链接
         this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
     ];
