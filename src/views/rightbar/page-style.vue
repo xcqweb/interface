@@ -55,7 +55,8 @@
       >
         <span style="color:#797979;margin-right:6px;">高</span>
         <input
-          v-model.number="solidHeight"
+          v-model="solidHeight"
+          v-number="1"
           @keyup.enter="changeScaleInput"
         >
       </div>
