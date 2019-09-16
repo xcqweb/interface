@@ -90,7 +90,6 @@ function insertEdge(cell) {
     let {startArrow, endArrow, strokeStyle,edgeProps} = cell
     let which = 0//是否有箭头
     let isDash = false //是否虚线
-    console.log(startArrow, endArrow)
     if (startArrow != 'none' && endArrow != 'none') {
         which = 3
     } else if (startArrow == 'classic') {
@@ -321,8 +320,9 @@ function dealCharts(cell) {
     }
     document.addEventListener("initEcharts",()=>{
         let myEchart = echarts.init(con)
-        if (cell.bindData && cell.bindData.dataSource.deviceTypeChild) {
+        if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild) {
             let deviceTypeId = cell.bindData.dataSource.deviceTypeChild.id
+            let titleShow = cell.bindData.params[0].paramName
             requestUtil.get(`${urls.timeSelect.url}${deviceTypeId}`).then(res => {
                 let checkItem = res.durations.find((item) => {
                     return item.checked === true
@@ -332,7 +332,7 @@ function dealCharts(cell) {
             })
             let devices = cell.bindData.dataSource.deviceNameChild
             if (cell.shapeName == 'lineChart') {
-                options.yAxis.name = cell.bindData.params[0].paramName
+                options.yAxis.name = titleShow
                 let tempLegend = [],tempSeries = []
                 let markLine = options.series[0].markLine
                 devices.forEach((item)=>{
@@ -349,7 +349,8 @@ function dealCharts(cell) {
                 options.series = tempSeries
                 options.xAxis.data = []
             }else {
-                options.series.data = [0]
+                options.series.data = [{value:0,name:titleShow}]
+                options.series.name = titleShow
             }
         }
         myEchart.setOption(options)
