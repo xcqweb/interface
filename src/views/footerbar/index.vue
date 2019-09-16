@@ -221,6 +221,11 @@ export default {
             ifCanAddParamFlag: true,
         }
     },
+    computed: {
+        footerModelUpdata() {
+            return this.$store.state.main.footerModelUpdata
+        }
+    },
     watch:{
         ifShowArrow(val) {
             let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
@@ -229,7 +234,12 @@ export default {
                 el.style.height = wh - 72 - 226 + 'px'
             }else{
                 el.style.height = wh - 72 - 26 + 'px'
-                console.log(el.style.height)
+            }
+        },
+        footerModelUpdata(val) {
+            if (val) {
+                this.isInitFlag = false
+                this.initData()
             }
         }
     },
@@ -247,8 +257,10 @@ export default {
                 this.ifShowArrow = isUp
             }
         })
-        VueEvent.$on('rightBarTabSwitch',()=>{
+        VueEvent.$on('rightBarTabSwitch',() => {
             this.ifShowArrow = false
+            // 隐藏右键菜单 防止到数据源页面 还会有
+            document.getElementById('pageContextMenu') ?  document.getElementById('pageContextMenu').style.display = 'none' : null
         })
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
@@ -273,7 +285,7 @@ export default {
                     }
                 }
             }
-           
+            // Message('绑定成功')
         })
     },
     methods:{

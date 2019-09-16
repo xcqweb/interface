@@ -71,7 +71,6 @@ export default{
     mounted() {
         graph = this.myEditorUi.editor.graph
         cells = graph.getModel().cells
-        // aa
     },
     methods: {
         checkCurrent(currentEditItem) { //当前控件和状态选中

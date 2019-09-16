@@ -252,10 +252,11 @@ export default {
                 height:100%;
                 .ivu-tabs-content{
                     height:100% !important;
-                    padding:0 6px;
+                    // padding:0 6px;
                     .commonPages {
                         height:180px;
                         overflow-y: auto;
+                        padding:0 6px;
                         .leftSidebar-addicon{
                             width:100%;
                             height: 24px;
@@ -283,10 +284,10 @@ export default {
                                 .right-icon-dolt{
                                     display: block
                                 }
-                                #editPageInput{
-                                    height: 25px;
-                                    border:none;
-                                }
+                            }
+                            #editPageInput{
+                                height: 25px;
+                                border:none;
                             }
                             &.left-sidebar-homepage{
                                 background: url(../../assets/images/leftsidebar/homepage.png) no-repeat left center;
@@ -420,9 +421,9 @@ body{
                                 &>label{
                                     display: inline-block;
                                     width:120px;
-                                    height:30px;
+                                    height:20px;
                                     text-align: center;
-                                    line-height: 30px;
+                                    line-height: 20px;
                                     font-size: 12px;
                                     color:#252525;
                                 }

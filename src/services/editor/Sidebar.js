@@ -936,7 +936,7 @@ Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, resu
  */
 Sidebar.prototype.deletePage = function (ele, pageType) {
     // 删除后应该显示的页面
-   
+   console.log(ele)
     const restList = this.editorUi.editor.pagesRank[pageType]
     if (restList.length <= 1) {
         tipDialog(this.editorUi,'至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
@@ -1041,31 +1041,6 @@ Sidebar.prototype.copyPage = function (ele,pageType) {
         $("#dialogPages li:last-child .spanli").click();
     }
 }
-Sidebar.prototype.svgPng = function (ele) {
-    const svg = ele
-    let ImgBase64 = ''
-    return new Promise((resolve, reject) => {
-        const s = new XMLSerializer().serializeToString(svg);
-        const src = `data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(s)))}`;
-        const img = new Image(); // 创建图片容器承载过渡
-        img.src = src;
-        img.crossOrigin = 'Anonymous';
-        img.onload = function() {
-            // 图片创建后再执行，转Base64过程
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            if (img.width <= 2) {
-                resolve()
-            } else {
-                canvas.height = img.height;
-                const context = canvas.getContext('2d');
-                context.drawImage(img, 0, 0);
-                ImgBase64 = canvas.toDataURL('image/png');
-                resolve(ImgBase64)
-            }
-        }
-    })
-}
 /*添加模版*/
 Sidebar.prototype.addTemplate = async function(type) {
     let svgImage = this.editorUi.editor.graph.getSvg(null, null, null, true, null, true, null, null, null, false)
@@ -1125,25 +1100,23 @@ Sidebar.prototype.createPageContextMenu = function (type) {
         menulist.appendChild(menu)
     }
     document.body.appendChild(menulist);
-    // 隐藏菜单
-    // mxEvent.addGestureListeners(document, (evt) => {
-    //     if (evt.target.parentNode && evt.target.parentNode.id !== 'pageContextMenu') {
-    //         this.hidePageContextMenu();
-    //     }
-    // });
     mxEvent.addListener(menulist, 'click', function (evt) {
         evt.stopPropagation()
         var target = evt.target;
         var ele = $(".pageList .currentPage").eq(0);
         let pageType = null
         let element = null
+        let newEle = null
         if (ele.parent().attr('id') === 'normalPages') {
             pageType = 'normal'
             element = document.querySelectorAll('#normalPages li')[CurrentMouseOver]
+            newEle = $('#normalPages li').eq(CurrentMouseOver)
         } else {
             pageType = 'dialog'
             element = document.querySelectorAll('#dialogPages li')[CurrentMouseOver]
+            newEle = $('#dialogPages li').eq(CurrentMouseOver)
         }
+        console.log(element)
         // 操作类型
         var actionType = target.getAttribute('data-type');
         // 添加页面
@@ -1152,16 +1125,8 @@ Sidebar.prototype.createPageContextMenu = function (type) {
         // const pageType = this.editorUi.editor.currentType;
         let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.data('pageid'))
         switch (actionType) {
-            case 'movePrev':
-                this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems(this.editorUi.editor.pagesRank[pageType], index - 1, index);
-                ele.insertBefore(ele.prev())
-                break;
-            case 'moveNext':
-                this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems(this.editorUi.editor.pagesRank[pageType], index, index - 1);
-                ele.insertAfter(ele.next())
-                break;
             case 'delete':
-                this.deletePage(ele, pageType)
+                this.deletePage(newEle, pageType)
                 break;
             case 'rename':
                 this.renameNode(element, pageType)
@@ -1172,18 +1137,19 @@ Sidebar.prototype.createPageContextMenu = function (type) {
                 break;
             case 'homepage':
                 this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems(this.editorUi.editor.pagesRank[pageType], index - 1, index);
-                // var first = document.pageList
                 var targetEle = null
                 if (pageType === 'normal') {
                     targetEle = document.querySelector('#normalPages')
                 } else {
                     targetEle = document.querySelector('#dialogPages')
                 }
-                const currentnode = document.querySelector('.currentPage')
                 const first = targetEle.firstChild
-                targetEle.insertBefore(currentnode, first)
+                targetEle.insertBefore(element, first)
                 $('.left-sidebar-homepage').removeClass('left-sidebar-homepage')
-                currentnode.className += ' left-sidebar-homepage'
+                element.className = 'left-sidebar-homepage'
+                if (pageType === 'normal') {
+                    $('.left-sidebar-homepage .spanli').click()
+                }
                 break
             case 'addTemplate':
                 this.editorUi.editor.setXml();
@@ -1216,7 +1182,6 @@ function createPageList(editorUi, el, data, id, _that) {
     el.appendChild(pageListEle)
 
     $('.commonPages').on('mouseenter', '.pageList>li>.right-icon-dolt', function (evt) {
-        setTimeout(() => {
             evt.preventDefault();
             // 右键菜单展示
             let LIArr = evt.target.parentNode.parentNode.children
@@ -1262,7 +1227,6 @@ function createPageList(editorUi, el, data, id, _that) {
             $('#pageContextMenu').mouseleave(() => {
                 // 要重新获取一下 currentIndex
                 if (evt.target.parentNode) {
-                    let getIdType = evt.target.parentNode.parentNode.id || ''
                     let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
                     if (currentIndex !== CurrentMouseOver) {
                         if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
@@ -1277,12 +1241,10 @@ function createPageList(editorUi, el, data, id, _that) {
                 }
                 
             })
-        })
     })
     $('.commonPages').on('mousemove', '.pageList>li>.right-icon-dolt', function (evt) {
-        setTimeout(() => {
             let widthLen = evt.target.offsetLeft
-            let HeightLen = evt.target.offsetTop + 72
+            let HeightLen = evt.target.offsetTop + 72 + 4
             let LIArr = evt.target.parentNode.parentNode.children
             for (var i = 0; i < LIArr.length; i++) {
                 if (LIArr[i] === evt.target.parentNode) {
@@ -1291,7 +1253,9 @@ function createPageList(editorUi, el, data, id, _that) {
             }
             let getIdType = evt.target.parentNode.parentNode.id
             let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
-            if (evt.clientX >= widthLen && evt.clientX <= widthLen + (evt.target.offsetWidth - 2)) {
+            // console.log(evt.clientX, '------', widthLen, '-----', widthLen + evt.target.offsetWidth - 2)
+            // console.log(currentIndex)
+            if (evt.clientX > widthLen && evt.clientX < widthLen + (evt.target.offsetWidth - 4)) {
                 var menulist = document.getElementById('pageContextMenu');
                 var targetElement = document.querySelector("#pageContextMenu .rename")
                 const textlen = menulist.firstChild.innerText
@@ -1327,7 +1291,6 @@ function createPageList(editorUi, el, data, id, _that) {
                 $('#pageContextMenu').mouseleave(() => {
                     // 要重新获取一下 currentIndex
                     if (evt.target && evt.target.parentNode) {
-                        let getIdType = evt.target.parentNode.parentNode.id
                         let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
                         if (currentIndex !== CurrentMouseOver) {
                             if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
@@ -1362,7 +1325,9 @@ function createPageList(editorUi, el, data, id, _that) {
                 }
                 _that.hidePageContextMenu()
             }
-        })
+    })
+    $('.commonPages').on('mouseenter','.pageList>li>.spanli', (evt) => {
+        _that.hidePageContextMenu()
     })
     function changePage(e,dis) {
         let target = e.target
@@ -1415,7 +1380,6 @@ function createPageList(editorUi, el, data, id, _that) {
 }
 Sidebar.prototype.hidePageContextMenu = function() {
     document.getElementById('pageContextMenu') ?  document.getElementById('pageContextMenu').style.display = 'none' : null;
-    $('.commonPages .pageList>li.currentPage>.right-icon-dolt').css({ 'pointer-events': 'auto' })
 }
 Sidebar.prototype.tabsSwitch = function(type) {
     this.createPageContextMenu(type)
