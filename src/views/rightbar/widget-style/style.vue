@@ -21,7 +21,8 @@
       >
         <span style="color:#797979;margin:0 6px;">X</span>
         <input
-          v-model.number="positionSize.x"
+          v-model="positionSize.x"
+          v-number.minus="1"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         >
@@ -32,7 +33,8 @@
       >
         <span style="color:#797979;margin:0 6px;">Y</span>
         <input
-          v-model.number="positionSize.y"
+          v-model="positionSize.y"
+          v-number.minus="1"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         > 
@@ -47,7 +49,8 @@
       >
         <span style="color:#797979;margin:0 6px;">宽</span>
         <input
-          v-model.number="positionSize.width"
+          v-model="positionSize.width"
+          v-number="1"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         >
@@ -58,7 +61,8 @@
       >
         <span style="color:#797979;margin:0 6px;">高</span>
         <input
-          v-model.number="positionSize.height"
+          v-model="positionSize.height"
+          v-number="1"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         > 
@@ -74,6 +78,7 @@
           <span style="color:#797979;margin:0 6px;">X</span>
           <input
             v-model="positionSize.sx"
+            v-number.minus="1"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -85,6 +90,7 @@
           <span style="color:#797979;margin:0 6px;">Y</span>
           <input
             v-model="positionSize.sy"
+            v-number.minus="1"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -99,6 +105,7 @@
           <span style="color:#797979;margin:0 6px;">X</span>
           <input
             v-model="positionSize.tx"
+            v-number.minus="1"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -110,6 +117,7 @@
           <span style="color:#797979;margin:0 6px;">Y</span>
           <input
             v-model="positionSize.ty"
+            v-number.minus="1"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -126,6 +134,7 @@
         <span style="color:#797979;margin:0 6px;">行</span>
         <input
           v-model="tableRow"
+          v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changeTableSize"
         >
@@ -137,6 +146,7 @@
         <span style="color:#797979;margin:0 6px;">列</span>
         <input
           v-model="tableCol"
+          v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changeTableSize"
         > 
