@@ -98,8 +98,7 @@ export default {
             },1000 * 60 * 1)//1分钟自动保存一次
         },
         updateZoom() {
-            console.log(this.myEditorUi.editor.graph.getSelectionCell())
-            this.$refs.toolbar.updateZoom();
+            this.$refs.toolbar.updateZoom()
         },
     }
 };

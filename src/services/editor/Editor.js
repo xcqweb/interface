@@ -383,7 +383,9 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
                     loadingBarInner.style.width = '100%'
                 }
                 setTimeout(() => {
-                    errorfn && errorfn(res)
+                    if (res.status !== 418){
+                        errorfn && errorfn(res)
+                    }
                 }, 550)
             }
         })
