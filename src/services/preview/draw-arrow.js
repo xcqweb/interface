@@ -88,7 +88,7 @@ function drawArrow(ctx, x1, y1, x2, y2, which = 0, color = '#000', width, isDash
     ctx.strokeStyle = color
     ctx.lineWidth = width
     if(isDash) {
-        ctx.setLineDash([8,8])
+        ctx.setLineDash([15,15])
     }
     ctx.moveTo(fromx, fromy)
     ctx.lineTo(tox, toy)
