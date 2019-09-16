@@ -21,7 +21,7 @@
       >
         <span style="color:#797979;margin:0 6px;">X</span>
         <input
-          v-model="positionSize.x"
+          v-model.number="positionSize.x"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         >
@@ -32,7 +32,7 @@
       >
         <span style="color:#797979;margin:0 6px;">Y</span>
         <input
-          v-model="positionSize.y"
+          v-model.number="positionSize.y"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         > 
@@ -47,7 +47,7 @@
       >
         <span style="color:#797979;margin:0 6px;">宽</span>
         <input
-          v-model="positionSize.width"
+          v-model.number="positionSize.width"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         >
@@ -58,7 +58,7 @@
       >
         <span style="color:#797979;margin:0 6px;">高</span>
         <input
-          v-model="positionSize.height"
+          v-model.number="positionSize.height"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         > 

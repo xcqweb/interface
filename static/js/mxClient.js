@@ -9665,7 +9665,18 @@ var mxEvent =
 			}
 			else if (!mxEvent.isConsumed(evt))
 			{
-				graph.fireMouseEvent(mxEvent.MOUSE_DOWN, new mxMouseEvent(evt, getState(evt)));
+				// 组合时候 拖拽以后会发生不对齐的现象，暂时屏蔽组合时的拖拽。
+				var tag = true;
+				function findTarget(state){
+					var curCell = state.cell;
+					if( curCell.style === 'group' ){
+						tag = false;
+					}
+				}
+				findTarget(getState(evt));
+				if( tag ){
+					graph.fireMouseEvent(mxEvent.MOUSE_DOWN, new mxMouseEvent(evt, getState(evt)));
+				}
 			}
 		},
 		function (evt)
@@ -80761,7 +80772,8 @@ mxKeyHandler.prototype.isGraphEvent = function(evt)
 	// console.log(this.graph.cellEditor != null , '-----', this.graph.cellEditor.isEventSource(evt))
 	// Accepts events from the target object or
 	// in-place editing inside graph
-	if ((source == this.target || source.parentNode == this.target) ||
+	// 首次进入优化 按delete
+	if ((source == this.target || source.parentNode == this.target || (source.tagName === 'A' && source.className.includes('geItem') && source.parentNode.className.includes('geSidebar'))) ||
 		(this.graph.cellEditor != null && this.graph.cellEditor.isEventSource(evt)))
 	{
 		return true;
@@ -80826,7 +80838,7 @@ mxKeyHandler.prototype.keyDown = function(evt)
  */
 mxKeyHandler.prototype.isEnabledForEvent = function(evt)
 {
-	// console.log(this.graph.isEnabled(), '--', !mxEvent.isConsumed(evt), '----',this.isGraphEvent(evt), '---',this.isEnabled() )
+	console.log(this.graph.isEnabled(), '--', !mxEvent.isConsumed(evt), '----',this.isGraphEvent(evt), '---',this.isEnabled() )
 	return (this.graph.isEnabled() && !mxEvent.isConsumed(evt) &&
 		this.isGraphEvent(evt) && this.isEnabled());
 };
