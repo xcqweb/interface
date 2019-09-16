@@ -242,7 +242,7 @@ class PreviewPage {
             this.gePreview.style.width = contentWidth + 'px'
             this.gePreview.style.height = contentHeight + 'px'
             this.gePreview.style.backgroundColor = viewBackground
-            if (pageStyle.backgroundUrl) {
+            if (pageStyle && pageStyle.backgroundUrl) {
                 this.gePreview.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
                 this.gePreview.style.backgroundSize = "100% 100%"
             }
@@ -378,7 +378,7 @@ class PreviewPage {
         // 绑定事件
         bindEvent(cellHtml, cell, this.mainProcess, applyData)
         $(cellHtml).data("shapeName",shapeName)
-        if (cell.bindData && cell.bindData.dataSource.deviceTypeChild) {
+        if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild) {
             let devices = cell.bindData.dataSource.deviceNameChild
             let paramShow = []
             if (cell.bindData.params) {
