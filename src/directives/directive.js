@@ -43,27 +43,28 @@ Vue.directive('number', {
     bind: function(el, {value, modifiers}, vNode) {
         let decimal = value;
         const minus = !!modifiers.minus;
-        const isempty = val => val === '' || val === null || val === undefined;
-        const tonumber = function(val) {
-            if (!isempty(val)) {
+        const isEmpty = val => val === '' || val === null || val === undefined;
+        const toNumber = function(val) {
+            if (!isEmpty(val)) {
                 val = val.toString().replace(new RegExp('[a-zA-Z,]', 'g'), '');
-                let regx = null;
-                if (isempty(decimal)) {
-                    regx = new RegExp(minus ? '(\\-\\d*|\\d+)(\\.\\d*)?' : '(\\d+)(\\.\\d*)?');
+                let reg = null;
+                if (isEmpty(decimal)) {
+                    reg = new RegExp(minus ? '(\\-\\d*|\\d+)(\\.\\d*)?' : '(\\d+)(\\.\\d*)?');
                 } else if (decimal === 0) {
-                    regx = new RegExp(minus ? '(\\-\\d*|\\d+)' : '(\\d+)');
+                    reg = new RegExp(minus ? '(\\-\\d*|\\d+)' : '(\\d+)');
                 } else {
                     decimal = Math.abs(decimal);
-                    regx = new RegExp(minus ? '(\\-\\d*|\\d+)(\\.\\d{0,' + decimal + '})?' : '(\\d+)(\\.\\d{0,' + decimal + '})?');
+                    reg = new RegExp(minus ? '(\\-\\d*|\\d+)(\\.\\d{0,' + decimal + '})?' : '(\\d+)(\\.\\d{0,' + decimal + '})?');
                 }
-                val = val.match(regx);
+                val = val.match(reg);
                 // 替换前置0 如：01.2122 或 -01.12类数字
                 val = val ? (minus ? val[0].replace(new RegExp('^(\\-?)(0*)(\\d+)'), '$1$3') : val[0].replace(new RegExp('^(0*)(\\d+)'), '$2')) : '';
             }
             return val;
         };
         el.handler = function(e) {
-            const val = tonumber(e.target.value);
+            console.log(vNode)
+            const val = toNumber(e.target.value);
             if (vNode.componentInstance) {
                 vNode.componentInstance.$emit('input', val);
             } else {

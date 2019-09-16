@@ -18,6 +18,7 @@
       <a
         ref="elScale"
         href="javascript:void(0);"
+        ondragstart="return false;"
         class="geLabel"
         title="缩放 (Alt+Mousewheel)"
         style="white-space: nowrap; position: relative; overflow: hidden; width: 50px;text-align:center;"
@@ -27,6 +28,7 @@
       </a>
       <a
         href="javascript:void(0);"
+        ondragstart="return false;"
         class="geButton"
         title="缩小"
         @click.stop.prevent="zoom('out')"
@@ -35,6 +37,7 @@
       </a>
       <a
         href="javascript:void(0);"
+        ondragstart="return false;"
         class="geButton"
         title="全屏 (F11)"
         @click.stop.prevent="fullscreen('out')"
@@ -46,6 +49,7 @@
       <a
         ref="undo"
         href="javascript:void(0);"
+        ondragstart="return false;"
         class="geButton"
         title="撤销 (Ctrl+Z)"
         @click.stop.prevent="addAction('undo')"
@@ -66,6 +70,7 @@
     <div class="geToolbar geToolbar4">
       <a
         href="javascript:void(0);"
+        ondragstart="return false;"
         class="geButton"
         style="width:48px;display:flex;align-items:center;justify-content:center;"
         :title="alignText"
@@ -80,6 +85,7 @@
       </a>
       <a
         href="javascript:void(0);"
+        ondragstart="return false;"
         class="geButton"
         title="移至最前 (Ctrl+Shift+F)"
         style="margin-left:12px;"
@@ -101,6 +107,7 @@
     <div class="geToolbar geToolbar5">
       <a
         href="javascript:void(0);"
+        ondragstart="return false;"
         class="geButton"
         title="组合 (Ctrl+G)"
         @click.stop.prevent="addAction('group')"
@@ -109,6 +116,7 @@
       </a>
       <a
         href="javascript:void(0);"
+        ondragstart="return false;"
         class="geButton"
         title="取消组合 (Ctrl+Shift+U)"
         style="margin-left:12px;"
@@ -120,6 +128,7 @@
     <div class="geToolbar geToolbar6">
       <a
         href="javascript:void(0);"
+        ondragstart="return false;"
         class="geButton"
         title="素材库"
         @click.stop.prevent="materialLab"
@@ -128,6 +137,7 @@
       </a>
       <a
         href="javascript:void(0);"
+        ondragstart="return false;"
         class="geButton"
         title="保存 (Ctrl+S)"
         style="margin-left:12px;"
@@ -137,6 +147,7 @@
       </a>
       <a
         href="javascript:void(0);"
+        ondragstart="return false;"
         class="geButton"
         title="预览 (Ctrl+Shift+L)"
         style="margin-left:12px;"

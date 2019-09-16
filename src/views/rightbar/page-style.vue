@@ -75,6 +75,7 @@
     <div
       class="item-container setBackgroundImg"
       style="height:98px;position:relative;padding:0;margin-top:6px;justify-content:center;"
+      ondragstart="return false;"
       @click="setBackgroundImg"
     >
       <div
@@ -142,11 +143,14 @@ export default {
             let editor = this.myEditorUi.editor
             let graph = editor.graph
             this.bgColor = backgroundColor = graph.background
-            let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
-            if(bgUrl && bgUrl !== 'none') {
-                this.changeBg(bgUrl)
-            }else{
-                mxClient.IS_ADD_IMG = false
+            let pageStyle = editor.pages[editor.currentPage].style
+            if(pageStyle) {
+                let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
+                if(bgUrl && bgUrl !== 'none') {
+                    this.changeBg(bgUrl)
+                }else{
+                    mxClient.IS_ADD_IMG = false
+                }
             }
             let {width,height} = graph.pageFormat
             this.solidWidth = width
