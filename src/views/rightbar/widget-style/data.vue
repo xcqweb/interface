@@ -171,9 +171,6 @@ export default{
         InputEle1.oninput = this.debounce(this.InputSelectHandle, 1000)
         this.init()
     },
-    beforeDestroy() {
-        VueEvent.$off('emitDataSourceFooter')
-    },
     methods: {
         init() {
             this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
@@ -275,6 +272,7 @@ export default{
                 objData.deviceNameChild[key].id = items
                 objData.deviceNameChild[key].name = this.deviceNameList[deviceNameIndex].deviceName || ''
             })
+            console.log(objData)
             if (objData) {
                 VueEvent.$emit('emitDataSourceFooter', objData)
                 this.deviceNameListArr = []
@@ -411,7 +409,7 @@ export default{
         }
         .ivu-select-selected-value{
             height:24px;
-            line-height:22px;
+            line-height:24px;
         }
         .ivu-select-dropdown{
           .ivu-select-dropdown-list{

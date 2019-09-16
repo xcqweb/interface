@@ -82,6 +82,20 @@ export default{
             picList:['image','userimage'],
         }
     },
+    computed:{
+        footerModelUpdata() {
+            return this.$store.state.main.footerModelUpdata
+        }
+    },
+    watch: {
+        'states.length': {
+            handler(newVal, oldVal) {
+                if (newVal !== oldVal && oldVal !== 0) {
+                    this.$store.commit('footerModelUpdata', true)
+                }
+            }
+        }
+    },
     mounted() {
         this.initStates()
     },

@@ -99,6 +99,7 @@ export default {
     created() {
     },
     mounted() {
+        VueEvent.$off('select-nodetype')
         VueEvent.$on('select-nodetype', function() {
             this.myEditorUi.sidebar.init('nowload')
         })
