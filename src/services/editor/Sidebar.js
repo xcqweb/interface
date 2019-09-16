@@ -1261,7 +1261,6 @@ function createPageList(editorUi, el, data, id, _that) {
             }
             $('#pageContextMenu').mouseleave(() => {
                 // 要重新获取一下 currentIndex
-                console.log(evt)
                 if (evt.target.parentNode) {
                     let getIdType = evt.target.parentNode.parentNode.id || ''
                     let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
