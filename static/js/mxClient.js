@@ -15396,26 +15396,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 
 	parent.containsItems = true;
 	var tr = document.createElement('tr');
-	tr.className = 'mxPopupMenuItem';
-	tr.className = `mxPopupMenuItem ${ ifshowPaste ? 'disabled' : ''}`;
-	// var col1 = document.createElement('td');
-	// col1.className = 'mxPopupMenuIcon';
-
-	// // Adds the given image into the first column
-	// if (image != null)
-	// {
-	// 	var img = document.createElement('img');
-	// 	img.src = image;
-	// 	col1.appendChild(img);
-	// }
-	// else if (iconCls != null)
-	// {
-	// 	var div = document.createElement('div');
-	// 	div.className = iconCls;
-	// 	col1.appendChild(div);
-	// }
-	
-	// tr.appendChild(col1);
+	tr.className = ifshowPaste ? 'mxPopupMenuItem disabled' : 'mxPopupMenuItem'
 	if (this.labels)
 	{
 		var col2 = document.createElement('td');
