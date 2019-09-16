@@ -63,8 +63,10 @@ function drawHead(ctx, x0, y0, x1, y1, x2, y2, style, color, width) {
     ctx.restore()
 }
 
-function drawArrow(ctx, x1, y1, x2, y2, which = 0, color = '#000', width, isDash,d = 9,style = 3, angle = Math.PI / 7) {
-    d = width * d / 2
+function drawArrow(ctx, x1, y1, x2, y2, which = 0, color = '#000', width, isDash, d = 9, style = 3, angle = Math.PI / 7) {
+    if(width > 1) {
+        d = width * d / 2
+    }
     let dist = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
     let ratio = (dist - d / 3) / dist
     let tox, toy, fromx, fromy

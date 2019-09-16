@@ -90,21 +90,21 @@ function insertEdge(cell) {
     let {startArrow, endArrow, strokeStyle,edgeProps} = cell
     let which = 0//是否有箭头
     let isDash = false //是否虚线
-    if (startArrow && endArrow) {
+    console.log(startArrow, endArrow)
+    if (startArrow != 'none' && endArrow != 'none') {
         which = 3
-    }else if(startArrow) {
-        which = 1
-    }else if(endArrow) {
+    } else if (startArrow == 'classic') {
         which = 2
+    } else if (endArrow == 'classic') {
+        which = 1
     }
     if (strokeStyle && strokeStyle == 1 ) {
         isDash = true
     }
     let con = document.createElement('div')
     let canvas = document.createElement('canvas')
-    canvas.width = cell.width
+    canvas.width = cell.width 
     canvas.height = cell.height
-    canvas.style.backgroundColor = 'transparent'
     let ctx = canvas.getContext("2d")
     drawArrow(ctx, edgeProps.sx - cell.x, edgeProps.sy - cell.y, edgeProps.tx - cell.x, edgeProps.ty - cell.y, which, cell.strokeColor, cell.strokeWidth,isDash)
     con.appendChild(canvas)

@@ -138,8 +138,16 @@ class PreviewPage {
                         edgeProps = JSON.parse(edgeProps)
                         width = Math.abs(edgeProps.tx - edgeProps.sx)
                         height = Math.abs(edgeProps.ty - edgeProps.sy)
-                        x = Math.min(edgeProps.sx, edgeProps.tx)
-                        y = Math.min(edgeProps.sy, edgeProps.ty)
+                        if(height < 30) {//防止箭头预览只看到一半
+                            height = 30
+                        }
+                        if (width < 30) { //防止箭头预览只看到一半
+                            width = 30
+                        }
+                        x = Math.min(edgeProps.sx, edgeProps.tx) / 2
+                        y = Math.min(edgeProps.sy, edgeProps.ty) / 2
+                        height = height + y
+                        width = width + x
                     }
                     let obj = {
                         id,
