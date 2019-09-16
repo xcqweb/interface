@@ -1116,7 +1116,6 @@ Sidebar.prototype.createPageContextMenu = function (type) {
             element = document.querySelectorAll('#dialogPages li')[CurrentMouseOver]
             newEle = $('#dialogPages li').eq(CurrentMouseOver)
         }
-        console.log(element)
         // 操作类型
         var actionType = target.getAttribute('data-type');
         // 添加页面
@@ -1129,7 +1128,9 @@ Sidebar.prototype.createPageContextMenu = function (type) {
                 this.deletePage(newEle, pageType)
                 break;
             case 'rename':
-                this.renameNode(element, pageType)
+                if (element.innerText) {
+                    this.renameNode(element, pageType)
+                }
                 break;
             case 'copy':
                 this.editorUi.editor.setXml();

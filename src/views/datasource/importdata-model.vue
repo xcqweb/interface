@@ -573,7 +573,6 @@ export default{
                   }
                   .content-common-botton{
                     height:25px;
-                    // padding: 0px 10px 0;
                     border-top:1px solid #D4D4D4;
                     display:flex;
                     .data-botton-left{
@@ -620,8 +619,7 @@ export default{
         height:24px;
       }
       .ivu-select-input{
-        height:24px;
-        line-height:24px;
+        height:22px;
       }
       .ivu-select-placeholder{
         height:24px;
@@ -635,6 +633,13 @@ export default{
           .ivu-select-item{
             padding: 0 16px 0;
           }
+        }
+      }
+    }
+    .ivu-checkbox-small{
+      .ivu-checkbox-checked{
+        .ivu-checkbox-inner::after{
+          left:4px;
         }
       }
     }

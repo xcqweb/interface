@@ -112,7 +112,10 @@
             v-show="tabsNum === 2"
             class="footer-common stateList"
           >
-            <ul class="footerTabs2Ul">
+            <ul
+              v-if="stateList && stateList.length > 1"
+              class="footerTabs2Ul"
+            >
               <li 
                 v-for="(item,index) in stateList"
                 :key="index"
@@ -144,7 +147,7 @@
           </div>
         </div>
         <div
-          v-if="!footerContent || (tabsNum === 2&&stateList.length===0) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
+          v-if="!footerContent || (tabsNum === 2 && (stateList.length===0 || stateList.length === 1) ) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
           class="no-data-wrap"
         >
           <NoData
@@ -240,6 +243,7 @@ export default {
             if (val) {
                 this.isInitFlag = false
                 this.initData()
+                this.$store.commit('footerModelUpdata', false)
             }
         }
     },
@@ -247,6 +251,9 @@ export default {
         if(this.footerContent) {
             this.initData()
         }
+        VueEvent.$off('rightBarTabSwitch')
+        VueEvent.$off('isShowFootBar')
+        VueEvent.$off('emitDataSourceFooter');
         VueEvent.$on('isShowFootBar', ({show,isUp}) => {
             this.isInitFlag = false
             this.footerContentHandle(show)
@@ -266,6 +273,7 @@ export default {
         VueEvent.$on('emitDataSourceFooter', (value) => {
             // 拿到之前绑定的 bindData
             let startBindData = this.getCellModelInfo('bindData')
+            console.log(startBindData)
             if (!startBindData) {
                 this.setCellModelInfo('bindData',{dataSource:value})
                 if (this.ifShowArrow) {
@@ -300,6 +308,7 @@ export default {
             }else{
                 this.stateList = []
             }
+            this.dataSourceList = []
             this.initDataSource()//初始化数据源列表
             this.initModelList()//初始化模型列表
             this.initParamsList()//初始化参数列表
@@ -453,7 +462,7 @@ export default {
             })
         },
         clearStateModel() {
-            let tempStateList = this.getCellModelInfo("statesInfo")
+            let tempStateList = this.getCellModelInfo("statesInfo") || []
             tempStateList.forEach((item)=>{
                 if(item.modelFormInfo) {
                     item.modelFormInfo = null

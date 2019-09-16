@@ -43,14 +43,15 @@ export default {
     },
     created() {},
     mounted() {
+        VueEvent.$off('refreshCurrentPage')
         VueEvent.$on('refreshCurrentPage',(type)=>{
             this.$store.dispatch('pageTabIndex',type)
             this.refresh++
         })
     },
-    beforeDestroy() {
-        VueEvent.$off('isShowFootBar')
-    },
+    // beforeDestroy() {
+    //     VueEvent.$off('isShowFootBar')
+    // },
     methods: {
         init() {
             let that = this.myEditorUi.sidebar

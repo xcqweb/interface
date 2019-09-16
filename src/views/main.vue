@@ -54,9 +54,9 @@ export default {
     mounted() {
         
     },
-    beforeDestroy() {
-        VueEvent.$off('rightBarTabSwitch')
-    },
+    // beforeDestroy() {
+    //     VueEvent.$off('rightBarTabSwitch')
+    // },
     methods: {
         changeTab(index) {
             if (!this.modelEditing && index === 1) {

@@ -497,7 +497,6 @@ export default {
         }
     },
     created() {
-        this.$store.commit('footerModelUpdata', false)
         this.studioIdNew = sessionStorage.getItem("applyId") || ''
     },
     mounted() {
@@ -507,6 +506,8 @@ export default {
             this.heightLen += (item.length * this.tdheight) / 2
         })
         let _that = this
+        VueEvent.$off('StartDeviceTypeArr')
+        VueEvent.$off('StartparamsNameArr')
         VueEvent.$on('StartDeviceTypeArr', function(value) {
             _that.deviceTypeArr = value
             if (_that.deviceTypeArr.length) {
@@ -519,9 +520,9 @@ export default {
             _that.conditionSignList = value
         })
     },
-    beforeDestroy() {
-        VueEvent.$off('clickChangeParamList')
-    },
+    // beforeDestroy() {
+    //     VueEvent.$off('clickChangeParamList')
+    // },
     methods: {
         // 模型列表
         getModelInit(deviceid) {
