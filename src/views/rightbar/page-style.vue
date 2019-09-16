@@ -154,6 +154,7 @@ export default {
             }
             let {width,height} = graph.pageFormat
             this.solidWidth = width
+            console.log(width,height,"tt--")
             this.solidHeight = height
             this.myEditorUi.setPageFormat({height:height,width:width,x:0,Y:0},true)
             this.scaleText = width + '*' + height
