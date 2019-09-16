@@ -24,7 +24,7 @@
       >
         <span style="color:#797979;margin:0 6px;">宽</span>
         <input
-          v-model="dialogWidth"
+          v-model.number="dialogWidth"
           @keyup.enter="changeScaleInput"
         >
       </div>
@@ -34,7 +34,7 @@
       >
         <span style="color:#797979;margin:0 6px;">高</span>
         <input
-          v-model="dialogHeight"
+          v-model.number="dialogHeight"
           @keyup.enter="changeScaleInput"
         > 
       </div>
