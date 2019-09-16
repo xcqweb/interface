@@ -9665,7 +9665,18 @@ var mxEvent =
 			}
 			else if (!mxEvent.isConsumed(evt))
 			{
-				graph.fireMouseEvent(mxEvent.MOUSE_DOWN, new mxMouseEvent(evt, getState(evt)));
+				// 组合时候 拖拽以后会发生不对齐的现象，暂时屏蔽组合时的拖拽。
+				var tag = true;
+				function findTarget(state){
+					var curCell = state.cell;
+					if( curCell.style === 'group' ){
+						tag = false;
+					}
+				}
+				findTarget(getState(evt));
+				if( tag ){
+					graph.fireMouseEvent(mxEvent.MOUSE_DOWN, new mxMouseEvent(evt, getState(evt)));
+				}
 			}
 		},
 		function (evt)

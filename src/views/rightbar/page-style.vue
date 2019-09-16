@@ -73,11 +73,10 @@
     />
     <div
       class="item-container setBackgroundImg"
-      style="justify-content:center;height:98px;padding:0;position:relative;"
+      style="height:98px;position:relative;padding:0;margin-top:6px;justify-content:center;"
       @click="setBackgroundImg"
     >
       <div
-        style="text-align:center;"
         :style="bgPicStyle"
       >
         <img
@@ -219,7 +218,9 @@ export default {
             // 添加删除按钮
             if (this.bgPic) {
                 this.deleteShowFlag = true
-            }            this.isShowBgText = false
+                this.isShowBgText = false
+                this.bgPicStyle = {height:'98px'}
+            }            
             this.myEditorUi.editor.graph.view.validateBackground()
         },
         setBg(url) {
