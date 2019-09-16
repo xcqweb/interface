@@ -497,6 +497,7 @@ export default {
         }
     },
     created() {
+        this.$store.commit('footerModelUpdata', false)
         this.studioIdNew = sessionStorage.getItem("applyId") || ''
     },
     mounted() {
@@ -817,6 +818,8 @@ export default {
                     if (res.sourceId) {
                         Message.success(`修改成功`)
                         ele.innerHTML = `${name}`
+                        // 用于去更新首页底部
+                        this.$store.commit('footerModelUpdata', true)
                         // 如果重命名的 和当前选中的 相同 则重置名字
                         if (this.modelNumber === this.currentMouseIndex) {
                             this.currenModelName = name
