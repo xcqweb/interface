@@ -138,8 +138,8 @@ class PreviewPage {
                         edgeProps = JSON.parse(edgeProps)
                         width = Math.abs(edgeProps.tx - edgeProps.sx)
                         height = Math.abs(edgeProps.ty - edgeProps.sy)
-                        x = edgeProps.tx
-                        y = edgeProps.ty
+                        x = Math.min(edgeProps.sx, edgeProps.tx)
+                        y = Math.min(edgeProps.sy, edgeProps.ty)
                     }
                     let obj = {
                         id,

@@ -3,6 +3,7 @@ import {data1,data2} from '../../constants/chart-default-data'
 import echarts from 'echarts'
 import requestUtil from '../../services/request'
 import urls from '../../constants/url'
+import {drawArrow} from './draw-arrow'
 
 /**
  * 移除dom节点
@@ -86,18 +87,27 @@ function insertImage(cell) {
  * @param {Array} target 结束点
  */
 function insertEdge(cell) {
-    let {edgeProps} = cell
-    
-    let {startArrow, endArrow, strokeStyle} = cell
-    console.log(startArrow,endArrow,strokeStyle)
+    let {startArrow, endArrow, strokeStyle,edgeProps} = cell
+    let which = 0//是否有箭头
+    let isDash = false //是否虚线
+    if (startArrow && endArrow) {
+        which = 3
+    }else if(startArrow) {
+        which = 1
+    }else if(endArrow) {
+        which = 2
+    }
+    if (strokeStyle && strokeStyle == 1 ) {
+        isDash = true
+    }
     let con = document.createElement('div')
-    let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    svg.setAttribute('width', cell.width)
-    svg.setAttribute('height', cell.height)
-    let innerHTMLPath = `<path d="M ${edgeProps.sx} ${edgeProps.sy} L ${edgeProps.tx} ${edgeProps.ty}"
-    fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke"></path>`
-    svg.innerHTML = innerHTMLPath
-    con.appendChild(svg)
+    let canvas = document.createElement('canvas')
+    canvas.width = cell.width
+    canvas.height = cell.height
+    canvas.style.backgroundColor = 'transparent'
+    let ctx = canvas.getContext("2d")
+    drawArrow(ctx, edgeProps.sx - cell.x, edgeProps.sy - cell.y, edgeProps.tx - cell.x, edgeProps.ty - cell.y, which, cell.strokeColor, cell.strokeWidth,isDash)
+    con.appendChild(canvas)
     return con
 }
 

@@ -41,7 +41,7 @@
       </div>
     </div>
     <div
-      v-if="shapeName!='beeline'"
+      v-if="shapeName!='beeline' && shapeName!='tableBox' && shapeName!='menulist'"
       style="display:flex;margin-top:2px;"
     >
       <div
@@ -198,7 +198,10 @@
             @click="pickFontColor"
           />
         </div>
-        <div class="itemLine">
+        <div
+          v-if="shapeName!='menulist' && shapeName!='tableBox'"
+          class="itemLine"
+        >
           <div class="setLevel">
             <div
               class="left"
@@ -236,7 +239,7 @@
         </div>
       </div>
     </div>
-    <div v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text'">
+    <div v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text' && shapeName!='tableBox' && shapeName!='menulist'">
       <div class="item-title">
         外观
       </div>
