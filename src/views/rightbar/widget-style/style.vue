@@ -22,6 +22,7 @@
         <span style="color:#797979;margin:0 6px;">X</span>
         <input
           v-model="positionSize.x"
+          v-number.minus="1"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         >
@@ -33,13 +34,14 @@
         <span style="color:#797979;margin:0 6px;">Y</span>
         <input
           v-model="positionSize.y"
+          v-number.minus="1"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         > 
       </div>
     </div>
     <div
-      v-if="shapeName!='beeline'"
+      v-if="shapeName!='beeline' && shapeName!='tableBox' && shapeName!='menulist'"
       style="display:flex;margin-top:2px;"
     >
       <div
@@ -48,6 +50,7 @@
         <span style="color:#797979;margin:0 6px;">宽</span>
         <input
           v-model="positionSize.width"
+          v-number="1"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         >
@@ -59,6 +62,7 @@
         <span style="color:#797979;margin:0 6px;">高</span>
         <input
           v-model="positionSize.height"
+          v-number="1"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         > 
@@ -74,6 +78,7 @@
           <span style="color:#797979;margin:0 6px;">X</span>
           <input
             v-model="positionSize.sx"
+            v-number.minus="1"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -85,6 +90,7 @@
           <span style="color:#797979;margin:0 6px;">Y</span>
           <input
             v-model="positionSize.sy"
+            v-number.minus="1"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -99,6 +105,7 @@
           <span style="color:#797979;margin:0 6px;">X</span>
           <input
             v-model="positionSize.tx"
+            v-number.minus="1"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -110,6 +117,7 @@
           <span style="color:#797979;margin:0 6px;">Y</span>
           <input
             v-model="positionSize.ty"
+            v-number.minus="1"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -126,6 +134,7 @@
         <span style="color:#797979;margin:0 6px;">行</span>
         <input
           v-model="tableRow"
+          v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changeTableSize"
         >
@@ -137,6 +146,7 @@
         <span style="color:#797979;margin:0 6px;">列</span>
         <input
           v-model="tableCol"
+          v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changeTableSize"
         > 
@@ -194,7 +204,10 @@
             @click="pickFontColor"
           />
         </div>
-        <div class="itemLine">
+        <div
+          v-if="shapeName!='menulist' && shapeName!='tableBox'"
+          class="itemLine"
+        >
           <div class="setLevel">
             <div
               class="left"
@@ -232,7 +245,7 @@
         </div>
       </div>
     </div>
-    <div v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text'">
+    <div v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text' && shapeName!='tableBox' && shapeName!='menulist'">
       <div class="item-title">
         外观
       </div>

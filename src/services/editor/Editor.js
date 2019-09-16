@@ -383,7 +383,9 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
                     loadingBarInner.style.width = '100%'
                 }
                 setTimeout(() => {
-                    errorfn && errorfn(res)
+                    if (res.status !== 418){
+                        errorfn && errorfn(res)
+                    }
                 }, 550)
             }
         })
@@ -2408,6 +2410,7 @@ PageSetupDialog.getFormats = function()
     
             if (mxClient.IS_ADD_IMG){
                 image = 'url(' + mxClient.IS_ADD_IMG_SRC + ')';
+                graph.view.backgroundPageShape.node.style.backgroundSize = 'cover';
             }else{
                 if (mxClient.IS_SVG) {
                     // Generates the SVG required for drawing the dynamic grid
