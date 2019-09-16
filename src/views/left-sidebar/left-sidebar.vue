@@ -284,10 +284,10 @@ export default {
                                 .right-icon-dolt{
                                     display: block
                                 }
-                                #editPageInput{
-                                    height: 25px;
-                                    border:none;
-                                }
+                            }
+                            #editPageInput{
+                                height: 25px;
+                                border:none;
                             }
                             &.left-sidebar-homepage{
                                 background: url(../../assets/images/leftsidebar/homepage.png) no-repeat left center;
