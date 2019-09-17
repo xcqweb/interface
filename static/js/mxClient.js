@@ -15357,7 +15357,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	if (selectCount === 1) { // 单个组件
 		if (!this.graph.getModel().isEdge(selectCell) && !this.graph.isSwimlane(selectCell) && this.graph.getModel().getChildCount(selectCell) > 0 && shapeName !== 'menulist') {
 			// 取消组合
-			let arr4 = ['粘贴', '组合', '取消组合']
+			let arr4 = shapeName === 'tableBox' ? ['粘贴', '组合','取消组合'] : ['粘贴', '组合']
 			if (arr4.includes(title)) {
 				ifshowPaste = true
 			}
@@ -15373,7 +15373,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 		if (title.includes('设置显示')) {
 			title = '设置隐藏'
 		}
-	    let arr3 = ['粘贴', '组合', '取消组合', '设置隐藏', '设置显示']
+		let arr3 = shapeName === 'tableBox' ? ['粘贴','组合','取消组合', '设置隐藏', '设置显示'] : ['粘贴', '取消组合', '设置隐藏', '设置显示']
 		if (arr3.includes(title)) {
 			ifshowPaste = true
 		}
@@ -19516,7 +19516,7 @@ mxSvgCanvas2D.prototype.image = function(x, y, w, h, src, aspect, flipH, flipV)
 	}
 	else
 	{
-		node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src.replace(/^\S*getechFileSystem/, fileSystem));
+		node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src);
 	}
 	
 	if (aspect)

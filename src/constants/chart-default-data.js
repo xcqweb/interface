@@ -72,12 +72,13 @@ export let data2 = {
         formatter: "{a} <br/>{b} : {c}%"
     },
     series: {
+        name:'仪表盘',
         type: 'gauge',
-        radius:'100%',
+        radius:'80%',
         detail: {
             formatter: '{value}%'
         },
-        data: [50],
+        data: [{name:'值',value:50}],
         min: 0,
         max: 100,
     },
