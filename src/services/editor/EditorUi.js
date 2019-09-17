@@ -3571,7 +3571,7 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                         }
                     }, (res) => {
                         reject(res);
-                    }, '', hideDialog = true)
+                    }, true, true)
                 } else {
                     editor.ajax(ui, urls.preview.url, 'POST', data,(res) => {
                         this.saveSuccess(res,hideDialog);
