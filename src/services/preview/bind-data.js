@@ -11,7 +11,7 @@ async function getLastData(pointParams) {
     for (let item of maps.values()) {
         params.push(item)
     }
-    const res = await geAjax('/api/persist/opentsdb/point/last', 'POST', JSON.stringify(params))
+    const res = await geAjax('/api/persist/opentsdb/point/last', 'POST', JSON.stringify(params)).catch(e => console.log(e))
     setterRealData(res)
 }
 
@@ -50,7 +50,7 @@ async function getSubscribeInfos(pointParams) {
         item.params = item.keys
         params.subscribeInfos.push(item)
     }
-    let data = await geAjax('/api/pubsub/subscribe', 'POST', JSON.stringify(params))
+    let data = await geAjax('/api/pubsub/subscribe', 'POST', JSON.stringify(params)).catch(e => console.log(e))
     data = JSON.parse(data)
     websocketUrlReal = data.data
     return data
