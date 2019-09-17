@@ -3555,6 +3555,7 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                     // 编辑保存
                     data.studioId = id
                     editor.ajax(ui, `${urls.ifMultipleEdit.url}${id}`, 'GET', '', (res) => {
+                        console.log(res)
                         if (res.data.code === '3012') {
                             tipDialog(this.editorUi, `当前应用 ${res.data.message ? res.data.message : '' } 正在编辑, 无法保存`);
                             return;
