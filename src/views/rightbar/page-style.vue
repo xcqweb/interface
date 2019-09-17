@@ -109,7 +109,7 @@
 <script>
 import {mxClient} from '../../services/mxGlobal'
 import {tipDialog, sureDialog} from '../../services/Utils'
-let backgroundColor,localImage
+let localImage
 export default {
     data() {
         return {
@@ -142,7 +142,7 @@ export default {
         init() {
             let editor = this.myEditorUi.editor
             let graph = editor.graph
-            this.bgColor = backgroundColor = graph.background
+            this.bgColor = graph.background
             let pageStyle = editor.pages[editor.currentPage].style
             if(pageStyle) {
                 let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
@@ -268,7 +268,7 @@ export default {
             }
         },
         pickColor() {
-            this.myEditorUi.pickColor(backgroundColor || 'none',color=>{
+            this.myEditorUi.pickColor(this.bgColor || 'none',color=>{
                 this.updateBackgroundColor(color)
             });
         },

@@ -63,7 +63,6 @@ Vue.directive('number', {
             return val;
         };
         el.handler = function(e) {
-            console.log(vNode)
             const val = toNumber(e.target.value);
             if (vNode.componentInstance) {
                 vNode.componentInstance.$emit('input', val);
