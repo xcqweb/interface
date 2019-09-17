@@ -3556,10 +3556,10 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                     data.studioId = id
                     editor.ajax(ui, `${urls.ifMultipleEdit.url}${id}`, 'GET', '', (res) => {
                         console.log(res)
-                        if (res.data.code === '3012') {
+                        if (res.code === '3012') {
                             tipDialog(this.editorUi, `当前应用 ${res.data.message ? res.data.message : '' } 正在编辑, 无法保存`);
                             return;
-                        } else if (res.data.code === '0') {
+                        } else if (res.code === '0') {
                             editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
                                 this.saveSuccess(res, hideDialog, type);
                                 setCookie('saveIotCds', 'put');
