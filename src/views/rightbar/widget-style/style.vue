@@ -22,7 +22,7 @@
         <span style="color:#797979;margin:0 6px;">X</span>
         <input
           v-model="positionSize.x"
-          v-number.minus="1"
+          v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         >
@@ -34,7 +34,7 @@
         <span style="color:#797979;margin:0 6px;">Y</span>
         <input
           v-model="positionSize.y"
-          v-number.minus="1"
+          v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         > 
@@ -50,7 +50,7 @@
         <span style="color:#797979;margin:0 6px;">宽</span>
         <input
           v-model="positionSize.width"
-          v-number="1"
+          v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         >
@@ -62,7 +62,7 @@
         <span style="color:#797979;margin:0 6px;">高</span>
         <input
           v-model="positionSize.height"
-          v-number="1"
+          v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         > 
@@ -78,7 +78,7 @@
           <span style="color:#797979;margin:0 6px;">X</span>
           <input
             v-model="positionSize.sx"
-            v-number.minus="1"
+            v-number="0"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -90,7 +90,7 @@
           <span style="color:#797979;margin:0 6px;">Y</span>
           <input
             v-model="positionSize.sy"
-            v-number.minus="1"
+            v-number="0"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -105,7 +105,7 @@
           <span style="color:#797979;margin:0 6px;">X</span>
           <input
             v-model="positionSize.tx"
-            v-number.minus="1"
+            v-number="0"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -117,7 +117,7 @@
           <span style="color:#797979;margin:0 6px;">Y</span>
           <input
             v-model="positionSize.ty"
-            v-number.minus="1"
+            v-number="0"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -400,6 +400,7 @@
           <span style="color:#797979;margin:0 6px;">上限</span>
           <input
             v-model="progressMax"
+            v-number="0"
             style="border-left:none;border-right:none;width:52%;"
             @keyup.enter="changeProgress"
           >
@@ -411,6 +412,7 @@
           <span style="color:#797979;margin:0 6px;">下限</span>
           <input
             v-model="progressMin"
+            v-number="0"
             style="border-left:none;border-right:none;width:52%;"
             @keyup.enter="changeProgress"
           > 
@@ -475,7 +477,7 @@
 <script>
 import Chart from '../../charts/chart'
 import {mxConstants,mxEventObject,Dialog} from '../../../services/mxGlobal'
-let newFontColor = "#000000",newBgColor = "#ffffff",newBorderColor = "#000000",name
+let palettName
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
 let picShapeList = ['pipeline2','pipeline3','light','lineChart','gaugeChart','userimage']
@@ -529,10 +531,9 @@ export default {
         widgetName: {
             get() {
                 return this.$store.state.main.widgetInfo.widgetName
-                
             },
             set(val) {
-                name = val
+                palettName = val
             }
         },
         positionSize() {
@@ -630,21 +631,30 @@ export default {
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
             let cellInfo = graph.getModel().getValue(cell)
-            cellInfo.setAttribute('palettename',name)
+            cellInfo.setAttribute('palettename',palettName)
             graph.getModel().setValue(cell, cellInfo)
             this.$store.commit('getWidgetInfo',graph)
         },
         changePositionSize() {
             let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
-            let geo = graph.getCellGeometry(cell)
-            geo.x = +this.positionSize.x
-            geo.y = +this.positionSize.y
-            geo.width = +this.positionSize.width
-            geo.height = +this.positionSize.height
-            graph.getModel().beginUpdate()
-            graph.getModel().setGeometry(cell,geo)
-            graph.getModel().endUpdate()
+            let cells = graph.getSelectionCells()
+            cells.forEach((cell)=>{
+                let geo = graph.getCellGeometry(cell)
+                if(graph.model.isEdge(cell)) {
+                    geo.sourcePoint.x = +this.positionSize.sx
+                    geo.sourcePoint.y = +this.positionSize.sy
+                    geo.targetPoint.x = +this.positionSize.tx
+                    geo.targetPoint.y = +this.positionSize.ty
+                }else {
+                    geo.x = +this.positionSize.x
+                    geo.y = +this.positionSize.y
+                    geo.width = +this.positionSize.width
+                    geo.height = +this.positionSize.height
+                }
+                graph.getModel().beginUpdate()
+                graph.getModel().setGeometry(cell,geo)
+                graph.getModel().endUpdate()
+            })
             graph.refresh()
             this.$nextTick(() => {
                 this.$store.commit('getWidgetInfo',graph)
@@ -685,8 +695,7 @@ export default {
             this.showFont = false
         },
         pickFontColor() {
-            this.myEditorUi.pickColor(newFontColor || 'none',color=>{
-                newFontColor = color  
+            this.myEditorUi.pickColor(this.fontColor || 'none',color=>{
                 if(color == 'none') {
                     this.fontColor = `url(${Dialog.prototype.noColorImage})`
                 }else{
@@ -699,8 +708,7 @@ export default {
             });
         },
         pickBgColor() {
-            this.myEditorUi.pickColor(newBgColor || 'none',color=>{
-                newBgColor = color  
+            this.myEditorUi.pickColor(this.bgColor || 'none',color=>{
                 if(color == 'none') {
                     this.bgColor = `url(${Dialog.prototype.noColorImage})`
                 }else{
@@ -712,8 +720,7 @@ export default {
             });
         },
         pickBorderColor() {
-            this.myEditorUi.pickColor(newBorderColor || 'none',color=>{
-                newBorderColor = color  
+            this.myEditorUi.pickColor(this.borderColor || 'none',color=>{
                 if(color == 'none') {
                     this.borderColor = `url(${Dialog.prototype.noColorImage})`
                 }else{
@@ -888,9 +895,7 @@ export default {
         },
         getWidgetProps(widgetProp) {
             let cellInfo = this.getCellInfo()
-            console.log(cellInfo)
             let attr = cellInfo.getAttribute(widgetProp)
-            console.log(attr)
             let attrObj = null
             if(attr) {
                 attrObj = JSON.parse(attr)

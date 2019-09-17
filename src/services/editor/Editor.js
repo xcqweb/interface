@@ -1201,7 +1201,7 @@ OpenFile.prototype.cancel = function(cancel)
 function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 {
     var dx = 0;
-    var dialogType = elt.getAttribute('data-dialog');
+    var dialogType = elt.getAttribute('data-dialog')
     title = title || '';
     if (mxClient.IS_VML && (document.documentMode == null || document.documentMode < 8))
     {
@@ -1275,17 +1275,9 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
     left = pos.x;
     top = pos.y;
     switch (dialogType) {
-        case 'chooseVariable':
-            left += 90;
-            top -= 30;
-            break;
-        case 'chooseModel':
-            left += 90;
-            top += 262;
-            break;
-        case 'chooseExecute':
-            left += 90;
-            top += 59;
+        case 'colorDialog':
+            let temp = (left - 250)
+            left += temp + w/2 - 40
             break;
         default:
             break;

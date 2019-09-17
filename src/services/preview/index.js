@@ -23,13 +23,16 @@ class Main {
     // 初始化
     async init() {
         ev = document.createEvent('CustomEvent')
-        ev.initCustomEvent('initEcharts', false, true)
+        ev.initCustomEvent('initEcharts', false, true, null)
         gePreview = document.getElementById('gePreview')
         let idArr = /id=(.+?)$/.exec(location.search)
-        let id
+        let id = ''
         if (idArr) {
             // 查看应用
             id = idArr[1]
+        }
+        if (!id) {
+            return
         }
         applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudio/${id}`, 'GET')
         if (!applyInfo) {

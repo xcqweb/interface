@@ -25,7 +25,7 @@
         <span style="color:#797979;margin:0 6px;">宽</span>
         <input
           v-model="dialogWidth"
-          v-number="1"
+          v-number="0"
           @keyup.enter="changeScaleInput"
         >
       </div>
@@ -36,7 +36,7 @@
         <span style="color:#797979;margin:0 6px;">高</span>
         <input
           v-model="dialogHeight"
-          v-number="1"
+          v-number="0"
           @keyup.enter="changeScaleInput"
         > 
       </div>
@@ -135,7 +135,6 @@
 </template>
 <script>
 import {mxClient} from '../../services/mxGlobal'
-let newBackgroundColor,newFontColor
 let alignArr = ['left','center','right']
 let valignArr = [],dialogStyle
 export default {
@@ -265,8 +264,7 @@ export default {
             this.showFont = false
         },
         pickColor() {
-            this.myEditorUi.pickColor(newBackgroundColor || 'none',color=>{
-                newBackgroundColor = color  
+            this.myEditorUi.pickColor(this.bgColor || 'none',color=>{
                 this.bgColor = color
                 let dialogStyle = {
                     background:`${this.bgColor}`,
@@ -275,8 +273,7 @@ export default {
             });
         },
         pickFontColor() {
-            this.myEditorUi.pickColor(newFontColor || 'none',color=>{
-                newFontColor = color  
+            this.myEditorUi.pickColor(this.fontColor || 'none',color=>{
                 this.fontColor = color
                 let dialogStyle = {
                     color:`${this.fontColor}`,

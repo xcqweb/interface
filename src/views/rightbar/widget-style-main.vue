@@ -69,7 +69,8 @@ export default{
     },
     computed: {
         shapeName() {
-            return this.$store.state.main.widgetInfo.shapeInfo.shape
+            let shapeNameTemp = this.$store.state.main.widgetInfo.shapeInfo.shape
+            return shapeNameTemp
         },
         rand() {
             return this.$store.state.main.rand
@@ -78,6 +79,11 @@ export default{
     watch: {
         rand() {
             this.refresh = this.rand
+        },
+        shapeName(val) {
+            if(!this.stateList.includes(val) && this.tab == 2 || !this.actionList.includes(val) && this.tab == 3 || !this.dataList.includes(val) && this.tab == 4) {
+                this.tab = 1
+            }
         },
     },
     mounted() {

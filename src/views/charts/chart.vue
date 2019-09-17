@@ -60,6 +60,7 @@
                 <span style="color:#797979;margin:0 6px;">上限</span>
                 <input
                   v-model="progressMax"
+                  v-number.minus="1"
                   style="border-left:none;border-right:none;width:52%;"
                   @keyup.enter="changeProgress"
                 >
@@ -71,6 +72,7 @@
                 <span style="color:#797979;margin:0 6px;">下限</span>
                 <input
                   v-model="progressMin"
+                  v-number.minus="1"
                   style="border-left:none;border-right:none;width:52%;"
                   @keyup.enter="changeProgress"
                 > 
@@ -104,6 +106,7 @@
               <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
                 数值 <input
                   v-model="markValue"
+                  v-number.minus="1"
                   style="width:82%;padding-left:4px;"
                 >
               </div>
@@ -259,7 +262,7 @@ export default{
             borderLineBoldList:[1,2,3,4,5],
             editMarkLine:null,
             editMarkLineIndex:0,
-            styleColorBg:'#333',
+            styleColorBg:'#000',
         }
     },
     mounted() {
@@ -282,9 +285,9 @@ export default{
                 }
                 this.styleColorBg = this.bindChartProps.yAxis.splitLine.lineStyle.color
             }else{
-                this.progressMin = this.options.series.min
-                this.progressMax = this.options.series.max
                 this.options2 = this.bindChartProps
+                this.progressMin = this.options2.series.min
+                this.progressMax = this.options2.series.max
             }
         }
     },
@@ -386,7 +389,7 @@ export default{
             this.options1.legend.show = this.chartLegend
         },
         pickStyleColor() {
-            this.myEditorUi.pickColor('#fff',color=>{
+            this.myEditorUi.pickColor(this.styleColorBg,color=>{
                 this.styleColorBg = color
                 let obj = {color:color}
                 this.options1.yAxis.splitLine.lineStyle = obj
