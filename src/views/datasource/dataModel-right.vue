@@ -318,9 +318,9 @@
         </div>
         <div class="dataSource-condition-bottom">
           <Button
+            v-show="!modelEditing"
             size="small"
             style="width:69px;"
-            :disabled="modelEditing"
             @click.stop.prevent="CancelModelHandle"
           >
             {{ cancelModelText }}
@@ -403,7 +403,7 @@ export default {
             currenModelId:'',
             currenModelName:'',
             alldata: {
-                conditionLogic: '',
+                conditionLogic: '1',
                 data: [
                     [
                         {
@@ -439,7 +439,7 @@ export default {
                 }
             ],
             tdheight: 30,
-            conditionLogicalSelect: '',
+            conditionLogicalSelect: '1',
             conditionSignList:[],
             conditionLogical:conditionLogical,
             logicalSignList:logicalSignList,
@@ -671,7 +671,7 @@ export default {
                 Message.warning(alertTip)
                 return false
             }
-            let data = formula ? JSON.parse(formula) : {conditionLogic: '',data:[[{paramName: '',logical:'',minValue:'',maxValue:'',fixedValue:''}]]}
+            let data = formula ? JSON.parse(formula) : {conditionLogic: '1',data:[[{paramName: '',logical:'',minValue:'',maxValue:'',fixedValue:''}]]}
             this.alldata.data = data.data
             this.alldata.conditionLogic = data.conditionLogic || ''
             this.textareValue = descript || ''
@@ -679,6 +679,7 @@ export default {
             this.currenModelId = modelId
             this.currenModelName = modelName
             this.conditionLogicalSelect = data.conditionLogic || ''
+            
         },
         MouseEnterHandle(evt,index) {
             evt.stopPropagation()
@@ -766,24 +767,30 @@ export default {
         },
         // 删除模型
         deleteModelHandle() {
-            this.requestUtil.delete(`${this.urls.addModelList.url}/${this.ModelNameArr[this.currentMouseIndex].sourceId}`).then(() => {
-                if (this.modelNumber === this.currentMouseIndex) {
-                    let ModelNameArrCopy = JSON.parse(JSON.stringify(this.ModelNameArr))
-                    let index = this.currentMouseIndex
-                    let _len = ModelNameArrCopy.length - 1
-                    this.ModelNameArr.splice(this.currentMouseIndex, 1)
-                    if (this.ModelNameArr.length) {
-                        if (this.currentMouseIndex === _len) {
-                            this.clickModelHandle('', this.ModelNameArr[_len - 1].sourceId, this.ModelNameArr[_len - 1].modelName,this.ModelNameArr[_len - 1].formula,this.ModelNameArr[_len - 1].descript, _len - 1)
-                        } else {
-                            this.clickModelHandle('', this.ModelNameArr[index].sourceId, this.ModelNameArr[index].modelName,this.ModelNameArr[index].formula,this.ModelNameArr[index].descript, index)
+            console.log(this.currentMouseIndex)
+            if (this.currentMouseIndex || this.currentMouseIndex === 0) {
+                this.requestUtil.delete(`${this.urls.addModelList.url}/${this.ModelNameArr[this.currentMouseIndex].sourceId}`).then(() => {
+                    if (this.modelNumber === this.currentMouseIndex) {
+                        let ModelNameArrCopy = JSON.parse(JSON.stringify(this.ModelNameArr))
+                        let index = this.currentMouseIndex
+                        let _len = ModelNameArrCopy.length - 1
+                        this.ModelNameArr.splice(this.currentMouseIndex, 1)
+                        this.currentMouseIndex = null
+                        if (this.ModelNameArr.length) {
+                            if (this.currentMouseIndex === _len) {
+                                this.clickModelHandle('', this.ModelNameArr[_len - 1].sourceId, this.ModelNameArr[_len - 1].modelName,this.ModelNameArr[_len - 1].formula,this.ModelNameArr[_len - 1].descript, _len - 1)
+                            } else {
+                                this.clickModelHandle('', this.ModelNameArr[index].sourceId, this.ModelNameArr[index].modelName,this.ModelNameArr[index].formula,this.ModelNameArr[index].descript, index)
+                            }
                         }
-                        
+                    } else {
+                        this.ModelNameArr.splice(this.currentMouseIndex, 1)
+                        this.currentMouseIndex = null
                     }
-                } else {
-                    this.ModelNameArr.splice(this.currentMouseIndex, 1)
-                }
-            })
+                })
+            } else {
+                this.ifShowSuspension = false
+            }
         },
         deleteAddtionHandle(index) {
             if (!this.modelEditing) {

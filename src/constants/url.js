@@ -18,4 +18,5 @@ export default {
     addModelList: {url: 'api/iot-cds/cds/model', 'desc':'新增修改模型'},
     getModelByIds: {url: 'api/iot-cds/cds/getModelByIds', 'desc':'根据id批量获取模型'},
     timeSelect: {url: '/api/device/device/time/select/', 'desc':'获取参数默认时长'},
+    ifMultipleEdit: {url: '/api/iot-cds/cds/configurationDesignStudio/judgeIsEdit/', 'des': '是否有多人编辑'}
 }
