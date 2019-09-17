@@ -3319,6 +3319,7 @@ EditorUi.prototype.pickColor = function(color, apply)
     {
         graph.cellEditor.restoreSelection(selState);
     });
+    dlg.container.dataset.dialog = 'colorDialog'
     this.showDialog(dlg.container, 203, 242, true, false);
     dlg.init();
 };
@@ -3480,8 +3481,8 @@ EditorUi.prototype.saveSuccess = function (res, hideDialog) {
         sessionStorage.setItem('applyId',res.studioId)
     }
     setTimeout(() => {
-        this.hideDialog();
         if (!hideDialog){
+            this.hideDialog()
             this.editor.tipInfo(this, true, '保存');
         }
     }, 350);
@@ -3491,8 +3492,8 @@ EditorUi.prototype.saveSuccess = function (res, hideDialog) {
  */
 EditorUi.prototype.saveError = function (res, hideDialog) {
     setTimeout(() => {
-        this.hideDialog();
         if (!hideDialog){
+            this.hideDialog()
             this.editor.tipInfo(this, null, res.message);
         }
     }, 350);

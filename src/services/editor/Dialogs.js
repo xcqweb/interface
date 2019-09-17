@@ -43,14 +43,14 @@ var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
     rect.style.border = 'none';
     rect.setAttribute('disabled',true);
 
-    var copyColor = document.createElement('p');
+ /*    var copyColor = document.createElement('p');
     copyColor.style.width = '16px';
     copyColor.style.height = '16px';
     copyColor.style.marginLeft = '10px';
     copyColor.style.background = "url('/static/images/default/copyColor.png')";
-    copyColor.style.cursor = 'pointer';
+    copyColor.style.cursor = 'pointer'; */
 
-    //点击复制
+   /*  //点击复制
     mxEvent.addListener(copyColor,'click',() => {
         var oInput = document.createElement('input');
         oInput.value = input.value;
@@ -60,10 +60,10 @@ var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
         oInput.className = 'oInput';
         oInput.style.display='none';
     },false)
-
+ */
     selectColor.appendChild(rect);
     selectColor.appendChild(input);
-    selectColor.appendChild(copyColor);
+    //selectColor.appendChild(copyColor);
 
     var border = document.createElement('p');
     border.style.height = '1px';
@@ -980,38 +980,6 @@ let addPageDialog = function(editorUi, type) {
     btnContent.appendChild(genericBtn);
 	
     saveContent.appendChild(btnContent)
-    this.container = saveContent;
-}
-/**
- * 更换图元
- */
-var ChangePrimitiveDialog = function(editorUi) {
-    var saveContent = editorUi.createDiv('geDialogInfo');
-    saveContent.setAttribute('data-dialog', 'changePrimitive');
-    // 图元列表
-    var graph = editorUi.editor.graph;
-    var cells = graph.getSelectionCells();
-    saveContent.innerHTML = `
-	${
-    editorUi.sidebar.primitives.map(val => `
-			<img class="primitiveIcon" src="/static/stencils/basic/${val}.png" />
-		`).join('')
-}
-	`
-    // 点击更换图元
-    mxEvent.addListener(saveContent, 'click', function(evt) {
-        if (evt.target.nodeName === 'IMG') {
-            graph.getModel().beginUpdate();
-            try {
-                graph.setCellStyles(mxConstants.STYLE_IMAGE, evt.target.getAttribute('src'), cells);
-                editorUi.hideDialog();
-            }
-            finally {
-                graph.getModel().endUpdate();
-            }
-        }
-    })
-    // saveContent.appendChild(primitiveList);
     this.container = saveContent;
 }
 
@@ -1997,6 +1965,5 @@ var LayersWindow = function(editorUi, x, y, w, h)
 
 export {
     OpenDialog, ColorDialog, AboutDialog, valueDialog,PreviewDialog, PublishDialog, tipDialog, ImageDialog,
-    addPageDialog,
-    ChangePrimitiveDialog, EditDiagramDialog, LinkDialog, OutlineWindow, LayersWindow, FilenameDialog
+    addPageDialog,EditDiagramDialog, LinkDialog, OutlineWindow, LayersWindow, FilenameDialog
 }
