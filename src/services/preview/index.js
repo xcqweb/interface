@@ -34,7 +34,7 @@ class Main {
         if (!id) {
             return
         }
-        applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudio/${id}`, 'GET').catch((e) => console.log(e))
+        applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudio/${id}`, 'GET')
         if (!applyInfo) {
             return
         }
