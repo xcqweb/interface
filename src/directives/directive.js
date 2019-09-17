@@ -44,18 +44,18 @@ Vue.directive('number', {
         let decimal = value;
         const minus = !!modifiers.minus;
         const isEmpty = val => val === '' || val === null || val === undefined;
+        let reg = null;
+        if (isEmpty(decimal)) {
+            reg = new RegExp(minus ? '(\\-\\d*|\\d+)(\\.\\d*)?' : '(\\d+)(\\.\\d*)?');
+        } else if (decimal === 0) {
+            reg = new RegExp(minus ? '(\\-\\d*|\\d+)' : '(\\d+)');
+        } else {
+            decimal = Math.abs(decimal);
+            reg = new RegExp(minus ? '(\\-\\d*|\\d+)(\\.\\d{0,' + decimal + '})?' : '(\\d+)(\\.\\d{0,' + decimal + '})?');
+        }
         const toNumber = function(val) {
             if (!isEmpty(val)) {
-                val = val.toString().replace(new RegExp('[a-zA-Z,]', 'g'), '');
-                let reg = null;
-                if (isEmpty(decimal)) {
-                    reg = new RegExp(minus ? '(\\-\\d*|\\d+)(\\.\\d*)?' : '(\\d+)(\\.\\d*)?');
-                } else if (decimal === 0) {
-                    reg = new RegExp(minus ? '(\\-\\d*|\\d+)' : '(\\d+)');
-                } else {
-                    decimal = Math.abs(decimal);
-                    reg = new RegExp(minus ? '(\\-\\d*|\\d+)(\\.\\d{0,' + decimal + '})?' : '(\\d+)(\\.\\d{0,' + decimal + '})?');
-                }
+                val = val.toString().replace(new RegExp('[a-zA-Z,]', 'g'), '');                
                 val = val.match(reg);
                 // 替换前置0 如：01.2122 或 -01.12类数字
                 val = val ? (minus ? val[0].replace(new RegExp('^(\\-?)(0*)(\\d+)'), '$1$3') : val[0].replace(new RegExp('^(0*)(\\d+)'), '$2')) : '';
