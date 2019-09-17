@@ -33,7 +33,7 @@ function destroyWs(applyData,pageId) {
  * @param {string} method 请求方法，默认GET方法
  * @param {object} data 请求参数
  */
-async function geAjax(url, method = 'GET', data = null) {
+function geAjax(url, method = 'GET', data = null) {
     return new Promise((resolve,reject)=>{
         callAjax()
         function callAjax() {
@@ -58,7 +58,7 @@ async function geAjax(url, method = 'GET', data = null) {
                             setCookie('token', res.token);
                             setCookie('refreshToken', res.refreshToken)
                             callAjax()
-                        })
+                        }).catch(e => console.log(e))
                     }
                     reject(res)
                 }
