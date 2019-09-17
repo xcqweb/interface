@@ -973,7 +973,7 @@ Sidebar.prototype.renameNode = function(ele, pageType) {
     ele.appendChild(editInput);
     editInput.focus();
     let saveFn = () => {
-        let name = editInput.value.trim();
+        let name = editInput.value.trim()
         mxEvent.removeListener(document.body, 'click', saveFn);
         if (!name) {
             tipDialog(this.editorUi, `${pageType === 'normal' ? '页面' : '弹窗'}名称不能为空`);
@@ -982,8 +982,9 @@ Sidebar.prototype.renameNode = function(ele, pageType) {
             tipDialog(this.editorUi, `${pageType === 'normal' ? '页面' : '弹窗'}名称不能超过20个字符`);
             ele.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${oldVal}</span><span class="right-icon-dolt"></span>`;
         } else {
-            this.editorUi.editor.pages[ele.getAttribute('data-pageid')].title = name;
+            this.editorUi.editor.pages[ele.getAttribute('data-pageid')].title = name
             $(".dialog-title-m").html(name)
+            VueEvent.$emit('refreshAction')
             ele.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${name}</span><span class="right-icon-dolt"></span>`;
         }
     }

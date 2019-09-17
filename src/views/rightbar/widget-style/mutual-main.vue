@@ -101,6 +101,7 @@ import Visible from './visible'
 import Change from './change'
 import {sureDialog} from '../../../services/Utils'
 import {mxUtils} from '../../../services/mxGlobal'
+import VueEvent from '../../../services/VueEvent.js'
 // 不显示节点的名称
 let forbiddenShape = ['menuCell', 'tableCell', 'label']
 export default{
@@ -120,58 +121,65 @@ export default{
         }
     },
     mounted() {
-        let values = Object.values(this.myEditorUi.editor.pages)
-        let pagesVal = values.filter(item=>{
-            return item.type === 'normal'
+        this.init()
+        VueEvent.$off('refreshAction')
+        VueEvent.$on('refreshAction',()=>{
+            this.init()
         })
-        let dialogVal = values.filter(item=>{
-            return item.type === 'dialog'
-        })
-        this.pages = pagesVal.map(item=>{
-            return {
-                id:item.id,
-                title:item.title,
-                selected:false,
-            }
-        })
-        this.dialogs = dialogVal.map(item=>{
-            return {
-                id:item.id,
-                title:item.title,
-                selected:false,
-                hide:true,
-            }
-        })
-        let graph = this.myEditorUi.editor.graph
-        let cells = graph.getModel().cells
-        this.currentPageWidgets = []
-        for (let key in cells) {
-            if (cells[key].id != '0' && cells[key].id != '1') {
-                let state = graph.view.getState(cells[key])
-                let info = state.style.shape
-                if (forbiddenShape.indexOf(info) != -1) {
-                    continue
-                }
-                let title = this.getCellInfo(graph,'palettename', cells[key])
-                let hide = this.getCellInfo(graph,'hide', cells[key])
-                if(!hide) {
-                    hide = false
-                }else{
-                    hide = true
-                }
-                let titleType = `${title}(${this.myEditorUi.editor.palettesInfo[info].name})` 
-                this.currentPageWidgets.push({
-                    id:cells[key].id,
-                    title:title,
-                    titleType:titleType,
-                    hide:hide,
-                    selected:false,
-                })
-            }
-        }
-        this.initActions()
     },
     methods: {
+        init() {
+            let values = Object.values(this.myEditorUi.editor.pages)
+            let pagesVal = values.filter(item=>{
+                return item.type === 'normal'
+            })
+            let dialogVal = values.filter(item=>{
+                return item.type === 'dialog'
+            })
+            this.pages = pagesVal.map(item=>{
+                return {
+                    id:item.id,
+                    title:item.title,
+                    selected:false,
+                }
+            })
+            this.dialogs = dialogVal.map(item=>{
+                return {
+                    id:item.id,
+                    title:item.title,
+                    selected:false,
+                    hide:true,
+                }
+            })
+            let graph = this.myEditorUi.editor.graph
+            let cells = graph.getModel().cells
+            this.currentPageWidgets = []
+            for (let key in cells) {
+                if (cells[key].id != '0' && cells[key].id != '1') {
+                    let state = graph.view.getState(cells[key])
+                    let info = state.style.shape
+                    if (forbiddenShape.indexOf(info) != -1) {
+                        continue
+                    }
+                    let title = this.getCellInfo(graph,'palettename', cells[key])
+                    let hide = this.getCellInfo(graph,'hide', cells[key])
+                    if(!hide) {
+                        hide = false
+                    }else{
+                        hide = true
+                    }
+                    let titleType = `${title}(${this.myEditorUi.editor.palettesInfo[info].name})` 
+                    this.currentPageWidgets.push({
+                        id:cells[key].id,
+                        title:title,
+                        titleType:titleType,
+                        hide:hide,
+                        selected:false,
+                    })
+                }
+            }
+            this.initActions()
+        },
         getCellInfo(graph,key, cell) {
             let cellInfo = graph.getModel().getValue(cell)
             return cellInfo && cellInfo.attributes && cellInfo.attributes[key] && cellInfo.attributes[key].nodeValue
