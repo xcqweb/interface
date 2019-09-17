@@ -50,21 +50,19 @@ async function getSubscribeInfos(pointParams) {
         item.params = item.keys
         params.subscribeInfos.push(item)
     }
-    const data = await geAjax('/api/pubsub/subscribe', 'POST', JSON.stringify(params)).catch(e=>console.log(e))
+    let data = await geAjax('/api/pubsub/subscribe', 'POST', JSON.stringify(params)).catch(e => console.log(e))
+    data = JSON.parse(data)
     websocketUrlReal = data.data
     return data
 }
 //绑定数据&切换状态的处理方法
 function setterRealData(res) {
-    console.log(res)
     res.forEach((item)=>{
         let els = document.querySelectorAll(`.point_${item.pointId}`)
-        console.log(els.length)
         for(let i = 0;i < els.length;i++) {
             let shapeName = $(els[i]).data("shapeName")
             let paramShow = $(els[i]).data("paramShow")
             let val = item[paramShow[0]]
-            console.log(paramShow, item, els[i].id)
             if(!val && val != 0) {
                 continue
             }
@@ -72,7 +70,7 @@ function setterRealData(res) {
                 let progressPropsObj = $(els[i]).data("progressPropsObj")
                 let {max,min,type} = progressPropsObj
                 let percentVal = val / (max - min)
-                let text = `${toDecimal2NoZero(percentVal) * 100}%`
+                let text = `${toDecimal2NoZero(percentVal * 100)}%`
                 if(type == 'real') {
                     text = val
                 }
@@ -112,7 +110,7 @@ function setterRealData(res) {
                     if (!val) {
                         val = 0
                     }
-                    options.series.data = [ val]
+                    options.series[0].data[0].value = val
                 }
                 echartsInstance.setOption(options)
             }else {
