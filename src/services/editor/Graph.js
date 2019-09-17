@@ -7955,10 +7955,12 @@ if (typeof mxVertexHandler != 'undefined')
         {
              let cell = this.graph.getSelectionCell()
              let state = this.graph.view.getState(cell)
-             let shapeName = state.style.shape
-             // 表格和菜单禁止旋转 
-             if (shapeName === 'menulist' || shapeName === 'tableBox' || shapeName === 'label') {
-                 return false
+             if (state.style && state.style.shape){
+                let shapeName = state.style.shape
+                // 表格和菜单禁止旋转 
+                if (shapeName === 'menulist' || shapeName === 'tableBox' || shapeName === 'label') {
+                    return false
+                }
              }
              return this.graph.isEnabled() && this.rotationEnabled && this.graph.isCellRotatable(this.state.cell) &&
 			(mxGraphHandler.prototype.maxCells <= 0 || this.graph.getSelectionCount() < mxGraphHandler.prototype.maxCells);

@@ -205,13 +205,19 @@ export default{
             if(el) {
                 el.appendChild(dlg.container)
                 inputs = $(".state-color-con").find("input")
-                $(inputs[1]).change((e)=>{
-                    let {value} = e.target
+                let defaultColorEls =  $(".state-color-con").find('center')
+                let changeStyleDeal = (value)=>{
                     style[tabArr[this.typeTab - 1]] = value
                     $(inputs[1]).val(value)
                     $(inputs[0]).css('background',value)
+                }
+                defaultColorEls.on("click","li",(event)=>{
+                    let target = $(event.target)
+                    changeStyleDeal(target.css('background-color'))
                 })
-                
+                $(inputs[1]).change((e)=>{
+                    changeStyleDeal(e.target.value)
+                })
             }
         })
     },  
@@ -228,6 +234,7 @@ export default{
             this.$emit("closeStateDialog")
         },
         submitState() {
+            console.log(style)
             let data = {
                 name:this.stateName,
                 desc:this.stateDesc,

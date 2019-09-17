@@ -22,7 +22,7 @@
         <span style="color:#797979;margin:0 6px;">X</span>
         <input
           v-model="positionSize.x"
-          v-number.minus="1"
+          v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         >
@@ -34,7 +34,7 @@
         <span style="color:#797979;margin:0 6px;">Y</span>
         <input
           v-model="positionSize.y"
-          v-number.minus="1"
+          v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         > 
@@ -50,7 +50,7 @@
         <span style="color:#797979;margin:0 6px;">宽</span>
         <input
           v-model="positionSize.width"
-          v-number="1"
+          v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         >
@@ -62,7 +62,7 @@
         <span style="color:#797979;margin:0 6px;">高</span>
         <input
           v-model="positionSize.height"
-          v-number="1"
+          v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize"
         > 
@@ -78,7 +78,7 @@
           <span style="color:#797979;margin:0 6px;">X</span>
           <input
             v-model="positionSize.sx"
-            v-number.minus="1"
+            v-number="0"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -90,7 +90,7 @@
           <span style="color:#797979;margin:0 6px;">Y</span>
           <input
             v-model="positionSize.sy"
-            v-number.minus="1"
+            v-number="0"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -105,7 +105,7 @@
           <span style="color:#797979;margin:0 6px;">X</span>
           <input
             v-model="positionSize.tx"
-            v-number.minus="1"
+            v-number="0"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -117,7 +117,7 @@
           <span style="color:#797979;margin:0 6px;">Y</span>
           <input
             v-model="positionSize.ty"
-            v-number.minus="1"
+            v-number="0"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize"
           > 
@@ -400,7 +400,7 @@
           <span style="color:#797979;margin:0 6px;">上限</span>
           <input
             v-model="progressMax"
-            v-number.minus="1"
+            v-number="0"
             style="border-left:none;border-right:none;width:52%;"
             @keyup.enter="changeProgress"
           >
@@ -412,7 +412,7 @@
           <span style="color:#797979;margin:0 6px;">下限</span>
           <input
             v-model="progressMin"
-            v-number.minus="1"
+            v-number="0"
             style="border-left:none;border-right:none;width:52%;"
             @keyup.enter="changeProgress"
           > 
@@ -637,22 +637,24 @@ export default {
         },
         changePositionSize() {
             let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
-            let geo = graph.getCellGeometry(cell)
-            if(graph.model.isEdge(cell)) {
-                geo.sourcePoint.x = +this.positionSize.sx
-                geo.sourcePoint.y = +this.positionSize.sy
-                geo.targetPoint.x = +this.positionSize.tx
-                geo.targetPoint.y = +this.positionSize.ty
-            }else {
-                geo.x = +this.positionSize.x
-                geo.y = +this.positionSize.y
-                geo.width = +this.positionSize.width
-                geo.height = +this.positionSize.height
-            }
-            graph.getModel().beginUpdate()
-            graph.getModel().setGeometry(cell,geo)
-            graph.getModel().endUpdate()
+            let cells = graph.getSelectionCells()
+            cells.forEach((cell)=>{
+                let geo = graph.getCellGeometry(cell)
+                if(graph.model.isEdge(cell)) {
+                    geo.sourcePoint.x = +this.positionSize.sx
+                    geo.sourcePoint.y = +this.positionSize.sy
+                    geo.targetPoint.x = +this.positionSize.tx
+                    geo.targetPoint.y = +this.positionSize.ty
+                }else {
+                    geo.x = +this.positionSize.x
+                    geo.y = +this.positionSize.y
+                    geo.width = +this.positionSize.width
+                    geo.height = +this.positionSize.height
+                }
+                graph.getModel().beginUpdate()
+                graph.getModel().setGeometry(cell,geo)
+                graph.getModel().endUpdate()
+            })
             graph.refresh()
             this.$nextTick(() => {
                 this.$store.commit('getWidgetInfo',graph)

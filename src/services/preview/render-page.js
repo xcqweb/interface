@@ -5,6 +5,7 @@
 let pageWidth = 0,pageHeight = 0
 // websocket信息
 let applyData = {}
+let finishFlag = false //控件递归结束标记
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
 
@@ -211,6 +212,7 @@ class PreviewPage {
     // 清空页面内容
     clearPage() {
         this.gePreview.innerHTML = ''
+        finishFlag = false
     }
     // 解析页面
     parsePage(page) {
@@ -258,18 +260,20 @@ class PreviewPage {
             lockWs: false
         };
         this.currentPageId = page.id
-        $(()=>{
+        /*   $(()=>{
             this.pubSubData()
-        })
+        }) */
         return cells
     }
     pubSubData() {
         createWsReal(this.currentPageId, applyData)
+        console.log(this.wsParams,"tt-cc")
         getLastData(this.wsParams) //低频数据 通过调用最后一笔数据显示
     }
     // 渲染页面
     renderPages(cells, ele = this.gePreview) {
-        for (let cell of cells) {
+        for (let i = 0;i < cells.length;i++) {
+            let cell = cells[i]
             let cellHtml = this.renderCell(cell)
             ele.appendChild(cellHtml)
             // 组内资源
@@ -277,6 +281,7 @@ class PreviewPage {
                 this.renderPages(cell.children, cellHtml)
             }
         }
+        finishFlag = true
     }
 
     // 渲染控件节点
@@ -340,7 +345,7 @@ class PreviewPage {
             cellHtml.style.lineHeight = cell.height + 'px'
         }
         cellHtml.style.textAlign = cell.align
-        if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart'].includes(shapeName)) {
+        if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress'].includes(shapeName)) {
             cellHtml.style.backgroundColor = 'transparent'
         }else{
             if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none')) {
@@ -417,16 +422,16 @@ class PreviewPage {
                             }
                         })
                         $(cellHtml).data("stateModels", cellStateInfoHasModel)
-                        initWsParams(this.wsParams, devices, resParams, paramShow)
+                        initWsParams(this.currentPageId, this.wsParams, devices, resParams, paramShow)
                     })
                 }else{
-                    initWsParams(this.wsParams, devices, resParams, paramShow)
+                    initWsParams(this.currentPageId, this.wsParams, devices, resParams, paramShow)
                 }
             } else{
-                initWsParams(this.wsParams,devices, resParams, paramShow)
+                initWsParams(this.currentPageId,this.wsParams,devices, resParams, paramShow)
             }
         }
-        function initWsParams(wsParams,devices, resParams, paramShow) {
+        function initWsParams(currentPageId,wsParams, devices, resParams, paramShow) {
             if (devices) {
                 devices.forEach((item) => {
                     cellHtml.className += ` point_${item.id}`
@@ -438,6 +443,10 @@ class PreviewPage {
                         })
                     }
                 })
+            }
+            if(finishFlag) {
+                createWsReal(currentPageId, applyData)
+                getLastData(wsParams) //低频数据 通过调用最后一笔数据显示
             }
         }
         return cellHtml

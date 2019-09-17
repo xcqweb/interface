@@ -28,11 +28,11 @@ var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
     selectColor.style.marginTop = '8px';
     selectColor.style.alignItems='center'
     var input = document.createElement('input');
-    input.style.width = '80px';
+    input.style.width = '120px';
     input.style.border = '1px solid #D4D4D4';
     input.style.backgroundColor = '#fff';
     input.style.borderRadius = '2px';
-    // input.setAttribute('disabled',true);
+    input.setAttribute('disabled',"");
 
     var rect = document.createElement('input')
     rect.style.width = '16px';
@@ -41,7 +41,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
     rect.style.backgroundColor = '#fff';
     rect.style.borderRadius = '2px';
     rect.style.border = 'none';
-    rect.setAttribute('disabled',true);
+    rect.setAttribute('disabled',"");
 
  /*    var copyColor = document.createElement('p');
     copyColor.style.width = '16px';
