@@ -3555,13 +3555,12 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                     // 编辑保存
                     data.studioId = id
                     editor.ajax(ui, `${urls.ifMultipleEdit.url}${id}`, 'GET', '', (res) => {
-                        console.log(res)
                         if (res.code === '3012') {
-                            tipDialog(this.editorUi, `当前应用 ${res.data.message ? res.data.message : '' } 正在编辑, 无法保存`);
+                            tipDialog(ui, `当前应用 ${res.message ? res.message : '' } 正在编辑, 无法保存`);
                             return;
                         } else if (res.code === '0') {
                             editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
-                                this.saveSuccess(res, hideDialog, type);
+                                this.saveSuccess(res, hideDialog);
                                 setCookie('saveIotCds', 'put');
                                 resolve(res);
                             }, (res) => {
