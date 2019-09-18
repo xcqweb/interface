@@ -373,6 +373,7 @@ export default{
             console.log()
         },
         checkAllGroupChange(data, number) {
+            console.log(data)
             let deviceNameListLen = (number === 1 ? this.paramsNameList.length : this.deviceNameList.length)
             if (data.length === deviceNameListLen) {
                 this.indeterminateArr[number] = false;

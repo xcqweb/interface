@@ -272,28 +272,28 @@ export default {
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
             // 拿到之前绑定的 bindData
-            let startBindData = this.getCellModelInfo('bindData')
-            console.log(startBindData)
-            if (!startBindData) {
-                this.setCellModelInfo('bindData',{dataSource:value})
-                if (this.ifShowArrow) {
-                    this.isInitFlag = false
-                    this.initData()
-                }
-            } else {
-                if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
-                    let deviceNameChild = startBindData.dataSource.deviceNameChild || []
-                    startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
-                    startBindData.dataSource.dataSourceChild = value.dataSourceChild
-                    startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
-                    this.setCellModelInfo('bindData',startBindData)
+            this.$nextTick(() => {
+                let startBindData = this.getCellModelInfo('bindData')
+                if (!startBindData) {
+                    this.setCellModelInfo('bindData',{dataSource:value})
                     if (this.ifShowArrow) {
                         this.isInitFlag = false
                         this.initData()
                     }
+                } else {
+                    if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
+                        let deviceNameChild = startBindData.dataSource.deviceNameChild || []
+                        startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
+                        startBindData.dataSource.dataSourceChild = value.dataSourceChild
+                        startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
+                        this.setCellModelInfo('bindData',startBindData)
+                        if (this.ifShowArrow) {
+                            this.isInitFlag = false
+                            this.initData()
+                        }
+                    }
                 }
-            }
-            // Message('绑定成功')
+            })
         })
     },
     methods:{
@@ -568,6 +568,13 @@ export default {
             }
             modelInfo.setAttribute(key, JSON.stringify(data))
             graph.getModel().setValue(cell, modelInfo)
+
+            let state = graph.view.getState(cell)
+            let shapeName = state.style.shape
+            // 防止表格小单元格 跳动
+            if (shapeName === 'tableCell') {
+                graph.refresh()
+            }
         },
     }
 }
