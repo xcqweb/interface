@@ -282,7 +282,9 @@ export default{
             deviceIdArr: [],
             ifclearSelect: true,
             deviceNumber: '',
-            paramNumber: ''
+            paramNumber: '',
+            paramsPageCurrent: 1,
+            devicePageCurrent: 1
         }
     },
     created() {
@@ -342,6 +344,7 @@ export default{
 
         },
         handleCheckAll(number) {
+            console.log(this.indeterminateArr[number])
             if (this.indeterminateArr[number]) {
                 this.checkAllArr[number] = false;
             } else {
@@ -349,6 +352,7 @@ export default{
             }
             this.indeterminateArr[number] = false;
             let dataArr = number === 1 ? this.paramsNameList : this.deviceNameList
+            console.log(dataArr)
             if (this.checkAllArr[number]) {
                 dataArr.forEach((item) => {
                     if (number === 1) {
@@ -366,8 +370,10 @@ export default{
             }
             this.paramIdArr = this.paramsNameListArr
             this.deviceIdArr = this.deviceNameListArr
+            console.log()
         },
         checkAllGroupChange(data, number) {
+            console.log(data)
             let deviceNameListLen = (number === 1 ? this.paramsNameList.length : this.deviceNameList.length)
             if (data.length === deviceNameListLen) {
                 this.indeterminateArr[number] = false;
@@ -392,7 +398,11 @@ export default{
                 Message.warning(`请选择设备类型`)
             } else {
                 let objData = {
-                    deviceTypeId : this.modelvalue2
+                    deviceTypeId : this.modelvalue2,
+                    studioId: sessionStorage.getItem("applyId") || '',
+                    type: 0,
+                    size:this.PAGE_SIZE,
+                    current:this.PAGE_CURREN
                 }
                 if (+type === 1) {
                     objData.paramName = value.trim()
@@ -454,10 +464,13 @@ export default{
         },
         // 参数名称
         paramPageChangeHandle(value) {
+            console.log(value)
+            // this.paramsPageCurrent = value
             this.pageChangeHandle(value, 1)
         },
         // 翻页设备名称
         devicePageChangeHandle(value) {
+            // this.devicePageCurrent = value
             this.pageChangeHandle(value, 2)
         },
         pageChangeHandle(value, type) {
