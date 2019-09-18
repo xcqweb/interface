@@ -122,7 +122,6 @@ export default{
             })
             item.selected = true 
             this.states = this.getWidgetStatesById(item.id)
-            this.checkState(status[0])
         },
         getWidgetStatesById(id) {
             let states = []

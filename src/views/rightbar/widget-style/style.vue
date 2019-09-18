@@ -3,17 +3,20 @@
     class="dialogPage"
     style="padding:0 4px 40px;overflow: auto;height:100%;margin-bottom:40px;"
   >
-    <p style="margin-top:10px;">
-      组件名称
-    </p>
-    <input
-      v-model="widgetName"
-      style="padding:0 4px;"
-      @keyup.enter="changeName"
+    <div style="height:10px;" />
+    <template
+      v-if="cellsCount == 1"
     >
-    <div class="item-line" />
+      组件名称
+      <input
+        v-model="widgetName"
+        style="padding:0 4px;"
+        @keyup.enter="changeName"
+      >
+      <div class="item-line" />
+    </template>
     <div
-      v-if="shapeName!='menuCell' && shapeName!='tableCell' && shapeName!='beeline' "
+      v-if="shapeName!='menuCell' && shapeName!='tableCell' && shapeName!='beeline' && edgeInfo !== 2"
       style="display:flex;margin-top:4px;"
     >
       <div
@@ -24,7 +27,7 @@
           v-model="positionSize.x"
           v-number="0"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changePositionSize"
+          @keyup.enter="changePositionSize('X')"
         >
       </div>
       <div
@@ -36,12 +39,12 @@
           v-model="positionSize.y"
           v-number="0"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changePositionSize"
+          @keyup.enter="changePositionSize('Y')"
         > 
       </div>
     </div>
     <div
-      v-if="shapeName!='beeline' && shapeName!='tableBox' && shapeName!='menulist'"
+      v-if="shapeName!='beeline' && shapeName!='tableBox' && shapeName!='menulist' && edgeInfo !== 2"
       style="display:flex;margin-top:2px;"
     >
       <div
@@ -52,7 +55,7 @@
           v-model="positionSize.width"
           v-number="0"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changePositionSize"
+          @keyup.enter="changePositionSize('W')"
         >
       </div>
       <div
@@ -64,11 +67,11 @@
           v-model="positionSize.height"
           v-number="0"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changePositionSize"
+          @keyup.enter="changePositionSize('H')"
         > 
       </div>
     </div>
-    <div v-if="shapeName=='beeline'">
+    <div v-if="shapeName=='beeline' && edgeInfo !== 2">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         起点
         <div
@@ -80,7 +83,7 @@
             v-model="positionSize.sx"
             v-number="0"
             style="border-left:none;border-right:none;"
-            @keyup.enter="changePositionSize"
+            @keyup.enter="changePositionSize('SX')"
           > 
         </div>
         <div
@@ -92,7 +95,7 @@
             v-model="positionSize.sy"
             v-number="0"
             style="border-left:none;border-right:none;"
-            @keyup.enter="changePositionSize"
+            @keyup.enter="changePositionSize('SY')"
           > 
         </div>
       </div>
@@ -107,7 +110,7 @@
             v-model="positionSize.tx"
             v-number="0"
             style="border-left:none;border-right:none;"
-            @keyup.enter="changePositionSize"
+            @keyup.enter="changePositionSize('TX')"
           > 
         </div>
         <div
@@ -119,7 +122,7 @@
             v-model="positionSize.ty"
             v-number="0"
             style="border-left:none;border-right:none;"
-            @keyup.enter="changePositionSize"
+            @keyup.enter="changePositionSize('TY')"
           > 
         </div>
       </div>
@@ -162,7 +165,7 @@
       />
     </div>
     <div
-      v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && shapeName!='linkTag' && !shapeName.includes('Chart') && !shapeName.includes('image') && shapeName!='beeline'"
+      v-if="(!selectMenu && shapeName!='menuCell' || selectMenu && shapeName=='menuCell') && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && shapeName!='linkTag' && !shapeName.includes('Chart') && !shapeName.includes('image') && shapeName!='beeline' && edgeInfo!==2"
       class="titleSet"
     >
       <div class="item-title">
@@ -174,10 +177,17 @@
             v-clickOutSide="hideFont"
             class="item-container fontSet"
             style="justify-content:space-between;position:relative;"
-            @click="showFont=true"
           >
-            {{ fontText }}
-            <img src="../../../assets/images/menu/down_ic.png">
+            <input
+              v-model="fontText"
+              v-number="0"
+              style="border-left: none;border-right: none"
+              @keyup.enter="changeFont(fontText)"
+            >
+            <img
+              src="../../../assets/images/menu/down_ic.png"
+              @click="showFont=true"
+            >
             <ul
               v-if="showFont"
               class="font-dialog"
@@ -245,11 +255,11 @@
         </div>
       </div>
     </div>
-    <div v-if="selectMenu && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text' && shapeName!='tableBox' && shapeName!='menulist'">
+    <div v-if="(!selectMenu && shapeName!='menuCell' || selectMenu && shapeName=='menuCell') && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text' && shapeName!='tableBox' && shapeName!='menulist'">
       <div class="item-title">
         外观
       </div>
-      <div v-if="!fillStyleList.includes(shapeName)">
+      <div v-if="!fillStyleList.includes(shapeName) && edgeInfo!==2">
         <p style="margin-top:10px;">
           填充
         </p>
@@ -262,7 +272,7 @@
       </div>
       <div>
         <p style="margin-top:10px;">
-          {{ shapeName=='beeline' ? '线条' : '边框' }}
+          {{ shapeName=='beeline' && edgeInfo!==2 ? '线条' : '边框' }}
         </p>
         <div style="display:flex;"> 
           <div
@@ -322,7 +332,7 @@
           </div>
         </div>
       </div>
-      <div v-if="shapeName=='beeline'">
+      <div v-if="shapeName=='beeline' && edgeInfo!==2">
         <p style="margin-top:10px;">
           箭头
         </p>
@@ -481,6 +491,7 @@ let palettName
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
 let picShapeList = ['pipeline2','pipeline3','light','lineChart','gaugeChart','userimage']
+import VueEvent from '../../../services/VueEvent.js'
 export default {
     components:{
         Chart
@@ -495,7 +506,7 @@ export default {
             alignIndex2:2,
             isSetBold:false,
             showBorderLineBold:false,
-            selectMenu:true,
+            selectMenu:false,
             bgColor:'#fff',
             borderColor:'#000',
             borderLineList:['border-line','border-dash'],
@@ -528,6 +539,12 @@ export default {
         shapeName() {
             return this.$store.state.main.widgetInfo.shapeInfo.shape
         },
+        cellsCount() {
+            return this.$store.state.main.widgetInfo.cellsCount
+        },
+        edgeInfo() {
+            return this.$store.state.main.widgetInfo.edgeInfo
+        },
         widgetName: {
             get() {
                 return this.$store.state.main.widgetInfo.widgetName
@@ -538,14 +555,16 @@ export default {
         },
         positionSize() {
             let geo = this.$store.state.main.widgetInfo.geo
-            if(this.shapeName == 'beeline') {
-                this.setWidgetProps('edgeProps',geo)
-            }
             return geo
         }
     },
     created() {},
     mounted() {
+        VueEvent.$off('edgePropsUpdate')
+        VueEvent.$on('edgePropsUpdate', () => {
+            let geo = this.$store.state.main.widgetInfo.geo
+            this.setWidgetProps('edgeProps',geo)
+        })
         let graph = this.myEditorUi.editor.graph
         this.fontText = this.$store.state.main.widgetInfo.fontSize
         this.isSetBold = this.$store.state.main.widgetInfo.isSetBold
@@ -635,21 +654,42 @@ export default {
             graph.getModel().setValue(cell, cellInfo)
             this.$store.commit('getWidgetInfo',graph)
         },
-        changePositionSize() {
+        changePositionSize(type) {
             let graph = this.myEditorUi.editor.graph
             let cells = graph.getSelectionCells()
+            let positionObj = Object.assign({},this.positionSize)
             cells.forEach((cell)=>{
                 let geo = graph.getCellGeometry(cell)
                 if(graph.model.isEdge(cell)) {
-                    geo.sourcePoint.x = +this.positionSize.sx
-                    geo.sourcePoint.y = +this.positionSize.sy
-                    geo.targetPoint.x = +this.positionSize.tx
-                    geo.targetPoint.y = +this.positionSize.ty
+                    switch(type) {
+                        case 'SX':
+                            geo.sourcePoint.x = +positionObj.sx
+                            break
+                        case 'SY':
+                            geo.sourcePoint.y = +positionObj.sy
+                            break
+                        case 'TX':
+                            geo.targetPoint.x = +positionObj.tx
+                            break
+                        case 'TY':
+                            geo.targetPoint.y = +positionObj.ty
+                            break
+                    }
                 }else {
-                    geo.x = +this.positionSize.x
-                    geo.y = +this.positionSize.y
-                    geo.width = +this.positionSize.width
-                    geo.height = +this.positionSize.height
+                    switch(type) {
+                        case 'X':
+                            geo.x = +positionObj.x
+                            break
+                        case 'Y':
+                            geo.y = +positionObj.y
+                            break
+                        case 'W':
+                            geo.width = +positionObj.width
+                            break
+                        case 'H':
+                            geo.height = +positionObj.height
+                            break
+                    }
                 }
                 graph.getModel().beginUpdate()
                 graph.getModel().setGeometry(cell,geo)
@@ -663,13 +703,13 @@ export default {
         changeFont(d,e) {
             this.fontText = d
             let graph = this.myEditorUi.editor.graph
-            let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells();
+            let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells()
             let key = mxConstants.STYLE_FONTSIZE
-            graph.setCellStyles(key,d, ss);
+            graph.setCellStyles(key,d, ss)
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [key],
-                'values', [+d], 'cells', ss));
-            this.showFont = false;
-            e.stopPropagation()
+                'values', [+d], 'cells', ss))
+            this.showFont = false
+            e && e.stopPropagation()
         },
         changeAlignIndex(type,index) {
             if(type == 1) {

@@ -319,6 +319,10 @@ Editor.prototype.getCookie = function(cname) {
  * 刷新token
  */
 Editor.prototype.refreshToken = function(refreshToken) {
+     if (!refreshToken) {
+         alert('登录已失效，请重新登录')
+         return
+     }
     return new Promise((resolve, rejec) => {
         $.ajax({
             method: 'POST',
@@ -353,6 +357,14 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
     function callAjax(){
         var token = getCookie('token');
         var refreshToken = getCookie('refreshToken')
+        if(!token || !refreshToken){
+            alert('登录已失效，请重新登录')
+             loadingBarInner.style.width = '100%'
+             setTimeout(() => {
+                 fn && fn()
+             }, 500)
+            return
+        }
         $.ajax({
             method,
             headers: {
