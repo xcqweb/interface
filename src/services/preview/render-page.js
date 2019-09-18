@@ -260,15 +260,7 @@ class PreviewPage {
             lockWs: false
         };
         this.currentPageId = page.id
-        /*   $(()=>{
-            this.pubSubData()
-        }) */
         return cells
-    }
-    pubSubData() {
-        createWsReal(this.currentPageId, applyData)
-        console.log(this.wsParams,"tt-cc")
-        getLastData(this.wsParams) //低频数据 通过调用最后一笔数据显示
     }
     // 渲染页面
     renderPages(cells, ele = this.gePreview) {
@@ -432,6 +424,7 @@ class PreviewPage {
             }
         }
         function initWsParams(currentPageId,wsParams, devices, resParams, paramShow) {
+            $(cellHtml).data("paramShowAll", Array.from(new Set(paramShow.concat(resParams))))
             if (devices) {
                 devices.forEach((item) => {
                     cellHtml.className += ` point_${item.id}`

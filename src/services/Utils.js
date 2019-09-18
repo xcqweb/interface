@@ -121,10 +121,26 @@ function sureDialog(editorUi, info, cb, confirmText = '确定', cancelText = '�
   let dlg = new sureContainer(editorUi, info, confirmText, cancelText,cb)
   editorUi.showDialog(dlg.container, 410, 160, true, false, null, null, title);
 }
+
+function debounce(func, delay) {
+  let timer = null
+  // 包装好的参数，
+  return function (e) {
+    // 暂存回调传回的参数，
+    let args = arguments
+    // 清楚前一次定时器
+    clearTimeout(timer)
+    // 设置新的定时器
+    timer = setTimeout(() => {
+      func.apply(this, arguments)
+    }, delay)
+  }
+}
 export {
   getCookie,
   setCookie,
   throttle,
   tipDialog,
-  sureDialog
+  sureDialog,
+  debounce
 }

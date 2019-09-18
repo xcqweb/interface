@@ -6,6 +6,8 @@
     <div id="gePreview" />
     <!-- 弹窗页面 -->
     <div id="geDialogs" />
+    <!-- 跟随内容浮窗 -->
+    <div id="formatLayer" />
   </div>
 </template>
 

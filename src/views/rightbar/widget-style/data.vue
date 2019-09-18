@@ -272,7 +272,6 @@ export default{
                 objData.deviceNameChild[key].id = items
                 objData.deviceNameChild[key].name = this.deviceNameList[deviceNameIndex].deviceName || ''
             })
-            console.log(objData)
             if (objData) {
                 VueEvent.$emit('emitDataSourceFooter', objData)
                 this.deviceNameListArr = []

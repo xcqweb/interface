@@ -73,7 +73,9 @@
                     <Select
                       v-model="item.model"
                       style="width:240px;height:24px;line-height:24px;"
+                      :clearable="true"
                       @on-change="val=>paramSelectChange(val,index)"
+                      @on-clear="removeParamHandle(item.id,index)"
                     >
                       <Option 
                         v-for="d in paramsList" 
@@ -83,25 +85,6 @@
                         {{ d.paramName }}
                       </Option>
                     </Select>
-                  </span>
-                  <span>
-                    <Button
-                      v-if="index === 0 && paramOutterList.length!==paramsList.length"
-                      size="small"
-                      :disabled="ifCanAddParamFlag"
-                      class="condition-icon condition-add-icon"
-                      @click.stop.prevent="addParamHandle()"
-                    >
-                      {{ buttonText[0] }}
-                    </Button>
-                    <Button
-                      v-if="paramOutterList.length > 1"
-                      size="small"
-                      class="condition-icon condition-delete-icon"
-                      @click.stop.prevent="removeParamHandle(item.id,index)"
-                    >
-                      {{ buttonText[1] }}
-                    </Button>
                   </span>
                 </div>
               </li>
@@ -160,7 +143,7 @@
 </template>
 
 <script>
-import {Tabs,TabPane, Table,Select, Option, Button, Message} from 'iview'
+import {Tabs,TabPane, Table,Select, Option, Message} from 'iview'
 import {mxUtils} from '../../services/mxGlobal'
 import NoData from '../datasource/nodata'
 import VueEvent from '../../services/VueEvent.js'
@@ -169,8 +152,6 @@ import {sureDialog} from '../../services/Utils'
 const allShapes = ['image','userimage','tableCell','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
 // 支持显示参数
 const SupportDataShow = ['rectangle','ellipse','tableCell','progress','lineChart', 'gaugeChart']
-// 支持单个数据显示参数
-const singleDataShow = ['progress','lineChart', 'gaugeChart']
 let deviceTypeId = null
 export default {
     components:{
@@ -179,7 +160,6 @@ export default {
         Table,
         Select,
         Option,
-        Button,
         NoData
     },
     data() {
@@ -221,7 +201,6 @@ export default {
             modelVals:[],//状态列表下的每个模型列表当前的v-model
             isInitFlag: false,
             ifShowDataFlag: true, // 判断是否显示数据显示tab
-            ifCanAddParamFlag: true,
         }
     },
     computed: {
@@ -274,7 +253,7 @@ export default {
             // 拿到之前绑定的 bindData
             let startBindData = this.getCellModelInfo('bindData')
             console.log(startBindData)
-            if (!startBindData) {
+            if (!startBindData || !startBindData.dataSource) {
                 this.setCellModelInfo('bindData',{dataSource:value})
                 if (this.ifShowArrow) {
                     this.isInitFlag = false
@@ -410,11 +389,6 @@ export default {
                 let cell = graph.getSelectionCell()
                 let state = graph.view.getState(cell)
                 let shapeName = state.style.shape
-                if (singleDataShow.includes(shapeName)) { // flag 增加参数按钮显示
-                    this.ifCanAddParamFlag = true
-                } else {
-                    this.ifCanAddParamFlag = false
-                }
                 if (SupportDataShow.includes(shapeName)) { // flag 是否数据显示
                     this.ifShowDataFlag = true
                 } else {
@@ -473,8 +447,8 @@ export default {
         addParamHandle() {
             this.paramOutterList.unshift({id:new Date().getTime(),model:""})
         },
-        removeParamHandle(id,index) {
-            this.paramOutterList.splice(index , 1)
+        removeParamHandle(id) {
+            //this.paramOutterList.splice(index , 1)
             let tempObj = this.getCellModelInfo('bindData')
             let list = [ ]
             if(tempObj && tempObj.params) {
@@ -486,7 +460,11 @@ export default {
                 })
                 if(resIndex != -1) {
                     list.splice(resIndex,1)
-                    tempObj.params = list
+                    if(!list.length) {
+                        tempObj.params = null
+                    }else{
+                        tempObj.params = list
+                    }
                     this.setCellModelInfo('bindData',tempObj)
                 }
             }
