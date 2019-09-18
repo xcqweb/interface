@@ -392,7 +392,11 @@ export default{
                 Message.warning(`请选择设备类型`)
             } else {
                 let objData = {
-                    deviceTypeId : this.modelvalue2
+                    deviceTypeId : this.modelvalue2,
+                    studioId: sessionStorage.getItem("applyId") || '',
+                    type: 1,
+                    size:this.PAGE_SIZE,
+                    current:this.PAGE_CURREN
                 }
                 if (+type === 1) {
                     objData.paramName = value.trim()
