@@ -7,7 +7,7 @@
  */
 import {
     addPageDialog,
-	PreviewDialog
+    ChangePrimitiveDialog 
 } from '../editor/Dialogs'
 import {mxUtils}  from '../mxGlobal'
 import router from '../../router'
@@ -286,7 +286,7 @@ Actions.prototype.init = function()
     this.addAction('insertMenuAfter', function() {
         insertMenu('after');
     })
-	
+    	
     // 向上插入一行
     this.addAction('addUpRow', () => {
         console.log('向上插入一行');

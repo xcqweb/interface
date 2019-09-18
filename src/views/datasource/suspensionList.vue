@@ -18,6 +18,8 @@
   </div>
 </template>
 <script>
+const alertTip = '您还有未保存的模型,请先保存'
+import {Message} from 'iview'
 export default{
     props:{
         datalist: {
@@ -30,8 +32,17 @@ export default{
             numberIndex: 0
         }
     },
+    computed:{
+        modelEditing() {
+            return this.$store.state.main.modelEditing
+        }
+    },
     methods: {
         clickHandle(id) {
+            if (!this.modelEditing) {
+                Message.warning(alertTip)
+                return false
+            }
             switch(+id) {
                 case 1:
                     this.$emit('renameHandle')

@@ -14,7 +14,7 @@ import {
 import {ChangePageSetup} from './Init'
 import {Format} from './Format'
 import urls from '../../constants/url'
-import {setCookie} from '../Utils'
+import { setCookie, tipDialog} from '../Utils'
 window.EditorUi = function(editor, container, lightbox)
 {
     mxEventSource.call(this);
@@ -3450,9 +3450,10 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
             return
         }
         // 编辑保存
-        var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '保存', mxUtils.bind(this, function(name, des)
+        var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '保存并退出', mxUtils.bind(this, function(name, des)
         {
-            this.save(name, des);
+            // closePage 手动保存 关闭页面
+            this.save(name, des, '', 'closePage');
         }), null, mxUtils.bind(this, function(name)
         {
             if (name != null && name.length > 0)
@@ -3472,8 +3473,25 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
 
 /**
  * 保存成功
+ * 和退出当前页面
  */
-EditorUi.prototype.saveSuccess = function (res, hideDialog) {
+function CloseWebPage() {
+    var userAgent = navigator.userAgent;
+    if (userAgent.indexOf("Firefox") != -1 || userAgent.indexOf("Chrome") != -1) {
+        window.opener = null;
+        window.onbeforeunload = function (event) {
+        };
+        window.open("about:blank", "_self");
+        window.close();
+    } else if (userAgent.indexOf('Android') > -1 || userAgent.indexOf('Linux') > -1) {
+        window.opener = null; window.open('about:blank', '_self', '').close();
+    } else {
+        window.opener = null;
+        window.open("about:blank", "_self");
+        window.close();
+    }
+}
+EditorUi.prototype.saveSuccess = function (res, hideDialog, type) {
     this.editor.setFilename(res.studioName)
     this.editor.setDescribe(res.descript)
     this.editor.setApplyId(res.studioId)
@@ -3484,6 +3502,9 @@ EditorUi.prototype.saveSuccess = function (res, hideDialog) {
         if (!hideDialog){
             this.hideDialog()
             this.editor.tipInfo(this, true, '保存');
+        }
+        if (type && type === 'closePage') {
+            CloseWebPage()
         }
     }, 350);
 }
@@ -3501,7 +3522,7 @@ EditorUi.prototype.saveError = function (res, hideDialog) {
 /**
  * 保存当前应用
  */
-EditorUi.prototype.save = function(name, des,hideDialog=false)
+EditorUi.prototype.save = function(name, des,hideDialog=false, type)
 {
     return new Promise((resolve, reject) => {
         if (name != null)
@@ -3523,18 +3544,33 @@ EditorUi.prototype.save = function(name, des,hideDialog=false)
                     applyCon: editor.pagesNameList().join(),
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                 }
+                // 
+                if (type && type === 'closePage') {
+                    data.lockStatus = 0
+                } else {
+                    data.lockStatus = 1
+                }
                 var id = editor.getApplyId() || sessionStorage.getItem('applyId')
                 if (id) {
                     // 编辑保存
                     data.studioId = id
-                    editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
-                        this.saveSuccess(res, hideDialog);
-                        setCookie('saveIotCds', 'put');
-                        resolve(res);
+                    editor.ajax(ui, `${urls.ifMultipleEdit.url}${id}`, 'GET', '', (res) => {
+                        if (res.code === '3012') {
+                            tipDialog(ui, `当前应用 ${res.message ? res.message : '' } 正在编辑, 无法保存`);
+                            return;
+                        } else if (res.code === '0') {
+                            editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
+                                this.saveSuccess(res, hideDialog);
+                                setCookie('saveIotCds', 'put');
+                                resolve(res);
+                            }, (res) => {
+                                this.saveError(res.responseJSON, hideDialog);
+                                reject(res);
+                            }, '加载中···', hideDialog)
+                        }
                     }, (res) => {
-                        this.saveError(res.responseJSON,hideDialog);
                         reject(res);
-                    },'加载中···',hideDialog)
+                    }, true, true)
                 } else {
                     editor.ajax(ui, urls.preview.url, 'POST', data,(res) => {
                         this.saveSuccess(res,hideDialog);
