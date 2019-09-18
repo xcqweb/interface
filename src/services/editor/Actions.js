@@ -7,8 +7,7 @@
  */
 import {
     addPageDialog,
-	PreviewDialog,
-    ChangePrimitiveDialog
+	PreviewDialog
 } from '../editor/Dialogs'
 import {mxUtils}  from '../mxGlobal'
 import router from '../../router'
@@ -286,11 +285,6 @@ Actions.prototype.init = function()
     // 往后插入菜单
     this.addAction('insertMenuAfter', function() {
         insertMenu('after');
-    })
-    // 更换图元
-    this.addAction('changePrimitive', function() {
-        var dlg = new ChangePrimitiveDialog(ui, '')
-        ui.showDialog(dlg.container, 410, 110, true, false, null, null, '更换图元');
     })
 	
     // 向上插入一行
