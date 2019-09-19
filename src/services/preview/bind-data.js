@@ -114,14 +114,23 @@ function setterRealData(res) {
                 }
                 echartsInstance.setOption(options)
             }else {
-                if (paramShow.length == 1) {
-                    $(els[i]).html(`${val}`)
-                } else{
-                    $(els[i]).css("line-height", "normal")
-                    $(els[i]).html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
+                $(els[i]).html(`${val}`)
+                let allParams = $(els[i]).data("paramShowAll")
+                let formatLayerEl = $("#formatLayer")
+                let formatLayerFun = (e)=>{
+                    let {clientX,clientY} = e
+                    formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
+                    formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + allParams.map((d) => {
                         return `<li>${d}=${item[d]}`
                     }).join('') + "</ul>")
-                }         
+                    formatLayerEl.show()
+                }
+                $(els[i]).mousemove(formatLayerFun)
+                $(els[i]).mouseleave(() => {
+                    let formatLayerEl = $("#formatLayer")
+                    formatLayerEl.html(" ")
+                    formatLayerEl.hide()
+                })
                 let stateModels = $(els[i]).data("stateModels")
                 if(stateModels) {
                     let stateIndex = 0

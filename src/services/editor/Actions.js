@@ -7,7 +7,7 @@
  */
 import {
     addPageDialog,
-    ChangePrimitiveDialog 
+    PreviewDialog
 } from '../editor/Dialogs'
 import {mxUtils}  from '../mxGlobal'
 import router from '../../router'
