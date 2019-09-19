@@ -97,8 +97,8 @@
                 @on-change="checked => checkAllGroupChange(checked, 1)"
               >
                 <Checkbox
-                  v-for="(item, index) in paramsNameList"
-                  :key="index"
+                  v-for="(item) in paramsNameList"
+                  :key="item.paramId"
                   :label="item.paramId"
                   size="small"
                 >
@@ -160,8 +160,8 @@
                 @on-change="checked => checkAllGroupChange(checked, 2)"
               >
                 <Checkbox
-                  v-for="(item, index) in deviceNameList"
-                  :key="index"
+                  v-for="(item) in deviceNameList"
+                  :key="item.deviceId"
                   :label="item.deviceId"
                   size="small"
                 >
@@ -284,7 +284,9 @@ export default{
             deviceNumber: '',
             paramNumber: '',
             paramsPageCurrent: 1,
-            devicePageCurrent: 1
+            devicePageCurrent: 1,
+            selectAllparamsArr: [],
+            selectAlldeviceArr: []
         }
     },
     created() {
@@ -344,7 +346,6 @@ export default{
 
         },
         handleCheckAll(number) {
-            console.log(this.indeterminateArr[number])
             if (this.indeterminateArr[number]) {
                 this.checkAllArr[number] = false;
             } else {
@@ -352,43 +353,116 @@ export default{
             }
             this.indeterminateArr[number] = false;
             let dataArr = number === 1 ? this.paramsNameList : this.deviceNameList
-            // console.log(dataArr)
+            let arr2 = []
+            dataArr.forEach((items) => {
+                if (number === 1) {
+                    arr2.push(items.paramId)
+                } else {
+                    arr2.push(items.deviceId)
+                }
+            })
             if (this.checkAllArr[number]) {
                 dataArr.forEach((item) => {
                     if (number === 1) {
                         this.paramsNameListArr.push(item.paramId)
+                        this.selectAllparamsArr.push(this.paramsPageCurrent)
+                        this.selectAllparamsArr = [...new Set(this.selectAllparamsArr)]
                     } else {
                         this.deviceNameListArr.push(item.deviceId)
+                        this.selectAlldeviceArr.push(this.devicePageCurrent)
+                        this.selectAlldeviceArr = [...new Set(this.selectAlldeviceArr)]
                     }
                 })
             } else {
                 if (number === 1) {
-                    this.paramsNameListArr = [];
+                    this.paramsNameListArr = this.diffArry(this.paramsNameListArr, arr2)
+                    if (this.selectAllparamsArr.length) {
+                        let index = this.selectAllparamsArr.findIndex(item => item === this.paramsPageCurrent)
+                        if (index !== -1) {
+                            this.selectAllparamsArr.splice(index, 1)
+                        }
+                    }
                 } else {
-                    this.deviceNameListArr = [];
+                    this.deviceNameListArr = this.diffArry(this.deviceNameListArr, arr2)
+                    if (this.selectAlldeviceArr.length) {
+                        let index = this.selectAlldeviceArr.findIndex(item => item === this.devicePageCurrent)
+                        if (index !== -1) {
+                            this.selectAlldeviceArr.splice(index, 1)
+                        }
+                    }
                 }
             }
             this.paramIdArr = this.paramsNameListArr
             this.deviceIdArr = this.deviceNameListArr
-            console.log(this.paramsNameListArr)
-            console.log(this.deviceNameListArr)
+        },
+        diffArry(arr1,arr2) {
+            for (let i = 0; i < arr2.length; i++) {
+                for(let j = 0; j < arr1.length; j++) {
+                    if(arr2[i] === arr1[j]) {
+                        arr1.splice(j, 1)
+                    }
+                }
+            }
+            return arr1
+        },
+        getArrEqual(arr1, arr2) {
+            let newArr = [];
+            for (let i = 0; i < arr2.length; i++) {
+                for (let j = 0; j < arr1.length; j++) {
+                    if(arr1[j] === arr2[i]) {
+                        newArr.push(arr1[j])
+                    }
+                }
+            }
+            return newArr;
         },
         checkAllGroupChange(data, number) {
-            console.log(data)
             let deviceNameListLen = (number === 1 ? this.paramsNameList.length : this.deviceNameList.length)
-            if (data.length === deviceNameListLen) {
+            let deviceNameListLenArr = number === 1 ? this.paramsNameList : this.deviceNameList
+            let arr2 = []
+            deviceNameListLenArr.forEach((item) => {
+                if (number === 1) {
+                    arr2.push(item.paramId)
+                } else {
+                    arr2.push(item.deviceId)
+                }
+            })
+            // 取出两个数组相同的
+            let commonArr = this.getArrEqual(data, arr2)
+            if ((commonArr.length % 10) === deviceNameListLen || (commonArr.length && commonArr.length % 10 === 0)) {
                 this.indeterminateArr[number] = false;
                 this.checkAllArr[number] = true;
+                if (number === 1) {
+                    this.selectAllparamsArr.push(this.paramsPageCurrent)
+                    this.selectAllparamsArr = [...new Set(this.selectAllparamsArr)]
+                } else {
+                    this.selectAlldeviceArr.push(this.devicePageCurrent)
+                    this.selectAlldeviceArr = [...new Set(this.selectAlldeviceArr)]
+                }
             }  else {
                 this.indeterminateArr[number] = false;
                 this.checkAllArr[number] = false;
+                if (number === 1) {
+                    if (this.selectAllparamsArr.length) {
+                        let index = this.selectAllparamsArr.findIndex(item => item === this.paramsPageCurrent)
+                        if (index !== -1) {
+                            this.selectAllparamsArr.splice(index, 1)
+                        }
+                    }
+                } else {
+                    if (this.selectAlldeviceArr.length) {
+                        let index = this.selectAlldeviceArr.findIndex(item => item === this.devicePageCurrent)
+                        if (index !== -1) {
+                            this.selectAlldeviceArr.splice(index, 1)
+                        }
+                    }
+                }
             }
             if (+number === 1) {
                 this.paramIdArr = data
             } else if(+number === 2) {
                 this.deviceIdArr = data
             }
-            // console.log(this.paramIdArr)
         },
         focusHandle() {
             if (!this.modelvalue2) {
@@ -412,7 +486,6 @@ export default{
                 if (+type === 2) {
                     objData.deviceName = value.trim()
                 }
-                console.log(objData)
                 let newUrl = +type === 1 ? this.urls.deviceParamList.url : this.urls.deviceEquipList.url
                 this.requestUtil.post(newUrl,objData).then((res) => {
                     if (+type === 1) {
@@ -466,14 +539,28 @@ export default{
         },
         // 参数名称
         paramPageChangeHandle(value) {
-            console.log(value)
-            // this.paramsPageCurrent = value
-            // this.paramsNameListArr = [];
             this.pageChangeHandle(value, 1)
+            this.paramsPageCurrent = +value
+            console.log(this.selectAllparamsArr)
+            if (this.selectAllparamsArr.length && this.selectAllparamsArr.includes(this.paramsPageCurrent)) {
+                this.indeterminateArr[1] = false
+                this.checkAllArr[1] = true
+            } else {
+                this.indeterminateArr[1] = false
+                this.checkAllArr[1] = false
+            }
+            
         },
         // 翻页设备名称
         devicePageChangeHandle(value) {
-            // this.devicePageCurrent = value
+            this.devicePageCurrent = +value
+            if (this.selectAlldeviceArr.length && this.selectAlldeviceArr.includes(this.devicePageCurrent)) {
+                this.indeterminateArr[2] = false
+                this.checkAllArr[2] = true
+            } else {
+                this.indeterminateArr[2] = false
+                this.checkAllArr[2] = false
+            }
             this.pageChangeHandle(value, 2)
         },
         pageChangeHandle(value, type) {
@@ -488,7 +575,6 @@ export default{
             this.requestUtil.post(NewUrl, objData).then((res) => {
                 if (type === 1) {
                     this.paramsNameList = res.records || []
-                    console.log(this.paramsNameList)
                 } else {
                     this.deviceNameList = res.records || []
                 }

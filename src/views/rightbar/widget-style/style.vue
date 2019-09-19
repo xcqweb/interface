@@ -626,9 +626,11 @@ export default {
                 this.bindChartProps = this.getWidgetProps('chartProps')
             } else if (state.style.shape === 'image') {
                 document.querySelector('#dlbChooseImage').click()
-                document.querySelector('#dlbChooseImage').onchange = (evt) => {
+                let $inputfile = `<input type="file" style="opacity: 0" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg">`;
+                document.getElementById('dlbChooseImage').addEventListener('change', (evt) => {
                     this.dblclickHandle(evt)
-                }
+                    $('#dlbChooseImage').replaceWith($inputfile)
+                })
             } else {
                 dblClickFn.call(graph,evt, cell)
             }
