@@ -157,7 +157,6 @@ export default {
             this.solidHeight = height
             this.myEditorUi.setPageFormat({height:height,width:width,x:0,Y:0},true)
             this.scaleText = width + '*' + height
-            //this.centerCanvas()
         },
         changeScale(d,e) {
             this.scaleText = d;
@@ -199,7 +198,7 @@ export default {
                 },
                 true
             )
-            //this.centerCanvas()
+            this.centerCanvas()
         },
         setBackgroundImg() {
             this.$refs.chooseImg.click()

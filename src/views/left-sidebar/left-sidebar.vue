@@ -147,7 +147,6 @@ export default {
                 } else if (type === 2) {
                     this.alertContent = this.alertModal
                 }
-                console.log(this.alertContent)
             })
             
         },

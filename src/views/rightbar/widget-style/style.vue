@@ -560,10 +560,10 @@ export default {
     },
     created() {},
     mounted() {
-        VueEvent.$off('edgePropsUpdate')
         VueEvent.$on('edgePropsUpdate', () => {
             let geo = this.$store.state.main.widgetInfo.geo
             this.setWidgetProps('edgeProps',geo)
+            VueEvent.$off('edgePropsUpdate')
         })
         let graph = this.myEditorUi.editor.graph
         this.fontText = this.$store.state.main.widgetInfo.fontSize

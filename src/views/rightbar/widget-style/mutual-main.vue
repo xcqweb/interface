@@ -196,6 +196,9 @@ export default{
             let graph = this.myEditorUi.editor.graph
             this.bindActions = this.getActions(graph)
             this.isEdit = true
+            if(this.typeTab == 3) {
+                this.$refs.change.addInit()
+            }
         },
         changeTab(index) {
             this.typeTab = index
@@ -250,7 +253,7 @@ export default{
                     }
                     if(item.stateInfo) {
                         tempObj.stateName = item.stateInfo.name
-                        tempObj.stateId = item.stateInfo.stateId
+                        tempObj.stateId = item.stateInfo.id
                     }
                     this.events.push(tempObj)
                 } else {//表示绑定交互的页面或弹窗或控件已被删除
