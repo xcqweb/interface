@@ -19516,7 +19516,8 @@ mxSvgCanvas2D.prototype.image = function(x, y, w, h, src, aspect, flipH, flipV)
 	}
 	else
 	{
-		node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src);
+		console.log(fileSystem,src)
+		node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src.replace(/^\S*getechFileSystem/, fileSystem));
 	}
 	
 	if (aspect)

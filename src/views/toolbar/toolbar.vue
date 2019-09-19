@@ -174,7 +174,7 @@
   </div>
 </template>
 <script>
-import {mxUtils,mxConstants} from '../../services/mxGlobal'
+import {mxUtils,mxConstants,mxEventSource} from '../../services/mxGlobal'
 import ScaleView from './scale-view'
 import AlignDialog from './align-dialog'
 import MaterialRoom from '../materialroom/materialroom'
@@ -237,8 +237,11 @@ export default{
             this.isShowScale = false
         },
         addAction(key) {
+            mxEventSource.call(this.myEditorUi.editor.graph)
             let action = this.myEditorUi.actions.get(key)
+            mxEventSource.call(this.myEditorUi.editor.graph)
             action.funct()
+            mxEventSource.call(this.myEditorUi.editor.graph)
         },
         changeAlign(d) {
             this.alignCls = d.cls
