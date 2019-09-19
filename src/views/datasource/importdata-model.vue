@@ -3,7 +3,7 @@
     <Modal
       ref="model"
       v-model="showdatasoures"
-      width="660px"
+      width="720px"
       class="importdata-model"
       :title="datasouresAlertName"
       :mask-closable="false"
@@ -352,7 +352,7 @@ export default{
             }
             this.indeterminateArr[number] = false;
             let dataArr = number === 1 ? this.paramsNameList : this.deviceNameList
-            console.log(dataArr)
+            // console.log(dataArr)
             if (this.checkAllArr[number]) {
                 dataArr.forEach((item) => {
                     if (number === 1) {
@@ -370,7 +370,8 @@ export default{
             }
             this.paramIdArr = this.paramsNameListArr
             this.deviceIdArr = this.deviceNameListArr
-            console.log()
+            console.log(this.paramsNameListArr)
+            console.log(this.deviceNameListArr)
         },
         checkAllGroupChange(data, number) {
             console.log(data)
@@ -387,6 +388,7 @@ export default{
             } else if(+number === 2) {
                 this.deviceIdArr = data
             }
+            // console.log(this.paramIdArr)
         },
         focusHandle() {
             if (!this.modelvalue2) {
@@ -466,6 +468,7 @@ export default{
         paramPageChangeHandle(value) {
             console.log(value)
             // this.paramsPageCurrent = value
+            // this.paramsNameListArr = [];
             this.pageChangeHandle(value, 1)
         },
         // 翻页设备名称
@@ -485,10 +488,12 @@ export default{
             this.requestUtil.post(NewUrl, objData).then((res) => {
                 if (type === 1) {
                     this.paramsNameList = res.records || []
+                    console.log(this.paramsNameList)
                 } else {
                     this.deviceNameList = res.records || []
                 }
             })
+            
         }
     }
 }
@@ -549,7 +554,7 @@ export default{
                 display:flex;
                 justify-content: space-between;
                 .content-common{
-                  width:300px;
+                  width:330px;
                   border:1px solid #D4D4D4;
                   border-radius: 2px;
                   background:#fff;
