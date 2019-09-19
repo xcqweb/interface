@@ -487,7 +487,6 @@ export default {
                     type: 'dialog'
                 }
             }
-            console.log(data)
             if ((this.pageMaterial.length && +index === 0) || (this.alertMaterial.length && +index === 1)) {
                 return false
             }
@@ -534,7 +533,6 @@ export default {
             var timer = null
             // 触发 拿到组件
             this.requestUtil.get(this.urls.materialRightList.url).then((res) => {
-                // console.log('素材列表',res)
                 let data = res || []
                 data.forEach((item) => {
                     let obj = {
@@ -675,7 +673,6 @@ export default {
                         this.deleteHandle(element, actionType, type,index, materialId)
                         break;
                     default:
-                        console.log('操作出错啦！')
                         break;
                 }
             })
@@ -784,7 +781,6 @@ export default {
                 if (type === this.POSITION_LEFT) {
                     this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
                         if (res.code === '0') {
-                            // console.log(this.myEditorUi)
                             sureDialog(this.myEditorUi, `确定要删除组件库-${ele.innerText}吗`, () => {
                                 this.assemblyArrayName.splice(index ,1)
                                 let lastLen = this.assemblyArrayName.length - 1
@@ -829,9 +825,6 @@ export default {
             
             this.hideMaterialModelMenu()
         },
-        deleteOneAssemly(evt) {
-            console.log(evt)
-        }
     }
     
 }

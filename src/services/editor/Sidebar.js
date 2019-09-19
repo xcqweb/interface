@@ -1365,7 +1365,7 @@ function createPageList(editorUi, el, data, id, _that) {
     }
     if (id.includes('dialog')) {
         $('.dialogPages').on('click', '.pageList>li>.spanli', function (evt) {
-            changePage(evt)
+            changePage(evt,true)
                 let normalArr = document.querySelectorAll('#dialogPages li')
                 for (let j = 0; j <= normalArr.length - 1; j++) {
                     if (normalArr[j].className.includes('currentPage')) {
@@ -1474,7 +1474,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;",
             // "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;",
             60,
-            20,
+            30,
             // 类似链接一样设置
             '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">输入文本</span>',
             // 'text',

@@ -362,6 +362,7 @@ export default {
                 }
                 this.requestUtil.post(this.urls.deviceParamList.url, param).then((res) => {
                     this.paramsList = res.records
+                    console.log(this.paramsList)
                 })
             }else{
                 this.paramsList = []

@@ -73,21 +73,29 @@ export default{
         cells = graph.getModel().cells
     },
     methods: {
+        addInit() {
+            this.isWidgetClick = false
+            this.currentPageWidgets.forEach(d=>{
+                d.selected = false
+            })
+            currentStateItem = null
+            currentWidgetItem = null
+        },
         checkCurrent(currentEditItem) { //当前控件和状态选中
             this.isWidgetClick = true
             this.currentPageWidgets.forEach(d=>{
                 if(d.id == currentEditItem.id) {
                     d.selected = true
-                    this.currentWidgetItem = d
+                    currentWidgetItem = d
                 }else{
                     d.selected = false
                 }
             })
-            this.states = this.getWidgetStatesById(this.currentWidgetItem.id)
+            this.states = this.getWidgetStatesById(currentWidgetItem.id)
             this.states.forEach((d)=>{
                 if(d.id == currentEditItem.stateId) {
                     d.check = true
-                    this.currentStateItem = d
+                    currentStateItem = d
                 }else{
                     d.check = false
                 }
@@ -100,6 +108,10 @@ export default{
             let sameFlag = false
             if(!currentWidgetItem) {
                 tipDialog(this.myEditorUi,`请选择要切换状态的控件`)
+                return
+            }
+            if(!currentStateItem) {
+                tipDialog(this.myEditorUi,`请选择要绑定的状态`)
                 return
             }
             for(let i = 0;i < this.bindActions.length;i++) {

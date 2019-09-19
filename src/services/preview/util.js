@@ -74,7 +74,7 @@ async function geAjax(url, method = 'GET', data = null) {
 function insertImage(cell, fileSystem) {
     let con = document.createElement('div')
     if(cell.image) {
-        cell.image = cell.image.replace(/getechFileSystem/, fileSystem)
+        cell.image = cell.image.replace(/getechFileSystem\//, fileSystem)
         con.style.background = `url('${cell.image}') no-repeat`
         con.style.backgroundPosition = "center center"
         con.style.backgroundSize = "100% 100%"
@@ -197,7 +197,7 @@ function actionChange(action, fileSystem) {
         cellCon.style[key] = stateInfo.style[key]
     }
     if(imgInfo) {
-        imgInfo.url = imgInfo.url.replace(/getechFileSystem/, fileSystem)
+        imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
         cellCon.style.background = `url(${imgInfo.url}) center center no-repeat`
         cellCon.style.backgroundSize = '100% 100%'
     }

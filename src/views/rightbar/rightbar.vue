@@ -13,8 +13,6 @@
     <div class="geSidebarContainer geFormatContainer">
       <PageStyle
         v-if="$store.state.main.type===0 && !showWidgetStyle && inited"
-        ref="pageStyle"
-        :key="refresh"
       />
       <DialogStyle
         v-if="$store.state.main.type===1 && !showWidgetStyle && inited"
@@ -61,8 +59,8 @@ export default {
                 // 文字
                 that.createVertexTemplateEntry(
                     "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;image=/static/stencils/basic/image.png",
-                    40,
-                    20,
+                    60,
+                    30,
                     // 类似链接一样设置
                     '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">输入文本</span>',
                     "文字",true,true
