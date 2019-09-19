@@ -103,6 +103,7 @@ export default {
     background:rgba(255,255,255,1);
     text-align:center;
     position: relative;
+    cursor: pointer;
     &.selected{
       background:rgba(61,145,247,1);
       border:1px solid rgba(202,201,202,1);

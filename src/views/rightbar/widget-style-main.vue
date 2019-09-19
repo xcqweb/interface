@@ -118,6 +118,7 @@ export default{
         color:#252525;
         text-align:center;
         background:#fff;
+        cursor: pointer;
         &.selected{
           background:#F2F2F2;
           border-bottom:none;

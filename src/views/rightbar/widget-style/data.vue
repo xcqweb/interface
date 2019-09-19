@@ -103,6 +103,7 @@
     <div class="data-sources-bottom">
       <Button 
         type="primary"
+        style="cursor: pointer;"
         long
         :disabled="!deviceIdArr.length"
         @click.stop.prevent="bindDeviceNameHandle"
@@ -314,6 +315,7 @@ export default{
                 }
                 this.requestUtil.post(this.urls.deviceEquipList.url,objData).then((res) => {
                     this.deviceNameList = res.records || []
+                    this.deviceListTotal = res.total || 10
                 })
             }
         },

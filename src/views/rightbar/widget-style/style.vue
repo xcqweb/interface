@@ -266,7 +266,7 @@
         <div
           class="item-container"
           style="position:relative;"
-          :style="{background:bgColor}"
+          :style="{background:bgColor, 'cursor': 'pointer'}"
           @click="pickBgColor"
         />
       </div>
@@ -1059,6 +1059,7 @@ export default {
       width: 50%;
       padding-left: 6px;
       margin-right: 6px;
+      cursor: pointer;
     }
     .itemLine{
       display: flex;
@@ -1072,6 +1073,7 @@ export default {
       height:24px;
       background: #000;
       border-radius: 2px;
+      cursor: pointer;
       border:1px solid rgba(212,212,212,1);
     }
     .setBold{
@@ -1097,6 +1099,7 @@ export default {
       margin-right: 6px;
       .left{
         width: 33.333%;
+        cursor: pointer;
         background:url('../../../assets/images/rightsidebar/left1.png') no-repeat center center;
         border-right:1px solid rgba(212,212,212,1);
         &.selected{
@@ -1106,6 +1109,7 @@ export default {
       }
       .center{
         width: 33.333%;
+        cursor: pointer;
         background:url('../../../assets/images/rightsidebar/center1.png') no-repeat center center;
         border-right:1px solid rgba(212,212,212,1);
         &.selected{
@@ -1115,6 +1119,7 @@ export default {
       }
       .right{
         width: 33.333%;
+        cursor: pointer;
         background:url('../../../assets/images/rightsidebar/right1.png') no-repeat center center;
         &.selected{
           background:url('../../../assets/images/rightsidebar/right2.png') no-repeat center center;
@@ -1131,6 +1136,7 @@ export default {
       background: #fff;
       .top{
         width: 33.333%;
+        cursor: pointer;
         background:url('../../../assets/images/rightsidebar/top1.png') no-repeat center center;
         border-right:1px solid rgba(212,212,212,1);
         &.selected{
@@ -1140,6 +1146,7 @@ export default {
       }
       .mid{
         width: 33.333%;
+        cursor: pointer;
         background:url('../../../assets/images/rightsidebar/middle1.png') no-repeat center center;
         border-right:1px solid rgba(212,212,212,1);
         &.selected{
@@ -1149,6 +1156,7 @@ export default {
       }
       .bottom{
         width: 33.333%;
+        cursor: pointer;
         background:url('../../../assets/images/rightsidebar/bottom1.png') no-repeat center center;
         &.selected{
           background:url('../../../assets/images/rightsidebar/bottom2.png') no-repeat center center;

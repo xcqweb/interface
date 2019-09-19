@@ -24,7 +24,9 @@
             class="Collapse-title-right"
             :class="ifShowArrow ? 'collapse-active' : ''"
             @click="ifShowArrow=!ifShowArrow"
-          />
+          >
+            <img src="../../assets/images/footer/foot-collapse.png">
+          </div>
         </div>
       </div>
       <div 
@@ -582,17 +584,24 @@ export default {
     display: flex;
     border-top:1px solid #CCCCCC;
     border-bottom: 1px solid #CCCCCC;
+    border-right:1px solid rgb(204, 204, 204);
     .Collapse-title-left{
       flex: 1;
     }
     .Collapse-title-right{
-      width: 50px;
+      width: 25px;
       height:24px;
       line-height: 24px;
-      padding-right:10px;
-      background: url("../../assets/images/footer/foot-collapse.png") no-repeat right center;
-      background-size:16px 16px;
-      border-right:1px solid rgb(204, 204, 204);
+      cursor: pointer;
+      img {
+        display: block;
+        height:16px;
+        width:16px;
+        margin:4px auto;
+      }
+      &.collapse-active{
+        transform: rotate(180deg);
+      }
     }
     /deep/.ivu-tabs{
       .ivu-tabs-nav{
