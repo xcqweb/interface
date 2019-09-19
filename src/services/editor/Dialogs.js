@@ -790,10 +790,9 @@ let ImageDialog = function(editorUi, cell) {
 		var select = null;
 		var cells = graph.getSelectionCells();
 		var updateImg = function (newValue) {
-            let prefix = newValue.host + '/'
-            let newValuenew = newValue.filePath
-            newValue = prefix + newValuenew
-            graph.getModel().beginUpdate();
+            let prefix = 'getechFileSystem/'
+            newValue = prefix + newValue.filePath
+            graph.getModel().beginUpdate()
             try {
                 graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
             }
@@ -813,7 +812,6 @@ let ImageDialog = function(editorUi, cell) {
             var formData = new FormData();
             formData.append('file', localImage);
             editorUi.editor.uploadFile(editorUi, '/api/console/upload/file', 'POST', formData, function (res) {
-                // newValue = res.filePath;
                 newValue = res;
                 updateImg(newValue)
             })

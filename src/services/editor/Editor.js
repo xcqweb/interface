@@ -349,14 +349,14 @@ Editor.prototype.refreshToken = function(refreshToken) {
  */
 Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···',hideDialog=false) {
     let _that = this
-    var loadingBarInner
+    let loadingBarInner
     if(!hideDialog){
         loadingBarInner = editorUi.actions.get('loading').funct(title);
     }   
     callAjax()
     function callAjax(){
-        var token = getCookie('token');
-        var refreshToken = getCookie('refreshToken')
+        let token = getCookie('token')
+        let refreshToken = getCookie('refreshToken')
         if(!token || !refreshToken){
             alert('登录已失效，请重新登录')
              loadingBarInner.style.width = '100%'
@@ -411,7 +411,7 @@ Editor.prototype.InitEditor = function(editorUi) {
     let getFileSystem = new Promise((resolve, reject) => {
         this.ajax(editorUi, '/api/console/host/imageHost', 'GET', null, function(res) {
             // 文件服务器地址
-            window.fileSystem = res.host;
+            window.fileSystem = res.imageHost
             resolve(res)
         }, null)
     })
@@ -446,32 +446,41 @@ Editor.prototype.InitEditor = function(editorUi) {
  * @param {Function} errorfn
  */
 Editor.prototype.uploadFile = function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}) {
-    var loadingBarInner = editorUi.actions.get('loading').funct();
-    var token = getCookie('token');
-    $.ajax({
-        method,
-        headers: {
-            "Authorization": 'Bearer ' + token
-        },
-        processData: false,
-        contentType: false,
-        cache:false,
-        beforeSend: function() {
-            loadingBarInner.style.width = '20%';
-        },
-        data: data,
-        url,
-        success: function(res) {
-            loadingBarInner.style.width = '100%';
-            setTimeout(() => {
-                fn && fn(res);
-            }, 500)
-        },
-        error: function(res) {
-            loadingBarInner.style.width = '100%';
-            errorfn && errorfn()
-        }
-    })
+    let _that = this
+    let loadingBarInner = editorUi.actions.get('loading').funct()
+    callAjax()
+    function callAjax() {
+        let token = getCookie('token')
+        let refreshToken = getCookie('refreshToken')
+        $.ajax({
+            method,
+            headers: {
+                "Authorization": 'Bearer ' + token
+            },
+            processData: false,
+            contentType: false,
+            cache:false,
+            beforeSend: function() {
+                loadingBarInner.style.width = '20%'
+            },
+            data: data,
+            url,
+            success: function(res) {
+                loadingBarInner.style.width = '100%'
+                setTimeout(() => {
+                    fn && fn(res)
+                }, 500)
+            },
+            error: async function(res) {
+                if (res.status == 418) {
+                    await _that.refreshToken(refreshToken)
+                    callAjax()
+                 }
+                loadingBarInner.style.width = '100%'
+                errorfn && errorfn()
+            }
+        })
+    }
 }
 /**
  * 控件信息

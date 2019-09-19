@@ -5,14 +5,14 @@ import echarts from 'echarts'
 //获取websocket连接信息
 let websocketUrlReal = ''
 //获取最后一笔数据
-async function getLastData(pointParams) {
+async function getLastData(pointParams, fileSystem) {
     let params = []
     let maps = dealPointParams(pointParams)
     for (let item of maps.values()) {
         params.push(item)
     }
     const res = await geAjax('/api/persist/opentsdb/point/last', 'POST', JSON.stringify(params))
-    setterRealData(res)
+    setterRealData(res,fileSystem)
 }
 
 function dealPointParams(pointParams) {
@@ -56,7 +56,7 @@ async function getSubscribeInfos(pointParams) {
     return data
 }
 //绑定数据&切换状态的处理方法
-function setterRealData(res) {
+function setterRealData(res, fileSystem) {
     res.forEach((item)=>{
         let els = document.querySelectorAll(`.point_${item.pointId}`)
         for(let i = 0;i < els.length;i++) {
@@ -140,7 +140,7 @@ function setterRealData(res) {
                             break
                         }
                     }
-                    changeEleState(els[i], stateModels[stateIndex])
+                    changeEleState(els[i], stateModels[stateIndex],fileSystem)
                 }
             }
         }
@@ -236,7 +236,7 @@ function dealLogic(logic,data) {
  * @param {*} el 
  * @param {*} stateInfo
  */
-function changeEleState(el, stateInfo) {
+function changeEleState(el, stateInfo,fileSystem) {
     if (stateInfo.animateCls) {
         el.classList.add(stateInfo.animateCls)
     }
@@ -245,6 +245,7 @@ function changeEleState(el, stateInfo) {
         el.style[key] = stateInfo.style[key]
     }
     if (imgInfo) {
+        imgInfo.url = imgInfo.url.replace(/getechFileSystem/, fileSystem)
         el.style.background = `url(${imgInfo.url}) center center no-repeat`
         el.style.backgroundSize = '100% 100%'
     }
@@ -255,7 +256,7 @@ function changeEleState(el, stateInfo) {
  */
 function reconnect(pageId,applyData) {
     if (!applyData[pageId] || applyData[pageId].lockWs) {return;}
-    applyData[pageId].lockWs = true;
+    applyData[pageId].lockWs = true
     // 3s重连
     setTimeout(function() {
         createWsReal(pageId,applyData)
@@ -263,7 +264,7 @@ function reconnect(pageId,applyData) {
     }, 3000)
 }
 
-function initialWs(ws, pageId,applyData) {
+function initialWs(ws, pageId, applyData, fileSystem) {
     // websocket连接成功
     ws.onopen = function() {
     }
@@ -277,7 +278,7 @@ function initialWs(ws, pageId,applyData) {
         if (dataArr[0] === 'rspCode' || dataArr[1] === 'rspMsg') {
             return
         }
-        throttle(setterRealData(JSON.parse(res.data)), 600)
+        throttle(setterRealData(JSON.parse(res.data),fileSystem), 600)
     }
     // 接收异常
     ws.onerror = function() {
@@ -290,7 +291,7 @@ function initialWs(ws, pageId,applyData) {
 }
 
 //实时数据
-function createWsReal(pageId,applyData) {
+function createWsReal(pageId, applyData, fileSystem) {
     let pointParams = applyData[pageId].wsParams
     getSubscribeInfos(pointParams).then((res) => {
         if (pointParams.length === 0 || !websocketUrlReal) {
@@ -298,7 +299,7 @@ function createWsReal(pageId,applyData) {
         }
         const token = getCookie('token')
         let ws = new WebSocket(res.data, token) // 提交时使用这个
-        initialWs(ws, pageId,applyData)
+        initialWs(ws, pageId, applyData, fileSystem)
         applyData[pageId].wsReal = ws
     })
 }

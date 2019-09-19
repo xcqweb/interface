@@ -255,7 +255,7 @@
         </div>
       </div>
     </div>
-    <div v-if="(!selectMenu && shapeName!='menuCell' || selectMenu && shapeName=='menuCell') && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text' && shapeName!='tableBox' && shapeName!='menulist'">
+    <div v-if="(!selectMenu && shapeName!='menuCell' || selectMenu && shapeName=='menuCell') && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text' && shapeName!='menulist'">
       <div class="item-title">
         外观
       </div>
@@ -697,6 +697,7 @@ export default {
             })
             graph.refresh()
             this.$nextTick(() => {
+
                 this.$store.commit('getWidgetInfo',graph)
             })
         },
@@ -948,34 +949,35 @@ export default {
         },
         dblclickHandle(e) {
             let graph = this.myEditorUi.editor.graph
-            var localImage;
+            let localImage
             return new Promise(function(resolve, reject) {
-                var fr = new FileReader();
+                var fr = new FileReader()
                 fr.onload = (function(file) {
                     resolve(file)
-                    this.removeImageRadio();
-                })(e.target.files[0]);
+                    this.removeImageRadio()
+                })(e.target.files[0])
                 fr.onerror = function() {
-                    reject('上传失败');
+                    reject('上传失败')
                 };
                 fr.readAsDataURL(e.target.files[0])
             }).then((res) => {
                 localImage = res
                 // 更换图片
-                var select = null;
-                var cells = graph.getSelectionCells();
+                let select = null;
+                let cells = graph.getSelectionCells();
                 let updateImg = function(newValue) {
-                    let newPicUrl = newValue.picUrl
-                    graph.getModel().beginUpdate();
+                    let prefix = 'getechFileSystem/'
+                    let newValueCell = prefix + newValue.picPath
+                    graph.getModel().beginUpdate()
                     try {
-                        graph.setCellStyles(mxConstants.STYLE_IMAGE, (newPicUrl.length > 0) ? newPicUrl : null, cells);
+                        graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValueCell.length > 0) ? newValueCell : null, cells);
                     }
                     finally {
-                        graph.getModel().endUpdate();
+                        graph.getModel().endUpdate()
                     }
                     if (select != null) {
-                        graph.setSelectionCells(select);
-                        graph.scrollCellToVisible(select[0]);
+                        graph.setSelectionCells(select)
+                        graph.scrollCellToVisible(select[0])
                     }
                 }
                 if (localImage) {
@@ -983,8 +985,7 @@ export default {
                     formData.append('file', localImage);
                     formData.append('materialLibraryId', '');
                     this.myEditorUi.editor.uploadFile(this.myEditorUi, 'api/iot-cds/sources/material', 'POST', formData, function(res) {
-                        let newValue = res;
-                        updateImg(newValue)
+                        updateImg(res)
                     })
                 } 
             }).catch((meg) => {

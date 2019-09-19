@@ -8,6 +8,8 @@ let applyInfo
 // 正常页面渲染地方
 let gePreview
 let ev//自定义事件，echart dom 渲染后，通知初始化echarts
+// 文件服务器host
+let fileSystem
 
 /**
  * 执行渲染主函数
@@ -34,6 +36,8 @@ class Main {
         if (!id) {
             return
         }
+        const host = await geAjax('/api/console/host/imageHost', 'GET')
+        fileSystem = host.imageHost
         applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudio/${id}`, 'GET')
         if (!applyInfo) {
             return
@@ -58,14 +62,14 @@ class Main {
     // 渲染普通页面
     renderNormal() {
         let pageContent = this.previewPage.content[this.pageId]
-        this.previewPage.parsePage(pageContent)
+        this.previewPage.parsePage(pageContent,fileSystem)
         document.dispatchEvent(ev)
     }
 
     // 渲染弹窗
     renderDialog(id) {
         let pageContent = this.previewPage.content[id];
-        this.previewPage.parsePage(pageContent)
+        this.previewPage.parsePage(pageContent,fileSystem)
         document.dispatchEvent(ev)
     }
 }

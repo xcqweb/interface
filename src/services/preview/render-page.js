@@ -6,6 +6,7 @@ let pageWidth = 0,pageHeight = 0
 // websocket信息
 let applyData = {}
 let finishFlag = false //控件递归结束标记
+let fileSystem //文件服务器host
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
 
@@ -63,10 +64,10 @@ class PreviewPage {
         dialog.appendChild(titleEl)
         // 点击关闭弹窗
         titleEl.addEventListener('click', () => {
-            removeEle(dialog);
-            removeEle(bg);
+            removeEle(dialog)
+            removeEle(bg)
             // 关闭websocket
-            destroyWs(applyData, id);
+            destroyWs(applyData, id)
         })
         // 弹窗正文
         let content = document.createElement('div')
@@ -215,7 +216,9 @@ class PreviewPage {
         finishFlag = false
     }
     // 解析页面
-    parsePage(page) {
+    parsePage(page,fileSystemParam) {
+        fileSystem = fileSystemParam
+        this.currentPageId = page.id
         const xmlDoc = mxUtils.parseXml(page.xml).documentElement
         let pageStyle = page.style
         const root = xmlDoc.getElementsByTagName('root')[0].childNodes
@@ -229,7 +232,7 @@ class PreviewPage {
         // 页面宽度和高度
         pageWidth = pageHeight = 0
         let cells = this.parseCells(list)
-        this.wsParams = [];
+        this.wsParams = []
         if (page.type === 'normal') {
             // 清除全部websocket
             for (let key in applyData) {
@@ -244,6 +247,7 @@ class PreviewPage {
             this.gePreview.style.height = contentHeight + 'px'
             this.gePreview.style.backgroundColor = viewBackground
             if (pageStyle && pageStyle.backgroundUrl) {
+                pageStyle.backgroundUrl = pageStyle.backgroundUrl.replace(/getechFileSystem/,fileSystem)
                 this.gePreview.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
                 this.gePreview.style.backgroundSize = "100% 100%"
             }
@@ -253,13 +257,6 @@ class PreviewPage {
             layerContent.innerHTML = ''
             this.renderPages(cells, layerContent)
         }
-        applyData[page.id] = {
-            wsReal: '',
-            data: {},
-            wsParams: this.wsParams,
-            lockWs: false
-        };
-        this.currentPageId = page.id
         return cells
     }
     // 渲染页面
@@ -278,12 +275,11 @@ class PreviewPage {
 
     // 渲染控件节点
     renderCell(cell) {
-        console.log(cell)
         const shapeName = cell.shapeName
         let cellHtml
         if (shapeName.includes('image')) {
             // 图片
-            cellHtml = insertImage(cell)
+            cellHtml = insertImage(cell,fileSystem)
         } else if (shapeName === 'linkTag') {
             // smartBi链接iframe
             cellHtml = document.createElement('iframe')
@@ -372,7 +368,7 @@ class PreviewPage {
         cellHtml.style.top = cell.y + 'px'
         cellHtml.id = `palette_${cell.id}`
         // 绑定事件
-        bindEvent(cellHtml, cell, this.mainProcess, applyData)
+        bindEvent(cellHtml, cell, this.mainProcess, applyData,fileSystem)
         $(cellHtml).data("shapeName",shapeName)
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild) {
             let devices = cell.bindData.dataSource.deviceNameChild
@@ -437,9 +433,15 @@ class PreviewPage {
                     }
                 })
             }
-            if(finishFlag) {
-                createWsReal(currentPageId, applyData)
-                getLastData(wsParams) //低频数据 通过调用最后一笔数据显示
+            if(finishFlag) {//初始化 数据订阅相关
+                applyData[currentPageId] = {
+                    wsReal: '',
+                    data: {},
+                    wsParams: wsParams,
+                    lockWs: false
+                }
+                createWsReal(currentPageId, applyData,fileSystem)
+                getLastData(wsParams,fileSystem) //低频数据 通过调用最后一笔数据显示
             }
         }
         return cellHtml

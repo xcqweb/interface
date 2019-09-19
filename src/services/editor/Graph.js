@@ -7958,7 +7958,7 @@ if (typeof mxVertexHandler != 'undefined')
              if (state.style && state.style.shape){
                 let shapeName = state.style.shape
                 // 表格和菜单禁止旋转 
-                if (shapeName === 'menulist' || shapeName === 'tableBox' || shapeName === 'label') {
+                if (shapeName === 'menulist' || shapeName === 'tableBox' || shapeName === 'label' || shapeName == 'cellBox' || shapeName == 'menuCell') {
                     return false
                 }
              }

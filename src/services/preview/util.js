@@ -71,9 +71,10 @@ async function geAjax(url, method = 'GET', data = null) {
  * 插入图片
  * @param {object} cell 
  */
-function insertImage(cell) {
+function insertImage(cell, fileSystem) {
     let con = document.createElement('div')
     if(cell.image) {
+        cell.image = cell.image.replace(/getechFileSystem/, fileSystem)
         con.style.background = `url('${cell.image}') no-repeat`
         con.style.backgroundPosition = "center center"
         con.style.backgroundSize = "100% 100%"
@@ -154,7 +155,7 @@ function actionClose(action, applyData) {
  * 触发事件
  * @param {object} action 
  */
-function effectEvent(action, mainProcess, applyData) {
+function effectEvent(action, mainProcess, applyData, fileSystem) {
     switch (action.effectAction) {
         case 'show':
             actionShow(action, mainProcess)
@@ -169,7 +170,7 @@ function effectEvent(action, mainProcess, applyData) {
             actionClose(action, applyData)
             break;
         case 'change'://控件切换状态
-            actionChange(action)
+            actionChange(action, fileSystem)
             break;
         default:
             break;
@@ -180,7 +181,7 @@ function effectEvent(action, mainProcess, applyData) {
  * @param {*} action 
  * @param {*} cellInfo 
  */
-function actionChange(action) {
+function actionChange(action, fileSystem) {
     let cellCon = document.getElementById('palette_' + action.link)
     let {stateInfo} = action
     let shapeName = $(cellCon).data("shapeName")
@@ -196,6 +197,7 @@ function actionChange(action) {
         cellCon.style[key] = stateInfo.style[key]
     }
     if(imgInfo) {
+        imgInfo.url = imgInfo.url.replace(/getechFileSystem/, fileSystem)
         cellCon.style.background = `url(${imgInfo.url}) center center no-repeat`
         cellCon.style.backgroundSize = '100% 100%'
     }
@@ -220,7 +222,7 @@ function actionHide(action, applyData) {
  * @param {object} ele DOM节点
  * @param {Array} ele DOM节点
  */
-function bindEvent(ele, cellInfo, mainProcess, applyData) {
+function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
     let {actionsInfo} = cellInfo
     if (actionsInfo) {
         for (let action of actionsInfo) {
@@ -232,7 +234,7 @@ function bindEvent(ele, cellInfo, mainProcess, applyData) {
                     e.cancelBubble = true;
                 }
                 // 触发事件
-                effectEvent(action, mainProcess, applyData);
+                effectEvent(action, mainProcess, applyData,fileSystem)
             })
         }
     }
