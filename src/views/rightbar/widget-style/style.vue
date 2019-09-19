@@ -626,6 +626,7 @@ export default {
                 this.bindChartProps = this.getWidgetProps('chartProps')
             } else if (state.style.shape === 'image') {
                 document.querySelector('#dlbChooseImage').click()
+                
                 document.querySelector('#dlbChooseImage').onchange = (evt) => {
                     this.dblclickHandle(evt)
                 }

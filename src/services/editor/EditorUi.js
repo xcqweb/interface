@@ -3560,7 +3560,7 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                             return;
                         } else if (res.code === '0') {
                             editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
-                                this.saveSuccess(res, hideDialog);
+                                this.saveSuccess(res, hideDialog, type);
                                 setCookie('saveIotCds', 'put');
                                 resolve(res);
                             }, (res) => {
