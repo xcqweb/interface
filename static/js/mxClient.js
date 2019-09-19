@@ -80749,12 +80749,12 @@ mxKeyHandler.prototype.getFunction = function(evt)
 mxKeyHandler.prototype.isGraphEvent = function(evt)
 {
 	var source = mxEvent.getSource(evt);
-
 	// console.log(this.graph.cellEditor != null , '-----', this.graph.cellEditor.isEventSource(evt))
 	// Accepts events from the target object or
 	// in-place editing inside graph
-	// 首次进入优化 按delete
-	if ((source == this.target || source.parentNode == this.target || (source.tagName === 'A' && source.className.includes('geItem') && source.parentNode.className.includes('geSidebar'))) ||
+	// 首次进入优化 按delete 加上toolbar
+	// console.log(source, '-----', this.target)
+	if ((source == this.target || source.parentNode == this.target || (source.tagName === 'A' && source.className.includes('del_use_flag_terry')) || (source.tagName === 'A' && source.className.includes('geItem') && source.parentNode.className.includes('geSidebar'))) ||
 		(this.graph.cellEditor != null && this.graph.cellEditor.isEventSource(evt)))
 	{
 		return true;

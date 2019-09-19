@@ -9,7 +9,7 @@
       <a
         href="javascript:void(0);"
         ondragstart="return false;"
-        class="geButton"
+        class="del_use_flag_terry geButton"
         title="放大"
         @click.stop.prevent="zoom('in')"
       >
@@ -19,7 +19,7 @@
         ref="elScale"
         href="javascript:void(0);"
         ondragstart="return false;"
-        class="geLabel"
+        class="del_use_flag_terry geLabel"
         title="缩放 (Alt+Mousewheel)"
         style="white-space: nowrap; position: relative; overflow: hidden; width: 50px;text-align:center;"
         @click.stop.prevent="isShowScale = true"
@@ -29,7 +29,7 @@
       <a
         href="javascript:void(0);"
         ondragstart="return false;"
-        class="geButton"
+        class="del_use_flag_terry geButton"
         title="缩小"
         @click.stop.prevent="zoom('out')"
       >
@@ -38,7 +38,7 @@
       <a
         href="javascript:void(0);"
         ondragstart="return false;"
-        class="geButton"
+        class="del_use_flag_terry geButton"
         title="全屏 (F11)"
         @click.stop.prevent="fullscreen('out')"
       >
@@ -50,7 +50,7 @@
         ref="undo"
         href="javascript:void(0);"
         ondragstart="return false;"
-        class="geButton"
+        class="del_use_flag_terry geButton"
         title="撤销 (Ctrl+Z)"
         @click.stop.prevent="addAction('undo')"
       >
@@ -59,7 +59,7 @@
       <a
         ref="redo"
         href="javascript:void(0);"
-        class="geButton"
+        class="del_use_flag_terry geButton"
         style="margin-left:12px;"
         title="重做 (Ctrl+Y)"
         @click.stop.prevent="addAction('redo')"
@@ -71,7 +71,7 @@
       <a
         href="javascript:void(0);"
         ondragstart="return false;"
-        class="geButton"
+        class="del_use_flag_terry geButton"
         style="width:48px;display:flex;align-items:center;justify-content:center;"
         :title="alignText"
         @click="dealAlign(alignCls)"
@@ -86,7 +86,7 @@
       <a
         href="javascript:void(0);"
         ondragstart="return false;"
-        class="geButton"
+        class="del_use_flag_terry geButton"
         title="移至最前 (Ctrl+Shift+F)"
         style="margin-left:12px;"
         @click.stop.prevent="addAction('toFront')"
@@ -96,7 +96,7 @@
       <a
         href="javascript:void(0);"
         ondragstart="return false;"
-        class="geButton"
+        class="del_use_flag_terry geButton"
         title="移至最后 (Ctrl+Shift+B)"
         style="margin-left:12px;"
         @click.stop.prevent="addAction('toBack')"
@@ -108,7 +108,7 @@
       <a
         href="javascript:void(0);"
         ondragstart="return false;"
-        class="geButton"
+        class="del_use_flag_terry geButton"
         title="组合 (Ctrl+G)"
         @click.stop.prevent="addAction('group')"
       >
@@ -117,7 +117,7 @@
       <a
         href="javascript:void(0);"
         ondragstart="return false;"
-        class="geButton"
+        class="del_use_flag_terry geButton"
         title="取消组合 (Ctrl+Shift+U)"
         style="margin-left:12px;"
         @click.stop.prevent="addAction('ungroup')"
