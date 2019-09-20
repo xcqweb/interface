@@ -212,14 +212,15 @@ export default {
     },
     watch:{
         ifShowArrow(val) {
-            console.log(val)
-            // let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
-            // let wh = document.documentElement.clientHeight
-            // if(val) {
-            //     el.style.height = wh - 72 - 226 + 'px'
-            // }else{
-            //     el.style.height = wh - 72 - 26 + 'px'
-            // }
+            let graph = this.myEditorUi.editor.graph
+            let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
+            let wh = document.documentElement.clientHeight
+            if(val) {
+                el.style.height = wh - 72 - 226 + 'px'
+            }else{
+                el.style.height = wh - 72 - 26 + 'px'
+            }
+            graph.refresh()
         },
         footerModelUpdata(val) {
             if (val) {
