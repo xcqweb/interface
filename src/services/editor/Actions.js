@@ -289,32 +289,32 @@ Actions.prototype.init = function()
     	
     // 向上插入一行
     this.addAction('addUpRow', () => {
-        console.log('向上插入一行');
+        // console.log('向上插入一行');
         this.insertTableCell('up');
     })
     // 向下插入一行
     this.addAction('addLowerRow', () => {
-        console.log('向下插入一行')
+        // console.log('向下插入一行')
         this.insertTableCell('lower');
     })
     // 删除行
     this.addAction('deleteRow', () => {
-        console.log('删除行')
+        // console.log('删除行')
         this.deleteTableCell('row');
     })
     // 向左插入一列
     this.addAction('addLeftCol', () => {
-        console.log('向左插入一列')
+        // console.log('向左插入一列')
         this.insertTableCell('left');
     })
     // 向右插入一列
     this.addAction('addRightCol', () => {
-        console.log('向右插入一列')
+        // console.log('向右插入一列')
         this.insertTableCell('right');
     })
     // 删除列
     this.addAction('deleteCol', () => {
-        console.log('删除列')
+        // console.log('删除列')
         this.deleteTableCell('col');
     })
     this.addAction('import...', () =>

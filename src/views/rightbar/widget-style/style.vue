@@ -699,7 +699,6 @@ export default {
             })
             graph.refresh()
             this.$nextTick(() => {
-
                 this.$store.commit('getWidgetInfo',graph)
             })
         },

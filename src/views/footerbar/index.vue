@@ -212,12 +212,18 @@ export default {
     },
     watch:{
         ifShowArrow(val) {
+            console.log(val)
             let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
+            // let ele = el.children[0]
+            // console.log(ele)
             let wh = document.documentElement.clientHeight
+            // console.log(val, ele.style.top)
             if(val) {
                 el.style.height = wh - 72 - 226 + 'px'
+                // ele.style.top = ele.style.top + 200 + 'px'
             }else{
                 el.style.height = wh - 72 - 26 + 'px'
+                // ele.style.top = ele.style.top - 200 + 'px'
             }
         },
         footerModelUpdata(val) {
@@ -559,13 +565,13 @@ export default {
             }
             modelInfo.setAttribute(key, JSON.stringify(data))
             graph.getModel().setValue(cell, modelInfo)
-
-            let state = graph.view.getState(cell)
-            let shapeName = state.style.shape
+            console.log(8888)
             // 防止表格小单元格 跳动
-            if (shapeName === 'tableCell') {
-                graph.refresh()
-            }
+            // let state = graph.view.getState(cell)
+            // let shapeName = state.style.shape
+            // if (shapeName === 'tableCell') {
+            //     graph.refresh()
+            // }
         },
     }
 }

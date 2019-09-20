@@ -103,7 +103,7 @@
     <DataDataModal
       v-if="ifShowImportData"
       ref="importdataModel"
-      @saveHandleToUpdata="getDeviceType"
+      @saveHandleToUpdata="getDeviceType(2)"
       @triggerCancel="triggerCancel"
     />
   </div>
@@ -163,8 +163,10 @@ export default{
         triggerCancel() {
             this.ifShowImportData = false
         },
-        getDeviceType() { // 两个地方去更新
-            this.$refs.datasourceright.initData()
+        getDeviceType(type) { // 两个地方去更新
+            // type 1 : 初始进来 2 点击导入数据源进入
+            this.$refs.datasourceright.initData(type)
+            
         },
         deleteDataSource() {
 
