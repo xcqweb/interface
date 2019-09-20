@@ -213,18 +213,13 @@ export default {
     watch:{
         ifShowArrow(val) {
             console.log(val)
-            let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
-            // let ele = el.children[0]
-            // console.log(ele)
-            let wh = document.documentElement.clientHeight
-            // console.log(val, ele.style.top)
-            if(val) {
-                el.style.height = wh - 72 - 226 + 'px'
-                // ele.style.top = ele.style.top + 200 + 'px'
-            }else{
-                el.style.height = wh - 72 - 26 + 'px'
-                // ele.style.top = ele.style.top - 200 + 'px'
-            }
+            // let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
+            // let wh = document.documentElement.clientHeight
+            // if(val) {
+            //     el.style.height = wh - 72 - 226 + 'px'
+            // }else{
+            //     el.style.height = wh - 72 - 26 + 'px'
+            // }
         },
         footerModelUpdata(val) {
             if (val) {

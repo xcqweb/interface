@@ -1235,7 +1235,7 @@ Actions.prototype.init = function()
 	    	var selectionState = graph.cellEditor.saveSelection();
 	    	ui.showImageDialog(title, value, function(newValue, w, h)
             {
-                console.log(graph.cellEditor.isContentEditing())
+                // console.log(graph.cellEditor.isContentEditing())
 	    		// 将图片插入html
 	    		if (graph.cellEditor.isContentEditing())
 	    		{
