@@ -568,7 +568,7 @@ export default {
         VueEvent.$off('edgePropsUpdate')
         VueEvent.$on('edgePropsUpdate', () => {
             let geo = this.$store.state.main.widgetInfo.geo
-            this.setWidgetProps('edgeProps',geo)
+            this.setWidgetProps('edgeProps', geo, true)
         })
         let graph = this.myEditorUi.editor.graph
         this.fontText = this.$store.state.main.widgetInfo.fontSize
@@ -704,6 +704,7 @@ export default {
             })
             graph.refresh()
             this.$nextTick(() => {
+
                 this.$store.commit('getWidgetInfo',graph)
             })
         },
@@ -931,14 +932,16 @@ export default {
             let cellInfo = graph.getModel().getValue(cell)
             return cellInfo
         },
-        setWidgetProps(widgetProp,props) {
+        setWidgetProps(widgetProp,props,noUpdateModel) {
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
             let cellInfo = graph.getModel().getValue(cell)
             let attrObj = this.getWidgetProps(widgetProp)
             let newAttr = JSON.stringify(Object.assign({},attrObj,props))
             cellInfo.setAttribute(widgetProp,newAttr)
-            graph.getModel().setValue(cell, cellInfo)
+            if (widgetProp !== 'edgeProps' || (widgetProp === 'edgeProps' && !noUpdateModel)) {
+                graph.getModel().setValue(cell, cellInfo)
+            }
         },
         getWidgetProps(widgetProp) {
             let cellInfo = this.getCellInfo()

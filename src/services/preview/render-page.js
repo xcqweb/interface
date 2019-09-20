@@ -287,7 +287,6 @@ class PreviewPage {
 
     // 渲染控件节点
     renderCell(cell) {
-        console.log(cell)
         const shapeName = cell.shapeName
         let cellHtml
         if (shapeName.includes('image')) {
@@ -308,13 +307,36 @@ class PreviewPage {
         }  else if (shapeName === 'text') {
             // 文本
             cellHtml = document.createElement('span')
+            cellHtml.style.overflow = 'visible'
+            let child = document.createElement('span')
+            let translateX = '0'
+            let translateY = '0'
+            child.style.position = "absolute"
+            if (cell.align === 'right') {
+                child.style.right = '0'
+            } else if (cell.align === 'center') {
+                child.style.left = '50%'
+                translateX = '-50%'
+            }
+            if (cell.verticalAlign === 'bottom') {
+                child.style.bottom = '0'
+            } else if (cell.verticalAlign === 'middle') {
+                child.style.top = '50%'
+                translateY = '-50%'
+            } else {
+                translateY = '8px'
+            }
+            child.style.transform = `translate(${translateX}, ${translateY})`
+            child.style.lineHeight = '1'
+            child.style.whiteSpace = 'nowrap'
             let reg = />(.+)</
             let textArr = cell.value.match(reg)
             if(textArr && textArr.length) {
-                cellHtml.innerHTML = textArr[1]
+                child.innerHTML = textArr[1]
             }else{
-                cellHtml.innerHTML = cell.value
+                child.innerHTML = cell.value
             }
+            cellHtml.appendChild(child)
         } else if (shapeName === 'button') {
             // 按钮
             cellHtml = document.createElement('div')
@@ -338,12 +360,14 @@ class PreviewPage {
             }
             cellHtml.innerHTML = cell.value;
         }
-        if (cell.verticalAlign === 'top') {
-            cellHtml.style.lineHeight = cell.fontSize + 'px'
-        } else if (cell.verticalAlign === 'bottom') {
-            cellHtml.style.lineHeight = (cell.height * 2 - cell.fontSize) + 'px'
-        } else {
-            cellHtml.style.lineHeight = cell.height + 'px'
+        if (shapeName !== 'text') {
+            if (cell.verticalAlign === 'top') {
+                cellHtml.style.lineHeight = cell.fontSize + 'px'
+            } else if (cell.verticalAlign === 'bottom') {
+                cellHtml.style.lineHeight = (cell.height * 2 - cell.fontSize) + 'px'
+            } else {
+                cellHtml.style.lineHeight = cell.height + 'px'
+            }
         }
         cellHtml.style.textAlign = cell.align
         if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress'].includes(shapeName)) {
