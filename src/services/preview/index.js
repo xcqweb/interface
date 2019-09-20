@@ -7,7 +7,7 @@ let mainProcess
 let applyInfo
 // 正常页面渲染地方
 let gePreview
-let ev//自定义事件，echart dom 渲染后，通知初始化echarts
+let evEchartsInit//自定义事件，echart dom 渲染后，通知初始化echarts
 // 文件服务器host
 let fileSystem
 
@@ -24,8 +24,8 @@ class Main {
 
     // 初始化
     async init() {
-        ev = document.createEvent('CustomEvent')
-        ev.initCustomEvent('initEcharts', false, true, null)
+        evEchartsInit = document.createEvent('CustomEvent')
+        evEchartsInit.initCustomEvent('initEcharts', false, true, null)
         gePreview = document.getElementById('gePreview')
         let idArr = /id=(.+?)$/.exec(location.search)
         let id = ''
@@ -63,14 +63,14 @@ class Main {
     renderNormal() {
         let pageContent = this.previewPage.content[this.pageId]
         this.previewPage.parsePage(pageContent,fileSystem)
-        document.dispatchEvent(ev)
+        document.dispatchEvent(evEchartsInit)
     }
 
     // 渲染弹窗
     renderDialog(id) {
         let pageContent = this.previewPage.content[id];
         this.previewPage.parsePage(pageContent,fileSystem)
-        document.dispatchEvent(ev)
+        document.dispatchEvent(evEchartsInit)
     }
 }
 mainProcess = new Main()

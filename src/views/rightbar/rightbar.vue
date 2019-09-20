@@ -44,6 +44,7 @@ export default {
         VueEvent.$off('refreshCurrentPage')
         VueEvent.$on('refreshCurrentPage',(type)=>{
             this.$store.dispatch('pageTabIndex',type)
+            this.centerCanvas()
             this.refresh++
         })
     },
@@ -96,7 +97,7 @@ export default {
                 that.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', that.defaultImageWidth, that.defaultImageHeight, '', '图片',true,true),
             ]
             for (let i = 0; i < shortCutWidgets.length; i++) {
-                ele.appendChild(shortCutWidgets[i](ele));
+                ele.appendChild(shortCutWidgets[i](ele))
             }
             this.myEditorUi.format.refresh = ()=>{
                 this.showWidgetStyle = !(graph.isSelectionEmpty())
@@ -116,6 +117,12 @@ export default {
                 }
             }
             this.inited = true
+        },
+        centerCanvas() {//居中画布
+            let graph = this.myEditorUi.editor.graph
+            this.$nextTick(()=>{
+                graph.center(true,true,0.5,0.5)
+            })
         },
     }
 };
