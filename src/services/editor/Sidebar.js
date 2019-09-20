@@ -970,6 +970,9 @@ Sidebar.prototype.renameNode = function(ele, pageType) {
     editInput.value = oldVal;
     ele.innerText = '';
     ele.appendChild(editInput);
+    editInput.onfocus = function() {
+        this.select()
+    }
     editInput.focus();
     let saveFn = () => {
         let name = editInput.value.trim()

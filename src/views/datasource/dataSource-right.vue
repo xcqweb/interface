@@ -404,6 +404,16 @@ export default {
             
         },
         async clickDeviceTypeListHandle(evt, index,deviceTypeId) {
+            // 清空之前
+            this.paramsNameList = []
+            this.deviceNameList = []
+            this.deviceNameListArr = []
+            this.paramsNameListArr = []
+            this.indeterminateArr[1] = false
+            this.checkAllArr[1] = false
+            this.indeterminateArr[2] = false
+            this.checkAllArr[2] = false
+
             this.numberlistIndex = index
             this.$emit('nowClickNumber',this.numberlistIndex)
             this.currentDeviceTypeId = deviceTypeId // 用于搜素

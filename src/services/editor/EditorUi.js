@@ -15,6 +15,7 @@ import {ChangePageSetup} from './Init'
 import {Format} from './Format'
 import urls from '../../constants/url'
 import { setCookie, tipDialog} from '../Utils'
+var autoSaveFlagTerry = 0
 window.EditorUi = function(editor, container, lightbox)
 {
     mxEventSource.call(this);
@@ -2181,15 +2182,16 @@ EditorUi.prototype.addBeforeUnloadListener = function()
         }
     });
 };
-
 /**
  * Sets the onbeforeunload for the application
  */
 EditorUi.prototype.onBeforeUnload = function()
 {
     if (this.editor.modified)
-    {
+    {   
+
         return mxResources.get('allChangesLost');
+        
     }
 };
 
@@ -3446,14 +3448,22 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
     else
     {
         if(hideDialog){
-            this.save(this.editor.getOrCreateFilename(), this.editor.getDescribe(),hideDialog)
-            return
+            console.log(7777)
+            // 自动保存 走这里
+            if (autoSaveFlagTerry === 0) { // 屏蔽自动保存 > 0 就不弹窗
+                this.save(this.editor.getOrCreateFilename(), this.editor.getDescribe(),hideDialog)
+                return
+            }else {
+                return
+            }
         }
         // 编辑保存
-        var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '保存并退出', mxUtils.bind(this, function(name, des)
+        var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '保存', mxUtils.bind(this, function(name, des)
         {
             // closePage 手动保存 关闭页面
-            this.save(name, des, '', 'closePage');
+            console.log(666)
+            autoSaveFlagTerry = 0
+            this.save(name, des, '', 'ManualSavePage');
         }), null, mxUtils.bind(this, function(name)
         {
             if (name != null && name.length > 0)
@@ -3470,27 +3480,27 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
         dlg.init();
     }
 };
-
 /**
  * 保存成功
  * 和退出当前页面
  */
-function CloseWebPage() {
-    var userAgent = navigator.userAgent;
-    if (userAgent.indexOf("Firefox") != -1 || userAgent.indexOf("Chrome") != -1) {
-        window.opener = null;
-        window.onbeforeunload = function (event) {
-        };
-        window.open("about:blank", "_self");
-        window.close();
-    } else if (userAgent.indexOf('Android') > -1 || userAgent.indexOf('Linux') > -1) {
-        window.opener = null; window.open('about:blank', '_self', '').close();
-    } else {
-        window.opener = null;
-        window.open("about:blank", "_self");
-        window.close();
-    }
-}
+// 去掉多人编辑 退出
+// function CloseWebPage() {
+//     var userAgent = navigator.userAgent;
+//     if (userAgent.indexOf("Firefox") != -1 || userAgent.indexOf("Chrome") != -1) {
+//         window.opener = null;
+//         window.onbeforeunload = function (event) {
+//         };
+//         window.open("about:blank", "_self");
+//         window.close();
+//     } else if (userAgent.indexOf('Android') > -1 || userAgent.indexOf('Linux') > -1) {
+//         window.opener = null; window.open('about:blank', '_self', '').close();
+//     } else {
+//         window.opener = null;
+//         window.open("about:blank", "_self");
+//         window.close();
+//     }
+// }
 EditorUi.prototype.saveSuccess = function (res, hideDialog, type) {
     this.editor.setFilename(res.studioName)
     this.editor.setDescribe(res.descript)
@@ -3502,9 +3512,6 @@ EditorUi.prototype.saveSuccess = function (res, hideDialog, type) {
         if (!hideDialog){
             this.hideDialog()
             this.editor.tipInfo(this, true, '保存');
-        }
-        if (type && type === 'closePage') {
-            CloseWebPage()
         }
     }, 350);
 }
@@ -3545,7 +3552,7 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                 }
                 // 
-                if (type && type === 'closePage') {
+                if (type && type === 'ManualSavePage') { // 手动保存
                     data.lockStatus = 0
                 } else {
                     data.lockStatus = 1
@@ -3556,6 +3563,7 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                     data.studioId = id
                     editor.ajax(ui, `${urls.ifMultipleEdit.url}${id}`, 'GET', '', (res) => {
                         if (res.code === '3012') {
+                            autoSaveFlagTerry++
                             tipDialog(ui, `当前应用 ${res.message ? res.message : '' } 正在编辑, 无法保存`);
                             return;
                         } else if (res.code === '0') {

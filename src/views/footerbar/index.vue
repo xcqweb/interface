@@ -76,6 +76,7 @@
                       v-model="item.model"
                       style="width:240px;height:24px;line-height:24px;"
                       :clearable="true"
+                      filterable
                       @on-change="val=>paramSelectChange(val,index)"
                       @on-clear="removeParamHandle(item.id,index)"
                     >
@@ -359,6 +360,7 @@ export default {
                 let param = {
                     studioId:sessionStorage.getItem("applyId"),
                     deviceTypeId: deviceTypeId,
+                    size:10000000,
                     type:1
                 }
                 this.requestUtil.post(this.urls.deviceParamList.url, param).then((res) => {
@@ -675,6 +677,10 @@ export default {
           height:24px;
         }
         .ivu-select-placeholder{
+          height:24px;
+          line-height:24px;
+        }
+        .ivu-select-input{
           height:24px;
           line-height:24px;
         }

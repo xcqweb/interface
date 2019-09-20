@@ -758,6 +758,9 @@ export default {
             editInput.value = oldVal
             ele.innerText = ''
             ele.appendChild(editInput)
+            editInput.onfocus = function() {
+                this.select()
+            }
             editInput.focus()
             let newMousHandele = this.mounseHandle()
             newMousHandele(editInput, 'blur', () => {
