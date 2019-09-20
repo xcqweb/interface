@@ -312,7 +312,12 @@
             style="justify-content:space-between;position:relative;flex:1;margin:0;"
             @click="showBorderLineBold=true"
           >
-            <div>{{ borderLineBoldText }}</div>
+            <input
+              v-model="borderLineBoldText"
+              v-number="0"
+              style="border-left: none;border-right: none"
+              @keyup.enter="changeBorderLineBold(borderLineBoldText)"
+            >
             <img src="../../../assets/images/menu/down_ic.png">
             <ul
               v-if="showBorderLineBold"
@@ -512,9 +517,9 @@ export default {
             borderLineList:['border-line','border-dash'],
             borderLineCls:'border-line',
             showArrowDialog:false,
-            fontList:[12,13,14,15,16,17,18,19,20],
+            fontList:[12,13,14,16,18,20,28,36,48],
             borderLineBoldText:1,
-            borderLineBoldList:[1,2,3,4,5,6,7,8,9,10],
+            borderLineBoldList:[1,2,3,4,5,6,7,8],
             arrowClsList:['arrow-empty','arrow-left','arrow-right','arrow-double'],
             arrowCls:'arrow-empty',
             fillStyleList:['beeline','image','userimage'],
@@ -560,10 +565,10 @@ export default {
     },
     created() {},
     mounted() {
+        VueEvent.$off('edgePropsUpdate')
         VueEvent.$on('edgePropsUpdate', () => {
             let geo = this.$store.state.main.widgetInfo.geo
-            this.setWidgetProps('edgeProps',geo)
-            VueEvent.$off('edgePropsUpdate')
+            this.setWidgetProps('edgeProps', geo, true)
         })
         let graph = this.myEditorUi.editor.graph
         this.fontText = this.$store.state.main.widgetInfo.fontSize
@@ -699,6 +704,7 @@ export default {
             })
             graph.refresh()
             this.$nextTick(() => {
+
                 this.$store.commit('getWidgetInfo',graph)
             })
         },
@@ -800,8 +806,8 @@ export default {
             let graph = this.myEditorUi.editor.graph
             graph.setCellStyles('strokeWidth', d, graph.getSelectionCells());
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['strokeWidth'],'values', [d], 'cells', graph.getSelectionCells()));
-            this.showBorderLineBold = false;
-            e.stopPropagation()
+            this.showBorderLineBold = false
+            e && e.stopPropagation()
         },
         hideBorderLineBold() {
             this.showBorderLineBold = false
@@ -926,14 +932,16 @@ export default {
             let cellInfo = graph.getModel().getValue(cell)
             return cellInfo
         },
-        setWidgetProps(widgetProp,props) {
+        setWidgetProps(widgetProp,props,noUpdateModel) {
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
             let cellInfo = graph.getModel().getValue(cell)
             let attrObj = this.getWidgetProps(widgetProp)
             let newAttr = JSON.stringify(Object.assign({},attrObj,props))
             cellInfo.setAttribute(widgetProp,newAttr)
-            graph.getModel().setValue(cell, cellInfo)
+            if (widgetProp !== 'edgeProps' || (widgetProp === 'edgeProps' && !noUpdateModel)) {
+                graph.getModel().setValue(cell, cellInfo)
+            }
         },
         getWidgetProps(widgetProp) {
             let cellInfo = this.getCellInfo()

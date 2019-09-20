@@ -52,7 +52,6 @@
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
         title="撤销 (Ctrl+Z)"
-        @click.stop.prevent="addAction('undo')"
       >
         <div class="geSprite geSprite-undo" />
       </a>
@@ -62,7 +61,6 @@
         class="del_use_flag_terry geButton"
         style="margin-left:12px;"
         title="重做 (Ctrl+Y)"
-        @click.stop.prevent="addAction('redo')"
       >
         <div class="geSprite geSprite-redo" />
       </a> 
@@ -84,43 +82,43 @@
         <img src="../../assets/images/menu/down_ic.png">
       </a>
       <a
+        ref="toFront"
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
         title="移至最前 (Ctrl+Shift+F)"
         style="margin-left:12px;"
-        @click.stop.prevent="addAction('toFront')"
       >
         <div class="geSprite geSprite-tofront" />
       </a>
       <a
+        ref="toBack"
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
         title="移至最后 (Ctrl+Shift+B)"
         style="margin-left:12px;"
-        @click.stop.prevent="addAction('toBack')"
       >
         <div class="geSprite geSprite-toback" />
       </a>
     </div>
     <div class="geToolbar geToolbar5">
       <a
+        ref="group"
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
         title="组合 (Ctrl+G)"
-        @click.stop.prevent="addAction('group')"
       >
         <div class="geSprite geSprite-group" />
       </a>
       <a
+        ref="ungroup"
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
         title="取消组合 (Ctrl+Shift+U)"
         style="margin-left:12px;"
-        @click.stop.prevent="addAction('ungroup')"
       >
         <div class="geSprite geSprite-ungroup" />
       </a>
@@ -146,12 +144,12 @@
         <div class="geSprite geSprite-save" />
       </a>
       <a
+        ref="previewapply"
         href="javascript:void(0);"
         ondragstart="return false;"
         class="geButton"
         title="预览 (Ctrl+Shift+L)"
         style="margin-left:12px;"
-        @click.stop.prevent="addAction('previewapply')"
       >
         <div class="geSprite geSprite-preview" />
       </a>
@@ -211,19 +209,26 @@ export default{
             }
         },
         init() {
-            let keys = [
-                'undo','redo'
-            ]
-            keys.forEach(key=>{
-                let action = this.myEditorUi.actions.get(key);
-                let elt = this.$refs[key]
-                this.myEditorUi.toolbar.initElement(elt)
-                if (action != null)  {
-                    elt.setEnabled(action.enabled)
-                    action.addListener('stateChanged',()=>{
-                        elt.setEnabled(action.enabled)
-                    })
-                }
+            this.$nextTick(() => {
+                let keys = [
+                    'undo', 'redo', 'toFront', 'toBack', 'group', 'ungroup', 'previewapply'
+                ]
+                keys.forEach(key=>{
+                    let action = this.myEditorUi.actions.get(key);
+                    let elt = this.$refs[key]
+                    this.myEditorUi.toolbar.initElement(elt)
+                    this.myEditorUi.toolbar.addClickHandler(elt, action.funct);
+                    elt.setEnabled(action.enabled);
+                    action.addListener('stateChanged', function() {
+                        elt.setEnabled(action.enabled);
+                    });
+                    // if (action != null)  {
+                    //     elt.setEnabled(action.enabled)
+                    //     action.addListener('stateChanged',()=>{
+                    //         elt.setEnabled(action.enabled)
+                    //     })
+                    // }
+                })
             })
         },
         fullscreen() {

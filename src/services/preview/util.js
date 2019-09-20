@@ -322,7 +322,7 @@ function dealCharts(cell) {
     }
     document.addEventListener("initEcharts",()=>{
         let myEchart = echarts.init(con)
-        if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild) {
+        if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params) {
             let deviceTypeId = cell.bindData.dataSource.deviceTypeChild.id
             let titleShow = cell.bindData.params[0].paramName
             requestUtil.get(`${urls.timeSelect.url}${deviceTypeId}`).then(res => {

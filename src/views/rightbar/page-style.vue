@@ -173,7 +173,7 @@ export default {
                 },
                 true
             )
-            this.centerCanvas()
+            //this.centerCanvas()
             e.stopPropagation()
         },
         centerCanvas() {//居中画布
@@ -198,7 +198,7 @@ export default {
                 },
                 true
             )
-            this.centerCanvas()
+            //this.centerCanvas()
         },
         setBackgroundImg() {
             this.$refs.chooseImg.click()

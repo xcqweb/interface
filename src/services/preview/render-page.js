@@ -5,7 +5,6 @@
 let pageWidth = 0,pageHeight = 0
 // websocket信息
 let applyData = {}
-let finishFlag = false //控件递归结束标记
 let fileSystem //文件服务器host
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
@@ -213,7 +212,16 @@ class PreviewPage {
     // 清空页面内容
     clearPage() {
         this.gePreview.innerHTML = ''
-        finishFlag = false
+    }
+    subscribeData() {
+        applyData[this.currentPageId] = {
+            wsReal: '',
+            data: {},
+            wsParams: this.wsParams,
+            lockWs: false
+        }
+        createWsReal(this.currentPageId, applyData, fileSystem)
+        getLastData(this.wsParams, fileSystem) //低频数据 通过调用最后一笔数据显示
     }
     // 解析页面
     parsePage(page,fileSystemParam) {
@@ -247,7 +255,7 @@ class PreviewPage {
             this.gePreview.style.height = contentHeight + 'px'
             this.gePreview.style.backgroundColor = viewBackground
             if (pageStyle && pageStyle.backgroundUrl) {
-                pageStyle.backgroundUrl = pageStyle.backgroundUrl.replace(/getechFileSystem/,fileSystem)
+                pageStyle.backgroundUrl = pageStyle.backgroundUrl.replace(/getechFileSystem\//, fileSystem)
                 this.gePreview.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
                 this.gePreview.style.backgroundSize = "100% 100%"
             }
@@ -257,6 +265,11 @@ class PreviewPage {
             layerContent.innerHTML = ''
             this.renderPages(cells, layerContent)
         }
+        $(() => {
+            setTimeout(() => {
+                this.subscribeData()
+            }, 400)
+        })
         return cells
     }
     // 渲染页面
@@ -270,7 +283,6 @@ class PreviewPage {
                 this.renderPages(cell.children, cellHtml)
             }
         }
-        finishFlag = true
     }
 
     // 渲染控件节点
@@ -295,13 +307,36 @@ class PreviewPage {
         }  else if (shapeName === 'text') {
             // 文本
             cellHtml = document.createElement('span')
+            cellHtml.style.overflow = 'visible'
+            let child = document.createElement('span')
+            let translateX = '0'
+            let translateY = '0'
+            child.style.position = "absolute"
+            if (cell.align === 'right') {
+                child.style.right = '0'
+            } else if (cell.align === 'center') {
+                child.style.left = '50%'
+                translateX = '-50%'
+            }
+            if (cell.verticalAlign === 'bottom') {
+                child.style.bottom = '0'
+            } else if (cell.verticalAlign === 'middle') {
+                child.style.top = '50%'
+                translateY = '-50%'
+            } else {
+                translateY = '8px'
+            }
+            child.style.transform = `translate(${translateX}, ${translateY})`
+            child.style.lineHeight = '1'
+            child.style.whiteSpace = 'nowrap'
             let reg = />(.+)</
             let textArr = cell.value.match(reg)
             if(textArr && textArr.length) {
-                cellHtml.innerHTML = textArr[1]
+                child.innerHTML = textArr[1]
             }else{
-                cellHtml.innerHTML = cell.value
+                child.innerHTML = cell.value
             }
+            cellHtml.appendChild(child)
         } else if (shapeName === 'button') {
             // 按钮
             cellHtml = document.createElement('div')
@@ -325,12 +360,14 @@ class PreviewPage {
             }
             cellHtml.innerHTML = cell.value;
         }
-        if (cell.verticalAlign === 'top') {
-            cellHtml.style.lineHeight = cell.fontSize + 'px'
-        } else if (cell.verticalAlign === 'bottom') {
-            cellHtml.style.lineHeight = (cell.height * 2 - cell.fontSize) + 'px'
-        } else {
-            cellHtml.style.lineHeight = cell.height + 'px'
+        if (shapeName !== 'text') {
+            if (cell.verticalAlign === 'top') {
+                cellHtml.style.lineHeight = cell.fontSize + 'px'
+            } else if (cell.verticalAlign === 'bottom') {
+                cellHtml.style.lineHeight = (cell.height * 2 - cell.fontSize) + 'px'
+            } else {
+                cellHtml.style.lineHeight = cell.height + 'px'
+            }
         }
         cellHtml.style.textAlign = cell.align
         if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress'].includes(shapeName)) {
@@ -410,41 +447,33 @@ class PreviewPage {
                             }
                         })
                         $(cellHtml).data("stateModels", cellStateInfoHasModel)
-                        initWsParams(this.currentPageId, this.wsParams, devices, resParams, paramShow)
+                        this.initWsParams(cellHtml, devices, resParams, paramShow)
+                    },()=>{
+                        this.initWsParams(cellHtml, devices, resParams, paramShow)
                     })
                 }else{
-                    initWsParams(this.currentPageId, this.wsParams, devices, resParams, paramShow)
+                    this.initWsParams(cellHtml, devices, resParams, paramShow)
                 }
             } else{
-                initWsParams(this.currentPageId,this.wsParams,devices, resParams, paramShow)
-            }
-        }
-        function initWsParams(currentPageId,wsParams, devices, resParams, paramShow) {
-            $(cellHtml).data("paramShowAll", Array.from(new Set(paramShow.concat(resParams))))
-            if (devices) {
-                devices.forEach((item) => {
-                    cellHtml.className += ` point_${item.id}`
-                    let resArr = Array.from(new Set(resParams.concat(paramShow)))
-                    if (resArr.length) {
-                        wsParams.push({
-                            pointId: item.id,
-                            params: resArr
-                        })
-                    }
-                })
-            }
-            if(finishFlag) {//初始化 数据订阅相关
-                applyData[currentPageId] = {
-                    wsReal: '',
-                    data: {},
-                    wsParams: wsParams,
-                    lockWs: false
-                }
-                createWsReal(currentPageId, applyData,fileSystem)
-                getLastData(wsParams,fileSystem) //低频数据 通过调用最后一笔数据显示
+                this.initWsParams(cellHtml, devices, resParams, paramShow)
             }
         }
         return cellHtml
+    }
+    initWsParams(cellHtml, devices, resParams, paramShow) {
+        $(cellHtml).data("paramShowAll", Array.from(new Set(paramShow.concat(resParams))))
+        if (devices) {
+            devices.forEach((item) => {
+                cellHtml.className += ` point_${item.id}`
+                let resArr = Array.from(new Set(resParams.concat(paramShow)))
+                if (resArr.length) {
+                    this.wsParams.push({
+                        pointId: item.id,
+                        params: resArr
+                    })
+                }
+            })
+        }
     }
 }
 
