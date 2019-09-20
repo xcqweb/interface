@@ -24,7 +24,9 @@
             class="Collapse-title-right"
             :class="ifShowArrow ? 'collapse-active' : ''"
             @click="ifShowArrow=!ifShowArrow"
-          />
+          >
+            <img src="../../assets/images/footer/foot-collapse.png">
+          </div>
         </div>
       </div>
       <div 
@@ -210,13 +212,14 @@ export default {
     },
     watch:{
         ifShowArrow(val) {
-            let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
-            let wh = document.documentElement.clientHeight
-            if(val) {
-                el.style.height = wh - 72 - 226 + 'px'
-            }else{
-                el.style.height = wh - 72 - 26 + 'px'
-            }
+            console.log(val)
+            // let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
+            // let wh = document.documentElement.clientHeight
+            // if(val) {
+            //     el.style.height = wh - 72 - 226 + 'px'
+            // }else{
+            //     el.style.height = wh - 72 - 26 + 'px'
+            // }
         },
         footerModelUpdata(val) {
             if (val) {
@@ -557,13 +560,13 @@ export default {
             }
             modelInfo.setAttribute(key, JSON.stringify(data))
             graph.getModel().setValue(cell, modelInfo)
-
-            let state = graph.view.getState(cell)
-            let shapeName = state.style.shape
+            console.log(8888)
             // 防止表格小单元格 跳动
-            if (shapeName === 'tableCell') {
-                graph.refresh()
-            }
+            // let state = graph.view.getState(cell)
+            // let shapeName = state.style.shape
+            // if (shapeName === 'tableCell') {
+            //     graph.refresh()
+            // }
         },
     }
 }
@@ -583,17 +586,24 @@ export default {
     display: flex;
     border-top:1px solid #CCCCCC;
     border-bottom: 1px solid #CCCCCC;
+    border-right:1px solid rgb(204, 204, 204);
     .Collapse-title-left{
       flex: 1;
     }
     .Collapse-title-right{
-      width: 50px;
+      width: 25px;
       height:24px;
       line-height: 24px;
-      padding-right:10px;
-      background: url("../../assets/images/footer/foot-collapse.png") no-repeat right center;
-      background-size:16px 16px;
-      border-right:1px solid rgb(204, 204, 204);
+      cursor: pointer;
+      img {
+        display: block;
+        height:16px;
+        width:16px;
+        margin:4px auto;
+      }
+      &.collapse-active{
+        transform: rotate(180deg);
+      }
     }
     /deep/.ivu-tabs{
       .ivu-tabs-nav{

@@ -266,6 +266,7 @@ export default {
                             line-height: 24px;
                             font-size: 11px;
                             color:#797979;
+                            cursor: pointer;
                         }
                         .pageList>li{
                             height:24px;
@@ -274,6 +275,7 @@ export default {
                             display: flex;
                             background:url(../../assets/images/material/page2_ic.png) no-repeat left center;
                             background-size:16px 16px;
+                            cursor: pointer;
                             &.currentPage{
                                 color:#fff;
                                 background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;

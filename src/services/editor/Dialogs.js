@@ -741,7 +741,7 @@ let ImageDialog = function(editorUi, cell) {
             var fr = new FileReader();
             // 获取图片信息
             localImage = e.target.files[0];
-            console.log(localImage)
+            // console.log(localImage)
             //将图片读取为DataURL
             // fr.readAsDataURL(localImage);
             // fr.onload = function() {}

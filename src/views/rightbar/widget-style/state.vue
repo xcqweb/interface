@@ -220,6 +220,7 @@ export default{
   margin-top:10px;
   display:flex;
   align-items:center;
+  cursor: pointer;
 }
 .event-item{
   margin-top:10px;

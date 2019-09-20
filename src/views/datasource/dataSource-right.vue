@@ -332,11 +332,10 @@ export default {
         VueEvent.$off('StartparamsNameArr')
     },
     methods: {
-        initData() {
+        initData(type) {
             let objData = {
                 studioId:this.studioIdNew
             }
-            console.log()
             // 默认取第一条数据的参数和名称
             this.requestUtil.get(this.urls.hasImportDeviceType.url,objData).then((res) => {
                 this.deviceTypeArr = res || []
@@ -344,27 +343,35 @@ export default {
                 VueEvent.$emit('StartDeviceTypeArr', this.deviceTypeArr)
                 this.$emit('dataSourceShow',this.deviceTypeArr)
                 this.$emit('nowClickNumber',this.numberlistIndex )
-                if (this.deviceTypeArr.length) {
-                    let objDataNew = {
-                        studioId:this.studioIdNew,
-                        deviceTypeId: this.currentDeviceTypeId || this.deviceTypeArr[0].deviceTypeId,
-                        current: this.PAGE_CURRENT,
-                        size:this.PAGE_SIZE,
-                        type: 1
+                if (type === 2) {
+                    if (this.deviceTypeArr.length) {
+                        this.clickDeviceTypeListHandle('', 0, this.deviceTypeArr[0].deviceTypeId)
+                        return [[], []]
                     }
-                    this.currentDeviceTypeId = objDataNew.deviceTypeId
-                    return Promise.all([
-                        this.requestUtil.post(this.urls.deviceParamList.url, objDataNew),
-                        this.requestUtil.post(this.urls.deviceEquipList.url, objDataNew)
-                    ]).catch(() => {
-                        Message.error('系统繁忙，请稍后再试')
-                        return false
-                    })
-                } else {
-                    this.paramsNameList = []
-                    this.deviceNameList = []
-                    return [[], []]
+                } else if (type === 1) {
+                    if (this.deviceTypeArr.length) {
+                        let objDataNew = {
+                            studioId:this.studioIdNew,
+                            deviceTypeId: this.deviceTypeArr[0].deviceTypeId,
+                            current: this.PAGE_CURRENT,
+                            size:this.PAGE_SIZE,
+                            type: 1
+                        }
+                        this.currentDeviceTypeId = objDataNew.deviceTypeId
+                        return Promise.all([
+                            this.requestUtil.post(this.urls.deviceParamList.url, objDataNew),
+                            this.requestUtil.post(this.urls.deviceEquipList.url, objDataNew)
+                        ]).catch(() => {
+                            Message.error('系统繁忙，请稍后再试')
+                            return false
+                        })
+                    } else {
+                        this.paramsNameList = []
+                        this.deviceNameList = []
+                        return [[], []]
+                    }
                 }
+                  
             }).then((res) => {
                 const [firstParamNameList, firstDeviceNameList] = res
                 this.paramsNameList = firstParamNameList.records || []
@@ -389,10 +396,12 @@ export default {
                 } else {
                     VueEvent.$emit('StartparamsNameArr', this.paramsNameList)
                 }
+
             }).catch(() => {
                 Message.error('系统繁忙，请稍后再试试')
                 return false
             })
+            
         },
         async clickDeviceTypeListHandle(evt, index,deviceTypeId) {
             this.numberlistIndex = index
