@@ -245,7 +245,7 @@ function changeEleState(el, stateInfo,fileSystem) {
         el.style[key] = stateInfo.style[key]
     }
     if (imgInfo) {
-        imgInfo.url = imgInfo.url.replace(/getechFileSystem/, fileSystem)
+        imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
         el.style.background = `url(${imgInfo.url}) center center no-repeat`
         el.style.backgroundSize = '100% 100%'
     }
