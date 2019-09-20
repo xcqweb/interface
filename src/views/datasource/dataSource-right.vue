@@ -336,7 +336,6 @@ export default {
             let objData = {
                 studioId:this.studioIdNew
             }
-            console.log()
             // 默认取第一条数据的参数和名称
             this.requestUtil.get(this.urls.hasImportDeviceType.url,objData).then((res) => {
                 this.deviceTypeArr = res || []

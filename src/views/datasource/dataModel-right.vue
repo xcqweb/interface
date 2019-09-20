@@ -560,7 +560,6 @@ export default {
                 this.snapDescript = this.textareValue
                 this.saveModelText = `保存模型`
                 this.$store.commit('modelEditing', false)
-                // console.log(this.ModelNameArr)
             } else {
                 if (this.treeCheckRule(this.alldata.data)) {
                     // 组装数据  保存模型
@@ -577,9 +576,7 @@ export default {
                         if (res.sourceId) {
                             Message.success('保存模型成功')
                             this.$store.commit('modelEditing', true)
-                            // console.log(this.modelNumber)
                             this.ModelNameArr.splice(this.modelNumber, 1, res)
-                            // console.log(this.ModelNameArr)
                         }
                     }).catch(() => {
                         Message.error('系统繁忙，请稍后再试！')
@@ -634,13 +631,9 @@ export default {
                 descript: '',
                 modelName: name
             }
-            // console.log(JSON.parse(JSON.stringify(this.ModelNameArr)))
             this.requestUtil.post(this.urls.addModelList.url, objData).then((res) => {
                 Message.success('添加模型成功')
                 this.ModelNameArr.push(res)
-                // console.log(this.ModelNameArr)
-                // console.log(this.alldata.data)
-                
                 this.clickModelHandle('', res.sourceId, res.modelName,res.formula,res.descript,this.ModelNameArr.length - 1)
                 this.$store.commit('modelEditing', false)
                 this.saveModelText = `保存模型`
@@ -679,18 +672,13 @@ export default {
                 return false
             }
             let data = formula ? JSON.parse(formula) : {conditionLogic: '1',data:[[{paramName: '',logical:'',minValue:'',maxValue:'',fixedValue:''}]]}
-            if (formula) {
-                this.alldata.data = data.data
-            } else {
-                this.alldata.data = data.data
-            }
+            this.alldata.data = data.data
             this.alldata.conditionLogic = data.conditionLogic || ''
             this.textareValue = descript || ''
             this.modelNumber = index
             this.currenModelId = modelId
             this.currenModelName = modelName
             this.conditionLogicalSelect = data.conditionLogic || ''
-            // console.log(this.ModelNameArr)
         },
         MouseEnterHandle(evt,index) {
             evt.stopPropagation()
@@ -781,12 +769,15 @@ export default {
             if (this.currentMouseIndex || this.currentMouseIndex === 0) {
                 sureDialog(this.myEditorUi, `确定要删除此模型吗`, () => {
                     this.requestUtil.delete(`${this.urls.addModelList.url}/${this.ModelNameArr[this.currentMouseIndex].sourceId}`).then(() => {
+                        console.log(this.modelNumber, this.currentMouseIndex)
                         if (this.modelNumber === this.currentMouseIndex) {
                             let ModelNameArrCopy = JSON.parse(JSON.stringify(this.ModelNameArr))
                             let index = this.currentMouseIndex
                             let _len = ModelNameArrCopy.length - 1
                             this.ModelNameArr.splice(this.currentMouseIndex, 1)
-                            this.currentMouseIndex = null
+                            // this.currentMouseIndex = null
+                            console.log(index)
+                            console.log(this.currentMouseIndex, _len)
                             if (this.ModelNameArr.length) {
                                 if (this.currentMouseIndex === _len) {
                                     this.clickModelHandle('', this.ModelNameArr[_len - 1].sourceId, this.ModelNameArr[_len - 1].modelName,this.ModelNameArr[_len - 1].formula,this.ModelNameArr[_len - 1].descript, _len - 1)
@@ -795,11 +786,11 @@ export default {
                                 }
                             }
                         } else {
+                            this.modelNumber = this.modelNumber - 1
                             this.ModelNameArr.splice(this.currentMouseIndex, 1)
-                            this.currentMouseIndex = null
+                            // this.currentMouseIndex = null
                         }
                         Message.success('删除成功')
-                        return
                     }).catch(() => {
                         this.ifShowSuspension = false
                         Message.error('系统繁忙，请稍后再试')
@@ -871,27 +862,27 @@ export default {
         // 双向触发数据更新
         treeSelectParamHandle(value, index, key) {
             this.alldata.data[key][index].paramName = value
-            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata)
+            this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
         },
         treeSelectLogicalHandle(value, index, key) {
             this.alldata.data[key][index].logical = value
-            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata)
+            this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
         },
         treeMinvalueHandle(value, index,key) {
             this.alldata.data[key][index].minValue = value
             this.alldata.data[key][index].fixedValue = ''
-            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata)
+            this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
         },
         treeMaxvalueHandle(value, index,key) {
             this.alldata.data[key][index].maxValue = value
             this.alldata.data[key][index].fixedValue = ''
-            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata)
+            this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
         },
         treeFixedvalueHandle(value, index,key) {
             this.alldata.data[key][index].fixedValue = value
             this.alldata.data[key][index].maxValue = ''
             this.alldata.data[key][index].minValue = ''
-            this.ModelNameArr[this.currentMouseIndex].formula = JSON.stringify(this.alldata)
+            this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
         },
         // 保存模型校验
         treeCheckRule(data) {
