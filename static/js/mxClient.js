@@ -365,7 +365,6 @@ var mxClient =
 	 */
 	dispose: function()
 	{
-		alert(7893549)
 		// Cleans all objects where listeners have been added
 		for (var i = 0; i < mxEvent.objects.length; i++)
 		{
@@ -11226,7 +11225,6 @@ mxXmlRequest.prototype.simulate = function(doc, target)
 {
 	doc = doc || document;
 	var old = null;
-	console.log(87634548943589)
 	// alert(doc, document , '---', doc == document)
 	if (doc == document)
 	{
@@ -80535,7 +80533,6 @@ function mxKeyHandler(graph, target)
 			mxEvent.addListener(window, 'unload',
 				mxUtils.bind(this, function()
 				{
-					alert(888)
 					this.destroy();
 				})
 			);
@@ -80759,7 +80756,6 @@ mxKeyHandler.prototype.isGraphEvent = function(evt)
 	if ((source == this.target || source.parentNode == this.target || (source.tagName === 'A' && source.className.includes('del_use_flag_terry')) || (source.tagName === 'A' && source.className.includes('geItem') && source.parentNode.className.includes('geSidebar'))) ||
 		(this.graph.cellEditor != null && this.graph.cellEditor.isEventSource(evt)))
 	{
-		console.log(123)
 		return true;
 	}
 	
