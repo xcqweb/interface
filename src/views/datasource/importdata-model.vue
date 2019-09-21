@@ -743,7 +743,8 @@ export default{
     .ivu-checkbox-small{
       .ivu-checkbox-checked{
         .ivu-checkbox-inner::after{
-          left:4px;
+          left:3px;
+          top:1px;
         }
       }
     }

@@ -754,6 +754,10 @@ export default {
           height:24px;
           line-height:24px;
         }
+        .ivu-select-input{
+          height:24px;
+          line-height:24px;
+        }
         .ivu-select-selected-value{
             height:24px;
             line-height:22px;
@@ -814,4 +818,5 @@ export default {
   }
 }
 </style>
+
 

@@ -429,6 +429,7 @@ Editor.prototype.InitEditor = function(editorUi) {
         }
         editPromise = new Promise((resolve, reject) => {
             this.ajax(editorUi, '/api/iot-cds/cds/configurationDesignStudio/' + id, 'GET', null, function(res) {
+                console.log(res)
                 resolve(res)
             }, null)
         })

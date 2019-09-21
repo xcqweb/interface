@@ -70,8 +70,8 @@
             @on-change="checkAllGroupChange"
           >
             <Checkbox
-              v-for="(item, index) in deviceNameList"
-              :key="index"
+              v-for="(item) in deviceNameList"
+              :key="item.deviceId"
               :label="item.deviceId"
               size="small"
             >
@@ -234,16 +234,20 @@ export default{
             let startBindData = this.getCellModelInfo('bindData')
             if (singleDeviceName.includes(this.shapeName) && this.deviceIdArr.length > 1) { // 绑定单个
                 Message.warning('此控件不允许绑定多个设备名称')
+                // 清空勾选
+                this.deviceNameListArr = []
                 return false
             }  
             if (singleDeviceName.includes(this.shapeName) && startBindData && startBindData.dataSource && startBindData.dataSource.deviceNameChild) {                    
                 Message.warning('此控件已经绑定设备名称')
+                this.deviceNameListArr = []
                 return false
             }
             if (startBindData && startBindData.dataSource) {
                 let deviceTypeData = startBindData.dataSource.deviceTypeChild || {}
                 if (deviceTypeData.id && deviceTypeData.id !== this.modelvalue2) {
                     Message.warning('此控件不允许绑定多个设备类型')
+                    this.deviceNameListArr = []
                     return false
                 }
             }

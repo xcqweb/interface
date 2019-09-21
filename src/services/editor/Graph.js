@@ -6774,7 +6774,10 @@ if (typeof mxVertexHandler != 'undefined')
             // Overrides class in case of HTML content to add
             // dashed borders for divs and table cells
             var state = this.graph.view.getState(cell);
-            if (state != null && state.style.image) { //不可输入的 禁用
+            let shapeName = state.style.shape
+            // 图片不可输入
+            let notInputArr = ['userimage', 'gaugeChart', 'lineChart', 'pipeline1', 'pipeline2', 'pipeline3', 'image', 'progress','light']
+            if (state != null && notInputArr.includes(shapeName)) { //不可输入的 禁用
                 this.textarea.setAttribute('contenteditable', false)
             }
             if (state != null && state.style['html'] == 1)

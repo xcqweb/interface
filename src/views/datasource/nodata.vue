@@ -19,9 +19,10 @@ export default{
 </script>
 <style lang="less" scoped>
 .no-data {
-    width: 56px;
+    width: 62px;
     padding-top:46px;
     margin-top:-46px;
+    text-align: center;
     background: url("../../assets/images/datasource/nodata.png") no-repeat center top;
     background-size: 56px 42px;
 }

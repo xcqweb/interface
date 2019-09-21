@@ -11225,7 +11225,7 @@ mxXmlRequest.prototype.simulate = function(doc, target)
 {
 	doc = doc || document;
 	var old = null;
-
+	// alert(doc, document , '---', doc == document)
 	if (doc == document)
 	{
 		old = window.onbeforeunload;		
@@ -80753,7 +80753,6 @@ mxKeyHandler.prototype.isGraphEvent = function(evt)
 	// Accepts events from the target object or
 	// in-place editing inside graph
 	// 首次进入优化 按delete 加上toolbar
-	// console.log(source, '-----', this.target)
 	if ((source == this.target || source.parentNode == this.target || (source.tagName === 'A' && source.className.includes('del_use_flag_terry')) || (source.tagName === 'A' && source.className.includes('geItem') && source.parentNode.className.includes('geSidebar'))) ||
 		(this.graph.cellEditor != null && this.graph.cellEditor.isEventSource(evt)))
 	{
