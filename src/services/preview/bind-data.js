@@ -62,11 +62,17 @@ function setterRealData(res, fileSystem) {
         for(let i = 0;i < els.length;i++) {
             let shapeName = $(els[i]).data("shapeName")
             let paramShow = $(els[i]).data("paramShow")
-            let val = item[paramShow[0]]
-            if(!val && val != 0) {
-                continue
+            let defaultParamIndex = paramShow.findIndex(item=>{
+                return item.type
+            })
+            let val = null
+            if (defaultParamIndex != -1) {
+                val = item[paramShow[defaultParamIndex]]
             }
             if(shapeName == 'progress') {//进度条
+                if(!val) {
+                    val = 0
+                }
                 let progressPropsObj = $(els[i]).data("progressPropsObj")
                 let {max,min,type} = progressPropsObj
                 let percentVal = val / (max - min)
@@ -114,13 +120,14 @@ function setterRealData(res, fileSystem) {
                 }
                 echartsInstance.setOption(options)
             }else {
-                $(els[i]).html(`${val}`)
-                let allParams = $(els[i]).data("paramShowAll")
+                if(val || val === 0) {
+                    $(els[i]).html(`${val}`)
+                }
                 let formatLayerEl = $("#formatLayer")
                 let formatLayerFun = (e)=>{
                     let {clientX,clientY} = e
                     formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
-                    formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + allParams.map((d) => {
+                    formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
                         return `<li>${d}=${item[d]}`
                     }).join('') + "</ul>")
                     formatLayerEl.show()
@@ -133,7 +140,7 @@ function setterRealData(res, fileSystem) {
                 })
                 let stateModels = $(els[i]).data("stateModels")
                 if(stateModels) {
-                    let stateIndex = 0
+                    let stateIndex = 0 //默认状态 未找到要切换的状态，显示默认
                     for (let j = 1; j < stateModels.length;j++) {
                         if (dealStateFormula(stateModels[j].modelFormInfo.formula, item)) {
                             stateIndex = j

@@ -99,24 +99,28 @@ const mutations = {
                 }
             }
         }
+        let dealEdgePosition = (cell)=>{
+            let stateWidget = graph.view.getState(cell)
+            let absolutePoints = stateWidget.absolutePoints
+            let translate = stateWidget.view.translate
+            absolutePoints = absolutePoints.map((item) => {
+                return {
+                    x: item.x - translate.x,
+                    y: item.y - translate.y
+                }
+            })
+            return {
+                sx: absolutePoints[0].x,
+                sy: absolutePoints[0].y,
+                tx: absolutePoints[1].x,
+                ty: absolutePoints[1].y
+            }
+        }
         if (stateWidget) {
             let tempFlag = cellsSameFlag
             if (graph.model.isEdge(cell)) {
                 tempFlag = cellsSameFlagEdge
-                let absolutePoints = stateWidget.absolutePoints
-                let translate = stateWidget.view.translate
-                absolutePoints = absolutePoints.map((item) => {
-                    return {
-                        x:item.x - translate.x,
-                        y:item.y - translate.y
-                    }
-                })
-                widgetInfo.geo = {
-                    sx: absolutePoints[0].x,
-                    sy: absolutePoints[0].y,
-                    tx: absolutePoints[1].x,
-                    ty: absolutePoints[1].y
-                }
+                widgetInfo.geo = dealEdgePosition(cell)
             }else{
                 widgetInfo.geo = {
                     x:geo.x,
@@ -187,9 +191,14 @@ const mutations = {
 
         let temp = Object.assign({},state.widgetInfo, widgetInfo)
         state.widgetInfo = temp
-        if(graph.model.isEdge(cell)) {
-            VueEvent.$emit('edgePropsUpdate')
-        }
+        cells.forEach(item => {
+            if (graph.model.isEdge(item)) {
+                VueEvent.$emit('edgePropsUpdate', {
+                    geo: dealEdgePosition(item),
+                    cell: item
+                })
+            }
+        })
     },
     widgetChange(state,rand) {
         state.rand = rand

@@ -159,6 +159,12 @@ export default{
             if(statesAttr) {
                 states = JSON.parse(statesAttr)
             }
+            states.forEach(item=>{
+                if(item.imgInfo) {
+                    item.imgInfo.url = item.imgInfo.url.replace(/getechFileSystem\//, window.fileSystem)
+                }
+            })
+            console.log(states)
             return states
         },
         setStateInfos(state) {

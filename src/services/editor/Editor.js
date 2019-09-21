@@ -2424,7 +2424,9 @@ PageSetupDialog.getFormats = function()
     
             if (mxClient.IS_ADD_IMG){
                 image = 'url(' + mxClient.IS_ADD_IMG_SRC + ')';
-                graph.view.backgroundPageShape.node.style.backgroundSize = 'cover';
+                if (graph.view.backgroundPageShape){
+                    graph.view.backgroundPageShape.node.style.backgroundSize = 'cover';
+                }
             }else{
                 if (mxClient.IS_SVG) {
                     // Generates the SVG required for drawing the dynamic grid

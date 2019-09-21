@@ -566,9 +566,8 @@ export default {
     created() {},
     mounted() {
         VueEvent.$off('edgePropsUpdate')
-        VueEvent.$on('edgePropsUpdate', () => {
-            let geo = this.$store.state.main.widgetInfo.geo
-            this.setWidgetProps('edgeProps', geo, true)
+        VueEvent.$on('edgePropsUpdate', ({geo,cell}) => {
+            this.setWidgetProps2('edgeProps', geo, cell)
         })
         let graph = this.myEditorUi.editor.graph
         this.fontText = this.$store.state.main.widgetInfo.fontSize
@@ -704,7 +703,6 @@ export default {
             })
             graph.refresh()
             this.$nextTick(() => {
-
                 this.$store.commit('getWidgetInfo',graph)
             })
         },
@@ -932,16 +930,21 @@ export default {
             let cellInfo = graph.getModel().getValue(cell)
             return cellInfo
         },
-        setWidgetProps(widgetProp,props,noUpdateModel) {
+        setWidgetProps(widgetProp,props) {
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
             let cellInfo = graph.getModel().getValue(cell)
             let attrObj = this.getWidgetProps(widgetProp)
             let newAttr = JSON.stringify(Object.assign({},attrObj,props))
             cellInfo.setAttribute(widgetProp,newAttr)
-            if (widgetProp !== 'edgeProps' || (widgetProp === 'edgeProps' && !noUpdateModel)) {
-                graph.getModel().setValue(cell, cellInfo)
-            }
+            graph.getModel().setValue(cell, cellInfo)
+        },
+        setWidgetProps2(widgetProp,props,cell) {
+            let graph = this.myEditorUi.editor.graph
+            let cellInfo = graph.getModel().getValue(cell)
+            let attrObj = this.getWidgetProps(widgetProp)
+            let newAttr = JSON.stringify(Object.assign({},attrObj,props))
+            cellInfo.setAttribute(widgetProp,newAttr)
         },
         getWidgetProps(widgetProp) {
             let cellInfo = this.getCellInfo()

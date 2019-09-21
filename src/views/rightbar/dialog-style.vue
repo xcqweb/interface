@@ -169,6 +169,7 @@ export default {
     },
     methods: {
         initPage() {
+            mxClient.IS_ADD_IMG = false
             let graph = this.myEditorUi.editor.graph
             let editor = this.myEditorUi.editor
             dialogStyle = editor.pages[editor.currentPage].style
@@ -191,10 +192,6 @@ export default {
                 this.dialogDesc = editor.pages[editor.currentPage].desc
                 this.titleName =  editor.pages[editor.currentPage].title
             },50)
-            let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
-            if(!bgUrl) {
-                mxClient.IS_ADD_IMG = false
-            }
         },
         descChange() {
             let editor = this.myEditorUi.editor

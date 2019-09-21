@@ -173,20 +173,14 @@ export default {
                 },
                 true
             )
-            //this.centerCanvas()
+            this.centerCanvas()
             e.stopPropagation()
         },
         centerCanvas() {//居中画布
             let graph = this.myEditorUi.editor.graph
-            let con = graph.container
-            let conWidth = con.clientWidth
-            let conHeight = con.clientHeight
-            let {clientWidth,clientHeight} = con.children[1] //svg
-            let canvasView = con.children[0]//画布
-            this.canvasOffsetTop = canvasView.offsetTop
-            this.canvasOffsetLeft = canvasView.offsetLeft
-            con.scrollLeft = (clientWidth - conWidth) / 2
-            con.scrollTop = (clientHeight - conHeight - 36) / 2
+            this.$nextTick(()=>{
+                graph.center(true,true,0.5,0.5)
+            })
         },
         changeScaleInput() {
             this.myEditorUi.setPageFormat(
@@ -198,7 +192,7 @@ export default {
                 },
                 true
             )
-            //this.centerCanvas()
+            this.centerCanvas()
         },
         setBackgroundImg() {
             this.$refs.chooseImg.click()
@@ -206,7 +200,7 @@ export default {
         deleteBgImgHandle() {
             sureDialog(this.myEditorUi,`确定要删除背景图片吗`,()=>{
                 let editor = this.myEditorUi.editor
-                editor.pages[editor.currentPage].style.backgroundUrl = 'none'
+                editor.pages[editor.currentPage].style.backgroundUrl = ''
                 this.bgPic = require('../../assets/images/rightsidebar/bg_ic_widget.png');
                 mxClient.IS_ADD_IMG = false
                 this.isShowBgText = true
@@ -216,6 +210,7 @@ export default {
             },)
         },
         changeBg(url) {
+            url = url.replace(/getechFileSystem\//, window.fileSystem)
             mxClient.IS_ADD_IMG = true
             mxClient.IS_ADD_IMG_SRC = url
             this.bgPic = url
@@ -236,7 +231,7 @@ export default {
             formData.append('file', localImage)
             formData.append('materialLibraryId',"");
             this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, function(res) {
-                editor.pages[editor.currentPage].style.backgroundUrl = `${res.picUrl}`
+                editor.pages[editor.currentPage].style.backgroundUrl = `getechFileSystem/${res.picPath}`
             })
         },
         fileChange(e) {
