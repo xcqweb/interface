@@ -20,6 +20,7 @@ export default {
         }
     },
     mounted() {
+        console.log(88)
         this.$nextTick(()=>{
             preview.mainProcess.init()
             history.pushState(null, null, document.URL)

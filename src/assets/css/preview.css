@@ -1,5 +1,6 @@
 #gePreview {
   position: relative;
+  margin: 0 auto
 }
 .gePalette {
   position: absolute;
