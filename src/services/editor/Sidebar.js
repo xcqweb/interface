@@ -15,6 +15,8 @@ var basicXmlFns = [];
 let startCurrentPageIndex = null
 let startCurrentDialogIndex = null
 let CurrentMouseOver = null
+let pageScrollTopHeight = 0
+let dialogesScrollTopHeight = 0
 function Sidebar(editorUi, container, container2)
 {
     this.editorUi = editorUi;
@@ -1188,6 +1190,7 @@ function createPageList(editorUi, el, data, id, _that) {
     $('.commonPages').on('mouseenter', '.pageList>li>.right-icon-dolt', function (evt) {
             evt.preventDefault();
             // 右键菜单展示
+            console.log(888)
             let LIArr = evt.target.parentNode.parentNode.children
             for (var i = 0; i < LIArr.length; i++) {
                 if (LIArr[i] === evt.target.parentNode) {
@@ -1208,17 +1211,17 @@ function createPageList(editorUi, el, data, id, _that) {
             } else {
                 $('.homepage').remove()
             }
+            let getIdType = evt.target.parentNode.parentNode.id
+            let scrollTopHeight = getIdType === 'normalPages' ? pageScrollTopHeight : dialogesScrollTopHeight
+            let currentIndex = getIdType == 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
             menulist.style.display = 'block';
             menulist.style.left = evt.target.offsetLeft + evt.target.offsetWidth - 100 / 2 + 'px';
-            menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 72 + 'px';
-
+            menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) - scrollTopHeight + 72 + 'px';
             //
             let classNameList = evt.target.parentNode.className
             if (!classNameList.includes('currentPage')) {
                 evt.target.parentNode.className += classNameList ? ' currentPage' : 'currentPage'
             }
-            let getIdType = evt.target.parentNode.parentNode.id
-            let currentIndex = getIdType == 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
             for (var i = 0; i < LIArr.length; i++) {
                 if (i !== currentIndex && i !== CurrentMouseOver) {
                     if (LIArr[i].className.includes('left-sidebar-homepage')) {
@@ -1228,7 +1231,8 @@ function createPageList(editorUi, el, data, id, _that) {
                     }
                 }
             }
-            $('#pageContextMenu').mouseleave(() => {
+            $('#pageContextMenu').mouseleave((e) => {
+                e.preventDefault();
                 // 要重新获取一下 currentIndex
                 if (evt.target.parentNode) {
                     let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
@@ -1247,18 +1251,19 @@ function createPageList(editorUi, el, data, id, _that) {
             })
     })
     $('.commonPages').on('mousemove', '.pageList>li>.right-icon-dolt', function (evt) {
+            event.preventDefault();
             let widthLen = evt.target.offsetLeft
-            let HeightLen = evt.target.offsetTop + 72 + 4
+            let getIdType = evt.target.parentNode.parentNode.id
+            let scrollTopHeight = getIdType === 'normalPages' ? pageScrollTopHeight : dialogesScrollTopHeight
+            let HeightLen = evt.target.offsetTop - scrollTopHeight + 72 + 4
             let LIArr = evt.target.parentNode.parentNode.children
             for (var i = 0; i < LIArr.length; i++) {
                 if (LIArr[i] === evt.target.parentNode) {
                     CurrentMouseOver = i
                 }
             }
-            let getIdType = evt.target.parentNode.parentNode.id
+            
             let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
-            // console.log(evt.clientX, '------', widthLen, '-----', widthLen + evt.target.offsetWidth - 2)
-            // console.log(currentIndex)
             if (evt.clientX > widthLen && evt.clientX < widthLen + (evt.target.offsetWidth - 4)) {
                 var menulist = document.getElementById('pageContextMenu');
                 var targetElement = document.querySelector("#pageContextMenu .rename")
@@ -1276,7 +1281,7 @@ function createPageList(editorUi, el, data, id, _that) {
                 }
                 menulist.style.display = 'block';
                 menulist.style.left = evt.target.offsetLeft + evt.target.offsetWidth - 100 / 2 + 'px';
-                menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 72 + 'px';
+                menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 72 - scrollTopHeight  + 'px';
 
                 let classNameList = evt.target.parentNode.className
                 if (!classNameList.includes('currentPage')) {
@@ -1331,6 +1336,7 @@ function createPageList(editorUi, el, data, id, _that) {
             }
     })
     $('.commonPages').on('mouseenter','.pageList>li>.spanli', (evt) => {
+        event.preventDefault();
         _that.hidePageContextMenu()
     })
     function changePage(e,dis) {
@@ -1414,6 +1420,14 @@ Sidebar.prototype.addPagePalette = function() {
         }
     })
     this.createPageContextMenu()
+    setTimeout(() => {
+        $(".normalPages").scroll(function() {
+            pageScrollTopHeight = parseInt($(".normalPages").scrollTop())
+        })
+        $(".dialogPages").scroll(function () {
+            dialogesScrollTopHeight = parseInt($(".dialogPages").scrollTop())
+        })
+    })
 }
 /**
  * 添加给定的模板控件.

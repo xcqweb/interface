@@ -162,8 +162,10 @@ export default {
         checkHasCurrent(type) {
             this.$nextTick(() => {
                 if (+type === 0) {
+                    $(".normalPages").scrollTop(0)
                     $('#normalPages >li:first-child .spanli').click()
                 } else if (+type === 1) {
+                    $(".dialogPages").scrollTop(0)
                     $('#dialogPages >li:first-child .spanli').click()
                 }
             })
