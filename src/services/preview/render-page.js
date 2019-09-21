@@ -136,18 +136,20 @@ class PreviewPage {
                     if(shapeName == 'beeline') {
                         edgeProps = item.getAttribute('edgeProps')
                         edgeProps = JSON.parse(edgeProps)
-                        width = Math.abs(edgeProps.tx - edgeProps.sx)
-                        height = Math.abs(edgeProps.ty - edgeProps.sy)
-                        if(height < 30) {//防止箭头预览只看到一半
-                            height = 30
+                        if (edgeProps) {
+                            width = Math.abs(edgeProps.tx - edgeProps.sx)
+                            height = Math.abs(edgeProps.ty - edgeProps.sy)
+                            if(height < 30) {//防止箭头预览只看到一半
+                                height = 30
+                            }
+                            if (width < 30) { //防止箭头预览只看到一半
+                                width = 30
+                            }
+                            x = Math.min(edgeProps.sx, edgeProps.tx) / 2
+                            y = Math.min(edgeProps.sy, edgeProps.ty) / 2
+                            height = height + y
+                            width = width + x
                         }
-                        if (width < 30) { //防止箭头预览只看到一半
-                            width = 30
-                        }
-                        x = Math.min(edgeProps.sx, edgeProps.tx) / 2
-                        y = Math.min(edgeProps.sy, edgeProps.ty) / 2
-                        height = height + y
-                        width = width + x
                     }
                     let obj = {
                         id,
@@ -211,7 +213,11 @@ class PreviewPage {
     }
     // 清空页面内容
     clearPage() {
+        for (let key in applyData) {
+            destroyWs(applyData, key)
+        }
         this.gePreview.innerHTML = ''
+        document.getElementById('geDialogs').innerHTML = ''
     }
     subscribeData() {
         applyData[this.currentPageId] = {
@@ -220,8 +226,10 @@ class PreviewPage {
             wsParams: this.wsParams,
             lockWs: false
         }
-        createWsReal(this.currentPageId, applyData, fileSystem)
-        getLastData(this.wsParams, fileSystem) //低频数据 通过调用最后一笔数据显示
+        if(this.wsParams.length) {
+            createWsReal(this.currentPageId, applyData, fileSystem)
+            getLastData(this.wsParams, fileSystem) //低频数据 通过调用最后一笔数据显示
+        }
     }
     // 解析页面
     parsePage(page,fileSystemParam) {
@@ -240,14 +248,9 @@ class PreviewPage {
         // 页面宽度和高度
         pageWidth = pageHeight = 0
         let cells = this.parseCells(list)
-        this.wsParams = []
+        this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
         if (page.type === 'normal') {
-            // 清除全部websocket
-            for (let key in applyData) {
-                destroyWs(applyData, key)
-            }
-            document.getElementById('geDialogs').innerHTML = ''
-            // 清空页面内容
+            // 清除全部websocket 和页面内容 、页面上的弹窗
             this.clearPage()
             // 正常页面      
             this.renderPages(cells, this.gePreview)
@@ -259,16 +262,14 @@ class PreviewPage {
                 this.gePreview.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
                 this.gePreview.style.backgroundSize = "100% 100%"
             }
-        } else {
+        } else { //弹窗是点弹窗关闭时候清空的内容和关闭ws连接
             // 弹窗页面
             let layerContent = this.createDialog(page)
             layerContent.innerHTML = ''
             this.renderPages(cells, layerContent)
         }
         $(() => {
-            setTimeout(() => {
-                this.subscribeData()
-            }, 400)
+            this.subscribeData()
         })
         return cells
     }
@@ -287,6 +288,7 @@ class PreviewPage {
 
     // 渲染控件节点
     renderCell(cell) {
+        console.log(cell)
         const shapeName = cell.shapeName
         let cellHtml
         if (shapeName.includes('image')) {
@@ -416,7 +418,6 @@ class PreviewPage {
                 })
             }
             $(cellHtml).data("paramShow", paramShow)
-            let resParams = []
             let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
             let modelIdsParam = []
             let statesInfo = cell.statesInfo
@@ -428,44 +429,22 @@ class PreviewPage {
                         modelIdsParam.push(item.modelFormInfo)
                     }
                 })
-                if (modelIdsParam.length) {
-                    requestUtil.post(urls.getModelByIds.url, modelIdsParam).then((res) => {
-                        res.returnObj.forEach((item, index) => {
-                            cellStateInfoHasModel[index + 1].modelFormInfo = item
-                            let formulaAttr
-                            if (item.formula) {
-                                formulaAttr = JSON.parse(item.formula)
-                            }
-                            let flatFormulaAttr = []
-                            if (formulaAttr) {
-                                formulaAttr.data.forEach((item)=>{
-                                    flatFormulaAttr = flatFormulaAttr.concat(...item)
-                                })
-                                flatFormulaAttr.forEach((d) => {
-                                    resParams.push(d.paramName)
-                                })
-                            }
-                        })
-                        $(cellHtml).data("stateModels", cellStateInfoHasModel)
-                        this.initWsParams(cellHtml, devices, resParams, paramShow)
-                    },()=>{
-                        this.initWsParams(cellHtml, devices, resParams, paramShow)
+                requestUtil.post(urls.getModelByIds.url, modelIdsParam).then((res) => {
+                    res.returnObj.forEach((item, index) => {
+                        cellStateInfoHasModel[index + 1].modelFormInfo = item
                     })
-                }else{
-                    this.initWsParams(cellHtml, devices, resParams, paramShow)
-                }
-            } else{
-                this.initWsParams(cellHtml, devices, resParams, paramShow)
+                    $(cellHtml).data("stateModels", cellStateInfoHasModel)
+                })
             }
+            this.initWsParams(cellHtml, devices,paramShow)
         }
         return cellHtml
     }
-    initWsParams(cellHtml, devices, resParams, paramShow) {
-        $(cellHtml).data("paramShowAll", Array.from(new Set(paramShow.concat(resParams))))
+    initWsParams(cellHtml, devices, paramShow) {
         if (devices) {
             devices.forEach((item) => {
                 cellHtml.className += ` point_${item.id}`
-                let resArr = Array.from(new Set(resParams.concat(paramShow)))
+                let resArr = Array.from(new Set(paramShow))
                 if (resArr.length) {
                     this.wsParams.push({
                         pointId: item.id,

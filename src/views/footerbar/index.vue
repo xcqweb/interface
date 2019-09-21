@@ -65,32 +65,59 @@
             v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length"
             class="footer-common dataDisplayList"
           > 
-            <ul class="dataDisplayListUl">
-              <li 
-                v-for="(item, index) in paramOutterList"
-                :key="index"
+            <Table
+              border
+              :show-header="false"
+              :columns="tabParamTitles"
+              :data="paramOutterList"
+              :max-height="heightlen"
+            >
+              <template
+                slot="paramChoose"
+                slot-scope="{row,index}"
               >
-                <div>
-                  <span>
-                    <Select
-                      v-model="item.model"
-                      style="width:240px;height:24px;line-height:24px;"
-                      :clearable="true"
-                      @on-change="val=>paramSelectChange(val,index)"
-                      @on-clear="removeParamHandle(item.id,index)"
-                    >
-                      <Option 
-                        v-for="d in paramsList" 
-                        :key="d.paramId" 
-                        :value="d.paramId"
-                      >
-                        {{ d.paramName }}
-                      </Option>
-                    </Select>
-                  </span>
-                </div>
-              </li>
-            </ul>
+                <Select
+                  v-model="row.model"
+                  style="width:240px;height:24px;line-height:24px;"
+                  filterable
+                  :clearable="true"
+                  @on-change="val=>paramSelectChange(val,index)"
+                  @on-clear="removeParamHandle(row.id,index)"
+                >
+                  <Option 
+                    v-for="d in paramsList" 
+                    :key="d.paramId" 
+                    :value="d.paramId"
+                  >
+                    {{ d.paramName }}
+                  </Option>
+                </Select>
+              </template>
+              <template
+                slot="paramShow"
+                slot-scope="{row}"
+              >
+                <Checkbox
+                  v-model="row.type"
+                  @on-change="val=>paramDefaultChange(val,row.id)"
+                >
+                  默认显示
+                </Checkbox>
+              </template>
+              <template
+                slot="actions"
+                slot-scope="{ row, index }" 
+              >
+                <span
+                  class="icon-add"
+                  @click.stop.prevent="addParamHandle"
+                />
+                <span
+                  class="icon-delete"
+                  @click.stop.prevent="removeParamHandle(row.id,index)"
+                />
+              </template>
+            </Table>
           </div>
           <!--状态模型-->
           <div
@@ -145,7 +172,7 @@
 </template>
 
 <script>
-import {Tabs,TabPane, Table,Select, Option, Message} from 'iview'
+import {Tabs,TabPane, Table,Select, Option, Message,Checkbox} from 'iview'
 import {mxUtils} from '../../services/mxGlobal'
 import NoData from '../datasource/nodata'
 import VueEvent from '../../services/VueEvent.js'
@@ -162,7 +189,8 @@ export default {
         Table,
         Select,
         Option,
-        NoData
+        NoData,
+        Checkbox
     },
     data() {
         return {
@@ -195,7 +223,7 @@ export default {
             dataSourceList: [],
             heightlen: '190',
             paramsList: [],
-            paramOutterList: [{id:new Date().getTime(),model:""}],
+            paramOutterList: [{id:new Date().getTime(),model:"",type:false}],
             stateList:[],
             modelList:[],
             selectEle: false,
@@ -203,6 +231,22 @@ export default {
             modelVals:[],//状态列表下的每个模型列表当前的v-model
             isInitFlag: false,
             ifShowDataFlag: true, // 判断是否显示数据显示tab
+            tabParamTitles:[
+                {
+                    title: '参数选择',
+                    slot: 'paramChoose',
+                },
+                {
+                    title: '参数显示',
+                    slot: 'paramShow'
+                },
+                {
+                    title: '操作',
+                    width: '160',
+                    slot: 'actions',
+                    key: 'actions',
+                },
+            ]
         }
     },
     computed: {
@@ -360,11 +404,11 @@ export default {
                 let param = {
                     studioId:sessionStorage.getItem("applyId"),
                     deviceTypeId: deviceTypeId,
-                    type:1
+                    type:1,
+                    size:10000,
                 }
                 this.requestUtil.post(this.urls.deviceParamList.url, param).then((res) => {
                     this.paramsList = res.records
-                    console.log(this.paramsList)
                 })
             }else{
                 this.paramsList = []
@@ -372,11 +416,11 @@ export default {
             if(tempObj && tempObj.params) {
                 let bindParamsList = tempObj.params
                 this.paramOutterList = new Array(bindParamsList.length)
-                bindParamsList.forEach((item,index)=>{
-                    this.$set(this.paramOutterList,index,{id:item.id,model:item.paramId})
+                bindParamsList.forEach((item,index)=>{ 
+                    this.$set(this.paramOutterList,index,{id:item.id,model:item.paramId,type:item.type})
                 })
             }else{
-                this.paramOutterList = [{id:new Date().getTime(),model:""}]
+                this.paramOutterList = [{id:new Date().getTime(),model:"",type:false}]
             }
         },
         modelSelectChange(modelIndex,stateIndex) {
@@ -460,10 +504,10 @@ export default {
             this.setCellModelInfo('statesInfo',tempStateList)
         },
         addParamHandle() {
-            this.paramOutterList.unshift({id:new Date().getTime(),model:""})
+            this.paramOutterList.unshift({id:new Date().getTime(),model:"",type:false})
         },
-        removeParamHandle(id) {
-            //this.paramOutterList.splice(index , 1)
+        removeParamHandle(id,index) {
+            this.paramOutterList.splice(index , 1)
             let tempObj = this.getCellModelInfo('bindData')
             let list = [ ]
             if(tempObj && tempObj.params) {
@@ -499,7 +543,8 @@ export default {
             let obj = {
                 paramId:targetParam.paramId,
                 paramName:targetParam.paramName,
-                id:this.paramOutterList[index].id
+                id:this.paramOutterList[index].id,
+                type:this.paramOutterList[index].type
             }
             let resIndex = list.findIndex((item)=>{
                 return item.id == this.paramOutterList[index].id
@@ -513,6 +558,34 @@ export default {
                 tempObj = { }
             }
             if(list.length) {
+                tempObj.params = list
+                this.setCellModelInfo('bindData',tempObj)
+            }
+        },
+        paramDefaultChange(val,id) {
+            this.paramOutterList.forEach(item=>{
+                if(item.id == id) {
+                    item.type = val
+                }else{
+                    item.type = false
+                }
+            })
+            let tempObj = this.getCellModelInfo('bindData')
+            let list = []
+            if(tempObj && tempObj.params) {
+                list = tempObj.params
+            }
+            if(list.length) {
+                list.forEach(item=>{
+                    if(item.id == id) {
+                        item.type = val
+                    }else{
+                        item.type = false
+                    }
+                })
+                if(!tempObj) {
+                    tempObj = { }
+                }
                 tempObj.params = list
                 this.setCellModelInfo('bindData',tempObj)
             }
@@ -561,13 +634,6 @@ export default {
             }
             modelInfo.setAttribute(key, JSON.stringify(data))
             graph.getModel().setValue(cell, modelInfo)
-            console.log(8888)
-            // 防止表格小单元格 跳动
-            // let state = graph.view.getState(cell)
-            // let shapeName = state.style.shape
-            // if (shapeName === 'tableCell') {
-            //     graph.refresh()
-            // }
         },
     }
 }
@@ -628,8 +694,8 @@ export default {
     .footer-common{
       padding: 5px;
       .ivu-table-wrapper{
-        // border: none;
         border-right:none;
+        overflow: visible;
         /deep/.ivu-table-header{
           height:24px;
           line-height: 24px;
@@ -662,6 +728,15 @@ export default {
           }
         }
       }
+      .icon-add{
+        width:20px;
+        height: 20px;
+        background: url('../../assets/images/leftsidebar/addpage.png') no-repeat center center;
+        background-size:16px 16px;
+        display: inline-block;
+        cursor: pointer;
+        vertical-align: middle;
+      }
       .icon-delete{
         width:20px;
         height: 20px;
@@ -692,7 +767,7 @@ export default {
           }
         }
       }
-      .dataDisplayListUl{
+      .dataDisplayList{
         li{
           margin-bottom:5px;
         }

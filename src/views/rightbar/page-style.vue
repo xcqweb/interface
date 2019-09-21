@@ -200,7 +200,7 @@ export default {
         deleteBgImgHandle() {
             sureDialog(this.myEditorUi,`确定要删除背景图片吗`,()=>{
                 let editor = this.myEditorUi.editor
-                editor.pages[editor.currentPage].style.backgroundUrl = 'none'
+                editor.pages[editor.currentPage].style.backgroundUrl = ''
                 this.bgPic = require('../../assets/images/rightsidebar/bg_ic_widget.png');
                 mxClient.IS_ADD_IMG = false
                 this.isShowBgText = true
@@ -210,6 +210,7 @@ export default {
             },)
         },
         changeBg(url) {
+            url = url.replace(/getechFileSystem\//, window.fileSystem)
             mxClient.IS_ADD_IMG = true
             mxClient.IS_ADD_IMG_SRC = url
             this.bgPic = url
@@ -230,7 +231,7 @@ export default {
             formData.append('file', localImage)
             formData.append('materialLibraryId',"");
             this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, function(res) {
-                editor.pages[editor.currentPage].style.backgroundUrl = `${res.picUrl}`
+                editor.pages[editor.currentPage].style.backgroundUrl = `getechFileSystem/${res.picPath}`
             })
         },
         fileChange(e) {

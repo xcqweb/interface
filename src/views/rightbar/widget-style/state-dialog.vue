@@ -234,7 +234,6 @@ export default{
             this.$emit("closeStateDialog")
         },
         submitState() {
-            console.log(style)
             let data = {
                 name:this.stateName,
                 desc:this.stateDesc,
@@ -250,7 +249,7 @@ export default{
                 formData.append('materialLibraryId',"");
                 this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, (res)=> {
                     data.imgInfo = {
-                        url:res.picUrl,
+                        url:`getechFileSystem/${res.picPath}`,
                         width:res.picWidth,
                         height:res.picHeight
                     }
@@ -285,6 +284,7 @@ export default{
             }
         },
         setBg(url) {
+            url = url.replace(/getechFileSystem\//, window.fileSystem)
             this.bgPic = url
             this.bgPicStyle = {height:'98px'}
             this.isShowBgText = false
