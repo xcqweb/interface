@@ -62,7 +62,8 @@ export let data1 = {
         data: [10, 52, 200, 334, 390, 330, 220],
         markLine: {
             silent: true,
-            data: []
+            data: [],
+            symbol:'none', // 去掉基准线箭头和点
         }
     }]
 }
