@@ -67,6 +67,7 @@
           > 
             <Table
               border
+              class="dataShowHide"
               :show-header="false"
               :columns="tabParamTitles"
               :data="paramOutterList"
@@ -80,6 +81,7 @@
                   v-model="row.model"
                   style="width:240px;height:24px;line-height:24px;"
                   filterable
+                  placeholder="请选中参数"
                   :clearable="true"
                   @on-change="val=>paramSelectChange(val,index)"
                   @on-clear="removeParamHandle(row.id,index)"
@@ -88,9 +90,8 @@
                     v-for="d in paramsList" 
                     :key="d.paramId" 
                     :value="d.paramId"
-                  >
-                    {{ d.paramName }}
-                  </Option>
+                    :label="d.paramName"
+                  />
                 </Select>
               </template>
               <template
@@ -113,6 +114,7 @@
                   @click.stop.prevent="addParamHandle"
                 />
                 <span
+                  v-show="index >= 1"
                   class="icon-delete"
                   @click.stop.prevent="removeParamHandle(row.id,index)"
                 />
@@ -507,26 +509,28 @@ export default {
             this.paramOutterList.unshift({id:new Date().getTime(),model:"",type:false})
         },
         removeParamHandle(id,index) {
-            this.paramOutterList.splice(index , 1)
-            let tempObj = this.getCellModelInfo('bindData')
-            let list = [ ]
-            if(tempObj && tempObj.params) {
-                list = tempObj.params
-            }
-            if(list.length) {
-                let resIndex = list.findIndex((item)=>{
-                    return item.id == id
-                })
-                if(resIndex != -1) {
-                    list.splice(resIndex,1)
-                    if(!list.length) {
-                        tempObj.params = null
-                    }else{
-                        tempObj.params = list
-                    }
-                    this.setCellModelInfo('bindData',tempObj)
+            sureDialog(this.myEditorUi,`确定要删除此当前数据吗`, () => {
+                this.paramOutterList.splice(index , 1)
+                let tempObj = this.getCellModelInfo('bindData')
+                let list = [ ]
+                if(tempObj && tempObj.params) {
+                    list = tempObj.params
                 }
-            }
+                if(list.length) {
+                    let resIndex = list.findIndex((item)=>{
+                        return item.id == id
+                    })
+                    if(resIndex != -1) {
+                        list.splice(resIndex,1)
+                        if(!list.length) {
+                            tempObj.params = null
+                        }else{
+                            tempObj.params = list
+                        }
+                        this.setCellModelInfo('bindData',tempObj)
+                    }
+                }
+            })
         },
         paramSelectChange(val,index) {
             if(!val) {
@@ -771,11 +775,6 @@ export default {
           }
         }
       }
-      .dataDisplayList{
-        li{
-          margin-bottom:5px;
-        }
-      }
       /deep/.ivu-table{
         &::before{
           height:0px
@@ -801,6 +800,25 @@ export default {
             }
             .footerTabs2-list-content{
               flex:1
+            }
+          }
+        }
+      }
+      &.dataDisplayList{
+        .dataShowHide {
+          /deep/.ivu-table {
+            /deep/.ivu-table-body {
+              .ivu-table-tbody{
+                  tr {
+                    height:35px
+                  }
+                  /deep/.ivu-checkbox-inner{
+                    &:after{
+                      top:2px !important;
+                      left:5px !important;
+                    }
+                  }
+              }
             }
           }
         }
