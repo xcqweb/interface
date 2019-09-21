@@ -1051,7 +1051,7 @@ Sidebar.prototype.addTemplate = async function(type) {
     let svgImage = this.editorUi.editor.graph.getSvg(null, null, null, true, null, true, null, null, null, false)
     let widthlen = svgImage.getAttribute('width').substring(0, svgImage.getAttribute('width').length-2);
     let heightLen = svgImage.getAttribute('height').substring(0, svgImage.getAttribute('width').length - 2);
-    svgImage.setAttribute('viewbox', `0 0 ${parseInt(widthlen * 1.8)} ${heightLen}`)
+    svgImage.setAttribute('viewbox', `-${widthlen/2 } 0 ${parseInt(widthlen * 2)} ${heightLen}`)
     let svgImagePic = svgImage.outerHTML
     if (svgImagePic) {
         var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
