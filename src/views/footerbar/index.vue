@@ -82,9 +82,7 @@
                   style="width:240px;height:24px;line-height:24px;"
                   filterable
                   placeholder="请选中参数"
-                  :clearable="true"
                   @on-change="val=>paramSelectChange(val,index)"
-                  @on-clear="removeParamHandle(row.id,index)"
                 >
                   <Option 
                     v-for="d in paramsList" 
@@ -96,11 +94,11 @@
               </template>
               <template
                 slot="paramShow"
-                slot-scope="{row}"
+                slot-scope="{row,index}"
               >
                 <Checkbox
                   v-model="row.type"
-                  @on-change="val=>paramDefaultChange(val,row.id)"
+                  @on-change="val=>paramDefaultChange(val,row.id,index)"
                 >
                   默认显示
                 </Checkbox>
@@ -248,7 +246,7 @@ export default {
                     slot: 'actions',
                     key: 'actions',
                 },
-            ]
+            ],
         }
     },
     computed: {
@@ -509,8 +507,8 @@ export default {
             this.paramOutterList.unshift({id:new Date().getTime(),model:"",type:false})
         },
         removeParamHandle(id,index) {
-            sureDialog(this.myEditorUi,`确定要删除此当前数据吗`, () => {
-                this.paramOutterList.splice(index , 1)
+            sureDialog(this.myEditorUi,`确定要删除此当前参数吗`, () => {
+                index && this.paramOutterList.splice(index , 1)
                 let tempObj = this.getCellModelInfo('bindData')
                 let list = [ ]
                 if(tempObj && tempObj.params) {
@@ -566,7 +564,11 @@ export default {
                 this.setCellModelInfo('bindData',tempObj)
             }
         },
-        paramDefaultChange(val,id) {
+        paramDefaultChange(val,id,index) {
+            if(!this.paramOutterList[index].model && val) {
+                Message.warning(`请先选中一个参数`)
+                return
+            }
             this.paramOutterList.forEach(item=>{
                 if(item.id == id) {
                     item.type = val
@@ -600,7 +602,7 @@ export default {
             for(let i = 0; i <= oldDeviceNameChild.length - 1; i++) {
                 for(let j = 0; j <= newDeviceNameChild.length - 1; j++) {
                     if (oldDeviceNameChild[i].id === newDeviceNameChild[j].id) {
-                        Message.success(`不允许重复绑定`)
+                        Message.warning(`不允许重复绑定`)
                         return false
                     }
                 }
