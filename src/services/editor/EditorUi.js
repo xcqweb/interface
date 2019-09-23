@@ -3452,7 +3452,7 @@ EditorUi.prototype.getIfMulateEdit = function() {
     }, (res) => {
         // this.saveError(res.responseJSON, hideDialog);
         reject(res);
-    }, '加载中···', hideDialog=false)
+    }, '加载中···', false)
 }
 /**
  * Adds the label menu items to the given menu and parent.
@@ -3467,7 +3467,7 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
     else
     {
         if(hideDialog){
-            console.log(7777)
+            // console.log(7777)
             // 自动保存 走这里
             if (autoSaveFlagTerry === 0) { // 屏蔽自动保存 > 0 就不弹窗
                 this.save(this.editor.getOrCreateFilename(), this.editor.getDescribe(),hideDialog)
@@ -3480,7 +3480,7 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
         var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '保存', mxUtils.bind(this, function(name, des)
         {
             // closePage 手动保存 关闭页面
-            console.log(666)
+            // console.log(666)
             autoSaveFlagTerry = 0
             this.save(name, des, '', 'ManualSavePage');
         }), null, mxUtils.bind(this, function(name)
