@@ -62,12 +62,10 @@ function setterRealData(res, fileSystem) {
         for(let i = 0;i < els.length;i++) {
             let shapeName = $(els[i]).data("shapeName")
             let paramShow = $(els[i]).data("paramShow")
-            let defaultParamIndex = paramShow.findIndex(item=>{
-                return item.type
-            })
+            let paramShowDefault = $(els[i]).data("paramShowDefault")
             let val = null
-            if (defaultParamIndex != -1) {
-                val = item[paramShow[defaultParamIndex]]
+            if (paramShowDefault) {
+                val = item[paramShowDefault]
             }
             if(shapeName == 'progress') {//进度条
                 if(!val) {
