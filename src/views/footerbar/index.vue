@@ -272,7 +272,7 @@ export default {
         }
         window.onresize = ()=>{
             if(this.ifShowArrow) {
-                this.dealFootbarHeight(true)
+                this.ifShowArrow = false
             }
         }
         VueEvent.$off('rightBarTabSwitch')

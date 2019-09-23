@@ -13,6 +13,7 @@
     <div class="geSidebarContainer geFormatContainer">
       <PageStyle
         v-if="$store.state.main.type===0 && !showWidgetStyle && inited"
+        :key="refresh"
       />
       <DialogStyle
         v-if="$store.state.main.type===1 && !showWidgetStyle && inited"
