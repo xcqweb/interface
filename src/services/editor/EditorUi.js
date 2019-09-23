@@ -2177,7 +2177,7 @@ EditorUi.prototype.addBeforeUnloadListener = function()
     window.onbeforeunload = mxUtils.bind(this, function()
     {
         console.log('刷新和关闭') // 都去调用 多人编辑接口
-        this.getIfMulateEdit()
+        // this.getIfMulateEdit()
         if (!this.editor.isChromelessView())
         {
             return this.onBeforeUnload();
@@ -3446,12 +3446,7 @@ EditorUi.prototype.getIfMulateEdit = function() {
         lockStatus: 0,
     };
     editor.ajax(ui, urls.preview.url, 'PUT', objData, (res) => {
-        // this.saveSuccess(res, hideDialog);
-        // setCookie('saveIotCds', 'post');
-        resolve(res);
     }, (res) => {
-        // this.saveError(res.responseJSON, hideDialog);
-        reject(res);
     }, '加载中···', false)
 }
 /**
