@@ -974,6 +974,7 @@ window.EditorUi = function(editor, container, lightbox)
    	this.init();
    	this.open();
 };
+
 // Extends mxEventSource
 mxUtils.extend(EditorUi, mxEventSource);
 /**
@@ -1067,7 +1068,7 @@ EditorUi.prototype.init = function()
     // Updates action states
     this.addUndoListener();
     this.addBeforeUnloadListener();
-
+    
     graph.getSelectionModel().addListener(mxEvent.CHANGE, mxUtils.bind(this, function()
     {
         this.updateActionStates();
@@ -1081,7 +1082,6 @@ EditorUi.prototype.init = function()
     // Changes action states after change of default parent
     var graphSetDefaultParent = graph.setDefaultParent;
     var ui = this;
-
     this.editor.graph.setDefaultParent = function()
     {
         graphSetDefaultParent.apply(this, arguments);
@@ -2176,6 +2176,8 @@ EditorUi.prototype.addBeforeUnloadListener = function()
     // This must be disabled during save and image export
     window.onbeforeunload = mxUtils.bind(this, function()
     {
+        console.log('刷新和关闭') // 都去调用 多人编辑接口
+        this.getIfMulateEdit()
         if (!this.editor.isChromelessView())
         {
             return this.onBeforeUnload();
@@ -3435,6 +3437,23 @@ EditorUi.prototype.isCompatibleString = function(data)
     return false;
 };
 
+EditorUi.prototype.getIfMulateEdit = function() {
+    var ui = this;
+    var editor = ui.editor;
+    var id = editor.getApplyId() || sessionStorage.getItem('applyId');
+    const objData = {
+        studioId: id,
+        lockStatus: 0,
+    };
+    editor.ajax(ui, urls.preview.url, 'POST', objData, (res) => {
+        // this.saveSuccess(res, hideDialog);
+        // setCookie('saveIotCds', 'post');
+        resolve(res);
+    }, (res) => {
+        // this.saveError(res.responseJSON, hideDialog);
+        reject(res);
+    }, '加载中···', hideDialog=false)
+}
 /**
  * Adds the label menu items to the given menu and parent.
  */
@@ -3484,23 +3503,6 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
  * 保存成功
  * 和退出当前页面
  */
-// 去掉多人编辑 退出
-// function CloseWebPage() {
-//     var userAgent = navigator.userAgent;
-//     if (userAgent.indexOf("Firefox") != -1 || userAgent.indexOf("Chrome") != -1) {
-//         window.opener = null;
-//         window.onbeforeunload = function (event) {
-//         };
-//         window.open("about:blank", "_self");
-//         window.close();
-//     } else if (userAgent.indexOf('Android') > -1 || userAgent.indexOf('Linux') > -1) {
-//         window.opener = null; window.open('about:blank', '_self', '').close();
-//     } else {
-//         window.opener = null;
-//         window.open("about:blank", "_self");
-//         window.close();
-//     }
-// }
 EditorUi.prototype.saveSuccess = function (res, hideDialog, type) {
     this.editor.setFilename(res.studioName)
     this.editor.setDescribe(res.descript)

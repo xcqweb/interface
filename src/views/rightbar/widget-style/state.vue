@@ -164,7 +164,7 @@ export default{
                     item.imgInfo.url = item.imgInfo.url.replace(/getechFileSystem\//, window.fileSystem)
                 }
             })
-            console.log(states)
+            // console.log(states)
             return states
         },
         setStateInfos(state) {

@@ -16,7 +16,6 @@ export default {
         }
     },
     mounted() {
-        console.log(888)
         this.init();
     },
     methods:{
@@ -59,7 +58,6 @@ export default {
             //创建一个画板
             var graph = new window.mxGraph(container);
             graph.setCellsEditable(false); 
-            console.log(this.currentPage.xml)
             var doc = window.mxUtils.parseXml(`<mxGraphModel dx="840" dy="524" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff">
               <root>
                 <mxCell id="0"/>

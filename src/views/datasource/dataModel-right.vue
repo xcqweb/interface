@@ -772,15 +772,12 @@ export default {
             if (this.currentMouseIndex || this.currentMouseIndex === 0) {
                 sureDialog(this.myEditorUi, `确定要删除此模型吗`, () => {
                     this.requestUtil.delete(`${this.urls.addModelList.url}/${this.ModelNameArr[this.currentMouseIndex].sourceId}`).then(() => {
-                        console.log(this.modelNumber, this.currentMouseIndex)
                         if (this.modelNumber === this.currentMouseIndex) {
                             let ModelNameArrCopy = JSON.parse(JSON.stringify(this.ModelNameArr))
                             let index = this.currentMouseIndex
                             let _len = ModelNameArrCopy.length - 1
                             this.ModelNameArr.splice(this.currentMouseIndex, 1)
                             // this.currentMouseIndex = null
-                            console.log(index)
-                            console.log(this.currentMouseIndex, _len)
                             if (this.ModelNameArr.length) {
                                 if (this.currentMouseIndex === _len) {
                                     this.clickModelHandle('', this.ModelNameArr[_len - 1].sourceId, this.ModelNameArr[_len - 1].modelName,this.ModelNameArr[_len - 1].formula,this.ModelNameArr[_len - 1].descript, _len - 1)
