@@ -71,12 +71,16 @@ export default{
     mounted() {
         graph = this.myEditorUi.editor.graph
         cells = graph.getModel().cells
+        console.log("tt-bb")
     },
     methods: {
         addInit() {
             this.isWidgetClick = false
             this.currentPageWidgets.forEach(d=>{
                 d.selected = false
+            })
+            this.states.forEach(d=>{
+                d.check = false
             })
             currentStateItem = null
             currentWidgetItem = null
@@ -179,6 +183,12 @@ export default{
         saveWidgetModeState() {//将状态设定信息保存在对应的控件的model中
             let cell = cells[currentWidgetItem.id]
             let modelInfo = graph.getModel().getValue(cell)
+            if (!mxUtils.isNode(modelInfo)) {
+                var doc = mxUtils.createXmlDocument();
+                var obj = doc.createElement('object');
+                obj.setAttribute('label', modelInfo || '');
+                modelInfo = obj;
+            }
             modelInfo.setAttribute('statesInfo', JSON.stringify(this.states))
             graph.getModel().setValue(cell, modelInfo)
         },
