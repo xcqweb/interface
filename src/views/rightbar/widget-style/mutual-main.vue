@@ -200,8 +200,11 @@ export default{
                 this.$refs.change.addInit()
             }
         },
-        changeTab(index) {
+        changeTab(index,changeEditFlag) {
             this.typeTab = index
+            if(index == 3 && !changeEditFlag) {
+                this.$refs.change.addInit()
+            }
         },
         editEventDone(data) {
             this.isEdit = false
@@ -307,7 +310,7 @@ export default{
                 if(actions[i].innerType == 'page' && action.mutualType == actions[i].mutualType) {
                     actions[i] = action
                     sameFlag = true
-                    break;
+                    break
                 }
             }
             if(!sameFlag) {
@@ -321,6 +324,12 @@ export default{
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
             let modelInfo = graph.getModel().getValue(cell)
+            if (!mxUtils.isNode(modelInfo)) {
+                var doc = mxUtils.createXmlDocument();
+                var obj = doc.createElement('object');
+                obj.setAttribute('label', modelInfo || '');
+                modelInfo = obj;
+            }
             modelInfo.setAttribute('actionsInfo', JSON.stringify(actions))
             graph.getModel().setValue(cell, modelInfo)
         },
@@ -383,7 +392,12 @@ export default{
                 this.$refs.change.checkCurrent(e)
             }
             this.isEdit = true
-            this.changeTab(e.type)
+            if(e.type == 3) {
+                this.changeTab(e.type,true)
+            }else {
+                this.changeTab(e.type)
+            }
+            
         },
     },      
 }

@@ -69,7 +69,7 @@
     <div
       class="item-container"
       style="position:relative;margin-bottom:4px;"
-      :style="{backgroundColor:bgColor}"
+      :style="{background:bgColor}"
       @click="pickColor"
     />
     <div
@@ -107,7 +107,7 @@
   </div>
 </template>
 <script>
-import {mxClient} from '../../services/mxGlobal'
+import {mxClient,Dialog} from '../../services/mxGlobal'
 import {tipDialog, sureDialog} from '../../services/Utils'
 let localImage
 export default {
@@ -267,7 +267,12 @@ export default {
             });
         },
         updateBackgroundColor(color)  {
-            this.bgColor = color
+            if(color == 'none') {
+
+                this.bgColor = `url(${Dialog.prototype.noColorImage})`
+            }else{
+                this.bgColor = color
+            }
             this.myEditorUi.setBackgroundColor(this.bgColor)
         },
         hideScale() {

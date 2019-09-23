@@ -78,8 +78,8 @@ export default{
             this.currentPageWidgets.forEach(d=>{
                 d.selected = false
             })
-            currentStateItem = null
             currentWidgetItem = null
+            currentStateItem = null
         },
         checkCurrent(currentEditItem) { //当前控件和状态选中
             this.isWidgetClick = true
@@ -92,6 +92,7 @@ export default{
                 }
             })
             this.states = this.getWidgetStatesById(currentWidgetItem.id)
+            console.log(currentEditItem)
             this.states.forEach((d)=>{
                 if(d.id == currentEditItem.stateId) {
                     d.check = true
@@ -134,6 +135,11 @@ export default{
             })
             item.selected = true 
             this.states = this.getWidgetStatesById(item.id)
+            if(!currentStateItem) {
+                this.states.forEach(item=>{
+                    item.check = false
+                })
+            }
         },
         getWidgetStatesById(id) {
             let states = []
@@ -179,6 +185,12 @@ export default{
         saveWidgetModeState() {//将状态设定信息保存在对应的控件的model中
             let cell = cells[currentWidgetItem.id]
             let modelInfo = graph.getModel().getValue(cell)
+            if (!mxUtils.isNode(modelInfo)) {
+                var doc = mxUtils.createXmlDocument();
+                var obj = doc.createElement('object');
+                obj.setAttribute('label', modelInfo || '');
+                modelInfo = obj;
+            }
             modelInfo.setAttribute('statesInfo', JSON.stringify(this.states))
             graph.getModel().setValue(cell, modelInfo)
         },

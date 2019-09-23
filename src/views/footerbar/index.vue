@@ -256,15 +256,7 @@ export default {
     },
     watch:{
         ifShowArrow(val) {
-            let graph = this.myEditorUi.editor.graph
-            let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
-            let wh = document.documentElement.clientHeight
-            if(val) {
-                el.style.height = wh - 72 - 226 + 'px'
-            }else{
-                el.style.height = wh - 72 - 26 + 'px'
-            }
-            graph.refresh()
+            this.dealFootbarHeight(val)
         },
         footerModelUpdata(val) {
             if (val) {
@@ -277,6 +269,11 @@ export default {
     mounted() {
         if(this.footerContent) {
             this.initData()
+        }
+        window.onresize = ()=>{
+            if(this.ifShowArrow) {
+                this.dealFootbarHeight(true)
+            }
         }
         VueEvent.$off('rightBarTabSwitch')
         VueEvent.$off('isShowFootBar')
@@ -351,6 +348,17 @@ export default {
             this.initParamsList()//初始化参数列表
             this.isInitFlag = true
            
+        },
+        dealFootbarHeight(val) {
+            let graph = this.myEditorUi.editor.graph
+            let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
+            let wh = document.documentElement.clientHeight
+            if(val) {
+                el.style.height = wh - 72 - 226 + 'px'
+            }else{
+                el.style.height = wh - 72 - 26 + 'px'
+            }
+            graph.refresh()
         },
         // 初始化数据源数据
         initDataSource() {
@@ -505,6 +513,7 @@ export default {
         },
         addParamHandle() {
             this.paramOutterList.unshift({id:new Date().getTime(),model:"",type:false})
+            console.log(this.paramOutterList)
         },
         removeParamHandle(id,index) {
             sureDialog(this.myEditorUi,`确定要删除此当前参数吗`, () => {
@@ -548,6 +557,7 @@ export default {
                 id:this.paramOutterList[index].id,
                 type:this.paramOutterList[index].type
             }
+            this.paramOutterList[index].model = val
             let resIndex = list.findIndex((item)=>{
                 return item.id == this.paramOutterList[index].id
             })

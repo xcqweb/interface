@@ -101,6 +101,14 @@ export default {
             }
             this.myEditorUi.format.refresh = ()=>{
                 this.showWidgetStyle = !(graph.isSelectionEmpty())
+                let selectCell = graph.getSelectionCell()
+                let cellState = graph.view.getState(selectCell)
+                if(cellState) {
+                    let shapeName =  cellState .style.shape
+                    if(shapeName == 'label') {
+                        this.showWidgetStyle = false
+                    }
+                }
                 if(this.showWidgetStyle) {
                     this.$store.commit('getWidgetInfo',graph)
                     this.$store.commit('widgetChange',new Date().getTime())

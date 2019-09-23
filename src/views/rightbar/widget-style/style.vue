@@ -162,6 +162,7 @@
       <i-switch
         v-model="selectMenu"
         size="small"
+        @on-change="checkMenu"
       />
     </div>
     <div
@@ -491,7 +492,7 @@
 </template>
 <script>
 import Chart from '../../charts/chart'
-import {mxConstants,mxEventObject,Dialog} from '../../../services/mxGlobal'
+import {mxConstants,mxEventObject,Dialog,mxUtils} from '../../../services/mxGlobal'
 let palettName
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
@@ -614,6 +615,11 @@ export default {
         }else if(this.shapeName == 'linkTag') {
             if (this.getWidgetProps('link')) {
                 this.linkUrl = this.getWidgetProps('link').url
+            }
+        }else if(this.shapeName == 'menuCell') {
+            let cellProp = this.getWidgetProps('memuCellProps')
+            if(cellProp) {
+                this.selectMenu = cellProp.check
             }
         }
         if(picShapeList.includes(this.shapeName)) {
@@ -934,6 +940,12 @@ export default {
             let graph = this.myEditorUi.editor.graph
             let cell = graph.getSelectionCell()
             let cellInfo = graph.getModel().getValue(cell)
+            if (!mxUtils.isNode(cellInfo)) {
+                var doc = mxUtils.createXmlDocument()
+                var obj = doc.createElement('object')
+                obj.setAttribute('label', cellInfo || '')
+                cellInfo = obj
+            }
             let attrObj = this.getWidgetProps(widgetProp)
             let newAttr = JSON.stringify(Object.assign({},attrObj,props))
             cellInfo.setAttribute(widgetProp,newAttr)
@@ -948,6 +960,12 @@ export default {
         },
         getWidgetProps(widgetProp) {
             let cellInfo = this.getCellInfo()
+            if (!mxUtils.isNode(cellInfo)) {
+                var doc = mxUtils.createXmlDocument()
+                var obj = doc.createElement('object')
+                obj.setAttribute('label', cellInfo || '')
+                cellInfo = obj
+            }
             let attr = cellInfo.getAttribute(widgetProp)
             let attrObj = null
             if(attr) {
@@ -1003,6 +1021,9 @@ export default {
             }).catch((meg) => {
                 console.log(meg)
             })
+        },
+        checkMenu(val) {
+            this.setWidgetProps('memuCellProps',{'check':val})
         }
     }
 };
