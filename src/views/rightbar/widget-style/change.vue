@@ -71,7 +71,6 @@ export default{
     mounted() {
         graph = this.myEditorUi.editor.graph
         cells = graph.getModel().cells
-        console.log("tt-bb")
     },
     methods: {
         addInit() {
@@ -79,11 +78,8 @@ export default{
             this.currentPageWidgets.forEach(d=>{
                 d.selected = false
             })
-            this.states.forEach(d=>{
-                d.check = false
-            })
-            currentStateItem = null
             currentWidgetItem = null
+            currentStateItem = null
         },
         checkCurrent(currentEditItem) { //当前控件和状态选中
             this.isWidgetClick = true
@@ -96,6 +92,7 @@ export default{
                 }
             })
             this.states = this.getWidgetStatesById(currentWidgetItem.id)
+            console.log(currentEditItem)
             this.states.forEach((d)=>{
                 if(d.id == currentEditItem.stateId) {
                     d.check = true
@@ -138,6 +135,11 @@ export default{
             })
             item.selected = true 
             this.states = this.getWidgetStatesById(item.id)
+            if(!currentStateItem) {
+                this.states.forEach(item=>{
+                    item.check = false
+                })
+            }
         },
         getWidgetStatesById(id) {
             let states = []

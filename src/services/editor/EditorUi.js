@@ -2176,8 +2176,8 @@ EditorUi.prototype.addBeforeUnloadListener = function()
     // This must be disabled during save and image export
     window.onbeforeunload = mxUtils.bind(this, function()
     {
-        console.log('刷新和关闭') // 都去调用 多人编辑接口
-        this.getIfMulateEdit()
+        //console.log('刷新和关闭') // 都去调用 多人编辑接口
+        //this.getIfMulateEdit()
         if (!this.editor.isChromelessView())
         {
             return this.onBeforeUnload();
