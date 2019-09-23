@@ -3547,13 +3547,14 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                     descript: des,
                     applyCon: editor.pagesNameList().join(),
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
+                    lockStatus: 1
                 }
                 // 
-                if (type && type === 'ManualSavePage') { // 手动保存
-                    data.lockStatus = 0
-                } else {
-                    data.lockStatus = 1
-                }
+                // if (type && type === 'ManualSavePage') { // 手动保存
+                //     data.lockStatus = 1
+                // } else {
+                //     data.lockStatus = 1
+                // }
                 var id = editor.getApplyId() || sessionStorage.getItem('applyId')
                 if (id) {
                     // 编辑保存
@@ -3565,7 +3566,7 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                             return;
                         } else if (res.code === '0') {
                             editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
-                                this.saveSuccess(res, hideDialog, type);
+                                this.saveSuccess(res, hideDialog);
                                 setCookie('saveIotCds', 'put');
                                 resolve(res);
                             }, (res) => {
