@@ -3445,7 +3445,7 @@ EditorUi.prototype.getIfMulateEdit = function() {
         studioId: id,
         lockStatus: 0,
     };
-    editor.ajax(ui, urls.preview.url, 'POST', objData, (res) => {
+    editor.ajax(ui, urls.preview.url, 'PUT', objData, (res) => {
         // this.saveSuccess(res, hideDialog);
         // setCookie('saveIotCds', 'post');
         resolve(res);
