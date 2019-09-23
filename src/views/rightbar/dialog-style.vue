@@ -161,7 +161,7 @@ export default {
         this.initPage()
     },
     beforeDestory() {
-        console.log("beforeDestory--不执性--why--")
+        // console.log("beforeDestory--不执性--why--")
     },
     destroyed() {
         let dialogTitleEle = document.querySelector('.dialog-title-m')

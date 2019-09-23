@@ -288,7 +288,7 @@ class PreviewPage {
 
     // 渲染控件节点
     renderCell(cell) {
-        console.log(cell)
+        // console.log(cell)
         const shapeName = cell.shapeName
         let cellHtml
         if (shapeName.includes('image')) {

@@ -1190,7 +1190,7 @@ function createPageList(editorUi, el, data, id, _that) {
     $('.commonPages').on('mouseenter', '.pageList>li>.right-icon-dolt', function (evt) {
             evt.preventDefault();
             // 右键菜单展示
-            console.log(888)
+            // console.log(888)
             let LIArr = evt.target.parentNode.parentNode.children
             for (var i = 0; i < LIArr.length; i++) {
                 if (LIArr[i] === evt.target.parentNode) {

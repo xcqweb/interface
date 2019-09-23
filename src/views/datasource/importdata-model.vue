@@ -541,7 +541,6 @@ export default{
         paramPageChangeHandle(value) {
             this.pageChangeHandle(value, 1)
             this.paramsPageCurrent = +value
-            console.log(this.selectAllparamsArr)
             if (this.selectAllparamsArr.length && this.selectAllparamsArr.includes(this.paramsPageCurrent)) {
                 this.indeterminateArr[1] = false
                 this.checkAllArr[1] = true
