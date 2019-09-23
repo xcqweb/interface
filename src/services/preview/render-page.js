@@ -412,10 +412,17 @@ class PreviewPage {
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild) {
             let devices = cell.bindData.dataSource.deviceNameChild
             let paramShow = []
+            let defaultParamIndex = -1
             if (cell.bindData.params) {
                 cell.bindData.params.forEach((item)=>{
                     paramShow.push(item.paramName)
                 })
+                defaultParamIndex = cell.bindData.params.findIndex(item => {
+                    return item.type
+                })
+            }
+            if (defaultParamIndex != -1) {
+                $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
             }
             $(cellHtml).data("paramShow", paramShow)
             let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
