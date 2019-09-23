@@ -202,7 +202,7 @@ export default{
         },
         changeTab(index,changeEditFlag) {
             this.typeTab = index
-            if(index == 3 && changeEditFlag) {
+            if(index == 3 && !changeEditFlag) {
                 this.$refs.change.addInit()
             }
         },

@@ -2176,7 +2176,7 @@ EditorUi.prototype.addBeforeUnloadListener = function()
     // This must be disabled during save and image export
     window.onbeforeunload = mxUtils.bind(this, function()
     {
-        console.log('刷新和关闭') // 都去调用 多人编辑接口
+        //console.log('刷新和关闭') // 都去调用 多人编辑接口
         this.getIfMulateEdit()
         if (!this.editor.isChromelessView())
         {
@@ -3446,12 +3446,7 @@ EditorUi.prototype.getIfMulateEdit = function() {
         lockStatus: 0,
     };
     editor.ajax(ui, urls.preview.url, 'PUT', objData, (res) => {
-        // this.saveSuccess(res, hideDialog);
-        // setCookie('saveIotCds', 'post');
-        resolve(res);
     }, (res) => {
-        // this.saveError(res.responseJSON, hideDialog);
-        reject(res);
     }, '加载中···', false)
 }
 /**
@@ -3552,13 +3547,14 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                     descript: des,
                     applyCon: editor.pagesNameList().join(),
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
+                    lockStatus: 1
                 }
                 // 
-                if (type && type === 'ManualSavePage') { // 手动保存
-                    data.lockStatus = 0
-                } else {
-                    data.lockStatus = 1
-                }
+                // if (type && type === 'ManualSavePage') { // 手动保存
+                //     data.lockStatus = 1
+                // } else {
+                //     data.lockStatus = 1
+                // }
                 var id = editor.getApplyId() || sessionStorage.getItem('applyId')
                 if (id) {
                     // 编辑保存
@@ -3570,7 +3566,7 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                             return;
                         } else if (res.code === '0') {
                             editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
-                                this.saveSuccess(res, hideDialog, type);
+                                this.saveSuccess(res, hideDialog);
                                 setCookie('saveIotCds', 'put');
                                 resolve(res);
                             }, (res) => {

@@ -125,7 +125,7 @@
             class="footer-common stateList"
           >
             <ul
-              v-if="stateList && stateList.length > 1"
+              v-if="stateList && stateList.length > 0"
               class="footerTabs2Ul"
             >
               <li 
@@ -159,7 +159,7 @@
           </div>
         </div>
         <div
-          v-if="!footerContent || (tabsNum === 2 && (stateList.length===0 || stateList.length === 1) ) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
+          v-if="!footerContent || (tabsNum === 2 && stateList.length === 0) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
           class="no-data-wrap"
         >
           <NoData
@@ -256,15 +256,7 @@ export default {
     },
     watch:{
         ifShowArrow(val) {
-            let graph = this.myEditorUi.editor.graph
-            let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
-            let wh = document.documentElement.clientHeight
-            if(val) {
-                el.style.height = wh - 72 - 226 + 'px'
-            }else{
-                el.style.height = wh - 72 - 26 + 'px'
-            }
-            graph.refresh()
+            this.dealFootbarHeight(val)
         },
         footerModelUpdata(val) {
             if (val) {
@@ -277,6 +269,11 @@ export default {
     mounted() {
         if(this.footerContent) {
             this.initData()
+        }
+        window.onresize = ()=>{
+            if(this.ifShowArrow) {
+                this.ifShowArrow = false
+            }
         }
         VueEvent.$off('rightBarTabSwitch')
         VueEvent.$off('isShowFootBar')
@@ -341,6 +338,9 @@ export default {
             //初始化状态列表
             let tempStateList = this.getCellModelInfo("statesInfo")
             if(tempStateList) {
+                tempStateList = tempStateList.filter(item=>{
+                    return item.id !== 'state_0'
+                })
                 this.stateList = tempStateList
             }else{
                 this.stateList = []
@@ -351,6 +351,17 @@ export default {
             this.initParamsList()//初始化参数列表
             this.isInitFlag = true
            
+        },
+        dealFootbarHeight(val) {
+            let graph = this.myEditorUi.editor.graph
+            let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
+            let wh = document.documentElement.clientHeight
+            if(val) {
+                el.style.height = wh - 72 - 226 + 'px'
+            }else{
+                el.style.height = wh - 72 - 26 + 'px'
+            }
+            graph.refresh()
         },
         // 初始化数据源数据
         initDataSource() {
@@ -505,6 +516,7 @@ export default {
         },
         addParamHandle() {
             this.paramOutterList.unshift({id:new Date().getTime(),model:"",type:false})
+            console.log(this.paramOutterList)
         },
         removeParamHandle(id,index) {
             sureDialog(this.myEditorUi,`确定要删除此当前参数吗`, () => {
@@ -548,6 +560,7 @@ export default {
                 id:this.paramOutterList[index].id,
                 type:this.paramOutterList[index].type
             }
+            this.paramOutterList[index].model = val
             let resIndex = list.findIndex((item)=>{
                 return item.id == this.paramOutterList[index].id
             })
