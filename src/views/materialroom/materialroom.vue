@@ -92,8 +92,8 @@
                     </template>
                     <template v-else>
                       <li
-                        v-for="(item, key) in arrListTables"
-                        :key="key"
+                        v-for="(item) in arrListTables"
+                        :key="item.materialId"
                       >
                         <div>
                           <span 
@@ -195,7 +195,7 @@
                   >
                     <li
                       v-for="(item, index) in pageMaterial"
-                      :key="index"
+                      :key="item.pageTemplateId"
                       class="user-uploadimage"
                     >
                       <div>
@@ -240,7 +240,7 @@
                   >
                     <li
                       v-for="(item, index) in alertMaterial"
-                      :key="index"
+                      :key="item.pageTemplateId"
                       class="user-uploadimage"
                     >
                       <div>
