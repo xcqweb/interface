@@ -1357,6 +1357,136 @@ Actions.prototype.getColNum = function(cell) {
 };
 
 /**
+ * 是否是表格单元格
+ */
+Actions.prototype.isTableCell = function(cell) {
+    return /shape=tableCell/.test(cell.style.toString());
+}
+/**
+ * 获取当前单元格的所有同行同列元素
+ */
+Actions.prototype.getRowColCells = function (selectionCell = null) {
+    const ui = this.editorUi;
+    const editor = ui.editor;
+    const graph = editor.graph;
+    const cell = selectionCell ? selectionCell : graph.getSelectionCell();
+    if (!this.isTableCell(cell)) {
+        return null;
+    }
+    const table = cell.parent;
+    const tableCells = table.children;
+    const cellX = cell.geometry.x;
+    const cellY = cell.geometry.y;
+    const rowCells = [];
+    const colCells = [];
+    const rightCells = [];
+    const bottomCells = [];
+    tableCells.forEach(item => {
+        // X轴相等，同列
+        if (item.geometry.x === cellX) {
+            colCells.push(item);
+        } else if (item.geometry.x > cellX) {
+            // 当前单元格右边的元素
+            rightCells.push(item);
+        }
+        // Y轴相等，同行
+        if (item.geometry.y === cellY) {
+            rowCells.push(item);
+        } else if (item.geometry.y > cellY) {
+            // 当前单元格下方的元素
+            bottomCells.push(item);
+        }
+    });
+    return {graph, cell, table, rowCells, colCells, rightCells, bottomCells};
+};
+/**
+ * 当前单元格宽高发生变化时，
+ * 更新同行的高和同列的宽，
+ * 更新tableBox的宽高，
+ * 更新右方的x轴，
+ * 更新下方的y轴
+ * @param {string} type 更新类型
+ * @param {number} diff 更新差值
+ * @param {tableCell} selectionCell 当前选中的单元格
+ */
+Actions.prototype.updateRowColSize = function (type, diff, selectionCell = null) {
+    if (!type || !diff) {
+        return;
+    }
+    const ui = this.editorUi;
+    const editor = ui.editor;
+    const graph = editor.graph;
+    const model = graph.getModel();
+    const cell = selectionCell ? selectionCell : graph.getSelectionCell();
+    if (!this.isTableCell(cell)) {
+        return null;
+    }
+    const table = cell.parent;
+    const tableCells = table.children;
+    const cellW = cell.geometry.width;
+    const cellH = cell.geometry.height;
+    const cellX = cell.geometry.x;
+    const cellY = cell.geometry.y;
+    const tableW = table.geometry.width;
+    const tableH = table.geometry.height;
+    const wType = 'W';
+    const hType = 'H';
+    const getGeo = mxCell => {
+        return graph.getCellGeometry(mxCell);
+    };
+    const extendGeo = (geo, type, value) => {
+        switch (type) {
+            case 'W':
+                geo.width = value;
+                break;
+            case 'H':
+                geo.height = value;
+                break;
+            case 'X':
+                geo.x = value;
+                break;
+            case 'Y':
+                geo.y = value;
+                break;
+        }
+        return geo;
+    };
+    // model.beginUpdate();
+    // 更新单元格的
+    tableCells.forEach(mxCell => {
+        // 当前选中单元格不用再次更新
+        if (mxCell.id !== cell.id) {
+            const geo = getGeo(mxCell);
+            // 修改宽，整列宽度都要改，右边单元格需要改x轴
+            if (type === wType) {
+                // X轴相等，同列
+                if (mxCell.geometry.x === cellX) {
+                    extendGeo(geo, wType, cellW);
+                } else if (mxCell.geometry.x > cellX) {
+                    // 当前单元格右边的元素
+                    extendGeo(geo, 'X', mxCell.geometry.x + diff);
+                }
+            } else if (type === hType) {
+                // 更新高时，要更新整行，下方单元格需要改y轴
+                // Y轴相等，同行
+                if (mxCell.geometry.y === cellY) {
+                    extendGeo(geo, hType, cellH);
+                } else if (mxCell.geometry.y > cellY) {
+                    // 当前单元格下方的元素
+                    extendGeo(geo, 'Y', mxCell.geometry.y + diff);
+                }
+            }
+            model.setGeometry(mxCell, geo);
+        }
+    });
+    // 更新表格的
+    const tableGeo = getGeo(table);
+    type === wType && extendGeo(tableGeo, wType, tableW + diff);
+    type === hType && extendGeo(tableGeo, hType, tableH + diff);
+    model.setGeometry(table, tableGeo);
+    // model.endUpdate();
+}
+/**
  * 向表格插入单元格
  * @param {string} type 
  */
