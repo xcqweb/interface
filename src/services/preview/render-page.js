@@ -254,11 +254,13 @@ class PreviewPage {
             this.renderPages(cells, this.gePreview)
             this.gePreview.style.width = contentWidth + 'px'
             this.gePreview.style.height = contentHeight + 'px'
-            this.gePreview.style.backgroundColor = viewBackground
             if (pageStyle && pageStyle.backgroundUrl) {
+                this.gePreview.style.backgroundColor = viewBackground
                 pageStyle.backgroundUrl = pageStyle.backgroundUrl.replace(/getechFileSystem\//, fileSystem)
                 this.gePreview.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
                 this.gePreview.style.backgroundSize = "100% 100%"
+            }else{
+                this.gePreview.style.background = viewBackground
             }
         } else { //弹窗是点弹窗关闭时候清空的内容和关闭ws连接
             // 弹窗页面
