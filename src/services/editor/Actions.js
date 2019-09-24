@@ -1457,6 +1457,7 @@ Actions.prototype.updateRowColSize = function (type, diff, selectionCell = null)
         // 当前选中单元格不用再次更新
         if (mxCell.id !== cell.id) {
             const geo = getGeo(mxCell);
+            let flag = true; // 是否需要更新geometry
             // 修改宽，整列宽度都要改，右边单元格需要改x轴
             if (type === wType) {
                 // X轴相等，同列
@@ -1465,6 +1466,8 @@ Actions.prototype.updateRowColSize = function (type, diff, selectionCell = null)
                 } else if (mxCell.geometry.x > cellX) {
                     // 当前单元格右边的元素
                     extendGeo(geo, 'X', mxCell.geometry.x + diff);
+                } else {
+                    flag = false
                 }
             } else if (type === hType) {
                 // 更新高时，要更新整行，下方单元格需要改y轴
@@ -1474,16 +1477,20 @@ Actions.prototype.updateRowColSize = function (type, diff, selectionCell = null)
                 } else if (mxCell.geometry.y > cellY) {
                     // 当前单元格下方的元素
                     extendGeo(geo, 'Y', mxCell.geometry.y + diff);
+                } else {
+                    flag = false
                 }
+            } else {
+                flag = false
             }
-            model.setGeometry(mxCell, geo);
+            flag && model.setGeometry(mxCell, geo);
         }
     });
     // 更新表格的
     const tableGeo = getGeo(table);
     type === wType && extendGeo(tableGeo, wType, tableW + diff);
     type === hType && extendGeo(tableGeo, hType, tableH + diff);
-    model.setGeometry(table, tableGeo);
+    [wType, hType].includes(type) && model.setGeometry(table, tableGeo);
     // model.endUpdate();
 }
 /**
