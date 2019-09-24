@@ -1684,53 +1684,108 @@ Actions.prototype.insertTableCell = function (type, selectionCell = null) {
  * 删除单元格
  * @param {string} type: row删除行，col删除列
  */
+// Actions.prototype.deleteTableCell = function(type,selectionCell=null) {
+//     var ui = this.editorUi;
+//     var editor = ui.editor;
+//     var graph = editor.graph;
+//     let cell = selectionCell ? selectionCell : graph.getSelectionCell()
+//     let cellW = cell.geometry.width;
+//     let cellH = cell.geometry.height;
+//     let table = cell.parent;
+//     let tableCells = table.children;
+//     // 当前行和列
+//     let row = this.getRowNum(cell);
+//     let col = this.getColNum(cell);
+//     // 需要删除的节点
+//     let delCells = []
+//     for (let tableCell of tableCells) {
+//         if ( type == 'row' ) {
+//             // 插入行
+//             if (this.getRowNum(tableCell) > row) {
+//                 tableCell.geometry.y -= cellH;
+//             } else if (this.getRowNum(tableCell) == row) {
+//                 // 当前行
+//                 delCells.push(tableCell);
+//             }
+//         } else {
+//             // 插入列
+//             if (this.getColNum(tableCell) > col) {
+//                 tableCell.geometry.x -= cellW;
+//             }else if (this.getColNum(tableCell) == col) {
+//                 // 当前列
+//                 delCells.push(tableCell);
+//             }
+//         }
+//         graph.getModel().setValue(tableCell, graph.getModel().getValue(tableCell));
+//     }
+//     graph.removeCells(delCells, true);
+
+//     // 更新样式
+//     graph.getModel().beginUpdate();
+//     try{
+//         var geo = graph.getModel().getGeometry(table);
+//         type == 'row' ? geo.height -= cellH : geo.width -= cellW;
+//         graph.getModel().setGeometry(table, geo);
+//         graph.getModel().setValue(table, graph.getModel().getValue(table));
+//     } finally {
+//         graph.getModel().endUpdate();
+//     }
+// }
 Actions.prototype.deleteTableCell = function(type,selectionCell=null) {
     var ui = this.editorUi;
     var editor = ui.editor;
     var graph = editor.graph;
-    let cell = selectionCell ? selectionCell : graph.getSelectionCell()
-    let cellW = cell.geometry.width;
-    let cellH = cell.geometry.height;
-    let table = cell.parent;
-    let tableCells = table.children;
-    // 当前行和列
-    let row = this.getRowNum(cell);
-    let col = this.getColNum(cell);
-    // 需要删除的节点
-    let delCells = []
-    for (let tableCell of tableCells) {
-        if ( type == 'row' ) {
-            // 插入行
-            if (this.getRowNum(tableCell) > row) {
-                tableCell.geometry.y -= cellH;
-            } else if (this.getRowNum(tableCell) == row) {
-                // 当前行
-                delCells.push(tableCell);
-            }
+    let cell = selectionCell ? selectionCell : graph.getSelectionCell();
+    const data = this.getRowColCells(cell);
+    if (data === null) {
+        return;
+    }
+    const table = data.table;
+    const cellW = cell.geometry.width;
+    const cellH = cell.geometry.height;
+    const getGeo = mxCell => {
+        return graph.getCellGeometry(mxCell);
+    };
+    const model = graph.getModel();
+    const moveXY = (item, isY) => {
+        const geo = getGeo(item);
+        if (isY) {
+            geo.y -= cellH;
         } else {
-            // 插入列
-            if (this.getColNum(tableCell) > col) {
-                tableCell.geometry.x -= cellW;
-            }else if (this.getColNum(tableCell) == col) {
-                // 当前列
-                delCells.push(tableCell);
-            }
+            geo.x -= cellW;
         }
-        graph.getModel().setValue(tableCell, graph.getModel().getValue(tableCell));
+        model.setGeometry(item, geo);
+        model.setValue(item, model.getValue(item));
+    };
+    model.beginUpdate();
+    try {
+        let delCells = [];
+        const tableGeo = getGeo(table);
+        // 删除行，下方元素y轴需要上移
+        if (type === 'row') {
+            delCells = [...data.rowCells];
+            data.bottomCells.forEach(item => {
+                moveXY(item, true);
+            });
+            tableGeo.height -= cellH;
+        } else {
+            delCells = [...data.colCells];
+            data.rightCells.forEach(item => {
+                moveXY(item);
+            });
+            tableGeo.width -= cellW;
+            // 插入列时，需要更新一下cols属性
+            const tableCol = this.getTableColCount(table);
+            const tableInfo = model.getValue(table);
+            tableInfo.setAttribute('cols', tableCol - 1);
+        }
+        graph.removeCells(delCells, true);
+        model.setValue(table, model.getValue(table));
     }
-    graph.removeCells(delCells, true);
-
-    // 更新样式
-    graph.getModel().beginUpdate();
-    try{
-        var geo = graph.getModel().getGeometry(table);
-        type == 'row' ? geo.height -= cellH : geo.width -= cellW;
-        graph.getModel().setGeometry(table, geo);
-        graph.getModel().setValue(table, graph.getModel().getValue(table));
-    } finally {
-        graph.getModel().endUpdate();
+    finally {
+        model.endUpdate();
     }
-}
+};
 /**
  * Registers the given action under the given name.
  */
