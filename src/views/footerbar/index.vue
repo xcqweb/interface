@@ -125,7 +125,7 @@
             class="footer-common stateList"
           >
             <ul
-              v-if="stateList && stateList.length > 1"
+              v-if="stateList && stateList.length > 0"
               class="footerTabs2Ul"
             >
               <li 
@@ -159,7 +159,7 @@
           </div>
         </div>
         <div
-          v-if="!footerContent || (tabsNum === 2 && (stateList.length===0 || stateList.length === 1) ) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
+          v-if="!footerContent || (tabsNum === 2 && stateList.length === 0) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
           class="no-data-wrap"
         >
           <NoData
@@ -272,7 +272,7 @@ export default {
         }
         window.onresize = ()=>{
             if(this.ifShowArrow) {
-                this.dealFootbarHeight(true)
+                this.ifShowArrow = false
             }
         }
         VueEvent.$off('rightBarTabSwitch')
@@ -338,6 +338,9 @@ export default {
             //初始化状态列表
             let tempStateList = this.getCellModelInfo("statesInfo")
             if(tempStateList) {
+                tempStateList = tempStateList.filter(item=>{
+                    return item.id !== 'state_0'
+                })
                 this.stateList = tempStateList
             }else{
                 this.stateList = []

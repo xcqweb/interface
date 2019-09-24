@@ -668,10 +668,13 @@ export default {
         },
         changePositionSize(type) {
             let graph = this.myEditorUi.editor.graph
+            let model = graph.getModel()
             let cells = graph.getSelectionCells()
             let positionObj = Object.assign({},this.positionSize)
+            model.beginUpdate()
             cells.forEach((cell)=>{
                 let geo = graph.getCellGeometry(cell)
+                let diff = 0;
                 if(graph.model.isEdge(cell)) {
                     switch(type) {
                         case 'SX':
@@ -696,21 +699,31 @@ export default {
                             geo.y = +positionObj.y
                             break
                         case 'W':
+                            diff = positionObj.width * 1 - geo.width;
                             geo.width = +positionObj.width
                             break
                         case 'H':
+                            diff = positionObj.height * 1 - geo.height;
+                            console.log(diff)
                             geo.height = +positionObj.height
                             break
                     }
                 }
-                graph.getModel().beginUpdate()
-                graph.getModel().setGeometry(cell,geo)
-                graph.getModel().endUpdate()
+                model.setGeometry(cell,geo)
+                if (diff !== 0) {
+                    this.updateTableSizeAfterCell(type, diff, cell)
+                }
             })
+            model.endUpdate()
             graph.refresh()
             this.$nextTick(() => {
                 this.$store.commit('getWidgetInfo',graph)
             })
+        },
+        // 修改表格单元格宽高后回调
+        updateTableSizeAfterCell(type, diff, cell) {
+            let actions = this.myEditorUi.actions
+            actions.updateRowColSize(type, diff, cell)
         },
         changeFont(d,e) {
             this.fontText = d
