@@ -9,6 +9,7 @@
       <div class="dataSource-right-content">
         <ul
           v-if="deviceTypeArr.length"
+          style="height:700px; overflow-y:auto"
           class="deviceType-ullist"
         >
           <li
@@ -157,162 +158,164 @@
                 </div>
               </div>
               <div class="addConlistRight right-wrapper">
-                <div
-                  v-for="(data, key) in alldata.data"
-                  :key="key"
-                  class="right-wrap"
-                >
+                <template v-if="alldata.data.length > 0">
                   <div
-                    class="center"
-                    :style="{'height': `${data.length * tdheight}px`}"
+                    v-for="(data, key) in alldata.data"
+                    :key="key"
+                    class="right-wrap"
                   >
-                    <div class="div1">
-                      <span class="span-wrap span-wrap-common">
-                        <span class="span-wrap-span1">
-                          <span class="delete-number">{{ key + 1 }}</span>
-                          <span 
-                            v-if="alldata.data.length > 1"
-                            class="delete-icon" 
-                            @click.stop.prevent="deleteAddtionHandle( key)"
-                          />
-                        </span>
-                        <span 
-                          v-if="data.length > 1"
-                          class="span-wrap-span2"
-                        >
-                          And
-                        </span>
-                      </span>
-                    </div>
-                    <div class="div4">
-                      <span />
-                    </div>
-                    <div class="div2">
-                      <span
-                        :style="{height: `${data.length * tdheight - tdheight}px`}"
-                      />
-                    </div>
                     <div
-                      v-if="data.length"
-                      class="div3"
+                      class="center"
+                      :style="{'height': `${data.length * tdheight}px`}"
                     >
-                      <span
-                        v-for="(item,index) in data"
-                        :key="index"
+                      <div class="div1">
+                        <span class="span-wrap span-wrap-common">
+                          <span class="span-wrap-span1">
+                            <span class="delete-number">{{ key + 1 }}</span>
+                            <span 
+                              v-if="alldata.data.length > 1"
+                              class="delete-icon" 
+                              @click.stop.prevent="deleteAddtionHandle( key)"
+                            />
+                          </span>
+                          <span 
+                            v-if="data.length > 1"
+                            class="span-wrap-span2"
+                          >
+                            And
+                          </span>
+                        </span>
+                      </div>
+                      <div class="div4">
+                        <span />
+                      </div>
+                      <div class="div2">
+                        <span
+                          :style="{height: `${data.length * tdheight - tdheight}px`}"
+                        />
+                      </div>
+                      <div
+                        v-if="data.length"
+                        class="div3"
                       >
-                        <label />
-                      </span>
+                        <span
+                          v-for="(item,index) in data"
+                          :key="index"
+                        >
+                          <label />
+                        </span>
+                      </div>
+                    </div>
+                    <div class="right">
+                      <Table 
+                        ref="thirdTable"
+                        border 
+                        :columns="columns" 
+                        :data="data" 
+                        :show-header="false"
+                      >
+                        <template 
+                          slot="one" 
+                          slot-scope="{ row, index }"
+                        >
+                          <Select
+                            v-model="row.paramName" 
+                            style="width:120px;"
+                            filterable
+                            :disabled="modelEditing"
+                            @on-change="treeSelectParamHandle(row.paramName,index, key)"
+                          >
+                            <Option 
+                              v-for="item in conditionSignList" 
+                              :key="item.paramId" 
+                              :value="item.paramName"
+                              :label="item.paramName"
+                            />
+                          </Select>
+                        </template>
+                        <template
+                          slot="two" 
+                          slot-scope="{ row, index}"
+                        >
+                          <Select
+                            v-model="row.logical" 
+                            style="width:80px;"
+                            :disabled="modelEditing"
+                            @on-change="treeSelectLogicalHandle(row.logical,index, key)"
+                          >
+                            <Option 
+                              v-for="item in logicalSignList" 
+                              :key="item.value" 
+                              :value="item.value"
+                            >
+                              {{ item.label }}
+                            </Option>
+                          </Select>
+                        </template>
+                        <template 
+                          slot="three" 
+                          slot-scope="{ row, index}"
+                        >
+                          <div 
+                            v-if="row.logical === '1' || row.logical === '2' "
+                            class="input-wrap-two"
+                          >
+                            <Input
+                              v-model="row.minValue"
+                              class="input-twp-left"
+                              :disabled="modelEditing"
+                              type="number" 
+                              @on-blur="treeMinvalueHandle(row.minValue, index, key)"
+                            />
+                            <span style="width:10px;text-align:center;">-</span>
+                            <Input
+                              v-model="row.maxValue"
+                              class="input-twp-right" 
+                              :disabled="modelEditing"
+                              type="number" 
+                              @on-blur="treeMaxvalueHandle(row.maxValue, index, key)"
+                            />
+                          </div>
+                          <div
+                            v-else
+                            class="input-wrap"
+                          >
+                            <Input
+                              v-model="row.fixedValue"
+                              placeholder="请输入"
+                              :disabled="modelEditing"
+                              type="number" 
+                              @on-blur="treeFixedvalueHandle(row.fixedValue, index, key)"
+                            />
+                          </div>
+                        </template>
+                        <template 
+                          slot="flour" 
+                          slot-scope="{index}"
+                        >
+                          <Button
+                            v-if="index === 0"
+                            size="small"
+                            class="condition-icon condition-add-icon"
+                            :disabled="modelEditing"
+                            @click.stop.prevent="adddata(key,index)"
+                          >
+                            添加
+                          </Button>
+                          <Button
+                            v-if="data.length > 1"
+                            size="small"
+                            class="condition-icon condition-delete-icon"
+                            :disabled="modelEditing"
+                            @click.stop.prevent="removedata(key, index)"
+                          >
+                            删除
+                          </Button>
+                        </template>
+                      </Table>
                     </div>
                   </div>
-                  <div class="right">
-                    <Table 
-                      ref="thirdTable"
-                      border 
-                      :columns="columns" 
-                      :data="data" 
-                      :show-header="false"
-                    >
-                      <template 
-                        slot="one" 
-                        slot-scope="{ row, index }"
-                      >
-                        <Select
-                          v-model="row.paramName" 
-                          style="width:120px;"
-                          :disabled="modelEditing"
-                          @on-change="treeSelectParamHandle(row.paramName,index, key)"
-                        >
-                          <Option 
-                            v-for="item in conditionSignList" 
-                            :key="item.paramId" 
-                            :value="item.paramName"
-                          >
-                            {{ item.paramName }}
-                          </Option>
-                        </Select>
-                      </template>
-                      <template
-                        slot="two" 
-                        slot-scope="{ row, index}"
-                      >
-                        <Select
-                          v-model="row.logical" 
-                          style="width:80px;"
-                          :disabled="modelEditing"
-                          @on-change="treeSelectLogicalHandle(row.logical,index, key)"
-                        >
-                          <Option 
-                            v-for="item in logicalSignList" 
-                            :key="item.value" 
-                            :value="item.value"
-                          >
-                            {{ item.label }}
-                          </Option>
-                        </Select>
-                      </template>
-                      <template 
-                        slot="three" 
-                        slot-scope="{ row, index}"
-                      >
-                        <div 
-                          v-if="row.logical === '1' || row.logical === '2' "
-                          class="input-wrap-two"
-                        >
-                          <Input
-                            v-model="row.minValue"
-                            class="input-twp-left"
-                            :disabled="modelEditing"
-                            type="number" 
-                            @on-blur="treeMinvalueHandle(row.minValue, index, key)"
-                          />
-                          <span style="width:10px;text-align:center;">-</span>
-                          <Input
-                            v-model="row.maxValue"
-                            class="input-twp-right" 
-                            :disabled="modelEditing"
-                            type="number" 
-                            @on-blur="treeMaxvalueHandle(row.maxValue, index, key)"
-                          />
-                        </div>
-                        <div
-                          v-else
-                          class="input-wrap"
-                        >
-                          <Input
-                            v-model="row.fixedValue"
-                            placeholder="请输入"
-                            :disabled="modelEditing"
-                            type="number" 
-                            @on-blur="treeFixedvalueHandle(row.fixedValue, index, key)"
-                          />
-                        </div>
-                      </template>
-                      <template 
-                        slot="flour" 
-                        slot-scope="{index}"
-                      >
-                        <Button
-                          v-if="index === 0"
-                          size="small"
-                          class="condition-icon condition-add-icon"
-                          :disabled="modelEditing"
-                          @click.stop.prevent="adddata(key,index)"
-                        >
-                          添加
-                        </Button>
-                        <Button
-                          v-if="data.length > 1"
-                          size="small"
-                          class="condition-icon condition-delete-icon"
-                          :disabled="modelEditing"
-                          @click.stop.prevent="removedata(key, index)"
-                        >
-                          删除
-                        </Button>
-                      </template>
-                    </Table>
-                  </div>
-                </div>
+                </template>
               </div>
             </div>
           </div>
@@ -406,15 +409,6 @@ export default {
             alldata: {
                 conditionLogic: '1',
                 data: [
-                    [
-                        {
-                            paramName: '',
-                            logical: '',
-                            minValue: '',
-                            maxValue: '',
-                            fixedValue: ''
-                        },
-                    ]
                 ]
             },
             columns: [
@@ -439,7 +433,7 @@ export default {
                     slot: 'flour'
                 }
             ],
-            tdheight: 30,
+            tdheight: 32,
             conditionLogicalSelect: '1',
             conditionSignList:[],
             conditionLogical:conditionLogical,
@@ -461,7 +455,8 @@ export default {
             TopHeight:0,
             snapshot:null, // 记录初始值
             snapDescript: null, // 记录初始值
-            ifCanClickCancelFlag: true
+            ifCanClickCancelFlag: true,
+            pageScrollTopHeight: 0
         }
     },
     computed:{
@@ -520,6 +515,10 @@ export default {
         VueEvent.$on('StartparamsNameArr', function(value) {
             _that.conditionSignList = value
         })
+        $("#addModelLisetWaper").scroll(function() {
+            _that.pageScrollTopHeight = parseInt($("#addModelLisetWaper").scrollTop())
+        })
+        
     },
     // beforeDestroy() {
     //     VueEvent.$off('clickChangeParamList')
@@ -534,7 +533,9 @@ export default {
             this.requestUtil.post(this.urls.getModelList.url, objData).then((res) => {
                 this.ModelNameArr = res.returnObj || []
                 if (this.ModelNameArr.length) {
-                    this.clickModelHandle('', this.ModelNameArr[0].sourceId, this.ModelNameArr[0].modelName,this.ModelNameArr[0].formula,this.ModelNameArr[0].descript, 0)
+                    setTimeout(() => {
+                        this.clickModelHandle('', this.ModelNameArr[0].sourceId, this.ModelNameArr[0].modelName,this.ModelNameArr[0].formula,this.ModelNameArr[0].descript, 0)
+                    }, 220)
                 }
             }).catch(() => {
                 Message.error('系统繁忙，请稍后再试')
@@ -697,7 +698,7 @@ export default {
                     }
                 }
                 this.LeftWidth = evt.target.offsetLeft + evt.target.offsetWidth - 116 / 2 + 'px';
-                this.TopHeight = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 'px';
+                this.TopHeight = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) - this.pageScrollTopHeight + 'px';
             } else {
                 let LIArr = evt.target.parentNode.children
                 for(var j = 0; j < LIArr.length; j++) {
@@ -709,7 +710,7 @@ export default {
         },
         MouseMoveHandle(evt, index) {
             let widthLen = evt.target.offsetLeft + evt.target.offsetWidth - 20
-            let HeightLen = evt.target.offsetTop  + 2
+            let HeightLen = evt.target.offsetTop - this.pageScrollTopHeight + 2
             this.currentMouseIndex = index
             if (evt.clientX >= widthLen && evt.clientX <= widthLen + 18) {
                 this.ifShowSuspension = true
@@ -724,7 +725,7 @@ export default {
                     }
                 }
                 this.LeftWidth = evt.target.offsetLeft + evt.target.offsetWidth - 116 / 2 + 'px';
-                this.TopHeight = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 'px';
+                this.TopHeight = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) - this.pageScrollTopHeight + 'px';
             }else {
                 if (this.modelNumber !== this.currentMouseIndex) {
                     evt.target.className = ''
@@ -861,28 +862,39 @@ export default {
         },
         // 双向触发数据更新
         treeSelectParamHandle(value, index, key) {
-            this.alldata.data[key][index].paramName = value
-            this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
+            if (value) {
+                this.alldata.data[key][index].paramName = value
+                this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
+            }
+            
         },
         treeSelectLogicalHandle(value, index, key) {
-            this.alldata.data[key][index].logical = value
-            this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
+            if (value) {
+                this.alldata.data[key][index].logical = value
+                this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
+            }
         },
         treeMinvalueHandle(value, index,key) {
-            this.alldata.data[key][index].minValue = value
-            this.alldata.data[key][index].fixedValue = ''
-            this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
+            if (value) {
+                this.alldata.data[key][index].minValue = value
+                this.alldata.data[key][index].fixedValue = ''
+                this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
+            }
         },
         treeMaxvalueHandle(value, index,key) {
-            this.alldata.data[key][index].maxValue = value
-            this.alldata.data[key][index].fixedValue = ''
-            this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
+            if (value) {
+                this.alldata.data[key][index].maxValue = value
+                this.alldata.data[key][index].fixedValue = ''
+                this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
+            }
         },
         treeFixedvalueHandle(value, index,key) {
-            this.alldata.data[key][index].fixedValue = value
-            this.alldata.data[key][index].maxValue = ''
-            this.alldata.data[key][index].minValue = ''
-            this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
+            if (value) {
+                this.alldata.data[key][index].fixedValue = value
+                this.alldata.data[key][index].maxValue = ''
+                this.alldata.data[key][index].minValue = ''
+                this.ModelNameArr[this.modelNumber].formula = JSON.stringify(this.alldata)
+            }
         },
         // 保存模型校验
         treeCheckRule(data) {
@@ -1019,28 +1031,32 @@ export default {
         padding-top:10px;
       }
       .addMolel-List{
-        li{
-          height:24px;
-          line-height: 24px;
-          padding-left: 10px;
-          padding-right:5px;
-          display: flex;
-          /deep/#editPageInput2{
-            width:90% !important;
-            border:none;
-            height:25px;
-            width:100%;
-          }
-          &.currentModelList{
-            color:#ffffff;
-            background-color: #3D91F7;
-            background-size:16px 16px;
-            background:#3D91F7 url('../../assets/images/leftsidebar/more1_ic.png') no-repeat right center;
-          }
-          &:hover{
-            color:#ffffff;
-            background-size:16px 16px;
-            background:#3D91F7 url('../../assets/images/leftsidebar/more1_ic.png') no-repeat right center;
+        #addModelLisetWaper{
+          height:700px;
+          overflow: auto;
+          li{
+            height:24px;
+            line-height: 24px;
+            padding-left: 10px;
+            padding-right:5px;
+            display: flex;
+            /deep/#editPageInput2{
+              width:90% !important;
+              border:none;
+              height:25px;
+              width:100%;
+            }
+            &.currentModelList{
+              color:#ffffff;
+              background-color: #3D91F7;
+              background-size:16px 16px;
+              background:#3D91F7 url('../../assets/images/leftsidebar/more1_ic.png') no-repeat right center;
+            }
+            &:hover{
+              color:#ffffff;
+              background-size:16px 16px;
+              background:#3D91F7 url('../../assets/images/leftsidebar/more1_ic.png') no-repeat right center;
+            }
           }
         }
       }
@@ -1196,6 +1212,14 @@ export default {
         height:24px;
         line-height:24px;
       }
+      .ivu-select-input{
+          height:24px;
+          line-height:24px;
+      }
+      .ivu-select-input[disabled]{
+          color:#515a6e !important;
+          -webkit-text-fill-color: #515a6e;
+      }
     }
     /deep/.ivu-table{
       &::before{
@@ -1205,7 +1229,7 @@ export default {
         width:0px
       }
       .ivu-table-row{
-        height:30px;
+        height:32px;
         td{
           height:30px;
           border:none;

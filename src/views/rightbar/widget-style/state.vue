@@ -11,7 +11,7 @@
     >
       <div
         v-if="state.id!='state_0'"
-        :key="state.name"
+        :key="index"
         class="event-item"
         @click="editStateFun(state)"
       >
@@ -120,6 +120,9 @@ export default{
             }
             if(data.id) {
                 state.id = data.id
+                if(data.modelFormInfo) {
+                    state.modelFormInfo = data.modelFormInfo
+                }
             }
             this.setStateInfos(state)
         },

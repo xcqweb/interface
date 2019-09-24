@@ -54,9 +54,6 @@ export default {
     mounted() {
         
     },
-    // beforeDestroy() {
-    //     VueEvent.$off('rightBarTabSwitch')
-    // },
     methods: {
         changeTab(index) {
             if (!this.modelEditing && index === 1) {
@@ -114,18 +111,6 @@ export default {
       left:50%;
       transform: translate(-50%,-50%);
     }
-  }
-  .page-tab::after {
-    content: "页面";
-    position: relative;
-    font-size: 12px;
-    top:24px;
-  }
-   .data-tab::after {
-    content: "数据源";
-    position: relative;
-    font-size: 12px;
-    top:24px;
   }
 }
 </style>

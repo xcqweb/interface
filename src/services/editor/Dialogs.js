@@ -738,13 +738,9 @@ let ImageDialog = function(editorUi, cell) {
         // 获取本地图片
         document.getElementById('chooseImage').addEventListener('change', function(e) {
             //创建new FileReader()对象
-            var fr = new FileReader();
             // 获取图片信息
             localImage = e.target.files[0];
-            // console.log(localImage)
             //将图片读取为DataURL
-            // fr.readAsDataURL(localImage);
-            // fr.onload = function() {}
             document.getElementById('choosedImgPath').innerHTML = document.getElementById('chooseImage').value;
         })
         // 内部图片点击事件
