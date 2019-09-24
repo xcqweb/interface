@@ -71,6 +71,7 @@
 import StateDialog from './state-dialog'
 import {sureDialog} from '../../../services/Utils'
 import {mxUtils} from '../../../services/mxGlobal'
+//import {syncWidget} from '../../../services/sync-widgets'
 export default{
     components:{StateDialog},
     data() {
@@ -123,6 +124,7 @@ export default{
                 if(data.modelFormInfo) {
                     state.modelFormInfo = data.modelFormInfo
                 }
+                //syncWidget(this.myEditorUi,'state',state)
             }
             this.setStateInfos(state)
         },
@@ -201,7 +203,6 @@ export default{
                 obj.setAttribute('label', modelInfo || '')
                 modelInfo = obj
             }
-            console.log(states)
             modelInfo.setAttribute('statesInfo', JSON.stringify(states))
             graph.getModel().setValue(cell, modelInfo)
         },

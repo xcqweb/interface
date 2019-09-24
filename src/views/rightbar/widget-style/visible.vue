@@ -131,7 +131,7 @@ export default{
                 currentItem = this.currentEditItem  //编辑传过来的
             }
             for(let i = 0;i < this.bindActions.length;i++) {
-                if(currentItem.id == this.bindActions[i].link) {
+                if(currentItem.id == this.bindActions[i].link && this.bindActions[i].mutualType == 2) {
                     flag2 = true
                     break
                 }
