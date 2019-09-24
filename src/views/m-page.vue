@@ -88,12 +88,10 @@ export default {
             this.$refs.toolbar.init();
             this.$refs.leftsidebar.init();
             this.$refs.rightbar.init()
-            // let applyId = sessionStorage.getItem('applyId')
-            // if(!applyId) {
-            // console.log(888)
-            // 当没人编辑的时候
-            this.myEditorUi.saveFile(true,true)
-            // }
+            let applyId = sessionStorage.getItem('applyId')
+            if(!applyId) {
+                this.myEditorUi.saveFile(true,true)
+            }
             timer = setInterval(()=> {
                 this.myEditorUi.saveFile(true,true)
             },1000 * 60 * 1)//1分钟自动保存一次
