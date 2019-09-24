@@ -78,7 +78,6 @@ Actions.prototype.init = function()
     }
     // 是否展示右侧菜单
     function toggleRightSide() {
-        console.log(ui.rightBarContainer.style.display)
         if (!graph.isPaletteManageEnabled() && !graph.isFormatManageEnabled()) {
             ui.toggleRightPanel(true);
         } else if (ui.rightBarContainer.style.display == 'none') {
@@ -429,7 +428,6 @@ Actions.prototype.init = function()
         }
     });
     this.addAction('resetHide', function () { 
-        // // console.log('点击隐藏设置')
         let flag = false
         let selectCell = graph.getSelectionCell()
         if (graph.getModel().getValue(graph.getSelectionCell())) {
@@ -1211,14 +1209,7 @@ Actions.prototype.init = function()
             removeImageRadio()
         }
     })
-        // 数据弹窗
-    // this.addAction('paletteData', function() {
-    //     var cell = graph.getSelectionCell();
-    //     var dlg = new PaletteDataDialog(ui, cell)
-    //     ui.showDialog(dlg.container, 410, 450, true, false, null, null, '绑定数据源');
-    //     dlg.init()
-    // })
-	
+    
     this.addAction('images', function()
     {
         if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent()))
@@ -1235,7 +1226,6 @@ Actions.prototype.init = function()
 	    	var selectionState = graph.cellEditor.saveSelection();
 	    	ui.showImageDialog(title, value, function(newValue, w, h)
             {
-                // console.log(graph.cellEditor.isContentEditing())
 	    		// 将图片插入html
 	    		if (graph.cellEditor.isContentEditing())
 	    		{

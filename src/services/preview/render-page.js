@@ -243,13 +243,9 @@ class PreviewPage {
         const viewBackground = xmlDoc.getAttribute('background')
         let contentWidth = xmlDoc.getAttribute('pageWidth')
         let contentHeight = xmlDoc.getAttribute('pageHeight')
-        const list = []
-        for (let i = 0; i < root.length; i++) {
-            list.push(root[i])
-        }
         // 页面宽度和高度
         pageWidth = pageHeight = 0
-        let cells = this.parseCells(list)
+        let cells = this.parseCells(root)
         this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
         if (page.type === 'normal') {
             // 清除全部websocket 和页面内容 、页面上的弹窗

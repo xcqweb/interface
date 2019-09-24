@@ -88,7 +88,7 @@ export default {
                     for (let i = 0; i < 9; i++) {
                         let line = parseInt(i / 3);
                         let xNum = i % 3;
-                        let symbol = new mxCell(i < 3 ? 'Column ' + (i + 1) : '', new mxGeometry(xNum * 100, 30 * line, 100, 30), 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;');
+                        let symbol = new mxCell(i < 3 ? 'Column ' + (i + 1) : '', new mxGeometry(xNum * 100, 30 * line, 100, 30), 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;fillColor=none;');
                         symbol.vertex = true;
                         cell.insert(symbol);
                     }

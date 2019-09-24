@@ -120,6 +120,9 @@ export default{
             }
             if(data.id) {
                 state.id = data.id
+                if(data.modelFormInfo) {
+                    state.modelFormInfo = data.modelFormInfo
+                }
             }
             this.setStateInfos(state)
         },

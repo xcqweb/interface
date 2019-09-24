@@ -2176,7 +2176,7 @@ EditorUi.prototype.addBeforeUnloadListener = function()
     // This must be disabled during save and image export
     window.onbeforeunload = mxUtils.bind(this, function()
     {
-        //console.log('刷新和关闭') // 都去调用 多人编辑接口
+        // 都去调用 多人编辑接口
         this.getIfMulateEdit()
         if (!this.editor.isChromelessView())
         {
@@ -3462,22 +3462,14 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
     else
     {
         if(hideDialog){
-            // console.log(7777)
-            // 自动保存 走这里
-            // if (autoSaveFlagTerry === 0) { // 屏蔽自动保存 > 0 就不弹窗
-                this.save(this.editor.getOrCreateFilename(), this.editor.getDescribe(),hideDialog)
-                return
-            // }else {
-            //     return
-            // }
+            this.save(this.editor.getOrCreateFilename(), this.editor.getDescribe(),hideDialog)
+            return
         }
         // 编辑保存
         var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '保存', mxUtils.bind(this, function(name, des)
         {
-            // closePage 手动保存 关闭页面
-            // console.log(666)
             autoSaveFlagTerry = 0
-            this.save(name, des, '', 'ManualSavePage');
+            this.save(name, des);
         }), null, mxUtils.bind(this, function(name)
         {
             if (name != null && name.length > 0)
@@ -3526,7 +3518,7 @@ EditorUi.prototype.saveError = function (res, hideDialog) {
 /**
  * 保存当前应用
  */
-EditorUi.prototype.save = function(name, des,hideDialog=false, type)
+EditorUi.prototype.save = function(name, des,hideDialog=false)
 {
     return new Promise((resolve, reject) => {
         if (name != null)
@@ -3549,12 +3541,6 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                     lockStatus: 1
                 }
-                // 
-                // if (type && type === 'ManualSavePage') { // 手动保存
-                //     data.lockStatus = 1
-                // } else {
-                //     data.lockStatus = 1
-                // }
                 var id = editor.getApplyId() || sessionStorage.getItem('applyId')
                 if (id) {
                     // 编辑保存
@@ -3564,7 +3550,6 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                             if (res.code === '3012') {
                                 autoSaveFlagTerry++
                                 tipDialog(ui, `当前应用 ${res.message ? res.message : '' } 正在编辑, 无法保存`);
-                                return;
                             } else if (res.code === '0') {
                                 editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
                                     this.saveSuccess(res, hideDialog);
@@ -3575,8 +3560,6 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                                     reject(res);
                                 }, '加载中···', hideDialog)
                             }
-                        } else {
-                            return;
                         }
                     }, (res) => {
                         reject(res);
@@ -3801,7 +3784,6 @@ EditorUi.prototype.createKeyHandler = function(editor)
     // Ignores graph enabled state but not chromeless state
     keyHandler.isEnabledForEvent = function(evt)
     {
-        // console.log(!mxEvent.isConsumed(evt), '----', this.isGraphEvent(evt), '-----', this.isEnabled(), '----', (editorUi.dialogs == null || editorUi.dialogs.length == 0))
         return (!mxEvent.isConsumed(evt) && this.isGraphEvent(evt) && this.isEnabled() &&
 			(editorUi.dialogs == null || editorUi.dialogs.length == 0));
     };
