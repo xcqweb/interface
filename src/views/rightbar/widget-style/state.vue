@@ -11,7 +11,7 @@
     >
       <div
         v-if="state.id!='state_0'"
-        :key="state.name"
+        :key="index"
         class="event-item"
         @click="editStateFun(state)"
       >

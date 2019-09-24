@@ -583,7 +583,7 @@ export default {
         if(this.shapeName == 'beeline') {
             this.arrowCls = this.$store.state.main.widgetInfo.arrowCls
         }else if(this.shapeName == 'tableBox') {
-            let res = this.getRowColNum(graph)
+            let res = this.getRowColNum()
             this.tableRow = res[0]
             this.tableCol = res[1]
         }else if(this.shapeName === 'progress') {
@@ -869,17 +869,19 @@ export default {
             this.showArrowDialog = false
             e.stopPropagation()
         },
-        getRowColNum(graph) {
-            let cellLast =  this.getCellLast(graph)
-            let table = graph.getSelectionCell()
-            let currentRowNum = parseInt(table.geometry.height / cellLast.geometry.height)
-            let currentColNum =  parseInt(table.geometry.width / cellLast.geometry.width)
-            return [currentRowNum,currentColNum]
+        getRowColNum() {
+            const ui = this.myEditorUi;
+            const actions = ui.actions;
+            const graph = ui.editor.graph;
+            const table = graph.getSelectionCell();
+            const col = actions.getTableColCount(table);
+            const row = actions.getTableRowCount(table);
+            return [row, col]
         },
         changeTableSize() {
             let actions = this.myEditorUi.actions
             let graph = this.myEditorUi.editor.graph
-            let res = this.getRowColNum(graph)
+            let res = this.getRowColNum()
            
             let disRow = this.tableRow - res[0]
             let disCol = this.tableCol - res[1]

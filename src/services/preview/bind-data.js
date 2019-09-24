@@ -217,7 +217,7 @@ function dealLogic(logic,data) {
             res = paramVal > min && paramVal < max
             break
         case 2: // 未介于
-            res = paramVal >= max && paramVal <= min
+            res = paramVal >= max || paramVal <= min
             break
         case 3: // 等于
             res = paramVal == fixed

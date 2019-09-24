@@ -82,12 +82,14 @@ class PreviewPage {
         // 递归获取节点
         console.time('节点递归时间');
         let getNode = (tId = 1) => {
-            let list = [];
+            let list = []
+            console.log(tId,"--ttId--")
             for (let item of root) {
                 // 节点类型：object有属性，mxcell无属性
-                let node, value, tagName = item.tagName;
+                let node, value, tagName = item.tagName
                 // 节点id
-                let id = item.getAttribute('id');
+                let id = item.getAttribute('id')
+                console.log("--id--", id, item.tagName)
                 // mxcell节点
                 if (tagName == 'object') {
                     node = item.childNodes[0]
@@ -286,7 +288,7 @@ class PreviewPage {
 
     // 渲染控件节点
     renderCell(cell) {
-        // console.log(cell)
+        console.log(cell)
         const shapeName = cell.shapeName
         let cellHtml
         if (shapeName.includes('image')) {
@@ -434,12 +436,14 @@ class PreviewPage {
                         modelIdsParam.push(item.modelFormInfo)
                     }
                 })
-                requestUtil.post(urls.getModelByIds.url, modelIdsParam).then((res) => {
-                    res.returnObj.forEach((item, index) => {
-                        cellStateInfoHasModel[index + 1].modelFormInfo = item
+                if (modelIdsParam.length) {
+                    requestUtil.post(urls.getModelByIds.url, modelIdsParam).then((res) => {
+                        res.returnObj.forEach((item, index) => {
+                            cellStateInfoHasModel[index + 1].modelFormInfo = item
+                        })
+                        $(cellHtml).data("stateModels", cellStateInfoHasModel)
                     })
-                    $(cellHtml).data("stateModels", cellStateInfoHasModel)
-                })
+                }
             }
             this.initWsParams(cellHtml, devices,paramShow)
         }
