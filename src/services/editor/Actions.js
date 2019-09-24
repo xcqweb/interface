@@ -1357,10 +1357,51 @@ Actions.prototype.getColNum = function(cell) {
 };
 
 /**
+ * 是否是表格
+ */
+Actions.prototype.isTableBox = function(cell) {
+    return /shape=tableBox/.test(cell.style.toString());
+}
+/**
  * 是否是表格单元格
  */
-Actions.prototype.isTableCell = function(cell) {
+Actions.prototype.isTableCell = function (cell) {
     return /shape=tableCell/.test(cell.style.toString());
+}
+/**
+ * 获取表格行数
+ */
+Actions.prototype.getTableRowCount = function (table, col = null) {
+    col = this.getTableColCount(table);
+    if (col === null || col === 0) {
+        return null;
+    }
+    return table.children.length / col;
+}
+/**
+ * 获取表格列数
+ */
+Actions.prototype.getTableColCount = function (table) {
+    if (!this.isTableBox(table)) {
+        return null;
+    }
+    const ui = this.editorUi;
+    const editor = ui.editor;
+    const graph = editor.graph;
+    const tableInfo = graph.getModel().getValue(table);
+    let cols = tableInfo.getAttribute('cols');
+    cols = cols ? parseInt(cols) : 0;
+    if (!isNaN(cols) && cols > 0) {
+        return cols;
+    }
+    const tableCells = table.children;
+    tableCells.forEach(cell => {
+        if (cell.geometry.y === 0) {
+            cols++;
+        }
+    })
+    tableInfo.setAttribute('cols', cols);
+    return cols;
 }
 /**
  * 获取当前单元格的所有同行同列元素
