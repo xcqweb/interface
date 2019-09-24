@@ -16,7 +16,7 @@
         <div style="flex:1">
           <ul
             v-if="deviceTypeArr.length"
-            style="height:700px;overflow-y:auto"
+            style="height:600px;overflow-y:auto"
             class="deviceType-ullist"
           >
             <li
@@ -78,7 +78,12 @@
                 :label="item.paramId"
                 size="small"
               >
-                <span>{{ item.paramName }}</span>
+                <span
+                  :title="item.paramName"
+                  style="display:inline-block;width:220px;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;"
+                >
+                  {{ item.paramName }}
+                </span>
                 <span 
                   class="datasource-delete-icon"
                   @click.stop.prevent="deleteParamHandle(item.paramId, item.paramName,index,1)"
@@ -159,7 +164,10 @@
                 :label="item.deviceId"
                 size="small"
               >
-                <span>{{ item.deviceName }}</span>
+                <span
+                  :title="item.deviceName"
+                  style="display:inline-block;width:220px;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;"
+                >{{ item.deviceName }}</span>
                 <span 
                   class="datasource-delete-icon"
                   @click.stop.prevent="deleteDeviceHandle(item.deviceId, item.deviceName,index,2)"
@@ -406,16 +414,6 @@ export default {
             
         },
         async clickDeviceTypeListHandle(evt, index,deviceTypeId) {
-            // 清空之前
-            this.paramsNameList = []
-            this.deviceNameList = []
-            this.deviceNameListArr = []
-            this.paramsNameListArr = []
-            this.indeterminateArr[1] = false
-            this.checkAllArr[1] = false
-            this.indeterminateArr[2] = false
-            this.checkAllArr[2] = false
-
             this.numberlistIndex = index
             this.$emit('nowClickNumber',this.numberlistIndex)
             this.currentDeviceTypeId = deviceTypeId // 用于搜素
@@ -424,6 +422,15 @@ export default {
                 classNameStr = evt.target.parentNode.className
             }
             if (!evt || !classNameStr.includes('currentList')) {
+                // 清空之前
+                this.paramsNameList = []
+                this.deviceNameList = []
+                this.deviceNameListArr = []
+                this.paramsNameListArr = []
+                this.indeterminateArr[1] = false
+                this.checkAllArr[1] = false
+                this.indeterminateArr[2] = false
+                this.checkAllArr[2] = false
                 let objDataNew = {
                     studioId:this.studioIdNew,
                     deviceTypeId: deviceTypeId,
@@ -509,6 +516,8 @@ export default {
                 }
             
             }
+            this.paramsNameListArr = [...new Set(this.paramsNameListArr)]
+            this.deviceNameListArr = [...new Set(this.deviceNameListArr)]
             this.paramIdArr = this.paramsNameListArr
             this.deviceIdArr = this.deviceNameListArr
         },
@@ -869,13 +878,13 @@ export default {
                 if (type === 1) {
                     this.paramsNameList = res.records || []
                     this.paramListTotal = res.total || 10
-                    this.indeterminateArr[1] = false
-                    this.checkAllArr[1] = false
+                    // this.indeterminateArr[1] = false
+                    // this.checkAllArr[1] = false
                 } else {
                     this.deviceNameList = res.records || []
                     this.deviceListTotal = res.total || 10
-                    this.indeterminateArr[2] = false
-                    this.checkAllArr[2] = false
+                    // this.indeterminateArr[2] = false
+                    // this.checkAllArr[2] = false
                 }
             })
         }
@@ -903,6 +912,10 @@ export default {
           padding-right:5px;
           display: flex;
           .deviceType-left{
+            width:160px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; 
             cursor: pointer;
             flex:1;
           }
@@ -934,6 +947,12 @@ export default {
             line-height: 24px;
             display:block;
             width:100%;
+            /deep/.ivu-checkbox{
+              vertical-align: top;
+              .ivu-checkbox-inner{
+                top:5px;
+              }
+            }
             .datasource-delete-icon{
               display: block;
               width:24px;

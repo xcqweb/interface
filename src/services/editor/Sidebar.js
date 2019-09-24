@@ -1591,8 +1591,8 @@ Sidebar.prototype.addGeneralPalette = function(expand)
     this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
 
     let fnsChart=[
-        this.createVertexTemplateEntry('shape=lineChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/lineChart.svg', 380, 200, '<span style="font-size:24px;">双击编辑</span>', '趋势图'),
-        this.createVertexTemplateEntry('shape=gaugeChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/gaugeChart.svg', 270, 270, '<span style="font-size:24px;">双击编辑</span>', '仪表盘'),
+        this.createVertexTemplateEntry('shape=lineChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/lineChart.svg', 380, 200, '<span style="display:inline-block;width:100px;height:30px;line-height:30px;text-align:center;color:rgba(255,255,255,1);font-weight:400;font-size:24px;background:rgba(0,0,0,1);opacity: 0.4;">双击编辑</span>', '趋势图'),
+        this.createVertexTemplateEntry('shape=gaugeChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/gaugeChart.svg', 270, 270, '<span style="display:inline-block;width:100px;height:30px;line-height:30px;text-align:center;color:rgba(255,255,255,1);font-weight:400;font-size:24px;background:rgba(0,0,0,1);opacity: 0.4;">双击编辑</span>', '仪表盘'),
     ]
     this.addPaletteFunctions('chart', '图表控件', false, fnsChart);
    };

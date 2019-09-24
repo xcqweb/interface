@@ -75,7 +75,10 @@
               :label="item.deviceId"
               size="small"
             >
-              <span>{{ item.deviceName }}</span>
+              <span 
+                :title="item.deviceName" 
+                style="display:inline-block;width:160px;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;"
+              >{{ item.deviceName }}</span>
             </Checkbox>
           </CheckboxGroup>
         </div>
@@ -376,7 +379,13 @@ export default{
         flex:1;
         .devicename-listUl{
           label{
-            width:100%
+            width:100%;
+            /deep/.ivu-checkbox{
+              vertical-align: top;
+              .ivu-checkbox-inner{
+                top:3px;
+              }
+            }
           }
           padding: 5px 0;
           li{

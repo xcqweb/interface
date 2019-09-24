@@ -9,7 +9,7 @@
       <div class="dataSource-right-content">
         <ul
           v-if="deviceTypeArr.length"
-          style="height:700px; overflow-y:auto"
+          style="height:600px; overflow-y:auto"
           class="deviceType-ullist"
         >
           <li
@@ -1032,8 +1032,8 @@ export default {
       }
       .addMolel-List{
         #addModelLisetWaper{
-          height:700px;
-          overflow: auto;
+          height:600px;
+          overflow-y: auto;
           li{
             height:24px;
             line-height: 24px;

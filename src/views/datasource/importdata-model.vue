@@ -102,7 +102,10 @@
                   :label="item.paramId"
                   size="small"
                 >
-                  <span>{{ item.paramName }}</span>
+                  <span 
+                    :title="item.paramName"
+                    style="display:inline-block;width:280px;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;"
+                  >{{ item.paramName }}</span>
                 </Checkbox>
               </CheckboxGroup>
             </div>
@@ -165,7 +168,10 @@
                   :label="item.deviceId"
                   size="small"
                 >
-                  <span>{{ item.deviceName }}</span>
+                  <span
+                    :title="item.deviceName"
+                    style="display:inline-block;width:280px;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;"
+                  >{{ item.deviceName }}</span>
                 </Checkbox>
               </CheckboxGroup>
             </div>
@@ -392,6 +398,8 @@ export default{
                     }
                 }
             }
+            this.paramsNameListArr = [...new Set(this.paramsNameListArr)]
+            this.deviceNameListArr = [...new Set(this.deviceNameListArr)]
             this.paramIdArr = this.paramsNameListArr
             this.deviceIdArr = this.deviceNameListArr
         },
@@ -539,7 +547,7 @@ export default{
         },
         // 参数名称
         paramPageChangeHandle(value) {
-            this.pageChangeHandle(value, 1)
+            this.pageChangeHandle(value, 1, this.paramsPageCurrent)
             this.paramsPageCurrent = +value
             if (this.selectAllparamsArr.length && this.selectAllparamsArr.includes(this.paramsPageCurrent)) {
                 this.indeterminateArr[1] = false
@@ -660,11 +668,18 @@ export default{
                   }
                   .content-common-center{
                     flex:1;
-                    padding: 8px 10px 0;
+                    padding: 8px 8px 0;
                     .devicename-listUl{
                       label{
                         display:block;
                         width:100%;
+                        height:24px;
+                        /deep/.ivu-checkbox{
+                          vertical-align: top;
+                          .ivu-checkbox-inner{
+                            top:4px;
+                          }
+                        }
                       }
                     }
                     .no-data-wrap{
