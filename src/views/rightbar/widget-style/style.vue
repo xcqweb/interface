@@ -568,7 +568,7 @@ export default {
     mounted() {
         VueEvent.$off('edgePropsUpdate')
         VueEvent.$on('edgePropsUpdate', ({geo,cell}) => {
-            this.setWidgetProps2('edgeProps', geo, cell)
+            this.setWidgetProps('edgeProps', geo, cell)
         })
         let graph = this.myEditorUi.editor.graph
         this.fontText = this.$store.state.main.widgetInfo.fontSize
@@ -965,13 +965,6 @@ export default {
             let newAttr = JSON.stringify(Object.assign({},attrObj,props))
             cellInfo.setAttribute(widgetProp,newAttr)
             graph.getModel().setValue(cell, cellInfo)
-        },
-        setWidgetProps2(widgetProp,props,cell) {
-            let graph = this.myEditorUi.editor.graph
-            let cellInfo = graph.getModel().getValue(cell)
-            let attrObj = this.getWidgetProps(widgetProp)
-            let newAttr = JSON.stringify(Object.assign({},attrObj,props))
-            cellInfo.setAttribute(widgetProp,newAttr)
         },
         getWidgetProps(widgetProp) {
             let cellInfo = this.getCellInfo()

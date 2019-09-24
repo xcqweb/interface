@@ -146,11 +146,14 @@ export default {
             let pageStyle = editor.pages[editor.currentPage].style
             if(pageStyle) {
                 let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
+                console
                 if(bgUrl && bgUrl !== 'none') {
                     this.changeBg(bgUrl)
                 }else{
                     mxClient.IS_ADD_IMG = false
                 }
+            }else {
+                mxClient.IS_ADD_IMG = false
             }
             let {width,height} = graph.pageFormat
             this.solidWidth = width
@@ -231,6 +234,10 @@ export default {
             formData.append('file', localImage)
             formData.append('materialLibraryId',"");
             this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, function(res) {
+                let pageStyle = editor.pages[editor.currentPage].style
+                if(!pageStyle) {
+                    editor.pages[editor.currentPage].style = { }
+                }
                 editor.pages[editor.currentPage].style.backgroundUrl = `getechFileSystem/${res.picPath}`
             })
         },

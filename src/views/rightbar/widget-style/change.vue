@@ -115,7 +115,12 @@ export default{
                 return
             }
             for(let i = 0;i < this.bindActions.length;i++) {
-                if(currentWidgetItem.id == this.bindActions[i].link && currentStateItem.id == this.bindActions[i].stateId) {
+                let stateId = ""
+                let stateInfo = this.bindActions[i].stateInfo
+                if(stateInfo) {
+                    stateId = stateInfo.id
+                }
+                if(currentWidgetItem.id == this.bindActions[i].link && currentStateItem.id == stateId) {
                     sameFlag = true
                     break
                 }

@@ -71,6 +71,7 @@
 import StateDialog from './state-dialog'
 import {sureDialog} from '../../../services/Utils'
 import {mxUtils} from '../../../services/mxGlobal'
+//import {syncWidget} from '../../../services/sync-widgets'
 export default{
     components:{StateDialog},
     data() {
@@ -123,6 +124,7 @@ export default{
                 if(data.modelFormInfo) {
                     state.modelFormInfo = data.modelFormInfo
                 }
+                //syncWidget(this.myEditorUi,'state',state)
             }
             this.setStateInfos(state)
         },
@@ -139,7 +141,7 @@ export default{
         },
         getStates(graph) {
             let cell = graph.getSelectionCell()
-            let states = [{
+            let statesTemp = [{
                 "id":'state_0',
                 "name":"默认",
                 "desc":'默认',
@@ -151,6 +153,7 @@ export default{
                 }, 
                 'check':false
             }]
+            let states = [ ]
             let modelInfo = graph.getModel().getValue(cell)
             if (!mxUtils.isNode(modelInfo)) {
                 var doc = mxUtils.createXmlDocument()
@@ -161,6 +164,9 @@ export default{
             let statesAttr = modelInfo.getAttribute('statesInfo')
             if(statesAttr) {
                 states = JSON.parse(statesAttr)
+                states[0] = statesTemp[0]
+            }else{
+                states = statesTemp
             }
             states.forEach(item=>{
                 if(item.imgInfo) {
