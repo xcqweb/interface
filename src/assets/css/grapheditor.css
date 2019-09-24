@@ -855,6 +855,19 @@ div.mxWindow .geButton {
 	content: '对齐';
 	left: 13px;
 }
+.page-tab::after {
+	content: "页面";
+	position: relative;
+	font-size: 12px;
+	top: 24px;
+}
+
+.data-tab::after {
+	content: "数据源";
+	position: relative;
+	font-size: 12px;
+	top: 24px;
+}
 .geSprite-left-align {
 	background-image: url(../images/menu/align_left_ic.png);
 	background-repeat: no-repeat;

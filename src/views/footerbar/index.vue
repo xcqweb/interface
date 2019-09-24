@@ -124,42 +124,44 @@
             v-show="tabsNum === 2"
             class="footer-common stateList"
           >
-            <ul
-              v-if="stateList && stateList.length > 0"
+            <div
+              v-if="stateList && stateList.length > 1"
               class="footerTabs2Ul"
             >
-              <li 
-                v-for="(item,index) in stateList"
-                :key="index"
-              >
+              <template v-for="(item,index) in stateList">
                 <div
-                  class="footerTabs2-list-wrap"
+                  v-if="item.id!='state_0'"
+                  :key="index"
                 >
-                  <span class="footerTabs2-list-top">{{ item.name }}</span>
-                  <span class="footerTabs2-list-content">
-                    <Select
-                      v-model="modelVals[index]"
-                      style="width:240px;height:24px;line-height:24px;"
-                      :clearable="true"
-                      @on-change="(val)=>modelSelectChange(val,index)"
-                      @on-clear="clearStateBtn(index)"
-                    > 
-                      <Option 
-                        v-for="(d,i) in modelList" 
-                        :key="i" 
-                        :value="i"
-                      >
-                        {{ d.modelName }}
-                      </Option>
-                    </Select>
-                  </span>
+                  <div
+                    class="footerTabs2-list-wrap"
+                  >
+                    <span class="footerTabs2-list-top">{{ item.name }}</span>
+                    <span class="footerTabs2-list-content">
+                      <Select
+                        v-model="modelVals[index]"
+                        style="width:240px;height:24px;line-height:24px;"
+                        :clearable="true"
+                        @on-change="(val)=>modelSelectChange(val,index)"
+                        @on-clear="clearStateBtn(index)"
+                      > 
+                        <Option 
+                          v-for="(d,i) in modelList" 
+                          :key="i" 
+                          :value="i"
+                        >
+                          {{ d.modelName }}
+                        </Option>
+                      </Select>
+                    </span>
+                  </div>
                 </div>
-              </li>
-            </ul>
+              </template>
+            </div>
           </div>
         </div>
         <div
-          v-if="!footerContent || (tabsNum === 2 && stateList.length === 0) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
+          v-if="!footerContent || (tabsNum === 2 && stateList.length <= 1) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
           class="no-data-wrap"
         >
           <NoData
@@ -338,9 +340,6 @@ export default {
             //初始化状态列表
             let tempStateList = this.getCellModelInfo("statesInfo")
             if(tempStateList) {
-                tempStateList = tempStateList.filter(item=>{
-                    return item.id !== 'state_0'
-                })
                 this.stateList = tempStateList
             }else{
                 this.stateList = []
@@ -802,7 +801,7 @@ export default {
         display: flex;
         flex-wrap:wrap;
         overflow: auto;
-        li {
+        div {
           flex:1;
           margin-bottom:10px;
           .footerTabs2-list-wrap{

@@ -106,7 +106,9 @@ function insertEdge(cell) {
     canvas.width = cell.width 
     canvas.height = cell.height
     let ctx = canvas.getContext("2d")
-    drawArrow(ctx, edgeProps.sx - cell.x, edgeProps.sy - cell.y, edgeProps.tx - cell.x, edgeProps.ty - cell.y, which, cell.strokeColor, cell.strokeWidth,isDash)
+    if (edgeProps) {
+        drawArrow(ctx, edgeProps.sx - cell.x, edgeProps.sy - cell.y, edgeProps.tx - cell.x, edgeProps.ty - cell.y, which, cell.strokeColor, cell.strokeWidth,isDash)
+    }
     con.appendChild(canvas)
     return con
 }
