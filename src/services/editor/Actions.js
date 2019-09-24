@@ -1622,7 +1622,7 @@ Actions.prototype.insertTableCell = function (type, selectionCell = null) {
         model.setValue(item, model.getValue(item));
     };
     const addItem = geomery => {
-        const symbol = new mxCell('', geomery, 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;');
+        const symbol = new mxCell('', geomery, 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;fillColor=none;');
         symbol.vertex = true;
         // 设置id
         symbol.setId(model.createId(symbol));
