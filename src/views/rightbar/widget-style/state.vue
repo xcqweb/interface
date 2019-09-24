@@ -139,7 +139,7 @@ export default{
         },
         getStates(graph) {
             let cell = graph.getSelectionCell()
-            let states = [{
+            let statesTemp = [{
                 "id":'state_0',
                 "name":"默认",
                 "desc":'默认',
@@ -151,6 +151,7 @@ export default{
                 }, 
                 'check':false
             }]
+            let states = [ ]
             let modelInfo = graph.getModel().getValue(cell)
             if (!mxUtils.isNode(modelInfo)) {
                 var doc = mxUtils.createXmlDocument()
@@ -161,6 +162,9 @@ export default{
             let statesAttr = modelInfo.getAttribute('statesInfo')
             if(statesAttr) {
                 states = JSON.parse(statesAttr)
+                states[0] = statesTemp[0]
+            }else{
+                states = statesTemp
             }
             states.forEach(item=>{
                 if(item.imgInfo) {
@@ -197,6 +201,7 @@ export default{
                 obj.setAttribute('label', modelInfo || '')
                 modelInfo = obj
             }
+            console.log(states)
             modelInfo.setAttribute('statesInfo', JSON.stringify(states))
             graph.getModel().setValue(cell, modelInfo)
         },

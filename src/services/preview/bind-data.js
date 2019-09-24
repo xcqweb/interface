@@ -1,4 +1,4 @@
-import {geAjax,toDecimal2NoZero} from './util'
+import {geAjax,toDecimal2NoZero,dealLightFill} from './util'
 import {getCookie,throttle} from '../Utils'
 import echarts from 'echarts'
 
@@ -246,8 +246,13 @@ function dealLogic(logic,data) {
  * @param {*} stateInfo
  */
 function changeEleState(el, stateInfo,fileSystem) {
+    let shapeName = $(el).data("shapeName")
     if (stateInfo.animateCls) {
         el.classList.add(stateInfo.animateCls)
+    }
+    if (shapeName == 'light') {
+        dealLightFill(el, stateInfo.style.background)
+        return
     }
     let imgInfo = stateInfo.imgInfo
     for (let key in stateInfo.style) {

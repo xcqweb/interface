@@ -394,5 +394,5 @@ function toDecimal2NoZero(x) {
 }
 export {
     removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips,
-    dealProgress, dealPipeline, dealCharts, dealLight,toDecimal2NoZero
+    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill
 }

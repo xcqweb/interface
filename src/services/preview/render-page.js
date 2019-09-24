@@ -83,13 +83,11 @@ class PreviewPage {
         console.time('节点递归时间');
         let getNode = (tId = 1) => {
             let list = []
-            console.log(tId,"--ttId--")
             for (let item of root) {
                 // 节点类型：object有属性，mxcell无属性
                 let node, value, tagName = item.tagName
                 // 节点id
                 let id = item.getAttribute('id')
-                console.log("--id--", id, item.tagName)
                 // mxcell节点
                 if (tagName == 'object') {
                     node = item.childNodes[0]
@@ -342,7 +340,13 @@ class PreviewPage {
         } else if (shapeName === 'button') {
             // 按钮
             cellHtml = document.createElement('div')
-            cellHtml.innerHTML = cell.value
+            let reg = />(.+)</
+            let textArr = cell.value.match(reg)
+            if (textArr && textArr.length) {
+                cellHtml.innerHTML = textArr[1]
+            } else {
+                cellHtml.innerHTML = cell.value
+            }
         } else if (shapeName === 'beeline') {
             // 箭头、直线，曲线
             cellHtml = insertEdge(cell)
