@@ -92,7 +92,6 @@ export default{
                 }
             })
             this.states = this.getWidgetStatesById(currentWidgetItem.id)
-            console.log(currentEditItem)
             this.states.forEach((d)=>{
                 if(d.id == currentEditItem.stateId) {
                     d.check = true

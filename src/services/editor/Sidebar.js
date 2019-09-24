@@ -1142,7 +1142,12 @@ Sidebar.prototype.createPageContextMenu = function (type) {
                 this.copyPage(element, pageType)
                 break;
             case 'homepage':
-                this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems(this.editorUi.editor.pagesRank[pageType], index - 1, index);
+                console.log(index)
+                let pagesRankArr = JSON.parse(JSON.stringify(this.editorUi.editor.pagesRank[pageType]))
+                let newValue = pagesRankArr[index]
+                // this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems(this.editorUi.editor.pagesRank[pageType], 0, index);
+                this.editorUi.editor.pagesRank[pageType].splice(index, 1)
+                this.editorUi.editor.pagesRank[pageType].unshift(newValue)
                 var targetEle = null
                 if (pageType === 'normal') {
                     targetEle = document.querySelector('#normalPages')
@@ -1156,6 +1161,7 @@ Sidebar.prototype.createPageContextMenu = function (type) {
                 if (pageType === 'normal') {
                     $('.left-sidebar-homepage .spanli').click()
                 }
+                // 换id
                 break
             case 'addTemplate':
                 this.editorUi.editor.setXml();

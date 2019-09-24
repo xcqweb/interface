@@ -16,6 +16,7 @@
         <div style="flex:1">
           <ul
             v-if="deviceTypeArr.length"
+            style="height:700px;overflow-y:auto"
             class="deviceType-ullist"
           >
             <li
@@ -306,7 +307,7 @@ export default {
             inputParamName:'',
             currentDeviceTypeId: '',
             PAGE_CURRENT: 1,
-            PAGE_SIZE:10,
+            PAGE_SIZE:20,
             paramsPageCurrent: 1,
             devicePageCurrent: 1,
             selectAllparamsArr: [],
@@ -323,6 +324,7 @@ export default {
             InputEle2.oninput = this.debounce(this.InputSelectHandle, 1000, 2)
         })
         let _that = this
+        VueEvent.$off('clickChangeParamList')
         VueEvent.$on('clickChangeParamList', function(index, deviceTypeId) {
             _that.clickDeviceTypeListHandle('', index,deviceTypeId)
         })
@@ -553,7 +555,7 @@ export default {
                 }
             })
             let commonArr = this.getArrEqual(data, arr2)
-            if ((commonArr.length % 10) === deviceNameListLen || (commonArr.length && commonArr.length % 10 === 0)) {
+            if ((commonArr.length % this.PAGE_SIZE) === deviceNameListLen || (commonArr.length && commonArr.length % this.PAGE_SIZE === 0)) {
                 this.indeterminateArr[number] = false;
                 this.checkAllArr[number] = true;
                 if (number === 1) {

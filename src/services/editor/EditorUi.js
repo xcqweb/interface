@@ -3464,12 +3464,12 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
         if(hideDialog){
             // console.log(7777)
             // 自动保存 走这里
-            if (autoSaveFlagTerry === 0) { // 屏蔽自动保存 > 0 就不弹窗
+            // if (autoSaveFlagTerry === 0) { // 屏蔽自动保存 > 0 就不弹窗
                 this.save(this.editor.getOrCreateFilename(), this.editor.getDescribe(),hideDialog)
                 return
-            }else {
-                return
-            }
+            // }else {
+            //     return
+            // }
         }
         // 编辑保存
         var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '保存', mxUtils.bind(this, function(name, des)
@@ -3560,19 +3560,23 @@ EditorUi.prototype.save = function(name, des,hideDialog=false, type)
                     // 编辑保存
                     data.studioId = id
                     editor.ajax(ui, `${urls.ifMultipleEdit.url}${id}`, 'GET', '', (res) => {
-                        if (res.code === '3012') {
-                            autoSaveFlagTerry++
-                            tipDialog(ui, `当前应用 ${res.message ? res.message : '' } 正在编辑, 无法保存`);
+                        if (autoSaveFlagTerry === 0) {
+                            if (res.code === '3012') {
+                                autoSaveFlagTerry++
+                                tipDialog(ui, `当前应用 ${res.message ? res.message : '' } 正在编辑, 无法保存`);
+                                return;
+                            } else if (res.code === '0') {
+                                editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
+                                    this.saveSuccess(res, hideDialog);
+                                    setCookie('saveIotCds', 'put');
+                                    resolve(res);
+                                }, (res) => {
+                                    this.saveError(res.responseJSON, hideDialog);
+                                    reject(res);
+                                }, '加载中···', hideDialog)
+                            }
+                        } else {
                             return;
-                        } else if (res.code === '0') {
-                            editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
-                                this.saveSuccess(res, hideDialog);
-                                setCookie('saveIotCds', 'put');
-                                resolve(res);
-                            }, (res) => {
-                                this.saveError(res.responseJSON, hideDialog);
-                                reject(res);
-                            }, '加载中···', hideDialog)
                         }
                     }, (res) => {
                         reject(res);
