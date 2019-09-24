@@ -1528,71 +1528,156 @@ Actions.prototype.updateRowColSize = function (type, diff, selectionCell = null)
  * 向表格插入单元格
  * @param {string} type 
  */
+// Actions.prototype.insertTableCell = function (type, selectionCell = null) {
+//     var ui = this.editorUi;
+//     var editor = ui.editor;
+//     var graph = editor.graph;
+//     let cell = selectionCell ? selectionCell : graph.getSelectionCell()
+//     let cellW = cell.geometry.width;
+//     let cellH = cell.geometry.height;
+//     let cellX = cell.geometry.x;
+//     let cellY = cell.geometry.y;
+//     let table = cell.parent;
+//     let tableCells = table.children;
+//     // 当前行和列
+//     let row = this.getRowNum(cell);
+//     let col = this.getColNum(cell);
+//     // 插入行还是列
+//     let insertRow = type == 'up' || type == 'lower';
+//     // 插入的单元格数量
+//     let insertNum = insertRow ? table.geometry.width / cellW : table.geometry.height / cellH;
+//     for (let tableCell of tableCells) {
+//         if ( insertRow ) {
+//             // 插入行
+//             if ( this.getRowNum(tableCell) > row) {
+//                 // 当前行之后
+//                 tableCell.geometry.y += cellH;
+//             } else if (this.getRowNum(tableCell) == row) {
+//                 // 当前行
+//                 type == 'up' ? tableCell.geometry.y += cellH : null;
+//             }			
+//         } else {
+//             // 插入列
+//             if ( this.getColNum(tableCell) > col) {
+//                 // 当前列之后
+//                 tableCell.geometry.x += cellW;
+//             } else if (this.getColNum(tableCell) == col) {
+//                 // 当前列
+//                 type == 'left' ? tableCell.geometry.x += cellW : null;
+//             }
+//         }
+//         graph.getModel().setValue(tableCell, graph.getModel().getValue(tableCell));
+//     }
+//     graph.getModel().beginUpdate();
+//     let insertX, insertY;
+//     if (insertRow) {
+//         insertX = 0;
+//         insertY = type == 'up' ? cellY : cellY + cellH;
+//     } else {
+//         insertY = 0;
+//         insertX = type == 'left' ? cellX : cellX + cellW;
+//     }
+//     // 插入新节点
+//     for (let i = 0; i < insertNum; i++) {
+//         var symbol = new mxCell('', new mxGeometry(insertRow ? insertX + cellW * i : insertX, insertRow ? insertY : insertY + cellH * i, cellW, cellH), 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;');
+//         symbol.vertex = true;
+//         // 设置id
+//         symbol.setId(graph.getModel().createId(symbol));
+//         graph.getModel().add(table, symbol);
+//     }
+//     // 更新样式
+//     try{
+//         var geo = graph.getModel().getGeometry(table);
+//         insertRow ? geo.height += cellH : geo.width += cellW;
+//         graph.getModel().setGeometry(table, geo);
+//         graph.getModel().setValue(table, graph.getModel().getValue(table));
+//     } finally {
+//         graph.getModel().endUpdate();
+//     }
+// };
 Actions.prototype.insertTableCell = function (type, selectionCell = null) {
     var ui = this.editorUi;
     var editor = ui.editor;
     var graph = editor.graph;
-    let cell = selectionCell ? selectionCell : graph.getSelectionCell()
-    let cellW = cell.geometry.width;
-    let cellH = cell.geometry.height;
-    let cellX = cell.geometry.x;
-    let cellY = cell.geometry.y;
-    let table = cell.parent;
-    let tableCells = table.children;
-    // 当前行和列
-    let row = this.getRowNum(cell);
-    let col = this.getColNum(cell);
-    // 插入行还是列
-    let insertRow = type == 'up' || type == 'lower';
-    // 插入的单元格数量
-    let insertNum = insertRow ? table.geometry.width / cellW : table.geometry.height / cellH;
-    for (let tableCell of tableCells) {
-        if ( insertRow ) {
-            // 插入行
-            if ( this.getRowNum(tableCell) > row) {
-                // 当前行之后
-                tableCell.geometry.y += cellH;
-            } else if (this.getRowNum(tableCell) == row) {
-                // 当前行
-                type == 'up' ? tableCell.geometry.y += cellH : null;
-            }			
+    let cell = selectionCell ? selectionCell : graph.getSelectionCell();
+    const data = this.getRowColCells(cell);
+    if (data === null) {
+        return;
+    }
+    const table = data.table;
+    const cellW = cell.geometry.width;
+    const cellH = cell.geometry.height;
+    const getGeo = mxCell => {
+        return graph.getCellGeometry(mxCell);
+    };
+    const model = graph.getModel();
+    const moveXY = (item, isY) => {
+        const geo = getGeo(item);
+        if (isY) {
+            geo.y += cellH;
         } else {
-            // 插入列
-            if ( this.getColNum(tableCell) > col) {
-                // 当前列之后
-                tableCell.geometry.x += cellW;
-            } else if (this.getColNum(tableCell) == col) {
-                // 当前列
-                type == 'left' ? tableCell.geometry.x += cellW : null;
-            }
+            geo.x += cellW;
         }
-        graph.getModel().setValue(tableCell, graph.getModel().getValue(tableCell));
-    }
-    graph.getModel().beginUpdate();
-    let insertX, insertY;
-    if (insertRow) {
-        insertX = 0;
-        insertY = type == 'up' ? cellY : cellY + cellH;
-    } else {
-        insertY = 0;
-        insertX = type == 'left' ? cellX : cellX + cellW;
-    }
-    // 插入新节点
-    for (let i = 0; i < insertNum; i++) {
-        var symbol = new mxCell('', new mxGeometry(insertRow ? insertX + cellW * i : insertX, insertRow ? insertY : insertY + cellH * i, cellW, cellH), 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;');
+        model.setGeometry(item, geo);
+        model.setValue(item, model.getValue(item));
+    };
+    const addItem = geomery => {
+        const symbol = new mxCell('', geomery, 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;');
         symbol.vertex = true;
         // 设置id
-        symbol.setId(graph.getModel().createId(symbol));
-        graph.getModel().add(table, symbol);
+        symbol.setId(model.createId(symbol));
+        model.add(table, symbol);
+    };
+    model.beginUpdate();
+    try {
+        const tableGeo = getGeo(table);
+        // 插入行时，下方的元素要移动y轴
+        if (type === 'up' || type === 'lower') {
+            data.bottomCells.forEach(item => {
+                moveXY(item, true);
+            });
+            if (type === 'up') {
+                // 上方插入行，当前行也要下移y轴
+                data.rowCells.forEach(item => {
+                    const geo = getGeo(item);
+                    addItem(new mxGeometry(geo.x, geo.y, geo.width, cellH));
+                    moveXY(item, true);
+                });
+            } else {
+                data.rowCells.forEach(item => {
+                    const geo = getGeo(item);
+                    addItem(new mxGeometry(geo.x, geo.y + cellH, geo.width, cellH));
+                });
+            }
+            tableGeo.height += cellH;
+        } else {
+            // 插入列，右方元素需要移动x轴
+            data.rightCells.forEach(item => {
+                moveXY(item);
+            });
+            if (type === 'left') {
+                // 左侧插入列，当前列要右移
+                data.colCells.forEach(item => {
+                    const geo = getGeo(item);
+                    addItem(new mxGeometry(geo.x, geo.y, cellW, geo.height));
+                    moveXY(item);
+                });
+            } else {
+                data.colCells.forEach(item => {
+                    const geo = getGeo(item);
+                    addItem(new mxGeometry(geo.x + cellW, geo.y, cellW, geo.height));
+                });
+            }
+            tableGeo.width += cellW;
+            // 插入列时，需要更新一下cols属性
+            const tableCol = this.getTableColCount(table);
+            const tableInfo = model.getValue(table);
+            tableInfo.setAttribute('cols', tableCol + 1);
+        }
+        model.setValue(table, model.getValue(table));
     }
-    // 更新样式
-    try{
-        var geo = graph.getModel().getGeometry(table);
-        insertRow ? geo.height += cellH : geo.width += cellW;
-        graph.getModel().setGeometry(table, geo);
-        graph.getModel().setValue(table, graph.getModel().getValue(table));
-    } finally {
-        graph.getModel().endUpdate();
+    finally {
+        model.endUpdate();
     }
 };
 /**
