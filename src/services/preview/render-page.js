@@ -80,20 +80,14 @@ class PreviewPage {
     // 解析所有控件节点
     parseCells(root) {
         // 递归获取节点
+        console.time('节点递归时间');
         let getNode = (tId = 1) => {
             let list = [];
             for (let item of root) {
                 // 节点类型：object有属性，mxcell无属性
-                let node, value, tagName = item.tagName
+                let node, value, tagName = item.tagName;
                 // 节点id
                 let id = item.getAttribute('id');
-                let bindData = JSON.parse(item.getAttribute('bindData'))
-                // 节点交互
-                let actionsInfo = JSON.parse(item.getAttribute('actionsInfo'))
-                // 节点状态
-                let statesInfo = JSON.parse(item.getAttribute('statesInfo'))
-                // 链接
-                let link = item.getAttribute('link')
                 // mxcell节点
                 if (tagName == 'object') {
                     node = item.childNodes[0]
@@ -106,6 +100,13 @@ class PreviewPage {
                 let parentId = node.getAttribute('parent')
                 // 节点存在id，递归
                 if (parentId == tId && id) {
+                    // 链接
+                    let link = item.getAttribute('link')
+                    let bindData = JSON.parse(item.getAttribute('bindData'))
+                    // 节点交互
+                    let actionsInfo = JSON.parse(item.getAttribute('actionsInfo'))
+                    // 节点状态
+                    let statesInfo = JSON.parse(item.getAttribute('statesInfo'))
                     // 节点参数信息
                     let getNodeInfo = new GetNodeInfo(node)
                     // 节点类型
@@ -203,7 +204,8 @@ class PreviewPage {
             }
             return list
         }
-        let cells = getNode()
+        let cells = getNode();
+        console.timeEnd('节点递归时间');
         cells.map(cell => {
             // 计算页面高度
             pageWidth = (cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth
