@@ -33,12 +33,13 @@ export default {
            
             let applyInfo = await this.requestUtil.get(`/api/viewtool/${id}`);
             let {content} = applyInfo
-            content = JSON.parse(content)
-            console.log(content)
-            pages = content.pages
-            rank = content.rank
-            this.pageId = rank.normal[0]
-            this.currentPage = pages[this.pageId]
+            if(content) {
+                content = JSON.parse(content)
+                pages = content.pages
+                rank = content.rank
+                this.pageId = rank.normal[0]
+                this.currentPage = pages[this.pageId]
+            }
 
             /*  let model = new window.mxGraphModel();
             let graph = new window.mxGraph(document.querySelector("#preview_c"), model);
@@ -51,18 +52,27 @@ export default {
 
             var container = document.getElementById("preview_c");
             //设置背景样式
-            container.style.background = 'url(../static/images/default/grid.gif)';        
+            //container.style.background = 'url(../static/images/default/grid.gif)';        
             container.style.height = "300px";
             container.style.padding = "20px";
             //创建一个画板
             var graph = new window.mxGraph(container);
-            
-            var doc = window.mxUtils.parseXml(this.currentPage.xml);
-            console.log(doc.firstChild)
-            let a = doc.firstChild
-            console.dir(a)
+            graph.setCellsEditable(false); 
+            var doc = window.mxUtils.parseXml(`<mxGraphModel dx="840" dy="524" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff">
+              <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="52" value="" style="endArrow=classic;html=1;" edge="1" parent="1">
+                  <mxGeometry width="50" height="50" relative="1" as="geometry">
+                    <mxPoint x="160" y="240" as="sourcePoint"/>
+                    <mxPoint x="210" y="190" as="targetPoint"/>
+                  </mxGeometry>
+                </mxCell>
+              </root>
+            </mxGraphModel>
+            `);
             var codec = new window.mxCodec(doc);
-            codec.decode(doc.documentElement, graph.getModel());
+            console.log(codec.decode(doc.documentElement, graph.getModel()));
 
         }
     }

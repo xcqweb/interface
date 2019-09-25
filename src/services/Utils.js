@@ -2,6 +2,7 @@
 /**
  * 获取一级域名
  */
+import {OpenDialog} from './editor/Dialogs'
 const getDomain = () => {
     let host = location.hostname;
     const ip = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/;
@@ -83,8 +84,63 @@ function throttle(func, wait, options) {
   }
 }
 
+function tipDialog(editorUi,tips,title='提示'){
+  editorUi.showDialog(new OpenDialog(tips).container, (Editor.useLocalStorage) ? 640 : 320,
+    (Editor.useLocalStorage) ? 480 : 80, true, false,null, null, title, null)
+  setTimeout(()=>{
+    editorUi.hideDialog()
+  },1500)
+}
+function sureContainer(editorUi,info,confirmText='确定',cancelText='取消',cb) {
+  let {mxUtils} = require('./mxGlobal')
+  let saveContent = editorUi.createDiv('geDialogInfo');
+  let nameTitle = document.createElement('p')
+  nameTitle.innerHTML = info;
+  nameTitle.className = 'geDialogInfoTitle';
+  saveContent.appendChild(nameTitle)
+
+  // 保存按钮
+  let btnContent = editorUi.createDiv('btnContent')
+  let genericBtn = mxUtils.button(confirmText, () => {
+      cb()
+      editorUi.hideDialog();
+  })
+  genericBtn.className = 'geBtn gePrimaryBtn';
+  // 取消按钮
+  let cancelBtn = mxUtils.button(cancelText,()=> {
+    editorUi.hideDialog();
+  });
+  cancelBtn.className = 'geBtn';
+  btnContent.appendChild(cancelBtn);
+  btnContent.appendChild(genericBtn);
+
+  saveContent.appendChild(btnContent)
+  this.container = saveContent;
+}
+function sureDialog(editorUi, info, cb, confirmText = '确定', cancelText = '取消', title = '提示') {
+  let dlg = new sureContainer(editorUi, info, confirmText, cancelText,cb)
+  editorUi.showDialog(dlg.container, 410, 160, true, false, null, null, title);
+}
+
+function debounce(func, delay) {
+  let timer = null
+  // 包装好的参数，
+  return function (e) {
+    // 暂存回调传回的参数，
+    let args = arguments
+    // 清楚前一次定时器
+    clearTimeout(timer)
+    // 设置新的定时器
+    timer = setTimeout(() => {
+      func.apply(this, arguments)
+    }, delay)
+  }
+}
 export {
   getCookie,
   setCookie,
-  throttle
+  throttle,
+  tipDialog,
+  sureDialog,
+  debounce
 }

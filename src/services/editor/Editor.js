@@ -10,7 +10,6 @@ import {
     getCookie,
     setCookie
 } from '../Utils'
-import Vue from 'vue'
 window.Editor = function(chromeless, themes, model, graph, editable)
 {
     mxEventSource.call(this);
@@ -320,6 +319,10 @@ Editor.prototype.getCookie = function(cname) {
  * 刷新token
  */
 Editor.prototype.refreshToken = function(refreshToken) {
+     if (!refreshToken) {
+         alert('登录已失效，请重新登录')
+         return
+     }
     return new Promise((resolve, rejec) => {
         $.ajax({
             method: 'POST',
@@ -344,90 +347,94 @@ Editor.prototype.refreshToken = function(refreshToken) {
  * @param {Function} fn
  * @param {Function} errorfn
  */
-Editor.prototype.ajax = async function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···') {
-    var token = getCookie('token');
-    var refreshToken = getCookie('refreshToken');
-    if (!token || !refreshToken) {
-        alert('登陆失效，请重新登陆系统！');
-        return;
-    }
-    const t_exp = jwt_decode(token).exp;
-    const r_exp = jwt_decode(refreshToken).exp;
-    const now = new Date().valueOf();
-    if (now > t_exp * 1000 && now < r_exp * 1000) {
-        // 刷新token
-        await this.refreshToken(refreshToken);
-    } else  if (now > r_exp * 1000) {
-        alert('登陆失效，请重新登陆系统！');
-        return;
-    }
-    var loadingBarInner = editorUi.actions.get('loading').funct(title);
-    var token = getCookie('token');
-    $.ajax({
-        method,
-        headers: {
-            "Content-Type": 'application/json;charset=utf-8',
-            "Authorization": 'Bearer ' + token
-        },
-        beforeSend: function() {
-            loadingBarInner.style.width = '20%';
-        },
-        data: method == 'GET' ? data : data ? JSON.stringify(data) : '',
-        url,
-        success: function(res) {
-            loadingBarInner.style.width = '100%';
-            setTimeout(() => {
-                fn && fn(res);
-                // resolve(res);
-            }, 550)
-        },
-        error: function(res) {
-            loadingBarInner.style.width = '100%';
-            setTimeout(() => {
-                errorfn && errorfn(res);
-            }, 550)
+Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···',hideDialog=false) {
+    let _that = this
+    let loadingBarInner
+    if(!hideDialog){
+        loadingBarInner = editorUi.actions.get('loading').funct(title);
+    }   
+    callAjax()
+    function callAjax(){
+        let token = getCookie('token')
+        let refreshToken = getCookie('refreshToken')
+        if(!token || !refreshToken){
+            alert('登录已失效，请重新登录')
+             loadingBarInner.style.width = '100%'
+             setTimeout(() => {
+                 fn && fn()
+             }, 500)
+            return
         }
-    })
+        $.ajax({
+            method,
+            headers: {
+                "Content-Type": 'application/json;charset=utf-8',
+                "Authorization": 'Bearer ' + token
+            },
+            beforeSend: function() {
+                if(!hideDialog){
+                    loadingBarInner.style.width = '20%';
+                }
+            },
+            data: method == 'GET' ? data : data ? JSON.stringify(data) : '',
+            url,
+            success: function(res) {
+                if(!hideDialog){
+                    loadingBarInner.style.width = '100%';
+                }
+                setTimeout(() => {
+                    fn && fn(res);
+                }, 550)
+            },
+            error: async function(res) {
+                if (res.status == 418) {
+                    await _that.refreshToken(refreshToken)
+                    callAjax()
+                }
+                if(!hideDialog){
+                    loadingBarInner.style.width = '100%'
+                }
+                setTimeout(() => {
+                    if (res.status !== 418){
+                        errorfn && errorfn(res)
+                    }
+                }, 550)
+            }
+        })
+    }
 }
 /**
  * 初始化进入
  */
 Editor.prototype.InitEditor = function(editorUi) {
-    Vue.prototype.editorUi = editorUi;
     // 获取文件服务器地址
     let getFileSystem = new Promise((resolve, reject) => {
-        this.ajax(editorUi, '/api/image/host', 'GET', null, function(res) {
+        this.ajax(editorUi, '/api/console/host/imageHost', 'GET', null, function(res) {
             // 文件服务器地址
-            window.fileSystem = res.host;
+            window.fileSystem = res.imageHost
             resolve(res)
         }, null)
     })
     // 编辑数据
-    let editPromise = null;
-    if (/id=(.+?)$/.exec(location.search)) {
+    let editPromise = null
+    let applyId = sessionStorage.getItem("applyId")
+    let idArr= /id=(.+?)$/.exec(location.search)
+    if (idArr || applyId) {
+        let id
+        if(idArr && idArr.length){
+            id= idArr[1]
+            sessionStorage.setItem("applyId", id)
+        }else{
+            id = applyId
+        }
         editPromise = new Promise((resolve, reject) => {
-            this.ajax(editorUi, '/api/viewtool/' + /id=(.+?)$/.exec(location.search)[1], 'GET', null, function(res) {
+            this.ajax(editorUi, '/api/iot-cds/cds/configurationDesignStudio/' + id, 'GET', null, function(res) {
                 resolve(res)
             }, null)
         })
     }
 	
-    Promise.all([getFileSystem, editPromise]).then(res => {
-        // 编辑
-        if (res[1]) {
-            var editData = res[1];
-            var content = JSON.parse(editData.content);
-            editorUi.editor.pages = content.pages;
-            editorUi.editor.pagesRank = content.rank;
-            editorUi.editor.setFilename(editData.name);
-            editorUi.editor.setApplyId(editData.id);
-            editorUi.editor.setDescribe(editData.describe);
-        }
-        editorUi.sidebar.container.innerHTML = '';
-        editorUi.sidebar.init();
-        // 默认选中
-        $("#normalPages li").eq(0).click();
-    })
+    return Promise.all([getFileSystem, editPromise])
 }
 /**
  * 上传文件请求
@@ -439,32 +446,41 @@ Editor.prototype.InitEditor = function(editorUi) {
  * @param {Function} errorfn
  */
 Editor.prototype.uploadFile = function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}) {
-    var loadingBarInner = editorUi.actions.get('loading').funct();
-    var token = getCookie('token');
-    $.ajax({
-        method,
-        headers: {
-            "Authorization": 'Bearer ' + token
-        },
-        processData: false,
-        contentType: false,
-        cache:false,
-        beforeSend: function() {
-            loadingBarInner.style.width = '20%';
-        },
-        data: data,
-        url,
-        success: function(res) {
-            loadingBarInner.style.width = '100%';
-            setTimeout(() => {
-                fn && fn(res);
-            }, 500)
-        },
-        error: function(res) {
-            loadingBarInner.style.width = '100%';
-            errorfn && errorfn()
-        }
-    })
+    let _that = this
+    let loadingBarInner = editorUi.actions.get('loading').funct()
+    callAjax()
+    function callAjax() {
+        let token = getCookie('token')
+        let refreshToken = getCookie('refreshToken')
+        $.ajax({
+            method,
+            headers: {
+                "Authorization": 'Bearer ' + token
+            },
+            processData: false,
+            contentType: false,
+            cache:false,
+            beforeSend: function() {
+                loadingBarInner.style.width = '20%'
+            },
+            data: data,
+            url,
+            success: function(res) {
+                loadingBarInner.style.width = '100%'
+                setTimeout(() => {
+                    fn && fn(res)
+                }, 500)
+            },
+            error: async function(res) {
+                if (res.status == 418) {
+                    await _that.refreshToken(refreshToken)
+                    callAjax()
+                 }
+                loadingBarInner.style.width = '100%'
+                errorfn && errorfn()
+            }
+        })
+    }
 }
 /**
  * 控件信息
@@ -472,6 +488,10 @@ Editor.prototype.uploadFile = function(editorUi, url, method, data, fn = functio
 Editor.prototype.palettesInfo = {
     'diamond': {
         name: 'diamond',
+        num: 0
+    },
+    'connector': {
+        name: '箭头',
         num: 0
     },
     'circle': {
@@ -492,6 +512,10 @@ Editor.prototype.palettesInfo = {
     },
     rectangle: {
         name: '矩形',
+        num: 0
+    },
+    ellipse: {
+        name: '圆形',
         num: 0
     },
     button: {
@@ -558,10 +582,42 @@ Editor.prototype.palettesInfo = {
         name: '单选',
         num: 0
     },
-    trendChart: {
+    light: {
+        name: '指示灯',
+        num: 0
+    },
+    progress: {
+        name: '进度条',
+        num: 0
+    },
+    pipeline1: {
+        name: '管道1',
+        num: 0
+    },
+    pipeline2: {
+        name: '管道2',
+        num: 0
+    },
+    pipeline3: {
+        name: '管道3',
+        num: 0
+    },
+    lineChart: {
         name: '趋势图',
         num: 0
     },
+    gaugeChart: {
+        name: '仪表盘',
+        num: 0
+    },
+    userimage: {
+        name: '用户图',
+        num: 0
+    },
+    groupNum: {
+        name:'组合',
+        num:0,
+    }
 }
 /**
  * 文件服务器的地址
@@ -590,8 +646,8 @@ Editor.prototype.setCurrentPage = function(id) {
 /**
  * 编辑器页面数据
  */
-const defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
-Editor.prototype.defaultXml = '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>';
+const defaultXml = ['<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="1366" pageHeight="768" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>', '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="600" pageHeight="400" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>'];
+Editor.prototype.defaultXml = ['<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="1366" pageHeight="768" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>', '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="600" pageHeight="400" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>'];
 Editor.prototype.pagesRank = {
     normal: ['pageid_1'],
     dialog: ['pageid_2']
@@ -601,15 +657,17 @@ Editor.prototype.pages = {
         id: 'pageid_1',
         title: '页面1',
         desc: '',
-        xml: defaultXml,
-        type: 'normal'
+        xml: defaultXml[0],
+        type: 'normal',
+        style:{},
     },
     "pageid_2": {
         id: 'pageid_2',
-        title: '页面2',
+        title: '弹窗1',
         desc: '',
-        xml: defaultXml,
-        type: 'dialog'
+        xml: defaultXml[1],
+        type: 'dialog',
+        style: {},
     }
 };
 /**
@@ -627,8 +685,8 @@ Editor.prototype.pagesNameList = function() {
  * @param {object} page 新增的页面
  * @returns {boolean} 添加成功返回true，失败返回false
  */
-Editor.prototype.addPage = function(page) {
-    page.xml = page.xml || this.defaultXml;
+Editor.prototype.addPage = function(page,type) {
+    page.xml = page.xml || this.defaultXml[type];
     let id = 1;
     for (let pageid in this.pages) {
         const idNum = parseInt(pageid.match(/^pageid\_([0-9]+)/)[1]);
@@ -638,7 +696,6 @@ Editor.prototype.addPage = function(page) {
     id = 'pageid_' + (id + 1);
     page.id = id;
     this.pages[id] = page;
-    // this.pagesRank[page.type].push(page.id);
     return page;
 }
 /**
@@ -772,7 +829,6 @@ Editor.prototype.editAsNew = function(xml, title)
  */
 Editor.prototype.createGraph = function(themes, model)
 {
-    console.log("graph--create")
     var graph = new Graph(null, model, null, null, themes);
     graph.transparentBackground = false;
 	
@@ -793,7 +849,6 @@ Editor.prototype.createGraph = function(themes, model)
  */
 Editor.prototype.resetGraph = function()
 {
-    console.log("reset--graph")
     this.graph.gridEnabled = !this.isChromelessView() || urlParams['grid'] == '1';
     this.graph.graphHandler.guidesEnabled = true;
     this.graph.setTooltips(true);
@@ -887,9 +942,8 @@ Editor.prototype.readGraphState = function(node)
 /**
  * Sets the XML node for the current diagram.
  */
-Editor.prototype.setGraphXml = function(node)
+Editor.prototype.setGraphXml = function(node,dis)
 {
-    console.log('set--view--data')
     if (node != null)
     {
         var dec = new mxCodec(node.ownerDocument);
@@ -916,7 +970,7 @@ Editor.prototype.setGraphXml = function(node)
             }
             finally
             {
-                this.graph.model.endUpdate();
+                this.graph.model.endUpdate(dis);
             }
 	
             this.fireEvent(new mxEventObject('resetGraphView'));
@@ -955,7 +1009,6 @@ Editor.prototype.setGraphXml = function(node)
  */
 Editor.prototype.getGraphXml = function(ignoreSelection)
 {
-    console.log('get--view--data')
     ignoreSelection = (ignoreSelection != null) ? ignoreSelection : true;
     var node = null;
     if (ignoreSelection)
@@ -1169,7 +1222,7 @@ OpenFile.prototype.cancel = function(cancel)
 function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
 {
     var dx = 0;
-    var dialogType = elt.getAttribute('data-dialog');
+    var dialogType = elt.getAttribute('data-dialog')
     title = title || '';
     if (mxClient.IS_VML && (document.documentMode == null || document.documentMode < 8))
     {
@@ -1243,17 +1296,9 @@ function Dialog(editorUi, elt, w, h, modal, closable, onClose, noScroll, title)
     left = pos.x;
     top = pos.y;
     switch (dialogType) {
-        case 'chooseVariable':
-            left += 90;
-            top -= 30;
-            break;
-        case 'chooseModel':
-            left += 90;
-            top += 262;
-            break;
-        case 'chooseExecute':
-            left += 90;
-            top += 59;
+        case 'colorDialog':
+            let temp = (left - 250)
+            left += temp + w/2 - 40
             break;
         default:
             break;
@@ -2279,13 +2324,11 @@ PageSetupDialog.getFormats = function()
     mxGraphView.prototype.validateBackgroundPage = function()
     {
         var graph = this.graph;
-		
         if (graph.container != null && !graph.transparentBackground)
         {
             if (graph.pageVisible)
             {
                 var bounds = this.getBackgroundPageBounds();
-				
                 if (this.backgroundPageShape == null)
                 {
                     // Finds first element in graph container
@@ -2295,7 +2338,6 @@ PageSetupDialog.getFormats = function()
                     {
                         firstChild = firstChild.nextSibling;
                     }
-					
                     if (firstChild != null)
                     {
                         this.backgroundPageShape = this.createBackgroundPageShape(bounds);
@@ -2315,12 +2357,12 @@ PageSetupDialog.getFormats = function()
                         this.backgroundPageShape.node.className = 'geBackgroundPage';
 						
                         // Adds listener for double click handling on background
-                        mxEvent.addListener(this.backgroundPageShape.node, 'dblclick',
+                       /*  mxEvent.addListener(this.backgroundPageShape.node, 'dblclick',
                             mxUtils.bind(this, function(evt)
                             {
                                 graph.dblClick(evt);
                             })
-                        );
+                        ); */
 						
                         // Adds basic listeners for graph event dispatching outside of the
                         // container and finishing the handling of a single gesture
@@ -2378,21 +2420,25 @@ PageSetupDialog.getFormats = function()
         if (graph.isGridEnabled())
         {
             var phase = 10;
-			
-            if (mxClient.IS_SVG)
-            {
-                // Generates the SVG required for drawing the dynamic grid
-                image = unescape(encodeURIComponent(this.createSvgGrid(gridColor)));
-                image = (window.btoa) ? btoa(image) : Base64.encode(image, true);
-                image = 'url(' + 'data:image/svg+xml;base64,' + image + ')'
-                phase = graph.gridSize * this.scale * this.gridSteps;
+    
+            if (mxClient.IS_ADD_IMG){
+                image = 'url(' + mxClient.IS_ADD_IMG_SRC + ')';
+                if (graph.view.backgroundPageShape){
+                    graph.view.backgroundPageShape.node.style.backgroundSize = 'cover';
+                }
+            }else{
+                if (mxClient.IS_SVG) {
+                    // Generates the SVG required for drawing the dynamic grid
+                    image = unescape(encodeURIComponent(this.createSvgGrid(gridColor)));
+                    image = (window.btoa) ? btoa(image) : Base64.encode(image, true);
+                    image = 'url(' + 'data:image/svg+xml;base64,' + image + ')'
+                    phase = graph.gridSize * this.scale * this.gridSteps;
+                }
+                else {
+                    // Fallback to grid wallpaper with fixed size
+                    image = 'url(' + this.gridImage + ')';
+                }
             }
-            else
-            {
-                // Fallback to grid wallpaper with fixed size
-                image = 'url(' + this.gridImage + ')';
-            }
-			
             var x0 = 0;
             var y0 = 0;
 			
@@ -2408,14 +2454,12 @@ PageSetupDialog.getFormats = function()
             position = -Math.round(phase - mxUtils.mod(this.translate.x * this.scale - x0, phase)) + 'px ' +
 				-Math.round(phase - mxUtils.mod(this.translate.y * this.scale - y0, phase)) + 'px';
         }
-		
         var canvas = graph.view.canvas;
 		
         if (canvas.ownerSVGElement != null)
         {
             canvas = canvas.ownerSVGElement;
         }
-		
         if (graph.view.backgroundPageShape != null)
         {
             graph.view.backgroundPageShape.node.style.backgroundPosition = position;

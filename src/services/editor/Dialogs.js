@@ -5,24 +5,10 @@
 /**
  * Constructs a new open dialog.
  */
-var OpenDialog = function()
+var OpenDialog = function(tips)
 {
-    // var iframe = document.createElement('iframe');
-    // iframe.style.backgroundColor = 'transparent';
-    // iframe.allowTransparency = 'true';
-    // iframe.style.borderStyle = 'none';
-    // iframe.style.borderWidth = '0px';
-    // iframe.style.overflow = 'hidden';
-    // iframe.frameBorder = '0';
-	
-    // // Adds padding as a workaround for box model in older IE versions
-    // var dx = (mxClient.IS_VML && (document.documentMode == null || document.documentMode < 8)) ? 20 : 0;
-	
-    // iframe.setAttribute('width', (((Editor.useLocalStorage) ? 640 : 320) + dx) + 'px');
-    // iframe.setAttribute('height', (((Editor.useLocalStorage) ? 480 : 220) + dx) + 'px');
-    // iframe.setAttribute('src', OPEN_FORM);
     var p = document.createElement('p')
-    p.innerHTML = '此菜单将打开应用中心';
+    p.innerHTML = tips
     p.style.textAlign = "center"
     p.style.fontSize = '14px';
     p.style.lineHeight = '40px';
@@ -33,20 +19,62 @@ var OpenDialog = function()
 /**
  * Constructs a new color dialog.
  */
-var ColorDialog = function(editorUi, color, apply, cancelFn)
+var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
 {
     this.editorUi = editorUi;
-	
+    
+    var selectColor = document.createElement('div');
+    selectColor.style.display = 'flex';
+    selectColor.style.marginTop = '8px';
+    selectColor.style.alignItems='center'
     var input = document.createElement('input');
-    input.style.marginBottom = '10px';
-    input.style.margintop = '3px';
-    input.style.width = '194px';
-	
+    input.style.width = '120px';
+    input.style.border = '1px solid #D4D4D4';
+    input.style.backgroundColor = '#fff';
+    input.style.borderRadius = '2px';
+    //input.setAttribute('disabled',"");
+
+    var rect = document.createElement('input')
+    rect.style.width = '16px';
+    rect.style.height = '16px';
+    rect.style.marginRight = '4px';
+    rect.style.backgroundColor = '#fff';
+    rect.style.borderRadius = '2px';
+    rect.style.border = 'none';
+    //rect.setAttribute('disabled',"");
+
+ /*    var copyColor = document.createElement('p');
+    copyColor.style.width = '16px';
+    copyColor.style.height = '16px';
+    copyColor.style.marginLeft = '10px';
+    copyColor.style.background = "url('/static/images/default/copyColor.png')";
+    copyColor.style.cursor = 'pointer'; */
+
+   /*  //点击复制
+    mxEvent.addListener(copyColor,'click',() => {
+        var oInput = document.createElement('input');
+        oInput.value = input.value;
+        document.body.appendChild(oInput);
+        oInput.select(); // 选择对象
+        document.execCommand("Copy"); // 执行浏览器复制命令
+        oInput.className = 'oInput';
+        oInput.style.display='none';
+    },false)
+ */
+    selectColor.appendChild(rect);
+    selectColor.appendChild(input);
+    //selectColor.appendChild(copyColor);
+
+    var border = document.createElement('p');
+    border.style.height = '1px';
+    border.style.marginTop = '6px';
+    border.style.backgroundColor = '#e1e1e1';
+
     // Required for picker to render in IE
     if (mxClient.IS_IE)
     {
-        input.style.marginTop = '10px';
-        document.body.appendChild(input);
+        // input.style.marginTop = '10px';
+        document.body.appendChild(selectColor);
     }
 	
     this.init = function()
@@ -56,8 +84,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
             input.focus();
         }
     };
-
-    var picker = new jscolor.color(input);
+    var picker = new jscolor.color(input,rect);
     picker.pickerOnfocus = false;
     picker.showPicker();
 
@@ -67,45 +94,45 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
     jscolor.picker.box.style.height = '100px';
     jscolor.picker.box.style.paddingBottom = '10px';
     div.appendChild(jscolor.picker.box);
-
     var center = document.createElement('center');
     center.style.textAlign = "left";
 	
     function createRecentColorTable()
     {
-        var table = addPresets((ColorDialog.recentColors.length == 0) ? ['FFFFFF'] :
-            ColorDialog.recentColors, 11, 'FFFFFF', true);
+        var table = addPresets((ColorDialog.recentColors.length == 0) ? ['#FFFFFF'] :
+            ColorDialog.recentColors, 9, '#FFFFFF', true, true);
         table.style.marginBottom = '8px';
 		
         return table;
     }
 	
-    function addPresets(presets, rowLength, defaultColor, addResetOption)
+    function addPresets(presets, rowLength, defaultColor, addResetOption,isRecent)
     {
-        rowLength = (rowLength != null) ? rowLength : 12;
-        var table = document.createElement('table');
-        table.style.borderCollapse = 'collapse';
-        table.setAttribute('cellspacing', '0');
-        table.style.marginBottom = '20px';
-        table.style.cellSpacing = '0px';
-        var tbody = document.createElement('tbody');
-        table.appendChild(tbody);
+        if (!isShowBtn){
+            presets = ['#D0021B', '#F5A623', '#F8E71C', '#7ED321', '#4A90E2', '#BD10E0', '#4A4A4A', '#9B9B9B']
+        }
+        rowLength = (rowLength != null) ? rowLength : 9;
+        var odiv = document.createElement('div');
 
         var rows = presets.length / rowLength;
-		
         for (var row = 0; row < rows; row++)
         {
-            var tr = document.createElement('tr');
-			
+            var tr = document.createElement('ul');
             for (var i = 0; i < rowLength; i++)
             {
+                if(!presets[row * rowLength + i]){
+                    continue;
+                }
                 (function(clr)
                 {
-                    var td = document.createElement('td');
-                    td.style.border = '1px solid black';
+                    var td = document.createElement('li');
+                    td.style.border = `1px solid #d4d4d4`;
                     td.style.padding = '0px';
                     td.style.width = '16px';
                     td.style.height = '16px';
+                    td.style.float = 'left';
+                    td.style.borderRadius = '2px';
+                    td.style.margin = '0 6px 6px 0';
 					
                     if (clr == null)
                     {
@@ -118,11 +145,11 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
                     }
                     else
                     {
-                        td.style.backgroundColor = '#' + clr;
+                        td.style.backgroundColor = clr;
                     }
 					
                     tr.appendChild(td);
-
+                    
                     if (clr != null)
                     {
                         td.style.cursor = 'pointer';
@@ -137,99 +164,97 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
                             else
                             {
                                 picker.fromString(clr);
+                                rect.style.backgroundColor = `${clr}`
                             }
                         });
                     }
                 })(presets[row * rowLength + i]);
             }
-			
-            tbody.appendChild(tr);
+            odiv.appendChild(tr);
         }
-		
-        if (addResetOption)
-        {
-            var td = document.createElement('td');
-            td.setAttribute('title', mxResources.get('reset'));
-            td.style.border = '1px solid black';
-            td.style.padding = '0px';
-            td.style.width = '16px';
-            td.style.height = '16px';
-            td.style.backgroundImage = 'url(\'' + Dialog.prototype.closeImage + '\')';
-            td.style.backgroundPosition = 'center center';
-            td.style.backgroundRepeat = 'no-repeat';
-            td.style.cursor = 'pointer';
-			
-            tr.appendChild(td);
-
-            mxEvent.addListener(td, 'click', function()
-            {
-                ColorDialog.resetRecentColors();
-                table.parentNode.replaceChild(createRecentColorTable(), table);
-            });
+        
+		var clearFix = document.createElement('p');
+            clearFix.style.display= 'block';
+            clearFix.style.overflow= 'auto';
+            clearFix.style.clear= 'both';
+            odiv.appendChild(clearFix);
+        center.appendChild(odiv);
+        if(!isRecent){
+            var borderU = document.createElement('p');
+            borderU.style.height = '1px';
+            borderU.style.margin = '6px 0 6px 0';
+            borderU.style.backgroundColor = '#e1e1e1';
+            odiv.appendChild(borderU);
+            var defaultColor = document.createElement('p');
+            defaultColor.style.margin = '6px 0 3px 0';
+            defaultColor.style.fontSize = '12px';
+            defaultColor.style.color = '#252525';
+            defaultColor.innerText = '最近使用';
+            odiv.appendChild(defaultColor);
         }
-		
-        center.appendChild(table);
-		
-        return table;
+        return odiv;
     }
 
-    div.appendChild(input);
-    mxUtils.br(div);
-	
-    // Adds recent colors
-    createRecentColorTable();
-		
-    // Adds presets
-    var table = addPresets(this.presetColors);
-    table.style.marginBottom = '8px';
-    table = addPresets(this.defaultColors);
-    table.style.marginBottom = '16px';
-
+    div.appendChild(selectColor);
+    div.appendChild(border);
+    var defaultColor = document.createElement('p');
+    defaultColor.style.margin = '6px 0 3px 0';
+    defaultColor.style.fontSize = '12px';
+    defaultColor.style.color = '#252525';
+    defaultColor.innerText = '默认颜色';
+    div.appendChild(defaultColor);
+    // Adds presets 默认
+    addPresets(this.presetColors,9,'#FFFFFF', true, !isShowBtn);
+   if(isShowBtn){
+        createRecentColorTable();
+   }
     div.appendChild(center);
-
-    var buttons = document.createElement('div');
-    buttons.className = "btnContent";
-    buttons.style.textAlign = 'right';
-    buttons.style.whiteSpace = 'nowrap';
-    buttons.style.overflow = 'hidden';
-	
-    var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
-    {
-        editorUi.hideDialog();
-		
-        if (cancelFn != null)
+    if(isShowBtn){
+        var buttons = document.createElement('div');
+        buttons.className = "btnContent";
+        buttons.style.textAlign = 'right';
+        buttons.style.whiteSpace = 'nowrap';
+        buttons.style.overflow = 'hidden';
+        
+        var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
         {
-            cancelFn();
-        }
-    });
-    cancelBtn.className = 'geBtn';
+            editorUi.hideDialog();
+            
+            if (cancelFn != null)
+            {
+                cancelFn();
+            }
+        });
+        cancelBtn.className = 'geBtn';
 
-    if (editorUi.editor.cancelFirst)
-    {
-        buttons.appendChild(cancelBtn);
-    }
-	
-    var applyFunction = (apply != null) ? apply : this.createApplyFunction();
-	
-    var applyBtn = mxUtils.button(mxResources.get('apply'), function()
-    {
-        var color = input.value;
-        ColorDialog.addRecentColor(color, 12);
-		
-        if (color != 'none' && color.charAt(0) != '#')
+        if (editorUi.editor.cancelFirst)
         {
-            color = '#' + color;
+            buttons.appendChild(cancelBtn);
         }
+        
+        var applyFunction = (apply != null) ? apply : this.createApplyFunction();
+        
+        var applyBtn = mxUtils.button(mxResources.get('apply'), function()
+        {
+            var color = input.value;
+            ColorDialog.addRecentColor(color, 9);
+            
+            if (color != 'none' && color.charAt(0) != '#')
+            {
+                color = '#' + color;
+            }
 
-        applyFunction(color);
-        editorUi.hideDialog();
-    });
-    applyBtn.className = 'geBtn gePrimaryBtn';
-    buttons.appendChild(applyBtn);
-	
-    if (!editorUi.editor.cancelFirst)
-    {
-        buttons.appendChild(cancelBtn);
+            applyFunction(color);
+            editorUi.hideDialog();
+        });
+        applyBtn.className = 'geBtn gePrimaryBtn';
+        buttons.appendChild(applyBtn);
+        
+        if (!editorUi.editor.cancelFirst)
+        {
+            buttons.appendChild(cancelBtn);
+        }
+        div.appendChild(buttons);
     }
 	
     if (color != null)
@@ -244,8 +269,6 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
             picker.fromString(color);
         }
     }
-	
-    div.appendChild(buttons);
     this.picker = picker;
     this.colorInput = input;
 
@@ -273,7 +296,8 @@ var ColorDialog = function(editorUi, color, apply, cancelFn)
 /**
  * Creates function to apply value
  */
-ColorDialog.prototype.presetColors = ['E6D0DE', 'CDA2BE', 'B5739D', 'E1D5E7', 'C3ABD0', 'A680B8', 'D4E1F5', 'A9C4EB', '7EA6E0', 'D5E8D4', '9AC7BF', '67AB9F', 'D5E8D4', 'B9E0A5', '97D077', 'FFF2CC', 'FFE599', 'FFD966', 'FFF4C3', 'FFCE9F', 'FFB570', 'F8CECC', 'F19C99', 'EA6B66']; 
+// ColorDialog.prototype.presetColors = ['E6D0DE', 'CDA2BE', 'B5739D', 'E1D5E7', 'C3ABD0', 'A680B8', 'D4E1F5', 'A9C4EB', '7EA6E0', 'D5E8D4', '9AC7BF', '67AB9F', 'D5E8D4', 'B9E0A5', '97D077', 'FFF2CC', 'FFE599', 'FFD966', 'FFF4C3', 'FFCE9F', 'FFB570', 'F8CECC', 'F19C99', 'EA6B66']; 
+ColorDialog.prototype.presetColors = ['none','#D0021B', '#F5A623', '#F8E71C', '#8B572A', '#7ED321', '#417505', '#BD10E0', '#9013FE', '#4A90E2', '#50E3C2', '#B8E986', '#000000', '#4A4A4A', '#9B9B9B', '#FFFFFF'];
 
 /**
  * Creates function to apply value
@@ -322,7 +346,7 @@ ColorDialog.addRecentColor = function(color, max)
         mxUtils.remove(color, ColorDialog.recentColors);
         ColorDialog.recentColors.splice(0, 0, color);
 		
-        if (ColorDialog.recentColors.length >= max)
+        if (ColorDialog.recentColors.length > max)
         {
             ColorDialog.recentColors.pop();
         }
@@ -555,142 +579,6 @@ let FilenameDialog = function(editorUi, filename, buttonText, fn, label, validat
     saveContent.appendChild(btnContent)
     this.container = saveContent;
 };
-
-/**
- * 链接设置弹窗
- */
-var ConfigLinkDialog = function(editorUi, linkvalue, buttonText, fn)
-{
-    var graph = editorUi.editor.graph;
-    // 获取选中节点
-    var cell = graph.getSelectionCell();
-    var cellInfo = graph.getModel().getValue(cell);
-    var saveContent = editorUi.createDiv('geDialogInfo')
-
-    // 名称
-    var linkNameTitle = document.createElement('p');
-    linkNameTitle.innerHTML = '名称：';
-    linkNameTitle.style.margin = "9px 0 5px";
-    linkNameTitle.style.color = "#929292";
-    saveContent.appendChild(linkNameTitle)
-	
-    var linkNameInput = document.createElement('input');
-    linkNameInput.setAttribute('value', cellInfo.getAttribute('smartBiName') || '');
-    linkNameInput.className = 'saveFileInput'
-    saveContent.appendChild(linkNameInput)
-
-    // 链接
-    var linkTitle = document.createElement('p');
-    linkTitle.innerHTML = '链接：';
-    linkTitle.style.margin = "9px 0 5px";
-    linkTitle.style.color = "#929292";
-    saveContent.appendChild(linkTitle)
-	
-    var linkInput = document.createElement('input');
-    linkInput.setAttribute('value', cellInfo.getAttribute('smartBiLink') || '');
-    linkInput.className = 'saveFileInput'
-    saveContent.appendChild(linkInput)
-
-    // 按钮
-    var btnContent = editorUi.createDiv('btnContent');
-    var genericBtn = mxUtils.button(buttonText, function()
-    {
-        editorUi.hideDialog();
-        cellInfo.setAttribute('smartBiName', linkNameInput.value);
-        cellInfo.setAttribute('smartBiLink', linkInput.value);
-        graph.getModel().setValue(cell, cellInfo);
-    });
-    genericBtn.className = 'geBtn gePrimaryBtn';
-	
-    this.init = function()
-    {
-    };
-    var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
-    {
-        editorUi.hideDialog();
-    });
-    cancelBtn.className = 'geBtn';
-	
-    btnContent.appendChild(cancelBtn);
-
-    mxEvent.addListener(linkInput, 'keypress', function(e)
-    {
-        if (e.keyCode == 13)
-        {
-            genericBtn.click();
-        }
-    });
-	
-    btnContent.appendChild(genericBtn);
-	
-    saveContent.appendChild(btnContent)
-    this.container = saveContent;
-};
-/**
- * 链接弹窗
- */
-var LinkReportDialog = function(editorUi, defaultLink) {
-    var graph = editorUi.editor.graph;
-    // 获取选中节点
-    var cell = graph.getSelectionCell();
-    var cellInfo = graph.getModel().getValue(cell);
-    var saveContent = editorUi.createDiv('geDialogInfo');
-    // 链接
-    var nameTitle = document.createElement('p')
-    nameTitle.innerHTML = '链接'
-    nameTitle.className = 'geDialogInfoTitle';	
-    saveContent.appendChild(nameTitle)
-	
-    var nameInput = document.createElement('input');
-    nameInput.setAttribute('value', cellInfo.getAttribute('linkReport') || '');
-    nameInput.setAttribute('placeholder', '请输入链接地址');
-    nameInput.className = 'saveFileInput'
-    saveContent.appendChild(nameInput)
-
-    // 保存按钮
-    var btnContent = editorUi.createDiv('btnContent');
-    var genericBtn = mxUtils.button('保存', function()
-    {
-        if (!nameInput.value) {
-            mxUtils.alert('请输入链接名称')
-        } else {
-            cellInfo = cellInfo.cloneNode(true);
-            cellInfo.setAttribute('linkReport', nameInput.value)
-            graph.getModel().setValue(cell, cellInfo)
-            editorUi.hideDialog();
-        }
-    });
-    genericBtn.className = 'geBtn gePrimaryBtn';
-    // 取消按钮
-    var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
-    {
-        editorUi.hideDialog();
-    });
-    cancelBtn.className = 'geBtn';
-	
-    if (editorUi.editor.cancelFirst)
-    {
-        btnContent.appendChild(cancelBtn);
-    }
-
-    mxEvent.addListener(nameInput, 'keypress', function(e)
-    {
-        if (e.keyCode == 13)
-        {
-            genericBtn.click();
-        }
-    });
-	
-    btnContent.appendChild(genericBtn);
-	
-    if (!editorUi.editor.cancelFirst)
-    {
-        btnContent.appendChild(cancelBtn);
-    }
-
-    saveContent.appendChild(btnContent)
-    this.container = saveContent;
-}
 /**
  * 发布弹窗
  */
@@ -707,11 +595,9 @@ let PreviewDialog = function(editorUi,callback) {
     var genericBtn = mxUtils.button('保存并预览', function()
     {
         editorUi.save(editorUi.editor.filename || '新建应用', editorUi.editor.describe || '').then(res => {
-            callback(res.id)
-            editorUi.hideDialog();
-        }).catch(e => {
-            console.log(e)
-        });
+            callback(res.studioId)
+            editorUi.hideDialog()
+        })
     });
     genericBtn.className = 'geBtn gePrimaryBtn';
     // 取消按钮
@@ -743,7 +629,6 @@ let PublishDialog = function(editorUi) {
     var genericBtn = mxUtils.button('保存并发布', function()
     {
         editorUi.hideDialog();
-        console.log(editor)
         editorUi.save(editor.filename, editor.describe).then(res => {
             editor.ajax(editorUi, '/api/viewtool/publish/' + editor.getApplyId() + '/1', 'PUT', null, function() {
                 editor.tipInfo(editorUi, true, '发布');
@@ -853,12 +738,9 @@ let ImageDialog = function(editorUi, cell) {
         // 获取本地图片
         document.getElementById('chooseImage').addEventListener('change', function(e) {
             //创建new FileReader()对象
-            var fr = new FileReader();
             // 获取图片信息
             localImage = e.target.files[0];
             //将图片读取为DataURL
-            // fr.readAsDataURL(localImage);
-            // fr.onload = function() {}
             document.getElementById('choosedImgPath').innerHTML = document.getElementById('chooseImage').value;
         })
         // 内部图片点击事件
@@ -904,11 +786,10 @@ let ImageDialog = function(editorUi, cell) {
 		var select = null;
 		var cells = graph.getSelectionCells();
 		var updateImg = function (newValue) {
-			let prefix = 'getechFileSystem/'
-			newValue =  prefix + newValue
-            graph.getModel().beginUpdate();
+            let prefix = 'getechFileSystem/'
+            newValue = prefix + newValue.filePath
+            graph.getModel().beginUpdate()
             try {
-                console.log(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
                 graph.setCellStyles(mxConstants.STYLE_IMAGE, (newValue.length > 0) ? newValue : null, cells);
             }
             finally {
@@ -926,8 +807,8 @@ let ImageDialog = function(editorUi, cell) {
         if (localImage) {
             var formData = new FormData();
             formData.append('file', localImage);
-            editorUi.editor.uploadFile(editorUi, '/api/upload/file', 'POST', formData, function(res) {
-                newValue = res.filePath;
+            editorUi.editor.uploadFile(editorUi, '/api/console/upload/file', 'POST', formData, function (res) {
+                newValue = res;
                 updateImg(newValue)
             })
         } else if (document.getElementById('checkedImage') && document.getElementById('checkedImage').getAttribute('data-layout')) {
@@ -1025,6 +906,7 @@ let addPageDialog = function(editorUi, type) {
     saveContent.appendChild(isDialog);
     // 保存按钮
     var btnContent = editorUi.createDiv('btnContent');
+
     var genericBtn = mxUtils.button('应用', function()
     {
         var titleText = nameInput.value.trim();
@@ -1092,684 +974,6 @@ let addPageDialog = function(editorUi, type) {
     btnContent.appendChild(genericBtn);
 	
     saveContent.appendChild(btnContent)
-    this.container = saveContent;
-}
-/**
- * 下拉列表属性弹窗
- * @param {object} editorUi 
- */
-
-/**
- * 第一次弹窗将其转为xml
- * @param {object} graph 
- * @param {object} cell 
- */
-function convertsToXml(graph, cell) {
-    var value = graph.getModel().getValue(cell);
-    if (!mxUtils.isNode(value))
-    {
-        var doc = mxUtils.createXmlDocument();
-        var obj = doc.createElement('object');
-        obj.setAttribute('label', value || '');
-        value = obj;
-    }
-    return value;
-}
-var SelectPropDialog = function(editorUi, cell) {
-    var graph = editorUi.editor.graph;
-    var value = convertsToXml(graph, cell)
-    // 获取选中节点
-    var cellInfo = graph.getModel().getValue(cell);
-    if (!mxUtils.isNode(cellInfo))
-    {
-        var doc = mxUtils.createXmlDocument();
-        var obj = doc.createElement('object');
-        obj.setAttribute('label', cellInfo || '');
-        cellInfo = obj;
-    }
-    var selectData = []
-    if (cellInfo.attributes.selectProps) {
-        selectData = [].concat(cellInfo.attributes.selectProps.nodeValue.split(','))
-    }
-    var defaultProp = cellInfo.getAttribute('defaultProp');
-    var saveContent = editorUi.createDiv('geDialogInfo')
-    // 属性列表
-    saveContent.innerHTML = `
-		<div id="innerPropsBox">
-			<div class="innerPropsOperate">
-				<img id="addProp" src="/static/images/icons/addProp.png" title="增加" />
-				<img id="moveUp" src="/static/images/icons/moveupProp.png" title="上移" />
-				<img id="moveDown" src="/static/images/icons/movedownProp.png" title="下移" />
-				<img id="delProp" src="/static/images/icons/deleteProp.png" title="删除" />
-			</div>
-			<ul id="innerPropsList">
-			${
-    selectData.reduce((str, v) => str += `
-						<li class="innerPropsType">
-							<input type="checkbox" ${defaultProp === v ? 'checked' : '' } />
-							<span>${v}</span>
-						</li>
-				`, '')
-}
-			</ul>
-		</div>
-	`
-
-    this.init = function() {
-        // 增加
-        $("#addProp").click(function() {
-            var liEle = document.createElement('li')
-            liEle.className = 'innerPropsType'
-            var inputEle = document.createElement('input')
-            inputEle.setAttribute('type', 'checkbox')
-            liEle.appendChild(inputEle);
-            var spanEle = document.createElement('span')
-            spanEle.innerText = "新增属性"
-            liEle.appendChild(spanEle);
-            $("#innerPropsList").append(liEle)
-        })
-        // 上移
-        $("#moveUp").click(function() {
-            var node = 	$("#innerPropsList .active").eq(0);
-            if (!node) { return false }
-            node.insertBefore(node.prev());
-        })
-        // 下移
-        $("#moveDown").click(function() {
-            var node = 	$("#innerPropsList .active").eq(0);
-            if (!node) { return false }
-            node.insertAfter(node.next());
-        })
-        // 删除
-        $("#delProp").click(function() {
-            $("#innerPropsList .active").eq(0).remove()
-        })
-        // 单击选中
-        $("#innerPropsList").click(function(e) {
-            e = e || window.event;
-            var node = e.target;
-            if (node.nodeName === 'SPAN') {
-                node = node.parentNode;
-            } else if ( node.nodeName === 'INPUT' ) {
-                node = node.parentNode;
-                $(node).siblings().children(':checked').prop('checked', false)
-            } else if ( node.nodeName !== 'LI') {
-                return false;
-            }
-            $(node).siblings('.active')[0] ? $(node).siblings('.active')[0].className = 'innerPropsType' : '';
-            node.className += " active";
-        })
-        // 双击编辑
-        $("#innerPropsList").dblclick(function(e) {
-            e = e || window.event;
-            var target = e.target;
-            if (target.nodeName === 'SPAN') {
-                // 添加编辑框
-                var _input = document.createElement('input')
-                _input.className = 'editInput'
-                target.parentNode.appendChild(_input);
-                _input.focus();
-                $(_input).val(target.innerText)
-                // 失去焦点
-                _input.addEventListener('blur', function() {
-                    $(this).prev().text($(this).val())
-                    $(this).remove();
-                })
-            }
-        })
-    }
-    // 保存按钮
-    var btnContent = editorUi.createDiv('btnContent');
-    var genericBtn = mxUtils.button('应用', function()
-    {
-        var list = $("#innerPropsList").children();
-        var data = [];
-        for (var i = 0; i < list.length; i++) {
-            data.push(list[i].children[1].innerText)
-        }
-        defaultProp = $('.innerPropsType input:checked').next().text();
-        cellInfo.setAttribute('defaultProp', defaultProp);
-        console.log(cellInfo.getAttribute('label'),defaultProp)
-        cellInfo.setAttribute('label', cellInfo.getAttribute('label').replace(/"selectTag">(.*)<\/select>/, `"selectTag"><option>${defaultProp}</option></select>`))
-        cellInfo.setAttribute('selectProps', data);
-        graph.getModel().setValue(cell, cellInfo)
-        editorUi.hideDialog();
-    });
-    genericBtn.className = 'geBtn gePrimaryBtn';
-    // 取消按钮
-    var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
-    {
-        editorUi.hideDialog();
-    });
-    cancelBtn.className = 'geBtn';
-    btnContent.appendChild(cancelBtn);
-    btnContent.appendChild(genericBtn);
-	
-    saveContent.appendChild(btnContent)
-    this.container = saveContent;
-}
-
-function fillParams(elt, data) {
-    elt.innerHTML = '';
-    elt.innerHTML = `
-		${
-    data.map(param => `
-				<span>${param.name}</span>
-			`).join(';')
-}
-	`;
-}
-/**
- * 控件数据弹窗
- * @param {object} editorUi 
- * @param {object} cell 
- */
-var PaletteDataDialog = function(editorUi, cell) {
-    var graph = editorUi.editor.graph;
-    var modelInfo = graph.getModel().getValue(cell);
-    var paramsData = '';
-    // 绑定数据信息
-    var bindData = JSON.parse(modelInfo.getAttribute('bindData')) || {
-        pointType: '',
-        point: '',
-        params: [],
-        fillVariable: false,
-        changeStatus: []
-    }
-    // 弹窗内容
-    var saveContent = editorUi.createDiv('geDialogInfo')
-    saveContent.style.padding = "22px";
-    // 已选择参数列表
-    var choosedParam = bindData.params;
-    // 填充列表
-    this.fillContent = function(ele, data) {
-        ele.innerHTML = '';
-        for (var i = 0; i < data.length; i++) {
-            var opt = document.createElement('option');
-            opt.innerText = data[i].name;
-            opt.setAttribute('value', data[i].id);
-            ( ele.id == 'pointSelect' ? bindData.point : bindData.pointType) === data[i].id ? opt.setAttribute('selected',  true) : null;
-            if (data[i].points) {
-                opt.setAttribute('data-points', JSON.stringify(data[i].points))
-                opt.setAttribute('data-params', JSON.stringify(data[i].params))
-            }
-            ele.appendChild(opt)
-        }
-    }
-	
-    // 采集点类型：
-    var typeTitle = document.createElement('p')
-    typeTitle.innerHTML = '采集点类型：';
-    typeTitle.className = 'geDialogInfoTitle';
-    saveContent.appendChild(typeTitle)
-	
-    var typeSelect = document.createElement('select');
-    typeSelect.setAttribute('value', '');
-    typeSelect.className = 'dialogSelect';
-    typeSelect.id = 'typeSelect';
-    typeSelect.setAttribute('value', bindData.pointType)
-    saveContent.appendChild(typeSelect)
-	
-    // 采集点：
-    var pointTitle = document.createElement('p');
-    pointTitle.innerHTML = '采集点：';
-    pointTitle.className = 'geDialogInfoTitle';
-    saveContent.appendChild(pointTitle)
-	
-    var pointSelect = document.createElement('select');
-    pointSelect.setAttribute('value', '');
-    pointSelect.className = 'dialogSelect'
-    pointSelect.id = 'pointSelect'
-    saveContent.appendChild(pointSelect)
-
-    // 变量：
-    var variableTitle = document.createElement('p');
-    variableTitle.className = 'geDialogInfoTitle';
-    var variableTitleSpan = document.createElement('span');
-    variableTitleSpan.innerHTML = '变量：';
-    variableTitle.appendChild(variableTitleSpan);
-    // 添加变量
-    var addVariableBtn = document.createElement('span');
-    addVariableBtn.innerHTML = '变量';
-    addVariableBtn.className = 'addVariableBtn';
-    variableTitle.appendChild(addVariableBtn);
-    saveContent.appendChild(variableTitle)
-    // 填充内容的变量
-    var insertVariable = document.createElement('div');
-    insertVariable.className = 'geDialogInfoTitle';
-    insertVariable.innerHTML = `
-		<span>填充数据：</span>
-		<span>
-			<label>
-				<input type='radio' class="fillVariable" value=true style="transform: translateY(2px)" name='insert' ${bindData.fillVariable && 'checked'} />
-				是(默认填充第一个参数)
-			</label>
-			<label>
-				<input type='radio' class="fillVariable" value=false style="transform: translateY(2px)" name='insert' ${!bindData.fillVariable && 'checked'} />
-				否
-			</label>
-		</span>
-	`
-    saveContent.appendChild(insertVariable)
-    // 变量列表
-    var variableList = document.createElement('div');
-    variableList.className = 'dataDialogList variablesList'
-    fillParams(variableList, choosedParam);
-    saveContent.appendChild(variableList);
-	
-    // 相关模型：
-    var modelTitle = document.createElement('p');
-    modelTitle.innerHTML = '相关模型：';
-    modelTitle.className = 'geDialogInfoTitle';
-    saveContent.appendChild(modelTitle)
-    // 模型列表
-    var modelList = document.createElement('ul');
-    modelList.className = 'dataDialogList modelList'
-    saveContent.appendChild(modelList);
-		
-    // 绑定事件
-    // 选择采集点类型
-    mxEvent.addListener(typeSelect, 'change', (e) => {
-        var data = $(typeSelect).find("option:selected").data('points');
-        paramsData = $(typeSelect).find("option:selected").data('params');
-        this.fillContent(pointSelect, data);
-        choosedParam = [];
-        fillParams(variableList, choosedParam);
-    })
-    // 切换采集点
-    mxEvent.addListener(pointSelect, 'change', (e) => {
-        choosedParam = [];
-        fillParams(variableList, choosedParam);
-        fillModelList(modelList, []);
-    });
-    // 选择变量应用回调函数
-    function chooseVariable(data) {
-        choosedParam = data;
-        fillParams(variableList, choosedParam);
-        editorUi.hideDialog();
-        getModels(editorUi, modelList, pointSelect.value, data.map(val => val.id).join(), true)
-    }
-    // 选择变量
-    addVariableBtn.addEventListener('click', function(e) {
-        var dlg = new chooseVariableDialog(editorUi, paramsData, choosedParam, chooseVariable)
-        editorUi.showDialog(dlg.container, 410, 350, true, false, null, null, '选择变量');
-    })
-	
-    // 保存按钮
-    var btnContent = editorUi.createDiv('btnContent');
-    var genericBtn = mxUtils.button('应用', function()
-    {
-        // 配置模型应用报警方式ajax
-        bindData = {
-            pointType: typeSelect.value,
-            point: pointSelect.value,
-            params: choosedParam,
-            fillVariable: $('.fillVariable:checked').val() == 'true'
-        }
-        graph.getModel().beginUpdate();
-        try {
-            modelInfo.setAttribute('bindData', JSON.stringify(bindData));
-            graph.getModel().setValue(cell, modelInfo);
-        }
-        finally {
-            graph.getModel().endUpdate();
-        }
-        editorUi.hideDialog();
-    });
-    genericBtn.className = 'geBtn gePrimaryBtn';
-    // 取消按钮
-    var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
-    {
-        editorUi.hideDialog();
-    });
-    this.init = () => {
-        editorUi.editor.ajax(editorUi, '/api/pointTypes', 'GET', '', (res) => {
-            // 点位类型数据
-            var pointTypes = [].concat(res);
-            pointTypes.unshift({
-                name: '请选择',
-                id: '',
-                points: [],
-                params: []
-            })
-            // 点位列表
-            const currentPointType = pointTypes.filter(val => {
-                return val.id == bindData.pointType
-            })[0];
-            var pointsData = currentPointType.points;
-            // 参数列表
-            paramsData = currentPointType.params;
-			
-            this.fillContent(typeSelect, pointTypes)
-            this.fillContent(pointSelect, pointsData)
-			
-            // 查询模型列表
-            getModels(editorUi, modelList, bindData.point, bindData.params.map(val => val.id).join())
-        })
-    }
-    cancelBtn.className = 'geBtn';
-    btnContent.appendChild(cancelBtn);
-    btnContent.appendChild(genericBtn);
-	
-    saveContent.appendChild(btnContent)
-    this.container = saveContent;
-}
-
-/**
- * 生成列表
- * @param {Array<string>} data 数据列表
- * @param {string} classname class名称
- */
-function createList(data, classname) {
-    classname = classname || '';
-    this.ulEle = document.createElement('ul');
-    this.ulEle.className = classname;
-    this.params = {};
-    this.nodes = []; //选中的DOM节点
-    this.ulEle.setAttribute('data-variables', []);
-    fillList(this.ulEle, data);
-    this.ulEle.addEventListener('click', function(e) {
-        e = e || window.event;
-        var target = e.target;
-        // 事件委托
-        if (target.nodeName === 'LI') {
-            if (target.className == 'active' ) {
-                target.className = '';
-                let index = 0;
-                this.nodes.splice( index , 1 );
-                if (this.params[target.getAttribute('data-paramId')]) {
-                    delete this.params[target.getAttribute('data-paramId')]
-                } 
-            } else {
-                target.className = 'active';
-                this.params[target.getAttribute('data-paramId')] = {
-                    name: target.innerHTML,
-                    id: target.getAttribute('data-paramId')
-                };
-                this.nodes.push(target);
-            }
-            // 锁定操作按钮
-            if (classname == 'sourceList variableList') {
-                if (!Object.keys(this.params).length) {
-                    document.getElementsByClassName('increment')[0].className = 'increment disabledCrement';
-                } else {
-                    document.getElementsByClassName('increment')[0].className = 'increment';
-                }
-            } else if (classname == 'destList variableList') {
-                if (!Object.keys(this.params).length) {
-                    document.getElementsByClassName('decrement')[0].className = 'decrement disabledCrement';
-                } else {
-                    document.getElementsByClassName('decrement')[0].className = 'decrement';
-                }
-            }
-        }
-    }.bind(this))
-}
-
-/**
- * 填充列表
- * @param {object} ele 
- * @param {Array} data
- */
-function fillList(ele, data) {
-    for (var i in data) {
-        var opt = document.createElement('li');
-        opt.innerText = data[i].name;
-        opt.setAttribute('data-paramId', data[i].id)
-        opt.setAttribute('title', data[i].name);
-        ele.appendChild(opt);
-    }
-}
-
-/**
- * 选择变量
- * @param {Array} data 全部参数列表
- * @param {Array} chooseData 以选择参数列表
- */
-var chooseVariableDialog = function(editorUi, sourcedata = [], chooseData = [], fn) {
-    var saveContent = editorUi.createDiv('geDialogInfo')
-    saveContent.setAttribute('data-dialog', 'chooseVariable');
-    // 搜索
-    var searchBox = editorUi.createDiv('searchBox')
-    var searchInput = document.createElement('input')
-    searchInput.className = "dialogSelect"
-    searchInput.setAttribute('placeholder', '搜索')
-    searchBox.appendChild(searchInput)
-    var searchBtn = document.createElement('button')
-    searchBtn.innerText = "搜索"
-    searchBox.appendChild(searchBtn)
-    saveContent.appendChild(searchBox)
-
-    // 点击搜索
-    mxEvent.addListener(searchBtn, 'click', function() {
-        let filterList = sourcedata.filter(val => {
-            return val.name.indexOf(searchInput.value) != -1
-        })
-        sourceList.nodes = [];
-        sourceList.params = {};
-        sourceList.ulEle.innerHTML = '';
-        document.getElementsByClassName('increment')[0].className = 'increment disabledCrement';
-        fillList(sourceList.ulEle, filterList);
-    })
-    // 源变量列表，过滤已选中的
-    sourcedata = sourcedata.filter(val => {
-        for (let item of chooseData) {
-            if (item.id === val.id) {
-                return false
-            }
-        }
-        return true
-    })
-    var sourceList = new createList(sourcedata, 'sourceList variableList');
-    saveContent.appendChild(sourceList.ulEle);
-    // 操作变量
-    // 右边增加变量
-    var operateList = editorUi.createDiv('operateList');
-    var increment = editorUi.createDiv('increment disabledCrement');
-    increment.innerText = '+';
-    operateList.appendChild(increment);
-    // 右边增加变量
-    increment.addEventListener('click', function() {
-        // 删除节点
-        for (var i = 0; i < sourceList.nodes.length; i++) {
-            sourceList.ulEle.removeChild(sourceList.nodes[i])
-        }
-        sourceList.nodes = [];
-        // 修改数据
-        var sList = sourceList.params;
-        for (let key in sList) {
-            chooseData.push(sList[key]);
-            sourcedata = sourcedata.filter(val => {
-                return val.id !== key
-            })
-        }
-        fillList(destList.ulEle, sList);
-        sourceList.params = {};
-        document.getElementsByClassName('increment')[0].className = 'increment disabledCrement';
-    })
-    // 右边减少变量
-    var decrement = editorUi.createDiv('decrement disabledCrement');
-    decrement.innerText = '-';
-    operateList.appendChild(decrement);
-    saveContent.appendChild(operateList);
-    // 目标变量列表
-    var destList = new createList(chooseData, 'destList variableList');
-    saveContent.appendChild(destList.ulEle);
-    decrement.addEventListener('click', function() {
-        // 删除节点
-        for (var i = 0; i < destList.nodes.length; i++) {
-            destList.ulEle.removeChild(destList.nodes[i])
-        }
-        destList.nodes = [];
-        // 修改数据
-        var sList = destList.params;
-        for (let key in sList) {
-            sourcedata.push(sList[key]);
-            chooseData = chooseData.filter(val => {
-                return val.id !== key
-            })
-        }
-        for (let key in sList) {
-            delete chooseData[key]
-        }
-        fillList(sourceList.ulEle, sList);
-        destList.params = {};
-        document.getElementsByClassName('decrement')[0].className = 'decrement disabledCrement';
-    })
-
-    // 保存按钮
-    var btnContent = editorUi.createDiv('btnContent');
-    var genericBtn = mxUtils.button('应用', function()
-    {
-        fn(chooseData);
-    });
-    genericBtn.className = 'geBtn gePrimaryBtn';
-    // 取消按钮
-    var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
-    {
-        editorUi.hideDialog();
-    });
-    cancelBtn.className = 'geBtn';
-    btnContent.appendChild(cancelBtn);
-    btnContent.appendChild(genericBtn);
-	
-    saveContent.appendChild(btnContent)
-    this.container = saveContent;
-}
-
-/**
- * 根据采集点和参数查询应用
- * @param {object} editorUi
- * @param {string} pointId 采集点id
- * @param {string} paramId 变量id，逗号隔开
- * @param {boolean} closeDialog 是否需要关闭弹窗
- */
-function getModels(editorUi, modelEle, pointId, paramId, closeDialog = false) {
-    var modelData = [];
-    if (pointId && paramId) {
-        editorUi.editor.ajax(editorUi, '/api/viewTool/model/serach', 'POST', {pointId, paramId}, function(res) {
-            modelData = [].concat(res);
-            if(res && res.length){
-                fillModelList(modelEle, modelData);
-            }
-        }, null, '获取应用模型中···')
-    } else {
-        fillModelList(modelEle, modelData);
-    }
-    return modelData;
-}
-
-/**
- * 填充模型列表
- * @param {object} ele 模型列表的DOM节点
- * @param {Array} data 数据列表
- */
-function fillModelList(ele, data) {
-    if (data.length) {
-        ele.innerHTML = `
-			${
-    data.map(model => `
-					<li>
-						<span style="color: #767676">${model.modelName}</span>
-						<span title="${JSON.parse(model.modelContent)[0].replaceName}">${JSON.parse(model.modelContent)[0].replaceName}</span>
-					</li>
-				`).join('')
-}
-		`;
-    } else {
-        sessionStorage.setItem('oldTab', JSON.stringify(      
-            [
-                {
-                    "path":"/alarmCenter",
-                    "name":"控制中心",
-                    "current":"",
-                    "status":""
-                },
-                {
-                    "name":"模型管理",
-                    "path":"/modelManage",
-                    "current":"}",
-                    "status":"add"
-                }
-            ]));
-        sessionStorage.setItem('tabIndex', 1);
-        ele.innerHTML = `
-			<span>当前采集点参数未独立应用模型</span><a class="addModelBtn" target="_blank" href="/modelManage">去添加模型</a>
-		`
-    }
-}
-
-/**
- * 填充执行列表
- * @param {object} ele 执行列表的DOM节点
- * @param {Array} data 数据列表
- */
-function fillExecuteList(ele, data) {
-    // 状态列表
-    const statusList = [
-        {
-            status: 0,
-            title: '不作任何变化'
-        }, {
-            status: 1,
-            title: '预警黄'
-        }, {
-            status: 2,
-            title: '告警红'
-        }, {
-            status: 3,
-            title: '异常灰'
-        }
-    ];
-
-    ele.innerHTML = `
-		${
-    data.map(model => `
-				<li data-modelId="${model.id}">
-					<input type="checkbox" name="models" style="float: left;margin: 6px 2px 0 0;" ${model.warn != 0 ? "checked" : ""}/>
-					<span style="color: #767676;float: left;width: 240px;overflow: hidden;text-overflow: ellipsis;" title="${model.modelName}${model.modelRule}">${model.modelName}${model.modelRule}</span>
-					<select style="float: left;width: 65px;border-color: #C5C5C5;" value='3'>
-					${
-    statusList.map(status => `
-							<option ${status.status == model.warn ? "selected" : ""} value="${status.status}">${status.title}</option>
-						`).join('')
-}
-					</select>
-				</li>
-			`).join('')
-}
-	`;
-}
-/**
- * 更换图元
- */
-var ChangePrimitiveDialog = function(editorUi) {
-    var saveContent = editorUi.createDiv('geDialogInfo');
-    saveContent.setAttribute('data-dialog', 'changePrimitive');
-    // 图元列表
-    var graph = editorUi.editor.graph;
-    var cells = graph.getSelectionCells();
-    saveContent.innerHTML = `
-	${
-    editorUi.sidebar.primitives.map(val => `
-			<img class="primitiveIcon" src="/static/stencils/basic/${val}.png" />
-		`).join('')
-}
-	`
-    // 点击更换图元
-    mxEvent.addListener(saveContent, 'click', function(evt) {
-        if (evt.target.nodeName === 'IMG') {
-            graph.getModel().beginUpdate();
-            try {
-                graph.setCellStyles(mxConstants.STYLE_IMAGE, evt.target.getAttribute('src'), cells);
-                editorUi.hideDialog();
-            }
-            finally {
-                graph.getModel().endUpdate();
-            }
-        }
-    })
-    // saveContent.appendChild(primitiveList);
     this.container = saveContent;
 }
 
@@ -2754,8 +1958,6 @@ var LayersWindow = function(editorUi, x, y, w, h)
 };
 
 export {
-    OpenDialog, ColorDialog, AboutDialog, valueDialog, ConfigLinkDialog,
-    LinkReportDialog, PreviewDialog, PublishDialog, tipDialog, ImageDialog,
-    addPageDialog, SelectPropDialog, PaletteDataDialog, fillExecuteList,
-    ChangePrimitiveDialog, EditDiagramDialog, LinkDialog, OutlineWindow, LayersWindow, FilenameDialog
+    OpenDialog, ColorDialog, AboutDialog, valueDialog,PreviewDialog, PublishDialog, tipDialog, ImageDialog,
+    addPageDialog,EditDiagramDialog, LinkDialog, OutlineWindow, LayersWindow, FilenameDialog
 }

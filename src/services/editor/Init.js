@@ -36,7 +36,7 @@ let getCookie = function(cname) {
 /**
  * Change types
  */
-export function ChangePageSetup(ui, color, image, format)
+function ChangePageSetup(ui, color, image, format)
 {
     this.ui = ui;
     this.color = color;
@@ -78,7 +78,6 @@ ChangePageSetup.prototype.execute = function()
     {
         this.format = this.previousFormat;
         var tmp = graph.pageFormat;
-		
         if (this.previousFormat.width != tmp.width ||
 			this.previousFormat.height != tmp.height)
         {
@@ -94,5 +93,5 @@ ChangePageSetup.prototype.execute = function()
     }
 };
 export {
-    getCookie,
+    getCookie, ChangePageSetup
 }

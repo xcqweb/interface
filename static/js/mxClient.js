@@ -183,6 +183,15 @@ var mxClient =
 	  	navigator.userAgent.indexOf('Gecko/') >= 0 || // Netscape/Gecko
 	  	navigator.userAgent.indexOf('Opera/') >= 0 || // Opera
 	  	(document.documentMode != null && document.documentMode >= 9), // IE9+
+	/**
+	 * 变量 IS_ADD_IMG 是否开启图案作为画布背景功能
+	 */
+	IS_ADD_IMG:false,
+
+	/**
+	 * 变量 IS_ADD_IMG_SRC 图案背景路径变量声明
+	 */
+	IS_ADD_IMG_SRC:'',
 
 	/**
 	 * Variable: NO_FO
@@ -7230,7 +7239,7 @@ var mxUtils =
 	 * Defines the rectangle for the A4 portrait page format. The dimensions
 	 * of this page format are 826x1169 pixels.
 	 */
-	PAGE_FORMAT_A4_PORTRAIT: new mxRectangle(0, 0, 827, 1169),
+	PAGE_FORMAT_A4_PORTRAIT: new mxRectangle(0, 0, 1366, 768),
 
 	/**
 	 * Variable: PAGE_FORMAT_A4_PORTRAIT
@@ -7238,7 +7247,7 @@ var mxUtils =
 	 * Defines the rectangle for the A4 portrait page format. The dimensions
 	 * of this page format are 826x1169 pixels.
 	 */
-	PAGE_FORMAT_A4_LANDSCAPE: new mxRectangle(0, 0, 1169, 827),
+	PAGE_FORMAT_A4_LANDSCAPE: new mxRectangle(0, 0, 1366, 768),
 
 	/**
 	 * Variable: PAGE_FORMAT_LETTER_PORTRAIT
@@ -8411,6 +8420,10 @@ var mxUtils =
 	 */
 	SHAPE_RECTANGLE: 'rectangle',
 
+	/*
+	 *Variable: SHAPE_oval
+	*/
+	SHAPE_OVAL: 'oval',
 	/**
 	 * Variable: SHAPE_ELLIPSE
 	 * 
@@ -8458,6 +8471,7 @@ var mxUtils =
 	 * Default is arrow.
 	 */
 	SHAPE_ARROW: 'arrow',
+
 	
 	/**
 	 * Variable: SHAPE_ARROW_CONNECTOR
@@ -8537,6 +8551,9 @@ var mxUtils =
 	 * Constant for classic arrow markers.
 	 */
 	ARROW_CLASSIC: 'classic',
+
+	/*
+	*/
 
 	/**
 	 * Variable: ARROW_CLASSIC_THIN
@@ -9648,7 +9665,18 @@ var mxEvent =
 			}
 			else if (!mxEvent.isConsumed(evt))
 			{
-				graph.fireMouseEvent(mxEvent.MOUSE_DOWN, new mxMouseEvent(evt, getState(evt)));
+				// 组合时候 拖拽以后会发生不对齐的现象，暂时屏蔽组合时的拖拽。
+				var tag = true;
+				function findTarget(state){
+					var curCell = state.cell;
+					if( curCell.style === 'group' ){
+						tag = false;
+					}
+				}
+				findTarget(getState(evt));
+				if( tag ){
+					graph.fireMouseEvent(mxEvent.MOUSE_DOWN, new mxMouseEvent(evt, getState(evt)));
+				}
 			}
 		},
 		function (evt)
@@ -11197,7 +11225,7 @@ mxXmlRequest.prototype.simulate = function(doc, target)
 {
 	doc = doc || document;
 	var old = null;
-
+	// alert(doc, document , '---', doc == document)
 	if (doc == document)
 	{
 		old = window.onbeforeunload;		
@@ -15304,9 +15332,57 @@ mxPopupMenu.prototype.isPopupTrigger = function(me)
  */
 mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, enabled, active)
 {
+	let selectCell = this.graph.getSelectionCell()
+	let selectCount = this.graph.getSelectionCount()
+	// console.log(selectCount)
+	let shapeName = ''
+	if (selectCell) {
+		shapeName = this.graph.view.getState(selectCell).style.shape;
+	}
+	if (typeof this.graph.getModel().getValue(selectCell) === 'object') {
+		if (this.graph.getModel().getValue(selectCell)) {
+			let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') || undefined // 获取到元素
+			if ((showOrHide === 'true') && title.includes('设置隐藏')) {
+				title = '设置显示'
+			}
+		} else {
+			if (Object.prototype.toString.call(selectCell) === '[object Object]' && selectCell.hide === true) {
+				title = '设置显示'
+			}
+		}
+	} else {
+	}
+	
+	let ifshowPaste = false
+	if (selectCount === 1) { // 单个组件
+		if (!this.graph.getModel().isEdge(selectCell) && !this.graph.isSwimlane(selectCell) && this.graph.getModel().getChildCount(selectCell) > 0 && shapeName !== 'menulist') {
+			// 取消组合
+			let arr4 = shapeName === 'tableBox' ? ['粘贴', '组合','取消组合'] : ['粘贴', '组合']
+			if (arr4.includes(title)) {
+				ifshowPaste = true
+			}
+		} else {
+			let arr = ['rectangle', 'button','ellipse', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag','text','light','progress','pipeline1','pipeline2','pipeline3', 'userimage', 'lineChart', 'gaugeChart'];
+			// let menulistArr = ['menulist','tableBox']; // 菜单 和 表格整体
+			let arr1 = ['粘贴','组合', '取消组合']
+			if (arr.includes(shapeName) && arr1.includes(title)) {
+				ifshowPaste = true
+			}
+		}
+	} else if (selectCount > 1 ) {
+		if (title.includes('设置显示')) {
+			title = '设置隐藏'
+		}
+		let arr3 = shapeName === 'tableBox' ? ['粘贴','组合','取消组合', '设置隐藏', '设置显示'] : ['粘贴', '取消组合', '设置隐藏', '设置显示']
+		if (arr3.includes(title)) {
+			ifshowPaste = true
+		}
+	} else {
+		ifshowPaste = false
+	}
+
 	parent = parent || this;
 	this.itemCount++;
-	
 	// Smart separators only added if element contains items
 	if (parent.willAddSeparator)
 	{
@@ -15320,48 +15396,32 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 
 	parent.containsItems = true;
 	var tr = document.createElement('tr');
-	tr.className = 'mxPopupMenuItem';
-	// var col1 = document.createElement('td');
-	// col1.className = 'mxPopupMenuIcon';
-
-	// // Adds the given image into the first column
-	// if (image != null)
-	// {
-	// 	var img = document.createElement('img');
-	// 	img.src = image;
-	// 	col1.appendChild(img);
-	// }
-	// else if (iconCls != null)
-	// {
-	// 	var div = document.createElement('div');
-	// 	div.className = iconCls;
-	// 	col1.appendChild(div);
-	// }
-	
-	// tr.appendChild(col1);
-	
+	tr.className = ifshowPaste ? 'mxPopupMenuItem disabled' : 'mxPopupMenuItem'
 	if (this.labels)
 	{
 		var col2 = document.createElement('td');
+		if (title === '图片') { // 选择图片... 扩大点击范围 调出上传图片框
+			col2.setAttribute('colspan', 2)
+		}
 		col2.className = 'mxPopupMenuItem' +
 			((enabled != null && !enabled) ? ' mxDisabled' : '');
-		
 		mxUtils.write(col2, title);
 		col2.align = 'left';
 		tr.appendChild(col2);
-	
-		var col3 = document.createElement('td');
-		col3.className = 'mxPopupMenuItem' +
-			((enabled != null && !enabled) ? ' mxDisabled' : '');
-		col3.style.textAlign = 'right';
-		col3.style.paddingRight = '15px';
-		
-		tr.appendChild(col3);
-		
-		if (parent.div == null)
-		{
+		if (title === '图片') {
+		} else {
+			var col3 = document.createElement('td');
+			col3.className = 'mxPopupMenuItem' +
+				((enabled != null && !enabled) ? ' mxDisabled' : '');
+			col3.style.textAlign = 'right';
+			col3.style.paddingRight = '15px';
+			col3.style.fontSize = '12px';
+			tr.appendChild(col3);
+		}
+		if (parent.div == null) {
 			this.createSubmenu(parent);
 		}
+		
 	}
 	
 	parent.tbody.appendChild(tr);
@@ -15369,7 +15429,6 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	if (active != false && enabled != false)
 	{
 		var currentSelection = null;
-		
 		mxEvent.addGestureListeners(tr,
 			mxUtils.bind(this, function(evt)
 			{
@@ -15462,7 +15521,6 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 			})
 		);
 	}
-	
 	return tr;
 };
 
@@ -15576,9 +15634,10 @@ mxPopupMenu.prototype.addSeparator = function(parent, force)
 		// col1.style.padding = '0 0 0 0px';
 		
 		// tr.appendChild(col1);
-		
+		tr.style.height = '10px';
 		var col2 = document.createElement('td');
 		col2.style.padding = '0 0 0 0px';
+		// col2.style.height = '10px';
 		col2.setAttribute('colSpan', '2');
 	
 		var hr = document.createElement('hr');
@@ -15665,16 +15724,24 @@ mxPopupMenu.prototype.showMenu = function()
  */
 mxPopupMenu.prototype.hideMenu = function()
 {
-	if (this.div != null)
-	{
-		if (this.div.parentNode != null)
-		{
-			this.div.parentNode.removeChild(this.div);
-		}
-		
-		this.hideSubmenu(this);
-		this.containsItems = false;
-		this.fireEvent(new mxEventObject(mxEvent.HIDE));
+	// 在这里存选择图片dom
+	let selectCell = this.graph.getSelectionCell()
+	let shapeName = ''
+	if (selectCell) {
+		shapeName = this.graph.view.getState(selectCell).style.shape;
+	}
+	if (shapeName === 'image') { // 图片 不走hideMenu 要不然不能上传
+	} else {
+		if (this.div != null)
+			{
+				if (this.div.parentNode != null)
+				{
+					this.div.parentNode.removeChild(this.div);
+				}
+				this.hideSubmenu(this);
+				this.containsItems = false;
+				this.fireEvent(new mxEventObject(mxEvent.HIDE));
+			}
 	}
 };
 
@@ -19442,7 +19509,6 @@ mxSvgCanvas2D.prototype.image = function(x, y, w, h, src, aspect, flipH, flipV)
 	node.setAttribute('y', this.format(y * s.scale) + this.imageOffset);
 	node.setAttribute('width', this.format(w * s.scale));
 	node.setAttribute('height', this.format(h * s.scale));
-	
 	// Workaround for missing namespace support
 	if (node.setAttributeNS == null)
 	{
@@ -19450,7 +19516,7 @@ mxSvgCanvas2D.prototype.image = function(x, y, w, h, src, aspect, flipH, flipV)
 	}
 	else
 	{
-		node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src.replace(/^\S*getechFileSystem/, fileSystem));
+		node.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', src.replace(/^\S*getechFileSystem\//, fileSystem));
 	}
 	
 	if (aspect)
@@ -19548,7 +19614,6 @@ mxSvgCanvas2D.prototype.convertHtml = function(val)
 	else if (document.implementation != null && document.implementation.createDocument != null)
 	{
 		var xd = document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'html', null);
-		console.log(xd)
 		var xb = xd.createElement('body');
 		xd.documentElement.appendChild(xb);
 		
@@ -23245,7 +23310,6 @@ mxShape.prototype.reconfigure = function()
 mxShape.prototype.redraw = function()
 {
 	this.updateBoundsFromPoints();
-	
 	if (this.visible && this.checkBounds())
 	{
 		this.node.style.visibility = 'visible';
@@ -24253,6 +24317,7 @@ mxShape.prototype.apply = function(state)
  */
 mxShape.prototype.setCursor = function(cursor)
 {
+	// console.log(cursor)
 	if (cursor == null)
 	{
 		cursor = '';
@@ -25050,6 +25115,7 @@ mxRectangleShape.prototype.paintForeground = function(c, x, y, w, h)
 		this.paintGlassEffect(c, x, y, w, h, this.getArcSize(w + this.strokewidth, h + this.strokewidth));
 	}
 };
+
 /**
  * Copyright (c) 2006-2015, JGraph Ltd
  * Copyright (c) 2006-2015, Gaudenz Alder
@@ -28131,7 +28197,6 @@ mxConnector.prototype.createMarker = function(c, pts, source)
 		
 		result = mxMarker.createMarker(c, this, type, pe, unitX, unitY, size, source, this.strokewidth, filled);
 	}
-	
 	return result;
 };
 
@@ -38517,7 +38582,6 @@ mxSwimlaneLayout.prototype.execute = function(parent, swimlanes)
 				model.setGeometry(parent, geo);
 			}
 		}
-
 		this.graph.removeCells(this.dummyVertices);
 	}
 	finally
@@ -41096,7 +41160,7 @@ mxGraphModel.prototype.beginUpdate = function()
  * function is invoked, that is, on undo and redo of
  * the edit.
  */
-mxGraphModel.prototype.endUpdate = function()
+mxGraphModel.prototype.endUpdate = function(dis)
 {
 	this.updateLevel--;
 	
@@ -41118,7 +41182,9 @@ mxGraphModel.prototype.endUpdate = function()
 				var tmp = this.currentEdit;
 				this.currentEdit = this.createUndoableEdit();
 				tmp.notify();
-				this.fireEvent(new mxEventObject(mxEvent.UNDO, 'edit', tmp));
+				if(dis !== true){
+					this.fireEvent(new mxEventObject(mxEvent.UNDO, 'edit', tmp));
+				}
 			}
 		}
 		finally
@@ -47330,10 +47396,11 @@ mxCellEditor.prototype.startEditing = function(cell, trigger)
 		{
 			// Prefers blinking cursor over no selected text if empty
 			this.textarea.focus();
-			
 			if (this.isSelectText() && this.textarea.innerHTML.length > 0 &&
 				(this.textarea.innerHTML != this.getEmptyLabelText() || !this.clearOnChange))
 			{
+				this.textNode = state.text.node;
+				this.textNode.style.visibility = 'hidden';
 				document.execCommand('selectAll', false, null);
 			}
 		}
@@ -47774,6 +47841,7 @@ mxCellRenderer.registerShape = function(key, shape)
 
 // 注册默认类型
 mxCellRenderer.registerShape(mxConstants.SHAPE_RECTANGLE, mxRectangleShape);
+// mxCellRenderer.registerShape(mxConstants.SHAPE_OVAL, mxOvalShape);
 mxCellRenderer.registerShape(mxConstants.SHAPE_ELLIPSE, mxEllipse);
 mxCellRenderer.registerShape(mxConstants.SHAPE_RHOMBUS, mxRhombus);
 mxCellRenderer.registerShape(mxConstants.SHAPE_CYLINDER, mxCylinder);
@@ -47789,13 +47857,22 @@ mxCellRenderer.registerShape(mxConstants.SHAPE_DOUBLE_ELLIPSE, mxDoubleEllipse);
 mxCellRenderer.registerShape(mxConstants.SHAPE_SWIMLANE, mxSwimlane);
 mxCellRenderer.registerShape(mxConstants.SHAPE_IMAGE, mxImageShape);
 mxCellRenderer.registerShape('primitive', mxImageShape);
-mxCellRenderer.registerShape('circle', mxImageShape);
+// mxCellRenderer.registerShape('oval', mxImageShape);
 mxCellRenderer.registerShape('diamond', mxImageShape);
 mxCellRenderer.registerShape('drop', mxImageShape);
 mxCellRenderer.registerShape('pentagram', mxImageShape);
 mxCellRenderer.registerShape('square', mxImageShape);
 mxCellRenderer.registerShape('multipleCheck', mxImageShape);
 mxCellRenderer.registerShape('singleCheck', mxImageShape);
+mxCellRenderer.registerShape('light', mxImageShape);
+mxCellRenderer.registerShape('progress', mxImageShape);
+mxCellRenderer.registerShape('pipeline1', mxImageShape);
+mxCellRenderer.registerShape('pipeline2', mxImageShape);
+mxCellRenderer.registerShape('pipeline3', mxImageShape);
+// mxCellRenderer.registerShape('layoutimage', mxImageShape);
+mxCellRenderer.registerShape('userimage', mxImageShape);
+mxCellRenderer.registerShape('lineChart', mxImageShape);//注册类型
+mxCellRenderer.registerShape('gaugeChart', mxImageShape);
 mxCellRenderer.registerShape(mxConstants.SHAPE_LABEL, mxLabel);
 
 /**
@@ -55541,7 +55618,7 @@ mxGraph.prototype.panDy = 0;
  * Specifies the <mxImage> to indicate a collapsed state.
  * Default value is mxClient.imageBasePath + '/collapsed.gif'
  */
-mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/collapsed.gif', 9, 9);
+mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/default/collapsed.1.gif', 9, 9);
 
 /**
  * Variable: expandedImage
@@ -55549,7 +55626,7 @@ mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/collap
  * Specifies the <mxImage> to indicate a expanded state.
  * Default value is mxClient.imageBasePath + '/expanded.gif'
  */
-mxGraph.prototype.expandedImage = new mxImage(mxClient.imageBasePath + '/expanded.gif', 9, 9);
+mxGraph.prototype.expandedImage = new mxImage(mxClient.imageBasePath + '/default/expanded.1.gif', 9, 9);
 
 /**
  * Variable: warningImage
@@ -55889,7 +55966,6 @@ mxGraph.prototype.graphModelChanged = function(changes)
 	{
 		this.processChange(changes[i]);
 	}
-	
 	this.removeSelectionCells(this.getRemovedCellsForChanges(changes));
 	
 	this.view.validate();
@@ -57561,7 +57637,6 @@ mxGraph.prototype.alignCells = function(align, cells, param)
 			}
 			finally
 			{
-				// console.log(8888)
 				this.model.endUpdate();
 			}
 		}
@@ -62506,7 +62581,9 @@ mxGraph.prototype.getFoldingImage = function(state)
 		
 		if (this.isCellFoldable(state.cell, !tmp))
 		{
-			return (tmp) ? this.collapsedImage : this.expandedImage;
+			// 对单个控件组合时候会产生展开收起的按钮，暂时取消
+			return null;
+			// return (tmp) ? this.collapsedImage : this.expandedImage;
 		}
 	}
 	
@@ -64325,7 +64402,6 @@ mxGraph.prototype.isEditing = function(cell)
 	if (this.cellEditor != null)
 	{
 		var editingCell = this.cellEditor.getEditingCell();
-		
 		return (cell == null) ? editingCell != null : cell == editingCell;
 	}
 	
@@ -76511,6 +76587,9 @@ mxVertexHandler.prototype.rotateCell = function(cell, angle, parent)
 {
 	if (angle != 0)
 	{
+
+		var model = this.graph.getModel();
+
 		if (model.isVertex(cell) || model.isEdge(cell))
 		{
 			if (!model.isEdge(cell))
@@ -77892,7 +77971,6 @@ mxEdgeHandler.prototype.validateConnection = function(source, target)
 					}
 					
 					bends.push(bend);
-				
 					if (!terminal)
 					{
 						this.points.push(new mxPoint(0,0));
@@ -80671,10 +80749,11 @@ mxKeyHandler.prototype.getFunction = function(evt)
 mxKeyHandler.prototype.isGraphEvent = function(evt)
 {
 	var source = mxEvent.getSource(evt);
-	
+	// console.log(this.graph.cellEditor != null , '-----', this.graph.cellEditor.isEventSource(evt))
 	// Accepts events from the target object or
 	// in-place editing inside graph
-	if ((source == this.target || source.parentNode == this.target) ||
+	// 首次进入优化 按delete 加上toolbar
+	if ((source == this.target || source.parentNode == this.target || (source.tagName === 'A' && source.className.includes('del_use_flag_terry')) || (source.tagName === 'A' && source.className.includes('geItem') && source.parentNode.className.includes('geSidebar'))) ||
 		(this.graph.cellEditor != null && this.graph.cellEditor.isEventSource(evt)))
 	{
 		return true;
@@ -80698,8 +80777,12 @@ mxKeyHandler.prototype.isGraphEvent = function(evt)
  */
 mxKeyHandler.prototype.keyDown = function(evt)
 {
+	let cell = this.graph.getSelectionCell()
+	// 首次进来 按delete
+	// || (cell && (evt.keyCode === 8 || evt.keyCode === 46) &&)
 	if (this.isEnabledForEvent(evt))
 	{
+		// console.log(!this.isEventIgnored(evt), '---', this.isEventIgnored(evt))
 		// Cancels the editing if escape is pressed
 		if (evt.keyCode == 27 /* Escape */)
 		{
@@ -80735,6 +80818,7 @@ mxKeyHandler.prototype.keyDown = function(evt)
  */
 mxKeyHandler.prototype.isEnabledForEvent = function(evt)
 {
+	console.log(this.graph.isEnabled(), '--', !mxEvent.isConsumed(evt), '----',this.isGraphEvent(evt), '---',this.isEnabled() )
 	return (this.graph.isEnabled() && !mxEvent.isConsumed(evt) &&
 		this.isGraphEvent(evt) && this.isEnabled());
 };
@@ -81883,7 +81967,6 @@ mxDefaultPopupMenu.prototype.createMenu = function(editor, menu, cell, evt)
 	{
 		var conditions = this.createConditions(editor, cell, evt);
 		var item = this.config.firstChild;
-
 		this.addItems(editor, menu, cell, evt, conditions, item, null);
 	}
 };
@@ -81983,7 +82066,6 @@ mxDefaultPopupMenu.prototype.addAction = function(menu, editor, lab, icon, funct
 			editor.execute(action, cell, evt);
 		}
 	};
-	
 	return menu.addItem(lab, icon, clickHandler, parent, iconCls, enabled);
 };
 
@@ -83642,7 +83724,7 @@ mxEditor.prototype.addActions = function ()
 			mxClipboard.paste(editor.graph);
 		}
 	});
-	
+	// 右键删除按钮
 	this.addAction('delete', function(editor)
 	{
 		if (editor.graph.isEnabled())

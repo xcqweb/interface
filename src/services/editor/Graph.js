@@ -966,7 +966,7 @@ Graph.prototype.defaultScrollbars = !mxClient.IS_IOS;
 /**
  * Specifies if the page should be visible for new files. Default is true.
  */
-Graph.prototype.defaultPageVisible = false;
+Graph.prototype.defaultPageVisible = true;
 
 /**
  * Specifies if the app should run in chromeless mode. Default is false.
@@ -1660,7 +1660,8 @@ Graph.prototype.getPageLayout = function()
         var w0 = Math.ceil((x + w) / size.width) - x0;
         var h0 = Math.ceil((y + h) / size.height) - y0;
 		
-        return new mxRectangle(x0, y0, w0, h0);
+        //return new mxRectangle(x0, y0, w0, h0); // 控件超出边界 固定宽高
+         return new mxRectangle(0, 0, 1, 1);
     }
 };
 
@@ -3417,7 +3418,6 @@ HoverIcons.prototype.isActive = function()
  */
 HoverIcons.prototype.drag = function(evt, x, y)
 {
-    this.sidebar.hidePageContextMenu();
     this.graph.popupMenuHandler.hideMenu();
     this.graph.stopEditing(false);
 
@@ -3612,7 +3612,6 @@ HoverIcons.prototype.repaint = function()
                 var checkCollision = mxUtils.bind(this, function(cell, arrow)
                 {
                     var geo = this.graph.model.isVertex(cell) && this.graph.getCellGeometry(cell);
-					
                     // Ignores collision if vertex is more than 3 times the size of this vertex
                     if (cell != null && !this.graph.model.isAncestor(cell, this.currentState.cell) &&
 						(geo == null || currentGeo == null || (geo.height < 6 * currentGeo.height &&
@@ -6775,7 +6774,12 @@ if (typeof mxVertexHandler != 'undefined')
             // Overrides class in case of HTML content to add
             // dashed borders for divs and table cells
             var state = this.graph.view.getState(cell);
-	
+            let shapeName = state.style.shape
+            // 图片不可输入
+            let notInputArr = ['userimage', 'gaugeChart', 'lineChart', 'pipeline1', 'pipeline2', 'pipeline3', 'image', 'progress','light']
+            if (state != null && notInputArr.includes(shapeName)) { //不可输入的 禁用
+                this.textarea.setAttribute('contenteditable', false)
+            }
             if (state != null && state.style['html'] == 1)
             {
                 this.textarea.className = 'mxCellEditor geContentEditable';
@@ -6790,10 +6794,13 @@ if (typeof mxVertexHandler != 'undefined')
 			
             // Stores current selection range when switching between markup and code
             this.switchSelectionState = null;
-			
             // Selects editing cell
             this.graph.setSelectionCell(cell);
-
+            var state3 = this.graph.getView().getState(cell);
+            if (state3.text) {
+                this.textNode = state3.text.node;
+                this.textNode.style.visibility = 'hidden';
+            }
             // Enables focus outline for edges and edge labels
             var parent = this.graph.getModel().getParent(cell);
             var geo = this.graph.getCellGeometry(cell);
@@ -6997,7 +7004,6 @@ if (typeof mxVertexHandler != 'undefined')
 			    
                 content = this.graph.sanitizeHtml((nl2Br) ? content.replace(/\n/g, '<br/>') : content, true)
                 this.textarea.className = 'mxCellEditor geContentEditable';
-				
                 var size = mxUtils.getValue(state.style, mxConstants.STYLE_FONTSIZE, mxConstants.DEFAULT_FONTSIZE);
                 var family = mxUtils.getValue(state.style, mxConstants.STYLE_FONTFAMILY, mxConstants.DEFAULT_FONTFAMILY);
                 var align = mxUtils.getValue(state.style, mxConstants.STYLE_ALIGN, mxConstants.ALIGN_LEFT);
@@ -7505,7 +7511,7 @@ if (typeof mxVertexHandler != 'undefined')
         }
 		
         // 旋转操作
-        mxVertexHandler.prototype.rotationEnabled = false;
+        mxVertexHandler.prototype.rotationEnabled = true;
         mxVertexHandler.prototype.manageSizers = true;
         mxVertexHandler.prototype.livePreview = true;
 	
@@ -7917,7 +7923,6 @@ if (typeof mxVertexHandler != 'undefined')
             var model = this.graph.getModel();
             var parent = model.getParent(state.cell);
             var geo = this.graph.getCellGeometry(state.cell);
-			
             if (model.isEdge(parent) && geo != null && geo.relative && state.width < 2 && state.height < 2 && state.text != null && state.text.boundingBox != null)
             {
                 var bbox = state.text.unrotatedBoundingBox || state.text.boundingBox;
@@ -7938,7 +7943,6 @@ if (typeof mxVertexHandler != 'undefined')
             var model = this.graph.getModel();
             var parent = model.getParent(this.state.cell);
             var geo = this.graph.getCellGeometry(this.state.cell);
-			
             // Lets rotation events through
             var handle = this.getHandleForEvent(me);
 			
@@ -7952,14 +7956,24 @@ if (typeof mxVertexHandler != 'undefined')
         // Shows rotation handle for edge labels.
         mxVertexHandler.prototype.isRotationHandleVisible = function()
         {
-            return this.graph.isEnabled() && this.rotationEnabled && this.graph.isCellRotatable(this.state.cell) &&
-				(mxGraphHandler.prototype.maxCells <= 0 || this.graph.getSelectionCount() < mxGraphHandler.prototype.maxCells);
+             let cell = this.graph.getSelectionCell()
+             let state = this.graph.view.getState(cell)
+             if (state.style && state.style.shape){
+                let shapeName = state.style.shape
+                // 表格和菜单禁止旋转 
+                if (shapeName === 'menulist' || shapeName === 'tableBox' || shapeName === 'label' || shapeName == 'cellBox' || shapeName == 'menuCell') {
+                    return false
+                }
+             }
+             return this.graph.isEnabled() && this.rotationEnabled && this.graph.isCellRotatable(this.state.cell) &&
+			(mxGraphHandler.prototype.maxCells <= 0 || this.graph.getSelectionCount() < mxGraphHandler.prototype.maxCells);
         };
 	
         // Invokes turn on single click on rotation handle
         mxVertexHandler.prototype.rotateClick = function()
         {
-            this.state.view.graph.turnShapes([this.state.cell]);
+            return
+            // this.state.view.graph.turnShapes([this.state.cell]);
         };
 		
         var vertexHandlerMouseMove = mxVertexHandler.prototype.mouseMove;
@@ -8013,7 +8027,6 @@ if (typeof mxVertexHandler != 'undefined')
                 {
                     this.specialHandle.node.style.display = (this.graph.isEnabled() && this.graph.getSelectionCount() < this.graph.graphHandler.maxCells) ? '' : 'none';
                 }
-				
                 this.redrawHandles();
             });
 			

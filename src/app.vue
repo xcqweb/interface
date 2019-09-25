@@ -1,5 +1,7 @@
 <template>
   <div id="app">
+    <!-- <p @click="$i18n.locale === 'en' ? ($i18n.locale='zh') : (($i18n.locale='en'))">切换语言</p> -->
+    <!-- <p>{{$t('lang')}}</p> -->
     <keep-alive>
       <router-view
         v-if="$route.meta.keepAlive"
@@ -45,7 +47,8 @@ export default {
 #app{
   font-size:14px;
   font-family:MicrosoftYaHei;
-  position: relative;
+  position: absolute;
+  width:100%;
   height:100%;
 }
 </style>

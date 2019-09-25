@@ -1,10 +1,39 @@
+
+@charset "utf-8";
 .geEditor {
+ 	position: relative;
+	height:100%;
 	font-size:14px;
 	border:none;
 	margin:0px;
 }
 .geEditor input[type=text]::-ms-clear {
 	display: none;
+}
+body ::-webkit-scrollbar {
+	width: 14px;
+	height: 14px;
+}
+
+body ::-webkit-scrollbar-track {
+	background-clip: padding-box;
+	border: solid transparent;
+	border-width: 1px;
+}
+
+body ::-webkit-scrollbar-corner {
+	background-color: transparent;
+}
+
+body ::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, .1);
+	background-clip: padding-box;
+	border: solid transparent;
+	border-radius: 10px;
+}
+
+body ::-webkit-scrollbar-thumb:hover {
+	background-color: rgba(0, 0, 0, .4);
 }
 .geMenubarContainer .geItem, .geToolbar .geButton, .geToolbar .geLabel, .geSidebarContainer .geTitle {
 	cursor:pointer !important;
@@ -27,16 +56,18 @@
 	background: #F2F2F2;
 	display: flex;
 	flex-direction: column;
+	border: none;
 }
 .geSidebarContainer.geFormatContainer {
 	overflow-x: hidden !important;
 	overflow-y: hidden !important;
-	/* overflow-y: auto !important; */
+	width: 210px;
 	font-size:12px;
 	flex: 1;
 	position: relative;
 }
 .geSidebarContainer.gePaletteManageContainer {
+	width:210px;
 	position: relative;
 	flex: 1;
 }
@@ -44,8 +75,7 @@
 	display: block;
 }
 .geDiagramContainer {
-	background-color:#ffffff;
-	border: 1px solid #e5e5e5;
+	background-color:#ebebeb;
 	outline:none;
 }
 .geDiagramContainer div, .geDiagramContainer button, .geDiagramContainer a  {
@@ -206,18 +236,19 @@
 	border:1px solid #d5d5d5 !important;
 }
 .geToolbarContainer {
-	border-top: 1px solid #cbcbcb;
-	border-bottom: 1px solid #cbcbcb;
+	/* border-top: 1px solid #cbcbcb; */
 	background: linear-gradient(0deg,rgba(216,216,216,1) 0%,rgba(228,227,228,1) 100%);
 	display: flex;
 	justify-content: space-between;
 	padding: 0 12px;
+	left:0;
+	right:0;
 }
 .geSidebarContainer .geToolbarContainer {
 	background:transparent;
 	border-bottom:none;
 }
-.geSidebarContainer button {
+/* .geSidebarContainer button {
 	text-overflow:ellipsis;
 	overflow:hidden;
 	height: 26px;
@@ -229,15 +260,12 @@
 	padding: 0;
 	cursor: pointer;
 	outline: none;
-}
+} */
 .geToolbarContainer .geToolbar {
-	padding-top: 12px;
+	padding-top: 16px;
 	overflow: hidden;
 	box-sizing: border-box;
 	flex: 0 0 auto;
-}
-.geToolbarContainer .geToolbar1 {
-	width: 80px;
 }
 
 .geToolbarContainer .geToolbar2 {
@@ -245,7 +273,7 @@
 }
 
 .geToolbarContainer .geToolbar3 {
-	width: 360px;
+	width: 110px;
 }
 .geToolbarContainer .geToolbar4 {
 	width: 170px;
@@ -254,17 +282,12 @@
 	clear: left;
 }
 .geToolbarContainer .geToolbar5 {
-	width: 125px;
+	width: 110px;
 }
 .geToolbarContainer .geToolbar6 {
-	width: 100px;
+	width: 172px;
 }
-.geToolbarContainer .geToolbar7 {
-	width: 185px;
-}
-.geToolbarContainer .geToolbar8 {
-	width: 80px;
-}
+ 
 .geToolbarContainer .geSeparator {
 	float:left;
 	width:1px;
@@ -320,10 +343,7 @@ div.mxWindow .geButton {
 	background:#F2F2F2;
 	overflow:hidden;
 	position:absolute;
-	border-top:1px solid #CCCCCC;
-	border-bottom:1px solid #CCCCCC;
-	overflow:auto;
-	margin-top: -1px;
+	z-index: 2;
 }
 .geSidebar {
 	padding: 4px;
@@ -331,9 +351,9 @@ div.mxWindow .geButton {
 	background:whiteSmoke;
 	border-bottom:1px solid #e5e5e5;
 	overflow:hidden;
-}
-.geSidebarContainer #pageManage {
-	/* padding-left: 20px; */
+	flex-direction: row;
+	flex-wrap:wrap;
+	display: flex;
 }
 .geSidebarContainer #pageManage p {
 	line-height: 24px;
@@ -357,7 +377,7 @@ div.mxWindow .geButton {
 	font-weight:bold;
 	padding-left: 20px;
 	margin:0px;
-	margin-top: -1px;
+	margin-top: -2px;
 	cursor:default;
 	background:#FAFAFA;
 	white-space:nowrap;
@@ -427,10 +447,11 @@ div.mxWindow .geButton {
 	display:inline-block;
 	background-repeat:no-repeat;
 	background-position: 50% 0;
-	background-size: 36px 36px;
-	border:1px solid transparent;
 	border-radius:2px;
 	cursor: move;
+	display:flex;
+	justify-content: center;
+	align-items: center;
 }
 .geSidebar .geItem:hover {
 	border-radius:2px;
@@ -446,10 +467,6 @@ div.mxWindow .geButton {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	line-height: 20px;
-}
-.geItem {
-	vertical-align: top;
-	display: inline-block;
 }
 .geSidebarTooltip {
 	position:absolute;
@@ -615,7 +632,7 @@ div.mxWindow .geButton {
 }
 .geDialog .geDialogTitle {
 	color: #252525;
-	font-size: 12px;
+	font-size: 14px;
 	line-height: 36px;
 	text-align: center;
 	box-sizing:border-box;
@@ -638,7 +655,7 @@ div.mxWindow .geButton {
 }
 .geDialog .geDialogInfo {
 	overflow: hidden;
-	padding: 22px;
+	padding: 6px 4px;
 	font-size: 12px;
 }
 .geDialog .tipDialogInfo {
@@ -665,10 +682,8 @@ div.mxWindow .geButton {
 	height: 30px;
 	line-height: 28px;
 	font-size: 12px;
-	border: 1px solid #C4C4C4;
 	color: #252525;
 	border-radius: 2px;
-	background: #fff;
 	margin: 0;
 	padding: 0 10px;
 	cursor: pointer;
@@ -780,34 +795,16 @@ div.mxWindow .geButton {
 @media print {
 	div.geNoPrint { display: none !important; }
 }
-.geToolbar1 .geSprite, .geToolbar8 .geSprite{
-	width: 36px;
-	height: 36px;
-	padding: 10px;
-}
-.geToolbar2 .geSprite{
-	width: 24px;
-	height: 24px;
-	padding: 4px;
-}
-.geToolbar3 .geSprite, .geToolbar6 .geSprite{
+.geToolbar3 .geSprite, .geToolbar6 .geSprite, .geToolbar4 .geSprite, .geToolbar5 .geSprite {
 	width: 48px;
 	height: 24px;
 	padding: 4px 16px;
 }
-
-.geToolbar5 .geSprite, .geToolbar7 .geSprite{
-	width: 60px;
-	height: 24px;
-	padding: 4px 22px;
-}
+ 
 .geSpriteBtn {
 	float: left;
 	width: 36px;
 	height: 24px;
-}
-.geSprite-new {
-	background-image: url(/static/images/menu/new.png);
 }
 .geSprite::after {
 	position: absolute;
@@ -815,158 +812,129 @@ div.mxWindow .geButton {
 	bottom: -20px;
 	font-size: 11px;
 }
-.geSprite-new::after {
-	content: '新建';
-	left: 6px;
-}
 .geSprite-save {
-	background-image: url(/static/images/menu/save.png);
+	background-image: url(../images/menu/storage_ic.png);
 }
 .geSprite-save::after {
 	content: '保存';
 	left: 6px;
 }
 .geSprite-zoomin {
-	background-image: url(/static/images/menu/zoomin.png);	
+	background-image: url(../images/menu/zoomin.png);
 }
 .geSprite-zoomin::after {
 	content: '缩放';
 	left: 37px;
 }
 .geSprite-fullscreen {
-	background-image: url(/static/images/menu/fullscreen.png);	
+	background-image: url(../images/menu/fullscreen.png);
 }
 .geSprite-fullscreen::after {
 	content: '全屏';
 	left: 0;
 }
 .geSprite-zoomout {
-	background-image: url(/static/images/menu/zoomout.png);
+	background-image: url(../images/menu/zoomout.png);
 }
-.geSprite-copy {
-	background-image: url(/static/images/menu/copy.png);
-}
-.geSprite-copy::after {
-	content: '复制';
-	left: 13px;
-}
-.geSprite-paste {
-	background-image: url(/static/images/menu/paste.png);
-}
-.geSprite-paste::after {
-	content: '粘贴';
-	left: 13px;
-}
-.geSprite-cut {
-	background-image: url(/static/images/menu/cut.png);
-}
-.geSprite-cut::after {
-	content: '剪切';
-	left: 13px;
-}
-.geSprite-duplicate {
-	background-image: url(/static/images/menu/duplicate.png);
-}
-.geSprite-duplicate::after {
-	content: '重复';
-	left: 13px;
-}
+ 
 .geSprite-undo {
-	background-image: url(/static/images/menu/undo.png);
+	background-image: url(../images/menu/undo.png);
 }
 .geSprite-undo::after {
 	content: '撤销';
 	left: 13px;
 }
 .geSprite-redo {
-	background-image: url(/static/images/menu/redo.png);
+	background-image: url(../images/menu/redo.png);
 }
 .geSprite-redo::after {
 	content: '重做';
 	left: 13px;
 }
-.geSprite-delete {
-	background-image: url(/static/images/menu/delete.png);
-}
-.geSprite-delete::after {
-	content: '删除';
+.geSprite-align::after {
+	content: '对齐';
 	left: 13px;
 }
-.geSprite-leftalign {
-	background-image: url(/static/images/menu/left.png);
+.page-tab::after {
+	content: "页面";
+	position: relative;
+	font-size: 12px;
+	top: 24px;
 }
-.geSprite-centeralign {
-	background-image: url(/static/images/menu/center.png);
+
+.data-tab::after {
+	content: "数据源";
+	position: relative;
+	font-size: 12px;
+	top: 24px;
 }
-.geSprite-rightalign {
-	background-image: url(/static/images/menu/right.png);
+.geSprite-left-align {
+	background-image: url(../images/menu/align_left_ic.png);
+	background-repeat: no-repeat;
+	background-position: center right;
 }
-.geSprite-top {
-	background-image: url(/static/images/menu/top.png);
+.geSprite-right-align {
+	background-image: url(../images/menu/align_right_ic.png);
+	background-repeat: no-repeat;
+	background-position: center right;
 }
-.geToolbarContainer .geSprite-bottom {
-	background-image: url(/static/images/menu/bottom.png);
+.geSprite-top-align {
+	background-image: url(../images/menu/align_top_ic.png);
+	background-repeat: no-repeat;
+	background-position: center right;
 }
-.geSprite-verticalalign {
-	background-image: url(/static/images/menu/verticalalign.png);
+.geSprite-bottom-align {
+	background-image: url(../images/menu/align_bottom_ic.png);
+	background-repeat: no-repeat;
+	background-position: center right;
 }
-.geSprite-verticalcenter {
-	background-image: url(/static/images/menu/verticalcenter.png);
+.geSprite-vertical-align {
+	background-image: url(../images/menu/align_verticalAlign_ic.png);
+	background-repeat: no-repeat;
+	background-position: center right;
 }
-.geSprite-horizontalcenter {
-	background-image: url(/static/images/menu/horizontalcenter.png);
+.geSprite-vertical-center {
+	background-image: url(../images/menu/align_verticalCenter_ic.png);
+	background-repeat: no-repeat;
+	background-position: center right;
 }
-.geSprite-horizontalalign {
-	background-image: url(/static/images/menu/horizontalalign.png);
+.geSprite-horizon-center {
+	background-image: url(../images/menu/align_horizonCenter_ic.png);
+	background-repeat: no-repeat;
+	background-position: center right;
+}
+.geSprite-horizon-align {
+	background-image: url(../images/menu/align_horizonAlign_ic.png);
+	background-repeat: no-repeat;
+	background-position: center right;
 }
 .geSprite-tofront {
-	background-image: url(/static/images/menu/tofront.png);
+	background-image: url(../images/menu/tofront.png);
 }
 .geSprite-tofront::after {
-	content: '置于顶层';
-	left: 6px;
+	content: '顶层';
+	left: 10px;
 }
 .geSprite-toback {
-	background-image: url(/static/images/menu/toback.png);
+	background-image: url(../images/menu/toback.png);
 }
 .geSprite-toback::after {
-	content: '置于底层';
-	left: 6px;
+	content: '底层';
+	left: 10px;
 }
 .geSprite-group {
-	background-image: url(/static/images/menu/group.png);
+	background-image: url(../images/menu/group.png);
 }
 .geSprite-group::after {
 	content: '组合';
 	left: 13px;
 }
 .geSprite-ungroup {
-	background-image: url(/static/images/menu/ungroup.png);
+	background-image: url(../images/menu/ungroup.png);
 }
 .geSprite-ungroup::after {
 	content: '取消组合';
 	left: 0px;
-}
-.geSprite-flipv {
-	background-image: url(/static/images/menu/flipv.png);
-}
-.geSprite-flipv::after {
-	content: '垂直翻转';
-	left: 6px;
-}
-.geSprite-fliph {
-	background-image: url(/static/images/menu/fliph.png);
-}
-.geSprite-fliph::after {
-	content: '水平翻转';
-	left: 6px;
-}
-.geSprite-turn {
-	background-image: url(/static/images/menu/turn.png);
-}
-.geSprite-turn::after {
-	content: '旋转90';
-	left: 12px;
 }
 .geSprite-linkreport {
 	background-image: url(/static/images/menu/link.png);
@@ -975,11 +943,19 @@ div.mxWindow .geButton {
 	content: '链接';
 	left: 6px;
 }
-.geSprite-previewapply {
-	background-image: url(/static/images/menu/preview.png);
+.geSprite-preview {
+	background-image: url(../images/menu/preview_ic.png);
 }
-.geSprite-previewapply::after {
+.geSprite-preview::after {
 	content: '预览';
+	left: 6px;
+}
+.geSprite-material {
+	background-image: url(../images/menu/materiallibrary_ic.png);
+}
+
+.geSprite-material::after {
+	content: '素材库';
 	left: 6px;
 }
 .geSprite-publish {
@@ -1090,6 +1066,13 @@ table.mxPopupMenu hr {
 }
 table.mxPopupMenu tr {
 	font-size: 14px;
+	height:26px;
+}
+table.mxPopupMenu tr.disabled{
+	opacity: 0.5 !important;
+	pointer-events: none;
+	cursor:no-drop !important; 
+    /* cursor: default !important; */
 }
 html td.mxWindowTitle {
  	text-align:left;
@@ -1250,12 +1233,6 @@ html td.mxWindowTitle {
 	background-position: right 10px top 50%;
 	background-image: url(/static/images/icons/checked_white.png);
 }
-.expandedImage {
-	background-image: url(/static/images/menu/expandedImage.png)
-}
-.collapsedImage {
-	background-image: url(/static/images/menu/collapsedImage.png)
-}
 .selectTag {
 	width: 100%;
 	height: 100%;
@@ -1405,7 +1382,7 @@ button.buttonTag, input.inputTag {
 	z-index: 999999;
 	color: #252525;
 	background: #F5F5F5;
-	border: 1px solid #CCCCCC;
+	/* border: 1px solid #CCCCCC; */
 	border-radius: 2px;
 	box-shadow:0px 0px 10px 0px rgba(0, 0, 0, 0.3);
 }
@@ -1422,7 +1399,7 @@ button.buttonTag, input.inputTag {
 }
 #pageContextMenu li:nth-of-type(2), #pageContextMenu li:nth-of-type(4) {
 	margin-bottom: 6px;
-	border-bottom: 1px solid #cccccc;
+	/* border-bottom: 1px solid #cccccc; */
 }
 .formatPannel {
 	height: calc(100% - 34px);
@@ -1445,7 +1422,7 @@ button.buttonTag, input.inputTag {
 	background-color: #fff;
 }
 .geFormatContainer .formatLargeInput, .gePaletteManageContainer .formatLargeInput {
-	width: 218px;
+	width: 100%;
 	height: 24px;
 	padding: 3px;
 	border: 1px solid #cccccc;
@@ -1475,7 +1452,7 @@ button.buttonTag, input.inputTag {
 	background-color: #3D91F7;
 }
 .gePaletteManageContainer .formatLargeInput {
-	width: 222px;
+	width: 100%;
 	margin: 6px 4px;
 }
 .formatPannel .formatSmallBtn {
@@ -1554,12 +1531,12 @@ button.buttonTag, input.inputTag {
 .background {
 	position: absolute;
 	background: white;
-	height: 937px;
-	right: 0px;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom:0;
 	z-index: 10003;
 	opacity: 0;
-	left: 0px;
-	top: 0px;
 }
 .tipDialogInfo {
 	position: absolute;
@@ -1585,3 +1562,55 @@ button.buttonTag, input.inputTag {
 .tipDialogInfo p {
 	font-size: 12px;
 }
+
+.mutual-btn {
+	width: 46%;
+	height: 24px;
+	line-height: 24px;
+	background: rgba(255, 255, 255, 1);
+	border: 1px solid rgba(196, 196, 196, 1);
+	border-radius: 2px;
+	color: #252525 !important;
+
+}
+
+.mutual-btn.selected {
+	background: rgba(61, 145, 247, 1);
+	border: 1px solid rgba(39, 122, 224, 1);
+	color: #fff !important;
+}
+
+.round-progress{
+	background:#fff;
+	border:solid 6px #7D7D7D;
+	text-align:center;
+}
+
+/* 组态动画效果 */
+.animate-blink{
+	animation: blink 1s ease infinite;
+}
+@keyframes blink {
+	0% {
+		opacity:0;
+	}
+	100% {
+		opacity:1;
+	}
+}
+ .progressbar-wrap {
+ 	position: relative;
+ 	width: 100px;
+ 	z-index: 2;
+ }
+ .progressbar-wrap .progressbar-common {
+ 	border: solid 2px #7D7D7D;
+ 	height: 24px;
+ }
+ .progressbar-wrap .progressbar-back {
+ 	background: #CBCBCB; 
+ 	width: 100%;
+ }
+ .progressbar-wrap .progressbar {
+ 	position: relative;
+ }

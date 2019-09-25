@@ -57,59 +57,7 @@ Toolbar.prototype.staticElements = null;
  */
 Toolbar.prototype.init = function()
 {
-    // 新建、保存
-    this.addItems(['new', 'save'], this.containerList[0]);
-    // 重置视图百分比
-    this.addItems(['zoomIn'], this.containerList[1]);
-    var viewMenu = this.addMenu('', mxResources.get('zoom') + ' (Alt+Mousewheel)', true, 'pageScale', this.containerList[1], true);
-    viewMenu.showDisabled = true;
-    viewMenu.style.whiteSpace = 'nowrap';
-    viewMenu.style.position = 'relative';
-    viewMenu.style.overflow = 'hidden';
-    if (EditorUi.compactUi)
-    {
-        viewMenu.style.width = (mxClient.IS_QUIRKS) ? '58px' : '50px';
-    }
-    else
-    {
-        viewMenu.style.width = (mxClient.IS_QUIRKS) ? '62px' : '36px';
-    }
-	
-    // 放大缩小
-    this.addItems(['zoomOut'], this.containerList[1]);
-    this.addItems(['fullScreen'], this.containerList[1]);
-    // 如果缩放后，更新标签
-    this.updateZoom = mxUtils.bind(this, function()
-    {
-        viewMenu.innerHTML = Math.round(this.editorUi.editor.graph.view.scale * 100) + '%' +
-			this.dropdownImageHtml;
-		
-        if (EditorUi.compactUi)
-        {
-            viewMenu.getElementsByTagName('img')[0].style.right = '1px';
-            viewMenu.getElementsByTagName('img')[0].style.top = '5px';
-        }
-    });
-
-    this.editorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
-    this.editorUi.editor.addListener('resetGraphView', this.updateZoom);
-    // 复制、粘贴
-    this.addItems(['copy', 'paste', 'cut', 'duplicate', 'undo', 'redo', 'delete'], this.containerList[2]);
-    // 排版
-    this.addItems([ 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'], this.containerList[3]);
-    // 置前
-    this.addItems([ 'toFront', 'toBack'], this.containerList[4]);
-    // 组合
-    this.addItems([ 'group', 'ungroup'], this.containerList[5]);
-    // 旋转
-    this.addItems([ 'turn', 'flipV', 'flipH'], this.containerList[6]);
-    let role_auth = JSON.parse(localStorage.getItem('roleAuth')) || [];
-    // 链接发布
-    let link_pub = ['previewapply'];
-    if (role_auth.indexOf('ADMIN') !== -1 || role_auth.indexOf('SYS_VIEWTOOL_PUSH') !== -1) {
-        link_pub.push('publish');
-    }
-    this.addItems(link_pub, this.containerList[7]);
+     
 };
 
 
@@ -156,7 +104,7 @@ Toolbar.prototype.addMenu = function(label, tooltip, showLabels, name, c, showAl
     {
         menu.funct.apply(menu, arguments);
     }, c, showAll);
-	
+
     menu.addListener('stateChanged', function()
     {
         elt.setEnabled(menu.enabled);
@@ -182,7 +130,7 @@ Toolbar.prototype.addMenuFunctionInContainer = function(container, label, toolti
     this.initElement(elt, tooltip);
     this.addMenuHandler(elt, showLabels, funct, showAll);
     container.appendChild(elt);
-	
+
     return elt;
 };
 
@@ -195,7 +143,7 @@ Toolbar.prototype.addSeparator = function(c)
     var elt = document.createElement('div');
     elt.className = 'geSeparator';
     c.appendChild(elt);
-	
+
     return elt;
 };
 
@@ -208,7 +156,7 @@ Toolbar.prototype.addItems = function(keys, c, ignoreDisabled)
     for (var i = 0; i < keys.length; i++)
     {
         var key = keys[i];
-		
+
         if (key == '-')
         {
             items.push(this.addSeparator(c));
@@ -218,7 +166,7 @@ Toolbar.prototype.addItems = function(keys, c, ignoreDisabled)
             items.push(this.addItem('geSprite-' + key.toLowerCase(), key, c, ignoreDisabled));
         }
     }
-	
+
     return items;
 };
 
@@ -230,28 +178,28 @@ Toolbar.prototype.addItem = function(sprite, key, c, ignoreDisabled)
     // 通过key值获取action
     var action = this.editorUi.actions.get(key);
     var elt = null;
-	
+
     if (action != null)
     {
         var tooltip = action.label;
-		
+
         if (action.shortcut != null)
         {
             tooltip += ' (' + action.shortcut + ')';
         }
-		
+
         elt = this.addButton(sprite, tooltip, action.funct, c);
         if (!ignoreDisabled)
         {
             elt.setEnabled(action.enabled);
-			
+
             action.addListener('stateChanged', function()
             {
                 elt.setEnabled(action.enabled);
             });
         }
     }
-	
+
     return elt;
 };
 
@@ -262,11 +210,11 @@ Toolbar.prototype.addButton = function(classname, tooltip, funct, c)
 {
     var elt = this.createButton(classname);
     c = (c != null) ? c : this.containerList[0];
-	
+
     this.initElement(elt, tooltip);
     this.addClickHandler(elt, funct);
     c.appendChild(elt);
-	
+
     return elt;
 };
 
@@ -280,7 +228,6 @@ Toolbar.prototype.initElement = function(elt, tooltip)
     {
         elt.setAttribute('title', tooltip);
     }
-
     this.addEnabledState(elt);
 };
 
@@ -302,7 +249,7 @@ Toolbar.prototype.addEnabledState = function(elt)
             elt.className = classname + ' mxDisabled';
         }
     };
-	
+
     elt.setEnabled(true);
 };
 
@@ -319,10 +266,10 @@ Toolbar.prototype.addClickHandler = function(elt, funct)
             {
                 funct(evt);
             }
-			
+
             mxEvent.consume(evt);
         });
-		
+
         if (document.documentMode != null && document.documentMode >= 9)
         {
             // Prevents focus
@@ -345,14 +292,14 @@ Toolbar.prototype.createButton = function(classname)
     elt.className = 'geButton';
 
     var inner = document.createElement('div');
-	
+
     if (classname != null)
     {
         inner.className = 'geSprite ' + classname;
     }
-	
+
     elt.appendChild(inner);
-	
+
     return elt;
 };
 
@@ -366,7 +313,7 @@ Toolbar.prototype.createLabel = function(label, tooltip)
     elt.setAttribute('ondragstart', 'return false;');
     elt.className = 'geLabel';
     mxUtils.write(elt, label);
-	
+
     return elt;
 };
 
@@ -391,31 +338,31 @@ Toolbar.prototype.addMenuHandler = function(elt, showLabels, funct, showAll)
                 menu.showDisabled = showAll;
                 menu.labels = showLabels;
                 menu.autoExpand = true;
-				
+
                 var offset = mxUtils.getOffset(elt);
                 menu.popup(offset.x, offset.y + elt.offsetHeight, null, evt);
                 this.editorUi.setCurrentMenu(menu, elt);
-				
+
                 // Workaround for scrollbar hiding menu items
                 if (!showLabels && menu.div.scrollHeight > menu.div.clientHeight)
                 {
                     menu.div.style.width = '40px';
                 }
-				
+
                 menu.hideMenu = mxUtils.bind(this, function()
                 {
                     mxPopupMenu.prototype.hideMenu.apply(menu, arguments);
                     this.editorUi.resetCurrentMenu();
                     menu.destroy();
                 });
-				
+
                 // Extends destroy to reset global state
                 menu.addListener(mxEvent.EVENT_HIDE, mxUtils.bind(this, function()
                 {
                     this.currentElt = null;
                 }));
             }
-			
+
             show = true;
             mxEvent.consume(evt);
         }));
@@ -424,7 +371,7 @@ Toolbar.prototype.addMenuHandler = function(elt, showLabels, funct, showAll)
         mxEvent.addListener(elt, 'mousedown', mxUtils.bind(this, function(evt)
         {
             show = this.currentElt != elt;
-			
+
             // Prevents focus
             if (document.documentMode != null && document.documentMode >= 9)
             {
@@ -440,7 +387,7 @@ Toolbar.prototype.addMenuHandler = function(elt, showLabels, funct, showAll)
 Toolbar.prototype.destroy = function()
 {
     if (this.gestureHandler != null)
-    {	
+    {
         mxEvent.removeGestureListeners(document, this.gestureHandler);
         this.gestureHandler = null;
     }

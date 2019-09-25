@@ -4,15 +4,15 @@
   >
     <!-- 内容主体 -->
     <div id="gePreview" />
-    <!-- 跟随内容浮窗 -->
-    <div id="formatLayer" />
     <!-- 弹窗页面 -->
     <div id="geDialogs" />
+    <!-- 跟随内容浮窗 -->
+    <div id="formatLayer" />
   </div>
 </template>
 
 <script> 
-import preview from '../services/preview'
+import preview from '../services/preview/'
 export default {
     data() {
         return{
@@ -22,6 +22,10 @@ export default {
     mounted() {
         this.$nextTick(()=>{
             preview.mainProcess.init()
+            history.pushState(null, null, document.URL)
+            window.addEventListener('popstate', ()=> {
+                history.pushState(null, null, document.URL)
+            })
         })
     },
 };
@@ -32,15 +36,4 @@ export default {
 </style>
 
 <style lang="less">
-#app{
-  font-size:14px;
-  font-family:MicrosoftYaHei;
-  position: relative;
-  height:100%;
-}
-.main-contianer{
-  display:flex;
-  position: relative;
-  height:100%;
-} 
 </style>

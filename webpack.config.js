@@ -14,7 +14,6 @@ const postCssPlugin = require("autoprefixer")({overrideBrowserslist: [ "> 1%",
 
 // 清除dist文件
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-
 module.exports = {
     entry: ["babel-polyfill",'./src/main.js'], //入口文件，src下的main.js
     output: {
@@ -146,9 +145,10 @@ module.exports = {
         },
         proxy: {
             "/api": {
-                "target": "http://10.74.20.25",
+                "target": "http://10.74.20.25:81",
                 "changeOrigin": true,
-                "pathRewrite": {"^/api": "/api"}
+                // "pathRewrite": {"^/api": "/api"}
+                // "pathRewrite": {"^/api": ""}
             }
         },
     },
