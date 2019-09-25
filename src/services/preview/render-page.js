@@ -7,7 +7,7 @@ let pageWidth = 0,pageHeight = 0
 let applyData = {}
 let fileSystem //文件服务器host
 // 默认样式
-const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
+const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
 import {removeEle, destroyWs, insertImage, insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight} from './util'
 import {createWsReal,getLastData} from './bind-data'
@@ -195,6 +195,9 @@ class PreviewPage {
                     }else if(shapeName.includes('Chart')) {
                         let chartProps = item.getAttribute('chartProps')
                         obj.chartProps = chartProps
+                    } else if (shapeName == 'menuCell') {
+                        let menuCellProps = item.getAttribute('menuCellProps')
+                        obj.menuCellProps = menuCellProps
                     }
                     // 组合节点
                     obj.children = getNode(id)
@@ -412,6 +415,18 @@ class PreviewPage {
         cellHtml.style.left = cell.x + 'px'
         cellHtml.style.top = cell.y + 'px'
         cellHtml.id = `palette_${cell.id}`
+        //判断菜单是否选中，未选中显示默认样式
+        let menuCellPropsStr = cell.menuCellProps
+        if(menuCellPropsStr) {
+            let cellProp = JSON.parse(menuCellPropsStr)
+            let check = cellProp.check
+            if(!check) {
+                cellHtml.style.fontSize = `${defaultStyle.fontSize}px`
+                cellHtml.style.fontWeight = `${defaultStyle.fontWeight}`
+                cellHtml.style.border = `solid 1px ${defaultStyle.strokeColor}`
+                cellHtml.style.backgroundColor = `${defaultStyle.fillColor}`
+            }
+        }
         // 绑定事件
         bindEvent(cellHtml, cell, this.mainProcess, applyData,fileSystem)
         $(cellHtml).data("shapeName",shapeName)
