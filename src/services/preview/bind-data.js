@@ -121,21 +121,6 @@ function setterRealData(res, fileSystem) {
                 if(val || val === 0) {
                     $(els[i]).html(`${val}`)
                 }
-                let formatLayerEl = $("#formatLayer")
-                let formatLayerFun = (e)=>{
-                    let {clientX,clientY} = e
-                    formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
-                    formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
-                        return `<li>${d}=${item[d]}`
-                    }).join('') + "</ul>")
-                    formatLayerEl.show()
-                }
-                $(els[i]).mousemove(formatLayerFun)
-                $(els[i]).mouseleave(() => {
-                    let formatLayerEl = $("#formatLayer")
-                    formatLayerEl.html(" ")
-                    formatLayerEl.hide()
-                })
                 let stateModels = $(els[i]).data("stateModels")
                 if(stateModels) {
                     let stateIndex = 0 //默认状态 未找到要切换的状态，显示默认
@@ -146,6 +131,23 @@ function setterRealData(res, fileSystem) {
                         }
                     }
                     changeEleState(els[i], stateModels[stateIndex],fileSystem)
+                }
+                if (paramShow && paramShow.length) {
+                    let formatLayerEl = $("#formatLayer")
+                    let formatLayerFun = (e)=>{
+                        let {clientX,clientY} = e
+                        formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
+                        formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
+                            return `<li>${d}=${item[d]}`
+                        }).join('') + "</ul>")
+                        formatLayerEl.show()
+                    }
+                    $(els[i]).mousemove(formatLayerFun)
+                    $(els[i]).mouseleave(() => {
+                        let formatLayerEl = $("#formatLayer")
+                        formatLayerEl.html(" ")
+                        formatLayerEl.hide()
+                    })
                 }
             }
         }
