@@ -121,6 +121,20 @@ function setterRealData(res, fileSystem) {
                 if(val || val === 0) {
                     $(els[i]).html(`${val}`)
                 }
+                let stateModels = $(els[i]).data("stateModels")
+                if(stateModels) {
+                    let stateIndex = 0 //默认状态 未找到要切换的状态，显示默认
+                    for (let j = 1; j < stateModels.length;j++) {
+                        if (dealStateFormula(stateModels[j].modelFormInfo.formula, item)) {
+                            stateIndex = j
+                            break
+                        }
+                    }
+                    changeEleState(els[i], stateModels[stateIndex],fileSystem)
+                }
+                if (!paramShow || !paramShow.length) {
+                    return
+                }
                 let formatLayerEl = $("#formatLayer")
                 let formatLayerFun = (e)=>{
                     let {clientX,clientY} = e
@@ -136,17 +150,6 @@ function setterRealData(res, fileSystem) {
                     formatLayerEl.html(" ")
                     formatLayerEl.hide()
                 })
-                let stateModels = $(els[i]).data("stateModels")
-                if(stateModels) {
-                    let stateIndex = 0 //默认状态 未找到要切换的状态，显示默认
-                    for (let j = 1; j < stateModels.length;j++) {
-                        if (dealStateFormula(stateModels[j].modelFormInfo.formula, item)) {
-                            stateIndex = j
-                            break
-                        }
-                    }
-                    changeEleState(els[i], stateModels[stateIndex],fileSystem)
-                }
             }
         }
     })

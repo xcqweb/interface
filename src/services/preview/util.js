@@ -227,6 +227,7 @@ function actionHide(action, applyData) {
 function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
     let {actionsInfo} = cellInfo
     if (actionsInfo) {
+        ele.style.cursor = "pointer"
         for (let action of actionsInfo) {
             ele.addEventListener(action.mouseEvent, function(e) {
                 e = e || window.event;

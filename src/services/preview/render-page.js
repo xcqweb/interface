@@ -80,7 +80,6 @@ class PreviewPage {
     // 解析所有控件节点
     parseCells(root) {
         // 递归获取节点
-        console.time('节点递归时间');
         let getNode = (tId = 1) => {
             let list = []
             for (let item of root) {
@@ -205,7 +204,6 @@ class PreviewPage {
             return list
         }
         let cells = getNode();
-        console.timeEnd('节点递归时间');
         cells.map(cell => {
             // 计算页面高度
             pageWidth = (cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth
@@ -269,7 +267,9 @@ class PreviewPage {
             this.renderPages(cells, layerContent)
         }
         $(() => {
-            this.subscribeData()
+            setTimeout(()=>{
+                this.subscribeData()
+            },600)
         })
         return cells
     }
@@ -431,6 +431,7 @@ class PreviewPage {
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
             }
             $(cellHtml).data("paramShow", paramShow)
+            let resParams = []
             let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
             let modelIdsParam = []
             let statesInfo = cell.statesInfo
@@ -446,20 +447,42 @@ class PreviewPage {
                     requestUtil.post(urls.getModelByIds.url, modelIdsParam).then((res) => {
                         res.returnObj.forEach((item, index) => {
                             cellStateInfoHasModel[index + 1].modelFormInfo = item
+                            let formulaAttr
+                            if (item.formula) {
+                                formulaAttr = JSON.parse(item.formula)
+                            }
+                            let flatFormulaAttr = []
+                            if (formulaAttr) {
+                                formulaAttr.data.forEach((item) => {
+                                    flatFormulaAttr = flatFormulaAttr.concat(...item)
+                                })
+                                flatFormulaAttr.forEach((d) => {
+                                    resParams.push(d.paramName)
+                                })
+                            }
                         })
                         $(cellHtml).data("stateModels", cellStateInfoHasModel)
+                        this.initWsParams(cellHtml,devices, paramShow, resParams)
                     })
+                }else{
+                    this.initWsParams(cellHtml, devices, paramShow)
                 }
+            }else{
+                this.initWsParams(cellHtml, devices,paramShow)
             }
-            this.initWsParams(cellHtml, devices,paramShow)
         }
         return cellHtml
     }
-    initWsParams(cellHtml, devices, paramShow) {
+    initWsParams(cellHtml, devices, paramShow, resParams) {
         if (devices) {
             devices.forEach((item) => {
                 cellHtml.className += ` point_${item.id}`
-                let resArr = Array.from(new Set(paramShow))
+                let resArr
+                if (resParams && resParams.length) {
+                    resArr = Array.from(new Set(resParams.concat(paramShow)))
+                }else{
+                    resArr = Array.from(new Set(paramShow))
+                }
                 if (resArr.length) {
                     this.wsParams.push({
                         pointId: item.id,
