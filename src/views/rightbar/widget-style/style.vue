@@ -617,7 +617,7 @@ export default {
                 this.linkUrl = this.getWidgetProps('link').url
             }
         }else if(this.shapeName == 'menuCell') {
-            let cellProp = this.getWidgetProps('memuCellProps')
+            let cellProp = this.getWidgetProps('menuCellProps')
             if(cellProp) {
                 this.selectMenu = cellProp.check
             }
@@ -1031,7 +1031,7 @@ export default {
             })
         },
         checkMenu(val) {
-            this.setWidgetProps('memuCellProps',{'check':val})
+            this.setWidgetProps('menuCellProps',{'check':val})
         }
     }
 };
