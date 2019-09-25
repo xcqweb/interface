@@ -221,6 +221,8 @@
                           <Select
                             v-model="row.paramName" 
                             style="width:120px;"
+                            :title="row.paramName"
+                            transfer
                             filterable
                             :disabled="modelEditing"
                             @on-change="treeSelectParamHandle(row.paramName,index, key)"
