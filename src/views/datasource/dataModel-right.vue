@@ -242,7 +242,7 @@
                           <Select
                             v-model="row.logical" 
                             style="width:85px;"
-							transfer
+                            transfer
                             :disabled="modelEditing"
                             @on-change="treeSelectLogicalHandle(row.logical,index, key)"
                           >

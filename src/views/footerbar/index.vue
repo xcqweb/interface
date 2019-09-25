@@ -335,7 +335,7 @@ export default {
     methods:{
         initData() {
             if (this.isInitFlag) {
-                return 
+                return
             }
             //初始化状态列表
             let tempStateList = this.getCellModelInfo("statesInfo")
@@ -515,7 +515,6 @@ export default {
         },
         addParamHandle() {
             this.paramOutterList.unshift({id:new Date().getTime(),model:"",type:false})
-            console.log(this.paramOutterList)
         },
         removeParamHandle(id,index) {
             sureDialog(this.myEditorUi,`确定要删除此当前参数吗`, () => {
@@ -652,6 +651,9 @@ export default {
             }
             modelInfo.setAttribute(key, JSON.stringify(data))
             graph.getModel().setValue(cell, modelInfo)
+            if(key == 'statesInfo') {
+                VueEvent.$emit('refreshStates')
+            }
         },
     }
 }
