@@ -132,24 +132,23 @@ function setterRealData(res, fileSystem) {
                     }
                     changeEleState(els[i], stateModels[stateIndex],fileSystem)
                 }
-                if (!paramShow || !paramShow.length) {
-                    return
-                }
-                let formatLayerEl = $("#formatLayer")
-                let formatLayerFun = (e)=>{
-                    let {clientX,clientY} = e
-                    formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
-                    formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
-                        return `<li>${d}=${item[d]}`
-                    }).join('') + "</ul>")
-                    formatLayerEl.show()
-                }
-                $(els[i]).mousemove(formatLayerFun)
-                $(els[i]).mouseleave(() => {
+                if (paramShow && paramShow.length) {
                     let formatLayerEl = $("#formatLayer")
-                    formatLayerEl.html(" ")
-                    formatLayerEl.hide()
-                })
+                    let formatLayerFun = (e)=>{
+                        let {clientX,clientY} = e
+                        formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
+                        formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
+                            return `<li>${d}=${item[d]}`
+                        }).join('') + "</ul>")
+                        formatLayerEl.show()
+                    }
+                    $(els[i]).mousemove(formatLayerFun)
+                    $(els[i]).mouseleave(() => {
+                        let formatLayerEl = $("#formatLayer")
+                        formatLayerEl.html(" ")
+                        formatLayerEl.hide()
+                    })
+                }
             }
         }
     })
