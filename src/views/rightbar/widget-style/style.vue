@@ -704,7 +704,6 @@ export default {
                             break
                         case 'H':
                             diff = positionObj.height * 1 - geo.height;
-                            console.log(diff)
                             geo.height = +positionObj.height
                             break
                     }
