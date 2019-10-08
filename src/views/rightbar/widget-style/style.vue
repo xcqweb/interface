@@ -674,7 +674,7 @@ export default {
             model.beginUpdate()
             cells.forEach((cell)=>{
                 let geo = graph.getCellGeometry(cell)
-                let diff = 0;
+                let diff = 0
                 if(graph.model.isEdge(cell)) {
                     switch(type) {
                         case 'SX':
@@ -699,12 +699,11 @@ export default {
                             geo.y = +positionObj.y
                             break
                         case 'W':
-                            diff = positionObj.width * 1 - geo.width;
+                            diff = positionObj.width * 1 - geo.width
                             geo.width = +positionObj.width
                             break
                         case 'H':
-                            diff = positionObj.height * 1 - geo.height;
-                            console.log(diff)
+                            diff = positionObj.height * 1 - geo.height
                             geo.height = +positionObj.height
                             break
                     }
@@ -951,9 +950,11 @@ export default {
             let cellInfo = graph.getModel().getValue(cell)
             return cellInfo
         },
-        setWidgetProps(widgetProp,props) {
+        setWidgetProps(widgetProp,props,cell) {
             let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
+            if(!cell) {
+                cell = graph.getSelectionCell()
+            }
             let cellInfo = graph.getModel().getValue(cell)
             if (!mxUtils.isNode(cellInfo)) {
                 var doc = mxUtils.createXmlDocument()

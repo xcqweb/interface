@@ -1,4 +1,4 @@
-import {geAjax,toDecimal2NoZero,dealLightFill} from './util'
+import {geAjax,toDecimal2NoZero,dealLightFill,throttleFun} from './util'
 import {getCookie,throttle} from '../Utils'
 import echarts from 'echarts'
 
@@ -134,7 +134,7 @@ function setterRealData(res, fileSystem) {
                 }
                 if (paramShow && paramShow.length) {
                     let formatLayerEl = $("#formatLayer")
-                    let formatLayerFun = (e)=>{
+                    let formatLayerShow = (e)=>{
                         let {clientX,clientY} = e
                         formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
                         formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
@@ -142,7 +142,12 @@ function setterRealData(res, fileSystem) {
                         }).join('') + "</ul>")
                         formatLayerEl.show()
                     }
-                    $(els[i]).mousemove(formatLayerFun)
+                    let formatLayerMove = (e)=> {
+                        let {clientX,clientY} = e
+                        formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
+                    }
+                    $(els[i]).mouseenter(formatLayerShow)
+                    $(els[i]).mousemove(throttleFun(formatLayerMove,16))
                     $(els[i]).mouseleave(() => {
                         let formatLayerEl = $("#formatLayer")
                         formatLayerEl.html(" ")

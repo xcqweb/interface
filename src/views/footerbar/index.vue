@@ -112,7 +112,7 @@
                   @click.stop.prevent="addParamHandle"
                 />
                 <span
-                  v-show="index >= 1"
+                  v-show="index!==paramOutterList.length-1"
                   class="icon-delete"
                   @click.stop.prevent="removeParamHandle(row.id,index)"
                 />
@@ -517,8 +517,14 @@ export default {
             this.paramOutterList.unshift({id:new Date().getTime(),model:"",type:false})
         },
         removeParamHandle(id,index) {
+            if(index || index === 0) {
+                if(!this.paramOutterList[index].model) {
+                    this.paramOutterList.splice(index , 1)
+                    return
+                }
+            }
             sureDialog(this.myEditorUi,`确定要删除此当前参数吗`, () => {
-                index && this.paramOutterList.splice(index , 1)
+                (index || index === 0) && this.paramOutterList.splice(index , 1)
                 let tempObj = this.getCellModelInfo('bindData')
                 let list = [ ]
                 if(tempObj && tempObj.params) {

@@ -1,8 +1,6 @@
 /**
  * 渲染页面
  */
-// 页面宽度和高度
-let pageWidth = 0,pageHeight = 0
 // websocket信息
 let applyData = {}
 let fileSystem //文件服务器host
@@ -108,6 +106,7 @@ class PreviewPage {
                     let statesInfo = JSON.parse(item.getAttribute('statesInfo'))
                     // 节点参数信息
                     let getNodeInfo = new GetNodeInfo(node)
+                    console.log(getNodeInfo)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape')
                     let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, rotation, direction, flipH, flipV, startArrow, endArrow, strokeWidth, fontWeight,edgeProps
@@ -134,22 +133,47 @@ class PreviewPage {
                     hide = item.getAttribute('hide');
                     height = parseFloat(node.childNodes[0].getAttribute('height'))
                     if(shapeName == 'beeline') {
-                        edgeProps = item.getAttribute('edgeProps')
-                        edgeProps = JSON.parse(edgeProps)
-                        if (edgeProps) {
-                            width = Math.abs(edgeProps.tx - edgeProps.sx)
-                            height = Math.abs(edgeProps.ty - edgeProps.sy)
-                            if(height < 30) {//防止箭头预览只看到一半
-                                height = 30
+                        let exitX = getNodeInfo.getStyles('exitX')
+                        let entryX = getNodeInfo.getStyles('entryX')
+                        console.log(exitX,entryX)
+                        edgeProps = {}
+                        const childNodes = node.getElementsByTagName('mxGeometry')[0].childNodes
+                        for (let childNode of childNodes) {
+                            let asText = childNode.getAttribute('as')
+                            if (asText === 'sourcePoint') {
+                                // 起点
+                                edgeProps.sx = parseFloat(childNode.getAttribute('x')) || 0
+                                edgeProps.sy = parseFloat(childNode.getAttribute('y')) || 0
+                            } else if (asText === 'targetPoint') {
+                                // 终点
+                                edgeProps.tx = parseFloat(childNode.getAttribute('x')) || 0
+                                edgeProps.ty = parseFloat(childNode.getAttribute('y')) || 0
                             }
-                            if (width < 30) { //防止箭头预览只看到一半
-                                width = 30
-                            }
-                            x = Math.min(edgeProps.sx, edgeProps.tx) / 2
-                            y = Math.min(edgeProps.sy, edgeProps.ty) / 2
-                            height = height + y
-                            width = width + x
                         }
+                        let edgePropsTemp = item.getAttribute('edgeProps')
+                        if(edgePropsTemp) {
+                            edgePropsTemp = JSON.parse(edgePropsTemp)
+                            if (entryX || entryX === 0) {
+                                edgeProps.tx = edgePropsTemp.tx
+                                edgeProps.ty = edgePropsTemp.ty
+                            }
+                            if(exitX || exitX === 0) {
+                                edgeProps.sx = edgePropsTemp.sx
+                                edgeProps.sy = edgePropsTemp.sy
+                            }
+                        }
+                        width = Math.abs(edgeProps.tx - edgeProps.sx)
+                        height = Math.abs(edgeProps.ty - edgeProps.sy)
+                        if(height < 30) {//防止箭头预览只看到一半
+                            height = 30
+                        }
+                        if (width < 30) { //防止箭头预览只看到一半
+                            width = 30
+                        }
+                        x = Math.min(edgeProps.sx, edgeProps.tx) / 2
+                        y = Math.min(edgeProps.sy, edgeProps.ty) / 2
+                        height = height + y
+                        width = width + x
                     }
                     let obj = {
                         id,
@@ -206,12 +230,7 @@ class PreviewPage {
             }
             return list
         }
-        let cells = getNode();
-        cells.map(cell => {
-            // 计算页面高度
-            pageWidth = (cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth
-            pageHeight = (cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight
-        })
+        let cells = getNode()
         return cells    
     }
     // 清空页面内容
@@ -245,7 +264,6 @@ class PreviewPage {
         let contentWidth = xmlDoc.getAttribute('pageWidth')
         let contentHeight = xmlDoc.getAttribute('pageHeight')
         // 页面宽度和高度
-        pageWidth = pageHeight = 0
         let cells = this.parseCells(root)
         this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
         if (page.type === 'normal') {
@@ -384,7 +402,7 @@ class PreviewPage {
         if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress'].includes(shapeName)) {
             cellHtml.style.backgroundColor = 'transparent'
         }else{
-            if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none')) {
+            if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none') && shapeName != 'tableBox') {
                 cellHtml.style.backgroundColor = 'transparent'
             } else {
                 cellHtml.style.backgroundColor = cell.fillColor

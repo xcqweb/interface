@@ -393,7 +393,20 @@ function toDecimal2NoZero(x) {
     var s = f.toString()
     return s
 }
+function throttleFun(fun, delay) {
+    let prvTm = Date.now(),result = null
+    return function() {
+        let context = this
+        let args = arguments
+        let now = Date.now()
+        if (now - prvTm >= delay) {
+            result = fun.apply(context, args)
+            prvTm = Date.now()
+        }
+        return result
+    }
+}
 export {
     removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips,
-    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill
+    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill, throttleFun
 }

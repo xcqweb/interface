@@ -3490,7 +3490,7 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
  * 保存成功
  * 和退出当前页面
  */
-EditorUi.prototype.saveSuccess = function (res, hideDialog, type) {
+EditorUi.prototype.saveSuccess = function (res, hideDialog) {
     this.editor.setFilename(res.studioName)
     this.editor.setDescribe(res.descript)
     this.editor.setApplyId(res.studioId)

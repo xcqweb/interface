@@ -80,7 +80,7 @@ export default {
                 //圆形
                 that.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#000;', 36, 36, '', '圆形', true, true, '圆形'),
                 // 按钮
-                that.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box;background:transparent;">BUTTON</button>', '按钮',true,true),
+                that.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;verticalAlign=middle;align=center;', 70, 40, '<div style="display: inline-block;text-align:inherit;text-decoration: inherit;white-space: normal;">BUTTON</div>', '按钮',true,true),
                 //表格,通过矩形拼接
                 that.addEntry('tableBox', function() {
                     var cell = new mxCell('', new mxGeometry(0, 0, 300, 90), 'shape=tableBox;group');

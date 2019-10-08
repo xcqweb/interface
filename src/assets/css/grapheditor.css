@@ -1241,7 +1241,7 @@ html td.mxWindowTitle {
 	float: left;
 	border: none;
 }
-button.buttonTag, input.inputTag {
+input.inputTag {
 	background: #fff;
 	border: none;
 	display: block;
