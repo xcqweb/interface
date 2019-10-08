@@ -415,8 +415,17 @@ class PreviewPage {
             }
             cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
         }
-        cellHtml.style.width = cell.width + 'px'
-        cellHtml.style.height = cell.height + 'px'
+        if (shapeName === 'tableCell') {
+            if (cell.x > 0) {
+                cellHtml.style.borderLeftWidth = 0
+            }
+            if (cell.y > 0) {
+                cellHtml.style.borderTopWidth = 0
+            }
+        }
+        cellHtml.style.width = (cell.width + cell.strokeWidth) + 'px'
+        cellHtml.style.height = (cell.height + cell.strokeWidth) + 'px'
+        
         cellHtml.className = 'gePalette'
         // 隐藏
         if (cell.hide == 'true') {
@@ -430,8 +439,8 @@ class PreviewPage {
         // 字体颜色
         cellHtml.style.color = `${cell.fontColor}`
         // 定位
-        cellHtml.style.left = cell.x + 'px'
-        cellHtml.style.top = cell.y + 'px'
+        cellHtml.style.left = (cell.x - cell.strokeWidth) + 'px'
+        cellHtml.style.top = (cell.y - cell.strokeWidth) + 'px'
         cellHtml.id = `palette_${cell.id}`
         //判断菜单是否选中，未选中显示默认样式
         let menuCellPropsStr = cell.menuCellProps
