@@ -414,16 +414,8 @@ class PreviewPage {
             }
             cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
         }
-        if (shapeName === 'tableCell') {
-            if (cell.x > 0) {
-                cellHtml.style.borderLeftWidth = 0
-            }
-            if (cell.y > 0) {
-                cellHtml.style.borderTopWidth = 0
-            }
-        }
-        cellHtml.style.width = (cell.width + cell.strokeWidth) + 'px'
-        cellHtml.style.height = (cell.height + cell.strokeWidth) + 'px'
+        cellHtml.style.width = (cell.width + parseInt(cell.strokeWidth)) + 'px'
+        cellHtml.style.height = (cell.height + parseInt(cell.strokeWidth)) + 'px'
         
         cellHtml.className = 'gePalette'
         // 隐藏
