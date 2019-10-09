@@ -135,7 +135,6 @@ class PreviewPage {
                     if(shapeName == 'beeline') {
                         let exitX = getNodeInfo.getStyles('exitX')
                         let entryX = getNodeInfo.getStyles('entryX')
-                        console.log(exitX,entryX)
                         edgeProps = {}
                         const childNodes = node.getElementsByTagName('mxGeometry')[0].childNodes
                         for (let childNode of childNodes) {

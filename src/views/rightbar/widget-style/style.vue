@@ -561,7 +561,9 @@ export default {
         },
         positionSize() {
             let geo = this.$store.state.main.widgetInfo.geo
-            return geo
+            let {width,height} = geo
+            let newGeo = {width:parseInt(width),height:parseInt(height)}
+            return Object.assign(geo,newGeo)
         }
     },
     created() {},
@@ -1042,7 +1044,6 @@ export default {
 .dialogPage {
     input{
         outline: none;
-        border:none;
         width:100%;
         height:24px;
         background:rgba(255,255,255,1);
