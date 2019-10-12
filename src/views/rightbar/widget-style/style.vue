@@ -561,8 +561,12 @@ export default {
         },
         positionSize() {
             let geo = this.$store.state.main.widgetInfo.geo
-            let {width,height} = geo
-            let newGeo = {width:parseInt(width),height:parseInt(height)}
+            let {width,height,x,y,sx,sy,tx,ty} = geo
+            let newGeo = {
+                width:parseInt(width),height:parseInt(height),x:parseInt(x),
+                y:parseInt(y),sx:parseInt(sx),sy:parseInt(sy),
+                tx:parseInt(tx),ty:parseInt(ty)
+            }
             return Object.assign(geo,newGeo)
         }
     },

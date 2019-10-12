@@ -316,19 +316,7 @@ export default {
                         this.isInitFlag = false
                         this.initData()
                     }
-                } else {
-                    if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
-                        let deviceNameChild = startBindData.dataSource.deviceNameChild || []
-                        startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
-                        startBindData.dataSource.dataSourceChild = value.dataSourceChild
-                        startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
-                        this.setCellModelInfo('bindData',startBindData)
-                        if (this.ifShowArrow) {
-                            this.isInitFlag = false
-                            this.initData()
-                        }
-                    }
-                }
+                } 
             }
         })
     },

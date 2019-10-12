@@ -149,10 +149,19 @@ function actionClose(action, applyData) {
     if (action.innerType === 'page' && action.type === 'in' && document.getElementById(action.link)) {
         removeEle(document.getElementById(action.link));
         removeEle(document.getElementById('bg_' + action.link));
+        //有浮窗在的隐藏浮窗
+        hideFrameLayout()
         destroyWs(applyData,action.link);
     }
 }
-
+/**
+ * 隐藏浮窗
+ */
+function hideFrameLayout() {
+    let formatLayerEl = $("#formatLayer")
+    formatLayerEl.html(" ")
+    formatLayerEl.hide()
+}
 /**
  * 触发事件
  * @param {object} action 
@@ -408,5 +417,5 @@ function throttleFun(fun, delay) {
 }
 export {
     removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips,
-    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill, throttleFun
+    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill, throttleFun, hideFrameLayout
 }

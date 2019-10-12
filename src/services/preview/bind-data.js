@@ -256,6 +256,8 @@ function changeEleState(el, stateInfo,fileSystem) {
     let shapeName = $(el).data("shapeName")
     if (stateInfo.animateCls) {
         el.classList.add(stateInfo.animateCls)
+    }else{
+        el.classList.remove(stateInfo.animateCls)
     }
     if (shapeName == 'light') {
         dealLightFill(el, stateInfo.style.background)

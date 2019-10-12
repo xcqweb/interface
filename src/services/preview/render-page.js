@@ -7,7 +7,7 @@ let fileSystem //文件服务器host
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
-import {removeEle, destroyWs, insertImage, insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight} from './util'
+import {removeEle, destroyWs, insertImage, insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout} from './util'
 import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -238,6 +238,8 @@ class PreviewPage {
             destroyWs(applyData, key)
         }
         this.gePreview.innerHTML = ''
+        //隐藏浮窗
+        hideFrameLayout()
         document.getElementById('geDialogs').innerHTML = ''
     }
     subscribeData() {
