@@ -7522,7 +7522,7 @@ if (typeof mxVertexHandler != 'undefined')
         mxEdgeHandler.prototype.virtualBendsEnabled = true;
         mxEdgeHandler.prototype.mergeRemoveEnabled = true;
         mxEdgeHandler.prototype.manageLabelHandle = true;
-        mxEdgeHandler.prototype.outlineConnect = true;
+        mxEdgeHandler.prototype.outlineConnect = true; // 是否显示 直线与矩形连接时外部高亮样式
 		
         // Disables adding waypoints if shift is pressed
         mxEdgeHandler.prototype.isAddVirtualBendEvent = function(me)
