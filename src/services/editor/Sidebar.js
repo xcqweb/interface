@@ -1535,7 +1535,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '菜单');
         }),
         // 按钮
-        this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;verticalAlign=middle;align=center;', 70, 40, '<div style="display: inline-block;text-align:inherit;text-decoration: inherit;white-space: normal;">BUTTON</div>', '按钮'),
+        this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;verticalAlign=middle;align=center;', 70, 40, '<div style="display: inline-block;text-align:inherit;text-decoration: inherit;">BUTTON</div>', '按钮'),
         // 复选
         // this.createVertexTemplateEntry('shape=multipleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="checkbox" class="inputTag1" />', '复选'),
         // this.createVertexTemplateEntry('shape=multipleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/multipleCheck.png', 16, 16, '', '复选'),
