@@ -79000,7 +79000,7 @@ mxEdgeHandler.prototype.mouseUp = function(sender, me)
 			else
 			{
 				this.graph.getView().invalidate(this.state.cell);
-				this.graph.getView().validate(this.state.cell);						
+				this.graph.getView().validate(this.state.cell);					
 			}
 		}
 		

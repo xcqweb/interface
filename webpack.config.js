@@ -20,7 +20,7 @@ module.exports = {
         path: path.join(__dirname, 'interface'), // 出口目录，dist文件
         publicPath: '',// 表示在引入静态资源时，从根路径开始引入,否则路由多层时候资源找不到
         filename: 'js/[name].[hash].js', //这里name就是打包出来的文件名
-        chunkFilename: 'js/[name].js',//指定动态生成的Chunk在输出时的文件名称
+        chunkFilename: 'js/[name].[hash].js',//指定动态生成的Chunk在输出时的文件名称
     }, 
     module: {
         rules: [
@@ -136,6 +136,7 @@ module.exports = {
         contentBase: path.join(__dirname, "interface"), //打包输出文件根目录
         port: 8090, // 端口
         host: '0.0.0.0',
+        hot: true, // 开启热更新
         historyApiFallback: true,//history 模式路由刷新 404 
         compress: true,
         disableHostCheck: true,

@@ -134,12 +134,15 @@ function setterRealData(res, fileSystem) {
                 }
                 if (paramShow && paramShow.length) {
                     let formatLayerEl = $("#formatLayer")
-                    let formatLayerShow = (e)=>{
-                        let {clientX,clientY} = e
-                        formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
+                    let formatLayerElText = () => {
                         formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
                             return `<li>${d}=${item[d]}`
                         }).join('') + "</ul>")
+                    }
+                    let formatLayerShow = (e)=>{
+                        let {clientX,clientY} = e
+                        formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
+                        formatLayerElText()
                         formatLayerEl.show()
                     }
                     let formatLayerMove = (e)=> {
@@ -148,11 +151,13 @@ function setterRealData(res, fileSystem) {
                     }
                     $(els[i]).mouseenter(formatLayerShow)
                     $(els[i]).mousemove(throttleFun(formatLayerMove,16))
-                    $(els[i]).mouseleave(() => {
-                        let formatLayerEl = $("#formatLayer")
+                    $(els[i]).mouseout(() => {
                         formatLayerEl.html(" ")
                         formatLayerEl.hide()
                     })
+                    if (formatLayerEl.is(':visible')) {
+                        formatLayerElText()
+                    }
                 }
             }
         }
@@ -257,7 +262,8 @@ function changeEleState(el, stateInfo,fileSystem) {
     if (stateInfo.animateCls) {
         el.classList.add(stateInfo.animateCls)
     }else{
-        el.classList.remove(stateInfo.animateCls)
+        //去掉动画样式
+        el.classList.remove('animate-blink')
     }
     if (shapeName == 'light') {
         dealLightFill(el, stateInfo.style.background)
