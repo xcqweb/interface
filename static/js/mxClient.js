@@ -77830,7 +77830,7 @@ mxEdgeHandler.prototype.isSelectionDashed = function()
  */
 mxEdgeHandler.prototype.isConnectableCell = function(cell)
 {
-	return true;
+	return false;
 };
 
 /**
