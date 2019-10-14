@@ -1491,8 +1491,8 @@ Sidebar.prototype.primitives = ['circle', 'diamond', 'drop', 'pentagram', 'squar
 Sidebar.prototype.addGeneralPalette = function(expand)
 {
     var that = this;
-    var divider = new mxCell('', new mxGeometry(0, 0, 40, 8), 'shape=beeline;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=1;labelPosition=right;points=[];portConstraint=eastwest;');
-    divider.vertex = true;
+    //var divider = new mxCell('', new mxGeometry(0, 0, 40, 8), 'shape=beeline;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=1;labelPosition=right;points=[];portConstraint=eastwest;');
+    //divider.vertex = true;
     var fns = [
         // 文字
         this.createVertexTemplateEntry(
@@ -1505,10 +1505,10 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             // 'text',
             "文字"
         ),
-        this.addEntry('divider hline line separator', function () {
+       /*  this.addEntry('divider hline line separator', function () {
             return that.createVertexTemplateFromCells([divider.clone()], divider.geometry.width, divider.geometry.height, 'Divider');
         }),
-        this.createVertexTemplateEntry('shape=beeline;strokeWidth=2;html=1;', 160, 1, '', 'Horizontal Line'),
+        this.createVertexTemplateEntry('shape=beeline;strokeWidth=2;html=1;', 160, 1, '', 'Horizontal Line'), */
         // 直线
         this.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 50, '', '直线', null,''),
          //箭头
