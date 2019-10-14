@@ -77830,7 +77830,7 @@ mxEdgeHandler.prototype.isSelectionDashed = function()
  */
 mxEdgeHandler.prototype.isConnectableCell = function(cell)
 {
-	return false;
+	return false;//取消edge类型（直线等）与其他控件的连接吸附功能
 };
 
 /**

@@ -6570,7 +6570,7 @@ if (typeof mxVertexHandler != 'undefined')
             // Hides menu when editing starts
             this.addListener(mxEvent.START_EDITING, function(sender, evt)
             {
-                this.sidebar.hidePageContextMenu();
+                //this.sidebar.hidePageContextMenu();
                 this.popupMenuHandler.hideMenu();
             });
 		
