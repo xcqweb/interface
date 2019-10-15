@@ -15,7 +15,7 @@ import {ChangePageSetup} from './Init'
 import {Format} from './Format'
 import urls from '../../constants/url'
 import { setCookie, tipDialog} from '../Utils'
-var autoSaveFlagTerry = 0
+window.autoSaveFlagTerry = 0
 window.EditorUi = function(editor, container, lightbox)
 {
     mxEventSource.call(this);

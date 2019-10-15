@@ -17,6 +17,7 @@ let startCurrentDialogIndex = null
 let CurrentMouseOver = null
 let pageScrollTopHeight = 0
 let dialogesScrollTopHeight = 0
+let shapeScrollTopHeight = 0
 function Sidebar(editorUi, container, container2)
 {
     this.editorUi = editorUi;
@@ -1142,7 +1143,6 @@ Sidebar.prototype.createPageContextMenu = function (type) {
                 this.copyPage(element, pageType)
                 break;
             case 'homepage':
-                console.log(index)
                 let pagesRankArr = JSON.parse(JSON.stringify(this.editorUi.editor.pagesRank[pageType]))
                 let newValue = pagesRankArr[index]
                 // this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems(this.editorUi.editor.pagesRank[pageType], 0, index);
@@ -1195,8 +1195,6 @@ function createPageList(editorUi, el, data, id, _that) {
 
     $('.commonPages').on('mouseenter', '.pageList>li>.right-icon-dolt', function (evt) {
             evt.preventDefault();
-            // 右键菜单展示
-            // console.log(888)
             let LIArr = evt.target.parentNode.parentNode.children
             for (var i = 0; i < LIArr.length; i++) {
                 if (LIArr[i] === evt.target.parentNode) {
@@ -1433,6 +1431,57 @@ Sidebar.prototype.addPagePalette = function() {
         $(".dialogPages").scroll(function () {
             dialogesScrollTopHeight = parseInt($(".dialogPages").scrollTop())
         })
+    })
+    $(".geSidebarContainer-bottom").scroll(function () {
+        shapeScrollTopHeight = parseInt($(".geSidebarContainer-bottom").scrollTop())
+    })
+    
+    // 鼠标滑过 悬浮控件名字
+    let controlName = ['text', 'beeline', 'rectangle', 'ellipse', 'menulist', 'button', 'tableBox', 'image', 'light', 'pipeline1', 'progress', 'pipeline2', 'pipeline3', 'linkTag', 'lineChart', 'gaugeChart']
+    let controlNameText = {
+        'text': '文字',
+        'beeline':'直线',
+        'rectangle': '矩形',
+        'ellipse': '椭圆',
+        'menulist':'菜单',
+        'button': '按钮',
+        'tableBox': '表格',
+        'image': '图片',
+        'light': '指示灯',
+        'pipeline1': '管道1',
+        'pipeline2': '管道2',
+        'pipeline3': '管道3',
+        'progress': '进度条',
+        'linkTag': 'Link链接',
+        'lineChart': '趋势图',
+        'gaugeChart': '仪表盘'
+    }
+    $('.geSidebarContainer-bottom').on('mouseenter', '.geSidebar>a', function (evt) {
+        evt.preventDefault()
+        evt.stopPropagation()
+        $('.suspension-showShapename').remove()
+        let shapename = evt.target.dataset.shapename
+        if (shapename && controlName.includes(shapename)) {
+            let ele = document.createElement('div')
+            ele.className = "suspension-showShapename"
+            ele.style.width = '60px'
+            ele.style.height = '30px'
+            ele.style.lineHeight = '30px'
+            ele.style.textAlign = 'center'
+            ele.innerText = controlNameText[shapename]
+            ele.style.position = 'absolute'
+            ele.style.backgroundColor="#ffffff"
+            ele.style.border="1px solid #d4d4d4"
+            ele.style.left = '210px'
+            ele.style.top = evt.target.offsetTop + 8 + 70 - shapeScrollTopHeight + 'px'
+            ele.style.zIndex='100'
+            document.body.appendChild(ele);
+        }
+
+    })
+    $('.geSidebarContainer-bottom').on('mouseleave', '.geSidebar>a', function (evt) {
+            evt.preventDefault()
+            $('.suspension-showShapename').remove()
     })
 }
 /**
@@ -1804,6 +1853,7 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
     elt.style.width = '46px'
     elt.style.height = '46px'
     var shapeName = /shape=(.+?);/.exec(cells[0].style)[1];
+    elt.setAttribute('data-shapeName', shapeName)
     if (!title) {
         // 图元列表
         this.thumbWidth = 29;
