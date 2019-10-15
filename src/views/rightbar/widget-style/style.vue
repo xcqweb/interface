@@ -479,7 +479,7 @@
       <input
         v-model="linkUrl"
         style="padding:0 4px;"
-        @keyup.enter="addLinkUrl"
+        @blur="addLinkUrl"
       >
     </div>
     <Chart
