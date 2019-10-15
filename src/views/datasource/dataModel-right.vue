@@ -1033,7 +1033,7 @@ export default {
         .dataSource-condition-content{
           max-height: 312px;
           // height: calc(100vh - 246px);
-          overflow-y: auto;
+          // overflow-y: auto;
           border: 1px dashed #D4D4D4;
           border-radius: 2px;
           padding: 10px;
