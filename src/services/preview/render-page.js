@@ -1,15 +1,13 @@
 /**
  * 渲染页面
  */
-// 页面宽度和高度
-let pageWidth = 0,pageHeight = 0
 // websocket信息
 let applyData = {}
 let fileSystem //文件服务器host
 // 默认样式
-const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px'}
+const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
-import {removeEle, destroyWs, insertImage, insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight} from './util'
+import {removeEle, destroyWs, insertImage, insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout} from './util'
 import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -80,7 +78,6 @@ class PreviewPage {
     // 解析所有控件节点
     parseCells(root) {
         // 递归获取节点
-        console.time('节点递归时间');
         let getNode = (tId = 1) => {
             let list = []
             for (let item of root) {
@@ -109,6 +106,7 @@ class PreviewPage {
                     let statesInfo = JSON.parse(item.getAttribute('statesInfo'))
                     // 节点参数信息
                     let getNodeInfo = new GetNodeInfo(node)
+                    console.log(getNodeInfo)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape')
                     let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, rotation, direction, flipH, flipV, startArrow, endArrow, strokeWidth, fontWeight,edgeProps
@@ -135,22 +133,46 @@ class PreviewPage {
                     hide = item.getAttribute('hide');
                     height = parseFloat(node.childNodes[0].getAttribute('height'))
                     if(shapeName == 'beeline') {
-                        edgeProps = item.getAttribute('edgeProps')
-                        edgeProps = JSON.parse(edgeProps)
-                        if (edgeProps) {
-                            width = Math.abs(edgeProps.tx - edgeProps.sx)
-                            height = Math.abs(edgeProps.ty - edgeProps.sy)
-                            if(height < 30) {//防止箭头预览只看到一半
-                                height = 30
+                        let exitX = getNodeInfo.getStyles('exitX')
+                        let entryX = getNodeInfo.getStyles('entryX')
+                        edgeProps = {}
+                        const childNodes = node.getElementsByTagName('mxGeometry')[0].childNodes
+                        for (let childNode of childNodes) {
+                            let asText = childNode.getAttribute('as')
+                            if (asText === 'sourcePoint') {
+                                // 起点
+                                edgeProps.sx = parseFloat(childNode.getAttribute('x')) || 0
+                                edgeProps.sy = parseFloat(childNode.getAttribute('y')) || 0
+                            } else if (asText === 'targetPoint') {
+                                // 终点
+                                edgeProps.tx = parseFloat(childNode.getAttribute('x')) || 0
+                                edgeProps.ty = parseFloat(childNode.getAttribute('y')) || 0
                             }
-                            if (width < 30) { //防止箭头预览只看到一半
-                                width = 30
-                            }
-                            x = Math.min(edgeProps.sx, edgeProps.tx) / 2
-                            y = Math.min(edgeProps.sy, edgeProps.ty) / 2
-                            height = height + y
-                            width = width + x
                         }
+                        let edgePropsTemp = item.getAttribute('edgeProps')
+                        if(edgePropsTemp) {
+                            edgePropsTemp = JSON.parse(edgePropsTemp)
+                            if (entryX || entryX === 0) {
+                                edgeProps.tx = edgePropsTemp.tx
+                                edgeProps.ty = edgePropsTemp.ty
+                            }
+                            if(exitX || exitX === 0) {
+                                edgeProps.sx = edgePropsTemp.sx
+                                edgeProps.sy = edgePropsTemp.sy
+                            }
+                        }
+                        width = Math.abs(edgeProps.tx - edgeProps.sx)
+                        height = Math.abs(edgeProps.ty - edgeProps.sy)
+                        if(height < 30) {//防止箭头预览只看到一半
+                            height = 30
+                        }
+                        if (width < 30) { //防止箭头预览只看到一半
+                            width = 30
+                        }
+                        x = Math.min(edgeProps.sx, edgeProps.tx) / 2
+                        y = Math.min(edgeProps.sy, edgeProps.ty) / 2
+                        height = height + y
+                        width = width + x
                     }
                     let obj = {
                         id,
@@ -196,6 +218,9 @@ class PreviewPage {
                     }else if(shapeName.includes('Chart')) {
                         let chartProps = item.getAttribute('chartProps')
                         obj.chartProps = chartProps
+                    } else if (shapeName == 'menuCell') {
+                        let menuCellProps = item.getAttribute('menuCellProps')
+                        obj.menuCellProps = menuCellProps
                     }
                     // 组合节点
                     obj.children = getNode(id)
@@ -204,13 +229,7 @@ class PreviewPage {
             }
             return list
         }
-        let cells = getNode();
-        console.timeEnd('节点递归时间');
-        cells.map(cell => {
-            // 计算页面高度
-            pageWidth = (cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth
-            pageHeight = (cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight
-        })
+        let cells = getNode()
         return cells    
     }
     // 清空页面内容
@@ -219,6 +238,8 @@ class PreviewPage {
             destroyWs(applyData, key)
         }
         this.gePreview.innerHTML = ''
+        //隐藏浮窗
+        hideFrameLayout()
         document.getElementById('geDialogs').innerHTML = ''
     }
     subscribeData() {
@@ -244,7 +265,6 @@ class PreviewPage {
         let contentWidth = xmlDoc.getAttribute('pageWidth')
         let contentHeight = xmlDoc.getAttribute('pageHeight')
         // 页面宽度和高度
-        pageWidth = pageHeight = 0
         let cells = this.parseCells(root)
         this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
         if (page.type === 'normal') {
@@ -269,7 +289,9 @@ class PreviewPage {
             this.renderPages(cells, layerContent)
         }
         $(() => {
-            this.subscribeData()
+            setTimeout(()=>{
+                this.subscribeData()
+            },600)
         })
         return cells
     }
@@ -381,7 +403,7 @@ class PreviewPage {
         if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress'].includes(shapeName)) {
             cellHtml.style.backgroundColor = 'transparent'
         }else{
-            if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none')) {
+            if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none') && shapeName != 'tableBox') {
                 cellHtml.style.backgroundColor = 'transparent'
             } else {
                 cellHtml.style.backgroundColor = cell.fillColor
@@ -394,8 +416,9 @@ class PreviewPage {
             }
             cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
         }
-        cellHtml.style.width = cell.width + 'px'
-        cellHtml.style.height = cell.height + 'px'
+        cellHtml.style.width = (cell.width + parseInt(cell.strokeWidth)) + 'px'
+        cellHtml.style.height = (cell.height + parseInt(cell.strokeWidth)) + 'px'
+        
         cellHtml.className = 'gePalette'
         // 隐藏
         if (cell.hide == 'true') {
@@ -409,9 +432,21 @@ class PreviewPage {
         // 字体颜色
         cellHtml.style.color = `${cell.fontColor}`
         // 定位
-        cellHtml.style.left = cell.x + 'px'
-        cellHtml.style.top = cell.y + 'px'
+        cellHtml.style.left = (cell.x - cell.strokeWidth) + 'px'
+        cellHtml.style.top = (cell.y - cell.strokeWidth) + 'px'
         cellHtml.id = `palette_${cell.id}`
+        //判断菜单是否选中，未选中显示默认样式
+        let menuCellPropsStr = cell.menuCellProps
+        if(menuCellPropsStr) {
+            let cellProp = JSON.parse(menuCellPropsStr)
+            let check = cellProp.check
+            if(!check) {
+                cellHtml.style.fontSize = `${defaultStyle.fontSize}px`
+                cellHtml.style.fontWeight = `${defaultStyle.fontWeight}`
+                cellHtml.style.border = `solid 1px ${defaultStyle.strokeColor}`
+                cellHtml.style.backgroundColor = `${defaultStyle.fillColor}`
+            }
+        }
         // 绑定事件
         bindEvent(cellHtml, cell, this.mainProcess, applyData,fileSystem)
         $(cellHtml).data("shapeName",shapeName)
@@ -431,6 +466,7 @@ class PreviewPage {
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
             }
             $(cellHtml).data("paramShow", paramShow)
+            let resParams = []
             let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
             let modelIdsParam = []
             let statesInfo = cell.statesInfo
@@ -446,20 +482,42 @@ class PreviewPage {
                     requestUtil.post(urls.getModelByIds.url, modelIdsParam).then((res) => {
                         res.returnObj.forEach((item, index) => {
                             cellStateInfoHasModel[index + 1].modelFormInfo = item
+                            let formulaAttr
+                            if (item.formula) {
+                                formulaAttr = JSON.parse(item.formula)
+                            }
+                            let flatFormulaAttr = []
+                            if (formulaAttr) {
+                                formulaAttr.data.forEach((item) => {
+                                    flatFormulaAttr = flatFormulaAttr.concat(...item)
+                                })
+                                flatFormulaAttr.forEach((d) => {
+                                    resParams.push(d.paramName)
+                                })
+                            }
                         })
                         $(cellHtml).data("stateModels", cellStateInfoHasModel)
+                        this.initWsParams(cellHtml,devices, paramShow, resParams)
                     })
+                }else{
+                    this.initWsParams(cellHtml, devices, paramShow)
                 }
+            }else{
+                this.initWsParams(cellHtml, devices,paramShow)
             }
-            this.initWsParams(cellHtml, devices,paramShow)
         }
         return cellHtml
     }
-    initWsParams(cellHtml, devices, paramShow) {
+    initWsParams(cellHtml, devices, paramShow, resParams) {
         if (devices) {
             devices.forEach((item) => {
                 cellHtml.className += ` point_${item.id}`
-                let resArr = Array.from(new Set(paramShow))
+                let resArr
+                if (resParams && resParams.length) {
+                    resArr = Array.from(new Set(resParams.concat(paramShow)))
+                }else{
+                    resArr = Array.from(new Set(paramShow))
+                }
                 if (resArr.length) {
                     this.wsParams.push({
                         pointId: item.id,

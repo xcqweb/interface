@@ -112,7 +112,7 @@
                   @click.stop.prevent="addParamHandle"
                 />
                 <span
-                  v-show="index >= 1"
+                  v-show="index!==paramOutterList.length-1"
                   class="icon-delete"
                   @click.stop.prevent="removeParamHandle(row.id,index)"
                 />
@@ -316,26 +316,14 @@ export default {
                         this.isInitFlag = false
                         this.initData()
                     }
-                } else {
-                    if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
-                        let deviceNameChild = startBindData.dataSource.deviceNameChild || []
-                        startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
-                        startBindData.dataSource.dataSourceChild = value.dataSourceChild
-                        startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
-                        this.setCellModelInfo('bindData',startBindData)
-                        if (this.ifShowArrow) {
-                            this.isInitFlag = false
-                            this.initData()
-                        }
-                    }
-                }
+                } 
             }
         })
     },
     methods:{
         initData() {
             if (this.isInitFlag) {
-                return 
+                return
             }
             //初始化状态列表
             let tempStateList = this.getCellModelInfo("statesInfo")
@@ -515,11 +503,16 @@ export default {
         },
         addParamHandle() {
             this.paramOutterList.unshift({id:new Date().getTime(),model:"",type:false})
-            console.log(this.paramOutterList)
         },
         removeParamHandle(id,index) {
+            if(index || index === 0) {
+                if(!this.paramOutterList[index].model) {
+                    this.paramOutterList.splice(index , 1)
+                    return
+                }
+            }
             sureDialog(this.myEditorUi,`确定要删除此当前参数吗`, () => {
-                index && this.paramOutterList.splice(index , 1)
+                (index || index === 0) && this.paramOutterList.splice(index , 1)
                 let tempObj = this.getCellModelInfo('bindData')
                 let list = [ ]
                 if(tempObj && tempObj.params) {
@@ -652,6 +645,9 @@ export default {
             }
             modelInfo.setAttribute(key, JSON.stringify(data))
             graph.getModel().setValue(cell, modelInfo)
+            if(key == 'statesInfo') {
+                VueEvent.$emit('refreshStates')
+            }
         },
     }
 }

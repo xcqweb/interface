@@ -422,7 +422,7 @@ export default {
                 },
                 {
                     title: '逻辑',
-                    width: 85,
+                    width: 90,
                     slot: 'two'
                 },
                 {
@@ -1031,7 +1031,7 @@ export default {
         flex:1;
         padding:10px 10px 0;
         .dataSource-condition-content{
-          height:100%;
+          max-height: 312px;
           // height: calc(100vh - 246px);
           overflow-y: auto;
           border: 1px dashed #D4D4D4;

@@ -149,10 +149,19 @@ function actionClose(action, applyData) {
     if (action.innerType === 'page' && action.type === 'in' && document.getElementById(action.link)) {
         removeEle(document.getElementById(action.link));
         removeEle(document.getElementById('bg_' + action.link));
+        //有浮窗在的隐藏浮窗
+        hideFrameLayout()
         destroyWs(applyData,action.link);
     }
 }
-
+/**
+ * 隐藏浮窗
+ */
+function hideFrameLayout() {
+    let formatLayerEl = $("#formatLayer")
+    formatLayerEl.html(" ")
+    formatLayerEl.hide()
+}
 /**
  * 触发事件
  * @param {object} action 
@@ -227,6 +236,7 @@ function actionHide(action, applyData) {
 function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
     let {actionsInfo} = cellInfo
     if (actionsInfo) {
+        ele.style.cursor = "pointer"
         for (let action of actionsInfo) {
             ele.addEventListener(action.mouseEvent, function(e) {
                 e = e || window.event;
@@ -392,7 +402,20 @@ function toDecimal2NoZero(x) {
     var s = f.toString()
     return s
 }
+function throttleFun(fun, delay) {
+    let prvTm = Date.now(),result = null
+    return function() {
+        let context = this
+        let args = arguments
+        let now = Date.now()
+        if (now - prvTm >= delay) {
+            result = fun.apply(context, args)
+            prvTm = Date.now()
+        }
+        return result
+    }
+}
 export {
     removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips,
-    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill
+    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill, throttleFun, hideFrameLayout
 }

@@ -90,10 +90,10 @@ function drawArrow(ctx, x1, y1, x2, y2, which = 0, color = '#000', width, isDash
     ctx.strokeStyle = color
     ctx.lineWidth = width
     if(isDash) {
-        ctx.setLineDash([15,15])
+        ctx.setLineDash([3])
     }
-    ctx.moveTo(fromx, fromy)
-    ctx.lineTo(tox, toy)
+    ctx.moveTo(fromx + 0.5, fromy + 0.5)
+    ctx.lineTo(tox + 0.5, toy + 0.5)
     ctx.stroke()
 
     let lineangle = Math.atan2(y2 - y1, x2 - x1)

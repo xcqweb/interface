@@ -271,6 +271,7 @@ export default{
         if(this.bindChartProps) {
             if(this.shapeName == 'lineChart') {
                 this.options1 = this.bindChartProps
+                this.chartLegend = this.options1.legend.show
                 let lineData = this.bindChartProps.series[0].markLine.data
                 if(lineData.length) {
                     lineData.forEach((item)=>{

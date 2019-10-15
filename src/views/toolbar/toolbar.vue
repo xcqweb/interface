@@ -222,12 +222,6 @@ export default{
                     action.addListener('stateChanged', function() {
                         elt.setEnabled(action.enabled);
                     });
-                    // if (action != null)  {
-                    //     elt.setEnabled(action.enabled)
-                    //     action.addListener('stateChanged',()=>{
-                    //         elt.setEnabled(action.enabled)
-                    //     })
-                    // }
                 })
             })
         },

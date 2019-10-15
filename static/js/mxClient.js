@@ -13517,7 +13517,6 @@ mxDragSource.prototype.mouseMove = function(evt)
 			x += this.dragOffset.x;
 			y += this.dragOffset.y;
 		}
-		
 		var offset = mxUtils.getDocumentScrollOrigin(document);
 		
 		this.dragElement.style.left = (x + offset.x) + 'px';
@@ -76186,7 +76185,7 @@ mxVertexHandler.prototype.mouseMove = function(sender, me)
 				this.resizeVertex(me);
 			}
 			// 更新显示浮窗
-			// this.updateHint(me);
+			this.updateHint(me);
 		}
 		
 		me.consume();
@@ -77831,7 +77830,7 @@ mxEdgeHandler.prototype.isSelectionDashed = function()
  */
 mxEdgeHandler.prototype.isConnectableCell = function(cell)
 {
-	return true;
+	return false;//取消edge类型（直线等）与其他控件的连接吸附功能
 };
 
 /**
@@ -79001,7 +79000,7 @@ mxEdgeHandler.prototype.mouseUp = function(sender, me)
 			else
 			{
 				this.graph.getView().invalidate(this.state.cell);
-				this.graph.getView().validate(this.state.cell);						
+				this.graph.getView().validate(this.state.cell);					
 			}
 		}
 		

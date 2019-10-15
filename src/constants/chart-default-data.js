@@ -70,16 +70,17 @@ export let data1 = {
 
 export let data2 = {
     tooltip: {
-        formatter: "{a} <br/>{b} : {c}%"
+        formatter: "{c}%"
     },
     series: {
         name:'仪表盘',
         type: 'gauge',
         radius:'80%',
         detail: {
+            show:false,
             formatter: '{value}%'
         },
-        data: [{name:'值',value:50}],
+        data: [{name:'',value:50}],
         min: 0,
         max: 100,
     },
