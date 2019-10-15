@@ -133,8 +133,6 @@ class PreviewPage {
                     hide = item.getAttribute('hide');
                     height = parseFloat(node.childNodes[0].getAttribute('height'))
                     if(shapeName == 'beeline') {
-                        let exitX = getNodeInfo.getStyles('exitX')
-                        let entryX = getNodeInfo.getStyles('entryX')
                         edgeProps = {}
                         const childNodes = node.getElementsByTagName('mxGeometry')[0].childNodes
                         for (let childNode of childNodes) {
@@ -147,18 +145,6 @@ class PreviewPage {
                                 // 终点
                                 edgeProps.tx = parseFloat(childNode.getAttribute('x')) || 0
                                 edgeProps.ty = parseFloat(childNode.getAttribute('y')) || 0
-                            }
-                        }
-                        let edgePropsTemp = item.getAttribute('edgeProps')
-                        if(edgePropsTemp) {
-                            edgePropsTemp = JSON.parse(edgePropsTemp)
-                            if (entryX || entryX === 0) {
-                                edgeProps.tx = edgePropsTemp.tx
-                                edgeProps.ty = edgePropsTemp.ty
-                            }
-                            if(exitX || exitX === 0) {
-                                edgeProps.sx = edgePropsTemp.sx
-                                edgeProps.sy = edgePropsTemp.sy
                             }
                         }
                         width = Math.abs(edgeProps.tx - edgeProps.sx)
@@ -416,9 +402,18 @@ class PreviewPage {
             }
             cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
         }
-        cellHtml.style.width = (cell.width + parseInt(cell.strokeWidth)) + 'px'
-        cellHtml.style.height = (cell.height + parseInt(cell.strokeWidth)) + 'px'
-        
+        if(shapeName != 'menuCell') {
+            cellHtml.style.width = (cell.width + parseInt(cell.strokeWidth)) + 'px'
+            cellHtml.style.height = (cell.height + parseInt(cell.strokeWidth)) + 'px'
+        }else{
+            cellHtml.style.width = cell.width + 'px'
+            cellHtml.style.height = cell.height + 'px'
+        }
+        if(shapeName === 'tableBox' || shapeName === 'menulist') {
+            if(cell.strokeColor === '#000000' && cell.strokeWidth == 1) {
+                cellHtml.style.border = "none"
+            }
+        }
         cellHtml.className = 'gePalette'
         // 隐藏
         if (cell.hide == 'true') {
@@ -432,8 +427,8 @@ class PreviewPage {
         // 字体颜色
         cellHtml.style.color = `${cell.fontColor}`
         // 定位
-        cellHtml.style.left = (cell.x - cell.strokeWidth) + 'px'
-        cellHtml.style.top = (cell.y - cell.strokeWidth) + 'px'
+        cellHtml.style.left = cell.x + 'px'
+        cellHtml.style.top = cell.y + 'px'
         cellHtml.id = `palette_${cell.id}`
         //判断菜单是否选中，未选中显示默认样式
         let menuCellPropsStr = cell.menuCellProps

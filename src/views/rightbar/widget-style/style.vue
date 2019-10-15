@@ -563,9 +563,9 @@ export default {
             let geo = this.$store.state.main.widgetInfo.geo
             let {width,height,x,y,sx,sy,tx,ty} = geo
             let newGeo = {
-                width:parseInt(width),height:parseInt(height),x:parseInt(x),
-                y:parseInt(y),sx:parseInt(sx),sy:parseInt(sy),
-                tx:parseInt(tx),ty:parseInt(ty)
+                width:this.dealNumber(width),height:this.dealNumber(height),x:this.dealNumber(x),
+                y:this.dealNumber(y),sx:this.dealNumber(sx),sy:this.dealNumber(sy),
+                tx:this.dealNumber(tx),ty:this.dealNumber(ty)
             }
             return Object.assign(geo,newGeo)
         }
@@ -653,6 +653,12 @@ export default {
         }
     },
     methods: {
+        dealNumber(number) {
+            if(number) {
+                return parseInt(number)
+            }
+            return number
+        },
         dealDefaultColor(color) {
             if(!color || color == 'none') {
                 return `url(${Dialog.prototype.noColorImage})`

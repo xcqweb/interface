@@ -9,7 +9,7 @@
         样式
       </div>
       <div
-        v-if="stateList.includes(shapeName)"
+        v-if="stateList.includes(shapeName) && cellsCount==1"
         class="tab"
         :class="{'selected':tab==2}"
         @click="changeTab(2)"
@@ -17,7 +17,7 @@
         状态
       </div>
       <div
-        v-if="actionList.includes(shapeName)"
+        v-if="actionList.includes(shapeName) && cellsCount==1"
         class="tab"
         :class="{'selected':tab==3}"
         @click="changeTab(3)"
@@ -25,7 +25,7 @@
         交互
       </div>
       <div
-        v-if="dataList.includes(shapeName)"
+        v-if="dataList.includes(shapeName) && cellsCount==1"
         class="tab"
         :class="{'selected':tab==4}"
         @click="changeTab(4)"
@@ -69,12 +69,14 @@ export default{
     },
     computed: {
         shapeName() {
-            let shapeNameTemp = this.$store.state.main.widgetInfo.shapeInfo.shape
-            return shapeNameTemp
+            return this.$store.state.main.widgetInfo.shapeInfo.shape
         },
         rand() {
             return this.$store.state.main.rand
-        }
+        },
+        cellsCount() {
+            return this.$store.state.main.widgetInfo.cellsCount
+        },
     },
     watch: {
         rand() {
