@@ -1442,7 +1442,7 @@ Sidebar.prototype.addPagePalette = function() {
         'text': '文字',
         'beeline':'直线',
         'rectangle': '矩形',
-        'ellipse': '椭圆',
+        'ellipse': '圆形',
         'menulist':'菜单',
         'button': '按钮',
         'tableBox': '表格',
