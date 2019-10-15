@@ -2753,14 +2753,14 @@ EditorUi.prototype.updateActionStates = function()
     var notMenu = shapeNameStr.indexOf('menuCell') == -1 && shapeNameStr.indexOf('menulist') == -1;
     // 判断当前是否是表格
     var isTable = shapeNameStr.indexOf('tableBox') != -1 || shapeNameStr.indexOf('tableCell') != -1;
-    for (var i = 0; i < actions.length; i++)
+  /*   for (var i = 0; i < actions.length; i++)
     {
         if (shapeName === 'menuCell' && menuDisabled.indexOf(actions[i]) != -1) { // 单个菜单
             this.actions.get(actions[i]).setEnabled(!selected);
         } else {
             this.actions.get(actions[i]).setEnabled(selected);
         }
-    }
+    } */
 
     this.actions.get('rotation').setEnabled(vertexSelected && shapeName !== 'menuCell');
     this.actions.get('autosize').setEnabled(vertexSelected && !isTable && notMenu);

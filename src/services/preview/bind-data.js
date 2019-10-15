@@ -135,8 +135,10 @@ function setterRealData(res, fileSystem) {
                 if (paramShow && paramShow.length) {
                     let formatLayerEl = $("#formatLayer")
                     let formatLayerElText = () => {
-                        formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
-                            return `<li>${d}=${item[d]}`
+                        formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + 
+                        `<li>${item.timestamp}</li>` +
+                        paramShow.map((d) => {
+                            return `<li>${d}=${item[d]}</li>`
                         }).join('') + "</ul>")
                     }
                     let formatLayerShow = (e)=>{
@@ -173,7 +175,7 @@ function dealStateFormula(formula, data) {
     let res1 = true,breakFlag = false,res2 = false
     let logics = formula.data
     if(!logics) {
-        return
+        return false
     }
     if (!formula.conditionLogic || formula.conditionLogic == 1) { // 顶级条件是and，有一个为false，就返回false
         for(let i = 0;i < logics.length;i++) {
