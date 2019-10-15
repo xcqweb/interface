@@ -220,7 +220,9 @@
                         >
                           <Select
                             v-model="row.paramName" 
-                            style="width:120px;"
+                            :style="{width: (modelEditing ? '202px' : '120px')}"
+                            :title="row.paramName"
+                            transfer
                             filterable
                             :disabled="modelEditing"
                             @on-change="treeSelectParamHandle(row.paramName,index, key)"
@@ -234,12 +236,12 @@
                           </Select>
                         </template>
                         <template
-                          slot="two" 
+                          slot="two"
                           slot-scope="{ row, index}"
                         >
                           <Select
-                            v-model="row.logical" 
-                            style="width:80px;"
+                            v-model="row.logical"
+                            style="width:80px"
                             :disabled="modelEditing"
                             @on-change="treeSelectLogicalHandle(row.logical,index, key)"
                           >
@@ -290,6 +292,7 @@
                           </div>
                         </template>
                         <template 
+                          v-if="!modelEditing"
                           slot="flour" 
                           slot-scope="{index}"
                         >
@@ -414,7 +417,7 @@ export default {
             columns: [
                 {
                     title: '第一列',
-                    width: 125,
+                    width:207,
                     slot: 'one'
                 },
                 {
@@ -427,11 +430,7 @@ export default {
                     width: 130,
                     slot: 'three'
                 },
-                {
-                    title: '操作',
-                    width:80,
-                    slot: 'flour'
-                }
+                
             ],
             tdheight: 32,
             conditionLogicalSelect: '1',
@@ -561,6 +560,20 @@ export default {
                 this.snapDescript = this.textareValue
                 this.saveModelText = `保存模型`
                 this.$store.commit('modelEditing', false)
+                let obj = {
+                    title: '操作',
+                    width:80,
+                    slot: 'flour'
+                }
+                let obj0 = {
+                    title: '第一列',
+                    width:125,
+                    slot: 'one'
+                }
+                if (this.columns.length !== 4) {
+                    this.columns.push(obj)
+                }
+                this.columns.splice(0,1,obj0)
             } else {
                 if (this.treeCheckRule(this.alldata.data)) {
                     // 组装数据  保存模型
@@ -579,6 +592,15 @@ export default {
                             this.$store.commit('modelEditing', true)
                             this.ModelNameArr.splice(this.modelNumber, 1, res)
                         }
+                        if (this.columns.length === 4) {
+                            this.columns.pop()
+                        }
+                        let obj0 = {
+                            title: '第一列',
+                            width:207,
+                            slot: 'one'
+                        }
+                        this.columns.splice(0, 1, obj0)
                     }).catch(() => {
                         Message.error('系统繁忙，请稍后再试！')
                         return false
@@ -594,6 +616,15 @@ export default {
             this.textareValue = this.snapDescript
             this.saveModelText = `编辑模型`
             this.$store.commit('modelEditing', true)
+            if (this.columns.length === 4) {
+                this.columns.pop()
+            }
+            let obj0 = {
+                title: '第一列',
+                width:207,
+                slot: 'one'
+            }
+            this.columns.splice(0, 1, obj0)
         },
         addConditionHandle() {
             if (this.modelEditing) {
@@ -614,6 +645,20 @@ export default {
             this.alldata.conditionLogic = data
         },
         addModelHandle() {
+            let obj = {
+                title: '操作',
+                width:80,
+                slot: 'flour'
+            }
+            let obj0 = {
+                title: '第一列',
+                width:125,
+                slot: 'one'
+            }
+            if (this.columns.length !== 4) {
+                this.columns.push(obj)
+            }
+            this.columns.splice(0,1,obj0)
             if (!this.modelEditing) {
                 Message.warning(alertTip)
                 return false
