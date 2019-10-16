@@ -57,7 +57,7 @@
         <input
           v-model="solidHeight"
           v-number="0"
-          @keyup.enter="changeScaleInput"
+          @blur="changeScaleInput"
         >
       </div>
     </div>

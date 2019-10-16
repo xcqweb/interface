@@ -11,7 +11,7 @@
       <input
         v-model="widgetName"
         style="padding:0 4px;"
-        @keyup.enter="changeName"
+        @blur="changeName"
       >
       <div class="item-line" />
     </template>
@@ -27,7 +27,7 @@
           v-model="positionSize.x"
           v-number="0"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changePositionSize('X')"
+          @blur="changePositionSize('X')"
         >
       </div>
       <div
@@ -39,7 +39,7 @@
           v-model="positionSize.y"
           v-number="0"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changePositionSize('Y')"
+          @blur="changePositionSize('Y')"
         > 
       </div>
     </div>
@@ -55,7 +55,7 @@
           v-model="positionSize.width"
           v-number="0"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changePositionSize('W')"
+          @blur="changePositionSize('W')"
         >
       </div>
       <div
@@ -67,7 +67,7 @@
           v-model="positionSize.height"
           v-number="0"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changePositionSize('H')"
+          @blur="changePositionSize('H')"
         > 
       </div>
     </div>
@@ -83,7 +83,7 @@
             v-model="positionSize.sx"
             v-number="0"
             style="border-left:none;border-right:none;"
-            @keyup.enter="changePositionSize('SX')"
+            @blur="changePositionSize('SX')"
           > 
         </div>
         <div
@@ -95,7 +95,7 @@
             v-model="positionSize.sy"
             v-number="0"
             style="border-left:none;border-right:none;"
-            @keyup.enter="changePositionSize('SY')"
+            @blur="changePositionSize('SY')"
           > 
         </div>
       </div>
@@ -110,7 +110,7 @@
             v-model="positionSize.tx"
             v-number="0"
             style="border-left:none;border-right:none;"
-            @keyup.enter="changePositionSize('TX')"
+            @blur="changePositionSize('TX')"
           > 
         </div>
         <div
@@ -122,7 +122,7 @@
             v-model="positionSize.ty"
             v-number="0"
             style="border-left:none;border-right:none;"
-            @keyup.enter="changePositionSize('TY')"
+            @blur="changePositionSize('TY')"
           > 
         </div>
       </div>
@@ -139,7 +139,7 @@
           v-model="tableRow"
           v-number="0"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changeTableSize"
+          @blur="changeTableSize"
         >
       </div>
       <div
@@ -151,7 +151,7 @@
           v-model="tableCol"
           v-number="0"
           style="border-left:none;border-right:none;"
-          @keyup.enter="changeTableSize"
+          @blur="changeTableSize"
         > 
       </div>
     </div>
@@ -183,7 +183,7 @@
               v-model="fontText"
               v-number="0"
               style="border-left: none;border-right: none"
-              @keyup.enter="changeFont(fontText)"
+              @blur="changeFont(fontText)"
             >
             <img
               src="../../../assets/images/menu/down_ic.png"
@@ -317,7 +317,7 @@
               v-model="borderLineBoldText"
               v-number="0"
               style="border-left: none;border-right: none"
-              @keyup.enter="changeBorderLineBold(borderLineBoldText)"
+              @blur="changeBorderLineBold(borderLineBoldText)"
             >
             <img src="../../../assets/images/menu/down_ic.png">
             <ul
@@ -418,7 +418,7 @@
             v-model="progressMax"
             v-number="0"
             style="border-left:none;border-right:none;width:52%;"
-            @keyup.enter="changeProgress"
+            @blur="changeProgress"
           >
         </div>
         <div
@@ -430,7 +430,7 @@
             v-model="progressMin"
             v-number="0"
             style="border-left:none;border-right:none;width:52%;"
-            @keyup.enter="changeProgress"
+            @blur="changeProgress"
           > 
         </div>
       </div>
