@@ -402,13 +402,8 @@ class PreviewPage {
             }
             cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
         }
-        if(shapeName != 'menuCell') {
-            cellHtml.style.width = (cell.width + parseInt(cell.strokeWidth)) + 'px'
-            cellHtml.style.height = (cell.height + parseInt(cell.strokeWidth)) + 'px'
-        }else{
-            cellHtml.style.width = cell.width + 'px'
-            cellHtml.style.height = cell.height + 'px'
-        }
+        cellHtml.style.width = (cell.width + parseInt(cell.strokeWidth)) + 'px'
+        cellHtml.style.height = (cell.height + parseInt(cell.strokeWidth)) + 'px'
         if(shapeName === 'tableBox' || shapeName === 'menulist') {
             if(cell.strokeColor === '#000000' && cell.strokeWidth == 1) {
                 cellHtml.style.border = "none"
