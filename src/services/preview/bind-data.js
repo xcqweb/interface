@@ -98,7 +98,7 @@ function setterRealData(res, fileSystem) {
                     let chartDataLen = $(els[i]).data("chartDataLen")
                     options.series.forEach((ser)=>{
                         if (ser.pointId == item.pointId) {
-                            if(ser.data.length == chartDataLen) {
+                            if(ser.data.length >= chartDataLen) {
                                 ser.data.shift()
                             }
                             if (val || val == 0) {
@@ -106,7 +106,7 @@ function setterRealData(res, fileSystem) {
                             }
                         }
                     })
-                    if(options.xAxis[0].data.length == chartDataLen) {
+                    if(options.xAxis[0].data.length >= chartDataLen) {
                         options.xAxis[0].data.shift()
                     }
                     options.xAxis[0].data.push(item.timestamp)
