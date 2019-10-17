@@ -1460,7 +1460,7 @@ Sidebar.prototype.addPagePalette = function() {
         evt.preventDefault()
         evt.stopPropagation()
         $('.suspension-showShapename').remove()
-        let shapename = $(this).data('shapename') || $(this).parents('.geItem').data('shapename')
+        let shapename = $(this).data('shapename')
         if (shapename && controlName.includes(shapename)) {
             let ele = document.createElement('div')
             ele.className = "suspension-showShapename"
