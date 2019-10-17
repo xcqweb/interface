@@ -346,6 +346,7 @@ function dealCharts(cell) {
                     let chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
                     $(con).data("chartDataLen", chartDataLen)
                     let nowTs = +new Date()
+                    options.xAxis.data = []
                     options.yAxis.name = titleShow
                     let tempLegend = [], tempSeries = []
                     let markLine = options.series[0].markLine
@@ -357,8 +358,6 @@ function dealCharts(cell) {
                         markLineMax = Math.max(...markValArr)
                     }
                     options.legend.data = tempLegend
-                    options.series = tempSeries
-                    options.xAxis.data = []
                     devices.forEach((item,index) => {
                         tempLegend.push(item.name)
                         tempSeries.push({
@@ -385,15 +384,19 @@ function dealCharts(cell) {
                             if(index === 0) {
                                 options.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
                             }
+                            if (index == devices.length - 1) {
+                                options.series = tempSeries
+                                myEchart.setOption(options)
+                            }
                         })
                     })
                 })
             }else {
                 options.series.data = [{value:0,name:titleShow}]
                 options.series.name = titleShow
+                myEchart.setOption(options)
             }
         }
-        myEchart.setOption(options)
     })
     return con
 }
@@ -442,7 +445,7 @@ function throttleFun(fun, delay) {
     }
 }
 function timeFormate(time) {
-    time = time || new Date().getTime()
+    time = +time || new Date().getTime()
     const timeEle = new Date(time)
     const year = timeEle.getFullYear()
     const month = timeEle.getMonth() + 1
