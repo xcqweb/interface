@@ -85,12 +85,10 @@ function post(url, params,isLoading = true) {
 }
 //返回一个Promise(发送get请求)
 function get(url,params,isLoading = true) {
-    // console.log(params)
     return dealRequest(url, {params},"get",isLoading);
 }
 //返回一个Promise(发送put请求)
 function put(url, params, isLoading = true) {
-    // console.log(params)
     return dealRequest(url, params, "put", isLoading);
 }
 //返回一个Promise(发送delete请求)
