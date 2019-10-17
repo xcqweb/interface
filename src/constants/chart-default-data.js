@@ -2,14 +2,18 @@ export let data1 = {
     legend: {
         show:true,
         data: ['图例'],
-        bottom: 0,
+        x:'center',
+        y:'bottom',
+        orient: 'horizontal',
         textStyle:{
             
         }
     },
     grid:{
-        top:10,
+        top:45,
         bottom:45,
+        left:45,
+        right:45
     },
     tooltip: {
         trigger: 'axis'

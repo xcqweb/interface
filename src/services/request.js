@@ -42,9 +42,6 @@ axios.interceptors.response.use((res) =>{
             })
         }
     }
-    if (error.response && error.response.data.result_msg) {
-        console.log(error.response.data.result_msg)
-    }
     return Promise.reject(error)
 })
 function dealRequest(url,params,funName,isLoading) {
