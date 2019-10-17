@@ -375,7 +375,7 @@ Actions.prototype.init = function()
         {
             mxClipboard.paste(graph);
         }
-    }, false, 'sprite-paste', Editor.ctrlKey + '+V');
+    }, null, 'sprite-paste', Editor.ctrlKey + '+V');
     this.addAction('pasteHere', function(evt)
     {
         if (graph.isEnabled() && !graph.isCellLocked(graph.getDefaultParent()))
@@ -1823,7 +1823,7 @@ Actions.prototype.put = function(name, action)
 Actions.prototype.get = function(name)
 {
     return this.actions[name];
-};
+}; 
 
 /**
  * Constructs a new action for the given parameters.
