@@ -21,6 +21,39 @@
           style="height:300px;width:46%;"
         />
         <div style="width:46%">
+          <div v-if="shapeName=='gaugeChart'">
+            <div class="item-title">
+              数值范围
+            </div>
+            <div
+              v-if="shapeName!='menuCell' && shapeName!='tableCell'"
+              style="display:flex;"
+            >
+              <div
+                class="item-container"
+              >
+                <span style="color:#797979;margin:0 6px;">上限</span>
+                <input
+                  v-model="progressMax"
+                  v-number.minus="1"
+                  style="border-left:none;border-right:none;width:52%;"
+                  @blur="changeProgress"
+                >
+              </div>
+              <div
+                class="item-container"
+                style="margin-left:10px;"
+              >
+                <span style="color:#797979;margin:0 6px;">下限</span>
+                <input
+                  v-model="progressMin"
+                  v-number.minus="1"
+                  style="border-left:none;border-right:none;width:52%;"
+                  @blur="changeProgress"
+                > 
+              </div>
+            </div>
+          </div>
           <div
             v-if="shapeName=='lineChart'"
             class="item-title"
@@ -38,46 +71,13 @@
             class="item-title"
             style="display:flex;justify-content:space-between;"
           >
-            样式
+            风格
             <div
               class="setColor"
               style="width:80%;"
               :style="{backgroundColor:styleColorBg}"
               @click="pickStyleColor"
             />
-          </div>
-          <div v-if="shapeName=='gaugeChart'">
-            <div class="item-title">
-              数值范围
-            </div>
-            <div
-              v-if="shapeName!='menuCell' && shapeName!='tableCell'"
-              style="display:flex;"
-            >
-              <div
-                class="item-container"
-              >
-                <span style="color:#797979;margin:0 6px;">上限</span>
-                <input
-                  v-model="progressMax"
-                  v-number.minus="1"
-                  style="border-left:none;border-right:none;width:52%;"
-                  @keyup.enter="changeProgress"
-                >
-              </div>
-              <div
-                class="item-container"
-                style="margin-left:10px;"
-              >
-                <span style="color:#797979;margin:0 6px;">下限</span>
-                <input
-                  v-model="progressMin"
-                  v-number.minus="1"
-                  style="border-left:none;border-right:none;width:52%;"
-                  @keyup.enter="changeProgress"
-                > 
-              </div>
-            </div>
           </div>
           <div v-if="shapeName=='lineChart'">
             <div
@@ -187,6 +187,7 @@
             </div>
             <div
               v-if="!isAddMark"
+              style="max-height:270px;overflow-y:scroll;"
             >
               <div
                 v-for="(item,index) in markLineList"

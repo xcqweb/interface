@@ -335,39 +335,68 @@ function dealCharts(cell) {
     document.addEventListener("initEcharts",()=>{
         let myEchart = echarts.init(con)
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params) {
-            let deviceTypeId = cell.bindData.dataSource.deviceTypeChild.id
             let titleShow = cell.bindData.params[0].paramName
-            requestUtil.get(`${urls.timeSelect.url}${deviceTypeId}`).then(res => {
-                let checkItem = res.durations.find((item) => {
-                    return item.checked === true
-                })
-                let chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
-                $(con).data("chartDataLen", chartDataLen)
-            })
             let devices = cell.bindData.dataSource.deviceNameChild
             if (cell.shapeName == 'lineChart') {
-                options.yAxis.name = titleShow
-                let tempLegend = [],tempSeries = []
-                let markLine = options.series[0].markLine
-                devices.forEach((item)=>{
-                    tempLegend.push(item.name)
-                    tempSeries.push({
-                        type:'line',
-                        name:item.name,
-                        markLine:markLine,
-                        data:[],
-                        pointId:item.id,//设备id，额外添加的，匹配数据时候用
+                let deviceTypeId = cell.bindData.dataSource.deviceTypeChild.id
+                requestUtil.get(`${urls.timeSelect.url}${deviceTypeId}`).then(res => {
+                    let checkItem = res.durations.find((item) => {
+                        return item.checked === true
+                    })
+                    let chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
+                    $(con).data("chartDataLen", chartDataLen)
+                    let nowTs = +new Date()
+                    options.xAxis.data = []
+                    options.yAxis.name = titleShow
+                    let tempLegend = [], tempSeries = []
+                    let markLine = options.series[0].markLine
+                    let markLineMax = 0,markValArr = []
+                    if(markLine && markLine.data && markLine.data.length) {
+                        markLine.data.forEach(item=>{
+                            markValArr.push(item.yAxis)
+                        })
+                        markLineMax = Math.max(...markValArr)
+                    }
+                    options.legend.data = tempLegend
+                    devices.forEach((item,index) => {
+                        tempLegend.push(item.name)
+                        tempSeries.push({
+                            type: 'line',
+                            name: item.name,
+                            markLine: markLine,
+                            data: [],
+                            pointId: item.id, //设备id，额外添加的，匹配数据时候用
+                        })
+                        let pentSdbParams = {
+                            pointId: item.id,
+                            key: titleShow,
+                            schame: 'iot',
+                            startTs: nowTs - checkItem.duration * 1000,
+                            endTs: nowTs,
+                        }
+                        requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
+                            for (let key in res.resMap) {
+                                if(index === 0) {
+                                    options.xAxis.data.push(timeFormate(key))
+                                }
+                                tempSeries[index].data.push(res.resMap[key])
+                            }
+                            if(index === 0) {
+                                options.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
+                            }
+                            if (index == devices.length - 1) {
+                                options.series = tempSeries
+                                myEchart.setOption(options)
+                            }
+                        })
                     })
                 })
-                options.legend.data = tempLegend
-                options.series = tempSeries
-                options.xAxis.data = []
             }else {
                 options.series.data = [{value:0,name:titleShow}]
                 options.series.name = titleShow
+                myEchart.setOption(options)
             }
         }
-        myEchart.setOption(options)
     })
     return con
 }
@@ -414,6 +443,18 @@ function throttleFun(fun, delay) {
         }
         return result
     }
+}
+function timeFormate(time) {
+    time = +time || new Date().getTime()
+    const timeEle = new Date(time)
+    const year = timeEle.getFullYear()
+    const month = timeEle.getMonth() + 1
+    const day = timeEle.getDate()
+    const hours = timeEle.getHours()
+    const minute = timeEle.getMinutes()
+    const second = timeEle.getSeconds()
+    const cmSecond = timeEle.getUTCMilliseconds()
+    return `${year}/${month > 9 ? month : '0' + month}/${day > 9 ? day : '0' + day} ${hours > 9 ? hours : '0' + hours}:${minute > 9 ? minute : '0' + minute}:${second > 9 ? second : '0' + second}.${cmSecond}`
 }
 export {
     removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips,

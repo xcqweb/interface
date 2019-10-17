@@ -1,4 +1,5 @@
 import {geAjax} from './util'
+import {getCookie} from '../Utils'
 import PreviewPage from './render-page'
 
 // 主函数
@@ -40,6 +41,12 @@ class Main {
         fileSystem = host.imageHost
         applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudio/${id}`, 'GET')
         if (!applyInfo) {
+            return
+        }
+        let token = getCookie('token')
+        let refreshToken = getCookie('refreshToken')
+        if ((!token || !refreshToken) && applyInfo.status === 0) { //未登录且应用未发布的情况下
+            gePreview.innerHTML = `<div style="margin-top:40px;font-size:14px;color:#222;text-align:center;">抱歉，该应用目前处于未发布的状态，暂时不能查看哦！</div>`
             return
         }
         document.getElementsByTagName('title')[0].innerHTML = applyInfo.studioName
