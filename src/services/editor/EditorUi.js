@@ -2794,20 +2794,20 @@ EditorUi.prototype.updateActionStates = function()
     this.actions.get('selectNone').setEnabled(unlocked);
 
     // 菜单单元格禁用
-    var menuCellDisabled = ['copy', 'cut', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
-    if (shapeName == 'menuCell') {
-        for (let i = 0; i < menuCellDisabled.length; i++) {
-            this.actions.get(menuCellDisabled[i]).setEnabled(false);
-        }
-    }
+    // var menuCellDisabled = ['copy', 'cut', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
+    // if (shapeName == 'menuCell') {
+    //     for (let i = 0; i < menuCellDisabled.length; i++) {
+    //         this.actions.get(menuCellDisabled[i]).setEnabled(false);
+    //     }
+    // }
 
     // 表格单元格禁用
-    var tableCellDisabled = ['copy', 'cut', 'delete', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
-    if (shapeName == 'tableCell') {
-        for (let i = 0; i < tableCellDisabled.length; i++) {
-            this.actions.get(tableCellDisabled[i]).setEnabled(false);
-        }
-    }
+    // var tableCellDisabled = ['copy', 'cut', 'delete', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
+    // if (shapeName == 'tableCell') {
+    //     for (let i = 0; i < tableCellDisabled.length; i++) {
+    //         this.actions.get(tableCellDisabled[i]).setEnabled(false);
+    //     }
+    // }
 
     this.updatePasteActionStates();
     // this.updatePasteActionStates(shapeName);

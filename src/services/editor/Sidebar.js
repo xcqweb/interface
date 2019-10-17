@@ -1460,7 +1460,7 @@ Sidebar.prototype.addPagePalette = function() {
         evt.preventDefault()
         evt.stopPropagation()
         $('.suspension-showShapename').remove()
-        let shapename = evt.target.dataset.shapename
+        let shapename = $(this).data('shapename') || $(this).parents('.geItem').data('shapename')
         if (shapename && controlName.includes(shapename)) {
             let ele = document.createElement('div')
             ele.className = "suspension-showShapename"
@@ -1477,7 +1477,6 @@ Sidebar.prototype.addPagePalette = function() {
             ele.style.zIndex='100'
             document.body.appendChild(ele);
         }
-
     })
     $('.geSidebarContainer-bottom').on('mouseleave', '.geSidebar>a', function (evt) {
             evt.preventDefault()

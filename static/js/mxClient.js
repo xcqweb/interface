@@ -15338,6 +15338,8 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	if (selectCell) {
 		shapeName = this.graph.view.getState(selectCell).style.shape;
 	}
+	// console.log(shapeName)
+	// console.log(title)
 	if (typeof this.graph.getModel().getValue(selectCell) === 'object') {
 		if (this.graph.getModel().getValue(selectCell)) {
 			let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') || undefined // 获取到元素
