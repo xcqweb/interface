@@ -37,8 +37,8 @@ async function geAjax(url, method = 'GET', data = null) {
     return new Promise((resolve,reject)=>{
         callAjax()
         function callAjax() {
-            var token = getCookie('token')
-            var refreshToken = getCookie('refreshToken')
+            let token = getCookie('token')
+            let refreshToken = getCookie('refreshToken')
             $.ajax({
                 method,
                 headers: {
@@ -374,29 +374,36 @@ function dealCharts(cell) {
                             startTs: nowTs - checkItem.duration * 1000,
                             endTs: nowTs,
                         }
-                        requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
-                            for (let key in res.resMap) {
-                                if(index === 0) {
-                                    options.xAxis.data.push(timeFormate(key))
+                        let refreshToken = getCookie('refreshToken')
+                        geAjax('/api/auth/refreshToken', 'POST', {
+                            refreshToken
+                        }).then(res => {
+                            setCookie('token', res.token);
+                            setCookie('refreshToken', res.refreshToken)
+                            requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
+                                for (let key in res.resMap) {
+                                    if(index === 0) {
+                                        options.xAxis.data.push(timeFormate(key))
+                                    }
+                                    tempSeries[index].data.push(res.resMap[key])
                                 }
-                                tempSeries[index].data.push(res.resMap[key])
-                            }
-                            if(index === 0) {
-                                options.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
-                            }
-                            if (index == devices.length - 1) {
-                                options.series = tempSeries
-                                myEchart.setOption(options)
-                            }
+                                if(index === 0) {
+                                    options.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
+                                }
+                                if (index == devices.length - 1) {
+                                    options.series = tempSeries
+                                    myEchart.setOption(options)
+                                }
+                            })
                         })
                     })
                 })
             }else {
                 options.series.data = [{value:0,name:titleShow}]
                 options.series.name = titleShow
-                myEchart.setOption(options)
             }
         }
+        myEchart.setOption(options)
     })
     return con
 }
