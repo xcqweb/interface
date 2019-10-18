@@ -24,6 +24,7 @@ window.EditorUi = function(editor, container, lightbox)
     this.container = container || document.body;
 
     var graph = this.editor.graph;
+    graph.setHtmlLabels(true)
     graph.lightbox = lightbox;
     graph.useCssTransforms =
 		this.editor.isChromelessView() &&
