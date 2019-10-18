@@ -46,9 +46,9 @@ class Main {
         let token = getCookie('token')
         let refreshToken = getCookie('refreshToken')
         if ((!token || !refreshToken) && applyInfo.status === 0) { //未登录且应用未发布的情况下
-            let notPublishImg = require('../../assets/images/apply_not_publish.png')
-            gePreview.style.height = "60vh"
-            gePreview.style.width = "60vw"
+            let notPublishImg = '../../../static/images/apply_not_publish.png'
+            gePreview.style.height = "80vh"
+            gePreview.style.width = "80vw"
             gePreview.style.background = `url('${notPublishImg}') center center no-repeat`
             gePreview.style.backgroundSize = "contain"
             return
