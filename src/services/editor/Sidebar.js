@@ -1539,8 +1539,6 @@ Sidebar.prototype.primitives = ['circle', 'diamond', 'drop', 'pentagram', 'squar
 Sidebar.prototype.addGeneralPalette = function(expand)
 {
     var that = this;
-    //var divider = new mxCell('', new mxGeometry(0, 0, 40, 8), 'shape=beeline;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=1;labelPosition=right;points=[];portConstraint=eastwest;');
-    //divider.vertex = true;
     var fns = [
         // 文字
         this.createVertexTemplateEntry(
@@ -1553,10 +1551,6 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             // 'text',
             "文字"
         ),
-       /*  this.addEntry('divider hline line separator', function () {
-            return that.createVertexTemplateFromCells([divider.clone()], divider.geometry.width, divider.geometry.height, 'Divider');
-        }),
-        this.createVertexTemplateEntry('shape=beeline;strokeWidth=2;html=1;', 160, 1, '', 'Horizontal Line'), */
         // 直线
         this.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 50, '', '直线', null,''),
          //箭头
@@ -1565,7 +1559,6 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;strokeColor=#000;', 120, 60, '', '矩形', null, null, '矩形'),
         // 圆形
         this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;strokeColor=#000;aspect=fixed;', 36, 36, '', '圆形', null, null, '圆形'),
-        // this.createVertexTemplateEntry('rounded=0;shape=oval;whiteSpace=wrap;html=1;', 36, 36, '', '圆形', null, null, '圆形'),
         // 横向菜单
         this.addEntry('page menu', function()
         {
@@ -1584,14 +1577,6 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         }),
         // 按钮
         this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;verticalAlign=middle;align=center;', 70, 40, '<div style="display: inline-block;text-align:inherit;text-decoration: inherit;">BUTTON</div>', '按钮'),
-        // 复选
-        // this.createVertexTemplateEntry('shape=multipleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="checkbox" class="inputTag1" />', '复选'),
-        // this.createVertexTemplateEntry('shape=multipleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/multipleCheck.png', 16, 16, '', '复选'),
-        // 单选
-        // this.createVertexTemplateEntry('shape=singleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="radio" class="inputTag" />', '单选'),
-        // this.createVertexTemplateEntry('shape=singleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/singleCheck.png', 16, 16, '', '单选'),
-        // 下拉列表
-        // this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 100, 16, '<select disabled class="selectTag"></select><div class="selectTagShade"></div>', '下拉列表'),
         // 表格，通过html生成   
        /* this.createVertexTemplateEntry('shape=table;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
          	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
