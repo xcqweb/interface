@@ -106,7 +106,6 @@ class PreviewPage {
                     let statesInfo = JSON.parse(item.getAttribute('statesInfo'))
                     // 节点参数信息
                     let getNodeInfo = new GetNodeInfo(node)
-                    console.log(getNodeInfo)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape')
                     let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, rotation, direction, flipH, flipV, startArrow, endArrow, strokeWidth, fontWeight,edgeProps
@@ -296,7 +295,6 @@ class PreviewPage {
 
     // 渲染控件节点
     renderCell(cell) {
-        console.log(cell)
         const shapeName = cell.shapeName
         let cellHtml
         if (shapeName.includes('image')) {

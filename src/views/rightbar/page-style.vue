@@ -146,7 +146,6 @@ export default {
             let pageStyle = editor.pages[editor.currentPage].style
             if(pageStyle) {
                 let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
-                console
                 if(bgUrl && bgUrl !== 'none') {
                     this.changeBg(bgUrl)
                 }else{

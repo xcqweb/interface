@@ -182,6 +182,7 @@
             <input
               v-model="fontText"
               v-number="0"
+              :disabled="showFont"
               style="border-left: none;border-right: none"
               @blur="changeFont(fontText)"
             >
@@ -311,15 +312,18 @@
             v-clickOutSide="hideBorderLineBold"
             class="item-container fontSet"
             style="justify-content:space-between;position:relative;flex:1;margin:0;"
-            @click="showBorderLineBold=true"
           >
             <input
               v-model="borderLineBoldText"
               v-number="0"
+              :disabled="showBorderLineBold"
               style="border-left: none;border-right: none"
               @blur="changeBorderLineBold(borderLineBoldText)"
             >
-            <img src="../../../assets/images/menu/down_ic.png">
+            <img 
+              src="../../../assets/images/menu/down_ic.png"
+              @click="showBorderLineBold=true"
+            >
             <ul
               v-if="showBorderLineBold"
               class="font-dialog"
@@ -830,6 +834,7 @@ export default {
             e.stopPropagation()
         },
         changeBorderLineBold(d,e) {
+            console.log(d, '---', e)
             this.borderLineBoldText = d
             let graph = this.myEditorUi.editor.graph
             graph.setCellStyles('strokeWidth', d, graph.getSelectionCells());
