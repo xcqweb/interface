@@ -70,10 +70,12 @@
                 v-clickOutSide="hideLegendChooseFun"
                 class="item-container fontSet"
                 style="justify-content:space-between;position:relative;"
-                @click="showLegendChoose=true"
               >
                 {{ legendChooseText }}
-                <img src="../../assets/images/menu/down_ic.png">
+                <img
+                  src="../../assets/images/menu/down_ic.png"
+                  @click="showLegendChoose=true"
+                >
                 <ul
                   v-if="showLegendChoose"
                   class="font-dialog"
@@ -171,10 +173,12 @@
                   v-clickOutSide="hideBorderLineBold"
                   class="item-container fontSet"
                   style="justify-content:space-between;position:relative;flex:1;margin:0;"
-                  @click="showBorderLineBold=true"
                 >
                   <div>{{ borderLineBoldText }}</div>
-                  <img src="../../assets/images/menu/down_ic.png">
+                  <img 
+                    src="../../assets/images/menu/down_ic.png"
+                    @click="showBorderLineBold=true"
+                  >
                   <ul
                     v-if="showBorderLineBold"
                     class="font-dialog"

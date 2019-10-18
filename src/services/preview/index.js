@@ -39,14 +39,18 @@ class Main {
         }
         const host = await geAjax('/api/console/host/imageHost', 'GET')
         fileSystem = host.imageHost
-        applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudio/${id}`, 'GET')
+        applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudioForPreview/${id}`, 'GET')
         if (!applyInfo) {
             return
         }
         let token = getCookie('token')
         let refreshToken = getCookie('refreshToken')
         if ((!token || !refreshToken) && applyInfo.status === 0) { //未登录且应用未发布的情况下
-            gePreview.innerHTML = `<div style="margin-top:40px;font-size:14px;color:#222;text-align:center;">抱歉，该应用目前处于未发布的状态，暂时不能查看哦！</div>`
+            let notPublishImg = require('../../assets/images/apply_not_publish.png')
+            gePreview.style.height = "60vh"
+            gePreview.style.width = "60vw"
+            gePreview.style.background = `url('${notPublishImg}') center center no-repeat`
+            gePreview.style.backgroundSize = "contain"
             return
         }
         document.getElementsByTagName('title')[0].innerHTML = applyInfo.studioName
