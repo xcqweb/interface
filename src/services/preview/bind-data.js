@@ -148,13 +148,14 @@ function setterRealData(res, fileSystem) {
                         formatLayerEl.show()
                     }
                     let formatLayerMove = (e)=> {
+                        console.log(e + "-" + new Date().getTime())
                         let {clientX,clientY} = e
                         formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
                     }
                     $(els[i]).mouseenter(formatLayerShow)
                     $(els[i]).mousemove(throttleFun(formatLayerMove,16))
-                    $(els[i]).mouseout(() => {
-                        formatLayerEl.html(" ")
+                    $(els[i]).mouseleave(() => {
+                        formatLayerEl.html("")
                         formatLayerEl.hide()
                     })
                     if (formatLayerEl.is(':visible')) {
