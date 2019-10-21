@@ -8,8 +8,6 @@
   position: absolute;
   display: block;
   box-sizing: border-box;
-  /* word-break: break-all; */
-  z-index:2;
   overflow: hidden;
 }
 .gePalette .flipH {

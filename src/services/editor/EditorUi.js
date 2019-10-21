@@ -2290,8 +2290,6 @@ EditorUi.prototype.updateDocumentTitle = function()
     }
 
     document.title = title;
-    // document.getElementById('filename').innerHTML = this.editor.getOrCreateFilename();
-    // document.getElementById('filenameInput').setAttribute('placeholder', this.editor.getOrCreateFilename())
 };
 
 /**

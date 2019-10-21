@@ -399,8 +399,8 @@ class PreviewPage {
                 borderStyle = 'dashed'
             }
             cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
-        }else{//防止canvas绘制的直线或者箭头 所占的区域盖住其他的
-            cellHtml.style.zIndex = "1"
+        }else{
+            cellHtml.style.pointerEvents = 'none'
         }
         cellHtml.style.width = (cell.width + parseInt(cell.strokeWidth)) + 'px'
         cellHtml.style.height = (cell.height + parseInt(cell.strokeWidth)) + 'px'
