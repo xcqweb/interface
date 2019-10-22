@@ -135,6 +135,7 @@
 </template>
 <script>
 import {mxClient} from '../../services/mxGlobal'
+
 let alignArr = ['left','center','right']
 let valignArr = [],dialogStyle
 export default {
@@ -200,10 +201,10 @@ export default {
         changeFont(d,e) {
             this.fontText = d
             this.showFont = false;
-            let dialogStyle = {
+            let dialogStyleTemp = {
                 fontSize:`${this.fontText}px`,
             }
-            this.commitStyleFun(dialogStyle)
+            this.commitStyleFun(dialogStyleTemp)
             e.stopPropagation()
         },
         commitStyleFun(param) {
@@ -228,12 +229,12 @@ export default {
             this.canvasOffsetLeft = canvasView.offsetLeft
             con.scrollLeft = (clientWidth - conWidth) / 2
             con.scrollTop = (clientHeight - conHeight - 36) / 2
-            let dialogStyle = {
+            let dialogStyleTemp = {
                 top:`${this.canvasOffsetTop - 36}px`,
                 left:`${this.canvasOffsetLeft}px`,
                 width:`${this.dialogWidth}px`,
             }
-            this.commitStyleFun(dialogStyle)
+            this.commitStyleFun(dialogStyleTemp)
         },
         changeAlignIndex(type,index) {
             valignArr = [this.fontText + 5,36,36 * 2 - this.fontText - 10]
@@ -242,11 +243,11 @@ export default {
             }else{
                 this.alignIndex2 = index
             }
-            let dialogStyle = {
+            let dialogStyleTemp = {
                 textAlign:`${alignArr[this.alignIndex1 - 1]}`,
                 lineHeight:`${valignArr[this.alignIndex2 - 1]}px`,
             }
-            this.commitStyleFun(dialogStyle)
+            this.commitStyleFun(dialogStyleTemp)
         },
         changeScaleInput() {
             this.myEditorUi.setPageFormat({
@@ -263,19 +264,19 @@ export default {
         pickColor() {
             this.myEditorUi.pickColor(this.bgColor || 'none',color=>{
                 this.bgColor = color
-                let dialogStyle = {
+                let dialogStyleTemp = {
                     background:`${this.bgColor}`,
                 }
-                this.commitStyleFun(dialogStyle)
+                this.commitStyleFun(dialogStyleTemp)
             });
         },
         pickFontColor() {
             this.myEditorUi.pickColor(this.fontColor || 'none',color=>{
                 this.fontColor = color
-                let dialogStyle = {
+                let dialogStyleTemp = {
                     color:`${this.fontColor}`,
                 }
-                this.commitStyleFun(dialogStyle)
+                this.commitStyleFun(dialogStyleTemp)
             });
         }
     }

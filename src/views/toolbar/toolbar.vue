@@ -11,6 +11,7 @@
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
         title="放大"
+        :class="{'mxDisabled':$store.state.main.type == 1}"
         @click.stop.prevent="zoom('in')"
       >
         <div class="geSprite geSprite-zoomin" />
@@ -21,8 +22,9 @@
         ondragstart="return false;"
         class="del_use_flag_terry geLabel"
         title="缩放 (Alt+Mousewheel)"
+        :class="{'mxDisabled':$store.state.main.type == 1}"
         style="white-space: nowrap; position: relative; overflow: hidden; width: 50px;text-align:center;"
-        @click.stop.prevent="isShowScale = true"
+        @click.stop.prevent="isShowScale = true && $store.state.main.type !== 1"
       >
         {{ scaleText }}
       </a>
@@ -31,6 +33,7 @@
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
         title="缩小"
+        :class="{'mxDisabled':$store.state.main.type == 1}"
         @click.stop.prevent="zoom('out')"
       >
         <div class="geSprite geSprite-zoomout" />
@@ -200,6 +203,9 @@ export default{
             this.tab = index
         },
         zoom(type) {
+            if(this.$store.state.main.type == 1) {
+                return
+            }
             let myEditor = this.myEditorUi.editor
             let graph = myEditor.graph
             if(type === 'in') {
@@ -232,6 +238,9 @@ export default{
             this.scaleText = Math.round(this.myEditorUi.editor.graph.view.scale * 100) + '%'
         },
         changeScale(scale) {
+            if(this.$store.state.main.type == 1) {
+                return
+            }
             this.myEditorUi.editor.graph.zoomTo(scale)
             this.isShowScale = false
         },
