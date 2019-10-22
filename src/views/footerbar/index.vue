@@ -343,10 +343,21 @@ export default {
             let graph = this.myEditorUi.editor.graph
             let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
             let wh = document.documentElement.clientHeight
+            let dialogTitleEle = document.querySelector('.dialog-title-m')
+            let dialogTop = 0
+            if(dialogTitleEle) {
+                dialogTop = dialogTitleEle.offsetTop
+            }
             if(val) {
                 el.style.height = wh - 72 - 226 + 'px'
+                if(dialogTitleEle) {
+                    dialogTitleEle.style.top = dialogTop - 200 + 'px'
+                }
             }else{
                 el.style.height = wh - 72 - 26 + 'px'
+                if(dialogTitleEle) {
+                    dialogTitleEle.style.top = dialogTop + 200 + 'px'
+                }
             }
             graph.refresh()
         },
