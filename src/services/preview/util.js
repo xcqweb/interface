@@ -71,10 +71,9 @@ async function geAjax(url, method = 'GET', data = null) {
  * 插入图片
  * @param {object} cell 
  */
-function insertImage(cell, fileSystem) {
+function insertImage(cell) {
     let con = document.createElement('div')
     if(cell.image) {
-        cell.image = cell.image.replace(/getechFileSystem\//, fileSystem)
         con.style.background = `url('${cell.image}') no-repeat`
         con.style.backgroundPosition = "center center"
         con.style.backgroundSize = "100% 100%"

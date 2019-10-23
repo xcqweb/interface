@@ -37,6 +37,7 @@
                   v-model="progressMax"
                   v-number.minus="1"
                   style="border-left:none;border-right:none;width:52%;"
+                  @keyup.enter="changeProgress"
                   @blur="changeProgress"
                 >
               </div>
@@ -49,6 +50,7 @@
                   v-model="progressMin"
                   v-number.minus="1"
                   style="border-left:none;border-right:none;width:52%;"
+                  @keyup.enter="changeProgress"
                   @blur="changeProgress"
                 > 
               </div>
@@ -80,6 +82,7 @@
                   v-if="showLegendChoose"
                   class="font-dialog"
                   @mouseleave="showLegendChoose=false"
+                  @keyup.enter="showLegendChoose=false"
                   @blur="showLegendChoose=false"
                 >
                   <li
@@ -156,6 +159,7 @@
                     v-if="showBorderLine"
                     class="font-dialog"
                     @mouseleave="showBorderLine=false"
+                    @keyup.enter="showBorderLine=false"
                     @blur="showBorderLine=false"
                   >
                     <li
@@ -184,6 +188,7 @@
                     class="font-dialog"
                     style="height:100px;overflow:auto;"
                     @mouseleave="showBorderLineBold=false"
+                    @keyup.enter="showBorderLineBold=false"
                     @blur="showBorderLineBold=false"
                   >
                     <li
