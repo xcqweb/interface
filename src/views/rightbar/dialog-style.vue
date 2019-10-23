@@ -26,6 +26,7 @@
         <input
           v-model="dialogWidth"
           v-number="0"
+          @keyup.enter="changeScaleInput"
           @blur="changeScaleInput"
         >
       </div>
@@ -37,6 +38,7 @@
         <input
           v-model="dialogHeight"
           v-number="0"
+          @keyup.enter="changeScaleInput"
           @blur="changeScaleInput"
         > 
       </div>
