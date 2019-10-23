@@ -401,9 +401,11 @@ function dealCharts(cell) {
             }else {
                 options.series.data = [{value:0,name:titleShow}]
                 options.series.name = titleShow
+                myEchart.setOption(options)
             }
+        }else {
+            myEchart.setOption(options)
         }
-        myEchart.setOption(options)
     })
     return con
 }

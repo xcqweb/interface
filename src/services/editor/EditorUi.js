@@ -24,6 +24,7 @@ window.EditorUi = function(editor, container, lightbox)
     this.container = container || document.body;
 
     var graph = this.editor.graph;
+    graph.setHtmlLabels(true)
     graph.lightbox = lightbox;
     graph.useCssTransforms =
 		this.editor.isChromelessView() &&
@@ -2289,8 +2290,6 @@ EditorUi.prototype.updateDocumentTitle = function()
     }
 
     document.title = title;
-    // document.getElementById('filename').innerHTML = this.editor.getOrCreateFilename();
-    // document.getElementById('filenameInput').setAttribute('placeholder', this.editor.getOrCreateFilename())
 };
 
 /**

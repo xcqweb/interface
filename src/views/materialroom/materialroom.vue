@@ -199,16 +199,10 @@
                       class="user-uploadimage"
                     >
                       <div>
-                        <!--eslint-disable-->
-                        <span 
+                        <span
                           style="display:flex;justify-content:center;align-items:center"
                           v-html="item.picUrl"
-                        >
-                          <!-- <img
-                            style="max-width:72px;max-height:72px"
-                            :src="item.picUrl" 
-                          > -->
-                        </span>
+                        />
                         <label 
                           class="right-spots-assemly" 
                           @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.pageTemplateId)"
@@ -244,16 +238,10 @@
                       class="user-uploadimage"
                     >
                       <div>
-                        <!--eslint-disable-->
                         <span 
                           style="display:flex;justify-content:center;align-items:center"
                           v-html="item.picUrl"
-                        >
-                          <!-- <img
-                            style="max-width:72px;max-height:72px"
-                            :src="item.picUrl" 
-                          > -->
-                        </span>
+                        />
                         <label 
                           class="right-spots-assemly" 
                           @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.pageTemplateId)"
@@ -282,13 +270,6 @@
         </Tabs>
       </div>
       <div class="materialtabs-footer">
-        <template v-if="isactive <= 1 || tabNumeber === 1">
-          <span>
-            <!-- <Button @click="cancel">
-              {{ madeltext[0] }}
-            </Button> -->
-          </span>
-        </template>
         <template v-if="isactive >= 2 && tabNumeber === 0">
           <span>
             <Upload 
@@ -313,7 +294,7 @@
 </template>
 <script>
 import {Tabs,TabPane,Modal, Upload, Message, Button} from 'iview'
-import {sureDialog, getCookie} from '../../services/Utils'
+import {sureDialog, getCookie,setCookie} from '../../services/Utils'
 const ROOT_LEN = 2 // 新增组件时计算长度使用
 export default {
     components: {
@@ -579,7 +560,6 @@ export default {
             }
         },
         uploadSucc(res) {
-            // this.emptyArray = []
             let addpicObj = {
                 image:res.picUrl,
                 name: res.descript,
@@ -589,7 +569,21 @@ export default {
             this.arrListTables = this.emptyArray
             Message.info('上传成功')
         },
-        uploadErr() {
+        uploadErr(res,file,fileList) {
+            if(res.status == 418) {
+                let refreshToken = getCookie('refreshToken')
+                this.requestUtil.post('/api/auth/refreshToken', {refreshToken}).then(res => {
+                    setCookie('token', res.token)
+                    setCookie('refreshToken', res.refreshToken)
+                    let formData = new FormData()
+                    formData.append('file', fileList)
+                    formData.append('materialLibraryId', this.uploadData.materialLibraryId)
+                    this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, (data)=>{
+                        this.uploadSucc(data)
+                    })
+                })
+                return
+            }
             setTimeout ( () => {
                 Message.info('上传失败')
             }, 500);

@@ -399,6 +399,8 @@ class PreviewPage {
                 borderStyle = 'dashed'
             }
             cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
+        }else{
+            cellHtml.style.pointerEvents = 'none'
         }
         cellHtml.style.width = (cell.width + parseInt(cell.strokeWidth)) + 'px'
         cellHtml.style.height = (cell.height + parseInt(cell.strokeWidth)) + 'px'

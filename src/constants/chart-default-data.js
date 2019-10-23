@@ -74,7 +74,7 @@ export let data1 = {
 
 export let data2 = {
     tooltip: {
-        formatter: "{c}%"
+        formatter: "{c}"
     },
     series: {
         name:'仪表盘',

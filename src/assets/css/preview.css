@@ -1,6 +1,7 @@
 #gePreview {
   position: relative;
   margin: 0 auto;
+  overflow-x: hidden;
   left: 2px;
   top: 2px;
 }
@@ -8,7 +9,6 @@
   position: absolute;
   display: block;
   box-sizing: border-box;
-  /* word-break: break-all; */
   overflow: hidden;
 }
 .gePalette .flipH {
