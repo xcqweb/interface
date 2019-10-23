@@ -6546,7 +6546,7 @@ if (typeof mxVertexHandler != 'undefined')
             var head = 26;
             var tail = 10;
 			
-            if (label.length > max)
+            if (label && label.length > max)
             {
                 label = label.substring(0, head) + '...' + label.substring(label.length - tail);
             }

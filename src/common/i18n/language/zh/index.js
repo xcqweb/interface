@@ -1,6 +1,6 @@
-import home from './home';
+import rightBar from './right-bar'
 
 export default {
-    ...home,
+    ...rightBar,
 };
 

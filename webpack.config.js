@@ -28,12 +28,6 @@ module.exports = {
                 test: /\.vue$/,
                 loader: 'vue-loader'
             },
-            /*  {
-                test: /mxClient\.js$/,
-                use: {
-                    loader: 'exports-loader?mxClient,mxGraphModel,mxActor,mxShape,mxEventObject,mxGraph,mxPrintPreview,mxEventSource,mxRectangle,mxVertexHandler,mxMouseEvent,mxGraphView,mxImage,mxGeometry,mxRubberband,mxKeyHandler,mxDragSource,mxUtils,mxWindow,mxEvent,mxCodec,mxCell,mxConstants,mxPoint,mxGraphHandler,mxCylinder,mxCellRenderer,mxUndoManager,mxResources,mxEditor'
-                },
-            },  */
             {
                 test: /\.js$/,
                 use: {

@@ -233,9 +233,7 @@
 </template> 
 <script>
 import {Modal, Form,FormItem, Button,Checkbox,CheckboxGroup, Page, Input, Select,Option, Message} from 'iview'
-// import DataSourceSelect from './dataSource-select'
 import NoData from './nodata'
-import {Promise} from 'q';
 export default{
     components: {
         Modal,
