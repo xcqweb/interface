@@ -199,6 +199,7 @@
                       class="user-uploadimage"
                     >
                       <div>
+                        <!--eslint-disable-->
                         <span
                           style="display:flex;justify-content:center;align-items:center"
                           v-html="item.picUrl"
@@ -238,6 +239,7 @@
                       class="user-uploadimage"
                     >
                       <div>
+                        <!--eslint-disable-->
                         <span 
                           style="display:flex;justify-content:center;align-items:center"
                           v-html="item.picUrl"
