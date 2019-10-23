@@ -861,7 +861,9 @@ div.mxWindow .geButton {
 	font-size: 12px;
 	top: 24px;
 }
-
+.en .page-tab::after {
+	content: 'page';
+}
 .data-tab::after {
 	content: "数据源";
 	position: relative;
