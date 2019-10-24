@@ -161,6 +161,9 @@ export default {
     created() {
     },
     mounted() {
+        window.onresize = ()=>{
+            this.centerCanvas()
+        }
         this.initPage()
     },
     beforeDestory() {

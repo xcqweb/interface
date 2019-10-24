@@ -122,7 +122,7 @@ import Input from '../../datasource/input-select'
 import VueEvent from '../../../services/VueEvent.js'
 import NoData from '../../datasource/nodata'
 import {Button,Page,Checkbox,Message,Select,Option, CheckboxGroup} from 'iview'
-const singleDeviceName = ['image','userimage','tableBox','rectangle','ellipse','light','progress','gaugeChart']
+const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart']
 const DataSourceID = {
     id: '123',
     name:'IOT平台'
