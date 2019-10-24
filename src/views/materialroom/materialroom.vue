@@ -578,7 +578,6 @@ export default {
                 this.requestUtil.post('/api/auth/refreshToken', {refreshToken}).then(res => {
                     setCookie('token', res.token)
                     setCookie('refreshToken', res.refreshToken)
-                    this.headers['Authorization'] = `Bearer ${getCookie('token')}`
                     let formData = new FormData()
                     formData.append('file', fileList)
                     formData.append('materialLibraryId', this.uploadData.materialLibraryId)
