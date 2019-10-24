@@ -280,8 +280,9 @@
               :with-credentials="true"
               :headers="headers"
               :format="['jpg', 'svg', 'png', 'gif']"
-              :max-size="500"
+              :max-size="2048"
               :on-format-error="handleFormatError"
+              :on-exceeded-size="handleMaxSize"
               :on-error="uploadErr"
               :on-success="uploadSucc"
               :data="uploadData"
@@ -577,6 +578,7 @@ export default {
                 this.requestUtil.post('/api/auth/refreshToken', {refreshToken}).then(res => {
                     setCookie('token', res.token)
                     setCookie('refreshToken', res.refreshToken)
+                    this.headers['Authorization'] = `Bearer ${getCookie('token')}`
                     let formData = new FormData()
                     formData.append('file', fileList)
                     formData.append('materialLibraryId', this.uploadData.materialLibraryId)
