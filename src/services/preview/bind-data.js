@@ -280,6 +280,11 @@ function changeEleState(el, stateInfo,fileSystem) {
         imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
         el.style.background = `url(${imgInfo.url}) center center no-repeat`
         el.style.backgroundSize = '100% 100%'
+        return
+    } 
+    if (shapeName.includes('image')) {
+        el.style.background = `url(${$(el).data("defaultImg")}) center center no-repeat`
+        el.style.backgroundSize = '100% 100%'
     }
 }
 /**

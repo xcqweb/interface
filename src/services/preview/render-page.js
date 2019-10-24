@@ -299,7 +299,9 @@ class PreviewPage {
         let cellHtml
         if (shapeName.includes('image')) {
             // 图片
-            cellHtml = insertImage(cell,fileSystem)
+            cell.image = cell.image.replace(/getechFileSystem\//, fileSystem)
+            cellHtml = insertImage(cell)
+            $(cellHtml).data("defaultImg", cell.image)
         } else if (shapeName === 'linkTag') {
             // smartBi链接iframe
             cellHtml = document.createElement('iframe')
