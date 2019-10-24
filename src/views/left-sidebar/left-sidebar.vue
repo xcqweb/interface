@@ -11,25 +11,25 @@
         @on-click="tabsSwitch"
       >
         <TabPane
-          label="页面" 
+          :label="$t('page')" 
           class="normalPages commonPages"
         >
           <div 
             class="leftSidebar-addicon" 
             @click="addPageType(1)"
           >
-            添加页面
+            {{ $t('leftBar.addPage') }}
           </div>
         </TabPane>
         <TabPane 
-          label="弹窗" 
+          :label="$t('popup')" 
           class="dialogPages commonPages"
         >
           <div 
             class="leftSidebar-addicon"
             @click="addPageType(2)"
           >
-            添加弹窗
+            {{ $t('leftBar.addPopup') }}
           </div>
         </TabPane>
       </Tabs>
@@ -64,7 +64,7 @@
                 </span>
               </template>
             </span>
-            <label>{{ item.name }} </label>
+            <label>{{ $t(item.name) }}</label>
           </li>
         </ul>
       </Modal>
@@ -76,7 +76,7 @@
 </template>
 <script>
 import {Tabs, TabPane, Modal} from 'iview'
-const addPageTypeName = ['','添加页面','添加弹窗']
+const addPageTypeName = ['','leftBar.addPage','leftBar.addPopup']
 import VueEvent from '../../services/VueEvent.js'
 export default {
     components: {
@@ -121,12 +121,12 @@ export default {
             // 1添加页面 2添加弹窗
             this.myEditorUi.editor.setXml();
             this.modelshow = true
-            this.alertTitleName = addPageTypeName[type]
+            this.alertTitleName = this.$t(addPageTypeName[type])
             let data = {
                 'type': +type === 1 ? 'normal' : 'dialog'
             }
-            this.pageModal = [{'name': '空白页面',picUrl: '',content: '',pageTemplateId: ''}]
-            this.alertModal = [{'name': '空白弹窗',picUrl: '',content: '',pageTemplateId:''}]
+            this.pageModal = [{'name': 'leftBar.emptyPage',picUrl: '',content: '',pageTemplateId: ''}]
+            this.alertModal = [{'name': 'leftBar.emptyPopup',picUrl: '',content: '',pageTemplateId:''}]
             this.requestUtil.get(this.urls.addTemplate.url, data).then((res) => {
                 let data = res.records || []
                 data.forEach(item => {

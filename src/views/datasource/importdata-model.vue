@@ -114,7 +114,7 @@
               class="no-data-wrap"
             >
               <NoData
-                :text="nodata"
+                :text="$t(nodata)"
               />
             </div>
           </div>
@@ -180,7 +180,7 @@
               class="no-data-wrap"
             >
               <NoData
-                :text="nodata"
+                :text="$t(nodata)"
               />
             </div>
           </div>
@@ -193,7 +193,7 @@
                 :value="checkAllArr[2]"
                 @click.prevent.native="handleCheckAll(2)"
               >
-                {{ selectAll }}
+                {{ $t(selectAll) }}
               </Checkbox>
             </div>
             <div class="data-botton-right">
@@ -259,7 +259,7 @@ export default{
             derectionArr: ['right', 'right'],
             dataName: '数据源',
             deviceType: '设备类型',
-            selectAll: '全选',
+            selectAll: 'selectAll',
             dataNameArr: [
                 {
                     value: '1',
@@ -278,7 +278,7 @@ export default{
             deviceNameListArr: [],
             indeterminateArr: ['',false, false],
             checkAllArr: ['',false, false],
-            nodata:'暂无数据',
+            nodata:'noData',
             PAGE_CURREN: 1,
             PAGE_SIZE: 10,
             inputParamName: '',

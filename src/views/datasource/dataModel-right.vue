@@ -2,7 +2,7 @@
   <div class="datamodel-right-wrap">
     <!--设备类型-->
     <dataRightColum
-      :title="titleArr[0]"
+      :title="$t(titleArr[0])"
       :widthlen="widthlenArr[0]"
       :showtitle="showtitleArr[0]"
     >
@@ -31,14 +31,14 @@
           class="no-data-wrap"
         >
           <NoData
-            :text="nodata"
+            :text="$t(nodata)"
           />
         </div>
       </div>
     </dataRightColum>
     <!--模型列表-->
     <dataRightColum
-      :title="titleArr[1]"
+      :title="$t(titleArr[1])"
       :widthlen="widthlenArr[1]"
       :showtitle="showtitleArr[1]"
     >
@@ -49,7 +49,7 @@
           <span 
             @click.stop.prevent="addModelHandle"
           >
-            {{ addModelText }}
+            {{ $t(addModelText) }}
           </span>
         </div>
         <div class="addMolel-List">
@@ -72,7 +72,7 @@
     <!--描述侧-->
     <dataRightColum
       v-show="ModelNameArr.length" 
-      :title="titleArr[2]"
+      :title="$t(titleArr[2])"
       :widthlen="widthlenArr[2]"
       :showtitle="showtitleArr[2]"
     >
@@ -81,30 +81,31 @@
         style="padding-top:0px;display:flex;flex-direction: column"
       >
         <div class="dataSource-title">
-          {{ descript }}
+          {{ $t(descript) }}
         </div>
         <div class="textare-wrap">
           <Input
             v-model="textareValue"
             :disabled="modelEditing" 
             type="textarea" 
-            :placeholder="descriptText"
+            :placeholder="$t(descriptText)"
             class="descript-color"
             :autosize="{maxRows: 3,minRows: 3}" 
           />
         </div>
         <div class="dataSource-title">
-          {{ condition }}
+          {{ $t(condition) }}
         </div>
         <div class="dataSource-conditioncontent-wrap">
           <div class="dataSource-condition-content">
-            <div class="add-condition">
-              <span
-                @click.stop.prevent="addConditionHandle"
-              >
-                {{ addConditionText }}
-              </span>
-            </div>
+            <Button
+              size="small"
+              :disabled="modelEditing" 
+              class="add-condition-btn"
+              @click.stop.prevent="addConditionHandle"
+            >
+              {{ $t(addConditionText) }}
+            </Button>
             <div class="add-condition-list wrapper">
               <div 
                 v-if="alldata.data.length > 1"
@@ -241,7 +242,7 @@
                         >
                           <Select
                             v-model="row.logical"
-                            style="width:80px"
+                            style="width:85px"
                             :disabled="modelEditing"
                             @on-change="treeSelectLogicalHandle(row.logical,index, key)"
                           >
@@ -250,7 +251,7 @@
                               :key="item.value" 
                               :value="item.value"
                             >
-                              {{ item.label }}
+                              {{ $t(item.label) }}
                             </Option>
                           </Select>
                         </template>
@@ -303,7 +304,7 @@
                             :disabled="modelEditing"
                             @click.stop.prevent="adddata(key,index)"
                           >
-                            添加
+                            {{ $t('add') }}
                           </Button>
                           <Button
                             v-if="data.length > 1"
@@ -312,7 +313,7 @@
                             :disabled="modelEditing"
                             @click.stop.prevent="removedata(key, index)"
                           >
-                            删除
+                            {{ $t('delete') }}
                           </Button>
                         </template>
                       </Table>
@@ -330,14 +331,14 @@
             style="width:69px;"
             @click.stop.prevent="CancelModelHandle"
           >
-            {{ cancelModelText }}
+            {{ $t(cancelModelText) }}
           </Button>
           <Button
             type="primary"
             size="small"
             @click.stop.prevent="saveModelHandle"
           >
-            {{ saveModelText }}
+            {{ $t(saveModelText) }}
           </Button>
         </div>
       </div>
@@ -362,7 +363,7 @@ import NoData from './nodata'
 import {Input, Button, Table, Select,Option, Message} from 'iview'
 import {conditionLogical,logicalSignList} from '../../constants/model-form-logic'
 import {sureDialog} from '../../services/Utils'
-const alertTip = '您还有未保存的模型,请先保存'
+const alertTip = 'dataSource.haveUnsavedModels'
 const defaultValue = {
     paramName: '',
     logical: '',
@@ -389,20 +390,20 @@ export default {
     },
     data() {
         return {
-            titleArr:['设备类型','模型列表',''],
+            titleArr:['dataSource.deviceType','dataSource.models',''],
             widthlenArr: [200,200,652],
             showtitleArr: [true, true, false],
-            descript: '描述',
-            descriptText: '描述内容',
+            descript: 'dataSource.remark',
+            descriptText: 'dataSource.remarkContent',
             textareValue: '',
-            condition: '条件',
-            saveModelText:'编辑模型',
-            cancelModelText: '取消',
-            addConditionText: '添加条件',
-            addModelText: '添加模型',
+            condition: 'dataSource.rule',
+            saveModelText: 'dataSource.editModel',
+            cancelModelText: 'cancel',
+            addConditionText: 'dataSource.addRule',
+            addModelText: 'dataSource.addModel',
             ModelNameArr:[],
             heightLen: null,
-            nodata: '暂无数据',
+            nodata: 'noData',
             numberlistIndex: 0,
             modelNumber: 0,
             deviceTypeArr:[],
@@ -416,8 +417,8 @@ export default {
             },
             columns: [
                 {
-                    title: '第一列',
-                    width:207,
+                    title: this.$t('dataSource.firstColumn'),
+                    width: 207,
                     slot: 'one'
                 },
                 {
@@ -441,11 +442,11 @@ export default {
             SuspensionListName: [
                 {
                     id: '1',
-                    name: '重命名'
+                    name: 'rename'
                 },
                 {
                     id: '2',
-                    name: '删除'
+                    name: 'delete'
                 }
             ],
             ifShowSuspension: false,
@@ -558,10 +559,10 @@ export default {
             if (this.modelEditing) {
                 this.snapshot = JSON.parse(JSON.stringify(this.alldata))
                 this.snapDescript = this.textareValue
-                this.saveModelText = `保存模型`
+                this.saveModelText = 'dataSource.saveModel'
                 this.$store.commit('modelEditing', false)
                 let obj = {
-                    title: '操作',
+                    title: this.$t('operation'),
                     width:80,
                     slot: 'flour'
                 }
@@ -577,7 +578,7 @@ export default {
             } else {
                 if (this.treeCheckRule(this.alldata.data)) {
                     // 组装数据  保存模型
-                    this.saveModelText = `编辑模型`
+                    this.saveModelText = 'dataSource.editModel'
                     let objData = {}
                     objData.studioId = this.studioIdNew
                     objData.deviceTypeId = this.currentDeviceTypeId
@@ -614,7 +615,7 @@ export default {
             this.alldata = this.snapshot
             this.conditionLogicalSelect = this.snapshot.conditionLogic
             this.textareValue = this.snapDescript
-            this.saveModelText = `编辑模型`
+            this.saveModelText = 'dataSource.editModel'
             this.$store.commit('modelEditing', true)
             if (this.columns.length === 4) {
                 this.columns.pop()
@@ -660,11 +661,11 @@ export default {
             }
             this.columns.splice(0,1,obj0)
             if (!this.modelEditing) {
-                Message.warning(alertTip)
+                Message.warning(this.$t(alertTip))
                 return false
             }
             if (!this.currentDeviceTypeId) {
-                Message.warning('您未选中设备类型')
+                Message.warning(this.$t('dataSource.haveNotSelectedDevice'))
                 return false
             }
             let num = this.ModelNameArr.length + 1
@@ -678,11 +679,11 @@ export default {
                 modelName: name
             }
             this.requestUtil.post(this.urls.addModelList.url, objData).then((res) => {
-                Message.success('添加模型成功')
+                Message.success(this.$t('dataSource.addModelSuccessfully'))
                 this.ModelNameArr.push(res)
                 this.clickModelHandle('', res.sourceId, res.modelName,res.formula,res.descript,this.ModelNameArr.length - 1)
                 this.$store.commit('modelEditing', false)
-                this.saveModelText = `保存模型`
+                this.saveModelText = 'dataSource.saveModel'
                 this.snapshot = JSON.parse(JSON.stringify(this.alldata))
                 return false
             }).catch(() => {
@@ -714,7 +715,7 @@ export default {
         // 渲染最右侧表格
         clickModelHandle(evt, modelId, modelName,formula,descript,index) {
             if (!this.modelEditing && this.modelNumber !== index) {
-                Message.warning(alertTip)
+                Message.warning(this.$t(alertTip))
                 return false
             }
             let data = formula ? JSON.parse(formula) : {conditionLogic: '1',data:[[{paramName: '',logical:'',minValue:'',maxValue:'',fixedValue:''}]]}
@@ -816,7 +817,7 @@ export default {
         // 删除模型
         deleteModelHandle() {
             if (this.currentMouseIndex || this.currentMouseIndex === 0) {
-                sureDialog(this.myEditorUi, `确定要删除此模型吗`, () => {
+                sureDialog(this.myEditorUi, this.$t('dataSource.confirmToDeleteModel'), () => {
                     this.requestUtil.delete(`${this.urls.addModelList.url}/${this.ModelNameArr[this.currentMouseIndex].sourceId}`).then(() => {
                         if (this.modelNumber === this.currentMouseIndex) {
                             let ModelNameArrCopy = JSON.parse(JSON.stringify(this.ModelNameArr))
@@ -836,7 +837,7 @@ export default {
                             this.ModelNameArr.splice(this.currentMouseIndex, 1)
                             // this.currentMouseIndex = null
                         }
-                        Message.success('删除成功')
+                        Message.success(this.$t('deleteSuccessfully'))
                     }).catch(() => {
                         this.ifShowSuspension = false
                         Message.error('系统繁忙，请稍后再试')
@@ -849,7 +850,7 @@ export default {
         },
         deleteAddtionHandle(index) {
             if (!this.modelEditing) {
-                sureDialog(this.myEditorUi, `确定要删除条件${index + 1}吗`, () => {
+                sureDialog(this.myEditorUi, this.$t('dataSource.confirmToDeleteRule', {index: index + 1}), () => {
                     this.alldata.data.splice(index, 1)
                 })
             } else {
@@ -865,8 +866,8 @@ export default {
             })
             if (!name || name.length > 20 || name === oldVal) {
                 ele.innerHTML = `${oldVal}`
-                if (!name) {Message.error(`名称不能为空`)}
-                if (name.length > 20) {Message.error(`名称不能超过20个字符`)}
+                if (!name) {Message.error(this.$t('dataSource.nameCouldNotEmpty'))}
+                if (name.length > 20) {Message.error(this.$t('dataSource.nameCouldNotExceed'))}
             } else {
                 // 请求接口
                 let objData = {}
@@ -879,7 +880,7 @@ export default {
                 objData.formula = this.ModelNameArr[this.currentMouseIndex].formula
                 this.requestUtil.put(this.urls.addModelList.url,objData).then((res) => {
                     if (res.sourceId) {
-                        Message.success(`修改成功`)
+                        Message.success(this.$t('modifySuccessfully'))
                         ele.innerHTML = `${name}`
                         // 用于去更新首页底部
                         this.$store.commit('footerModelUpdata', true)
@@ -949,7 +950,7 @@ export default {
             let conditionSelect = this.conditionLogicalSelect || '' 
             if (data.length > 1) {
                 if (!conditionSelect) {
-                    Message.warning(`第一列不能为空`)
+                    Message.warning(this.$t('dataSource.firstColumnCouldNotEmpty'))
                     result = false
                     return
                 }
@@ -1046,6 +1047,11 @@ export default {
         padding:0 10px;
         text-align: right;
         padding-top:16px;
+      }
+      .add-condition-btn {
+          width: 80px;
+          padding-left: 16px;
+          background:url('../../assets/images/leftsidebar/addpage.png') no-repeat 2px center;
       }
       .add-condition{
         height:24px;

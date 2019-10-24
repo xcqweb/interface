@@ -10,13 +10,13 @@
               @on-click="switchTabHandle"
             >
               <TabPane
-                :label="dataSourceName[0]"
+                :label="$t(dataSourceName[0])"
               />
               <TabPane
-                :label="dataSourceName[1]"
+                :label="$t(dataSourceName[1])"
               />
               <TabPane
-                :label="dataSourceName[2]"
+                :label="$t(dataSourceName[2])"
               />
             </Tabs>
           </div>
@@ -81,7 +81,7 @@
                   v-model="row.model"
                   style="width:240px;height:24px;line-height:24px;"
                   filterable
-                  placeholder="请选中参数"
+                  :placeholder="$t('footBar.selectTheParameter')"
                   @on-change="val=>paramSelectChange(val,index)"
                 >
                   <Option 
@@ -100,7 +100,7 @@
                   v-model="row.type"
                   @on-change="val=>paramDefaultChange(val,row.id,index)"
                 >
-                  默认显示
+                  {{ $t('display') }}
                 </Checkbox>
               </template>
               <template
@@ -165,7 +165,7 @@
           class="no-data-wrap"
         >
           <NoData
-            :text="nodata"
+            :text="$t(nodata)"
           />
         </div>
       </div>
@@ -197,26 +197,26 @@ export default {
     data() {
         return {
             value1: '1',
-            dataSourceName:['数据源','数据显示','状态模型'],
-            buttonText:['添加参数', '删除'],
+            dataSourceName:['dataSources','footBar.dataDisplay','footBar.stateModel'],
+            buttonText:['添加参数', 'delete'],
             ifShowArrow: false,
             tabsNum: 0,
-            nodata: '暂无数据',
+            nodata: 'noData',
             tablTitles:[
                 {
-                    title: '数据源',
+                    title: this.$t('dataSources'),
                     key: 'name'
                 },
                 {
-                    title: '类型',
+                    title: this.$t('type'),
                     key: 'typeName'
                 },
                 {
-                    title: '名称',
+                    title: this.$t('name'),
                     key: 'deviceName'
                 },
                 {
-                    title: '操作',
+                    title: this.$t('operation'),
                     width: '80',
                     slot: 'actions',
                     key: 'actions',
