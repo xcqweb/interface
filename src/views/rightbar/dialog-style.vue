@@ -4,10 +4,10 @@
     style="padding:0 4px;"
   >
     <p style="text-align:center;margin:10px;font-size:14px;">
-      弹窗样式
+      {{ $t('popup') }}{{ $t('style') }}
     </p>
     <p style="margin-top:1px;">
-      弹框描述
+      {{ $t('popup') }}{{ $t('describe') }}
     </p>
     <textarea
       v-model="dialogDesc"
@@ -16,13 +16,13 @@
       @blur="descChange"
     />
     <div class="item-title">
-      弹框尺寸
+      {{ $t('popup') }}{{ $t('size') }}
     </div>
     <div style="display:flex;margin-top:4px;">
       <div
         class="item-container"
       >
-        <span style="color:#797979;margin:0 6px;">宽</span>
+        <span style="color:#797979;margin:0 6px;">{{ $t('width') }}</span>
         <input
           v-model="dialogWidth"
           v-number="0"
@@ -33,7 +33,7 @@
         class="item-container"
         style="margin-left:10px;"
       >
-        <span style="color:#797979;margin:0 6px;">高</span>
+        <span style="color:#797979;margin:0 6px;">{{ $t('height') }}</span>
         <input
           v-model="dialogHeight"
           v-number="0"
@@ -43,7 +43,7 @@
     </div>
     <div class="titleSet">
       <div class="item-title">
-        标题文本
+        {{ $t('title') }} {{ $t('text') }}
       </div>
       <div class="titleCon">
         <div class="itemLine">
@@ -118,7 +118,7 @@
     <div
       class="item-title"
     >
-      标题填充
+      {{ $t('title') }}{{ $t('fill') }}
     </div>
     <div
       class="item-container"
@@ -143,7 +143,7 @@ export default {
         return {
             dialogDesc:"",
             showFont:false,
-            titleName:'弹窗标题',
+            titleName:'',
             dialogHeight: 400,
             dialogWidth: 600,
             fontText:12,

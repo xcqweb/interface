@@ -22,7 +22,7 @@
         <div
           style="flex:1;"
         >
-          <div>事件类型-{{ mutualTypes[e.type-1] }}</div>
+          <div>{{ $t("rightBar.eventTypes") }}-{{ mutualTypes[e.type-1] }}</div>
           <div>
             {{ e.title }}<span v-if="e.type==3">-{{ e.stateName }}</span>
           </div>
@@ -40,7 +40,7 @@
       style="padding:10px 4px;height:100%;"
     >
       <p style="margin-bottom: 2px;">
-        类型
+        {{ $t("type") }}
       </p>
       <div class="type-tab-con">
         <div
@@ -49,14 +49,14 @@
           style="border-top-left-radius:2px;border-bottom-left-radius:2px;"
           @click="changeTab(1)"
         >
-          跳转
+          {{ $t("link") }}
         </div>
         <div
           class="type-tab"
           :class="{'selected':typeTab==2}"
           @click="changeTab(2)"
         >
-          显/隐
+          {{ $t("rightBar.visibleOrHide") }}
         </div>
         <div
           class="type-tab"
@@ -64,7 +64,7 @@
           :class="{'selected':typeTab==3}"
           @click="changeTab(3)"
         >
-          切换
+          {{ $t("rightBar.change") }}
         </div>
       </div>
       <LinkTo
@@ -335,7 +335,7 @@ export default{
         },
         removeEvent(event,index,evet) {
             evet.stopPropagation()
-            sureDialog(this.myEditorUi,`确定要删除交互事件${index + 1}吗`,()=>{
+            sureDialog(this.myEditorUi,`${this.$t("sureToDelActions")}${index + 1}？`,()=>{
                 this.events.splice(index,1)
                 let {id,stateInfo} = event
                 this.removeActions(id,stateInfo)//控件或者页面id

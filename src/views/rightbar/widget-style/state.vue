@@ -23,25 +23,25 @@
           >
         </div>
         <div>
-          描述：{{ state.desc || '暂无描述' }}
+          {{ $t("describe") }}：{{ state.desc || $t("noDescribe") }}
         </div>
         <ul style="display:flex;align-items:center;">
           <template v-if="!picList.includes(shapeName)">
-            <span>填充</span>
+            <span>{{ $t("fill") }}</span>
             <li
               class="rect"
               :style="{background:state.style.background || '#ECEFF4'}"
             />
           </template>
           <template v-if="picList.includes(shapeName) && state.imgInfo">
-            <span>图片</span>
+            <span>{{ $t("picture") }}</span>
             <img
               :src="state.imgInfo.url"
               style="height:32px;margin:4px 0 0 4px;"
             >
           </template>
           <template v-if="shapeName!='light'">
-            <span :style="{marginLeft:picList.includes(shapeName) && !state.imgInfo ? 0 : '15px'}">边框</span>
+            <span :style="{marginLeft:picList.includes(shapeName) && !state.imgInfo ? 0 : '15px'}">{{ $t("border") }}</span>
             <li
               class="rect"
               :style="{background:state.style.borderColor || '#7D7D7D'}"
@@ -49,7 +49,7 @@
           </template>
           <template v-if="!picList.includes(shapeName) && shapeName!='light'">
             <span style="margin-left:15px;">
-              文本
+              {{ $t("text") }}
             </span>
             <li
               class="rect"
@@ -153,8 +153,8 @@ export default{
             let cell = graph.getSelectionCell()
             let statesTemp = [{
                 "id":'state_0',
-                "name":"默认",
-                "desc":'默认',
+                "name":`${this.$t("defaultText")}`,
+                "desc":`${this.$t("defaultText")}`,
                 'animateCls':'',
                 "style":{
                     background:this.$store.state.main.widgetInfo.bgColor,
@@ -213,7 +213,7 @@ export default{
         },
         removeState(state,index,evet) {
             evet.stopPropagation()
-            sureDialog(this.myEditorUi,`确定要删除${state.name}吗`,()=>{
+            sureDialog(this.myEditorUi,`${this.$t("sureDel")}${state.name}?`,()=>{
                 let graph = this.myEditorUi.editor.graph
                 let states = this.getStates(graph)
                 this.states.splice(index,1)

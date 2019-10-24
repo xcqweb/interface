@@ -123,9 +123,9 @@ import VueEvent from '../../../services/VueEvent.js'
 import NoData from '../../datasource/nodata'
 import {Button,Page,Checkbox,Message,Select,Option, CheckboxGroup} from 'iview'
 const singleDeviceName = ['image','userimage','tableBox','rectangle','ellipse','light','progress','gaugeChart']
-const DataSourceID = {
+const dataSourceID = {
     id: '123',
-    name:'IOT平台'
+    name:`${this.$t('iotText')}`
 }
 export default{
     components: {
@@ -140,22 +140,22 @@ export default{
     },
     data() {
         return {
-            dataName: '数据源',
-            deviceType: '设备类型',
-            deviceName: '设备名称',
-            placeText: '搜索设备名称',
+            dataName: `${this.$t('dataSource')}`,
+            deviceType: `${this.$t('deviceType')}`,
+            deviceName: `${this.$t('deviceName')}`,
+            placeText: `${this.$t('search')}${this.$t('deviceName')}`,
             derection: 'right',
-            nodata: '暂无数据',
+            nodata: `${this.$t('noData')}`,
             dataNameArr: [
                 {
                     value: '1',
-                    label: 'IOT平台'
+                    label: `${this.$t('iotText')}`
                 }
             ],
             deviceNameArr:[],
             deviceNameList:[],
             single: false,
-            buttonName: '绑定',
+            buttonName: `{rightBar.bindText}`,
             modelvalue1:'1',
             modelvalue2:'',
             ifclearSelect:true,
@@ -195,7 +195,7 @@ export default{
                     return Promise.all([
                         this.requestUtil.post(this.urls.deviceEquipList.url, objDataNew)
                     ]).catch(() => {
-                        Message.error('系统繁忙，请稍后再试')
+                        Message.error(`${this.$t('systemBusy')}`)
                         return false
                     })
                 } else {
@@ -207,7 +207,7 @@ export default{
                 this.deviceNameList = firstDeviceNameList.records || []
                 this.deviceListTotal = firstDeviceNameList.total || 10
             }).catch(() => {
-                Message.error('系统繁忙，请稍后再试试')
+                Message.error(`${this.$t('systemBusy')}`)
                 return false
             })
         },
@@ -229,27 +229,27 @@ export default{
                 this.deviceNameList = res.records || []
                 this.deviceListTotal = res.total || 10
             }).catch(() => {
-                Message.error('系统繁忙，请稍后再试')
+                Message.error(`${this.$t('systemBusy')}`)
                 return false
             })
         },
         bindDeviceNameHandle() {
             let startBindData = this.getCellModelInfo('bindData')
             if (singleDeviceName.includes(this.shapeName) && this.deviceIdArr.length > 1) { // 绑定单个
-                Message.warning('此控件不允许绑定多个设备名称')
+                Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
                 // 清空勾选
                 this.deviceNameListArr = []
                 return false
             }  
             if (singleDeviceName.includes(this.shapeName) && startBindData && startBindData.dataSource && startBindData.dataSource.deviceNameChild) {                    
-                Message.warning('此控件已经绑定设备名称')
+                Message.warning(`${this.$t('rightBar.hasBindDevice')}`)
                 this.deviceNameListArr = []
                 return false
             }
             if (startBindData && startBindData.dataSource) {
                 let deviceTypeData = startBindData.dataSource.deviceTypeChild || {}
                 if (deviceTypeData.id && deviceTypeData.id !== this.modelvalue2) {
-                    Message.warning('此控件不允许绑定多个设备类型')
+                    Message.warning(`${this.$t('rightBar.notAllowBindMultiplyDevice')}`)
                     this.deviceNameListArr = []
                     return false
                 }
@@ -263,7 +263,7 @@ export default{
                 }
             })
             let objData = {}
-            objData.dataSourceChild = DataSourceID
+            objData.dataSourceChild = dataSourceID
             objData.deviceTypeChild = {
                 id: this.deviceNameArr[DeviceIndex].deviceTypeId,
                 name: this.deviceNameArr[DeviceIndex].deviceTypeName || ''
@@ -310,7 +310,7 @@ export default{
         },
         InputSelectHandle(value) {
             if (!this.modelvalue2) {
-                Message.warning(`请选择设备类型`)
+                Message.warning(`${this.$t('rightBar.chooseDeviceType')}`)
             } else {
                 let objData = {
                     deviceTypeId : this.modelvalue2,
@@ -340,7 +340,7 @@ export default{
             this.requestUtil.post(this.urls.deviceEquipList.url, objData).then((res) => {
                 this.deviceNameList = res.records || []
             }).catch(() => {
-                Message.error('系统繁忙，请稍后再试')
+                Message.error(`${this.$t('systemBusy')}`)
                 return false
             })
         }

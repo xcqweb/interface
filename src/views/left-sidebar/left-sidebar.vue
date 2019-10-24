@@ -173,7 +173,7 @@ export default {
         alertAddPage(typePage, listNumber) {
             const pagesRank = this.myEditorUi.editor.pagesRank
             const pages = this.myEditorUi.editor.pages
-            let nameArr = null
+            let nameArr = []
             let namebefore = ''
             if (+typePage === 0) {
                 namebefore = `页面`
