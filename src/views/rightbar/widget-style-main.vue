@@ -6,7 +6,7 @@
         :class="{'selected':tab==1}"
         @click="changeTab(1)"
       >
-        样式
+        {{ $t('style') }}
       </div>
       <div
         v-if="stateList.includes(shapeName) && cellsCount==1"
@@ -14,7 +14,7 @@
         :class="{'selected':tab==2}"
         @click="changeTab(2)"
       >
-        状态
+        {{ $t('state') }}
       </div>
       <div
         v-if="actionList.includes(shapeName) && cellsCount==1"
@@ -22,7 +22,7 @@
         :class="{'selected':tab==3}"
         @click="changeTab(3)"
       >
-        交互
+        {{ $t('action') }}
       </div>
       <div
         v-if="dataList.includes(shapeName) && cellsCount==1"
@@ -30,7 +30,7 @@
         :class="{'selected':tab==4}"
         @click="changeTab(4)"
       >
-        数据
+        {{ $t('data') }}
       </div>
     </div>
     <Style

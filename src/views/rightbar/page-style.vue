@@ -3,10 +3,10 @@
     class="page-cls"
   >
     <p style="text-align:center;margin:10px;font-size:14px;">
-      页面样式
+      {{ $t('page') }}{{ $t('style') }}
     </p>
     <p style="margin-top:10px;">
-      页面描述
+      {{ $t('page') }}{{ $t('describe') }}
     </p>
     <textarea
       v-model="pageDesc"
@@ -14,7 +14,7 @@
       rows="3"
     />
     <div class="item-title">
-      页面尺寸
+      {{ $t('page') }}{{ $t('size') }}
     </div>
     <div
       v-clickOutSide="hideScale"
@@ -43,7 +43,7 @@
       <div
         class="item-container solidWidth"
       >
-        <span style="color:#797979;margin-right:6px;">宽</span>
+        <span style="color:#797979;margin-right:6px;">{{ $t('width') }}</span>
         <input
           v-model="solidWidth"
           disabled
@@ -53,7 +53,7 @@
         class="item-container"
         style="margin-left:10px;"
       >
-        <span style="color:#797979;margin-right:6px;">高</span>
+        <span style="color:#797979;margin-right:6px;">{{ $t('height') }}</span>
         <input
           v-model="solidHeight"
           v-number="0"
@@ -64,7 +64,7 @@
     <div
       class="item-title"
     >
-      背景颜色
+      {{ $t('rightBar.bgColor') }}
     </div>
     <div
       class="item-container"
@@ -87,7 +87,7 @@
           style="width:100%;"
         >
         <div v-show="isShowBgText">
-          选择背景图案
+          {{ $t('choose') }}{{ $t('rightBar.bgImage') }}
         </div>
         <input
           ref="chooseImg"
@@ -200,7 +200,7 @@ export default {
             this.$refs.chooseImg.click()
         },
         deleteBgImgHandle() {
-            sureDialog(this.myEditorUi,`确定要删除背景图片吗`,()=>{
+            sureDialog(this.myEditorUi,`${this.$t('rightBar.sureDelBgPic')}`,()=>{
                 let editor = this.myEditorUi.editor
                 editor.pages[editor.currentPage].style.backgroundUrl = ''
                 this.bgPic = require('../../assets/images/rightsidebar/bg_ic_widget.png');
@@ -244,7 +244,7 @@ export default {
             if(e.target.files && e.target.files.length) {
                 let file = e.target.files[0]
                 if (file.size >= 5 * 1024 * 1024) {
-                    tipDialog(this.myEditorUi,`背景图片大小不得超过5M`)
+                    tipDialog(this.myEditorUi,`${this.$t('rightBar.bgPicNotOver5M')}`)
                     return
                 }
                 let  fileTypes = ['jpg','png','jpeg','gif','bmp','svg']
@@ -256,7 +256,7 @@ export default {
                     }
                 }
                 if(!typeFlag) {
-                    tipDialog(this.myEditorUi,`请选择图片文件`)
+                    tipDialog(this.myEditorUi,`${this.$t('rightBar.pleaseChoosePic')}`)
                     return
                 }
                 
