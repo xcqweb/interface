@@ -15,7 +15,7 @@ import {ChangePageSetup} from './Init'
 import {Format} from './Format'
 import urls from '../../constants/url'
 import { setCookie, tipDialog} from '../Utils'
-var autoSaveFlagTerry = 0
+window.autoSaveFlagTerry = 0
 window.EditorUi = function(editor, container, lightbox)
 {
     mxEventSource.call(this);
@@ -24,6 +24,7 @@ window.EditorUi = function(editor, container, lightbox)
     this.container = container || document.body;
 
     var graph = this.editor.graph;
+    graph.setHtmlLabels(true)
     graph.lightbox = lightbox;
     graph.useCssTransforms =
 		this.editor.isChromelessView() &&
@@ -2289,8 +2290,6 @@ EditorUi.prototype.updateDocumentTitle = function()
     }
 
     document.title = title;
-    // document.getElementById('filename').innerHTML = this.editor.getOrCreateFilename();
-    // document.getElementById('filenameInput').setAttribute('placeholder', this.editor.getOrCreateFilename())
 };
 
 /**
@@ -2753,14 +2752,14 @@ EditorUi.prototype.updateActionStates = function()
     var notMenu = shapeNameStr.indexOf('menuCell') == -1 && shapeNameStr.indexOf('menulist') == -1;
     // 判断当前是否是表格
     var isTable = shapeNameStr.indexOf('tableBox') != -1 || shapeNameStr.indexOf('tableCell') != -1;
-    for (var i = 0; i < actions.length; i++)
+  /*   for (var i = 0; i < actions.length; i++)
     {
         if (shapeName === 'menuCell' && menuDisabled.indexOf(actions[i]) != -1) { // 单个菜单
             this.actions.get(actions[i]).setEnabled(!selected);
         } else {
             this.actions.get(actions[i]).setEnabled(selected);
         }
-    }
+    } */
 
     this.actions.get('rotation').setEnabled(vertexSelected && shapeName !== 'menuCell');
     this.actions.get('autosize').setEnabled(vertexSelected && !isTable && notMenu);
@@ -2794,20 +2793,20 @@ EditorUi.prototype.updateActionStates = function()
     this.actions.get('selectNone').setEnabled(unlocked);
 
     // 菜单单元格禁用
-    var menuCellDisabled = ['copy', 'cut', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
-    if (shapeName == 'menuCell') {
-        for (let i = 0; i < menuCellDisabled.length; i++) {
-            this.actions.get(menuCellDisabled[i]).setEnabled(false);
-        }
-    }
+    // var menuCellDisabled = ['copy', 'cut', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
+    // if (shapeName == 'menuCell') {
+    //     for (let i = 0; i < menuCellDisabled.length; i++) {
+    //         this.actions.get(menuCellDisabled[i]).setEnabled(false);
+    //     }
+    // }
 
     // 表格单元格禁用
-    var tableCellDisabled = ['copy', 'cut', 'delete', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
-    if (shapeName == 'tableCell') {
-        for (let i = 0; i < tableCellDisabled.length; i++) {
-            this.actions.get(tableCellDisabled[i]).setEnabled(false);
-        }
-    }
+    // var tableCellDisabled = ['copy', 'cut', 'delete', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
+    // if (shapeName == 'tableCell') {
+    //     for (let i = 0; i < tableCellDisabled.length; i++) {
+    //         this.actions.get(tableCellDisabled[i]).setEnabled(false);
+    //     }
+    // }
 
     this.updatePasteActionStates();
     // this.updatePasteActionStates(shapeName);
@@ -3490,7 +3489,7 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
  * 保存成功
  * 和退出当前页面
  */
-EditorUi.prototype.saveSuccess = function (res, hideDialog, type) {
+EditorUi.prototype.saveSuccess = function (res, hideDialog) {
     this.editor.setFilename(res.studioName)
     this.editor.setDescribe(res.descript)
     this.editor.setApplyId(res.studioId)

@@ -121,7 +121,11 @@ function sureDialog(editorUi, info, cb, confirmText = '确定', cancelText = '�
   let dlg = new sureContainer(editorUi, info, confirmText, cancelText,cb)
   editorUi.showDialog(dlg.container, 410, 160, true, false, null, null, title);
 }
-
+/**
+ * 
+ * @param {*} func 
+ * @param {*} delay 
+ */
 function debounce(func, delay) {
   let timer = null
   // 包装好的参数，

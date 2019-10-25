@@ -2,14 +2,18 @@ export let data1 = {
     legend: {
         show:true,
         data: ['图例'],
-        bottom: 0,
+        x:'center',
+        y:'bottom',
+        orient: 'horizontal',
         textStyle:{
             
         }
     },
     grid:{
-        top:10,
+        top:45,
         bottom:45,
+        left:45,
+        right:45
     },
     tooltip: {
         trigger: 'axis'
@@ -70,16 +74,17 @@ export let data1 = {
 
 export let data2 = {
     tooltip: {
-        formatter: "{a} <br/>{b} : {c}%"
+        formatter: "{c}"
     },
     series: {
         name:'仪表盘',
         type: 'gauge',
         radius:'80%',
         detail: {
+            show:false,
             formatter: '{value}%'
         },
-        data: [{name:'值',value:50}],
+        data: [{name:'',value:50}],
         min: 0,
         max: 100,
     },

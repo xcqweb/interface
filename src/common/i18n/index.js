@@ -1,16 +1,16 @@
 
-import Vue from 'vue';
-import VueI18n from 'vue-i18n';
-import {getCookie} from '../../services/Utils';
-import en from './language/en';
-import zh from './language/zh';
+import Vue from 'vue'
+import VueI18n from 'vue-i18n'
+import {getCookie} from '../../services/Utils'
+import en from './language/en'
+import zh from './language/zh'
 
-Vue.use(VueI18n);
-
-
+Vue.use(VueI18n)
+let language = getCookie('language')
+language = language || 'zh'
 
 export const i18n = new VueI18n({
-    locale: getCookie('language') ? getCookie('language') : 'zh',
+    locale: language,
     messages: {
         en: {
             ...en,
@@ -20,5 +20,5 @@ export const i18n = new VueI18n({
         },
     },
 
-});
+})
 

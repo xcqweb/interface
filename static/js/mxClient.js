@@ -13517,7 +13517,6 @@ mxDragSource.prototype.mouseMove = function(evt)
 			x += this.dragOffset.x;
 			y += this.dragOffset.y;
 		}
-		
 		var offset = mxUtils.getDocumentScrollOrigin(document);
 		
 		this.dragElement.style.left = (x + offset.x) + 'px';
@@ -15339,6 +15338,8 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 	if (selectCell) {
 		shapeName = this.graph.view.getState(selectCell).style.shape;
 	}
+	// console.log(shapeName)
+	// console.log(title)
 	if (typeof this.graph.getModel().getValue(selectCell) === 'object') {
 		if (this.graph.getModel().getValue(selectCell)) {
 			let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') || undefined // 获取到元素
@@ -76186,7 +76187,7 @@ mxVertexHandler.prototype.mouseMove = function(sender, me)
 				this.resizeVertex(me);
 			}
 			// 更新显示浮窗
-			// this.updateHint(me);
+			this.updateHint(me);
 		}
 		
 		me.consume();
@@ -77831,7 +77832,7 @@ mxEdgeHandler.prototype.isSelectionDashed = function()
  */
 mxEdgeHandler.prototype.isConnectableCell = function(cell)
 {
-	return true;
+	return false;//取消edge类型（直线等）与其他控件的连接吸附功能
 };
 
 /**
@@ -79001,7 +79002,7 @@ mxEdgeHandler.prototype.mouseUp = function(sender, me)
 			else
 			{
 				this.graph.getView().invalidate(this.state.cell);
-				this.graph.getView().validate(this.state.cell);						
+				this.graph.getView().validate(this.state.cell);					
 			}
 		}
 		

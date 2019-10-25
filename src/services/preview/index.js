@@ -1,4 +1,5 @@
 import {geAjax} from './util'
+import {getCookie} from '../Utils'
 import PreviewPage from './render-page'
 
 // 主函数
@@ -38,8 +39,18 @@ class Main {
         }
         const host = await geAjax('/api/console/host/imageHost', 'GET')
         fileSystem = host.imageHost
-        applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudio/${id}`, 'GET')
+        applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudioForPreview/${id}`, 'GET')
         if (!applyInfo) {
+            return
+        }
+        let token = getCookie('token')
+        let refreshToken = getCookie('refreshToken')
+        if ((!token || !refreshToken) && applyInfo.status === 0) { //未登录且应用未发布的情况下
+            let notPublishImg = '../../../static/images/apply_not_publish.png'
+            gePreview.style.height = "80vh"
+            gePreview.style.width = "80vw"
+            gePreview.style.background = `url('${notPublishImg}') center center no-repeat`
+            gePreview.style.backgroundSize = "contain"
             return
         }
         document.getElementsByTagName('title')[0].innerHTML = applyInfo.studioName

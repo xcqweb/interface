@@ -1,4 +1,4 @@
-import {geAjax,toDecimal2NoZero,dealLightFill} from './util'
+import {geAjax,toDecimal2NoZero,dealLightFill,throttleFun} from './util'
 import {getCookie,throttle} from '../Utils'
 import echarts from 'echarts'
 
@@ -98,7 +98,7 @@ function setterRealData(res, fileSystem) {
                     let chartDataLen = $(els[i]).data("chartDataLen")
                     options.series.forEach((ser)=>{
                         if (ser.pointId == item.pointId) {
-                            if(ser.data.length == chartDataLen) {
+                            if(ser.data.length >= chartDataLen) {
                                 ser.data.shift()
                             }
                             if (val || val == 0) {
@@ -106,7 +106,7 @@ function setterRealData(res, fileSystem) {
                             }
                         }
                     })
-                    if(options.xAxis[0].data.length == chartDataLen) {
+                    if(options.xAxis[0].data.length >= chartDataLen) {
                         options.xAxis[0].data.shift()
                     }
                     options.xAxis[0].data.push(item.timestamp)
@@ -134,20 +134,33 @@ function setterRealData(res, fileSystem) {
                 }
                 if (paramShow && paramShow.length) {
                     let formatLayerEl = $("#formatLayer")
-                    let formatLayerFun = (e)=>{
+                    let formatLayerElText = () => {
+                        formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + 
+                        `<li>${item.timestamp}</li>` +
+                        paramShow.map((d) => {
+                            return `<li>${d}=${item[d]}</li>`
+                        }).join('') + "</ul>")
+                    }
+                    let formatLayerShow = (e)=>{
                         let {clientX,clientY} = e
                         formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
-                        formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + paramShow.map((d) => {
-                            return `<li>${d}=${item[d]}`
-                        }).join('') + "</ul>")
+                        formatLayerElText()
                         formatLayerEl.show()
                     }
-                    $(els[i]).mousemove(formatLayerFun)
+                    let formatLayerMove = (e)=> {
+                        console.log(e + "-" + new Date().getTime())
+                        let {clientX,clientY} = e
+                        formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
+                    }
+                    $(els[i]).mouseenter(formatLayerShow)
+                    $(els[i]).mousemove(throttleFun(formatLayerMove,16))
                     $(els[i]).mouseleave(() => {
-                        let formatLayerEl = $("#formatLayer")
-                        formatLayerEl.html(" ")
+                        formatLayerEl.html("")
                         formatLayerEl.hide()
                     })
+                    if (formatLayerEl.is(':visible')) {
+                        formatLayerElText()
+                    }
                 }
             }
         }
@@ -163,7 +176,7 @@ function dealStateFormula(formula, data) {
     let res1 = true,breakFlag = false,res2 = false
     let logics = formula.data
     if(!logics) {
-        return
+        return false
     }
     if (!formula.conditionLogic || formula.conditionLogic == 1) { // 顶级条件是and，有一个为false，就返回false
         for(let i = 0;i < logics.length;i++) {
@@ -251,6 +264,9 @@ function changeEleState(el, stateInfo,fileSystem) {
     let shapeName = $(el).data("shapeName")
     if (stateInfo.animateCls) {
         el.classList.add(stateInfo.animateCls)
+    }else{
+        //去掉动画样式
+        el.classList.remove('animate-blink')
     }
     if (shapeName == 'light') {
         dealLightFill(el, stateInfo.style.background)
@@ -263,6 +279,11 @@ function changeEleState(el, stateInfo,fileSystem) {
     if (imgInfo) {
         imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
         el.style.background = `url(${imgInfo.url}) center center no-repeat`
+        el.style.backgroundSize = '100% 100%'
+        return
+    } 
+    if (shapeName.includes('image')) {
+        el.style.background = `url(${$(el).data("defaultImg")}) center center no-repeat`
         el.style.backgroundSize = '100% 100%'
     }
 }

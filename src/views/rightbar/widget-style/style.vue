@@ -12,6 +12,7 @@
         v-model="widgetName"
         style="padding:0 4px;"
         @keyup.enter="changeName"
+        @blur="changeName"
       >
       <div class="item-line" />
     </template>
@@ -28,6 +29,7 @@
           v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize('X')"
+          @blur="changePositionSize('X')"
         >
       </div>
       <div
@@ -40,6 +42,7 @@
           v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize('Y')"
+          @blur="changePositionSize('Y')"
         > 
       </div>
     </div>
@@ -56,6 +59,7 @@
           v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize('W')"
+          @blur="changePositionSize('W')"
         >
       </div>
       <div
@@ -68,6 +72,7 @@
           v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changePositionSize('H')"
+          @blur="changePositionSize('H')"
         > 
       </div>
     </div>
@@ -84,6 +89,7 @@
             v-number="0"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize('SX')"
+            @blur="changePositionSize('SX')"
           > 
         </div>
         <div
@@ -96,6 +102,7 @@
             v-number="0"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize('SY')"
+            @blur="changePositionSize('SY')"
           > 
         </div>
       </div>
@@ -111,6 +118,7 @@
             v-number="0"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize('TX')"
+            @blur="changePositionSize('TX')"
           > 
         </div>
         <div
@@ -123,6 +131,7 @@
             v-number="0"
             style="border-left:none;border-right:none;"
             @keyup.enter="changePositionSize('TY')"
+            @blur="changePositionSize('TY')"
           > 
         </div>
       </div>
@@ -140,6 +149,7 @@
           v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changeTableSize"
+          @blur="changeTableSize"
         >
       </div>
       <div
@@ -152,6 +162,7 @@
           v-number="0"
           style="border-left:none;border-right:none;"
           @keyup.enter="changeTableSize"
+          @blur="changeTableSize"
         > 
       </div>
     </div>
@@ -182,8 +193,10 @@
             <input
               v-model="fontText"
               v-number="0"
+              :disabled="showFont"
               style="border-left: none;border-right: none"
               @keyup.enter="changeFont(fontText)"
+              @blur="changeFont(fontText)"
             >
             <img
               src="../../../assets/images/menu/down_ic.png"
@@ -311,15 +324,19 @@
             v-clickOutSide="hideBorderLineBold"
             class="item-container fontSet"
             style="justify-content:space-between;position:relative;flex:1;margin:0;"
-            @click="showBorderLineBold=true"
           >
             <input
               v-model="borderLineBoldText"
               v-number="0"
+              :disabled="showBorderLineBold"
               style="border-left: none;border-right: none"
               @keyup.enter="changeBorderLineBold(borderLineBoldText)"
+              @blur="changeBorderLineBold(borderLineBoldText)"
             >
-            <img src="../../../assets/images/menu/down_ic.png">
+            <img 
+              src="../../../assets/images/menu/down_ic.png"
+              @click="showBorderLineBold=true"
+            >
             <ul
               v-if="showBorderLineBold"
               class="font-dialog"
@@ -419,6 +436,7 @@
             v-number="0"
             style="border-left:none;border-right:none;width:52%;"
             @keyup.enter="changeProgress"
+            @blur="changeProgress"
           >
         </div>
         <div
@@ -431,6 +449,7 @@
             v-number="0"
             style="border-left:none;border-right:none;width:52%;"
             @keyup.enter="changeProgress"
+            @blur="changeProgress"
           > 
         </div>
       </div>
@@ -480,6 +499,7 @@
         v-model="linkUrl"
         style="padding:0 4px;"
         @keyup.enter="addLinkUrl"
+        @blur="addLinkUrl"
       >
     </div>
     <Chart
@@ -561,7 +581,13 @@ export default {
         },
         positionSize() {
             let geo = this.$store.state.main.widgetInfo.geo
-            return geo
+            let {width,height,x,y,sx,sy,tx,ty} = geo
+            let newGeo = {
+                width:this.dealNumber(width),height:this.dealNumber(height),x:this.dealNumber(x),
+                y:this.dealNumber(y),sx:this.dealNumber(sx),sy:this.dealNumber(sy),
+                tx:this.dealNumber(tx),ty:this.dealNumber(ty)
+            }
+            return Object.assign(geo,newGeo)
         }
     },
     created() {},
@@ -647,6 +673,12 @@ export default {
         }
     },
     methods: {
+        dealNumber(number) {
+            if(number) {
+                return parseInt(number)
+            }
+            return number
+        },
         dealDefaultColor(color) {
             if(!color || color == 'none') {
                 return `url(${Dialog.prototype.noColorImage})`
@@ -674,7 +706,7 @@ export default {
             model.beginUpdate()
             cells.forEach((cell)=>{
                 let geo = graph.getCellGeometry(cell)
-                let diff = 0;
+                let diff = 0
                 if(graph.model.isEdge(cell)) {
                     switch(type) {
                         case 'SX':
@@ -699,12 +731,11 @@ export default {
                             geo.y = +positionObj.y
                             break
                         case 'W':
-                            diff = positionObj.width * 1 - geo.width;
+                            diff = positionObj.width * 1 - geo.width
                             geo.width = +positionObj.width
                             break
                         case 'H':
-                            diff = positionObj.height * 1 - geo.height;
-                            console.log(diff)
+                            diff = positionObj.height * 1 - geo.height
                             geo.height = +positionObj.height
                             break
                     }
@@ -819,6 +850,7 @@ export default {
             e.stopPropagation()
         },
         changeBorderLineBold(d,e) {
+            console.log(d, '---', e)
             this.borderLineBoldText = d
             let graph = this.myEditorUi.editor.graph
             graph.setCellStyles('strokeWidth', d, graph.getSelectionCells());
@@ -951,9 +983,11 @@ export default {
             let cellInfo = graph.getModel().getValue(cell)
             return cellInfo
         },
-        setWidgetProps(widgetProp,props) {
+        setWidgetProps(widgetProp,props,cell) {
             let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
+            if(!cell) {
+                cell = graph.getSelectionCell()
+            }
             let cellInfo = graph.getModel().getValue(cell)
             if (!mxUtils.isNode(cellInfo)) {
                 var doc = mxUtils.createXmlDocument()
@@ -1041,7 +1075,6 @@ export default {
 .dialogPage {
     input{
         outline: none;
-        border:none;
         width:100%;
         height:24px;
         background:rgba(255,255,255,1);

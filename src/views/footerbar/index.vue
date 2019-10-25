@@ -97,8 +97,16 @@
                 slot-scope="{row,index}"
               >
                 <Checkbox
+                  v-if="!singleParamShow.includes($store.state.main.widgetInfo.shapeInfo.shape)"
                   v-model="row.type"
                   @on-change="val=>paramDefaultChange(val,row.id,index)"
+                >
+                  默认显示
+                </Checkbox>
+                <Checkbox
+                  v-else
+                  :value="true"
+                  disabled
                 >
                   默认显示
                 </Checkbox>
@@ -108,11 +116,12 @@
                 slot-scope="{ row, index }" 
               >
                 <span
+                  v-show="!singleParamShow.includes($store.state.main.widgetInfo.shapeInfo.shape)"
                   class="icon-add"
                   @click.stop.prevent="addParamHandle"
                 />
                 <span
-                  v-show="index >= 1"
+                  v-show="index!==paramOutterList.length-1"
                   class="icon-delete"
                   @click.stop.prevent="removeParamHandle(row.id,index)"
                 />
@@ -182,7 +191,7 @@ import VueEvent from '../../services/VueEvent.js'
 import {sureDialog} from '../../services/Utils'
 const allShapes = ['image','userimage','tableCell','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
 // 支持显示参数
-const SupportDataShow = ['rectangle','ellipse','tableCell','progress','lineChart', 'gaugeChart']
+const supportDataShow = ['rectangle','ellipse','tableCell','progress','lineChart', 'gaugeChart']
 let deviceTypeId = null
 export default {
     components:{
@@ -197,6 +206,7 @@ export default {
     data() {
         return {
             value1: '1',
+            singleParamShow:['progress','lineChart', 'gaugeChart'],
             dataSourceName:['数据源','数据显示','状态模型'],
             buttonText:['添加参数', '删除'],
             ifShowArrow: false,
@@ -316,19 +326,7 @@ export default {
                         this.isInitFlag = false
                         this.initData()
                     }
-                } else {
-                    if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
-                        let deviceNameChild = startBindData.dataSource.deviceNameChild || []
-                        startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
-                        startBindData.dataSource.dataSourceChild = value.dataSourceChild
-                        startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
-                        this.setCellModelInfo('bindData',startBindData)
-                        if (this.ifShowArrow) {
-                            this.isInitFlag = false
-                            this.initData()
-                        }
-                    }
-                }
+                } 
             }
         })
     },
@@ -355,10 +353,21 @@ export default {
             let graph = this.myEditorUi.editor.graph
             let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
             let wh = document.documentElement.clientHeight
+            let dialogTitleEle = document.querySelector('.dialog-title-m')
+            let dialogTop = 0
+            if(dialogTitleEle) {
+                dialogTop = dialogTitleEle.offsetTop
+            }
             if(val) {
                 el.style.height = wh - 72 - 226 + 'px'
+                if(dialogTitleEle) {
+                    dialogTitleEle.style.top = dialogTop - 200 + 'px'
+                }
             }else{
                 el.style.height = wh - 72 - 26 + 'px'
+                if(dialogTitleEle) {
+                    dialogTitleEle.style.top = dialogTop + 200 + 'px'
+                }
             }
             graph.refresh()
         },
@@ -454,16 +463,12 @@ export default {
         },
         footerContentHandle(show) {
             if (show) {
-                let graph = this.myEditorUi.editor.graph
-                let cell = graph.getSelectionCell()
-                let state = graph.view.getState(cell)
-                let shapeName = state.style.shape
-                if (SupportDataShow.includes(shapeName)) { // flag 是否数据显示
+                if (supportDataShow.includes(this.$store.state.main.widgetInfo.shapeInfo.shape)) { // flag 是否数据显示
                     this.ifShowDataFlag = true
                 } else {
                     this.ifShowDataFlag = false
                 }
-                if(allShapes.includes(shapeName)) { // 底部内容显示
+                if(allShapes.includes(this.$store.state.main.widgetInfo.shapeInfo.shape)) { // 底部内容显示
                     this.footerContent = true
                 }else{
                     this.footerContent = false
@@ -517,8 +522,14 @@ export default {
             this.paramOutterList.unshift({id:new Date().getTime(),model:"",type:false})
         },
         removeParamHandle(id,index) {
+            if(index || index === 0) {
+                if(!this.paramOutterList[index].model) {
+                    this.paramOutterList.splice(index , 1)
+                    return
+                }
+            }
             sureDialog(this.myEditorUi,`确定要删除此当前参数吗`, () => {
-                index && this.paramOutterList.splice(index , 1)
+                (index || index === 0) && this.paramOutterList.splice(index , 1)
                 let tempObj = this.getCellModelInfo('bindData')
                 let list = [ ]
                 if(tempObj && tempObj.params) {

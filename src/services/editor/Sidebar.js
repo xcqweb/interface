@@ -17,6 +17,7 @@ let startCurrentDialogIndex = null
 let CurrentMouseOver = null
 let pageScrollTopHeight = 0
 let dialogesScrollTopHeight = 0
+let shapeScrollTopHeight = 0
 function Sidebar(editorUi, container, container2)
 {
     this.editorUi = editorUi;
@@ -1142,7 +1143,6 @@ Sidebar.prototype.createPageContextMenu = function (type) {
                 this.copyPage(element, pageType)
                 break;
             case 'homepage':
-                console.log(index)
                 let pagesRankArr = JSON.parse(JSON.stringify(this.editorUi.editor.pagesRank[pageType]))
                 let newValue = pagesRankArr[index]
                 // this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems(this.editorUi.editor.pagesRank[pageType], 0, index);
@@ -1195,8 +1195,6 @@ function createPageList(editorUi, el, data, id, _that) {
 
     $('.commonPages').on('mouseenter', '.pageList>li>.right-icon-dolt', function (evt) {
             evt.preventDefault();
-            // 右键菜单展示
-            // console.log(888)
             let LIArr = evt.target.parentNode.parentNode.children
             for (var i = 0; i < LIArr.length; i++) {
                 if (LIArr[i] === evt.target.parentNode) {
@@ -1434,6 +1432,56 @@ Sidebar.prototype.addPagePalette = function() {
             dialogesScrollTopHeight = parseInt($(".dialogPages").scrollTop())
         })
     })
+    $(".geSidebarContainer-bottom").scroll(function () {
+        shapeScrollTopHeight = parseInt($(".geSidebarContainer-bottom").scrollTop())
+    })
+    
+    // 鼠标滑过 悬浮控件名字
+    let controlName = ['text', 'beeline', 'rectangle', 'ellipse', 'menulist', 'button', 'tableBox', 'image', 'light', 'pipeline1', 'progress', 'pipeline2', 'pipeline3', 'linkTag', 'lineChart', 'gaugeChart']
+    let controlNameText = {
+        'text': '文字',
+        'beeline':'直线',
+        'rectangle': '矩形',
+        'ellipse': '圆形',
+        'menulist':'菜单',
+        'button': '按钮',
+        'tableBox': '表格',
+        'image': '图片',
+        'light': '指示灯',
+        'pipeline1': '管道1',
+        'pipeline2': '管道2',
+        'pipeline3': '管道3',
+        'progress': '进度条',
+        'linkTag': 'Link链接',
+        'lineChart': '趋势图',
+        'gaugeChart': '仪表盘'
+    }
+    $('.geSidebarContainer-bottom').on('mouseenter', '.geSidebar>a', function (evt) {
+        evt.preventDefault()
+        evt.stopPropagation()
+        $('.suspension-showShapename').remove()
+        let shapename = $(this).data('shapename')
+        if (shapename && controlName.includes(shapename)) {
+            let ele = document.createElement('div')
+            ele.className = "suspension-showShapename"
+            ele.style.width = '60px'
+            ele.style.height = '30px'
+            ele.style.lineHeight = '30px'
+            ele.style.textAlign = 'center'
+            ele.innerText = controlNameText[shapename]
+            ele.style.position = 'absolute'
+            ele.style.backgroundColor="#ffffff"
+            ele.style.border="1px solid #d4d4d4"
+            ele.style.left = '210px'
+            ele.style.top = evt.target.offsetTop + 8 + 70 - shapeScrollTopHeight + 'px'
+            ele.style.zIndex='100'
+            document.body.appendChild(ele);
+        }
+    })
+    $('.geSidebarContainer-bottom').on('mouseleave', '.geSidebar>a', function (evt) {
+            evt.preventDefault()
+            $('.suspension-showShapename').remove()
+    })
 }
 /**
  * 添加给定的模板控件.
@@ -1511,7 +1559,6 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;strokeColor=#000;', 120, 60, '', '矩形', null, null, '矩形'),
         // 圆形
         this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;strokeColor=#000;aspect=fixed;', 36, 36, '', '圆形', null, null, '圆形'),
-        // this.createVertexTemplateEntry('rounded=0;shape=oval;whiteSpace=wrap;html=1;', 36, 36, '', '圆形', null, null, '圆形'),
         // 横向菜单
         this.addEntry('page menu', function()
         {
@@ -1529,17 +1576,9 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '菜单');
         }),
         // 按钮
-        this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;overflow=fill', 70, 40, '<button class="buttonTag" style="box-sizing:content-box;background:transparent;">BUTTON</button>', '按钮'),
-        // 复选
-        // this.createVertexTemplateEntry('shape=multipleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="checkbox" class="inputTag1" />', '复选'),
-        // this.createVertexTemplateEntry('shape=multipleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/multipleCheck.png', 16, 16, '', '复选'),
-        // 单选
-        // this.createVertexTemplateEntry('shape=singleCheck;html=1;strokeColor=#000;fillColor=none;overflow=fill', 32, 32, '<input type="radio" class="inputTag" />', '单选'),
-        // this.createVertexTemplateEntry('shape=singleCheck;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/singleCheck.png', 16, 16, '', '单选'),
-        // 下拉列表
-        // this.createVertexTemplateEntry('shape=select;html=1;strokeColor=#000;fillColor=none;overflow=fill', 100, 16, '<select disabled class="selectTag"></select><div class="selectTagShade"></div>', '下拉列表'),
-        // 表格，通过html生成
-        /* this.createVertexTemplateEntry('shape=table;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
+        this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;verticalAlign=middle;align=center;', 70, 40, '<div style="display: inline-block;text-align:inherit;text-decoration: inherit;">BUTTON</div>', '按钮'),
+        // 表格，通过html生成   
+       /* this.createVertexTemplateEntry('shape=table;html=1;strokeColor=none;fillColor=none;overflow=fill;', 180, 140,
          	'<p style="width:100%;height:25%;line-height: 100%;text-align: center">表格标题</p>' +
  			'<table border="1" style="width:100%;height:75%;border-collapse:collapse;">' +
  			'<tr><td align="center">Value 1</td><td align="center">Value 2</td><td align="center">Value 3</td></tr>' +
@@ -1788,7 +1827,6 @@ Sidebar.prototype.createThumb = function(cells, width, height, parent, title, sh
  */
 Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, width, height, allowCellsInserted, type, imageurl)
 {
-    // let Basic_ = 'http://10.74.20.26:8009/'
     var elt = document.createElement('a');
     var ui = this.editorUi;
     elt.setAttribute('href', "javascript:void(0);");
@@ -1799,6 +1837,7 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
     elt.style.width = '46px'
     elt.style.height = '46px'
     var shapeName = /shape=(.+?);/.exec(cells[0].style)[1];
+    elt.setAttribute('data-shapeName', shapeName)
     if (!title) {
         // 图元列表
         this.thumbWidth = 29;

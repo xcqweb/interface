@@ -1,7 +1,8 @@
 <template>
-  <div id="app">
-    <!-- <p @click="$i18n.locale === 'en' ? ($i18n.locale='zh') : (($i18n.locale='en'))">切换语言</p> -->
-    <!-- <p>{{$t('lang')}}</p> -->
+  <div
+    id="app"
+    :class="langCss"
+  >
     <keep-alive>
       <router-view
         v-if="$route.meta.keepAlive"
@@ -17,7 +18,7 @@
 export default {
     data() {
         return{
-
+            langCss:''
         }
     },
     beforeCreate() {
@@ -34,7 +35,11 @@ export default {
         }
     },
     mounted() {
-
+        if(this.$i18n.locale == 'zh') {
+            this.langCss = ''
+        }else{
+            this.langCss = this.$i18n.locale
+        }
     },
 };
 </script>

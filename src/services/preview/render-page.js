@@ -1,15 +1,13 @@
 /**
  * 渲染页面
  */
-// 页面宽度和高度
-let pageWidth = 0,pageHeight = 0
 // websocket信息
 let applyData = {}
 let fileSystem //文件服务器host
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
-import {removeEle, destroyWs, insertImage, insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight} from './util'
+import {removeEle, destroyWs, insertImage, insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout} from './util'
 import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -134,22 +132,32 @@ class PreviewPage {
                     hide = item.getAttribute('hide');
                     height = parseFloat(node.childNodes[0].getAttribute('height'))
                     if(shapeName == 'beeline') {
-                        edgeProps = item.getAttribute('edgeProps')
-                        edgeProps = JSON.parse(edgeProps)
-                        if (edgeProps) {
-                            width = Math.abs(edgeProps.tx - edgeProps.sx)
-                            height = Math.abs(edgeProps.ty - edgeProps.sy)
-                            if(height < 30) {//防止箭头预览只看到一半
-                                height = 30
+                        edgeProps = {}
+                        const childNodes = node.getElementsByTagName('mxGeometry')[0].childNodes
+                        for (let childNode of childNodes) {
+                            let asText = childNode.getAttribute('as')
+                            if (asText === 'sourcePoint') {
+                                // 起点
+                                edgeProps.sx = parseFloat(childNode.getAttribute('x')) || 0
+                                edgeProps.sy = parseFloat(childNode.getAttribute('y')) || 0
+                            } else if (asText === 'targetPoint') {
+                                // 终点
+                                edgeProps.tx = parseFloat(childNode.getAttribute('x')) || 0
+                                edgeProps.ty = parseFloat(childNode.getAttribute('y')) || 0
                             }
-                            if (width < 30) { //防止箭头预览只看到一半
-                                width = 30
-                            }
-                            x = Math.min(edgeProps.sx, edgeProps.tx) / 2
-                            y = Math.min(edgeProps.sy, edgeProps.ty) / 2
-                            height = height + y
-                            width = width + x
                         }
+                        width = Math.abs(edgeProps.tx - edgeProps.sx)
+                        height = Math.abs(edgeProps.ty - edgeProps.sy)
+                        if(height < 30) {//防止箭头预览只看到一半
+                            height = 30
+                        }
+                        if (width < 30) { //防止箭头预览只看到一半
+                            width = 30
+                        }
+                        x = Math.min(edgeProps.sx, edgeProps.tx) / 2
+                        y = Math.min(edgeProps.sy, edgeProps.ty) / 2
+                        height = height + y
+                        width = width + x
                     }
                     let obj = {
                         id,
@@ -206,12 +214,7 @@ class PreviewPage {
             }
             return list
         }
-        let cells = getNode();
-        cells.map(cell => {
-            // 计算页面高度
-            pageWidth = (cell.x + cell.width) > pageWidth ? cell.x + cell.width : pageWidth
-            pageHeight = (cell.y + cell.height) > pageHeight ? cell.y + cell.height : pageHeight
-        })
+        let cells = getNode()
         return cells    
     }
     // 清空页面内容
@@ -220,6 +223,8 @@ class PreviewPage {
             destroyWs(applyData, key)
         }
         this.gePreview.innerHTML = ''
+        //隐藏浮窗
+        hideFrameLayout()
         document.getElementById('geDialogs').innerHTML = ''
     }
     subscribeData() {
@@ -245,7 +250,6 @@ class PreviewPage {
         let contentWidth = xmlDoc.getAttribute('pageWidth')
         let contentHeight = xmlDoc.getAttribute('pageHeight')
         // 页面宽度和高度
-        pageWidth = pageHeight = 0
         let cells = this.parseCells(root)
         this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
         if (page.type === 'normal') {
@@ -291,12 +295,13 @@ class PreviewPage {
 
     // 渲染控件节点
     renderCell(cell) {
-        console.log(cell)
         const shapeName = cell.shapeName
         let cellHtml
         if (shapeName.includes('image')) {
             // 图片
-            cellHtml = insertImage(cell,fileSystem)
+            cell.image = cell.image.replace(/getechFileSystem\//, fileSystem)
+            cellHtml = insertImage(cell)
+            $(cellHtml).data("defaultImg", cell.image)
         } else if (shapeName === 'linkTag') {
             // smartBi链接iframe
             cellHtml = document.createElement('iframe')
@@ -384,7 +389,7 @@ class PreviewPage {
         if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress'].includes(shapeName)) {
             cellHtml.style.backgroundColor = 'transparent'
         }else{
-            if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none')) {
+            if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none') && shapeName != 'tableBox') {
                 cellHtml.style.backgroundColor = 'transparent'
             } else {
                 cellHtml.style.backgroundColor = cell.fillColor
@@ -396,9 +401,16 @@ class PreviewPage {
                 borderStyle = 'dashed'
             }
             cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
+        }else{
+            cellHtml.style.pointerEvents = 'none'
         }
-        cellHtml.style.width = cell.width + 'px'
-        cellHtml.style.height = cell.height + 'px'
+        cellHtml.style.width = (cell.width + parseInt(cell.strokeWidth)) + 'px'
+        cellHtml.style.height = (cell.height + parseInt(cell.strokeWidth)) + 'px'
+        if(shapeName === 'tableBox' || shapeName === 'menulist') {
+            if(cell.strokeColor === '#000000' && cell.strokeWidth == 1) {
+                cellHtml.style.border = "none"
+            }
+        }
         cellHtml.className = 'gePalette'
         // 隐藏
         if (cell.hide == 'true') {

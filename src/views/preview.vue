@@ -36,4 +36,7 @@ export default {
 </style>
 
 <style lang="less">
+#formatLayer{
+  pointer-events:none;
+}
 </style>

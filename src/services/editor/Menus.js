@@ -631,39 +631,20 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                     menu.addSeparator();
                     this.addMenuItems(menu, ['copy', 'cut', 'paste', '-', 'toFront', 'toBack', '-', 'group', 'ungroup', '-', 'resetHide', 'delete'], null, evt);
                 } else {
-                    if (shapeName == "menulist") { // 菜单
-                        this.addMenuItems(menu, ['copy', 'cut', 'paste', '-'], null, evt);
-                    } else if (shapeName == "menuCell"){
-
-                    } else {
-                        if (shapeName !== 'tableCell') {
-                            this.addMenuItems(menu, ['copy', 'cut', 'paste', '-'], null, evt);
-                        }
-                    }
-                    let cellArray = ['menuCell', 'tableCell']
-                    if (!cellArray.includes(shapeName)) {
-                        this.addMenuItems(menu, ['toFront', 'toBack', '-','group', 'ungroup', '-'], null, evt);
-                    }
+                    if (shapeName !== "menuCell" && shapeName !== 'tableCell'){ // 菜单或表格单元格
+                        this.addMenuItems(menu, ['copy', 'cut', 'paste', '-', 'toFront', 'toBack', '-', 'group', 'ungroup', '-'], null, evt);
+                    } 
                     menu.addSeparator();
-                    let arr = ['rectangle', 'ellipse', 'button', 'menulist', 'image', 'multipleCheck', 'singleCheck', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag', 'text', 'light', 'progress', 'pipeline1', 'pipeline2', 'pipeline3', 'userimage', 'gaugeChart', 'lineChart']
+                    let arr = ['rectangle', 'ellipse', 'button', 'menulist', 'image', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag', 'text', 'light', 'progress', 'pipeline1', 'pipeline2', 'pipeline3', 'userimage', 'gaugeChart', 'lineChart']
                     if (arr.includes(shapeName)) {
                         this.addMenuItems(menu, ['resetHide', '-', 'delete'], null, evt);
                     }
-                    if(shapeName == 'linkTag') {
-                        // 链接
-                        // 注释掉右键功能
-                        // this.addMenuItem(menu, 'configLink', null, evt).firstChild.innerHTML = '配置...';
-                    } else if (shapeName == 'rectangle') {
-                        // 矩形
-                    }   else if (shapeName == 'image') {
+                    if (shapeName == 'image') {
                         // 编辑图片
                         this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = '<label class="imageRadio" style="margin:1px 0"><input type="file" id="chooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/>选择图片...</label>';
                     } else if (shapeName == 'menuCell') {
                         // 菜单
                         this.addMenuItems(menu, ['insertMenuBefore', 'insertMenuAfter', 'delete'], null, evt);
-                    } else if (this.editorUi.sidebar.primitives.indexOf(shapeName) != -1) {
-                        // 图元
-                        // this.addMenuItems(menu, ['changePrimitive', 'paletteData'], null, evt);
                     } else if (shapeName == 'tableCell') {
                         // 单元格
                         this.addMenuItems(menu, ['addUpRow', 'addLowerRow', 'deleteRow','-', 'addLeftCol', 'addRightCol', 'deleteCol'], null, evt);

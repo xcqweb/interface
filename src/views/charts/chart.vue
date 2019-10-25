@@ -21,31 +21,6 @@
           style="height:300px;width:46%;"
         />
         <div style="width:46%">
-          <div
-            v-if="shapeName=='lineChart'"
-            class="item-title"
-            style="display:flex;justify-content:space-between;"
-          >
-            图例
-            <i-switch
-              v-model="chartLegend"
-              size="small"
-              @on-change="chooseLegend"
-            />
-          </div>
-          <div
-            v-if="shapeName=='lineChart'"
-            class="item-title"
-            style="display:flex;justify-content:space-between;"
-          >
-            样式
-            <div
-              class="setColor"
-              style="width:80%;"
-              :style="{backgroundColor:styleColorBg}"
-              @click="pickStyleColor"
-            />
-          </div>
           <div v-if="shapeName=='gaugeChart'">
             <div class="item-title">
               数值范围
@@ -63,6 +38,7 @@
                   v-number.minus="1"
                   style="border-left:none;border-right:none;width:52%;"
                   @keyup.enter="changeProgress"
+                  @blur="changeProgress"
                 >
               </div>
               <div
@@ -75,11 +51,62 @@
                   v-number.minus="1"
                   style="border-left:none;border-right:none;width:52%;"
                   @keyup.enter="changeProgress"
+                  @blur="changeProgress"
                 > 
               </div>
             </div>
           </div>
           <div v-if="shapeName=='lineChart'">
+            <div
+              class="item-title"
+              style="display:flex;justify-content:space-between;align-items:center;"
+            >
+              图例
+              <i-switch
+                v-model="chartLegend"
+                size="small"
+                @on-change="chooseLegend"
+              />
+              <div
+                v-visible="chartLegend"
+                v-clickOutSide="hideLegendChooseFun"
+                class="item-container fontSet"
+                style="justify-content:space-between;position:relative;"
+              >
+                {{ legendChooseText }}
+                <img
+                  src="../../assets/images/menu/down_ic.png"
+                  @click="showLegendChoose=true"
+                >
+                <ul
+                  v-if="showLegendChoose"
+                  class="font-dialog"
+                  @mouseleave="showLegendChoose=false"
+                  @keyup.enter="showLegendChoose=false"
+                  @blur="showLegendChoose=false"
+                >
+                  <li
+                    v-for="(d,index) in legendChooseList"
+                    :key="index"
+                    @click="changeLegendChoose(d,$event)"
+                  >
+                    {{ d.text }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div
+              class="item-title"
+              style="display:flex;justify-content:space-between;"
+            >
+              风格
+              <div
+                class="setColor"
+                style="width:80%;"
+                :style="{backgroundColor:styleColorBg}"
+                @click="pickStyleColor"
+              />
+            </div>
             <div
               class="item-title"
               style="display:flex;justify-content:space-between;"
@@ -132,6 +159,7 @@
                     v-if="showBorderLine"
                     class="font-dialog"
                     @mouseleave="showBorderLine=false"
+                    @keyup.enter="showBorderLine=false"
                     @blur="showBorderLine=false"
                   >
                     <li
@@ -149,15 +177,18 @@
                   v-clickOutSide="hideBorderLineBold"
                   class="item-container fontSet"
                   style="justify-content:space-between;position:relative;flex:1;margin:0;"
-                  @click="showBorderLineBold=true"
                 >
                   <div>{{ borderLineBoldText }}</div>
-                  <img src="../../assets/images/menu/down_ic.png">
+                  <img 
+                    src="../../assets/images/menu/down_ic.png"
+                    @click="showBorderLineBold=true"
+                  >
                   <ul
                     v-if="showBorderLineBold"
                     class="font-dialog"
                     style="height:100px;overflow:auto;"
                     @mouseleave="showBorderLineBold=false"
+                    @keyup.enter="showBorderLineBold=false"
                     @blur="showBorderLineBold=false"
                   >
                     <li
@@ -187,6 +218,7 @@
             </div>
             <div
               v-if="!isAddMark"
+              style="max-height:220px;overflow-y:scroll;"
             >
               <div
                 v-for="(item,index) in markLineList"
@@ -197,15 +229,13 @@
                 <div
                   style="display:flex;justify-content:space-between;"
                 >
-                  名称-{{ item.markName }}
+                  <div>名称-{{ item.markName }}</div>
+                  数值-{{ item.markValue }}
                   <img
                     src="../../assets/images/rightsidebar/dele_ic.png"
                     @click="delMark(item,index,$event)"
                   >
                 </div>
-                <p style="margin:10px 0;">
-                  数值-{{ item.markValue }}
-                </p>
                 <div style="display:flex;margin-top:10px;"> 
                   <div style="margin-right:5.5%;">
                     线条
@@ -263,6 +293,9 @@ export default{
             editMarkLine:null,
             editMarkLineIndex:0,
             styleColorBg:'#000',
+            showLegendChoose:false,
+            legendChooseText:'底部',
+            legendChooseList:[{text:'底部',type:1},{text:'顶部',type:2},{text:'左侧',type:3},{text:'右侧',type:4}]
         }
     },
     mounted() {
@@ -271,6 +304,8 @@ export default{
         if(this.bindChartProps) {
             if(this.shapeName == 'lineChart') {
                 this.options1 = this.bindChartProps
+                this.chartLegend = this.options1.legend.show
+                this.initLegendChoose()
                 let lineData = this.bindChartProps.series[0].markLine.data
                 if(lineData.length) {
                     lineData.forEach((item)=>{
@@ -317,6 +352,11 @@ export default{
                     yAxis:item.markValue
                 })
             })
+            let markValArr = this.markLineList.map(item=>{
+                return item.markValue
+            })
+            let yAxisMax = Math.max(...markValArr,...this.options1.series[0].data)
+            this.options1.yAxis.max = yAxisMax
         },
         changeProgress() {
             this.options2.series.min = this.progressMin
@@ -339,7 +379,7 @@ export default{
         },
         changeChartBorderLineBold(d,e) {
             this.borderLineBoldText = d
-            this.showBorderLineBold = false;
+            this.showBorderLineBold = false
             e.stopPropagation()
         },
         cancel() {
@@ -387,6 +427,7 @@ export default{
         },
         chooseLegend() {
             this.options1.legend.show = this.chartLegend
+            this.initLegendChoose()
         },
         pickStyleColor() {
             this.myEditorUi.pickColor(this.styleColorBg,color=>{
@@ -402,6 +443,53 @@ export default{
                 this.options1.legend.textStyle = obj
             })
         },
+        changeLegendChoose(d,e) {
+            this.legendChooseText = d.text
+            let tempLegend = {
+                show:true,
+                data: ['图例'],
+                textStyle:{
+            
+                }
+            }
+            tempLegend.mtype = d.type
+            switch(d.type) {
+                case 1:
+                    tempLegend.x = 'center'
+                    tempLegend.y = 'bottom'
+                    tempLegend.orient = 'horizontal'
+                    break
+                case 2:
+                    tempLegend.x = 'center'
+                    tempLegend.y = 'top'
+                    tempLegend.orient = 'horizontal'
+                    tempLegend.padding = [10,0,0,0]
+                    break
+                case 3:
+                    tempLegend.x = 'left'
+                    tempLegend.y = 'center'
+                    tempLegend.orient = 'vertical'
+                    tempLegend.padding = [0,0,0,-30]
+                    this.options1.grid.left = 60
+                    break
+                case 4:
+                    tempLegend.x = 'right'
+                    tempLegend.y = 'center'
+                    tempLegend.orient = 'vertical'
+                    tempLegend.padding = [0,-30,0,0]
+                    break
+            }
+            this.options1.legend = Object.assign({},tempLegend)
+            this.showLegendChoose = false
+            e.stopPropagation()
+        },
+        initLegendChoose() {
+            let mtype = this.options1.legend.mtype || 1
+            this.legendChooseText = this.legendChooseList[mtype - 1].text
+        },
+        hideLegendChooseFun() {
+            this.showLegendChoose = false
+        }
     },      
 }
 </script>

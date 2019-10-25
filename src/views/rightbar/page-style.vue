@@ -58,6 +58,7 @@
           v-model="solidHeight"
           v-number="0"
           @keyup.enter="changeScaleInput"
+          @blur="changeScaleInput"
         >
       </div>
     </div>
@@ -146,7 +147,6 @@ export default {
             let pageStyle = editor.pages[editor.currentPage].style
             if(pageStyle) {
                 let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
-                console
                 if(bgUrl && bgUrl !== 'none') {
                     this.changeBg(bgUrl)
                 }else{

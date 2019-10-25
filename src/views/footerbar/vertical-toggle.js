@@ -1,7 +1,6 @@
 const elTransition = '0.3s height linear, 0.3s padding-top linear, 0.3s padding-bottom linear'
 const Transition = {
     'before-enter'(el) {
-    // console.log(el)
         el.style.transition = elTransition
         if (!el.dataset) {el.dataset = {}}
 
@@ -31,14 +30,12 @@ const Transition = {
     },
 
     'after-enter'(el) {
-    // console.log(el)
         el.style.transition = ''
         el.style.height = ''
         el.style.overflow = el.dataset.oldOverflow
     },
 
     'before-leave'(el) {
-    // console.log(el)
         if (!el.dataset) {el.dataset = {}}
         el.dataset.oldPaddingTop = el.style.paddingTop
         el.dataset.oldPaddingBottom = el.style.paddingBottom
