@@ -520,9 +520,6 @@ export default {
         })
         
     },
-    // beforeDestroy() {
-    //     VueEvent.$off('clickChangeParamList')
-    // },
     methods: {
         // 模型列表
         getModelInit(deviceid) {
@@ -567,7 +564,7 @@ export default {
                     slot: 'flour'
                 }
                 let obj0 = {
-                    title: '第一列',
+                    title: this.$t("dataSource.firstColumn"),
                     width:125,
                     slot: 'one'
                 }
@@ -589,7 +586,7 @@ export default {
                     objData.formula = JSON.stringify(this.alldata)
                     this.requestUtil.put(this.urls.addModelList.url,objData).then((res) => {
                         if (res.sourceId) {
-                            Message.success('保存模型成功')
+                            Message.success(this.$t("dataSource.saveModelSuccess"))
                             this.$store.commit('modelEditing', true)
                             this.ModelNameArr.splice(this.modelNumber, 1, res)
                         }
@@ -597,7 +594,7 @@ export default {
                             this.columns.pop()
                         }
                         let obj0 = {
-                            title: '第一列',
+                            title: this.$t("dataSource.firstColumn"),
                             width:207,
                             slot: 'one'
                         }
@@ -621,7 +618,7 @@ export default {
                 this.columns.pop()
             }
             let obj0 = {
-                title: '第一列',
+                title: this.$t("dataSource.firstColumn"),
                 width:207,
                 slot: 'one'
             }
@@ -629,7 +626,7 @@ export default {
         },
         addConditionHandle() {
             if (this.modelEditing) {
-                Message.warning('非编辑状态，不能添加条件')
+                Message.warning(this.$t('dataSource.notEditCanNotAddCondition'))
                 return false
             }
             this.alldata.data.push([
@@ -647,12 +644,12 @@ export default {
         },
         addModelHandle() {
             let obj = {
-                title: '操作',
+                title: this.$t('operation'),
                 width:80,
                 slot: 'flour'
             }
             let obj0 = {
-                title: '第一列',
+                title: this.$t('dataSource.firstColumn'),
                 width:125,
                 slot: 'one'
             }
@@ -824,7 +821,6 @@ export default {
                             let index = this.currentMouseIndex
                             let _len = ModelNameArrCopy.length - 1
                             this.ModelNameArr.splice(this.currentMouseIndex, 1)
-                            // this.currentMouseIndex = null
                             if (this.ModelNameArr.length) {
                                 if (this.currentMouseIndex === _len) {
                                     this.clickModelHandle('', this.ModelNameArr[_len - 1].sourceId, this.ModelNameArr[_len - 1].modelName,this.ModelNameArr[_len - 1].formula,this.ModelNameArr[_len - 1].descript, _len - 1)
@@ -835,7 +831,6 @@ export default {
                         } else {
                             this.modelNumber = this.modelNumber - 1
                             this.ModelNameArr.splice(this.currentMouseIndex, 1)
-                            // this.currentMouseIndex = null
                         }
                         Message.success(this.$t('deleteSuccessfully'))
                     }).catch(() => {

@@ -9,6 +9,7 @@ export default {
     addModel: '添加模型',
     addModelSuccessfully: '添加模型成功',
     saveModel: '保存模型',
+    saveModelSuccess: '保存模型成功',
     editModel: '编辑模型',
     remark: '描述',
     remarkContent: '描述内容',
@@ -22,4 +23,5 @@ export default {
     nameCouldNotExceed: '名称不能超过20个字符',
     firstColumnCouldNotEmpty: '第一列不能为空',
     firstColumn: '第一列',
+    notEditCanNotAddCondition: '非编辑状态，不能添加条件',
 };
