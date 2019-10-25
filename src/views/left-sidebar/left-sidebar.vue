@@ -176,11 +176,11 @@ export default {
             let nameArr = []
             let namebefore = ''
             if (+typePage === 0) {
-                namebefore = `页面`
+                namebefore = this.$t('page')
                 nameArr = [...pagesRank.normal]
             } 
             if (+typePage === 1) {
-                namebefore = `弹窗`
+                namebefore = this.$t('popup')
                 nameArr = [...pagesRank.dialog]
             }
             let nameMax = nameArr.length

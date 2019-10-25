@@ -235,15 +235,15 @@ export default {
             ifShowDataFlag: true, // 判断是否显示数据显示tab
             tabParamTitles:[
                 {
-                    title: '参数选择',
+                    title: this.$('footBar.paramChoose'),
                     slot: 'paramChoose',
                 },
                 {
-                    title: '参数显示',
+                    title: this.$('footBar.paramShow'),
                     slot: 'paramShow'
                 },
                 {
-                    title: '操作',
+                    title: this.$t('operation'),
                     width: '160',
                     slot: 'actions',
                     key: 'actions',
@@ -480,7 +480,7 @@ export default {
         deleteFooterHandle(data, index) {
             let startBindData = this.getCellModelInfo('bindData')
             let newDataSource = JSON.parse(JSON.stringify(this.dataSourceList))
-            sureDialog(this.myEditorUi,`确定要删除数据源-${data.name}吗`,()=>{
+            sureDialog(this.myEditorUi,`${this.$t('footBar.sureDelDataSources')}-${data.name}?`,()=>{
                 this.dataSourceList.splice(index, 1)
                 let objArr = startBindData.dataSource.deviceNameChild
                 let deleteEle = newDataSource[index].deviceName
@@ -522,7 +522,7 @@ export default {
                     return
                 }
             }
-            sureDialog(this.myEditorUi,`确定要删除此当前参数吗`, () => {
+            sureDialog(this.myEditorUi,this.$t('footBar.sureDelCurrentParam'), () => {
                 (index || index === 0) && this.paramOutterList.splice(index , 1)
                 let tempObj = this.getCellModelInfo('bindData')
                 let list = [ ]
@@ -582,7 +582,7 @@ export default {
         },
         paramDefaultChange(val,id,index) {
             if(!this.paramOutterList[index].model && val) {
-                Message.warning(`请先选中一个参数`)
+                Message.warning(this.$t('footBar.pleaseChooseOneParam'))
                 return
             }
             this.paramOutterList.forEach(item=>{
@@ -618,7 +618,7 @@ export default {
             for(let i = 0; i <= oldDeviceNameChild.length - 1; i++) {
                 for(let j = 0; j <= newDeviceNameChild.length - 1; j++) {
                     if (oldDeviceNameChild[i].id === newDeviceNameChild[j].id) {
-                        Message.warning(`不允许重复绑定`)
+                        Message.warning(this.$t('notAllowMultiplyBind'))
                         return false
                     }
                 }

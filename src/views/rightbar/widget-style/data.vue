@@ -125,7 +125,7 @@ import {Button,Page,Checkbox,Message,Select,Option, CheckboxGroup} from 'iview'
 const singleDeviceName = ['image','userimage','tableBox','rectangle','ellipse','light','progress','gaugeChart']
 const dataSourceID = {
     id: '123',
-    name:`${this.$t('iotText')}`
+    name:'IoT平台'
 }
 export default{
     components: {
@@ -140,9 +140,9 @@ export default{
     },
     data() {
         return {
-            dataName: `${this.$t('dataSource')}`,
-            deviceType: `${this.$t('deviceType')}`,
-            deviceName: `${this.$t('deviceName')}`,
+            dataName: this.$t('dataSources'),
+            deviceType: this.$t('deviceType'),
+            deviceName: this.$t('deviceName'),
             placeText: `${this.$t('search')}${this.$t('deviceName')}`,
             derection: 'right',
             nodata: `${this.$t('noData')}`,

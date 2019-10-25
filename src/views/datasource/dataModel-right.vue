@@ -285,7 +285,7 @@
                           >
                             <Input
                               v-model="row.fixedValue"
-                              placeholder="请输入"
+                              :placeholder="$t('pleaseInput')"
                               :disabled="modelEditing"
                               type="number" 
                               @on-blur="treeFixedvalueHandle(row.fixedValue, index, key)"
@@ -422,12 +422,12 @@ export default {
                     slot: 'one'
                 },
                 {
-                    title: '逻辑',
+                    title: this.$t('logic'),
                     width: 90,
                     slot: 'two'
                 },
                 {
-                    title: '区间值',
+                    title:  this.$t('rangeValue'),
                     width: 130,
                     slot: 'three'
                 },
@@ -538,7 +538,7 @@ export default {
                     }, 220)
                 }
             }).catch(() => {
-                Message.error('系统繁忙，请稍后再试')
+                Message.error(this.$t('systemBusy'))
                 return false
             })
         },
@@ -603,7 +603,7 @@ export default {
                         }
                         this.columns.splice(0, 1, obj0)
                     }).catch(() => {
-                        Message.error('系统繁忙，请稍后再试！')
+                        Message.error(this.$t('systemBusy'))
                         return false
                     })
                     
@@ -687,7 +687,7 @@ export default {
                 this.snapshot = JSON.parse(JSON.stringify(this.alldata))
                 return false
             }).catch(() => {
-                Message.error('系统繁忙，请稍后再试')
+                Message.error(this.$t('systemBusy'))
                 return false
             })
         },
@@ -840,7 +840,7 @@ export default {
                         Message.success(this.$t('deleteSuccessfully'))
                     }).catch(() => {
                         this.ifShowSuspension = false
-                        Message.error('系统繁忙，请稍后再试')
+                        Message.error(this.$t('systemBusy'))
                         return false
                     })
                 })
@@ -890,7 +890,7 @@ export default {
                         }
                     }
                 }).catch(() => {
-                    Message.success(`系统繁忙， 请稍后再试`)
+                    Message.error(this.$t('systemBusy'))
                     ele.innerHTML = `${name}`
                 })
             }
@@ -957,7 +957,6 @@ export default {
             }
             for (let i = 0; i <= treeData.length - 1 ; i++) {
                 for(let j = 0; j <= treeData[i].length - 1 ; j++) {
-                    // treeData[i][j].conditionLogic = conditionSelect
                     if (!treeData[i][j].paramName) {
                         Message.warning(`条件${i + 1}第${j + 1}行参数不能为空`)
                         result = false

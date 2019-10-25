@@ -16,14 +16,14 @@
         >
           <!--组件库-->
           <TabPane 
-            label="组件库"
+            :label="$t('widgetsLib')"
           >
             <div class="assembly-wrapper commom-wrapper">
               <div class="assembly-left materialtabs-left">
                 <div class="assembly-seach-wrapper">
                   <input 
                     type="text" 
-                    placeholder="搜索组件名称" 
+                    :placeholder="$t('materialRoom.searchWidgetName')" 
                     class="assembly-seach-icon"
                   >
                   <div
@@ -31,7 +31,7 @@
                     class="addassembly"
                     @click="addassemblyFn"
                   >
-                    新增组件库
+                    {{ $t('addWidgetLibs') }}
                   </div>
                   <template
                     v-if="leftshowIf"
@@ -167,7 +167,7 @@
             </div>
           </TabPane>
           <TabPane
-            label="模版库" 
+            :label="$t('materialRoom.templateLibs')" 
           >
             <div class="material-wrapper commom-wrapper">
               <div class="material-left materialtabs-left">
@@ -306,7 +306,7 @@ export default {
     },
     data() {
         return {
-            materialAlertName: '素材库',
+            materialAlertName: this.$t('materialRoom'),
             showmarerial: true,
             madeltext: ['取消', '上传组件'],
             showOktext: true,
