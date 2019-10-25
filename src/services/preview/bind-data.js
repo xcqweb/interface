@@ -117,7 +117,7 @@ function setterRealData(res, fileSystem) {
                         }
                         options.series[0].data[0].value = val
                     }
-                    //echartsInstance.setOption(options)
+                    echartsInstance.setOption(options)
                 }
             }else {
                 if(val || val === 0) {
@@ -149,19 +149,12 @@ function setterRealData(res, fileSystem) {
                         formatLayerElText()
                         formatLayerEl.show()
                     }
-                    let formatLayerMove = (e)=> {
-                        let {clientX,clientY} = e
-                        formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
-                    }
                     $(els[i]).mouseenter(formatLayerShow)
-                    $(els[i]).mousemove(throttleFun(formatLayerMove,16))
+                    $(els[i]).mousemove(throttleFun(formatLayerShow,16))
                     $(els[i]).mouseleave(() => {
                         formatLayerEl.html("")
                         formatLayerEl.hide()
                     })
-                    if (formatLayerEl.is(':visible')) {
-                        formatLayerElText()
-                    }
                 }
             }
         }
