@@ -331,6 +331,7 @@ function dealCharts(cell) {
             options = data2
         }
     }
+    options = JSON.parse(JSON.stringify(options))
     document.addEventListener("initEcharts",()=>{
         let myEchart = echarts.init(con)
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params) {
@@ -373,27 +374,20 @@ function dealCharts(cell) {
                             startTs: nowTs - checkItem.duration * 1000,
                             endTs: nowTs,
                         }
-                        let refreshToken = getCookie('refreshToken')
-                        geAjax('/api/auth/refreshToken', 'POST', {
-                            refreshToken
-                        }).then(res => {
-                            setCookie('token', res.token);
-                            setCookie('refreshToken', res.refreshToken)
-                            requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
-                                for (let key in res.resMap) {
-                                    if(index === 0) {
-                                        options.xAxis.data.push(timeFormate(key))
-                                    }
-                                    tempSeries[index].data.push(res.resMap[key])
-                                }
+                        requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
+                            for (let key in res.resMap) {
                                 if(index === 0) {
-                                    options.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
+                                    options.xAxis.data.push(timeFormate(key))
                                 }
-                                if (index == devices.length - 1) {
-                                    options.series = tempSeries
-                                    myEchart.setOption(options)
-                                }
-                            })
+                                tempSeries[index].data.push(res.resMap[key])
+                            }
+                            if(index === 0) {
+                                options.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
+                            }
+                            if (index == devices.length - 1) {
+                                options.series = tempSeries
+                                myEchart.setOption(options)
+                            }
                         })
                     })
                 })
