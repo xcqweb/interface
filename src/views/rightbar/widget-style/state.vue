@@ -163,9 +163,6 @@ export default{
                 }, 
                 'check':false
             }]
-            if(this.shapeName == 'light') { //指示灯 默认色
-                statesTemp.style.background = "#7D7D7D"
-            }
             let states = [ ]
             let modelInfo = graph.getModel().getValue(cell)
             if (!mxUtils.isNode(modelInfo)) {
