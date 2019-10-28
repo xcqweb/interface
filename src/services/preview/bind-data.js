@@ -138,10 +138,10 @@ function setterRealData(res, fileSystem) {
                     let formatLayerEl = $("#formatLayer")
                     let formatLayerElText = () => {
                         formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + 
-                        `<li>${item.timestamp}</li>` +
-                        paramShow.map((d) => {
-                            return `<li>${d}=${item[d]}</li>`
-                        }).join('') + "</ul>")
+                            `<li>${item.timestamp}</li>` +
+                            paramShow.map((d) => {
+                                return `<li>${d}=${item[d]}</li>`
+                            }).join('') + "</ul>")
                     }
                     let formatLayerShow = (e)=>{
                         let {clientX,clientY} = e
@@ -149,12 +149,20 @@ function setterRealData(res, fileSystem) {
                         formatLayerElText()
                         formatLayerEl.show()
                     }
-                    $(els[i]).mouseenter(formatLayerShow)
-                    $(els[i]).mousemove(throttleFun(formatLayerShow,16))
+                    $(els[i]).mouseenter(e=>{
+                        formatLayerShow(e)
+                        els[i].frameFlag = true
+                        console.log(els[i].frameFlag)
+                    })
+                    $(els[i]).mousemove(throttleFun(formatLayerShow,20))
                     $(els[i]).mouseleave(() => {
+                        els[i].frameFlag = false
                         formatLayerEl.html("")
                         formatLayerEl.hide()
                     })
+                    if (els[i].frameFlag) { //当前控件显示时候，刷新对应浮窗数据
+                        formatLayerElText()
+                    }
                 }
             }
         }
