@@ -95,7 +95,7 @@ export default {
                     return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, `${this.$t('table')}`,true,true);
                 }),
                 // 图片
-                that.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', that.defaultImageWidth, that.defaultImageHeight, '', `${this.$t('picture')}`,true,true),
+                that.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', that.defaultImageWidth, that.defaultImageHeight, '', `${this.$t('image')}`,true,true),
             ]
             for (let i = 0; i < shortCutWidgets.length; i++) {
                 ele.appendChild(shortCutWidgets[i](ele))

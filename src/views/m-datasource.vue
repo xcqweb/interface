@@ -12,7 +12,7 @@
           @click.stop.prevent="importDataHander"
         >
           <span class="import-datasour-icon" />
-          <span class="import-data-text">{{ importdataSource }}</span>
+          <span class="import-data-text">{{ $t(importdataSource) }}</span>
         </span>
       </span>
     </div>
@@ -24,7 +24,7 @@
           @on-click="tabsSwitchData"
         >
           <TabPane
-            :label="dataSource"
+            :label="$t(dataSource)"
             :disabled="!modelEditing"
           >
             <ul
@@ -36,7 +36,7 @@
                 :key="index"
                 class="dataSource currentList"
               >
-                <span class="dataSources-left">{{ item.name }}</span>
+                <span class="dataSources-left">{{ $t(item.name) }}</span>
                 <!-- <span 
                     class="delete-icon"
                     @click.stop.prevent="deleteDataSource" 
@@ -48,12 +48,12 @@
               class="no-data-wrap"
             >
               <NoData
-                :text="nodata"
+                :text="$t(nodata)"
               />
             </div>
           </TabPane>
           <TabPane
-            :label="datamodel"
+            :label="$t(datamodel)"
           >
             <ul
               v-if="dataSourceList.length && deviceTypeArr.length"
@@ -64,7 +64,7 @@
                 :key="index"
                 class="dataSource currentList"
               >
-                <span class="dataSources-left">{{ item.name }}</span>
+                <span class="dataSources-left">{{ $t(item.name) }}</span>
               </li>
             </ul>
             <div 
@@ -72,7 +72,7 @@
               class="no-data-wrap"
             >
               <NoData
-                :text="nodata"
+                :text="$t(nodata)"
               />
             </div>
           </TabPane>
@@ -127,17 +127,17 @@ export default{
     data() {
         return {
             tab:1,
-            dataSource:'数据源',
-            datamodel: '数据模型',
-            importdataSource:'导入数据源',
+            dataSource: 'dataSources',
+            datamodel: 'dataModel',
+            importdataSource: 'importDataSource',
             numberlistIndex: 0,
             deviceTypeArr: [],
-            nodata:'暂无数据',
+            nodata: 'noData',
             dataType: 1, // dataType 数据源 2: 数据模型
             ifShowImportData: false,
             dataSourceList: [
                 {
-                    name: 'IOT平台',
+                    name: 'iotPlatform',
                     id: '1233'
                 }
             ],

@@ -70,7 +70,7 @@ f<template>
                 :class="{'selected':typeTab==4}"
                 @click="changeTab(4)"
               >
-                {{ $t("picture") }}
+                {{ $t("image") }}
               </div>
               <div
                 v-if="!picList.includes(shapeName) || shapeName=='light'"

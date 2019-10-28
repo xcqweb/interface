@@ -127,7 +127,7 @@
                 :value="checkAllArr[1]"
                 @click.prevent.native="handleCheckAll(1)"
               >
-                {{ selectAll }}
+                {{ $t(selectAll) }}
               </Checkbox>
             </div>
             <div class="data-botton-right">

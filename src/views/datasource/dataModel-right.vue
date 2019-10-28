@@ -953,29 +953,29 @@ export default {
             for (let i = 0; i <= treeData.length - 1 ; i++) {
                 for(let j = 0; j <= treeData[i].length - 1 ; j++) {
                     if (!treeData[i][j].paramName) {
-                        Message.warning(`条件${i + 1}第${j + 1}行参数不能为空`)
+                        Message.warning(this.$t('dataSource.ruleCouldNotEmpty', {index: i + 1}))
                         result = false
                         return 
                     }
                     if (!treeData[i][j].logical) {
-                        Message.warning(`条件${i + 1}第${j + 1}行条件不能为空`)
+                        Message.warning(this.$t('dataSource.ruleCouldNotEmpty', {index: i + 1}))
                         result = false
                         return 
                     }
                     if (logicalTypeArr.includes(treeData[i][j].logical)) {
                         if (!treeData[i][j].minValue) { // 
-                            Message.warning(`条件${i + 1}第${j + 1}行区间最小值不能为空`)
+                            Message.warning(this.$t('dataSource.ruleCouldNotEmpty', {index: i + 1}))
                             result = false
                             return 
                         }
                         if (!treeData[i][j].maxValue) {
-                            Message.warning(`条件${i + 1}第${j + 1}行区间最大值不能为空`)
+                            Message.warning(this.$t('dataSource.ruleCouldNotEmpty', {index: i + 1}))
                             result = false
                             return 
                         }
                     } else {
                         if (!treeData[i][j].fixedValue) { // 
-                            Message.warning(`条件${i + 1}第${j + 1}行值不能为空`)
+                            Message.warning(this.$t('dataSource.ruleCouldNotEmpty', {index: i + 1}))
                             result = false
                             return 
                         }

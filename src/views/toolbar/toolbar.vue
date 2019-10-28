@@ -130,7 +130,7 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="geButton"
-        :title="$t('materialRoom')"
+        :title="$t('materialLibrary')"
         @click.stop.prevent="materialLab"
       >
         <div class="geSprite geSprite-material" />

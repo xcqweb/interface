@@ -24,4 +24,5 @@ export default {
     firstColumnCouldNotEmpty: '第一列不能为空',
     firstColumn: '第一列',
     notEditCanNotAddCondition: '非编辑状态，不能添加条件',
+    ruleCouldNotEmpty: '条件{index}所有值不能为空',
 };

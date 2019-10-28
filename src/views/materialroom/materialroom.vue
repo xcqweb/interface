@@ -4,7 +4,7 @@
       v-model="showmarerial"
       width="720px"
       class="materialroom-model"
-      :title="materialAlertName"
+      :title="$t(materialAlertName)"
       :mask-closable="false"
       @on-cancel="cancel"
     >
@@ -16,14 +16,14 @@
         >
           <!--组件库-->
           <TabPane 
-            :label="$t('widgetsLib')"
+            :label="$t('shapeLibrary')"
           >
             <div class="assembly-wrapper commom-wrapper">
               <div class="assembly-left materialtabs-left">
                 <div class="assembly-seach-wrapper">
                   <input 
                     type="text" 
-                    :placeholder="$t('materialRoom.searchWidgetName')" 
+                    :placeholder="$t('materialRoom.searchShapeName')" 
                     class="assembly-seach-icon"
                   >
                   <div
@@ -31,7 +31,7 @@
                     class="addassembly"
                     @click="addassemblyFn"
                   >
-                    {{ $t('addWidgetLibs') }}
+                    {{ $t('addShapes') }}
                   </div>
                   <template
                     v-if="leftshowIf"
@@ -47,7 +47,7 @@
                           :class="index === isactive ? 'left-side-listactive' : ''"
                           @click="selectAssemblyList($event,index, item.materialLibraryId)"
                         >
-                          <span class="left-assembly-left">{{ item.name }}</span>
+                          <span class="left-assembly-left">{{ $t(item.name) }}</span>
                           <span 
                             v-if="index >= 3" 
                             class="right-spots" 
@@ -84,7 +84,7 @@
                           <span
                             class="left-assembly-left"
                           >
-                            {{ item.name }}
+                            {{ $t(item.name) }}
                           </span>
                           <span class="right-spots" />
                         </span>
@@ -103,7 +103,7 @@
                           <label class="right-spots-assemly" />
                         </div>
                         <span>
-                          {{ item.name }}
+                          {{ $t(item.name) }}
                         </span>
                       </li>
                     </template>
@@ -160,7 +160,7 @@
                   class="right-nodata"
                 >
                   <span>
-                    {{ nodata }}
+                    {{ $t(nodata) }}
                   </span>
                 </div>
               </div>
@@ -181,7 +181,7 @@
                     :class="index === isactive2 ? 'left-side-listactive' : ''"
                     @click="selectMaterialList(index)"
                   > 
-                    {{ item }}
+                    {{ $t(item) }}
                   </li>
                 </ul>
               </div>
@@ -221,7 +221,7 @@
                     class="right-nodata"
                   >
                     <span>
-                      {{ nodata }}
+                      {{ $t(nodata) }}
                     </span>
                   </div>
                 </template>
@@ -260,7 +260,7 @@
                     class="right-nodata"
                   >
                     <span>
-                      {{ nodata }}
+                      {{ $t(nodata) }}
                     </span>
                   </div>
                 </template>
@@ -284,7 +284,7 @@
               :on-success="uploadSucc"
               :data="uploadData"
             >
-              <Button type="primary">{{ madeltext[1] }}</Button>
+              <Button type="primary">{{ $t(madeltext[1]) }}</Button>
             </Upload>
           </span>
         </template>
@@ -306,46 +306,46 @@ export default {
     },
     data() {
         return {
-            materialAlertName: this.$t('materialRoom'),
+            materialAlertName: 'materialLibrary',
             showmarerial: true,
-            madeltext: ['取消', '上传组件'],
+            madeltext: ['cancel', 'uploadShape'],
             showOktext: true,
             assemblyArrayName: [
                 {
-                    name: '基本组件',
+                    name: 'generalShape',
                     materialLibraryId: '1'
                 },
                 {
-                    name: '图表组件',
+                    name: 'chartShape',
                     materialLibraryId: '2'
                 },
                 {
-                    name: 'layout组件',
+                    name: 'layoutShape',
                     materialLibraryId: 'e76e6a1b18e493472bc869d835811711'
                 }
             ],
-            materialArrayName: ['页面模版', '弹窗模版'],
+            materialArrayName: ['pageTemplate', 'popupTemplate'],
             uploadData:{},
             DIR_: `../../../static/stencils/basic/`,
             baseAssembly: [
-                {image:'text.svg', name :'文字'},
-                {image:'rectangle.svg',name :'矩形'},
-                {image:'ellipse.svg',name : '椭圆'},
-                {image:'line.svg', name :'直线'},
-                {image:'button.png', name :'按钮'},
-                {image:'menulist.png',name :'菜单'},
-                {image:'tableBox.svg', name :'表格'},
-                {image:'image.svg', name :'图片'},
+                {image:'text.svg', name :'text'},
+                {image:'rectangle.svg',name :'rectangle'},
+                {image:'ellipse.svg',name : 'ellipse'},
+                {image:'line.svg', name :'beeline'},
+                {image:'button.png', name :'button'},
+                {image:'menulist.png',name :'menu'},
+                {image:'tableBox.svg', name :'table'},
+                {image:'image.svg', name :'image'},
                 {image:'linkTag.svg',name : 'Link'},
-                {image:'light.svg', name :'指示灯'},
-                {image:'progress.svg', name :'进度条'},
-                {image:'pipeline1.svg', name :'管道1'},
-                {image:'pipeline2.svg',name :'管道2'},
-                {image:'pipeline3.svg',name :'管道3'}
+                {image:'light.svg', name :'pilotLamp'},
+                {image:'progress.svg', name :'progressBar'},
+                {image:'pipeline1.svg', name :'pipeline1'},
+                {image:'pipeline2.svg',name :'pipeline2'},
+                {image:'pipeline3.svg',name :'pipeline3'}
             ],
             tablesAssembly: [
-                {image:'lineChart.svg',name :'趋势图'},
-                {image:'gaugeChart.svg',name :'仪表盘'}
+                {image:'lineChart.svg',name :'trend'},
+                {image:'gaugeChart.svg',name :'dashboard'}
             ],
             arrListTables: [],
             emptyArray: [],
@@ -355,12 +355,12 @@ export default {
             tabNumeber: 0,
             renderIndex: 0,
             modelleftmenus: {
-                'rename': '重命名',
-                'delete': '删除'
+                'rename': 'rename',
+                'delete': 'delete'
             },
             modelrightmenus: {
-                'rename': '重命名',
-                'delete': '删除'
+                'rename': 'rename',
+                'delete': 'delete'
             },
             POSITION_LEFT: 'left',
             POSITION_RIGHT: 'right',
@@ -368,7 +368,7 @@ export default {
             allMaterial: [],
             pageMaterial: [],
             alertMaterial: [],
-            nodata: '暂无数据',
+            nodata: 'noData',
             leftshowIf: true, // 搜索素材 展示左侧素材库列表
             ifselectFrom: false, // 是否来自搜索
             userMaterialAll: [],
@@ -397,7 +397,7 @@ export default {
                     this.assemblyArrayName.push(obj)
                 })
             }).catch(() => {
-                Message.error('系统繁忙，请稍后再试试')
+                Message.error(this.$t('systemBusy'))
                 return false
             })
             let oInp = document.querySelector('.assembly-seach-icon')
@@ -432,7 +432,7 @@ export default {
                             this.emptyArray.push(obj)
                         })
                     }).catch(() => {
-                        Message.error('系统繁忙，请稍后再试试')
+                        Message.error(this.$t('systemBusy'))
                         return false
                     })
                 }
@@ -486,7 +486,7 @@ export default {
                     }
                 })
             }).catch(() => {
-                Message.error('系统繁忙，请稍后再试试')
+                Message.error(this.$t('systemBusy'))
                 return false
             })
         },
@@ -524,7 +524,7 @@ export default {
                     this.userMaterialAll.push(obj)
                 })
             }).catch(() => {
-                Message.error('系统繁忙，请稍后再试试')
+                Message.error(this.$t('systemBusy'))
                 return false
             })
             return function() {
@@ -567,7 +567,7 @@ export default {
             }
             this.emptyArray.push(addpicObj)
             this.arrListTables = this.emptyArray
-            Message.info('上传成功')
+            Message.info(this.$t('uploadSuccessfully'))
         },
         uploadErr(res,file,fileList) {
             if(res.status == 418) {
@@ -585,17 +585,17 @@ export default {
                 return
             }
             setTimeout ( () => {
-                Message.info('上传失败')
+                Message.info(this.$t('uploadFailed'))
             }, 500);
         },
         handleFormatError() {
             setTimeout ( () => {
-                Message.warning('图片格式不符合要求,只允许上传后缀名为"jpg", "svg", "png", "gif"的图片')
+                Message.warning(this.$t('materialRoom.imageFormatRequirement'))
             }, 1000);
         },
         handleMaxSize() {
             setTimeout ( () => {
-                Message.warning('图片大小不符合要求,每个文件大小不超过 2M(2048kb)')
+                Message.warning(this.$t('materialRoom.imageSizeRequirement'))
             }, 1000);
         },
         mounseHandle() {
@@ -623,7 +623,7 @@ export default {
             menulist.id = 'materialModelMenu';
             for (var key in this.modelleftmenus) {
                 var menu = document.createElement('li')
-                menu.innerText = this.modelleftmenus[key]
+                menu.innerText = this.$t(this.modelleftmenus[key])
                 menu.className = key
                 menu.setAttribute('data-type', key)
                 menulist.appendChild(menu)
@@ -695,10 +695,10 @@ export default {
                 document.body.removeEventListener('click', saveFn)
                 if (!name) {
                     ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
-                    Message.warning('页面名称不能为空')
+                    Message.warning(this.$t('materialRoom.pageNameCouldNotEmpty'))
                 } else if (name.length > 20) {
                     ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
-                    Message.warning('页面名称不能超过20个字符');
+                    Message.warning(this.$t('materialRoom.pageNameCouldNotExceed'));
                 } else {
                     if (name !== oldVal) {
                         if (this.tabNumeber === 0) {
@@ -713,23 +713,23 @@ export default {
                             if (type === 'left') {
                                 this.requestUtil.put(this.urls.materialList.url,data1).then((res) => {
                                     if (res.libraryName) {
-                                        Message.info('修改成功')
+                                        Message.info(this.$t('modifySuccessfully'))
                                         ele.innerHTML = `<span class="left-assembly-left">${name}</span><span class="right-spots"></span>`
                                     }
                                 }).catch(() => {
                                     ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
-                                    Message.error('修改失败')
+                                    Message.error(this.$t('modifyFailed'))
                                     return false
                                 })
                             } else if (type === 'right') {
                                 this.requestUtil.put(this.urls.materialRightList.url,data2).then((res) => {
                                     if (res.descript) {
-                                        Message.info('修改成功')
+                                        Message.info(this.$t('modifySuccessfully'))
                                         ele.innerHTML = `<span class="left-assembly-left">${name}</span><span class="right-spots"></span>`
                                     }
                                 }).catch(() => {
                                     ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
-                                    Message.error('修改失败')
+                                    Message.info(this.$t('modifyFailed'))
                                     return false
                                 })
                                 
@@ -741,12 +741,12 @@ export default {
                             }
                             this.requestUtil.put(this.urls.addTemplate.url,data).then((res) => {
                                 if (res.name) {
-                                    Message.info('修改成功')
+                                    Message.info(this.$t('modifySuccessfully'))
                                     ele.innerHTML = `<span class="left-assembly-left">${name}</span><span class="right-spots"></span>`
                                 }
                             }).catch(() => {
                                 ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
-                                Message.error('修改失败')
+                                Message.info(this.$t('modifyFailed'))
                                 return false
                             })
                         }
@@ -778,45 +778,46 @@ export default {
                 if (type === this.POSITION_LEFT) {
                     this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
                         if (res.code === '0') {
-                            sureDialog(this.myEditorUi, `确定要删除组件库-${ele.innerText}吗`, () => {
+                            sureDialog(this.myEditorUi, this.$t('materialRoom.confirmToDeleteShapes', {name: ele.innerText}), () => {
                                 this.assemblyArrayName.splice(index ,1)
                                 let lastLen = this.assemblyArrayName.length - 1
                                 let materialLibraryid = this.assemblyArrayName[lastLen].materialLibraryId
                                 this.selectAssemblyList('',lastLen,materialLibraryid)
-                                Message.warning('删除成功')
+                                Message.warning(this.$t('deleteSuccessfully'))
                             })
                         }
                     }).catch(() => {
-                        Message.warning('删除失败')
+                        Message.warning(this.$t('modifyFailed'))
                     })
                 } else if (type === this.POSITION_RIGHT) {
                     this.requestUtil.delete(this.urls.materialRightList.url + `/${materialId}`,).then((res) => {
                         if (this.arrListTables[index].materialId === materialId && res.code === '0') {
-                            sureDialog(this.myEditorUi, `确定要删除组件-${ele.innerText}吗`, () => {
+                            sureDialog(this.myEditorUi, this.$t('materialRoom.confirmToDeleteShape', {name: ele.innerText}), () => {
                                 this.arrListTables.splice(index,1)
-                                Message.warning('删除成功')
+                                Message.warning(this.$t('deleteSuccessfully'))
                             })
                         }
                     }).catch(() => {
-                        Message.warning('删除失败')
+                        Message.warning(this.$t('modifyFailed'))
                         return false
                     })
                 }
             } else if (+this.tabNumeber === 1) {
                 this.requestUtil.delete(this.urls.addTemplate.url + `/${materialId}`,).then((res) => {
-                    let textDelete = +this.isactive2 === 1 ? '弹窗模版' : '页面模版'
+                    let textDelete = +this.isactive2 === 1 ? 'confirmToDeletePopupTemplate' : 'confirmToDeletePageTemplate'
+                    textDelete = 'materialRoom.' + textDelete
                     if (res.code === '0') {
-                        sureDialog(this.myEditorUi, `确定要删除${textDelete}-${ele.innerText}吗`, () => {
+                        sureDialog(this.myEditorUi, this.$t(textDelete, {name: ele.innerText}), () => {
                             if (+this.isactive2 === 1) {
                                 this.alertMaterial.splice(index, 1)
                             } else if(+this.isactive2 === 0) {
                                 this.pageMaterial.splice(index, 1)
                             }
-                            Message.warning('删除成功')
+                            Message.warning(this.$t('deleteSuccessfully'))
                         })
                     }
                 }).catch(() => {
-                    Message.warning('删除失败')
+                    Message.warning(this.$t('modifyFailed'))
                 })
             }
             

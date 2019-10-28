@@ -34,7 +34,7 @@
             />
           </template>
           <template v-if="picList.includes(shapeName) && state.imgInfo">
-            <span>{{ $t("picture") }}</span>
+            <span>{{ $t("image") }}</span>
             <img
               :src="state.imgInfo.url"
               style="height:32px;margin:4px 0 0 4px;"
