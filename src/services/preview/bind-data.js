@@ -152,7 +152,6 @@ function setterRealData(res, fileSystem) {
                     $(els[i]).mouseenter(e=>{
                         formatLayerShow(e)
                         els[i].frameFlag = true
-                        console.log(els[i].frameFlag)
                     })
                     $(els[i]).mousemove(throttleFun(formatLayerShow,20))
                     $(els[i]).mouseleave(() => {
