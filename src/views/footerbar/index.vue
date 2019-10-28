@@ -235,11 +235,11 @@ export default {
             ifShowDataFlag: true, // 判断是否显示数据显示tab
             tabParamTitles:[
                 {
-                    title: this.$('footBar.paramChoose'),
+                    title: this.$t('footBar.paramChoose'),
                     slot: 'paramChoose',
                 },
                 {
-                    title: this.$('footBar.paramShow'),
+                    title: this.$t('footBar.paramShow'),
                     slot: 'paramShow'
                 },
                 {
