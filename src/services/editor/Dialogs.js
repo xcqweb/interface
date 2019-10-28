@@ -32,6 +32,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
     input.style.border = '1px solid #D4D4D4';
     input.style.backgroundColor = '#fff';
     input.style.borderRadius = '2px';
+    input.setAttribute('spellcheck',"false")
     //input.setAttribute('disabled',"");
 
     var rect = document.createElement('input')
