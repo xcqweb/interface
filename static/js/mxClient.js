@@ -15333,13 +15333,10 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 {
 	let selectCell = this.graph.getSelectionCell()
 	let selectCount = this.graph.getSelectionCount()
-	// console.log(selectCount)
 	let shapeName = ''
 	if (selectCell) {
 		shapeName = this.graph.view.getState(selectCell).style.shape;
 	}
-	// console.log(shapeName)
-	// console.log(title)
 	if (typeof this.graph.getModel().getValue(selectCell) === 'object') {
 		if (this.graph.getModel().getValue(selectCell)) {
 			let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') || undefined // 获取到元素
@@ -19564,7 +19561,6 @@ mxSvgCanvas2D.prototype.image = function(x, y, w, h, src, aspect, flipH, flipV)
 	{
 		node.setAttribute('pointer-events', 'none');
 	}
-	
 	this.root.appendChild(node);
 	
 	// Disables control-clicks on images in Firefox to open in new tab
@@ -24318,7 +24314,6 @@ mxShape.prototype.apply = function(state)
  */
 mxShape.prototype.setCursor = function(cursor)
 {
-	// console.log(cursor)
 	if (cursor == null)
 	{
 		cursor = '';
@@ -56408,7 +56403,8 @@ mxGraph.prototype.startEditingAtCell = function(cell, evt)
 			}
 		}
 		var shapeName = this.getCellStyle(cell).shape;
-		if (cell != null && shapeName !== 'image' && shapeName !== 'select' && shapeName !== 'endarrow' && shapeName !== 'beeline')
+		let notInputArr = ['userimage', 'gaugeChart', 'lineChart', 'pipeline1', 'pipeline2', 'pipeline3', 'image', 'progress','light', 'beeline']
+		if (cell != null && notInputArr.includes('shapeName') === -1)
 		{
 			this.fireEvent(new mxEventObject(mxEvent.START_EDITING,
 					'cell', cell, 'event', evt));
@@ -77036,7 +77032,6 @@ mxVertexHandler.prototype.redrawHandles = function()
 				s.y -= this.verticalOffset / 2;
 				s.height += this.verticalOffset;
 			}
-			
 			if (this.sizers.length >= 8)
 			{
 				if ((s.width < 2 * this.sizers[0].bounds.width + 2 * tol) ||
@@ -77046,13 +77041,21 @@ mxVertexHandler.prototype.redrawHandles = function()
 					this.sizers[2].node.style.display = 'none';
 					this.sizers[5].node.style.display = 'none';
 					this.sizers[7].node.style.display = 'none';
-				}
-				else
-				{
+				}else {
 					this.sizers[0].node.style.display = '';
 					this.sizers[2].node.style.display = '';
 					this.sizers[5].node.style.display = '';
 					this.sizers[7].node.style.display = '';
+				}
+
+				// 菜单单个单元格删除 最后还有选中状态bug
+				let selectCell = this.graph.getSelectionCell()
+				let shapeName = selectCell ? this.graph.view.getState(selectCell).style.shape : ''
+				if (s.width === this.sizers[0].bounds.width && shapeName === 'menulist') {
+					this.sizers[1].node.style.display = 'none';
+					this.sizers[3].node.style.display = 'none';
+					this.sizers[4].node.style.display = 'none';
+					this.sizers[6].node.style.display = 'none';
 				}
 			}
 		}
@@ -77072,7 +77075,6 @@ mxVertexHandler.prototype.redrawHandles = function()
 			{
 				// 菜单单元格和表格单元格，不展示伸缩图标
 				var crs = this.state.style.shape !== 'tableCell' && this.state.style.shape !== 'menuCell' ? ['nw-resize', 'n-resize', 'ne-resize', 'e-resize', 'se-resize', 's-resize', 'sw-resize', 'w-resize'] : ['default','default','default','default','default','default','default','default'];
-				
 				// 只能横向扩展长度
 				if (this.state.style.shape === 'multipleCheck' || this.state.style.shape === 'singleCheck' || this.state.style.shape === 'select') {
 					var alpha = mxUtils.toRadians(this.state.style[mxConstants.STYLE_ROTATION] || '0');
@@ -79900,7 +79902,6 @@ mxElbowEdgeHandler.prototype.createVirtualBend = function(dblClickHandler)
 	{
 		bend.node.style.display = 'none';
 	}
-
 	return bend;
 };
 
@@ -80750,11 +80751,11 @@ mxKeyHandler.prototype.getFunction = function(evt)
 mxKeyHandler.prototype.isGraphEvent = function(evt)
 {
 	var source = mxEvent.getSource(evt);
-	// console.log(this.graph.cellEditor != null , '-----', this.graph.cellEditor.isEventSource(evt))
 	// Accepts events from the target object or
 	// in-place editing inside graph
-	// 首次进入优化 按delete 加上toolbar
-	if ((source == this.target || source.parentNode == this.target || (source.tagName === 'A' && source.className.includes('del_use_flag_terry')) || (source.tagName === 'A' && source.className.includes('geItem') && source.parentNode.className.includes('geSidebar'))) ||
+	// 首次进入优化 按delete 加上toolbar源头 chartFlag 判断是否是 趋势图和仪表盘的弹窗
+	const chartFlag = document.querySelector('.delete_flag_chartDialog_terry')
+	if (!chartFlag && (source == this.target || source.parentNode == this.target || (source.tagName === 'A' && source.className.includes('del_use_flag_terry')) || (source.tagName === 'A' && source.className.includes('geItem') && source.parentNode.className.includes('geSidebar'))) ||
 		(this.graph.cellEditor != null && this.graph.cellEditor.isEventSource(evt)))
 	{
 		return true;
@@ -80793,8 +80794,8 @@ mxKeyHandler.prototype.keyDown = function(evt)
 		// Invokes the function for the keystroke
 		else if (!this.isEventIgnored(evt))
 		{
-			var boundFunction = this.getFunction(evt);
 			
+			var boundFunction = this.getFunction(evt);
 			if (boundFunction != null)
 			{
 				boundFunction(evt);
@@ -80819,7 +80820,7 @@ mxKeyHandler.prototype.keyDown = function(evt)
  */
 mxKeyHandler.prototype.isEnabledForEvent = function(evt)
 {
-	console.log(this.graph.isEnabled(), '--', !mxEvent.isConsumed(evt), '----',this.isGraphEvent(evt), '---',this.isEnabled() )
+	// console.log(this.graph.isEnabled(), '--', !mxEvent.isConsumed(evt), '----',this.isGraphEvent(evt), '---',this.isEnabled() )
 	return (this.graph.isEnabled() && !mxEvent.isConsumed(evt) &&
 		this.isGraphEvent(evt) && this.isEnabled());
 };

@@ -614,7 +614,7 @@ export default{
             }
             .ivu-modal-body{
               padding: 0 24px;
-              height:350px;
+              height:360px;
               display:flex;
               flex-direction: column;
               .content-top{
@@ -735,9 +735,11 @@ export default{
     .ivu-select{
       .ivu-select-selection{
         height:24px;
+        line-height: 24px;
       }
       .ivu-select-input{
         height:22px;
+        line-height:22px;
       }
       .ivu-select-placeholder{
         height:24px;
