@@ -234,12 +234,13 @@ Actions.prototype.init = function()
         var cell = graph.getSelectionCell();
         var idx = -1;
         var cellW = cell.geometry.width;
+        let cellH = cell.geometry.height;
         var menuCell = cell.parent;
         if (menuCell.children.length >= 10) {
             mxUtils.alert('最多10个菜单');
         }
         if (type === 'before') {
-            var symbol = new mxCell('菜单', new mxGeometry(cell.geometry.x, 0, cellW, 40), 'shape=menuCell;html=1;whiteSpace=wrap;');
+            var symbol = new mxCell('菜单', new mxGeometry(cell.geometry.x, 0, cellW, cellH), 'shape=menuCell;html=1;whiteSpace=wrap;strokeColor=#000;');
             for (var i = 0; i < menuCell.children.length; i++) {
                 if (cell.id === menuCell.children[i].id) {
                     idx = i;
@@ -259,7 +260,7 @@ Actions.prototype.init = function()
                     idx = i + 1;
                 }
             }
-            var symbol = new mxCell('菜单', new mxGeometry(cell.geometry.x + cellW, 0, cellW, 40), 'shape=menuCell;html=1;whiteSpace=wrap;');
+            var symbol = new mxCell('菜单', new mxGeometry(cell.geometry.x + cellW, 0, cellW, cellH), 'shape=menuCell;html=1;whiteSpace=wrap;strokeColor=#000;');
         }
         symbol.vertex = true;
         // 设置id

@@ -130,9 +130,7 @@
     />
     <div
       class="dialog-title-m"
-    >
-      {{ titleName }}
-    </div>
+    />
   </div>
 </template>
 <script>
@@ -145,7 +143,6 @@ export default {
         return {
             dialogDesc:"",
             showFont:false,
-            titleName:'弹窗标题',
             dialogHeight: 400,
             dialogWidth: 600,
             fontText:12,
@@ -161,6 +158,9 @@ export default {
     created() {
     },
     mounted() {
+        window.onresize = ()=>{
+            this.centerCanvas()
+        }
         this.initPage()
     },
     beforeDestory() {
@@ -189,11 +189,10 @@ export default {
                 let graph = this.myEditorUi.editor.graph
                 let con = graph.container
                 let dialogTitleEle = document.querySelector('.dialog-title-m')
+                dialogTitleEle.innerHTML = editor.pages[editor.currentPage].title
                 dialogTitleEle.parentNode.removeChild(dialogTitleEle)
                 con.appendChild(dialogTitleEle)
-
                 this.dialogDesc = editor.pages[editor.currentPage].desc
-                this.titleName =  editor.pages[editor.currentPage].title
             },50)
         },
         descChange() {

@@ -94,29 +94,31 @@ function setterRealData(res, fileSystem) {
             }else if(shapeName.includes('Chart')) {
                 let echartsInstance = echarts.getInstanceByDom(els[i])
                 let options = echartsInstance.getOption()
-                if(shapeName == 'lineChart') {
-                    let chartDataLen = $(els[i]).data("chartDataLen")
-                    options.series.forEach((ser)=>{
-                        if (ser.pointId == item.pointId) {
-                            if(ser.data.length >= chartDataLen) {
-                                ser.data.shift()
+                if(options) {
+                    if(shapeName == 'lineChart') {
+                        let chartDataLen = $(els[i]).data("chartDataLen")
+                        options.series.forEach((ser)=>{
+                            if (ser.pointId == item.pointId) {
+                                if(ser.data.length >= chartDataLen) {
+                                    ser.data.shift()
+                                }
+                                if (val || val == 0) {
+                                    ser.data.push(val)
+                                }
                             }
-                            if (val || val == 0) {
-                                ser.data.push(val)
-                            }
+                        })
+                        if(options.xAxis[0].data.length >= chartDataLen) {
+                            options.xAxis[0].data.shift()
                         }
-                    })
-                    if(options.xAxis[0].data.length >= chartDataLen) {
-                        options.xAxis[0].data.shift()
+                        options.xAxis[0].data.push(item.timestamp)
+                    }else {
+                        if (!val) {
+                            val = 0
+                        }
+                        options.series[0].data[0].value = val
                     }
-                    options.xAxis[0].data.push(item.timestamp)
-                }else {
-                    if (!val) {
-                        val = 0
-                    }
-                    options.series[0].data[0].value = val
+                    echartsInstance.setOption(options)
                 }
-                echartsInstance.setOption(options)
             }else {
                 if(val || val === 0) {
                     $(els[i]).html(`${val}`)
@@ -136,10 +138,10 @@ function setterRealData(res, fileSystem) {
                     let formatLayerEl = $("#formatLayer")
                     let formatLayerElText = () => {
                         formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + 
-                        `<li>${item.timestamp}</li>` +
-                        paramShow.map((d) => {
-                            return `<li>${d}=${item[d]}</li>`
-                        }).join('') + "</ul>")
+                            `<li>${item.timestamp}</li>` +
+                            paramShow.map((d) => {
+                                return `<li>${d}=${item[d]}</li>`
+                            }).join('') + "</ul>")
                     }
                     let formatLayerShow = (e)=>{
                         let {clientX,clientY} = e
@@ -147,18 +149,17 @@ function setterRealData(res, fileSystem) {
                         formatLayerElText()
                         formatLayerEl.show()
                     }
-                    let formatLayerMove = (e)=> {
-                        console.log(e + "-" + new Date().getTime())
-                        let {clientX,clientY} = e
-                        formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
-                    }
-                    $(els[i]).mouseenter(formatLayerShow)
-                    $(els[i]).mousemove(throttleFun(formatLayerMove,16))
+                    $(els[i]).mouseenter(e=>{
+                        formatLayerShow(e)
+                        els[i].frameFlag = true
+                    })
+                    $(els[i]).mousemove(throttleFun(formatLayerShow,20))
                     $(els[i]).mouseleave(() => {
+                        els[i].frameFlag = false
                         formatLayerEl.html("")
                         formatLayerEl.hide()
                     })
-                    if (formatLayerEl.is(':visible')) {
+                    if (els[i].frameFlag) { //当前控件显示时候，刷新对应浮窗数据
                         formatLayerElText()
                     }
                 }

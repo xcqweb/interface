@@ -295,6 +295,7 @@ class PreviewPage {
 
     // 渲染控件节点
     renderCell(cell) {
+        //console.log(cell)
         const shapeName = cell.shapeName
         let cellHtml
         if (shapeName.includes('image')) {
@@ -445,19 +446,20 @@ class PreviewPage {
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild) {
             let devices = cell.bindData.dataSource.deviceNameChild
             let paramShow = []
-            let defaultParamIndex = -1
             if (cell.bindData.params) {
+                let defaultParamIndex = 0
                 cell.bindData.params.forEach((item)=>{
                     paramShow.push(item.paramName)
                 })
-                defaultParamIndex = cell.bindData.params.findIndex(item => {
-                    return item.type
-                })
-            }
-            if (defaultParamIndex != -1) {
+                let singleParamShow = ['progress', 'lineChart', 'gaugeChart']
+                if (!singleParamShow.includes(shapeName)) {
+                    defaultParamIndex = cell.bindData.params.findIndex(item => {
+                        return item.type
+                    })
+                }
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
+                $(cellHtml).data("paramShow", paramShow)
             }
-            $(cellHtml).data("paramShow", paramShow)
             let resParams = []
             let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
             let modelIdsParam = []

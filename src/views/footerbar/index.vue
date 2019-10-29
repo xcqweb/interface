@@ -97,8 +97,16 @@
                 slot-scope="{row,index}"
               >
                 <Checkbox
+                  v-if="!singleParamShow.includes($store.state.main.widgetInfo.shapeInfo.shape)"
                   v-model="row.type"
                   @on-change="val=>paramDefaultChange(val,row.id,index)"
+                >
+                  默认显示
+                </Checkbox>
+                <Checkbox
+                  v-else
+                  :value="true"
+                  disabled
                 >
                   默认显示
                 </Checkbox>
@@ -108,6 +116,7 @@
                 slot-scope="{ row, index }" 
               >
                 <span
+                  v-show="!singleParamShow.includes($store.state.main.widgetInfo.shapeInfo.shape)"
                   class="icon-add"
                   @click.stop.prevent="addParamHandle"
                 />
@@ -182,7 +191,7 @@ import VueEvent from '../../services/VueEvent.js'
 import {sureDialog} from '../../services/Utils'
 const allShapes = ['image','userimage','tableCell','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
 // 支持显示参数
-const SupportDataShow = ['rectangle','ellipse','tableCell','progress','lineChart', 'gaugeChart']
+const supportDataShow = ['rectangle','ellipse','tableCell','progress','lineChart', 'gaugeChart']
 let deviceTypeId = null
 export default {
     components:{
@@ -197,6 +206,7 @@ export default {
     data() {
         return {
             value1: '1',
+            singleParamShow:['progress','lineChart', 'gaugeChart'],
             dataSourceName:['数据源','数据显示','状态模型'],
             buttonText:['添加参数', '删除'],
             ifShowArrow: false,
@@ -453,16 +463,12 @@ export default {
         },
         footerContentHandle(show) {
             if (show) {
-                let graph = this.myEditorUi.editor.graph
-                let cell = graph.getSelectionCell()
-                let state = graph.view.getState(cell)
-                let shapeName = state.style.shape
-                if (SupportDataShow.includes(shapeName)) { // flag 是否数据显示
+                if (supportDataShow.includes(this.$store.state.main.widgetInfo.shapeInfo.shape)) { // flag 是否数据显示
                     this.ifShowDataFlag = true
                 } else {
                     this.ifShowDataFlag = false
                 }
-                if(allShapes.includes(shapeName)) { // 底部内容显示
+                if(allShapes.includes(this.$store.state.main.widgetInfo.shapeInfo.shape)) { // 底部内容显示
                     this.footerContent = true
                 }else{
                     this.footerContent = false

@@ -342,13 +342,14 @@ function dealCharts(cell) {
                     let checkItem = res.durations.find((item) => {
                         return item.checked === true
                     })
+                    let tempOptions = JSON.parse(JSON.stringify(options))
                     let chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
                     $(con).data("chartDataLen", chartDataLen)
                     let nowTs = +new Date()
-                    options.xAxis.data = []
-                    options.yAxis.name = titleShow
+                    tempOptions.xAxis.data = []
+                    tempOptions.yAxis.name = titleShow
                     let tempLegend = [], tempSeries = []
-                    let markLine = options.series[0].markLine
+                    let markLine = tempOptions.series[0].markLine
                     let markLineMax = 0,markValArr = []
                     if(markLine && markLine.data && markLine.data.length) {
                         markLine.data.forEach(item=>{
@@ -356,7 +357,7 @@ function dealCharts(cell) {
                         })
                         markLineMax = Math.max(...markValArr)
                     }
-                    options.legend.data = tempLegend
+                    tempOptions.legend.data = tempLegend
                     devices.forEach((item,index) => {
                         tempLegend.push(item.name)
                         tempSeries.push({
@@ -373,27 +374,20 @@ function dealCharts(cell) {
                             startTs: nowTs - checkItem.duration * 1000,
                             endTs: nowTs,
                         }
-                        let refreshToken = getCookie('refreshToken')
-                        geAjax('/api/auth/refreshToken', 'POST', {
-                            refreshToken
-                        }).then(res => {
-                            setCookie('token', res.token);
-                            setCookie('refreshToken', res.refreshToken)
-                            requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
-                                for (let key in res.resMap) {
-                                    if(index === 0) {
-                                        options.xAxis.data.push(timeFormate(key))
-                                    }
-                                    tempSeries[index].data.push(res.resMap[key])
-                                }
+                        requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
+                            for (let key in res.resMap) {
                                 if(index === 0) {
-                                    options.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
+                                    tempOptions.xAxis.data.push(timeFormate(key))
                                 }
-                                if (index == devices.length - 1) {
-                                    options.series = tempSeries
-                                    myEchart.setOption(options)
-                                }
-                            })
+                                tempSeries[index].data.push(res.resMap[key])
+                            }
+                            if(index === 0) {
+                                tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
+                            }
+                            if (index == devices.length - 1) {
+                                tempOptions.series = tempSeries
+                                myEchart.setOption(tempOptions)
+                            }
                         })
                     })
                 })
