@@ -108,7 +108,7 @@ class PreviewPage {
                     let getNodeInfo = new GetNodeInfo(node)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape')
-                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, rotation, direction, flipH, flipV, startArrow, endArrow, strokeWidth, fontWeight,edgeProps
+                    let x, y, width, height,arcSize,fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, rotation, direction, flipH, flipV, startArrow, endArrow, strokeWidth, fontWeight,edgeProps
                     styles = node.getAttribute('style')
                     isGroup = styles.indexOf('group') != -1
                     fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF'
@@ -123,7 +123,8 @@ class PreviewPage {
                     fontWeight = getNodeInfo.getStyles('fontStyle') || 0
                     strokeStyle = getNodeInfo.getStyles('dashed')
                     strokeWidth = getNodeInfo.getStyles('strokeWidth') || 1
-                    strokeColor = (shapeName.includes('image') ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
+                    strokeColor = (shapeName.includes('image') ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none'
+                    arcSize = getNodeInfo.getStyles('arcSize') || 0
                     // 图片地址
                     image = getNodeInfo.getStyles('image') || null
                     x = parseFloat(node.childNodes[0].getAttribute('x')) || 0
@@ -177,6 +178,7 @@ class PreviewPage {
                         fontSize,
                         fontWeight,
                         image,
+                        arcSize,
                         link,
                         actionsInfo,
                         statesInfo,
@@ -421,6 +423,7 @@ class PreviewPage {
         cellHtml.style.transform = `rotate(${cell.rotation}deg) ${cell.flipV == 1 ? ' scaleY(-1)' : ''} ${cell.flipH == 1 ? ' scaleX(-1)' : ''}`;
         // 字体大小
         cellHtml.style.fontSize = `${cell.fontSize}px`
+        cellHtml.style.borderRadius = `${cell.arcSize * 0.6}px`
         cellHtml.style.fontWeight = `${cell.fontWeight == 1 ? 'bold' : 'normal'}`
         // 字体颜色
         cellHtml.style.color = `${cell.fontColor}`

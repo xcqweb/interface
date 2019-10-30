@@ -92,7 +92,7 @@ export default {
                 that.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 50, '', '直线', true,true),
                 // 矩形
                 that.createVertexTemplateEntry(
-                    "rounded=0;shape=rectangle;whiteSpace=wrap;html=1;strokeColor=#000;",
+                    "rounded=1;shape=rectangle;whiteSpace=wrap;html=1;strokeColor=#000;arcSize=0;",
                     120,
                     60,
                     "",

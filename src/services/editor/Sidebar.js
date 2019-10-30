@@ -1556,7 +1556,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
          //箭头
         //this.createEdgeTemplateEntry('shape=endarrow;endArrow=classic;html=1;', 50, 0, '', '箭头', false, false),
         // 矩形
-        this.createVertexTemplateEntry('rounded=0;shape=rectangle;whiteSpace=wrap;html=1;strokeColor=#000;', 120, 60, '', '矩形', null, null, '矩形'),
+        this.createVertexTemplateEntry('rounded=1;shape=rectangle;whiteSpace=wrap;html=1;strokeColor=#000;arcSize=0;', 120, 60, '', '矩形', null, null, '矩形'),
         // 圆形
         this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;strokeColor=#000;aspect=fixed;', 36, 36, '', '圆形', null, null, '圆形'),
         // 横向菜单

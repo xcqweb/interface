@@ -17,7 +17,7 @@
       <div class="item-line" />
     </template>
     <div
-      v-if="shapeName!='menuCell' && shapeName!='tableCell' && shapeName!='beeline' && edgeInfo !== 2 && shapeName!='tableCell' && shapeName!='menuCell' && shapeName!='tableBox' && shapeName!='menulist' || (shapeName=='tableCell' || shapeName=='menuCell' || shapeName=='tableBox' || shapeName=='menulist')&&cellsCount==1"
+      v-if="shapeName!='menuCell' && shapeName!='tableCell' && shapeName!='beeline' && edgeInfo !== 2 && shapeName!='tableBox' && shapeName!='menulist' || (shapeName=='tableBox' || shapeName=='menulist')&&cellsCount==1"
       style="display:flex;margin-top:4px;"
     >
       <div
@@ -47,7 +47,7 @@
       </div>
     </div>
     <div
-      v-if="shapeName!='beeline' && shapeName!='tableBox' && shapeName!='menulist' && edgeInfo !== 2 && shapeName!='tableCell' && shapeName!='menuCell' && shapeName!='tableBox' && shapeName!='menulist' || (shapeName=='tableCell' || shapeName=='menuCell' || shapeName=='tableBox' || shapeName=='menulist')&&cellsCount==1"
+      v-if="shapeName!='beeline' && shapeName!='tableBox' && shapeName!='menulist' && edgeInfo !== 2 && shapeName!='tableCell' && shapeName!='menuCell' || (shapeName=='tableCell' || shapeName=='menuCell')&&cellsCount==1"
       style="display:flex;margin-top:2px;"
     >
       <div
@@ -354,16 +354,6 @@
             </ul>
           </div>
         </div>
-      </div>
-      <div v-if="shapeName=='rectangle'">
-        <div class="item-title">
-          圆角
-        </div>
-        <i-switch
-          v-model="rounded"
-          size="small"
-          @on-change="checkRounded"
-        />
       </div>
       <div v-if="shapeName=='beeline' && edgeInfo!==2">
         <p style="margin-top:10px;">
@@ -794,7 +784,6 @@ export default {
             showLegendChoose:false,
             legendChooseText:'底部',
             legendChooseList:[{text:'底部',type:1},{text:'顶部',type:2},{text:'左侧',type:3},{text:'右侧',type:4}],
-            rounded:false, //矩形圆角
         }
     },
     computed: {
@@ -1505,18 +1494,6 @@ export default {
         hideLegendChooseFun() {
             this.showLegendChoose = false
         },
-        checkRounded(val) {
-            console.log("tt-aa")
-            let graph = this.myEditorUi.editor.graph
-            graph.getModel().beginUpdate()
-            let values = ['0'],keys = [mxConstants.STYLE_ROUNDED]
-            if(val) {
-                values = ['1']
-            }
-            debugger
-            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', keys,'values', values, 'cells', graph.getSelectionCells()))
-            graph.getModel().endUpdate()
-        }
     }
 };
 </script>
