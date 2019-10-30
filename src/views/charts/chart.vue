@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <!--delete_flag_chartDialog_terry 用来特殊标志-删除 其他地方不能用-->
+  <div class="delete_flag_chartDialog_terry">
     <div class="background" />
     <div
       class="geDialog"
