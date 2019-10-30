@@ -17,7 +17,7 @@
       <div class="item-line" />
     </template>
     <div
-      v-if="shapeName!='menuCell' && shapeName!='tableCell' && shapeName!='beeline' && edgeInfo !== 2"
+      v-if="shapeName!='menuCell' && shapeName!='tableCell' && shapeName!='beeline' && edgeInfo !== 2 && shapeName!='tableCell' && shapeName!='menuCell' && shapeName!='tableBox' && shapeName!='menulist' || (shapeName=='tableCell' || shapeName=='menuCell' || shapeName=='tableBox' || shapeName=='menulist')&&cellsCount==1"
       style="display:flex;margin-top:4px;"
     >
       <div
@@ -47,7 +47,7 @@
       </div>
     </div>
     <div
-      v-if="shapeName!='beeline' && shapeName!='tableBox' && shapeName!='menulist' && edgeInfo !== 2"
+      v-if="shapeName!='beeline' && shapeName!='tableBox' && shapeName!='menulist' && edgeInfo !== 2 && shapeName!='tableCell' && shapeName!='menuCell' && shapeName!='tableBox' && shapeName!='menulist' || (shapeName=='tableCell' || shapeName=='menuCell' || shapeName=='tableBox' || shapeName=='menulist')&&cellsCount==1"
       style="display:flex;margin-top:2px;"
     >
       <div
@@ -137,7 +137,7 @@
       </div>
     </div>
     <div
-      v-if="shapeName=='tableBox'"
+      v-if="shapeName=='tableBox' && cellsCount==1"
       style="display:flex;margin-top:2px;"
     >
       <div
@@ -166,7 +166,7 @@
         > 
       </div>
     </div>
-    <div v-if="shapeName=='menuCell'">
+    <div v-if="shapeName=='menuCell' && cellsCount==1">
       <div class="item-title">
         选中
       </div>
@@ -355,6 +355,16 @@
           </div>
         </div>
       </div>
+      <div v-if="shapeName=='rectangle'">
+        <div class="item-title">
+          圆角
+        </div>
+        <i-switch
+          v-model="rounded"
+          size="small"
+          @on-change="checkRounded"
+        />
+      </div>
       <div v-if="shapeName=='beeline' && edgeInfo!==2">
         <p style="margin-top:10px;">
           箭头
@@ -419,12 +429,11 @@
         </div>
       </div>
     </div>
-    <div v-if="shapeName=='progress'">
+    <div v-if="shapeName=='progress' || shapeName=='gaugeChart'">
       <div class="item-title">
         数值范围
       </div>
       <div
-        v-if="shapeName!='menuCell' && shapeName!='tableCell'"
         style="display:flex;"
       >
         <div
@@ -453,7 +462,7 @@
           > 
         </div>
       </div>
-      <div>
+      <div v-if="shapeName=='progress'">
         <div
           class="item-title"
           style="border:none;"
@@ -505,19 +514,227 @@
     <Chart
       v-if="isChartShow"
       :shape-name="shapeName"
-      :bind-chart-props="bindChartProps"
+      :bind-chart-props="bindChartProps2"
       @hideChartDialog="hideChartDialog"
     />
+    <div v-if="shapeName=='lineChart'">
+      <div
+        class="item-title"
+        style="display:flex;justify-content:space-between;align-items:center;"
+      >
+        图例
+        <i-switch
+          v-model="chartLegend"
+          size="small"
+          @on-change="chooseLegend"
+        />
+        <div
+          v-visible="chartLegend"
+          v-clickOutSide="hideLegendChooseFun"
+          class="item-container fontSet"
+          style="justify-content:space-between;position:relative;"
+        >
+          {{ legendChooseText }}
+          <img
+            src="../../../assets/images/menu/down_ic.png"
+            @click="showLegendChoose=true"
+          >
+          <ul
+            v-if="showLegendChoose"
+            class="font-dialog"
+            @mouseleave="showLegendChoose=false"
+            @keyup.enter="showLegendChoose=false"
+            @blur="showLegendChoose=false"
+          >
+            <li
+              v-for="(d,index) in legendChooseList"
+              :key="index"
+              @click="changeLegendChoose(d,$event)"
+            >
+              {{ d.text }}
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div
+        class="item-title"
+        style="display:flex;justify-content:space-between;"
+      >
+        风格
+        <div
+          class="setColor"
+          style="width:80%;"
+          :style="{backgroundColor:styleColorBg}"
+          @click="pickStyleColor"
+        />
+      </div>
+      <div
+        class="item-title"
+        style="display:flex;justify-content:space-between;"
+      >
+        指标
+        <div
+          v-if="!isAddMark"
+          style="display:flex;align-items:center;"
+          @click="addMark"
+        >
+          <img src="../../../assets/images/rightsidebar/plus_ic.png"> 添加
+        </div>
+      </div>
+      <div
+        v-if="isAddMark"
+        class="addMark-con"
+      >
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          名称 <input
+            v-model="markName"
+            style="width:82%;padding-left:4px;"
+          >
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+          数值 <input
+            v-model="markValue"
+            v-number.minus="1"
+            style="width:82%;padding-left:4px;"
+          >
+        </div>
+        <div style="display:flex;margin-top:10px;"> 
+          <div style="margin-right:5.5%;">
+            线条
+          </div>
+          <div
+            class="setColor"
+            style="flex:1;margin-right:6px;"
+            :style="{backgroundColor:borderColorChart}"
+            @click="pickChartBorderColor"
+          />
+          <div
+            v-clickOutSide="hideBorderLineChart"
+            class="item-container fontSet"
+            style="justify-content:space-between;position:relative;flex:1;"
+            @click="showBorderLineChart=true"
+          >
+            <div :class="borderLineClsChart" />
+            <img src="../../../assets/images/menu/down_ic.png">
+            <ul
+              v-if="showBorderLineChart"
+              class="font-dialog"
+              @mouseleave="showBorderLineChart=false"
+              @keyup.enter="showBorderLineChart=false"
+              @blur="showBorderLine=false"
+            >
+              <li
+                v-for="(d,index) in borderLineListChart"
+                :key="index"
+                @click="changeChartBorderLine(d,$event)"
+              >
+                <div style="width:100%;height:4px;display:inline-block;vertical-align:middle;">
+                  <div :class="d" />
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div
+            v-clickOutSide="hideBorderLineBoldChart"
+            class="item-container fontSet"
+            style="justify-content:space-between;position:relative;flex:1;margin:0;"
+          >
+            <div>{{ borderLineBoldTextChart }}</div>
+            <img 
+              src="../../../assets/images/menu/down_ic.png"
+              @click="showBorderLineBold=true"
+            >
+            <ul
+              v-if="showBorderLineBoldChart"
+              class="font-dialog"
+              style="height:100px;overflow:auto;"
+              @mouseleave="showBorderLineBoldChart=false"
+              @keyup.enter="showBorderLineBoldChart=false"
+              @blur="showBorderLineBoldChart=false"
+            >
+              <li
+                v-for="(d,index) in borderLineBoldListChart"
+                :key="index"
+                @click="changeChartBorderLineBold(d,$event)"
+              >
+                {{ d }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;">
+          <button
+            class="mutual-btn"
+            @click="cancel()"
+          >
+            取消
+          </button>
+          <button
+            class="mutual-btn selected"
+            @click="submit()"
+          >
+            提交
+          </button>
+        </div>
+      </div>
+      <div
+        v-if="!isAddMark"
+        style="max-height:500px;overflow-y:scroll;margin-top:10px;"
+      >
+        <div
+          v-for="(item,index) in markLineList"
+          :key="index"
+          class="markline-item"
+          @click="editMarkLineFun(item,index,$event)"
+        >
+          <div
+            style="display:flex;justify-content:space-between;"
+          >
+            <div>名称-{{ item.markName }}</div>
+            数值-{{ item.markValue }}
+            <img
+              src="../../../assets/images/rightsidebar/dele_ic.png"
+              @click="delMark(item,index,$event)"
+            >
+          </div>
+          <div style="display:flex;margin-top:10px;"> 
+            <div style="margin-right:5.5%;">
+              线条
+            </div>
+            <div
+              class="setColor"
+              style="flex:1;margin-right:6px;"
+              :style="{backgroundColor:item.borderColor}"
+            />
+            <div
+              class="item-container fontSet"
+              style="justify-content:space-between;position:relative;flex:1;"
+            >
+              <div :class="item.borderLineCls" />
+            </div>
+            <div
+              class="item-container fontSet"
+              style="justify-content:space-between;position:relative;flex:1;margin:0;"
+            >
+              {{ item.borderLineBoldText }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
+import echarts from 'echarts'
 import Chart from '../../charts/chart'
 import {mxConstants,mxEventObject,Dialog,mxUtils} from '../../../services/mxGlobal'
+import {data1,data2} from '../../../constants/chart-default-data'
+import {sureDialog} from '../../../services/Utils'
 let palettName
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
-let picShapeList = ['pipeline2','pipeline3','light','lineChart','gaugeChart','userimage']
-import VueEvent from '../../../services/VueEvent.js'
+let picShapeList = ['pipeline2','pipeline3','light','userimage']
+let cellEchart,bindChartProps
 export default {
     components:{
         Chart
@@ -558,7 +775,26 @@ export default {
             progressDialogList:[{name:'百分比',value:'percent'},{name:'实际数值',value:'real'}],
             linkUrl:"",
             isChartShow:false,
-            bindChartProps:null,
+            bindChartProps2:null,
+            chartLegend:true,
+            markLineList:[],//标线 line-chart
+            isAddMark:false,
+            markName:'指标1',
+            markValue:0,
+            borderColorChart:"#000",
+            borderLineClsChart:"border-line",
+            borderLineBoldTextChart:"1",
+            showBorderLineChart:false,
+            showBorderLineBoldChart:false,
+            borderLineListChart:['border-line','border-dash'],
+            borderLineBoldListChart:[1,2,3,4,5],
+            editMarkLine:null,
+            editMarkLineIndex:0,
+            styleColorBg:'#000',
+            showLegendChoose:false,
+            legendChooseText:'底部',
+            legendChooseList:[{text:'底部',type:1},{text:'顶部',type:2},{text:'左侧',type:3},{text:'右侧',type:4}],
+            rounded:false, //矩形圆角
         }
     },
     computed: {
@@ -592,10 +828,6 @@ export default {
     },
     created() {},
     mounted() {
-        VueEvent.$off('edgePropsUpdate')
-        VueEvent.$on('edgePropsUpdate', ({geo,cell}) => {
-            this.setWidgetProps('edgeProps', geo, cell)
-        })
         let graph = this.myEditorUi.editor.graph
         this.fontText = this.$store.state.main.widgetInfo.fontSize
         this.isSetBold = this.$store.state.main.widgetInfo.isSetBold
@@ -637,7 +869,15 @@ export default {
                 this.pipelineFlowVal = findCurrent.value
             }
         }else if(this.shapeName.includes('Chart')) {
-            this.bindChartProps = this.getWidgetProps('chartProps')
+            bindChartProps = this.getWidgetProps('chartProps')
+            if(bindChartProps) {
+                this.bindChartProps2  = Object.assign({},bindChartProps)
+                if(this.shapeName == 'gaugeChart') {
+                    this.progressMin = bindChartProps.series.min
+                    this.progressMax = bindChartProps.series.max
+                } 
+            }
+            this.initChartDom()
         }else if(this.shapeName == 'linkTag') {
             if (this.getWidgetProps('link')) {
                 this.linkUrl = this.getWidgetProps('link').url
@@ -649,17 +889,21 @@ export default {
             }
         }
         if(picShapeList.includes(this.shapeName)) {
-            graph.setCellStyles(mxConstants.STYLE_ASPECT, 'fixed', graph.getSelectionCells());
-            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],
-                'values', ['fixed'], 'cells', graph.getSelectionCells()))
+            graph.setCellStyles(mxConstants.STYLE_ASPECT, 'fixed', graph.getSelectionCells())
+            graph.getModel().beginUpdate()
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],'values', ['fixed'], 'cells', graph.getSelectionCells()))
+            graph.getModel().endUpdate()
         }
         let dblClickFn = graph.dblClick
         graph.dblClick = (evt, cell) => {
             let state = graph.view.getState(cell)
-            if (!state) {return false;}
-            if (state.style.shape.includes('Chart')) {
+            if (!state) {
+                return false
+            }
+            let labelStr = cell.getAttribute("label")
+            if (state.style.shape.includes('Chart') && labelStr && !labelStr.includes('widget-chart')) {
                 this.isChartShow = true
-                this.bindChartProps = this.getWidgetProps('chartProps')
+                bindChartProps = this.getWidgetProps('chartProps')
             } else if (state.style.shape === 'image') {
                 document.querySelector('#dlbChooseImage').click()
                 let $inputfile = `<input type="file" style="opacity: 0" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg">`;
@@ -673,6 +917,31 @@ export default {
         }
     },
     methods: {
+        initChartDom() {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            graph.getModel().beginUpdate()
+            cell.setAttribute('label',`<div class="widget-chart chart${cell.id}"/>`)
+            graph.getModel().endUpdate()
+            graph.view.refresh(cell)
+            let echartsDom = document.querySelector(`.widget-chart.chart${cell.id}`)
+            echartsDom.style.width = `${cell.geometry.width}px`
+            echartsDom.style.height = `${cell.geometry.height}px`
+            let options = {}
+            cellEchart = echarts.init(echartsDom)
+            if(this.shapeName == 'lineChart') {
+                options = data1
+            }else{
+                options = data2
+            }
+            if(bindChartProps) {
+                options = bindChartProps
+            }else{
+                bindChartProps = options
+                this.setWidgetProps("chartProps",bindChartProps)
+            }
+            cellEchart.setOption(options)
+        },
         dealNumber(number) {
             if(number) {
                 return parseInt(number)
@@ -700,11 +969,10 @@ export default {
         },
         changePositionSize(type) {
             let graph = this.myEditorUi.editor.graph
-            let model = graph.getModel()
             let cells = graph.getSelectionCells()
             let positionObj = Object.assign({},this.positionSize)
-            model.beginUpdate()
             cells.forEach((cell)=>{
+                graph.getModel().beginUpdate()
                 let geo = graph.getCellGeometry(cell)
                 let diff = 0
                 if(graph.model.isEdge(cell)) {
@@ -740,13 +1008,13 @@ export default {
                             break
                     }
                 }
-                model.setGeometry(cell,geo)
+                graph.getModel().setGeometry(cell,geo)
                 if (diff !== 0) {
                     this.updateTableSizeAfterCell(type, diff, cell)
                 }
+                graph.getModel().endUpdate()
+                graph.refresh(cell)
             })
-            model.endUpdate()
-            graph.refresh()
             this.$nextTick(() => {
                 this.$store.commit('getWidgetInfo',graph)
             })
@@ -759,11 +1027,12 @@ export default {
         changeFont(d,e) {
             this.fontText = d
             let graph = this.myEditorUi.editor.graph
+            graph.getModel().beginUpdate()
             let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells()
             let key = mxConstants.STYLE_FONTSIZE
             graph.setCellStyles(key,d, ss)
-            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [key],
-                'values', [+d], 'cells', ss))
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [key],'values', [+d], 'cells', ss))
+            graph.getModel().endUpdate()
             this.showFont = false
             e && e.stopPropagation()
         },
@@ -779,13 +1048,15 @@ export default {
         setBold() {
             this.isSetBold = !this.isSetBold
             let graph = this.myEditorUi.editor.graph
+            graph.getModel().beginUpdate()
             let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells();
             let bold = 0
             if(this.isSetBold) {
                 bold = 1
             }
             graph.setCellStyles('fontStyle', bold, ss);
-            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontStyle'],'values', [bold], 'cells',ss));
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontStyle'],'values', [bold], 'cells',ss))
+            graph.getModel().endUpdate()
         },
         hideFont() {
             this.showFont = false
@@ -798,9 +1069,11 @@ export default {
                     this.fontColor = color
                 }
                 let graph = this.myEditorUi.editor.graph
+                graph.getModel().beginUpdate()
                 let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells()
                 graph.setCellStyles('fontColor', color, ss);
                 this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontColor'],'values', [color], 'cells', ss))
+                graph.getModel().endUpdate()
             });
         },
         pickBgColor() {
@@ -811,8 +1084,10 @@ export default {
                     this.bgColor = color
                 }
                 let graph = this.myEditorUi.editor.graph
+                graph.getModel().beginUpdate()
                 graph.setCellStyles('fillColor', color, graph.getSelectionCells());
-                this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fillColor'],'values', [color], 'cells', graph.getSelectionCells()));
+                this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fillColor'],'values', [color], 'cells', graph.getSelectionCells()))
+                graph.getModel().endUpdate
             });
         },
         pickBorderColor() {
@@ -823,12 +1098,14 @@ export default {
                     this.borderColor = color
                 }
                 let graph = this.myEditorUi.editor.graph
+                graph.getModel().beginUpdate()
                 let key = 'strokeColor'
                 if(this.shapeName.includes('image')) {
                     key = 'imageBorder'
                 }
                 graph.setCellStyles(key, color, graph.getSelectionCells());
-                this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [key],'values', [color], 'cells', graph.getSelectionCells()));
+                this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [key],'values', [color], 'cells', graph.getSelectionCells()))
+                graph.getModel().endUpdate()
             });
         },
         hideBorderLine() {
@@ -837,6 +1114,7 @@ export default {
         changeBorderLine(d,e) {
             this.borderLineCls = d
             let graph = this.myEditorUi.editor.graph
+            graph.getModel().beginUpdate()
             let keys = [mxConstants.STYLE_DASHED],values = [null]
             if(d.includes('dash')) {
                 keys = [mxConstants.STYLE_DASHED]
@@ -845,16 +1123,18 @@ export default {
             for (let i = 0; i < keys.length; i++) {
                 graph.setCellStyles(keys[i], values[i]);
             }
-            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', keys,'values', values, 'cells', graph.getSelectionCells()));
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', keys,'values', values, 'cells', graph.getSelectionCells()))
+            graph.getModel().endUpdate()
             this.showBorderLine = false
             e.stopPropagation()
         },
         changeBorderLineBold(d,e) {
-            console.log(d, '---', e)
             this.borderLineBoldText = d
             let graph = this.myEditorUi.editor.graph
+            graph.getModel().beginUpdate()
             graph.setCellStyles('strokeWidth', d, graph.getSelectionCells());
-            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['strokeWidth'],'values', [d], 'cells', graph.getSelectionCells()));
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['strokeWidth'],'values', [d], 'cells', graph.getSelectionCells()))
+            graph.getModel().endUpdate()
             this.showBorderLineBold = false
             e && e.stopPropagation()
         },
@@ -868,6 +1148,7 @@ export default {
             this.arrowCls = d
             let keys = [],values = [],keys2 = [],values2 = []
             let graph = this.myEditorUi.editor.graph
+            graph.getModel().beginUpdate()
             if(d.includes('left')) {
                 keys = [mxConstants.STYLE_STARTARROW, 'startFill']
                 values = [mxConstants.ARROW_CLASSIC, 1]
@@ -898,6 +1179,7 @@ export default {
                 graph.setCellStyles(keys[i], values[i]);
             }
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys',keys,'values', values, 'cells', graph.getSelectionCells()));
+            graph.getModel().endUpdate()
             this.showArrowDialog = false
             e.stopPropagation()
         },
@@ -958,7 +1240,14 @@ export default {
             e.stopPropagation()
         },
         changeProgress() {
-            this.setWidgetProps('progressProps',{max:this.progressMax,min:this.progressMin,type:this.progressTypeVal})
+            if(this.shapeName == 'progress') {
+                this.setWidgetProps('progressProps',{max:this.progressMax,min:this.progressMin,type:this.progressTypeVal})
+            }else{
+                bindChartProps.series.min = this.progressMin
+                bindChartProps.series.max = this.progressMax
+                cellEchart.setOption(bindChartProps)
+                this.setWidgetProps("chartProps",bindChartProps)
+            }
         },
         hideProgressDialogFun() {
             this.progressDialog = false
@@ -983,11 +1272,9 @@ export default {
             let cellInfo = graph.getModel().getValue(cell)
             return cellInfo
         },
-        setWidgetProps(widgetProp,props,cell) {
+        setWidgetProps(widgetProp,props) {
             let graph = this.myEditorUi.editor.graph
-            if(!cell) {
-                cell = graph.getSelectionCell()
-            }
+            let cell = graph.getSelectionCell()
             let cellInfo = graph.getModel().getValue(cell)
             if (!mxUtils.isNode(cellInfo)) {
                 var doc = mxUtils.createXmlDocument()
@@ -1066,6 +1353,169 @@ export default {
         },
         checkMenu(val) {
             this.setWidgetProps('menuCellProps',{'check':val})
+        },
+        setMarkLineFun() {
+            bindChartProps.series[0].markLine.data.splice(0)
+            this.markLineList.forEach((item)=>{
+                bindChartProps.series[0].markLine.data.push({
+                    lineStyle:{
+                        color:item.borderColor,
+                        type:item.borderLineCls === 'border-line' ? 'solid' : 'dashed',
+                        width:item.borderLineBoldText
+                    },
+                    label:item.markName,
+                    yAxis:item.markValue
+                })
+            })
+            let markValArr = this.markLineList.map(item=>{
+                return item.markValue
+            })
+            let yAxisMax = Math.max(...markValArr,...bindChartProps.series[0].data)
+            bindChartProps.yAxis.max = yAxisMax
+            cellEchart.setOption(bindChartProps)
+        },
+        addMark() {//折线chart 添加标线
+            this.isAddMark = true
+            this.editMarkLine = null
+            this.markName = `指标${this.markLineList.length + 1}`
+        },
+        pickChartBorderColor() {//chart mark-line
+            this.myEditorUi.pickColor(this.borderColor,color=>{
+                this.borderColorChart = color
+            })
+        },
+        changeChartBorderLine(d,e) {
+            this.borderLineClsChart = d
+            this.showBorderLineChart = false
+            e.stopPropagation()
+        },
+        changeChartBorderLineBold(d,e) {
+            this.borderLineBoldTextChart = d
+            this.showBorderLineBoldchart = false
+            e.stopPropagation()
+        },
+        cancel() {
+            this.isAddMark = false
+        },
+        hideBorderLineChart() {
+            this.showBorderLineChart = false
+        },
+        submit() {
+            if(this.editMarkLine) {
+                this.markLineList.splice(this.editMarkLineIndex,1)
+            }
+            this.markLineList.push(
+                {
+                    markName:this.markName,
+                    markValue:this.markValue,
+                    borderColor:this.borderColorChart,
+                    borderLineCls:this.borderLineClsChart,
+                    borderLineBoldText:this.borderLineBoldTextChart,
+                }
+            )
+            this.setMarkLineFun()
+            this.isAddMark = false
+        },
+        hideBorderLineBoldChart() {
+            this.showBorderLineBold = false
+        },
+        delMark(d,index,evet) {
+            evet.stopPropagation()
+            sureDialog(this.myEditorUi,`确定要删除${d.markName}吗`,()=>{
+                this.markLineList.splice(index,1)
+                this.setMarkLineFun()
+            },)
+        },
+        editMarkLineFun(item,index,evet) {
+            evet.stopPropagation()
+            this.editMarkLine = item
+            this.editMarkLineIndex = index
+            this.isAddMark = true
+            this.markName = item.markName
+            this.markValue = item.markValue
+            this.borderColor = item.borderColor
+            this.borderLineCls = item.borderLineCls
+            this.borderLineBoldText = item.borderLineBoldText
+        },
+        chooseLegend() {
+            bindChartProps.legend.show = this.chartLegend
+            cellEchart.setOption(bindChartProps)
+            this.initLegendChoose()
+        },
+        pickStyleColor() {
+            this.myEditorUi.pickColor(this.styleColorBg,color=>{
+                this.styleColorBg = color
+                let obj = {color:color}
+                bindChartProps.yAxis.splitLine.lineStyle = obj
+                bindChartProps.yAxis.axisLine.lineStyle = obj
+                bindChartProps.yAxis.axisTick.lineStyle = obj
+                bindChartProps.xAxis.axisLabel.lineStyle = obj
+                bindChartProps.xAxis.axisLine.lineStyle = obj
+                bindChartProps.xAxis.axisTick.lineStyle = obj
+                bindChartProps.xAxis.axisLabel.lineStyle = obj
+                bindChartProps.legend.textStyle = obj
+                cellEchart.setOption(bindChartProps)
+            })
+        },
+        changeLegendChoose(d,e) {
+            this.legendChooseText = d.text
+            let tempLegend = {
+                show:true,
+                data: ['图例'],
+                textStyle:{
+            
+                }
+            }
+            tempLegend.mtype = d.type
+            switch(d.type) {
+                case 1:
+                    tempLegend.x = 'center'
+                    tempLegend.y = 'bottom'
+                    tempLegend.orient = 'horizontal'
+                    break
+                case 2:
+                    tempLegend.x = 'center'
+                    tempLegend.y = 'top'
+                    tempLegend.orient = 'horizontal'
+                    tempLegend.padding = [10,0,0,0]
+                    break
+                case 3:
+                    tempLegend.x = 'left'
+                    tempLegend.y = 'center'
+                    tempLegend.orient = 'vertical'
+                    tempLegend.padding = [0,0,0,-30]
+                    bindChartProps.grid.left = 60
+                    break
+                case 4:
+                    tempLegend.x = 'right'
+                    tempLegend.y = 'center'
+                    tempLegend.orient = 'vertical'
+                    tempLegend.padding = [0,-30,0,0]
+                    break
+            }
+            bindChartProps.legend = Object.assign({},tempLegend)
+            this.showLegendChoose = false
+            cellEchart.setOption(bindChartProps)
+            e.stopPropagation()
+        },
+        initLegendChoose() {
+            let mtype = bindChartProps.legend.mtype || 1
+            this.legendChooseText = this.legendChooseList[mtype - 1].text
+        },
+        hideLegendChooseFun() {
+            this.showLegendChoose = false
+        },
+        checkRounded(val) {
+            console.log("tt-aa")
+            let graph = this.myEditorUi.editor.graph
+            graph.getModel().beginUpdate()
+            let values = ['0'],keys = [mxConstants.STYLE_ROUNDED]
+            if(val) {
+                values = ['1']
+            }
+            debugger
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', keys,'values', values, 'cells', graph.getSelectionCells()))
+            graph.getModel().endUpdate()
         }
     }
 };

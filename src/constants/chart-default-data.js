@@ -64,6 +64,7 @@ export let data1 = {
         name: '图例',
         type: 'line',
         data: [10, 52, 200, 334, 390, 330, 220],
+        connectNulls: true,
         markLine: {
             silent: true,
             data: [],
@@ -79,10 +80,13 @@ export let data2 = {
     series: {
         name:'仪表盘',
         type: 'gauge',
-        radius:'80%',
+        radius:'100%',
         detail: {
             show:false,
             formatter: '{value}%'
+        },
+        title: {
+            show:false
         },
         data: [{name:'',value:50}],
         min: 0,

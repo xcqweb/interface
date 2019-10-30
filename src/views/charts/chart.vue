@@ -27,7 +27,6 @@
               数值范围
             </div>
             <div
-              v-if="shapeName!='menuCell' && shapeName!='tableCell'"
               style="display:flex;"
             >
               <div

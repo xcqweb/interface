@@ -1560,7 +1560,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         // 圆形
         this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;strokeColor=#000;aspect=fixed;', 36, 36, '', '圆形', null, null, '圆形'),
         // 横向菜单
-        this.addEntry('page menu', function()
+        this.addEntry('menulist', function()
         {
             var cell = new mxCell('', new mxGeometry(0, 0, 360, 40), 'shape=menulist;group;selectBackgroundColor=#3B72A8;selectedFontColor=#3B72A8;');
             cell.vertex = true;
@@ -1628,10 +1628,13 @@ Sidebar.prototype.addGeneralPalette = function(expand)
     ];
     //封装
     this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
-
     let fnsChart=[
-        this.createVertexTemplateEntry('shape=lineChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/lineChart.svg', 380, 200, '<span style="display:inline-block;width:100px;height:30px;line-height:30px;text-align:center;color:rgba(255,255,255,1);font-weight:400;font-size:24px;background:rgba(0,0,0,1);opacity: 0.4;">双击编辑</span>', '趋势图'),
-        this.createVertexTemplateEntry('shape=gaugeChart;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/gaugeChart.svg', 270, 270, '<span style="display:inline-block;width:100px;height:30px;line-height:30px;text-align:center;color:rgba(255,255,255,1);font-weight:400;font-size:24px;background:rgba(0,0,0,1);opacity: 0.4;">双击编辑</span>', '仪表盘'),
+        this.addEntry('lineChart',()=>{
+            let cell = new mxCell(`<div class="widget-chart chart"/>`, new mxGeometry(0, 0, 380, 200), 'shape=lineChart;html=1;strokeColor=none;fillColor=none;overflow=fill;')
+            cell.vertex = true
+            return this.createVertexTemplateFromCells([cell.clone()],cell.geometry.width,cell.geometry.height,'趋势图')
+        }),
+        this.createVertexTemplateEntry('shape=gaugeChart;html=1;strokeColor=none;fillColor=none;overflow=fill;', 270, 270, `<div class="widget-chart chart"/>`, '仪表盘'),
     ]
     this.addPaletteFunctions('chart', '图表控件', false, fnsChart);
    };
