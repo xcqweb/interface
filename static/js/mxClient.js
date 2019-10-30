@@ -56403,8 +56403,8 @@ mxGraph.prototype.startEditingAtCell = function(cell, evt)
 			}
 		}
 		var shapeName = this.getCellStyle(cell).shape;
-		let notInputArr = ['userimage', 'gaugeChart', 'lineChart', 'pipeline1', 'pipeline2', 'pipeline3', 'image', 'progress','light', 'beeline']
-		if (cell != null && notInputArr.includes('shapeName') === -1)
+		let notInputArr = ['userimage', 'gaugeChart', 'lineChart', 'pipeline1', 'pipeline2', 'pipeline3', 'image', 'progress','light', 'beeline'];
+		if (cell != null && !notInputArr.includes(shapeName))
 		{
 			this.fireEvent(new mxEventObject(mxEvent.START_EDITING,
 					'cell', cell, 'event', evt));
