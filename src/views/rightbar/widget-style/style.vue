@@ -1513,7 +1513,6 @@ export default {
             if(val) {
                 values = ['1']
             }
-            debugger
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', keys,'values', values, 'cells', graph.getSelectionCells()))
             graph.getModel().endUpdate()
         }
