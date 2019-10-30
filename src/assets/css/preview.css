@@ -71,6 +71,7 @@
   height: calc(100% - 36px);
   padding: 0 20px;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   position: relative;
 }
 #gePreview .gePalette .buttonTag{
@@ -89,6 +90,7 @@
   padding: 6px;
   background: #fff;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   border: 1px solid #333;
   border-radius: 4px;
   display:none;

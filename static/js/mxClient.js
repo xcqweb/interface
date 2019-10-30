@@ -56688,7 +56688,7 @@ mxGraph.prototype.click = function(me)
 // 双击控件事件控制,编辑内容
 mxGraph.prototype.dblClick = function(evt, cell)
 {
-	var forbiddenList = ['image','select','endarrow','multipleCheck','singleCheck',];
+	let forbiddenList = ['userimage', 'gaugeChart', 'lineChart', 'pipeline1', 'pipeline2', 'pipeline3', 'image', 'progress', 'light']
 	var mxe = new mxEventObject(mxEvent.DOUBLE_CLICK, 'event', evt, 'cell', cell);
 	this.fireEvent(mxe);
 	var shapeName = this.getCellStyle(cell).shape;

@@ -102,9 +102,7 @@ function setterRealData(res, fileSystem) {
                                 if(ser.data.length >= chartDataLen) {
                                     ser.data.shift()
                                 }
-                                if (val || val == 0) {
-                                    ser.data.push(val)
-                                }
+                                ser.data.push(val)
                             }
                         })
                         if(options.xAxis[0].data.length >= chartDataLen) {

@@ -1,4 +1,3 @@
-import VueEvent from '../services/VueEvent.js'
 const state = {
     type:0,//0=页面 1=弹窗 2=普通控件
     widgetInfo:{},//当前组件信息
@@ -191,14 +190,6 @@ const mutations = {
 
         let temp = Object.assign({},state.widgetInfo, widgetInfo)
         state.widgetInfo = temp
-        cells.forEach(item => {
-            if (graph.model.isEdge(item)) {
-                VueEvent.$emit('edgePropsUpdate', {
-                    geo: dealEdgePosition(item),
-                    cell: item
-                })
-            }
-        })
     },
     widgetChange(state,rand) {
         state.rand = rand

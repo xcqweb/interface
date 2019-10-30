@@ -24,6 +24,7 @@
   </div>
 </template>
 <script>
+import echarts from 'echarts'
 import {mxEvent,mxCell,mxGeometry} from '../../services/mxGlobal'
 import VueEvent from '../../services/VueEvent.js'
 import PageStyle from './page-style'
@@ -53,8 +54,28 @@ export default {
         init() {
             let that = this.myEditorUi.sidebar
             let graph = this.myEditorUi.editor.graph
+            graph.addListener(mxEvent.RESIZE_CELLS, (sender,evt)=>{
+                let cells = evt.properties.cells
+                if(cells && cells.length) {
+                    let cell = cells[0]
+                    let stateWidget = graph.view.getState(cell)
+                    if(stateWidget) {
+                        let shapeInfo = stateWidget.style
+                        let shapeName = shapeInfo.shape
+                        if(shapeName.includes('Chart')) {
+                            let echartsDom = document.querySelector(`.widget-chart.chart${cell.id}`)
+                            let echartsInstance = echarts.getInstanceByDom(echartsDom)
+                            echartsInstance.resize({width:cell.geometry.width,height:cell.geometry.height})
+                        }
+                    }
+                }
+            })
             graph.getModel().addListener(mxEvent.CHANGE,()=>{
                 this.$store.commit('getWidgetInfo',graph)
+                this.dealChartsRefresh(graph)
+            })
+            graph.addListener(mxEvent.REFRESH,()=>{
+                this.dealChartsRefresh(graph)
             })
             let ele = this.$refs.shortCutWrapper
             shortCutWidgets = [
@@ -132,6 +153,32 @@ export default {
             this.$nextTick(()=>{
                 graph.center(true,true,0.5,0.5)
             })
+        },
+        dealChartsRefresh(graph) {
+            let cells = Object.values(graph.model.cells)
+            for(let i = 0;i < cells.length;i++) {
+                if(cells[i].id != 0 && cells[i].id != 1) {
+                    let echartsDom = document.querySelector(`.widget-chart.chart${cells[i].id}`)
+                    if(!echartsDom) {
+                        return
+                    }
+                    echartsDom.style.width = `${cells[i].geometry.width}px`
+                    echartsDom.style.height = `${cells[i].geometry.height}px`
+                    let cellEchart = echarts.init(echartsDom)
+                    let bindChartProps = this.getWidgetProps('chartProps',cells[i])
+                    cellEchart.setOption(bindChartProps)
+                }
+            }
+        },
+        getWidgetProps(widgetProp,cell) {
+            let graph = this.myEditorUi.editor.graph
+            let cellInfo = graph.getModel().getValue(cell)
+            let attr = cellInfo.getAttribute(widgetProp)
+            let attrObj = null
+            if(attr) {
+                attrObj = JSON.parse(attr)
+            }
+            return attrObj
         },
     }
 };
