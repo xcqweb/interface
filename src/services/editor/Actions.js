@@ -240,7 +240,6 @@ Actions.prototype.init = function()
 	 */
     function insertMenu(type) {
         var cell = graph.getSelectionCell();
-        var idx = -1;
         var cellW = cell.geometry.width;
         let cellH = cell.geometry.height;
         var menuCell = cell.parent;
@@ -256,25 +255,21 @@ Actions.prototype.init = function()
         model.beginUpdate();
         try {
             let x = cell.geometry.x;
+            let items = menuCell.children;
+            let len = items.length;
             if (type === 'before') {
-                for (var i = 0; i < menuCell.children.length; i++) {
-                    if (cell.id === menuCell.children[i].id) {
-                        idx = i;
-                    }
-                    if (idx !== -1) {
-                        moveX(menuCell.children[i], cellW);
+                for (var i = 0; i < len; i++) {
+                    if (items[i].geometry.x >= x) {
+                        moveX(items[i], cellW);
                     }
                 }
             } else {
-                x += cellW;
-                for (var i = 0; i < menuCell.children.length; i++) {
-                    if (idx !== -1) {
-                        moveX(menuCell.children[i], cellW);
-                    }
-                    if (cell.id === menuCell.children[i].id) {
-                        idx = i;
+                for (var i = 0; i < len; i++) {
+                    if (items[i].geometry.x > x) {
+                        moveX(items[i], cellW);
                     }
                 }
+                x += cellW;
             }
             const symbol = new mxCell('菜单', new mxGeometry(x, 0, cellW, cellH), 'shape=menuCell;html=1;whiteSpace=wrap;strokeColor=#000;');
             symbol.setVertex(true);
