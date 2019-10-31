@@ -7,7 +7,7 @@
     <template
       v-if="cellsCount == 1"
     >
-      组件名称
+      {{ $t('rightBar.widgetName') }}
       <input
         v-model="widgetName"
         style="padding:0 4px;"
@@ -23,7 +23,7 @@
       <div
         class="item-container"
       >
-        <span style="color:#797979;margin:0 6px;">X</span>
+        <span style="color:#797979;margin:0 6px;">{{ $t('X') }}</span>
         <input
           v-model="positionSize.x"
           v-number="0"
@@ -36,7 +36,7 @@
         class="item-container"
         style="margin-left:10px;"
       >
-        <span style="color:#797979;margin:0 6px;">Y</span>
+        <span style="color:#797979;margin:0 6px;">{{ $t('Y') }}</span>
         <input
           v-model="positionSize.y"
           v-number="0"
@@ -53,7 +53,7 @@
       <div
         class="item-container"
       >
-        <span style="color:#797979;margin:0 6px;">宽</span>
+        <span style="color:#797979;margin:0 6px;">{{ $t('width') }}</span>
         <input
           v-model="positionSize.width"
           v-number="0"
@@ -66,7 +66,7 @@
         class="item-container"
         style="margin-left:10px;"
       >
-        <span style="color:#797979;margin:0 6px;">高</span>
+        <span style="color:#797979;margin:0 6px;">{{ $t('height') }}</span>
         <input
           v-model="positionSize.height"
           v-number="0"
@@ -78,12 +78,12 @@
     </div>
     <div v-if="shapeName=='beeline' && edgeInfo !== 2">
       <div style="display:flex;align-items:center;justify-content:space-between;">
-        起点
+        {{ $t('rightBar.startPos') }}
         <div
           class="item-container"
           style="width:40%;"
         >
-          <span style="color:#797979;margin:0 6px;">X</span>
+          <span style="color:#797979;margin:0 6px;">{{ $t('X') }}</span>
           <input
             v-model="positionSize.sx"
             v-number="0"
@@ -96,7 +96,7 @@
           class="item-container"
           style="width:40%;"
         >
-          <span style="color:#797979;margin:0 6px;">Y</span>
+          <span style="color:#797979;margin:0 6px;">{{ $t('Y') }}</span>
           <input
             v-model="positionSize.sy"
             v-number="0"
@@ -107,12 +107,12 @@
         </div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
-        终点
+        {{ $t('rightBar.endPos') }}
         <div
           class="item-container"
           style="width:40%;"
         >
-          <span style="color:#797979;margin:0 6px;">X</span>
+          <span style="color:#797979;margin:0 6px;">{{ $t('X') }}</span>
           <input
             v-model="positionSize.tx"
             v-number="0"
@@ -125,7 +125,7 @@
           class="item-container"
           style="width:40%;"
         >
-          <span style="color:#797979;margin:0 6px;">Y</span>
+          <span style="color:#797979;margin:0 6px;">{{ $t('Y') }}</span>
           <input
             v-model="positionSize.ty"
             v-number="0"
@@ -143,7 +143,7 @@
       <div
         class="item-container"
       >
-        <span style="color:#797979;margin:0 6px;">行</span>
+        <span style="color:#797979;margin:0 6px;">{{ $t('row') }}</span>
         <input
           v-model="tableRow"
           v-number="0"
@@ -156,7 +156,7 @@
         class="item-container"
         style="margin-left:10px;"
       >
-        <span style="color:#797979;margin:0 6px;">列</span>
+        <span style="color:#797979;margin:0 6px;">{{ $t('col') }}</span>
         <input
           v-model="tableCol"
           v-number="0"
@@ -168,7 +168,7 @@
     </div>
     <div v-if="shapeName=='menuCell' && cellsCount==1">
       <div class="item-title">
-        选中
+        {{ $t('checked') }}
       </div>
       <i-switch
         v-model="selectMenu"
@@ -181,7 +181,7 @@
       class="titleSet"
     >
       <div class="item-title">
-        文本
+        {{ $t('text') }}
       </div>
       <div class="titleCon">
         <div class="itemLine">
@@ -271,11 +271,11 @@
     </div>
     <div v-if="(!selectMenu && shapeName!='menuCell' || selectMenu && shapeName=='menuCell') && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text' && shapeName!='menulist'">
       <div class="item-title">
-        外观
+        {{ $t('appearance') }}
       </div>
       <div v-if="!fillStyleList.includes(shapeName) && edgeInfo!==2">
         <p style="margin-top:10px;">
-          填充
+          {{ $t('fill') }}
         </p>
         <div
           class="item-container"
@@ -286,7 +286,7 @@
       </div>
       <div>
         <p style="margin-top:10px;">
-          {{ shapeName=='beeline' && edgeInfo!==2 ? '线条' : '边框' }}
+          {{ shapeName=='beeline' && edgeInfo!==2 ? $t('line') : $t('border') }}
         </p>
         <div style="display:flex;"> 
           <div
@@ -357,7 +357,7 @@
       </div>
       <div v-if="shapeName=='beeline' && edgeInfo!==2">
         <p style="margin-top:10px;">
-          箭头
+          {{ $t('arrow') }}
         </p>
         <div
           v-clickOutSide="hideArrowFun"
@@ -389,7 +389,7 @@
       class="titleSet"
     >
       <div class="item-title">
-        流动指示
+        {{ $t('rightBar.flowDirection') }}
       </div>
       <div class="titleCon">
         <div class="itemLine">
@@ -421,7 +421,7 @@
     </div>
     <div v-if="shapeName=='progress' || shapeName=='gaugeChart'">
       <div class="item-title">
-        数值范围
+        {{ $t('rightBar.numberRange') }}
       </div>
       <div
         style="display:flex;"
@@ -429,7 +429,7 @@
         <div
           class="item-container"
         >
-          <span style="color:#797979;margin:0 6px;">上限</span>
+          <span style="color:#797979;margin:0 6px;">{{ $t('upLimit') }}</span>
           <input
             v-model="progressMax"
             v-number="0"
@@ -442,7 +442,7 @@
           class="item-container"
           style="margin-left:10px;"
         >
-          <span style="color:#797979;margin:0 6px;">下限</span>
+          <span style="color:#797979;margin:0 6px;">{{ $t('downLimit') }}</span>
           <input
             v-model="progressMin"
             v-number="0"
@@ -457,7 +457,7 @@
           class="item-title"
           style="border:none;"
         >
-          数值显示
+          {{ $t('rightBar.numberShow') }}
         </div>
         <div
           class="titleCon"
@@ -492,7 +492,7 @@
     </div>
     <div v-if="shapeName=='linkTag'">
       <div class="item-title">
-        链接地址
+        {{ $t('rightBar.linkAddress') }}
       </div>
       <input
         v-model="linkUrl"

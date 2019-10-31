@@ -85,25 +85,25 @@ export default {
                     60,
                     30,
                     // 类似链接一样设置
-                    '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">输入文本</span>',
-                    "文字",true,true
+                    `<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">${this.$t('rightBar.inputText')}</span>`,
+                    `${this.$t('char')}`,true,true
                 ),
                 //直线
-                that.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 50, '', '直线', true,true),
+                that.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 50, '', `${this.$t('beeline')}`, true,true),
                 // 矩形
                 that.createVertexTemplateEntry(
                     "rounded=1;shape=rectangle;whiteSpace=wrap;html=1;strokeColor=#000;arcSize=0;",
                     120,
                     60,
                     "",
-                    "矩形",true,true
+                    `${this.$t('rectangle')}`,true,true
                 ),
                 //圆形
-                that.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#000;', 36, 36, '', '圆形', true, true, '圆形'),
+                that.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#000;', 36, 36, '', `${this.$t('circle')}`, true, true, `${this.$t('circle')}`),
                 // 按钮
-                that.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;verticalAlign=middle;align=center;', 70, 40, '<div style="display: inline-block;text-align:inherit;text-decoration: inherit;">BUTTON</div>', '按钮',true,true),
+                that.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;verticalAlign=middle;align=center;', 70, 40, '<div style="display: inline-block;text-align:inherit;text-decoration: inherit;">BUTTON</div>', `${this.$t('button')}`,true,true),
                 //表格,通过矩形拼接
-                that.addEntry('tableBox', function() {
+                that.addEntry('tableBox', ()=> {
                     var cell = new mxCell('', new mxGeometry(0, 0, 300, 90), 'shape=tableBox;group');
                     cell.vertex = true;
                     for (let i = 0; i < 9; i++) {
@@ -113,10 +113,10 @@ export default {
                         symbol.vertex = true;
                         cell.insert(symbol);
                     }
-                    return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '表格',true,true);
+                    return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, `${this.$t('table')}`,true,true);
                 }),
                 // 图片
-                that.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', that.defaultImageWidth, that.defaultImageHeight, '', '图片',true,true),
+                that.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', that.defaultImageWidth, that.defaultImageHeight, '', `${this.$t('image')}`,true,true),
             ]
             for (let i = 0; i < shortCutWidgets.length; i++) {
                 ele.appendChild(shortCutWidgets[i](ele))

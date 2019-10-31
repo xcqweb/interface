@@ -819,6 +819,9 @@ div.mxWindow .geButton {
 	content: '保存';
 	left: 6px;
 }
+.en .geSprite-save::after {
+	content: 'Save';
+}
 .geSprite-zoomin {
 	background-image: url(../images/menu/zoomin.png);
 }
@@ -826,12 +829,18 @@ div.mxWindow .geButton {
 	content: '缩放';
 	left: 37px;
 }
+.en .geSprite-zoomin::after {
+	content: 'Scale';
+}
 .geSprite-fullscreen {
 	background-image: url(../images/menu/fullscreen.png);
 }
 .geSprite-fullscreen::after {
 	content: '全屏';
 	left: 0;
+}
+.en .geSprite-fullscreen::after {
+	content: 'Full';
 }
 .geSprite-zoomout {
 	background-image: url(../images/menu/zoomout.png);
@@ -844,6 +853,9 @@ div.mxWindow .geButton {
 	content: '撤销';
 	left: 13px;
 }
+.en .geSprite-undo::after {
+	content: 'Undo';
+}
 .geSprite-redo {
 	background-image: url(../images/menu/redo.png);
 }
@@ -851,9 +863,15 @@ div.mxWindow .geButton {
 	content: '重做';
 	left: 13px;
 }
+.en .geSprite-redo::after {
+	content: 'Redo';
+}
 .geSprite-align::after {
 	content: '对齐';
 	left: 13px;
+}
+.en .geSprite-align::after {
+	content: 'Align';
 }
 .page-tab::after {
 	content: "页面";
@@ -869,6 +887,9 @@ div.mxWindow .geButton {
 	position: relative;
 	font-size: 12px;
 	top: 24px;
+}
+.en .data-tab::after {
+	content: "DataSource";
 }
 .geSprite-left-align {
 	background-image: url(../images/menu/align_left_ic.png);
@@ -917,12 +938,18 @@ div.mxWindow .geButton {
 	content: '顶层';
 	left: 10px;
 }
+.en .geSprite-tofront::after {
+	content: 'Top';
+}
 .geSprite-toback {
 	background-image: url(../images/menu/toback.png);
 }
 .geSprite-toback::after {
 	content: '底层';
 	left: 10px;
+}
+.en .geSprite-toback::after {
+	content: 'Bottom';
 }
 .geSprite-group {
 	background-image: url(../images/menu/group.png);
@@ -931,12 +958,18 @@ div.mxWindow .geButton {
 	content: '组合';
 	left: 13px;
 }
+.en .geSprite-group::after {
+	content: 'Group';
+}
 .geSprite-ungroup {
 	background-image: url(../images/menu/ungroup.png);
 }
 .geSprite-ungroup::after {
 	content: '取消组合';
 	left: 0px;
+}
+.en .geSprite-ungroup::after {
+	content: 'UnGroup';
 }
 .geSprite-linkreport {
 	background-image: url(/static/images/menu/link.png);
@@ -952,6 +985,9 @@ div.mxWindow .geButton {
 	content: '预览';
 	left: 6px;
 }
+.en .geSprite-preview::after {
+	content: 'Preview';
+}
 .geSprite-material {
 	background-image: url(../images/menu/materiallibrary_ic.png);
 }
@@ -960,12 +996,8 @@ div.mxWindow .geButton {
 	content: '素材库';
 	left: 6px;
 }
-.geSprite-publish {
-	background-image: url(/static/images/menu/publish.png);
-}
-.geSprite-publish::after {
-	content: '发布';
-	left: 6px;
+.en .geSprite-material::after {
+	content: 'ResourceLib';
 }
 .geSprite-limit {
 	cursor: pointer;

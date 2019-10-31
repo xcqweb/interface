@@ -28,7 +28,7 @@
 <script>
 import MPage from './m-page'
 import MDataS from './m-datasource'
-const alertTip = '您还有未保存的模型,请先保存'
+const alertTip = 'dataSource.haveUnsavedModels'
 import VueEvent from '../services/VueEvent.js'
 import {Message} from 'iview'
 export default {
@@ -57,7 +57,7 @@ export default {
     methods: {
         changeTab(index) {
             if (!this.modelEditing && index === 1) {
-                Message.warning(alertTip)
+                Message.warning(this.$t(alertTip))
                 return false
             }
             this.tab = index

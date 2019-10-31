@@ -114,7 +114,7 @@
               class="no-data-wrap"
             >
               <NoData
-                :text="nodata"
+                :text="$t(nodata)"
               />
             </div>
           </div>
@@ -127,7 +127,7 @@
                 :value="checkAllArr[1]"
                 @click.prevent.native="handleCheckAll(1)"
               >
-                {{ selectAll }}
+                {{ $t(selectAll) }}
               </Checkbox>
             </div>
             <div class="data-botton-right">
@@ -180,7 +180,7 @@
               class="no-data-wrap"
             >
               <NoData
-                :text="nodata"
+                :text="$t(nodata)"
               />
             </div>
           </div>
@@ -193,7 +193,7 @@
                 :value="checkAllArr[2]"
                 @click.prevent.native="handleCheckAll(2)"
               >
-                {{ selectAll }}
+                {{ $t(selectAll) }}
               </Checkbox>
             </div>
             <div class="data-botton-right">
@@ -233,9 +233,7 @@
 </template> 
 <script>
 import {Modal, Form,FormItem, Button,Checkbox,CheckboxGroup, Page, Input, Select,Option, Message} from 'iview'
-// import DataSourceSelect from './dataSource-select'
 import NoData from './nodata'
-import {Promise} from 'q';
 export default{
     components: {
         Modal,
@@ -259,7 +257,7 @@ export default{
             derectionArr: ['right', 'right'],
             dataName: '数据源',
             deviceType: '设备类型',
-            selectAll: '全选',
+            selectAll: 'selectAll',
             dataNameArr: [
                 {
                     value: '1',
@@ -278,7 +276,7 @@ export default{
             deviceNameListArr: [],
             indeterminateArr: ['',false, false],
             checkAllArr: ['',false, false],
-            nodata:'暂无数据',
+            nodata:'noData',
             PAGE_CURREN: 1,
             PAGE_SIZE: 10,
             inputParamName: '',

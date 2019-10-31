@@ -2,7 +2,7 @@
   <div class="dataSource-right-wrap">
     <!--设备类型-->
     <dataRightColum
-      :title="titleArr[0]"
+      :title="$t(titleArr[0])"
       :widthlen="widthlenArr[0]"
     >
       <div 
@@ -42,7 +42,7 @@
             class="no-data-wrap"
           >
             <NoData
-              :text="nodata"
+              :text="$t(nodata)"
             />
           </div>
         </div>
@@ -51,7 +51,7 @@
     </dataRightColum>
     <!--参数列表-->
     <dataRightColum
-      :title="titleArr[1]"
+      :title="$t(titleArr[1])"
       :widthlen="widthlenArr[1]"
     >
       <div class="dataSource-right-content">
@@ -59,7 +59,7 @@
           <Input
             v-model="inputParamName"
             class="inputParamName2"
-            :placeholder="placeTextArr[0]"
+            :placeholder="$t(placeTextArr[0])"
             suffix="ios-search"
           />
         </div>
@@ -96,7 +96,7 @@
             class="no-data-wrap"
           >
             <NoData
-              :text="nodata"
+              :text="$t(nodata)"
             />
           </div>
         </div>
@@ -120,7 +120,7 @@
               :value="checkAllArr[1]"
               @click.prevent.native="handleCheckAll(1)"
             >
-              {{ selectAll }}
+              {{ $t(selectAll) }}
             </Checkbox>
           </div>
           <div class="dataSource-right-bomright">
@@ -129,7 +129,7 @@
               :disabled="!paramsNameList.length"
               @click.prevent.native="deleteAll(1)"
             >
-              {{ alldelete }}
+              {{ $t(alldelete) }}
             </Button>
           </div>
         </div>
@@ -137,7 +137,7 @@
     </dataRightColum>
     <!--设备列表-->
     <dataRightColum
-      :title="titleArr[2]"
+      :title="$t(titleArr[2])"
       :widthlen="widthlenArr[2]"
     >
       <div class="dataSource-right-content">
@@ -145,7 +145,7 @@
           <Input 
             v-model="inputDeviceName"
             class="inputDeviceName2"
-            :placeholder="placeTextArr[1]"
+            :placeholder="$t(placeTextArr[1])"
             suffix="ios-search"
           />
         </div>
@@ -180,7 +180,7 @@
             class="no-data-wrap"
           >
             <NoData
-              :text="nodata"
+              :text="$t(nodata)"
             />
           </div>
         </div>
@@ -204,7 +204,7 @@
               :value="checkAllArr[2]"
               @click.prevent.native="handleCheckAll(2)"
             >
-              {{ selectAll }}
+              {{ $t(selectAll) }}
             </Checkbox>
           </div>
           <div class="dataSource-right-bomright">
@@ -213,7 +213,7 @@
               :disabled="!deviceNameList.length"
               @click.prevent.native="deleteAll(2)"
             >
-              {{ alldelete }}
+              {{ $t(alldelete) }}
             </Button>
           </div>
         </div>
@@ -221,7 +221,7 @@
     </dataRightColum>
     <Modal
       v-model="modalParam.ifShow"
-      :title="modalParam.titleText"
+      :title="$t(modalParam.titleText)"
       class="left-sidebar-model2"
       width="408px"
       :mask-closable="false"
@@ -235,7 +235,7 @@
           style="height:28px;width:84px"
           @click.stop.prevent="cancelHandle"
         >
-          {{ buttonText[0] }}
+          {{ $t(buttonText[0]) }}
         </Button> 
         <Button
           type="primary"
@@ -243,7 +243,7 @@
           style="height:28px;width:84px"
           @click.stop.prevent="saveHandle"
         >
-          {{ buttonText[1] }}
+          {{ $t(buttonText[1]) }}
         </Button> 
       </div>
     </Modal> 
@@ -269,11 +269,11 @@ export default {
     },
     data() {
         return {
-            titleArr:['设备类型','参数列表','设备列表'],
+            titleArr:['dataSource.deviceType','dataSource.parameters','dataSource.devices'],
             widthlenArr: [200,300,300],
-            placeTextArr: ['输入参数名', '输入设备名称'],
+            placeTextArr: ['dataSource.enterParameterNameToSearch', 'dataSource.enterDeviceNameToSearch'],
             derectionArr: ['right','right'],
-            buttonText: ['取消','确认'],
+            buttonText: ['cancel','confirm'],
             dataNameArr: [
                 {
                     value: '1',
@@ -293,15 +293,15 @@ export default {
             deviceNameListArr: [],
             indeterminateArr: ['',false, false],
             checkAllArr: ['',false, false],
-            nodata:'暂无数据',
-            alldelete: '批量删除',
-            selectAll: '全选',
+            nodata:'noData',
+            alldelete: 'batchDeletion',
+            selectAll: 'selectAll',
             numberlistIndex: 0,
             paramListTotal: 1,
             deviceListTotal: 1,
             studioIdNew: null,
             modalParam: {
-                titleText: '删除',
+                titleText: 'delete',
                 ifShow: false,
                 type: null,
                 deleteAll: false
@@ -621,7 +621,7 @@ export default {
         // 删除参数
         deleteParamHandle(paramIds,paramName,index,type) {
             this.modalParam = {
-                titleText: '删除',
+                titleText: 'delete',
                 ifShow: true,
                 index: index,
                 type: type,
@@ -639,7 +639,7 @@ export default {
         // 删除设备
         deleteDeviceHandle(deviceIds,deviceName, index,type) {
             this.modalParam = {
-                titleText: '删除',
+                titleText: 'delete',
                 ifShow: true,
                 index: index,
                 type: type,
@@ -657,7 +657,7 @@ export default {
         // 1 批量删除参数 2 批量删除设备
         deleteAll(type) {
             this.modalParam = {
-                titleText: '删除',
+                titleText: 'delete',
                 ifShow: true,
                 index: null,
                 type: type,
@@ -667,7 +667,7 @@ export default {
         },
         cancelHandle() {
             this.modalParam = {
-                titleText: '删除',
+                titleText: 'delete',
                 ifShow: false,
                 index: null,
                 type: null,

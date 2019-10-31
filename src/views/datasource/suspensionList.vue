@@ -11,14 +11,14 @@
           :class="numberIndex === 0 ? 'currentList' : ''"
           @click="clickHandle(item.id, index)"
         >
-          {{ item.name }}
+          {{ $t(item.name) }}
         </li>
       </ul>
     </div>
   </div>
 </template>
 <script>
-const alertTip = '您还有未保存的模型,请先保存'
+const alertTip = 'dataSource.haveUnsavedModels'
 import {Message} from 'iview'
 export default{
     props:{
@@ -40,7 +40,7 @@ export default{
     methods: {
         clickHandle(id) {
             if (!this.modelEditing) {
-                Message.warning(alertTip)
+                Message.warning(this.$t(alertTip))
                 return false
             }
             switch(+id) {

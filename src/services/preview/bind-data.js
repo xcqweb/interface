@@ -314,7 +314,10 @@ function initialWs(ws, pageId, applyData, fileSystem) {
         if (dataArr[0] === 'rspCode' || dataArr[1] === 'rspMsg') {
             return
         }
-        throttle(setterRealData(JSON.parse(res.data),fileSystem), 600)
+        let fun = ()=>{
+            setterRealData(JSON.parse(res.data), fileSystem)
+        }
+        throttle(fun, 600)
     }
     // 接收异常
     ws.onerror = function() {

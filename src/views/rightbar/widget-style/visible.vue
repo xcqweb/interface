@@ -1,7 +1,7 @@
 <template>
   <div style="height:100%;">
     <p style="margin-bottom: 2px;margin-top:10px;">
-      对象
+      {{ $t("object") }}
     </p>
     <div class="type-tab-con">
       <div
@@ -10,7 +10,7 @@
         style="border-top-left-radius:2px;border-bottom-left-radius:2px;"
         @click="changeTab(1)"
       >
-        弹窗
+        {{ $t("popup") }}
       </div>
       <div
         class="type-tab"
@@ -18,7 +18,7 @@
         :class="{'selected':typeTab==2}"
         @click="changeTab(2)"
       >
-        组件
+        {{ $t("widget") }}
       </div>
     </div>
     <div style="height:100%;">
@@ -27,7 +27,7 @@
         style="height:60%;"
       >
         <p style="margin-bottom: 2px;margin-top:10px;">
-          选择弹窗
+          {{ $t("rightBar.choosePopup") }}
         </p>
         <ul class="widget-con">
           <li
@@ -45,7 +45,7 @@
         style="height:60%;"
       >
         <p style="margin-bottom: 2px;margin-top:10px;">
-          选择组件
+          {{ $t("rightBar.chooseWidget") }}
         </p>
         <ul class="widget-con">
           <li
@@ -63,13 +63,13 @@
           class="mutual-btn"
           @click="hide(typeTab)"
         >
-          取消
+          {{ $t("cancel") }}
         </button>
         <button
           class="mutual-btn selected"
           @click="submit(typeTab)"
         >
-          提交
+          {{ $t("submit") }}
         </button>
       </div>
     </div>
@@ -110,12 +110,12 @@ export default{
                 currentItem = this.currentDialogItem
                 innerType = 'page'
                 tempList = this.dialogs
-                tipText = '弹窗'
+                tipText = `${this.$t("popup")}`
             }else{
                 currentItem = this.currentWidgetItem
                 innerType = 'palette'
                 tempList = this.currentPageWidgets
-                tipText = '控件'
+                tipText = `${this.$t("control")}`
             }
             for(let i = 0;i < tempList.length;i++) {
                 if(tempList[i].selected) {
@@ -124,7 +124,7 @@ export default{
                 }
             }
             if(!flag) {
-                tipDialog(this.myEditorUi,`请选择要设置的${tipText}`)
+                tipDialog(this.myEditorUi,`${this.$t("rightBar.chooseToSet")}${tipText}`)
                 return
             } 
             if(!currentItem) {
@@ -137,7 +137,7 @@ export default{
                 }
             }
             if(flag2) {
-                tipDialog(this.myEditorUi,`该${tipText}已经绑定了显隐事件`)
+                tipDialog(this.myEditorUi,`${this.$t("thisText")}${tipText}${this.$t("rightBar.hasBindVisibleOrHideEvent")}`)
                 return
             } 
             this.$emit("submitMutual",{mutualType:2,id:currentItem.id,hide:currentItem.hide,innerType:innerType})
