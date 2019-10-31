@@ -1188,28 +1188,23 @@ export default {
            
             let disRow = this.tableRow - res[0]
             let disCol = this.tableCol - res[1]
-            // graph.getModel().beginUpdate()
-            try{
-                if(disRow > 0) {
-                    for(let i = 0;i < disRow;i++) {
-                        actions.insertTableCell('lower',this.getCellLast(graph))
-                    }
-                }else if(disRow < 0) {
-                    for(let i = 0;i < -disRow;i++) {
-                        actions.deleteTableCell('row',this.getCellLast(graph))
-                    }
+            if(disRow > 0) {
+                for(let i = 0;i < disRow;i++) {
+                    actions.insertTableCell('lower',this.getCellLast(graph))
                 }
-                if(disCol > 0) {
-                    for(let i = 0;i < disCol;i++) {
-                        actions.insertTableCell('right',this.getCellLast(graph))
-                    }
-                }else if(disCol < 0) {
-                    for(let i = 0;i < -disCol;i++) {
-                        actions.deleteTableCell('col', this.getCellLast(graph))
-                    }
+            }else if(disRow < 0) {
+                for(let i = 0;i < -disRow;i++) {
+                    actions.deleteTableCell('row',this.getCellLast(graph))
                 }
-            }finally {
-                // graph.getModel().endUpdate()
+            }
+            if(disCol > 0) {
+                for(let i = 0;i < disCol;i++) {
+                    actions.insertTableCell('right',this.getCellLast(graph))
+                }
+            }else if(disCol < 0) {
+                for(let i = 0;i < -disCol;i++) {
+                    actions.deleteTableCell('col', this.getCellLast(graph))
+                }
             }
         },
         getCellLast(graph) {
