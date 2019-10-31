@@ -1387,19 +1387,13 @@ Actions.prototype.getTableColCount = function (table) {
     const ui = this.editorUi;
     const editor = ui.editor;
     const graph = editor.graph;
-    // const tableInfo = graph.getModel().getValue(table);
-    let cols = table.getAttribute('cols');
-    cols = cols ? parseInt(cols) : 0;
-    if (!isNaN(cols) && cols > 0) {
-        return cols;
-    }
+    let cols = 0;
     const tableCells = table.children;
     tableCells.forEach(cell => {
         if (cell.geometry.y === 0) {
             cols++;
         }
     })
-    table.setAttribute('cols', cols);
     return cols;
 }
 /**
@@ -1679,9 +1673,6 @@ Actions.prototype.insertTableCell = function (type, selectionCell = null) {
                 });
             }
             tableGeo.width += cellW;
-            // 插入列时，需要更新一下cols属性
-            const tableCol = this.getTableColCount(table);
-            table.setAttribute('cols', tableCol + 1);
         }
         model.setGeometry(table, tableGeo)
     }
@@ -1783,9 +1774,6 @@ Actions.prototype.deleteTableCell = function(type,selectionCell=null) {
                 moveXY(item);
             });
             tableGeo.width -= cellW;
-            // 插入列时，需要更新一下cols属性
-            const tableCol = this.getTableColCount(table);
-            table.setAttribute('cols', tableCol - 1);
         }
         graph.removeCells(delCells, true);
         model.setGeometry(table, tableGeo);
