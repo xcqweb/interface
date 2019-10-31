@@ -1188,7 +1188,7 @@ export default {
            
             let disRow = this.tableRow - res[0]
             let disCol = this.tableCol - res[1]
-            graph.getModel().beginUpdate()
+            // graph.getModel().beginUpdate()
             try{
                 if(disRow > 0) {
                     for(let i = 0;i < disRow;i++) {
@@ -1209,7 +1209,7 @@ export default {
                     }
                 }
             }finally {
-                graph.getModel().endUpdate()
+                // graph.getModel().endUpdate()
             }
         },
         getCellLast(graph) {

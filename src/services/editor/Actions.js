@@ -227,6 +227,14 @@ Actions.prototype.init = function()
         ui.showDialog(dlg.container, 400, 270, true, false, null, null, type == 'rename' ? '编辑页面' : '新建页面');
     })
     /**
+     * 获取节点坐标信息
+     * @param {mxCell} mxCell 
+     */
+    const getGeo = mxCell => {
+        const geo = graph.getCellGeometry(mxCell);
+        return geo.clone();
+    };
+    /**
 	 * 插入菜单
 	 * @param {string} type 往前插入菜单：'before'，往后插入菜单：'after'
 	 */
@@ -239,42 +247,45 @@ Actions.prototype.init = function()
         if (menuCell.children.length >= 10) {
             mxUtils.alert('最多10个菜单');
         }
-        if (type === 'before') {
-            var symbol = new mxCell('菜单', new mxGeometry(cell.geometry.x, 0, cellW, cellH), 'shape=menuCell;html=1;whiteSpace=wrap;strokeColor=#000;');
-            for (var i = 0; i < menuCell.children.length; i++) {
-                if (cell.id === menuCell.children[i].id) {
-                    idx = i;
+        const model = graph.getModel();
+        const moveX = (item, cellW) => {
+            const geo = getGeo(item);
+            geo.x += cellW;
+            model.setGeometry(item, geo);
+        };
+        model.beginUpdate();
+        try {
+            let x = cell.geometry.x;
+            if (type === 'before') {
+                for (var i = 0; i < menuCell.children.length; i++) {
+                    if (cell.id === menuCell.children[i].id) {
+                        idx = i;
+                    }
+                    if (idx !== -1) {
+                        moveX(menuCell.children[i], cellW);
+                    }
                 }
-                if (idx !== -1) {
-                    menuCell.children[i].geometry.x += cellW;
+            } else {
+                x += cellW;
+                for (var i = 0; i < menuCell.children.length; i++) {
+                    if (idx !== -1) {
+                        moveX(menuCell.children[i], cellW);
+                    }
+                    if (cell.id === menuCell.children[i].id) {
+                        idx = i;
+                    }
                 }
-                graph.getModel().setValue(menuCell.children[i], graph.getModel().getValue(menuCell.children[i]));
             }
-        } else {
-            for (var i = 0; i < menuCell.children.length; i++) {
-                if (idx !== -1) {
-                    menuCell.children[i].geometry.x += cellW - 1;
-                }
-                graph.getModel().setValue(menuCell.children[i], graph.getModel().getValue(menuCell.children[i]));
-                if (cell.id === menuCell.children[i].id) {
-                    idx = i + 1;
-                }
-            }
-            var symbol = new mxCell('菜单', new mxGeometry(cell.geometry.x + cellW, 0, cellW, cellH), 'shape=menuCell;html=1;whiteSpace=wrap;strokeColor=#000;');
-        }
-        symbol.vertex = true;
-        // 设置id
-        symbol.setId(graph.getModel().createId(symbol));
-        graph.getModel().beginUpdate();
-        try{
-            // menuCell.insert(symbol, idx);
-            var geo = graph.getModel().getGeometry(menuCell);
-            geo.width += cellW;
-            graph.getModel().add(menuCell, symbol, idx);
-            // graph.getModel().setGeometry(menuCell, geo);
-            // graph.getModel().setValue(menuCell, graph.getModel().getValue(menuCell));
+            const symbol = new mxCell('菜单', new mxGeometry(x, 0, cellW, cellH), 'shape=menuCell;html=1;whiteSpace=wrap;strokeColor=#000;');
+            symbol.setVertex(true);
+            // 设置id
+            symbol.setId(model.createId(symbol));
+            model.add(menuCell, symbol);
+            const menuCellGeo = getGeo(menuCell);
+            menuCellGeo.width += cellW;
+            model.setGeometry(menuCell, menuCellGeo);
         } finally {
-            graph.getModel().endUpdate();
+            model.endUpdate();
         }
     }
 
@@ -473,38 +484,41 @@ Actions.prototype.init = function()
 		
         if (cells != null && cells.length > 0)
         {
-            var parents = graph.model.getParents(cells);
-            graph.removeCells(cells, includeEdges);
-			
-            // 群组删除节点时选中父节点
-            if (parents != null)
-            {
-                var select = [];
-				
-                for (var i = 0; i < parents.length; i++)
-                {
-                    // 删除菜单时处理菜单长度和子菜单的定位
-                    if (graph.view.getState(parents[i]) && graph.view.getState(parents[i]).style.shape === 'menulist') {
-                        var pos_x = 0;
-                        for (var j = 0; j < parents[i].children.length; j++) {
-                            var cell = parents[i].children[j];
-                            var geo = graph.getModel().getGeometry(cell);
-                            geo.x = pos_x;
-                            pos_x += geo.width;
-                            graph.getModel().setValue(cell, graph.getModel().getValue(cell));
+            const model = graph.getModel();
+            const parents = graph.model.getParents(cells);
+            model.beginUpdate();
+			try {
+                graph.removeCells(cells, true);
+                // 群组删除节点时选中父节点
+                if (parents != null) {
+                    var select = [];
+                    var len = parents.length;
+                    for (var i = 0; i < len; i++) {
+                        // 删除菜单时处理菜单长度和子菜单的定位
+                        if (graph.view.getState(parents[i]) && graph.view.getState(parents[i]).style.shape === 'menulist') {
+                            let pos_x = 0;
+                            for (var j = 0; j < parents[i].children.length; j++) {
+                                var cell = parents[i].children[j];
+                                const geo = getGeo(cell);
+                                geo.x = pos_x;
+                                pos_x += geo.width;
+                                model.setGeometry(cell, geo);
+                            }
+                            const parentGeo = getGeo(parents[i]);
+                            parentGeo.width = pos_x;
+                            model.setGeometry(parents[i], parentGeo);
                         }
-                        parents[i].geometry.width = pos_x;
-                        graph.getModel().setValue(parents[i], graph.getModel().getValue(parents[i]));
+                        // 添加选中节点
+                        if (graph.model.contains(parents[i]) &&
+                            (graph.model.isVertex(parents[i]) ||
+                                graph.model.isEdge(parents[i]))) {
+                            select.push(parents[i]);
+                        }
                     }
-                    // 添加选中节点
-                    if (graph.model.contains(parents[i]) &&
-						(graph.model.isVertex(parents[i]) ||
-						graph.model.isEdge(parents[i])))
-                    {
-                        select.push(parents[i]);
-                    }
+                    select.length && graph.setSelectionCells(select);
                 }
-                graph.setSelectionCells(select);
+            } finally {
+                model.endUpdate();
             }
         }
     }
@@ -1373,8 +1387,8 @@ Actions.prototype.getTableColCount = function (table) {
     const ui = this.editorUi;
     const editor = ui.editor;
     const graph = editor.graph;
-    const tableInfo = graph.getModel().getValue(table);
-    let cols = tableInfo.getAttribute('cols');
+    // const tableInfo = graph.getModel().getValue(table);
+    let cols = table.getAttribute('cols');
     cols = cols ? parseInt(cols) : 0;
     if (!isNaN(cols) && cols > 0) {
         return cols;
@@ -1385,7 +1399,7 @@ Actions.prototype.getTableColCount = function (table) {
             cols++;
         }
     })
-    tableInfo.setAttribute('cols', cols);
+    table.setAttribute('cols', cols);
     return cols;
 }
 /**
@@ -1458,7 +1472,8 @@ Actions.prototype.updateRowColSize = function (type, diff, selectionCell = null)
     const wType = 'W';
     const hType = 'H';
     const getGeo = mxCell => {
-        return graph.getCellGeometry(mxCell);
+        const geo = graph.getCellGeometry(mxCell);
+        return geo.clone();
     };
     const extendGeo = (geo, type, value) => {
         switch (type) {
@@ -1603,7 +1618,8 @@ Actions.prototype.insertTableCell = function (type, selectionCell = null) {
     const cellW = cell.geometry.width;
     const cellH = cell.geometry.height;
     const getGeo = mxCell => {
-        return graph.getCellGeometry(mxCell);
+        const geo = graph.getCellGeometry(mxCell);
+        return geo.clone();
     };
     const model = graph.getModel();
     const moveXY = (item, isY) => {
@@ -1614,11 +1630,10 @@ Actions.prototype.insertTableCell = function (type, selectionCell = null) {
             geo.x += cellW;
         }
         model.setGeometry(item, geo);
-        model.setValue(item, model.getValue(item));
     };
     const addItem = geomery => {
         const symbol = new mxCell('', geomery, 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;fillColor=none;');
-        symbol.vertex = true;
+        symbol.setVertex(true);
         // 设置id
         symbol.setId(model.createId(symbol));
         model.add(table, symbol);
@@ -1666,10 +1681,9 @@ Actions.prototype.insertTableCell = function (type, selectionCell = null) {
             tableGeo.width += cellW;
             // 插入列时，需要更新一下cols属性
             const tableCol = this.getTableColCount(table);
-            const tableInfo = model.getValue(table);
-            tableInfo.setAttribute('cols', tableCol + 1);
+            table.setAttribute('cols', tableCol + 1);
         }
-        model.setValue(table, model.getValue(table));
+        model.setGeometry(table, tableGeo)
     }
     finally {
         model.endUpdate();
@@ -1739,7 +1753,8 @@ Actions.prototype.deleteTableCell = function(type,selectionCell=null) {
     const cellW = cell.geometry.width;
     const cellH = cell.geometry.height;
     const getGeo = mxCell => {
-        return graph.getCellGeometry(mxCell);
+        const geo = graph.getCellGeometry(mxCell);
+        return geo.clone();
     };
     const model = graph.getModel();
     const moveXY = (item, isY) => {
@@ -1750,7 +1765,6 @@ Actions.prototype.deleteTableCell = function(type,selectionCell=null) {
             geo.x -= cellW;
         }
         model.setGeometry(item, geo);
-        model.setValue(item, model.getValue(item));
     };
     model.beginUpdate();
     try {
@@ -1771,11 +1785,10 @@ Actions.prototype.deleteTableCell = function(type,selectionCell=null) {
             tableGeo.width -= cellW;
             // 插入列时，需要更新一下cols属性
             const tableCol = this.getTableColCount(table);
-            const tableInfo = model.getValue(table);
-            tableInfo.setAttribute('cols', tableCol - 1);
+            table.setAttribute('cols', tableCol - 1);
         }
         graph.removeCells(delCells, true);
-        model.setValue(table, model.getValue(table));
+        model.setGeometry(table, tableGeo);
     }
     finally {
         model.endUpdate();
