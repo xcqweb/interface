@@ -784,7 +784,7 @@ div.mxWindow .geButton {
 @media print {
 	div.geNoPrint { display: none !important; }
 }
-.geToolbar3 .geSprite, .geToolbar6 .geSprite, .geToolbar4 .geSprite, .geToolbar5 .geSprite {
+.geToolbar3 .geSprite, .geToolbar6 .geSprite, .geToolbar4 .geSprite, .geToolbar5 .geSprite, .geToolbar7 .geSprite{
 	width: 48px;
 	height: 24px;
 	padding: 4px 16px;
@@ -971,11 +971,10 @@ div.mxWindow .geButton {
 	content: 'Lock';
 }
 .geSprite-unlock {
-	background-image: url(../images/menu/ungroup.png);
+	background-image: url(../images/menu/group.png);
 }
 .geSprite-unlock::after {
 	content: '解锁';
-	left: 0px;
 }
 .en .geSprite-unlock::after {
 	content: 'Unlock';

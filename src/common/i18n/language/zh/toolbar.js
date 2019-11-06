@@ -11,8 +11,8 @@ export default {
     ungroupTitle: '取消组合 (Ctrl+Shift+U)',
     saveTitle: '保存 (Ctrl+S)',
     previewTitle: '预览 (Ctrl+Shift+L)',
-    lock:'锁定',
-    unlock:'解锁',
+    lock:'锁定 (Ctrl+L)',
+    unlock:'解锁 (Ctrl+L)',
 
 }
 

@@ -20,7 +20,6 @@ const mutations = {
         let geo = graph.model.getGeometry(cell)
         let shapeInfo = stateWidget && stateWidget.style
         widgetInfo.shapeInfo = shapeInfo
-
         let cellInfo = graph.getModel().getValue(cell)
         if (cellInfo && cellInfo.attributes && cellInfo.attributes['palettename']) {
             let widgetName = cellInfo.attributes['palettename'].nodeValue || '' //控件名称
@@ -144,7 +143,7 @@ const mutations = {
         let fontSize = 12
         let isSetBold = false
         let color = '',bgColor = '',borderColor = '',borderBold = 1
-        let align = mxConstants.ALIGN_CENTER,valign = mxConstants.ALIGN_MIDDLE,borderLineCls,arrow1,arrow2
+        let align = mxConstants.ALIGN_CENTER,valign = mxConstants.ALIGN_MIDDLE,borderLineCls,arrow1,arrow2,lock
         if (stateWidget) {
             fontSize = parseFloat(mxUtils.getValue(stateWidget.style, mxConstants.STYLE_FONTSIZE, 0));
             isSetBold = mxUtils.getValue(stateWidget.style, 'fontStyle', 0) === 1
@@ -162,7 +161,9 @@ const mutations = {
                 arrow1 = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_STARTARROW, null)
                 arrow2 = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_ENDARROW, null)
             }
+            lock = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_MOVABLE,0)
         }
+        widgetInfo.lock = lock
         widgetInfo.fontSize = fontSize
         widgetInfo.isSetBold = isSetBold
         widgetInfo.color = color

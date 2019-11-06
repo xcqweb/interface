@@ -131,10 +131,11 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
-        :title="$t('toolbar.lock')"
+        :title="lock ? $t('toolbar.lock') : $t('toolbar.unlock')"
       >
         <div
-          class="geSprite geSprite-lock"
+          class="geSprite"
+          :class="{'geSprite-lock':lock,'geSprite-unlock':!lock}"
         />
       </a>
     </div>
@@ -204,6 +205,11 @@ export default{
             alignCls:'geSprite-left-align',
             ifshowmarerial: false
         }
+    },
+    computed: {
+        lock() {
+            return this.$store.state.main.widgetInfo.lock
+        },
     },
     created() {
     },
@@ -308,21 +314,6 @@ export default{
         },
         save() {
             this.myEditorUi.saveFile(true)
-        },
-        setWidgetProps(widgetProp,props) {
-            let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
-            let cellInfo = graph.getModel().getValue(cell)
-            if (!mxUtils.isNode(cellInfo)) {
-                var doc = mxUtils.createXmlDocument()
-                var obj = doc.createElement('object')
-                obj.setAttribute('label', cellInfo || '')
-                cellInfo = obj
-            }
-            let attrObj = this.getWidgetProps(widgetProp)
-            let newAttr = JSON.stringify(Object.assign({},attrObj,props))
-            cellInfo.setAttribute(widgetProp,newAttr)
-            graph.getModel().setValue(cell, cellInfo)
         },
     },      
 }
