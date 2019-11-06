@@ -1,4 +1,4 @@
-f<template>
+<template>
   <div class="state-dialog-el-con">
     <div
       class="background"
