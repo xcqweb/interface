@@ -1,4 +1,5 @@
 export let data1 = {
+    color: ['#3D91F7', '#61C3FA', '#A838D8', '#EE6B5F', '#6DDAA6', '#F7B83D'],
     legend: {
         show:true,
         data: ['图例'],

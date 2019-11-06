@@ -1782,9 +1782,6 @@ Actions.prototype.deleteTableCell = function(type,selectionCell=null) {
  */
 Actions.prototype.addAction = function(key, funct, enabled, iconCls, shortcut)
 {
-    /* if(key =='ungroup'){
-        debugger
-    } */
     var title;
     if (key.substring(key.length - 3) == '...')
     {

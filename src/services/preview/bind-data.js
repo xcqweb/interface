@@ -102,9 +102,13 @@ function setterRealData(res, fileSystem) {
                                 if(ser.data.length >= chartDataLen) {
                                     ser.data.shift()
                                 }
-                                ser.data.push(val)
+                                if(val || val == 0) {
+                                    ser.data.push(val)
+                                }
                             }
                         })
+                        let yMax = options.yAxis[0].max
+                        options.yAxis[0].max = Math.max(yMax,val)
                         if(options.xAxis[0].data.length >= chartDataLen) {
                             options.xAxis[0].data.shift()
                         }

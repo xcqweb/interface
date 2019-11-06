@@ -22,9 +22,10 @@ const mutations = {
         widgetInfo.shapeInfo = shapeInfo
 
         let cellInfo = graph.getModel().getValue(cell)
-        let widgetName = cellInfo && cellInfo.attributes && cellInfo.attributes['palettename'] && cellInfo.attributes['palettename'].nodeValue || '' //控件名称
-        widgetInfo.widgetName = widgetName
-
+        if (cellInfo && cellInfo.attributes && cellInfo.attributes['palettename']) {
+            let widgetName = cellInfo.attributes['palettename'].nodeValue || '' //控件名称
+            widgetInfo.widgetName = widgetName
+        }
         let edgeArr = new Array(2).fill(0)
         let edgeInfo = 1 //没有直线
         let cellsSameFlagEdge = { //选中多个控件时候，如果位置大小相同就显示值，否则显示空

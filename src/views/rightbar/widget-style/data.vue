@@ -161,7 +161,7 @@ export default{
             deviceNameList:[],
             single: false,
         
-            buttonName: `{rightBar.bindText}`,
+            buttonName: `${this.$t('rightBar.bindText')}`,
             modelvalue1:'1',
             modelvalue2:'',
             ifclearSelect:true,

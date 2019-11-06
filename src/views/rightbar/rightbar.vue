@@ -30,7 +30,7 @@ import VueEvent from '../../services/VueEvent.js'
 import PageStyle from './page-style'
 import DialogStyle from './dialog-style'
 import WidgetStyleMain from './widget-style-main'
-
+const allShapes = ['image','userimage','tableCell','rectangle','ellipse','light','progress','lineChart','gaugeChart','tableBox'] //可以绑定数据的控件
 let shortCutWidgets
 export default {
     components:{PageStyle,DialogStyle,WidgetStyleMain},
@@ -124,12 +124,9 @@ export default {
             this.myEditorUi.format.refresh = ()=>{
                 this.showWidgetStyle = !(graph.isSelectionEmpty())
                 let selectCell = graph.getSelectionCell()
-                let cellState = graph.view.getState(selectCell)
-                if(cellState) {
-                    let shapeName =  cellState .style.shape
-                    if(shapeName == 'label') {
-                        this.showWidgetStyle = false
-                    }
+                let isBindData = this.showWidgetStyle
+                if(this.getCellShapeName(selectCell) == 'label') {//组合 不允许设置样式
+                    this.showWidgetStyle = false
                 }
                 if(this.showWidgetStyle) {
                     this.$store.commit('getWidgetInfo',graph)
@@ -140,13 +137,29 @@ export default {
                         document.querySelector('.mxPopupMenu').remove()
                     }
                 }
-                if( graph.getSelectionCount() > 1) {
-                    VueEvent.$emit('isShowFootBar',{show:false})
-                }else{
-                    VueEvent.$emit('isShowFootBar',{show:this.showWidgetStyle})
+                let cells = graph.getSelectionCells()
+                for(let i = 0;i < cells.length;i++) {
+                    if(!allShapes.includes(this.getCellShapeName(cells[i]))) {
+                        isBindData = false
+                        break
+                    }
+                    if(i < cells.length - 1 && this.getCellShapeName(cells[i]) != this.getCellShapeName(cells[i + 1])) {
+                        isBindData = false
+                        break
+                    }
                 }
+                VueEvent.$emit('isShowFootBar',{show:isBindData})
             }
             this.inited = true
+        },
+        getCellShapeName(cell) {
+            let graph = this.myEditorUi.editor.graph
+            let shapeName = ''
+            let cellState = graph.view.getState(cell)
+            if(cellState) {
+                shapeName =  cellState.style.shape
+            }
+            return shapeName
         },
         centerCanvas() {//居中画布
             let graph = this.myEditorUi.editor.graph

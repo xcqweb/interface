@@ -101,14 +101,14 @@
                   v-model="row.type"
                   @on-change="val=>paramDefaultChange(val,row.id,index)"
                 >
-                  {{ $t('display') }}
+                  {{ $t('footBar.defaultDisplay') }}
                 </Checkbox>
                 <Checkbox
                   v-else
                   :value="true"
                   disabled
                 >
-                  默认显示
+                  {{ $t('defaultDisplay') }}
                 </Checkbox>
               </template>
               <template
@@ -134,7 +134,7 @@
             class="footer-common stateList"
           >
             <div
-              v-if="stateList && stateList.length > 1"
+              v-if="stateList && stateList.length > 1 && cellsCount==1"
               class="footerTabs2Ul"
             >
               <template v-for="(item,index) in stateList">
@@ -170,7 +170,7 @@
           </div>
         </div>
         <div
-          v-if="!footerContent || (tabsNum === 2 && stateList.length <= 1) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
+          v-if="!footerContent || (tabsNum === 2 && cellsCount!=1 || tabsNum === 2 && cellsCount==1 && stateList.length <= 1) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
           class="no-data-wrap"
         >
           <NoData
@@ -189,9 +189,8 @@ import NoData from '../datasource/nodata'
 import VueEvent from '../../services/VueEvent.js'
 
 import {sureDialog} from '../../services/Utils'
-const allShapes = ['image','userimage','tableCell','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart']
-// 支持显示参数
-const supportDataShow = ['rectangle','ellipse','tableCell','progress','lineChart', 'gaugeChart']
+const allShapes = ['image','userimage','tableCell','rectangle','ellipse','light','progress','lineChart','gaugeChart','tableBox'] //可以绑定数据的控件
+const supportDataShow = ['rectangle','ellipse','tableCell','progress','lineChart', 'gaugeChart']// 支持显示参数
 let deviceTypeId = null
 export default {
     components:{
@@ -207,7 +206,9 @@ export default {
         return {
             value1: '1',
             dataSourceName:['dataSources','footBar.dataDisplay','footBar.stateModel'],
-           buttonText:['添加参数', 'delete'],             ifShowArrow: false,
+            singleParamShow:['progress','lineChart', 'gaugeChart'],
+            buttonText:['添加参数', 'delete'],             
+            ifShowArrow: false,
             tabsNum: 0,
             nodata: 'noData',
             tablTitles:[
@@ -262,7 +263,10 @@ export default {
     computed: {
         footerModelUpdata() {
             return this.$store.state.main.footerModelUpdata
-        }
+        },
+        cellsCount() {
+            return this.$store.state.main.widgetInfo.cellsCount
+        },
     },
     watch:{
         ifShowArrow(val) {
@@ -287,7 +291,7 @@ export default {
         }
         VueEvent.$off('rightBarTabSwitch')
         VueEvent.$off('isShowFootBar')
-        VueEvent.$off('emitDataSourceFooter');
+        VueEvent.$off('emitDataSourceFooter')
         VueEvent.$on('isShowFootBar', ({show,isUp}) => {
             this.isInitFlag = false
             this.footerContentHandle(show)
@@ -306,25 +310,30 @@ export default {
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
             // 拿到之前绑定的 bindData
-            let startBindData = this.getCellModelInfo('bindData')
-            if (!startBindData || !startBindData.dataSource) {
-                this.setCellModelInfo('bindData',{dataSource:value})
-                if (this.ifShowArrow) {
-                    this.isInitFlag = false
-                    this.initData()
-                }
-            } else {
-                if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
-                    let deviceNameChild = startBindData.dataSource.deviceNameChild || []
-                    startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
-                    startBindData.dataSource.dataSourceChild = value.dataSourceChild
-                    startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
-                    this.setCellModelInfo('bindData',startBindData)                    
+            let graph = this.myEditorUi.editor.graph
+            let cells = graph.getSelectionCells()
+            for(let i = 0;i < cells.length;i++) {
+                let startBindData = this.getCellModelInfo('bindData',cells[i])
+                if (!startBindData || !startBindData.dataSource) {
+                    this.setCellModelInfo('bindData',{dataSource:value},cells[i])
                     if (this.ifShowArrow) {
                         this.isInitFlag = false
                         this.initData()
                     }
-                } 
+                } else {
+                    if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
+                        let deviceNameChild = startBindData.dataSource.deviceNameChild || []
+                        startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
+                        startBindData.dataSource.dataSourceChild = value.dataSourceChild
+                        startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
+                        this.setCellModelInfo('bindData',startBindData,cells[i])
+                        console.log("tt-bb")                    
+                        if (this.ifShowArrow) {
+                            this.isInitFlag = false
+                            this.initData()
+                        }
+                    } 
+                }
             }
         })
     },
@@ -461,12 +470,12 @@ export default {
         },
         footerContentHandle(show) {
             if (show) {
-                if (supportDataShow.includes(this.$store.state.main.widgetInfo.shapeInfo.shape)) { // flag 是否数据显示
+                if (supportDataShow.includes(this.$store.state.main.widgetInfo.shapeInfo.shape)) { // 数据显示tab 是否展示
                     this.ifShowDataFlag = true
                 } else {
                     this.ifShowDataFlag = false
                 }
-                if(allShapes.includes(this.$store.state.main.widgetInfo.shapeInfo.shape)) { // 底部内容显示
+                if(allShapes.includes(this.$store.state.main.widgetInfo.shapeInfo.shape)) {
                     this.footerContent = true
                 }else{
                     this.footerContent = false
@@ -629,9 +638,11 @@ export default {
             }
             return true
         },
-        getCellModelInfo(key) {
+        getCellModelInfo(key,cell) {
             let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
+            if(!cell) {
+                cell = graph.getSelectionCell()
+            }
             let modelInfo = graph.getModel().getValue(cell)
             let bindData = null
             if (!mxUtils.isNode(modelInfo)) {
@@ -648,9 +659,11 @@ export default {
             }
             return bindData
         },
-        setCellModelInfo(key,data) {
+        setCellModelInfo(key,data,cell) {
             let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
+            if(!cell) {
+                cell = graph.getSelectionCell()
+            }
             let modelInfo = graph.getModel().getValue(cell)
             if (!mxUtils.isNode(modelInfo)) {
                 let doc = mxUtils.createXmlDocument()

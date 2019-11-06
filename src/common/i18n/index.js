@@ -19,6 +19,6 @@ export const i18n = new VueI18n({
             ...zh,
         },
     },
-
+    silentTranslationWarn: true
 })
 

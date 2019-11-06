@@ -423,7 +423,8 @@ class PreviewPage {
         cellHtml.style.transform = `rotate(${cell.rotation}deg) ${cell.flipV == 1 ? ' scaleY(-1)' : ''} ${cell.flipH == 1 ? ' scaleX(-1)' : ''}`;
         // 字体大小
         cellHtml.style.fontSize = `${cell.fontSize}px`
-        cellHtml.style.borderRadius = `${cell.arcSize * 0.6}px`
+        console.log(cell.arcSize)
+        cellHtml.style.borderRadius = `${cell.arcSize * Math.min(cell.width,cell.height) * 0.01}px`
         cellHtml.style.fontWeight = `${cell.fontWeight == 1 ? 'bold' : 'normal'}`
         // 字体颜色
         cellHtml.style.color = `${cell.fontColor}`

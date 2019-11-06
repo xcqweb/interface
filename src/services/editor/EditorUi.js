@@ -3087,7 +3087,7 @@ EditorUi.prototype.createUi = function()
 
     // 多个toolbar功能区
     var containerList = []
-    for(let i=2;i<7;i++){
+    for(let i=2;i<8;i++){
         containerList.push(document.querySelector('.geToolbar.geToolbar' + i))
     }
     // 创建 toolbar

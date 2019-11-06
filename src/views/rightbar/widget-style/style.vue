@@ -911,7 +911,6 @@ export default {
             let cell = graph.getSelectionCell()
             graph.getModel().beginUpdate()
             cell.setAttribute('label',`<div class="widget-chart chart${cell.id}"/>`)
-            graph.getModel().endUpdate()
             graph.view.refresh(cell)
             let echartsDom = document.querySelector(`.widget-chart.chart${cell.id}`)
             echartsDom.style.width = `${cell.geometry.width}px`
@@ -930,6 +929,7 @@ export default {
                 this.setWidgetProps("chartProps",bindChartProps)
             }
             cellEchart.setOption(options)
+            graph.getModel().endUpdate()
         },
         dealNumber(number) {
             if(number) {

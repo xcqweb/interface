@@ -143,7 +143,7 @@ export default {
         return {
             dialogDesc:"",
             showFont:false,
-                      dialogHeight: 400,
+            dialogHeight: 400,
             dialogWidth: 600,
             fontText:12,
             bgColor:'#fff',

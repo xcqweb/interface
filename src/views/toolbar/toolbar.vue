@@ -127,6 +127,19 @@
     </div>
     <div class="geToolbar geToolbar6">
       <a
+        ref="lockUnlock"
+        href="javascript:void(0);"
+        ondragstart="return false;"
+        class="del_use_flag_terry geButton"
+        :title="$t('toolbar.lock')"
+      >
+        <div
+          class="geSprite geSprite-lock"
+        />
+      </a>
+    </div>
+    <div class="geToolbar geToolbar7">
+      <a
         href="javascript:void(0);"
         ondragstart="return false;"
         class="geButton"
@@ -215,7 +228,7 @@ export default{
         init() {
             this.$nextTick(() => {
                 let keys = [
-                    'undo', 'redo', 'toFront', 'toBack', 'group', 'ungroup', 'previewapply'
+                    'undo', 'redo', 'toFront', 'toBack', 'group', 'ungroup', 'previewapply','lockUnlock'
                 ]
                 keys.forEach(key=>{
                     let action = this.myEditorUi.actions.get(key);
@@ -295,6 +308,21 @@ export default{
         },
         save() {
             this.myEditorUi.saveFile(true)
+        },
+        setWidgetProps(widgetProp,props) {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let cellInfo = graph.getModel().getValue(cell)
+            if (!mxUtils.isNode(cellInfo)) {
+                var doc = mxUtils.createXmlDocument()
+                var obj = doc.createElement('object')
+                obj.setAttribute('label', cellInfo || '')
+                cellInfo = obj
+            }
+            let attrObj = this.getWidgetProps(widgetProp)
+            let newAttr = JSON.stringify(Object.assign({},attrObj,props))
+            cellInfo.setAttribute(widgetProp,newAttr)
+            graph.getModel().setValue(cell, cellInfo)
         },
     },      
 }
