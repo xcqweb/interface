@@ -161,7 +161,7 @@ const mutations = {
                 arrow1 = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_STARTARROW, null)
                 arrow2 = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_ENDARROW, null)
             }
-            lock = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_MOVABLE,0)
+            lock = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_MOVABLE,1)
         }
         widgetInfo.lock = lock
         widgetInfo.fontSize = fontSize

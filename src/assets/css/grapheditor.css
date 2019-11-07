@@ -961,7 +961,7 @@ div.mxWindow .geButton {
 	content: 'Ungroup';
 }
 .geSprite-lock {
-	background-image: url(../images/menu/group.png);
+	background-image: url(../images/menu/lock.png);
 }
 .geSprite-lock::after {
 	content: '锁定';
@@ -971,7 +971,7 @@ div.mxWindow .geButton {
 	content: 'Lock';
 }
 .geSprite-unlock {
-	background-image: url(../images/menu/group.png);
+	background-image: url(../images/menu/unlock.png);
 }
 .geSprite-unlock::after {
 	content: '解锁';

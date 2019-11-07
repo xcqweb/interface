@@ -131,11 +131,11 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
-        :title="lock ? $t('toolbar.lock') : $t('toolbar.unlock')"
+        :title="lock==1 ? $t('toolbar.lock') : $t('toolbar.unlock')"
       >
         <div
           class="geSprite"
-          :class="{'geSprite-lock':lock,'geSprite-unlock':!lock}"
+          :class="{'geSprite-lock':lock==1,'geSprite-unlock':lock!=1}"
         />
       </a>
     </div>

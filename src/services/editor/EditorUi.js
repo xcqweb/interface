@@ -2712,7 +2712,6 @@ EditorUi.prototype.addUndoListener = function()
 EditorUi.prototype.updateActionStates = function()
 {
     var graph = this.editor.graph;
-    var selected = !graph.isSelectionEmpty();
     var vertexSelected = false;
     var edgeSelected = false;
 
@@ -2752,23 +2751,12 @@ EditorUi.prototype.updateActionStates = function()
     var notMenu = shapeNameStr.indexOf('menuCell') == -1 && shapeNameStr.indexOf('menulist') == -1;
     // 判断当前是否是表格
     var isTable = shapeNameStr.indexOf('tableBox') != -1 || shapeNameStr.indexOf('tableCell') != -1;
-  /*   for (var i = 0; i < actions.length; i++)
-    {
-        if (shapeName === 'menuCell' && menuDisabled.indexOf(actions[i]) != -1) { // 单个菜单
-            this.actions.get(actions[i]).setEnabled(!selected);
-        } else {
-            this.actions.get(actions[i]).setEnabled(selected);
-        }
-    } */
 
     this.actions.get('rotation').setEnabled(vertexSelected && shapeName !== 'menuCell');
     this.actions.get('autosize').setEnabled(vertexSelected && !isTable && notMenu);
     var oneVertexSelected = vertexSelected && graph.getSelectionCount() == 1;
-    // 暂时注释掉
-    // this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && (shapeName !== 'menuCell' && shapeName !== 'menulist' && !isTable));
-    // this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 &&
-	// 	(graph.getModel().getChildCount(graph.getSelectionCell()) > 0 ||
-	// 	(oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) &&  shapeName !== "menulist" && !isTable);
+    this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && (shapeName !== 'menuCell' && shapeName!='tableCell'));
+    this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 && (graph.getModel().getChildCount(graph.getSelectionCell()) > 0 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && !isTable);
 
     this.actions.get('linkReport').setEnabled(graph.getSelectionCount() == 1 && shapeName === "linkTag");
     this.actions.get('removeFromGroup').setEnabled(oneVertexSelected && graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())) && notMenu && !isTable);
@@ -2791,25 +2779,10 @@ EditorUi.prototype.updateActionStates = function()
     this.actions.get('selectEdges').setEnabled(unlocked);
     this.actions.get('selectAll').setEnabled(unlocked);
     this.actions.get('selectNone').setEnabled(unlocked);
+    this.actions.get('lockUnlock').setEnabled(!graph.isSelectionEmpty() && shapeName!=='tableCell' && shapeName!=='menuCell')
 
-    // 菜单单元格禁用
-    // var menuCellDisabled = ['copy', 'cut', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
-    // if (shapeName == 'menuCell') {
-    //     for (let i = 0; i < menuCellDisabled.length; i++) {
-    //         this.actions.get(menuCellDisabled[i]).setEnabled(false);
-    //     }
-    // }
-
-    // 表格单元格禁用
-    // var tableCellDisabled = ['copy', 'cut', 'delete', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
-    // if (shapeName == 'tableCell') {
-    //     for (let i = 0; i < tableCellDisabled.length; i++) {
-    //         this.actions.get(tableCellDisabled[i]).setEnabled(false);
-    //     }
-    // }
 
     this.updatePasteActionStates();
-    // this.updatePasteActionStates(shapeName);
 };
 
 /**
@@ -3807,7 +3780,6 @@ EditorUi.prototype.createKeyHandler = function(editor)
 
                 if (resize)
                 {
-                    // Resizes all selected vertices
                     graph.getModel().beginUpdate();
                     try
                     {
