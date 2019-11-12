@@ -127,15 +127,26 @@
     </div>
     <div class="geToolbar geToolbar6">
       <a
-        ref="lockUnlock"
+        ref="lock"
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
-        :title="lock==1 ? $t('toolbar.lock') : $t('toolbar.unlock')"
+        :title="$t('toolbar.lock')"
       >
         <div
-          class="geSprite"
-          :class="{'geSprite-lock':lock==1,'geSprite-unlock':lock!=1}"
+          class="geSprite geSprite-lock"
+        />
+      </a>
+      <a
+        ref="unlock"
+        href="javascript:void(0);"
+        ondragstart="return false;"
+        class="del_use_flag_terry geButton"
+        style="margin-left:12px;"
+        :title="$t('toolbar.unlock')"
+      >
+        <div
+          class="geSprite geSprite-unlock"
         />
       </a>
     </div>
@@ -233,18 +244,16 @@ export default{
         },
         init() {
             this.$nextTick(() => {
-                let keys = [
-                    'undo', 'redo', 'toFront', 'toBack', 'group', 'ungroup', 'previewapply','lockUnlock'
-                ]
+                let keys = ['undo', 'redo', 'toFront', 'toBack', 'group', 'ungroup', 'previewapply','lock','unlock']
                 keys.forEach(key=>{
-                    let action = this.myEditorUi.actions.get(key);
+                    let action = this.myEditorUi.actions.get(key)
                     let elt = this.$refs[key]
                     this.myEditorUi.toolbar.initElement(elt)
-                    this.myEditorUi.toolbar.addClickHandler(elt, action.funct);
-                    elt.setEnabled(action.enabled);
+                    this.myEditorUi.toolbar.addClickHandler(elt, action.funct)
+                    elt.setEnabled(action.enabled)
                     action.addListener('stateChanged', function() {
-                        elt.setEnabled(action.enabled);
-                    });
+                        elt.setEnabled(action.enabled)
+                    })
                 })
             })
         },

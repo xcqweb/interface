@@ -30,7 +30,7 @@ import VueEvent from '../../services/VueEvent.js'
 import PageStyle from './page-style'
 import DialogStyle from './dialog-style'
 import WidgetStyleMain from './widget-style-main'
-const allShapes = ['image','userimage','tableCell','rectangle','ellipse','light','progress','lineChart','gaugeChart','tableBox'] //可以绑定数据的控件
+//const allShapes = ['image','userimage','tableCell','rectangle','ellipse','light','progress','lineChart','gaugeChart','tableBox'] //可以绑定数据的控件
 let shortCutWidgets
 export default {
     components:{PageStyle,DialogStyle,WidgetStyleMain},
@@ -138,7 +138,10 @@ export default {
                     }
                 }
                 let cells = graph.getSelectionCells()
-                for(let i = 0;i < cells.length;i++) {
+                if(cells.length > 1) {
+                    isBindData = false
+                }
+                /*  for(let i = 0;i < cells.length;i++) { //批量绑定数据源的，先注释
                     if(!allShapes.includes(this.getCellShapeName(cells[i]))) {
                         isBindData = false
                         break
@@ -147,7 +150,7 @@ export default {
                         isBindData = false
                         break
                     }
-                }
+                } */
                 VueEvent.$emit('isShowFootBar',{show:isBindData})
             }
             this.inited = true

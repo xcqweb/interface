@@ -943,30 +943,33 @@ Sidebar.prototype.deletePage = function (ele, pageType) {
     if (restList.length <= 1) {
         tipDialog(this.editorUi,'至少保留一个' + (pageType === 'normal' ? '页面' : '弹窗'));
         return;
-    } else {
-        sureDialog(this.editorUi, `确定要删除${pageType === 'normal' ? '页面' : '弹窗'}吗`, () => {
-            var target;
-            var type = this.editorUi.editor.pages[this.editorUi.editor.currentPage].type
-            if (ele.prev().length) {
-                target = ele.prev().children('.spanli');
-            } else if (ele.next().length) {
-                target = ele.next().addClass('left-sidebar-homepage').children('.spanli');
-            } else if (type == 'dialog' && !!$("#normalPages li").first()) {
-                target = $("#normalPages li").first().children('.spanli');
-            } else if (type == 'noraml' && !!$("#dialogPages li").first()) {
-                target = $("#dialogPages li").first().children('.spanli');
-            }
-            // 删除页面数据
-            this.editorUi.editor.deletePage(ele.data('pageid'), type)
-            target.click();
-            // 移除节点
-            ele.remove()
-        })
-        
-    }
+    }  
+    sureDialog(this.editorUi, `确定要删除${pageType === 'normal' ? '页面' : '弹窗'}吗`, () => {
+        var target;
+        var type = this.editorUi.editor.pages[this.editorUi.editor.currentPage].type
+        if (ele.prev().length) {
+            target = ele.prev().children('.spanli');
+        } else if (ele.next().length) {
+            target = ele.next().addClass('left-sidebar-homepage').children('.spanli');
+        } else if (type == 'dialog' && !!$("#normalPages li").first()) {
+            target = $("#normalPages li").first().children('.spanli');
+        } else if (type == 'noraml' && !!$("#dialogPages li").first()) {
+            target = $("#dialogPages li").first().children('.spanli');
+        }
+        // 删除页面数据
+        this.editorUi.editor.deletePage(ele.data('pageid'), type)
+        target.click();
+        // 移除节点
+        ele.remove()
+    })
+    
 }
 /**/
 Sidebar.prototype.renameNode = function(ele, pageType) {
+    if (!ele.innerText){
+        return
+    }
+    console.log(ele)
     let editInput = document.createElement('input');
     editInput.id = 'editPageInput';
     let oldVal = ele.innerText
@@ -1082,22 +1085,15 @@ Sidebar.prototype.createPageContextMenu = function (type) {
         document.querySelector('#pageContextMenu').remove()
     }
     menulist.id = 'pageContextMenu';
-    let menus = null
-    if (+type === 1) { // 弹窗
-        menus = {
-            'copy': '复制弹窗',
-            'addTemplate': `添加到模版`,
-            'rename': '重命名',
-            'delete': '删除',
-        }
-    } else {
-        menus = {
-            'copy': '复制页面',
-            'addTemplate': `添加到模版`,
-            'rename': '重命名',
-            'delete': '删除',
-        }
+    let menus = {
+        'copy': '复制页面',
+        'addTemplate': `添加到模版`,
+        'rename': '重命名',
+        'delete': '删除',
     }
+    if (+type === 1) { // 弹窗
+        menus.copy = '复制弹窗'
+    }  
     for (var key in menus) {
         var menu = document.createElement('li')
         menu.innerText = menus[key]
@@ -1126,17 +1122,13 @@ Sidebar.prototype.createPageContextMenu = function (type) {
         var actionType = target.getAttribute('data-type');
         // 添加页面
         var addPage = this.editorUi.actions.get('addPage').funct;
-
-        // const pageType = this.editorUi.editor.currentType;
         let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.data('pageid'))
         switch (actionType) {
             case 'delete':
                 this.deletePage(newEle, pageType)
                 break;
             case 'rename':
-                if (element.innerText) {
-                    this.renameNode(element, pageType)
-                }
+                this.renameNode(element, pageType)
                 break;
             case 'copy':
                 this.editorUi.editor.setXml();
@@ -1145,7 +1137,6 @@ Sidebar.prototype.createPageContextMenu = function (type) {
             case 'homepage':
                 let pagesRankArr = JSON.parse(JSON.stringify(this.editorUi.editor.pagesRank[pageType]))
                 let newValue = pagesRankArr[index]
-                // this.editorUi.editor.pagesRank[pageType] = mxUtils.swapItems(this.editorUi.editor.pagesRank[pageType], 0, index);
                 this.editorUi.editor.pagesRank[pageType].splice(index, 1)
                 this.editorUi.editor.pagesRank[pageType].unshift(newValue)
                 var targetEle = null
@@ -1171,7 +1162,6 @@ Sidebar.prototype.createPageContextMenu = function (type) {
                 addPage(actionType)
                 break;
         }
-        // this.hidePageContextMenu();
     }.bind(this))
     return menulist;
 }
@@ -1221,7 +1211,6 @@ function createPageList(editorUi, el, data, id, _that) {
             menulist.style.display = 'block';
             menulist.style.left = evt.target.offsetLeft + evt.target.offsetWidth - 100 / 2 + 'px';
             menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) - scrollTopHeight + 72 + 'px';
-            //
             let classNameList = evt.target.parentNode.className
             if (!classNameList.includes('currentPage')) {
                 evt.target.parentNode.className += classNameList ? ' currentPage' : 'currentPage'
@@ -1343,7 +1332,7 @@ function createPageList(editorUi, el, data, id, _that) {
         event.preventDefault();
         _that.hidePageContextMenu()
     })
-    function changePage(e,dis) {
+    function changePage(e, dis) {
         let target = e.target
         if (((target.parentNode.nodeName === 'LI') && target.parentNode.className !== 'currentPage')) {
             // 目标页面名称
@@ -1366,25 +1355,31 @@ function createPageList(editorUi, el, data, id, _that) {
         }
     }
     if (id.includes('normal')) {
+        $('.normalPages .pageList>li').on('dblclick', (evt)=> {
+            _that.renameNode(evt.currentTarget, editorUi.editor.currentPage)
+        })
         $('.normalPages').on('click', '.pageList>li>.spanli', function (evt) {
             changePage(evt,true)
-                let normalArr = document.querySelectorAll('#normalPages li')
-                for (let j = 0; j <= normalArr.length - 1; j++) {
-                    if (normalArr[j].className.includes('currentPage')) {
-                        startCurrentPageIndex = j
-                    }
+            let normalArr = document.querySelectorAll('#normalPages li')
+            for (let j = 0; j <= normalArr.length - 1; j++) {
+                if (normalArr[j].className.includes('currentPage')) {
+                    startCurrentPageIndex = j
                 }
+            }
         })
     }
     if (id.includes('dialog')) {
+        $('.dialogPages .pageList>li').on('dblclick', (evt) => {
+            _that.renameNode(evt.currentTarget, editorUi.editor.currentPage)
+        })
         $('.dialogPages').on('click', '.pageList>li>.spanli', function (evt) {
             changePage(evt,true)
-                let normalArr = document.querySelectorAll('#dialogPages li')
-                for (let j = 0; j <= normalArr.length - 1; j++) {
-                    if (normalArr[j].className.includes('currentPage')) {
-                        startCurrentDialogIndex = j
-                    }
+            let normalArr = document.querySelectorAll('#dialogPages li')
+            for (let j = 0; j <= normalArr.length - 1; j++) {
+                if (normalArr[j].className.includes('currentPage')) {
+                    startCurrentDialogIndex = j
                 }
+            }
         })
     }
     mxEvent.addListener(pageListEle, 'contextmenu', function (evt) {
@@ -1406,7 +1401,6 @@ Sidebar.prototype.addPagePalette = function() {
     for (let key of this.editorUi.editor.pagesRank.normal) {
         pages[key] && normalPages.push(pages[key]);
     }
-    // // 弹窗
     for (let key of this.editorUi.editor.pagesRank.dialog) {
         pages[key] && dialogPages.push(pages[key]);
     }
@@ -1791,7 +1785,7 @@ Sidebar.prototype.createThumb = function(cells, width, height, parent, title, sh
     // node.style.left = this.thumbBorder + 'px';
     node.style.top = this.thumbBorder + 'px';
     node.style.width = width + 'px';
-    node.style.height = height + 'px';
+    node.style.height = '24px'
     node.style.visibility = '';
     node.style.minWidth = '';
     node.style.minHeight = '';

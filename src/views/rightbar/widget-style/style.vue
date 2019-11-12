@@ -1,7 +1,6 @@
 <template>
   <div
-    class="dialogPage"
-    style="padding:0 4px 40px;overflow: auto;height:100%;margin-bottom:40px;"
+    class="stylePage"
   >
     <div style="height:10px;" />
     <template
@@ -712,11 +711,27 @@
         </div>
       </div>
     </div>
+    <div
+      v-if="shapeName == 'rectangle'"
+      class="arcSize-rectangle"
+    >
+      <span>圆角</span>
+      <Slider
+        :value="$store.state.main.widgetInfo.shapeInfo.arcSize / 100"
+        :max="0.5"
+        :min="0"
+        :step="0.005"
+        :show-tip="'never'"
+        style="width:60%;"
+        @on-input="arcSizeChange"
+      />
+    </div>
   </div>
 </template>
 <script>
 import echarts from 'echarts'
 import Chart from '../../charts/chart'
+import {Slider} from 'iview'
 import {mxConstants,mxEventObject,Dialog,mxUtils} from '../../../services/mxGlobal'
 import {data1,data2} from '../../../constants/chart-default-data'
 import {sureDialog} from '../../../services/Utils'
@@ -727,7 +742,7 @@ let picShapeList = ['pipeline2','pipeline3','light','userimage']
 let cellEchart,bindChartProps
 export default {
     components:{
-        Chart
+        Chart,Slider
     },
     data() {
         return {
@@ -1490,12 +1505,23 @@ export default {
         hideLegendChooseFun() {
             this.showLegendChoose = false
         },
+        arcSizeChange(val) {
+            let graph = this.myEditorUi.editor.graph
+            let model = graph.getModel()
+            let cell = graph.getSelectionCell()
+            let style = mxUtils.setStyle(model.getStyle(cell), 'arcSize', Math.round(val * 100))
+            model.setStyle(cell, style)
+        }
     }
 };
 </script>
 
 <style lang="less" scoped>
-.dialogPage {
+.stylePage {
+    padding:0 4px 40px;
+    overflow: auto;
+    height:100%;
+    margin-bottom:40px;
     input{
         outline: none;
         width:100%;
@@ -1702,6 +1728,15 @@ export default {
       border:dashed 1px #000;
       height:1px;
       width:40px;
+    }
+    .arcSize-rectangle{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-right:10px;
+      /deep/.ivu-slider-wrap{
+        background:#000;
+      }
     }
 }
 </style>

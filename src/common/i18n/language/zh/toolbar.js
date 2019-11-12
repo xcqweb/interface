@@ -12,7 +12,7 @@ export default {
     saveTitle: '保存 (Ctrl+S)',
     previewTitle: '预览 (Ctrl+Shift+L)',
     lock:'锁定 (Ctrl+L)',
-    unlock:'解锁 (Ctrl+L)',
+    unlock:'解锁 (Ctrl+Shift+L)',
 
 }
 

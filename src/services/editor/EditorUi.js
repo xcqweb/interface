@@ -2742,7 +2742,7 @@ EditorUi.prototype.updateActionStates = function()
     var shapeName = state && state.style.shape;
     var actions = ['cut', 'copy', 'bold', 'underline','paste', 'delete', 'duplicate',
         'editLink', 'backgroundColor', 'borderColor', 'group','ungroup','resetHide',
-	               'edit', 'toFront', 'toBack', 'lockUnlock',
+	               'edit', 'toFront', 'toBack', 'lockUnlock','lock','unlock',
 	               'fillColor', 'gradientColor', 'fontColor',
 	               'formattedText', 'strokeColor', 'turn', 'flipH', 'flipV', 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'];
 
@@ -2755,7 +2755,7 @@ EditorUi.prototype.updateActionStates = function()
     this.actions.get('rotation').setEnabled(vertexSelected && shapeName !== 'menuCell');
     this.actions.get('autosize').setEnabled(vertexSelected && !isTable && notMenu);
     var oneVertexSelected = vertexSelected && graph.getSelectionCount() == 1;
-    this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && (shapeName !== 'menuCell' && shapeName!='tableCell'));
+    this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && (!isTable && shapeName!='tableCell'));
     this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 && (graph.getModel().getChildCount(graph.getSelectionCell()) > 0 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && !isTable);
 
     this.actions.get('linkReport').setEnabled(graph.getSelectionCount() == 1 && shapeName === "linkTag");
@@ -2780,8 +2780,8 @@ EditorUi.prototype.updateActionStates = function()
     this.actions.get('selectAll').setEnabled(unlocked);
     this.actions.get('selectNone').setEnabled(unlocked);
     this.actions.get('lockUnlock').setEnabled(!graph.isSelectionEmpty() && shapeName!=='tableCell' && shapeName!=='menuCell')
-
-
+    this.actions.get('lock').setEnabled(graph.isCellMovable(graph.getSelectionCell()) && !graph.isSelectionEmpty() && graph.getSelectionCount() == 1)
+    this.actions.get('unlock').setEnabled(!graph.isCellMovable(graph.getSelectionCell()) && !graph.isSelectionEmpty() && graph.getSelectionCount() == 1)
     this.updatePasteActionStates();
 };
 
@@ -3042,8 +3042,8 @@ EditorUi.prototype.createUi = function()
 
    /*  if (footer != null)
     {
-        // this.footerContainer.appendChild(footer);
-        // this.container.appendChild(this.footerContainer);
+        this.footerContainer.appendChild(footer);
+        this.container.appendChild(this.footerContainer);
     }
  */
     if (this.sidebar != null && this.sidebarFooterContainer)
@@ -4093,7 +4093,8 @@ EditorUi.prototype.createKeyHandler = function(editor)
         keyHandler.bindAction(86, true, 'paste'); // Ctrl+V
         keyHandler.bindAction(71, true, 'group'); // Ctrl+G
 		keyHandler.bindAction(85, true, 'ungroup', true); // Ctrl+Shift+U
-        keyHandler.bindAction(76, true, 'lockUnlock'); // Ctrl+L
+        keyHandler.bindAction(76, true, 'lock'); // Ctrl+L
+        keyHandler.bindAction(76, true, 'unlock',true); // Ctrl+Shift+L
         keyHandler.bindKey(13, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // Enter
     }
 

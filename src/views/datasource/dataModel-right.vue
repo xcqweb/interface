@@ -60,6 +60,7 @@
               :class="modelNumber === index ? 'currentModelList' : ''"
               style="cursor:pointer"
               @click.stop.prevent="clickModelHandle($event,item.sourceId, item.modelName,item.formula,item.descript,index)"
+              @dblclick="renameModelHandle"
               @mouseenter="MouseEnterHandle($event, index)"
               @mousemove="MouseMoveHandle($event, index)"
             >
@@ -350,7 +351,6 @@
       @ChildMouseLeaveHandle="ChildMouseLeaveHandle"
       @renameHandle="renameModelHandle"
       @deleteHandle="deleteModelHandle"
-      @clickHandleList="clickHandleList"
     />
   </div>
 </template>
@@ -790,9 +790,6 @@ export default {
                 }
             }
             this.ifShowSuspension = false
-        },
-        clickHandleList() {
-            // this.ifShowSuspension = false
         },
         renameModelHandle() {
             let ele = document.querySelectorAll('#addModelLisetWaper li')[this.currentMouseIndex]

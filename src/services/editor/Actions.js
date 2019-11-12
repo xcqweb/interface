@@ -198,15 +198,20 @@ Actions.prototype.init = function()
         ui.showDialog(dlg.container, 410, 200, true, false, null, null, '链接');
     }, true)
     // 预览
-    this.addAction('previewapply', function () {
-        let dlg = new PreviewDialog(ui, (id) => {
+    this.addAction('previewapply', function (){
+        let dlg = new PreviewDialog(ui, (id,windowPage) => {
             let page = router.resolve({
                 path: "/interface_preview",
                 query: {
                     id: id
                 }
             })
-            window.open(page.href, '_blank')
+            let openWin=function (url) {
+                $('body').append($('<a href="' + url + '" target="_blank" id="openWin_preview"></a>'))
+                document.getElementById("openWin_preview").click()//点击事件
+                $('#openWin').remove()
+            }
+            openWin(page.href)
         })
         ui.showDialog(dlg.container, 410, 160, true, false, null, null, '预览')
     }, true, null, Editor.ctrlKey + '+Shift+L');
@@ -476,7 +481,14 @@ Actions.prototype.init = function()
         // 取消互动操作
         graph.escape();
         var cells = graph.getDeletableCells(graph.getSelectionCells());
-		
+        if (cells.length == 1 && graph.view.getState(cells[0]) && graph.view.getState(cells[0]).style.shape === 'tableCell'){
+            let model = graph.getModel()
+            model.beginUpdate()
+            model.setValue(cells[0],'')
+            model.endUpdate()
+            graph.view.refresh(cells[0])
+            return
+        }
         if (cells != null && cells.length > 0)
         {
             const model = graph.getModel();
@@ -538,6 +550,26 @@ Actions.prototype.init = function()
     this.addAction('selectEdges', function() { graph.selectEdges(); }, null, null, Editor.ctrlKey + '+Shift+E');
     this.addAction('selectAll', function() { graph.selectAll(null, true); }, null, null, Editor.ctrlKey + '+A');
     this.addAction('selectNone', function() { graph.clearSelection(); }, null, null, Editor.ctrlKey + '+Shift+A');
+    this.addAction('lock',()=>{
+        graph.getModel().beginUpdate();
+        graph.setCellStyles(mxConstants.STYLE_MOVABLE, 0);
+        graph.setCellStyles(mxConstants.STYLE_RESIZABLE, 0);
+        graph.setCellStyles(mxConstants.STYLE_ROTATABLE, 0);
+        graph.setCellStyles(mxConstants.STYLE_DELETABLE, 0);
+        graph.setCellStyles(mxConstants.STYLE_EDITABLE, 0);
+        graph.setCellStyles('connectable', 0);
+        graph.getModel().endUpdate();
+    },null, null, Editor.ctrlKey + '+L');
+    this.addAction('unlock', () => {
+        graph.getModel().beginUpdate();
+        graph.setCellStyles(mxConstants.STYLE_MOVABLE, 1);
+        graph.setCellStyles(mxConstants.STYLE_RESIZABLE, 1);
+        graph.setCellStyles(mxConstants.STYLE_ROTATABLE, 1);
+        graph.setCellStyles(mxConstants.STYLE_DELETABLE, 1);
+        graph.setCellStyles(mxConstants.STYLE_EDITABLE, 1);
+        graph.setCellStyles('connectable', 1);
+        graph.getModel().endUpdate();
+    }, null, null, Editor.ctrlKey + '+Shift+L');
     this.addAction('lockUnlock', function()
     {
         if (!graph.isSelectionEmpty())

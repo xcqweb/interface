@@ -143,12 +143,13 @@ const mutations = {
         let fontSize = 12
         let isSetBold = false
         let color = '',bgColor = '',borderColor = '',borderBold = 1
-        let align = mxConstants.ALIGN_CENTER,valign = mxConstants.ALIGN_MIDDLE,borderLineCls,arrow1,arrow2,lock
+        let align = mxConstants.ALIGN_CENTER, valign = mxConstants.ALIGN_MIDDLE, borderLineCls, arrow1, arrow2, lock, arcSize
         if (stateWidget) {
             fontSize = parseFloat(mxUtils.getValue(stateWidget.style, mxConstants.STYLE_FONTSIZE, 0));
             isSetBold = mxUtils.getValue(stateWidget.style, 'fontStyle', 0) === 1
             color = mxUtils.getValue(stateWidget.style, 'fontColor', null)
             bgColor = mxUtils.getValue(stateWidget.style, 'fillColor', null)
+            arcSize = mxUtils.getValue(stateWidget.style, 'arcSize', 0)
             borderColor = mxUtils.getValue(stateWidget.style, 'strokeColor', null)
             if(shapeInfo.shape.includes('image')) {
                 borderColor = mxUtils.getValue(stateWidget.style, 'imageBorder', "#000000")
@@ -162,12 +163,13 @@ const mutations = {
                 arrow2 = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_ENDARROW, null)
             }
             lock = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_MOVABLE,1)
+            widgetInfo.lock = lock
         }
-        widgetInfo.lock = lock
         widgetInfo.fontSize = fontSize
         widgetInfo.isSetBold = isSetBold
         widgetInfo.color = color
         widgetInfo.bgColor = bgColor
+        widgetInfo.arcSize = arcSize
         widgetInfo.borderColor = borderColor
         widgetInfo.borderBold = borderBold
         widgetInfo.align = align

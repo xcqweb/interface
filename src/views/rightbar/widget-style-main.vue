@@ -92,12 +92,15 @@ export default{
     created() {
         let graph = this.myEditorUi.editor.graph
         let cells = graph.getSelectionCells()
-        for(let i = 0;i < cells.length;i++) {
+        if(cells.length > 1) {
+            this.isShowDataTab = false
+        }
+        /*  for(let i = 0;i < cells.length;i++) { //批量绑定数据源的
             if(i < cells.length - 1 && this.getCellShapeName(cells[i]) != this.getCellShapeName(cells[i + 1])) {
                 this.isShowDataTab = false
                 break
             }
-        }
+        } */
     },
     mounted() {
         VueEvent.$off('rightBarTabSwitch')
