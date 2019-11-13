@@ -431,7 +431,6 @@ export default {
                     width: 130,
                     slot: 'three'
                 },
-                
             ],
             tdheight: 32,
             conditionLogicalSelect: '1',
@@ -558,20 +557,7 @@ export default {
                 this.snapDescript = this.textareValue
                 this.saveModelText = 'dataSource.saveModel'
                 this.$store.commit('modelEditing', false)
-                let obj = {
-                    title: this.$t('operation'),
-                    width:80,
-                    slot: 'flour'
-                }
-                let obj0 = {
-                    title: this.$t("dataSource.firstColumn"),
-                    width:125,
-                    slot: 'one'
-                }
-                if (this.columns.length !== 4) {
-                    this.columns.push(obj)
-                }
-                this.columns.splice(0,1,obj0)
+                this.conditionColumChange('edit')
             } else {
                 if (this.treeCheckRule(this.alldata.data)) {
                     // 组装数据  保存模型
@@ -584,45 +570,58 @@ export default {
                     objData.sourceId = this.currenModelId
                     objData.modelName = this.currenModelName
                     objData.formula = JSON.stringify(this.alldata)
-                    this.requestUtil.put(this.urls.addModelList.url,objData).then((res) => {
-                        if (res.sourceId) {
-                            Message.success(this.$t("dataSource.saveModelSuccess"))
+                    // 编辑保存
+                    if (this.currenModelId) {
+                        this.requestUtil.put(this.urls.addModelList.url,objData).then((res) => {
+                            if (res.sourceId) {
+                                Message.success(this.$t("dataSource.saveModelSuccess"))
+                                this.conditionColumChange('show')
+                                this.$store.commit('modelEditing', true)
+                                this.ModelNameArr.splice(this.modelNumber, 1, res)
+                            }
+                        })
+                    } else { // 新建保存
+                        this.requestUtil.post(this.urls.addModelList.url, objData).then((res) => {
+                            Message.success(this.$t('dataSource.addModelSuccessfully'))
+                            this.conditionColumChange('show')
                             this.$store.commit('modelEditing', true)
-                            this.ModelNameArr.splice(this.modelNumber, 1, res)
-                        }
-                        if (this.columns.length === 4) {
-                            this.columns.pop()
-                        }
-                        let obj0 = {
-                            title: this.$t("dataSource.firstColumn"),
-                            width:207,
-                            slot: 'one'
-                        }
-                        this.columns.splice(0, 1, obj0)
-                    }).catch(() => {
-                        Message.error(this.$t('systemBusy'))
-                        return false
-                    })
-                    
+                            this.currenModelId = res.sourceId;
+                            let obj = {
+                                studioId: res.studioId,
+                                deviceTypeId: res.deviceTypeId,
+                                formula: res.formula,
+                                viewContent: '',
+                                descript: res.descript,
+                                modelName: res.modelName,
+                                sourceId: res.sourceId,
+                                formulaView: res.formulaView,
+                            }
+                            this.ModelNameArr.splice(this.ModelNameArr.length - 1, 1, obj);
+                        })
+                    }
                 }
             }
         },
         // 取消
         CancelModelHandle() {
-            this.alldata = this.snapshot
-            this.conditionLogicalSelect = this.snapshot.conditionLogic
-            this.textareValue = this.snapDescript
-            this.saveModelText = 'dataSource.editModel'
-            this.$store.commit('modelEditing', true)
-            if (this.columns.length === 4) {
-                this.columns.pop()
+            if (!this.currenModelId) { // 不存在模型id 则删除新建模型
+                sureDialog(this.myEditorUi, this.$t('dataSource.confirmToCancelDeleteModel'), () => {
+                    this.$store.commit('modelEditing', true)
+                    this.conditionColumChange('show');
+                    let ModelNameArrCopy = JSON.parse(JSON.stringify(this.ModelNameArr))
+                    let _len = ModelNameArrCopy.length - 1
+                    this.clickModelHandle('', this.ModelNameArr[_len - 1].sourceId, this.ModelNameArr[_len - 1].modelName,this.ModelNameArr[_len - 1].formula,this.ModelNameArr[_len - 1].descript, _len - 1)
+                    this.ModelNameArr.pop()
+                })
+            } else {
+                this.alldata = this.snapshot
+                this.conditionLogicalSelect = this.snapshot.conditionLogic
+                this.textareValue = this.snapDescript
+                this.saveModelText = 'dataSource.editModel'
+                this.$store.commit('modelEditing', true)
+                this.conditionColumChange('show')
             }
-            let obj0 = {
-                title: this.$t("dataSource.firstColumn"),
-                width:207,
-                slot: 'one'
-            }
-            this.columns.splice(0, 1, obj0)
+            
         },
         addConditionHandle() {
             if (this.modelEditing) {
@@ -643,20 +642,7 @@ export default {
             this.alldata.conditionLogic = data
         },
         addModelHandle() {
-            let obj = {
-                title: this.$t('operation'),
-                width:80,
-                slot: 'flour'
-            }
-            let obj0 = {
-                title: this.$t('dataSource.firstColumn'),
-                width:125,
-                slot: 'one'
-            }
-            if (this.columns.length !== 4) {
-                this.columns.push(obj)
-            }
-            this.columns.splice(0,1,obj0)
+            this.conditionColumChange('edit')
             if (!this.modelEditing) {
                 Message.warning(this.$t(alertTip))
                 return false
@@ -667,26 +653,21 @@ export default {
             }
             let num = this.ModelNameArr.length + 1
             let name = `新建模型${num}`
-            let objData = {
+            let res = {
                 studioId: this.studioIdNew,
                 deviceTypeId: this.currentDeviceTypeId,
                 formula: '',
                 viewContent: '',
                 descript: '',
-                modelName: name
+                modelName: name,
+                sourceId: '',
+                formulaView: '',
             }
-            this.requestUtil.post(this.urls.addModelList.url, objData).then((res) => {
-                Message.success(this.$t('dataSource.addModelSuccessfully'))
-                this.ModelNameArr.push(res)
-                this.clickModelHandle('', res.sourceId, res.modelName,res.formula,res.descript,this.ModelNameArr.length - 1)
-                this.$store.commit('modelEditing', false)
-                this.saveModelText = 'dataSource.saveModel'
-                this.snapshot = JSON.parse(JSON.stringify(this.alldata))
-                return false
-            }).catch(() => {
-                Message.error(this.$t('systemBusy'))
-                return false
-            })
+            this.ModelNameArr.push(res)
+            this.clickModelHandle('', res.sourceId, res.modelName,res.formula,res.descript,this.ModelNameArr.length - 1)
+            this.$store.commit('modelEditing', false)
+            this.saveModelText = 'dataSource.saveModel'
+            this.snapshot = JSON.parse(JSON.stringify(this.alldata))
         },
         removedata(key, index) {
             if (this.alldata.data[key].length) {
@@ -826,7 +807,7 @@ export default {
                                 }
                             }
                         } else {
-                            this.modelNumber = this.modelNumber - 1
+                            this.modelNumber = (this.modelNumber - 1) >= 0 ?  this.modelNumber - 1 : 0
                             this.ModelNameArr.splice(this.currentMouseIndex, 1)
                         }
                         Message.success(this.$t('deleteSuccessfully'))
@@ -981,6 +962,35 @@ export default {
             }
             result = true
             return result
+        },
+        conditionColumChange(type) {
+            // 保存后 变为3列
+            if (type === 'show') {
+                if (this.columns.length === 4) {
+                    this.columns.pop()
+                    let obj0 = {
+                        title: this.$t("dataSource.firstColumn"),
+                        width:207,
+                        slot: 'one'
+                    }
+                    this.columns.splice(0, 1, obj0)
+                }
+            } else if (type === 'edit') {
+                let obj = {
+                    title: this.$t('operation'),
+                    width:80,
+                    slot: 'flour'
+                }
+                let obj0 = {
+                    title: this.$t("dataSource.firstColumn"),
+                    width:125,
+                    slot: 'one'
+                }
+                if (this.columns.length !== 4) {
+                    this.columns.push(obj)
+                }
+                this.columns.splice(0,1,obj0)
+            }
         }
     }
 }

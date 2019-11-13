@@ -23,7 +23,7 @@ const logicalSignList = [
     },
     {
         value: '4',
-        label: 'notEqual'
+        label: 'notEqualTo'
     },
     {
         value: '5',

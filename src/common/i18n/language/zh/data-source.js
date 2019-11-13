@@ -18,6 +18,7 @@ export default {
     haveUnsavedModels: '您还有未保存的模型,请先保存',
     haveNotSelectedDevice: '你未选择设备类型',
     confirmToDeleteModel: '确定要删除此模型吗',
+    confirmToCancelDeleteModel : '此模型还未保存，取消将会删除该新建模型？',
     confirmToDeleteRule: '确定要删除条件{index}吗',
     nameCouldNotEmpty: '名称不能为空',
     nameCouldNotExceed: '名称不能超过20个字符',
