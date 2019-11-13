@@ -1,10 +1,8 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin') // 复制静态资源的插件
-const argv = require('yargs-parser')(process.argv.slice(2));
-const mode = argv.mode || 'development';
+const isDev = process.env.NODE_ENV === 'development'
 const {VueLoaderPlugin} = require('vue-loader');
-const isDev = mode === 'development';
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');//webpack内置的js压缩插件
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -164,12 +162,16 @@ module.exports = {
         runtimeChunk: {
             name: 'runtime'
         },
-        minimizer: [
-            new UglifyJsPlugin(), //会优化掉 .map文件
+        minimizer: isDev ? [] : [
+            new UglifyJsPlugin({
+                cache: true,
+                parallel: true,
+                sourceMap: true
+            }),
             new OptimizeCSSAssetsPlugin(),
         ],
     },
-    devtool: '#source-map',
+    devtool: isDev ? 'cheap-module-eval-souce-map' : 'cheap-module-souce-map',
     resolve: {
         extensions: ['.js', '.jsx','.ts','.tsx', '.less','.json','.css','.vue'],
         alias: {
