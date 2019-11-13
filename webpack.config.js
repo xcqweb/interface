@@ -171,7 +171,7 @@ module.exports = {
             new OptimizeCSSAssetsPlugin(),
         ],
     },
-    devtool: isDev ? 'cheap-module-eval-souce-map' : 'cheap-module-souce-map',
+    devtool: isDev ? 'eval-source-map' : 'source-map',
     resolve: {
         extensions: ['.js', '.jsx','.ts','.tsx', '.less','.json','.css','.vue'],
         alias: {

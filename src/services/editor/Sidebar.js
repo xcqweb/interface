@@ -969,7 +969,6 @@ Sidebar.prototype.renameNode = function(ele, pageType) {
     if (!ele.innerText){
         return
     }
-    console.log(ele)
     let editInput = document.createElement('input');
     editInput.id = 'editPageInput';
     let oldVal = ele.innerText

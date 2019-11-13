@@ -4,8 +4,8 @@
   "description": "demo",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --hot --mode=development",
-    "build": "webpack --max_old_space_size=4096 --mode=production",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --mode=development",
+    "build": "cross-env NODE_ENV=production webpack --max_old_space_size=4096 --mode=production",
     "lint": "eslint --ext .js --ext .vue src/",
     "lint-fix": "eslint --fix --ext .js --ext .jsx --ext .vue src/"
   },
