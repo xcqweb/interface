@@ -533,9 +533,6 @@ export default {
                         this.clickModelHandle('', this.ModelNameArr[0].sourceId, this.ModelNameArr[0].modelName,this.ModelNameArr[0].formula,this.ModelNameArr[0].descript, 0)
                     }, 220)
                 }
-            }).catch(() => {
-                Message.error(this.$t('systemBusy'))
-                return false
             })
         },
         // 获取参数列表 modelId设备id
@@ -813,8 +810,6 @@ export default {
                         Message.success(this.$t('deleteSuccessfully'))
                     }).catch(() => {
                         this.ifShowSuspension = false
-                        Message.error(this.$t('systemBusy'))
-                        return false
                     })
                 })
             } else {
@@ -863,7 +858,6 @@ export default {
                         }
                     }
                 }).catch(() => {
-                    Message.error(this.$t('systemBusy'))
                     ele.innerHTML = `${name}`
                 })
             }

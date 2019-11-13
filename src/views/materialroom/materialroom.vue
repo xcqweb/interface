@@ -399,9 +399,6 @@ export default {
                     }
                     this.assemblyArrayName.push(obj)
                 })
-            }).catch(() => {
-                Message.error(this.$t('systemBusy'))
-                return false
             })
             let oInp = document.querySelector('.assembly-seach-icon')
             oInp.oninput = this.debounce(this.selectMaterial, 1000)
@@ -434,9 +431,6 @@ export default {
                             }
                             this.emptyArray.push(obj)
                         })
-                    }).catch(() => {
-                        Message.error(this.$t('systemBusy'))
-                        return false
                     })
                 }
             }
@@ -488,9 +482,6 @@ export default {
                         this.alertMaterial.push(obj)
                     }
                 })
-            }).catch(() => {
-                Message.error(this.$t('systemBusy'))
-                return false
             })
         },
         tabsSwitch(type) {
@@ -526,9 +517,6 @@ export default {
                     }
                     this.userMaterialAll.push(obj)
                 })
-            }).catch(() => {
-                Message.error(this.$t('systemBusy'))
-                return false
             })
             return function() {
                 clearTimeout(timer)

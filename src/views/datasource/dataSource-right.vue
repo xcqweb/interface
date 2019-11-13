@@ -371,10 +371,7 @@ export default {
                         return Promise.all([
                             this.requestUtil.post(this.urls.deviceParamList.url, objDataNew),
                             this.requestUtil.post(this.urls.deviceEquipList.url, objDataNew)
-                        ]).catch(() => {
-                            Message.error('系统繁忙，请稍后再试')
-                            return false
-                        })
+                        ])
                     } else {
                         this.paramsNameList = []
                         this.deviceNameList = []
@@ -399,17 +396,11 @@ export default {
                     }
                     this.requestUtil.post(this.urls.deviceParamList.url, objDataNew2).then((res) => {
                         VueEvent.$emit('StartparamsNameArr', res.records || [])
-                    }).catch(() => {
-                        Message.error('系统繁忙，请稍后再试试')
-                        return false
                     })
                 } else {
                     VueEvent.$emit('StartparamsNameArr', this.paramsNameList)
                 }
 
-            }).catch(() => {
-                Message.error('系统繁忙，请稍后再试试')
-                return false
             })
             
         },
@@ -442,10 +433,7 @@ export default {
                 const [ParamNameList, DeviceNameList] = await Promise.all([
                     this.requestUtil.post(this.urls.deviceParamList.url, objDataNew),
                     this.requestUtil.post(this.urls.deviceEquipList.url, objDataNew)
-                ]).catch(() => {
-                    Message.error('系统繁忙，请稍后再试')
-                    return false
-                })
+                ])
                 this.paramsNameList = ParamNameList.records || []
                 this.deviceNameList = DeviceNameList.records || []
                 this.paramListTotal = ParamNameList.total || 10
@@ -462,9 +450,6 @@ export default {
                     }
                     this.requestUtil.post(this.urls.deviceParamList.url, objDataNew2).then((res) => {
                         VueEvent.$emit('StartparamsNameArr', res.records || [])
-                    }).catch(() => {
-                        Message.error('系统繁忙，请稍后再试')
-                        return false
                     })
                 } else {
                     VueEvent.$emit('StartparamsNameArr', this.paramsNameList)
@@ -729,9 +714,6 @@ export default {
                         }
                         this.cancelHandle()
                     }
-                }).catch(() => {
-                    Message.sucess('系统繁忙，请稍后再试试')
-                    return false
                 })
             } else if (type === 2) {
                 this.requestUtil.post(this.urls.deleteDeviceList.url,ObjData).then((res) => {
@@ -760,9 +742,6 @@ export default {
                         }
                         this.cancelHandle()
                     }
-                }).catch(() => {
-                    Message.error('系统繁忙，请稍后再试试')
-                    return false
                 })
             } else if (type === 3) { // 删除设备类型
                 this.requestUtil.delete(`${this.urls.deleteDeviceType.url}/${ObjData}`).then((res) => {
@@ -783,9 +762,6 @@ export default {
                         }
                         this.cancelHandle()
                     }
-                }).catch(() => {
-                    Message.error('系统繁忙，请稍后再试试')
-                    return false
                 })
             }
         },

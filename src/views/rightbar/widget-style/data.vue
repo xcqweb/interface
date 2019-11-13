@@ -200,11 +200,7 @@ export default{
                     }
                     return Promise.all([
                         this.requestUtil.post(this.urls.deviceEquipList.url, objDataNew)
-                    ]).catch(() => {
-                        
-                        Message.error(`${this.$t('systemBusy')}`)
-                        return false
-                    })
+                    ])
                 } else {
                     this.deviceNameList = []
                     return [[]]
@@ -213,10 +209,6 @@ export default{
                 const [firstDeviceNameList] = res
                 this.deviceNameList = firstDeviceNameList.records || []
                 this.deviceListTotal = firstDeviceNameList.total || 10
-            }).catch(() => {
-               
-                Message.error(`${this.$t('systemBusy')}`)
-                return false
             })
         },
         checkAllGroupChange(data) {
@@ -236,10 +228,6 @@ export default{
             this.requestUtil.post(this.urls.deviceEquipList.url, objData).then((res) => {
                 this.deviceNameList = res.records || []
                 this.deviceListTotal = res.total || 10
-            }).catch(() => {
-                
-                Message.error(`${this.$t('systemBusy')}`)
-                return false
             })
         },
         bindDeviceNameHandle() {
@@ -353,10 +341,6 @@ export default{
         PageChangeAjax(objData) {
             this.requestUtil.post(this.urls.deviceEquipList.url, objData).then((res) => {
                 this.deviceNameList = res.records || []
-            }).catch(() => {
-                
-                Message.error(`${this.$t('systemBusy')}`)
-                return false
             })
         }
     },      
