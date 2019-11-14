@@ -1193,9 +1193,8 @@ export default {
             const actions = ui.actions;
             const graph = ui.editor.graph;
             const table = graph.getSelectionCell();
-            const col = actions.getTableColCount(table);
-            const row = actions.getTableRowCount(table);
-            return [row, col]
+            const {row, col} = actions.getTableRowColNum(table);
+            return [row, col];
         },
         changeTableSize() {
             let actions = this.myEditorUi.actions
