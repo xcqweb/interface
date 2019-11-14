@@ -1049,15 +1049,23 @@ Sidebar.prototype.copyPage = function (ele,pageType) {
         $("#dialogPages li:last-child .spanli").click();
     }
 }
+// 获取缩略图
+Sidebar.prototype.getSvgImage = function () {
+    const editor = this.editorUi.editor;
+    const graph = editor.graph;
+    let svgImage = graph.getSvg(graph.background, null, null, true, null, true, null, null, null, false);
+    let widthlen = svgImage.getAttribute('width').substring(0, svgImage.getAttribute('width').length - 2);
+    let heightLen = svgImage.getAttribute('height').substring(0, svgImage.getAttribute('width').length - 2);
+    svgImage.setAttribute('viewbox', `-${widthlen / 2} 0 ${parseInt(widthlen * 2)} ${heightLen}`);
+    return svgImage;
+}
 /*添加模版*/
 Sidebar.prototype.addTemplate = async function(type) {
-    let svgImage = this.editorUi.editor.graph.getSvg(null, null, null, true, null, true, null, null, null, false)
-    let widthlen = svgImage.getAttribute('width').substring(0, svgImage.getAttribute('width').length-2);
-    let heightLen = svgImage.getAttribute('height').substring(0, svgImage.getAttribute('width').length - 2);
-    svgImage.setAttribute('viewbox', `-${widthlen/2 } 0 ${parseInt(widthlen * 2)} ${heightLen}`)
-    let svgImagePic = svgImage.outerHTML
+    const svgImage = this.getSvgImage();
+    const svgImagePic = svgImage.outerHTML;
     if (svgImagePic) {
-        var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
+        const editor = this.editorUi.editor;
+        var currentPage = editor.pages[editor.currentPage]
         let data = {
             content: JSON.stringify(currentPage),
             pic: svgImagePic,

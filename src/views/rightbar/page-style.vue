@@ -16,29 +16,6 @@
     <div class="item-title">
       {{ $t('page') }}{{ $t('size') }}
     </div>
-    <div
-      v-clickOutSide="hideScale"
-      class="item-container"
-      style="justify-content:space-between;position:relative;"
-      @click="showScale=true"
-    >
-      {{ scaleText }}
-      <img src="../../assets/images/menu/down_ic.png">
-      <ul
-        v-if="showScale"
-        class="scale-dialog"
-        @mouseleave="showScale=false"
-        @blur="showScale=false"
-      >
-        <li
-          v-for="(d,index) in scaleList"
-          :key="index"
-          @click="changeScale(d,$event)"
-        >
-          {{ d }}
-        </li>
-      </ul>
-    </div>
     <div style="display:flex;margin-top:4px;">
       <div
         class="item-container solidWidth"
@@ -115,19 +92,9 @@ export default {
     data() {
         return {
             pageDesc:"",
-            showScale:false,
             solidHeight: 768,
             solidWidth: 1366,
-            scaleText:'1366*768',
             bgColor:'#fff',
-            scaleList:[
-                '2560*1600',
-                '1920*1080',
-                '1440*900',
-                '1366*768',
-                '1280*800',
-                '1024*768',
-            ],
             bgPic:require('../../assets/images/rightsidebar/bg_ic_widget.png'),
             isShowBgText:true,
             bgPicStyle:{height:'auto'},
@@ -159,25 +126,6 @@ export default {
             this.solidWidth = width
             this.solidHeight = height
             this.myEditorUi.setPageFormat({height:height,width:width,x:0,Y:0},true)
-            this.scaleText = width + '*' + height
-        },
-        changeScale(d,e) {
-            this.scaleText = d;
-            this.showScale = false;
-            let arr = d.split("*")
-            this.solidWidth = arr[0]
-            this.solidHeight = arr[1]
-            this.myEditorUi.setPageFormat(
-                {
-                    height: arr[1],
-                    width: arr[0],
-                    x: 0,
-                    y: 0
-                },
-                true
-            )
-            this.centerCanvas()
-            e.stopPropagation()
         },
         centerCanvas() {//居中画布
             let graph = this.myEditorUi.editor.graph
@@ -239,6 +187,7 @@ export default {
                     editor.pages[editor.currentPage].style = { }
                 }
                 editor.pages[editor.currentPage].style.backgroundUrl = `getechFileSystem/${res.picPath}`
+                this.myEditorUi.graph.setBackgroundImage(`getechFileSystem/${res.picPath}`)
             })
         },
         fileChange(e) {
@@ -281,9 +230,6 @@ export default {
                 this.bgColor = color
             }
             this.myEditorUi.setBackgroundColor(this.bgColor)
-        },
-        hideScale() {
-            this.showScale = false
         },
     }
 };

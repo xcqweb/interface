@@ -3466,6 +3466,7 @@ EditorUi.prototype.saveSuccess = function (res, hideDialog) {
     this.editor.setFilename(res.studioName)
     this.editor.setDescribe(res.descript)
     this.editor.setApplyId(res.studioId)
+    this.editor.setAppType(res.appType)
     if (res && res.studioId){
         sessionStorage.setItem('applyId',res.studioId)
     }
@@ -3512,6 +3513,10 @@ EditorUi.prototype.save = function(name, des,hideDialog=false)
                     applyCon: editor.pagesNameList().join(),
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                     lockStatus: 1
+                }
+                const svgImg = ui.sidebar.getSvgImage();
+                if (svgImg && svgImg.outerHTML) {
+                    data.picUrl = svgImg.outerHTML
                 }
                 var id = editor.getApplyId() || sessionStorage.getItem('applyId')
                 if (id) {
