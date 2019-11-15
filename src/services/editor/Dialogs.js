@@ -438,8 +438,9 @@ let FilenameDialog = function(editorUi,fn, closeOnBtn, cancelFn)
             style: 1,
             status: 1
         }
-        if (!editorUi.lengthWidth) {//老应用，默认不启用菜单
-            editorUi.theme.status = 0
+        if (editorUi.isOldApply) {
+           //老应用，默认不启用菜单
+           editorUi.theme.status = 0
         } 
     }
     saveContent.style.padding="20px 20px 0 20px"

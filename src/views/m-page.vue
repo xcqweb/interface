@@ -70,6 +70,7 @@ export default {
                     const editData = res[1]
                     // pc默认1366*768，mobile默认360*640
                     if (!editData.lengthWidth) {
+                        myEditorUi.isOldApply = true
                         if (editData.appType === 1) {
                             editData.lengthWidth = '360*640'
                         } else {
@@ -97,7 +98,6 @@ export default {
                     }else{
                         myEditorUi.theme = null
                     }
-                    myEditorUi.lengthWidth = editData.lengthWidth
                 }
                 myEditor.defaultXml[0] = myEditor.createPageXml(page.width, page.height)
                 myEditor.defaultXml[1] = myEditor.createPageXml(dialog.width, dialog.height)
