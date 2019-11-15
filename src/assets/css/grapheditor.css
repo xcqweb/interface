@@ -1741,3 +1741,50 @@ input.inputTag {
 	height: 100%;
 	background:#D9D9D9;
  }
+ .menu-config-switch{
+	width: 49px;
+	height: 24px;
+	position: relative;
+	border: 1px solid #dfdfdf;
+	background-color: #fdfdfd;
+	box-shadow: #dfdfdf 0 0 0 0 inset;
+	border-radius: 20px;
+	background-clip: content-box;
+	display: inline-block;
+	-webkit-appearance: none;
+	user-select: none;
+	outline: none;
+}
+.menu-config-switch:before {
+	content: '';
+	width: 22px;
+	height: 22px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	border-radius: 20px;
+	background-color: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.menu-config-switch:checked {
+	border-color: #3D91F7;
+	box-shadow: #3D91F7 0 0 0 16px inset;
+	background-color: #3D91F7;
+}
+.menu-config-switch:checked:before {
+	left: 26px;
+}
+.menu-config-switch.menu-config-switch-anim {
+	transition: border cubic-bezier(0, 0, 0, 1) 0.4s, box-shadow cubic-bezier(0, 0, 0, 1) 0.4s;
+}
+.menu-config-switch.menu-config-switch-anim:before {
+	transition: left 0.3s;
+}
+.menu-config-switch.menu-config-switch-anim:checked {
+	box-shadow: #3D91F7 0 0 0 16px inset;
+	background-color: #3D91F7;
+	transition: border ease 0.4s, box-shadow ease 0.4s, background-color ease 1.2s;
+}
+.menu-config-switch.menu-config-switch-anim:checked:before {
+	transition: left 0.3s;
+}

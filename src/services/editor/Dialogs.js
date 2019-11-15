@@ -432,20 +432,57 @@ let FilenameDialog = function(editorUi,fn, closeOnBtn, cancelFn)
 {
     closeOnBtn = (closeOnBtn != null) ? closeOnBtn : true
     var saveContent = editorUi.createDiv('geDialogInfo')
-    saveContent.style.padding="20px"
+    if (!editorUi.theme) {
+        editorUi.theme = {
+            position: 1,
+            style: 1,
+            status: 1
+        }
+        if (!editorUi.lengthWidth) {//老应用，默认不启用菜单
+            editorUi.theme.status = 0
+        } 
+    }
+    saveContent.style.padding="20px 20px 0 20px"
+    //默认导航是否启用
+    let defaultConfigMenu = document.createElement('div')
+    defaultConfigMenu.innerHTML = `<div style="font-size:14px;color:#929292;flex:1;">默认导航</div>
+        <div style="flex:2"><input type="checkbox" class="menu-config-switch menu-config-switch-anim" ${editorUi.theme.status == 1 ? 'checked' : ''}></div>`;
+    defaultConfigMenu.style.cssText = "display:flex;height:24px;align-items:center;"
+    saveContent.appendChild(defaultConfigMenu)
+
+    let menuPosMsgCon = document.createElement("div")
+    menuPosMsgCon.style.display = editorUi.theme.status == 1 ? "block" : "none"
+
+    $(defaultConfigMenu).on("change", "input", function() {
+       if ($(this).prop("checked")) {
+          editorUi.theme.status = 1
+          menuPosMsgCon.style.display = 'block'
+          $(".geDialog").css("minHeight", "266px")
+       } else {
+          editorUi.theme.status = 0
+          menuPosMsgCon.style.display = "none"
+          $(".geDialog").css('minHeight','auto')
+       }
+     })
+    this.init = function() {
+        if(editorUi.theme.status !=1){
+            $(".geDialog").css("minHeight", "auto")
+        }
+    }
     // 导航位置
     let menuPosCon = document.createElement('div')
-    menuPosCon.innerHTML =`<span style="font-size:14px;color:#929292;flex:1;">导航位置</span>
+    menuPosMsgCon.style.marginTop='15px'
+    menuPosCon.innerHTML = `<span style="font-size:14px;color:#929292;flex:1;">导航位置</span>
     <div style="flex:2;display:flex;">
-        <div class="menu-pos-con check">
+        <div class="menu-pos-con ${editorUi.theme.position == 1 ? 'check' : ''}">
             <div class="menu-left-cls check"></div>
         </div>
-        <div class="menu-pos-con" style="margin-left:20px;">
+        <div class="menu-pos-con ${editorUi.theme.position == 2 ? 'check' : ''}" style="margin-left:20px;">
             <div class="menu-top-cls"><div>
         </div>
-    </div>`
+    </div>`;
     menuPosCon.className = 'menu-pos-con-dlg'
-    saveContent.appendChild(menuPosCon)
+    menuPosMsgCon.appendChild(menuPosCon)
     $(menuPosCon).on('click','.menu-pos-con',(evt)=>{
         let el = evt.currentTarget
         $(el).addClass('check').siblings().removeClass('check')
@@ -453,54 +490,57 @@ let FilenameDialog = function(editorUi,fn, closeOnBtn, cancelFn)
  
     // 导航风格
     let menuStyleCon = document.createElement('div')
-    menuStyleCon.style.marginTop="20px"
+    menuStyleCon.style.marginTop="15px"
     menuStyleCon.innerHTML = `<span style="font-size:14px;color:#929292;flex:1;">导航风格</span>
-    <ul class='menu-style-con'><li class="check"><div class="menu1"></div></li><li><div class="menu2"></div></li><li><div class="menu3"></div></li><li><div class="menu4"></div></li></ul>
+    <ul class='menu-style-con'>
+        <li class="${editorUi.theme.style == 1 ? 'check' : ''}"><div class="menu1"></div></li>
+        <li class="${editorUi.theme.style == 2 ? 'check' : ''}"><div class="menu2"></div></li>
+        <li class="${editorUi.theme.style == 3 ? 'check' : ''}"><div class="menu3"></div></li>
+        <li class="${editorUi.theme.style == 4 ? 'check' : ''}"><div class="menu4"></div></li>
+    </ul>
     `
     menuStyleCon.className = 'menu-pos-con-dlg'
-    saveContent.appendChild(menuStyleCon)
+    menuPosMsgCon.appendChild(menuStyleCon)
     $(menuStyleCon).on('click', 'li', (evt) => {
         let el = evt.currentTarget
         $(el).addClass('check').siblings().removeClass('check')
     })
+    saveContent.appendChild(menuPosMsgCon)
     // 按钮
-    var btnContent = editorUi.createDiv('btnContent');
+    var btnContent = editorUi.createDiv('btnContent')
+    btnContent.style.marginTop="5px"
+    btnContent.style.marginBottom='25px'
     var genericBtn = mxUtils.button(mxResources.get('save'), function()
-    {
-        let theme = {
-            position:1,
-            style:1
-        }
+    {   
         $(".menu-pos-con").each((index, item) => {
             if ($(item).hasClass('check')) {
-                theme.position = index + 1
+                editorUi.theme.position = index + 1
                 return false
             }
         })
         $(".menu-style-con li").each((index,item)=>{
             if($(item).hasClass('check')){
-                theme.style=index+1
+                editorUi.theme.style = index + 1
                 return false
             }
         })
-        editorUi.theme = theme
         fn()
     });
-    genericBtn.className = 'geBtn gePrimaryBtn';
+    genericBtn.className = 'geBtn gePrimaryBtn'
     var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
     {
-        editorUi.hideDialog();
+        editorUi.hideDialog()
 		
         if (cancelFn != null)
         {
-            cancelFn(mxResources.get('cancel'));
+            cancelFn(mxResources.get('cancel'))
         }
     });
     cancelBtn.className = 'geBtn'
     btnContent.appendChild(cancelBtn)
     btnContent.appendChild(genericBtn)
     saveContent.appendChild(btnContent)
-    this.container = saveContent;
+    this.container = saveContent
 };
 /**
  * 发布弹窗
@@ -518,49 +558,10 @@ let PreviewDialog = function(editorUi,callback) {
     var genericBtn = mxUtils.button('保存并预览', function()
     {
         autoSaveFlagTerry = 0
-        editorUi.save(editorUi.theme).then(res => {
+        editorUi.save().then(res => {
             callback(res.studioId)
             editorUi.hideDialog()
         })
-    });
-    genericBtn.className = 'geBtn gePrimaryBtn';
-    // 取消按钮
-    var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
-    {
-        editorUi.hideDialog();
-    });
-    cancelBtn.className = 'geBtn';
-    btnContent.appendChild(cancelBtn);
-    btnContent.appendChild(genericBtn);
-	
-    saveContent.appendChild(btnContent)
-    this.container = saveContent;
-}
-/**
- * 发布弹窗
- */
-let PublishDialog = function(editorUi) {
-    var saveContent = editorUi.createDiv('geDialogInfo');
-    let editor = editorUi.editor;
-    // 链接
-    var nameTitle = document.createElement('p')
-    nameTitle.innerHTML = '发布之后，生成的应用将在平台展示。';
-    nameTitle.className = 'geDialogInfoTitle';
-    saveContent.appendChild(nameTitle)
-
-    // 保存按钮
-    var btnContent = editorUi.createDiv('btnContent');
-    var genericBtn = mxUtils.button('保存并发布', function()
-    {
-        editorUi.hideDialog();
-        editorUi.save(editor.filename, editor.describe).then(res => {
-            editor.ajax(editorUi, '/api/viewtool/publish/' + editor.getApplyId() + '/1', 'PUT', null, function() {
-                editor.tipInfo(editorUi, true, '发布');
-            }, function() {
-                editor.tipInfo(editorUi, false, '发布');
-            });
-            editorUi.hideDialog();
-        });
     });
     genericBtn.className = 'geBtn gePrimaryBtn';
     // 取消按钮
@@ -1882,6 +1883,6 @@ var LayersWindow = function(editorUi, x, y, w, h)
 };
 
 export {
-    OpenDialog, ColorDialog, AboutDialog, valueDialog,PreviewDialog, PublishDialog, tipDialog, ImageDialog,
+    OpenDialog, ColorDialog, AboutDialog, valueDialog,PreviewDialog, tipDialog, ImageDialog,
     addPageDialog,EditDiagramDialog, LinkDialog, OutlineWindow, LayersWindow, FilenameDialog
 }

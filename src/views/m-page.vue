@@ -92,6 +92,12 @@ export default {
                     myEditorUi.editor.setApplyId(editData.studioId)
                     myEditorUi.editor.setAppType(editData.appType)
                     myEditorUi.editor.setDescribe(editData.descript)
+                    if(editData.theme) {
+                        myEditorUi.theme = JSON.parse(editData.theme)
+                    }else{
+                        myEditorUi.theme = null
+                    }
+                    myEditorUi.lengthWidth = editData.lengthWidth
                 }
                 myEditor.defaultXml[0] = myEditor.createPageXml(page.width, page.height)
                 myEditor.defaultXml[1] = myEditor.createPageXml(dialog.width, dialog.height)
@@ -122,10 +128,6 @@ export default {
             this.$refs.toolbar.init();
             this.$refs.leftsidebar.init();
             this.$refs.rightbar.init()
-            let applyId = sessionStorage.getItem('applyId')
-            if(!applyId) {
-                this.myEditorUi.saveFile(true,true)
-            }
             timer = setInterval(()=> {
                 this.myEditorUi.saveFile(true,true)
             },1000 * 60 * 1)//1分钟自动保存一次

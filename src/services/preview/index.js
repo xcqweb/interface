@@ -153,11 +153,15 @@ class Main {
                 height: `${menuHeight}px`,
                 display: 'inline-block',
                 lineHeight: `${menuHeight}px`,
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
             })
             if(parseTheme.position == 1) {
                 menuLi.css({padding: '0 10px'})
             }
             menuLi.html(`${pages[key]}`)
+            menuLi.attr('title',pages[key])
             menuUl.append(menuLi)
         }
         menuCon.append(menuUl)
