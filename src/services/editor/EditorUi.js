@@ -3429,19 +3429,19 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
     if (!forceDialog && this.editor.filename != null)
     {
         // 新建保存
-        this.save(this.editor.getOrCreateFilename(), this.editor.getDescribe());
+        this.save(this.theme);
     }
     else
     {
         if(hideDialog){
-            this.save(this.editor.getOrCreateFilename(), this.editor.getDescribe(),hideDialog)
+            this.save(this.theme,hideDialog)
             return
         }
         // 编辑保存
-        var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '保存', mxUtils.bind(this, function(name, des)
+        var dlg = new FilenameDialog(this,mxUtils.bind(this, function()
         {
             autoSaveFlagTerry = 0
-            this.save(name, des);
+            this.save(this.theme)
         }), null, mxUtils.bind(this, function(name)
         {
             if (name != null && name.length > 0)
@@ -3454,8 +3454,7 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
             return false;
         }));
         // 显示弹窗
-        this.showDialog(dlg.container, 410, 266, true, false, null, null, '保存文件');
-        dlg.init();
+        this.showDialog(dlg.container, 410, 266, true, false, null, null, '保存应用');
     }
 };
 /**
@@ -3490,7 +3489,7 @@ EditorUi.prototype.saveError = function (res, hideDialog) {
 /**
  * 保存当前应用
  */
-EditorUi.prototype.save = function(name, des,hideDialog=false)
+EditorUi.prototype.save = function(theme,hideDialog=false)
 {
     return new Promise((resolve, reject) => {
         if (name != null)
@@ -3507,12 +3506,15 @@ EditorUi.prototype.save = function(name, des,hideDialog=false)
                 // 页面信息
                 var pages = editor.pages;
                 var data = {
-                    studioName: name,
-                    descript: des,
+                    theme:JSON.stringify(theme),
                     applyCon: editor.pagesNameList().join(),
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                     lockStatus: 1
                 }
+                data.studioName = '新建应用'
+                data.appType = 0
+                data.lengthWidth='1366*768'
+                data.classifyId = '5766489a98ca72f47fefbd981295a733'
                 var id = editor.getApplyId() || sessionStorage.getItem('applyId')
                 if (id) {
                     // 编辑保存

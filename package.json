@@ -70,6 +70,7 @@
     "canvas-nest.js": "^2.0.4",
     "echarts": "^4.2.1",
     "exports-loader": "^0.7.0",
+    "horwheel": "^1.0.1",
     "mxgraph": "^4.0.1",
     "nprogress": "^0.2.0",
     "script-loader": "^0.7.2",

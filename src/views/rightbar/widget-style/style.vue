@@ -715,14 +715,14 @@
       v-if="shapeName == 'rectangle'"
       class="arcSize-rectangle"
     >
-      <span>圆角</span>
+      <p>圆角</p>
       <Slider
         :value="$store.state.main.widgetInfo.shapeInfo.arcSize / 100"
         :max="0.5"
         :min="0"
+        style="margin-left:6px;"
         :step="0.005"
         :show-tip="'never'"
-        style="width:60%;"
         @on-input="arcSizeChange"
       />
     </div>
@@ -1730,12 +1730,10 @@ export default {
       width:40px;
     }
     .arcSize-rectangle{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-right:10px;
+      margin-top:10px;
       /deep/.ivu-slider-wrap{
-        background:#000;
+        background:#D4D4D4;
+        margin:6px 0;
       }
     }
 }

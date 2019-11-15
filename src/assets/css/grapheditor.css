@@ -806,7 +806,7 @@ div.mxWindow .geButton {
 }
 .geSprite-save::after {
 	content: '保存';
-	left: 6px;
+	left: 12px;
 }
 .en .geSprite-save::after {
 	content: 'Save';
@@ -991,7 +991,7 @@ div.mxWindow .geButton {
 }
 .geSprite-preview::after {
 	content: '预览';
-	left: 6px;
+	left: 12px;
 }
 .en .geSprite-preview::after {
 	content: 'Preview';
@@ -1659,4 +1659,85 @@ input.inputTag {
  .widget-chart {
 	 width:100%;
 	 height:100%;
+ }
+ .menu-pos-con-dlg{
+	display: flex;
+	align-items:center;
+ }
+ .menu-pos-con-dlg .menu-pos-con{
+	width:48px;
+	height: 48px;
+	border-radius: 2px;
+	border:solid 1px #C5C5C5;
+	display: flex;
+	align-items: start;
+	justify-content: center;
+	cursor: pointer;
+ }
+ .menu-left-cls {
+	margin-top:7px;
+	width:36px;
+	background: url(../images/menu/menu-pos-left.png);
+	background-size: 100% 100%;
+}
+ .menu-left-cls::after{
+	content:'左侧';
+	position: relative;
+	bottom:-17px;
+	left:6px;
+	font-size:12px;	
+ }
+  .menu-top-cls {
+	margin-top:7px;
+	width:36px;
+	background: url(../images/menu/menu-pos-top.png);
+	background-size: 100% 100%;
+}
+ .menu-top-cls::after{
+	content:'顶部';
+	position: relative;
+	bottom:-17px;
+	left:6px;
+	font-size:12px;	
+ }
+ .menu-pos-con.check{
+	border:solid 2px #3D91F7;
+ }
+ .menu-left-cls.check{
+	margin-top:6px;
+ }
+  .menu-top-cls.check{
+	margin-top:6px;
+ }
+ .menu-style-con{
+	flex:2;
+ }
+ .menu-style-con li{
+	width:36px;
+	height:36px;
+	display: inline-block;
+	padding:2px;
+	border:1px solid #C5C5C5;
+	border-radius:2px;
+	margin-right: 10px;
+	cursor: pointer;
+ }
+ .menu-style-con li.check{
+	 border:2px solid #3D91F7;
+ }
+ .menu-style-con li .menu1{
+	height: 100%;
+	background:#161D21;
+ }
+ .menu-style-con li .menu2{
+	height: 100%;
+	background:#4672A5;
+ }
+ .menu-style-con li .menu3{
+	height: 100%;
+	background:#2E6F1D;
+ }
+ .menu-style-con li .menu4{
+	height: 100%;
+	background:#D9D9D9;
  }

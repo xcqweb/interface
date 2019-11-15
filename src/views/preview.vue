@@ -1,9 +1,15 @@
 <template>
   <div
-    style="height: 100%;overflow: scroll;"
+    style="height: 100%;overflow:auto;"
   >
     <!-- 内容主体 -->
-    <div id="gePreview" />
+    <div id="gePreview">
+      <div
+        id="gePreviewCon"
+        style="width:100%;height:100%;"
+      />
+      <div class="gePreviewMenu" />
+    </div>
     <!-- 弹窗页面 -->
     <div id="geDialogs" />
     <!-- 跟随内容浮窗 -->

@@ -224,7 +224,8 @@ class PreviewPage {
         for (let key in applyData) {
             destroyWs(applyData, key)
         }
-        this.gePreview.innerHTML = ''
+        let el = document.querySelector("#gePreviewCon")
+        el.innerHTML = ''
         //隐藏浮窗
         hideFrameLayout()
         document.getElementById('geDialogs').innerHTML = ''
@@ -258,7 +259,7 @@ class PreviewPage {
             // 清除全部websocket 和页面内容 、页面上的弹窗
             this.clearPage()
             // 正常页面      
-            this.renderPages(cells, this.gePreview)
+            this.renderPages(cells, document.querySelector("#gePreviewCon"))
             this.gePreview.style.width = contentWidth + 'px'
             this.gePreview.style.height = contentHeight + 'px'
             if (pageStyle && pageStyle.backgroundUrl) {
@@ -283,7 +284,7 @@ class PreviewPage {
         return cells
     }
     // 渲染页面
-    renderPages(cells, ele = this.gePreview) {
+    renderPages(cells, ele) {
         for (let i = 0;i < cells.length;i++) {
             let cell = cells[i]
             let cellHtml = this.renderCell(cell)
@@ -302,7 +303,9 @@ class PreviewPage {
         let cellHtml
         if (shapeName.includes('image')) {
             // 图片
-            cell.image = cell.image.replace(/getechFileSystem\//, fileSystem)
+            if(cell.image) {
+                cell.image = cell.image.replace(/getechFileSystem\//, fileSystem)
+            }
             cellHtml = insertImage(cell)
             $(cellHtml).data("defaultImg", cell.image)
         } else if (shapeName === 'linkTag') {
@@ -497,6 +500,8 @@ class PreviewPage {
                         })
                         $(cellHtml).data("stateModels", cellStateInfoHasModel)
                         this.initWsParams(cellHtml,devices, paramShow, resParams)
+                    },()=>{
+                        this.initWsParams(cellHtml, devices, paramShow)
                     })
                 }else{
                     this.initWsParams(cellHtml, devices, paramShow)

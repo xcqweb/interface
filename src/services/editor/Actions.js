@@ -965,35 +965,6 @@ Actions.prototype.init = function()
                 (graph.container.scrollWidth - graph.container.clientWidth) / 2);
         }
     }));
-    this.put('customZoom', new Action(mxResources.get('custom') + '...', mxUtils.bind(this, function()
-    {
-        var dlg = new FilenameDialog(this.editorUi, parseInt(graph.getView().getScale() * 100), mxResources.get('apply'), mxUtils.bind(this, function(newValue)
-        {
-            var val = parseInt(newValue);
-			
-            if (!isNaN(val) && val > 0)
-            {
-                graph.zoomTo(val / 100);
-            }
-        }), mxResources.get('zoom') + ' (%)');
-        this.editorUi.showDialog(dlg.container, 300, 80, true, true);
-        dlg.init();
-    }), null, null, Editor.ctrlKey + '+0'));
-    this.addAction('pageScale...', mxUtils.bind(this, function()
-    {
-        var dlg = new FilenameDialog(this.editorUi, parseInt(graph.pageScale * 100), mxResources.get('apply'), mxUtils.bind(this, function(newValue)
-        {
-            var val = parseInt(newValue);
-			
-            if (!isNaN(val) && val > 0)
-            {
-                ui.setPageScale(val / 100);
-            }
-        }), mxResources.get('pageScale') + ' (%)');
-        this.editorUi.showDialog(dlg.container, 300, 80, true, true);
-        dlg.init();
-    }));
-
     // Option actions
     var action = null;
     action = this.addAction('grid', function()
