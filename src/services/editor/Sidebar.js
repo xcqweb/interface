@@ -1054,8 +1054,8 @@ Sidebar.prototype.getSvgImage = function () {
     const editor = this.editorUi.editor;
     const graph = editor.graph;
     let svgImage = graph.getSvg(graph.background, null, null, true, null, true, null, null, null, false);
-    let widthlen = svgImage.getAttribute('width').substring(0, svgImage.getAttribute('width').length - 2);
-    let heightLen = svgImage.getAttribute('height').substring(0, svgImage.getAttribute('width').length - 2);
+    let widthlen = parseInt(svgImage.getAttribute('width'));
+    let heightLen = parseInt(svgImage.getAttribute('height'));
     svgImage.setAttribute('viewbox', `-${widthlen / 2} 0 ${parseInt(widthlen * 2)} ${heightLen}`);
     return svgImage;
 }
