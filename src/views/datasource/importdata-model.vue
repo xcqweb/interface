@@ -307,9 +307,6 @@ export default{
         init() {
             this.requestUtil.get(this.urls.devicetypelist.url).then((res) => {
                 this.deviceNameArr = res.returnObj || []
-            }).catch(() => {
-                Message.error('系统繁忙，请稍后再试试')
-                return false
             })
         },
         // 取消事件
@@ -341,11 +338,8 @@ export default{
                     this.$emit('triggerCancel')
                     return false
                 }
-                
             }).catch(() => {
                 this.loading = false
-                Message.error('系统繁忙，请稍后再试')
-                return false
             })
 
         },

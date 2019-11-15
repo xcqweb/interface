@@ -26,6 +26,7 @@
         <input
           v-model="dialogWidth"
           v-number="0"
+          :disabled="isMobileApp"
           @keyup.enter="changeScaleInput"
           @blur="changeScaleInput"
         >
@@ -141,6 +142,7 @@ let valignArr = [],dialogStyle
 export default {
     data() {
         return {
+            isMobileApp: false,
             dialogDesc:"",
             showFont:false,
             dialogHeight: 400,
@@ -176,6 +178,7 @@ export default {
             let graph = this.myEditorUi.editor.graph
             let editor = this.myEditorUi.editor
             dialogStyle = editor.pages[editor.currentPage].style
+            this.isMobileApp = editor.getAppType() === 1
             this.dialogWidth = graph.pageFormat.width || 600
             this.dialogHeight = graph.pageFormat.height || 400
             this.fontText = parseInt(dialogStyle.fontSize || 12)

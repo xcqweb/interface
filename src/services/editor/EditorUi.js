@@ -3465,6 +3465,7 @@ EditorUi.prototype.saveSuccess = function (res, hideDialog) {
     this.editor.setFilename(res.studioName)
     this.editor.setDescribe(res.descript)
     this.editor.setApplyId(res.studioId)
+    this.editor.setAppType(res.appType)
     if (res && res.studioId){
         sessionStorage.setItem('applyId',res.studioId)
     }
@@ -3511,10 +3512,13 @@ EditorUi.prototype.save = function(theme,hideDialog=false)
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                     lockStatus: 1
                 }
-                data.studioName = '新建应用'
+                const svgImg = ui.sidebar.getSvgImage();
+                if (svgImg && svgImg.outerHTML) {
+                    data.picUrl = svgImg.outerHTML
+                }  data.studioName = '新建应用'
                 data.appType = 0
                 data.lengthWidth='1366*768'
-                data.classifyId = '5766489a98ca72f47fefbd981295a733'
+                data.classifyId = '5766489a98ca72f47fefbd981295a733'              
                 var id = editor.getApplyId() || sessionStorage.getItem('applyId')
                 if (id) {
                     // 编辑保存

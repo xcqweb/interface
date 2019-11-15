@@ -57,15 +57,49 @@ export default {
             let myEditor = new Editor(false, themes)
             let myEditorUi = new EditorUi(myEditor,document.querySelector(".geEditor"))
             myEditorUi.editor.InitEditor(myEditorUi).then(res => {
+                const page = {
+                    width: 1366,
+                    height: 768
+                }
+                const dialog = {
+                    width: 600,
+                    height: 400
+                }
                 // 编辑
                 if (res[1]) {
-                    var editData = res[1]
-                    var content = JSON.parse(editData.content)
-                    myEditorUi.editor.pages = content.pages
-                    myEditorUi.editor.pagesRank = content.rank
+                    const editData = res[1]
+                    // pc默认1366*768，mobile默认360*640
+                    if (!editData.lengthWidth) {
+                        if (editData.appType === 1) {
+                            editData.lengthWidth = '360*640'
+                        } else {
+                            editData.lengthWidth = '1366*768'
+                        }
+                    }
+                    const lengthWidth = editData.lengthWidth.split('*')
+                    page.width = lengthWidth[0] * 1
+                    page.height = lengthWidth[1] * 1
+                    if (editData.appType === 1) {
+                        // 移动端应用，弹窗页面的宽度跟页面宽度一样
+                        dialog.width = page.width
+                    }
+                    if (editData.content) {
+                        const content = JSON.parse(editData.content)
+                        myEditorUi.editor.pages = content.pages
+                        myEditorUi.editor.pagesRank = content.rank
+                    }
                     myEditorUi.editor.setFilename(editData.studioName)
                     myEditorUi.editor.setApplyId(editData.studioId)
+                    myEditorUi.editor.setAppType(editData.appType)
                     myEditorUi.editor.setDescribe(editData.descript)
+                }
+                myEditor.defaultXml[0] = myEditor.createPageXml(page.width, page.height)
+                myEditor.defaultXml[1] = myEditor.createPageXml(dialog.width, dialog.height)
+                if (!myEditor.pages.pageid_1.xml) {
+                    myEditor.pages.pageid_1.xml = myEditor.defaultXml[0]
+                }
+                if (!myEditor.pages.pageid_2.xml) {
+                    myEditor.pages.pageid_2.xml = myEditor.defaultXml[1]
                 }
                 Vue.prototype.myEditorUi = myEditorUi
                 this.init()

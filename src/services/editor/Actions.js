@@ -1366,33 +1366,28 @@ Actions.prototype.isTableCell = function (cell) {
     return /shape=tableCell/.test(cell.style.toString());
 }
 /**
- * 获取表格行数
- */
-Actions.prototype.getTableRowCount = function (table, col = null) {
-    col = this.getTableColCount(table);
-    if (col === null || col === 0) {
-        return null;
-    }
-    return table.children.length / col;
-}
-/**
+ * 获取表格行和列数
  * 获取表格列数
  */
-Actions.prototype.getTableColCount = function (table) {
+Actions.prototype.getTableRowColNum = function (table) {
     if (!this.isTableBox(table)) {
         return null;
     }
     const ui = this.editorUi;
     const editor = ui.editor;
     const graph = editor.graph;
-    let cols = 0;
+    let col = 0;
+    let row = 0;
     const tableCells = table.children;
     tableCells.forEach(cell => {
         if (cell.geometry.y === 0) {
-            cols++;
+            col++;
+        }
+        if (cell.geometry.x === 0) {
+            row++;
         }
     })
-    return cols;
+    return {row, col};
 }
 /**
  * 获取当前单元格的所有同行同列元素

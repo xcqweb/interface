@@ -39,6 +39,9 @@ window.Editor = function(chromeless, themes, model, graph, editable)
     {
         return this.applyId;
     };
+    this.getAppType = function() {
+        return this.appType;
+    };
     // Sets the status and fires a statusChanged event
     this.setStatus = function(value)
     {
@@ -264,6 +267,7 @@ Editor.prototype.enabled = true;
 Editor.prototype.colSpanPaletteManagePanel = true;
 Editor.prototype.filename = null;
 Editor.prototype.applyId = null;
+Editor.prototype.appType = 0; // 0-pc, 1-mobile
 Editor.prototype.paletteNum =  {};
 /**
  * 提示信息
@@ -646,8 +650,11 @@ Editor.prototype.setCurrentPage = function(id) {
 /**
  * 编辑器页面数据
  */
-const defaultXml = ['<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="1366" pageHeight="768" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>', '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="600" pageHeight="400" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>'];
-Editor.prototype.defaultXml = ['<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="1366" pageHeight="768" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>', '<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="600" pageHeight="400" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>'];
+const createPageXml = (width = 1366, height = 768) => {
+    return `<mxGraphModel dx="735" dy="773" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="0" fold="1" page="0" pageScale="1" pageWidth="${width}" pageHeight="${height}" background="#ffffff"><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>`
+};
+Editor.prototype.createPageXml = createPageXml;
+Editor.prototype.defaultXml = ['', ''];
 Editor.prototype.pagesRank = {
     normal: ['pageid_1'],
     dialog: ['pageid_2']
@@ -657,7 +664,7 @@ Editor.prototype.pages = {
         id: 'pageid_1',
         title: '页面1',
         desc: '',
-        xml: defaultXml[0],
+        xml: '',
         type: 'normal',
         style:{},
     },
@@ -665,7 +672,7 @@ Editor.prototype.pages = {
         id: 'pageid_2',
         title: '弹窗1',
         desc: '',
-        xml: defaultXml[1],
+        xml: '',
         type: 'dialog',
         style: {},
     }
@@ -1091,6 +1098,12 @@ Editor.prototype.setApplyId = function(value)
 {
     this.applyId = value;
 };
+/**
+ * 设置应用类型-pc/mobile
+ */
+Editor.prototype.setAppType = function(value) {
+    this.appType = value;
+}
 /**
  * Creates and returns a new undo manager.
  */
