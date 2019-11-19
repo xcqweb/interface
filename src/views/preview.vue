@@ -9,6 +9,10 @@
         style="width:100%;height:100%;"
       />
       <div class="gePreviewMenu" />
+      <div
+        class="gePreviewMenuIcon"
+        title="菜单"
+      />
     </div>
     <!-- 弹窗页面 -->
     <div id="geDialogs" />

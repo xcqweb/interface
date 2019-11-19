@@ -18,7 +18,7 @@
     <div class="item-title">
       {{ $t('popup') }}{{ $t('size') }}
     </div>
-    <div style="display:flex;margin-top:4px;">
+    <div style="display:flex;">
       <div
         class="item-container"
       >

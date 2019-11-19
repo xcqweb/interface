@@ -16,7 +16,7 @@
     <div class="item-title">
       {{ $t('page') }}{{ $t('size') }}
     </div>
-    <div style="display:flex;margin-top:4px;">
+    <div style="display:flex;">
       <div
         class="item-container solidWidth"
       >

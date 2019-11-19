@@ -2,6 +2,7 @@ export default {
     dataDisplay: '数据显示',
     stateModel: '状态模型',
     defaultDisplay: '默认显示',
+    paramType: '参数类型',
     selectTheParameter: '请选择参数',
     paramChoose: '参数选择',
     paramshow: '参数显示',

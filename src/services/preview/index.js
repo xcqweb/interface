@@ -59,7 +59,6 @@ class Main {
         this.previewPage = new PreviewPage(applyInfo, this, gePreview)
         this.changePage(this.previewPage.pagesRank.normal[0])
         //初始化菜单
-        console.log(applyInfo)
         this.initMenus(applyInfo)
     }
     //切换页面
@@ -100,7 +99,7 @@ class Main {
         }
         let pageRankNormal = parseContent.rank.normal
         if (!parseTheme || pageRankNormal.length == 1 || parseTheme.status == 0) {
-            //只有一个页面，不渲染菜单 老应用未编辑过的没有theme字段，不渲染菜单 重新编辑过的老应用或者新增的应用，选择启用不启用菜单，则不渲染
+            //只有一个页面，不渲染菜单 老应用未编辑过的没有theme字段，不渲染菜单 重新编辑过的老应用或者新增的应用，选择不启用菜单，则不渲染
             return;
         }
         let pages = {}
@@ -109,11 +108,10 @@ class Main {
         })
         let menuStyle = menuStyles[parseTheme.style - 1]
         let menuCon = $(".gePreviewMenu")
+        menuCon.data('check',1)
+        let menuIcon = $(".gePreviewMenuIcon")
         let menuUl = $("<ul>")
-        menuCon.css({
-            background: menuStyle.bgColor,
-            width: '100%',
-        })
+        menuCon.css({background: menuStyle.bgColor})
         if(parseTheme.position == 1) {
             menuCon.css({
                 width: `${menuWidth}px`,
@@ -180,12 +178,51 @@ class Main {
         }
         $(() => {
             $(".preview-menu-check:eq(0)").click()
-            $(".gePreviewMenu").css('left', `${$("#gePreviewCon").offset().left}px`)
+            menuCon.css('left', `${$("#gePreviewCon").offset().left}px`)
             if (parseTheme.position == 2) {//顶部
-                $(".gePreviewMenu").css('width', `${$("#gePreviewCon").width()}px`)
+                menuCon.css('width', `${$("#gePreviewCon").width()}px`)
+                let top = menuIcon.height() - menuHeight - 15
+                menuIcon.css({
+                    left: `${$("#gePreviewCon").width() / 2 + $("#gePreviewCon").offset().left - menuIcon.width() / 2}px`,
+                    top: `-${top}px`,
+                    borderBottom: `solid 1px ${menuStyle.bgColor}`,
+                    borderRadius: `0 0 100px 100px`
+                })
+                menuIcon.html(`<i class="ivu-icon ivu-icon-ios-arrow-down" style="position:relative;top:${menuHeight - 2}px;font-size:24px;color:${menuStyle.bgColor}"></i>`)
                 let el = document.querySelector(".gePreviewMenu ul")
                 horwheel(el)//支持鼠标滚轮滚动
                 mouseDeal(el)//鼠标向左向右滑动
+                menuIcon.on('click', function() {
+                    let check = menuCon.data("check")
+                    if(check == 1) {
+                        menuIcon.css('top', `-${top + menuHeight}px`)
+                        menuCon.hide()
+                    }else{
+                        menuIcon.css('top', `-${top}px`)
+                        menuCon.show()
+                    }
+                    menuCon.data("check",1 - check)
+                })
+            }else{//左侧
+                let left = menuWidth + $("#gePreviewCon").offset().left - menuIcon.width() + 20
+                menuIcon.css({
+                    left: `${left - 4}px`,
+                    top: `${$(window).height() / 2 + menuIcon.height() / 2}px`,
+                    borderRight: `solid 1px ${menuStyle.bgColor}`,
+                    borderRadius: `0 100px 100px 0`
+                })
+                menuIcon.html(`<i class="ivu-icon ivu-icon-ios-arrow-forward" style="position:relative;left:39px;font-size:24px;color:${menuStyle.bgColor}"></i>`)
+                menuIcon.on('click', function() {
+                    let check = menuCon.data("check")
+                    if (check == 1) {
+                        menuIcon.css('left', `${$("#gePreviewCon").offset().left - menuIcon.width() + 20}px`)
+                        menuCon.hide()
+                    } else {
+                        menuIcon.css('left', `${left}px`)
+                        menuCon.show()
+                    }
+                    menuCon.data("check", 1 - check)
+                })
             }
         })
     }

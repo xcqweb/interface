@@ -500,12 +500,6 @@
         @blur="addLinkUrl"
       >
     </div>
-    <Chart
-      v-if="isChartShow"
-      :shape-name="shapeName"
-      :bind-chart-props="bindChartProps2"
-      @hideChartDialog="hideChartDialog"
-    />
     <div v-if="shapeName=='lineChart'">
       <div
         class="item-title"
@@ -730,7 +724,6 @@
 </template>
 <script>
 import echarts from 'echarts'
-import Chart from '../../charts/chart'
 import {Slider} from 'iview'
 import {mxConstants,mxEventObject,Dialog,mxUtils} from '../../../services/mxGlobal'
 import {data1,data2} from '../../../constants/chart-default-data'
@@ -742,7 +735,7 @@ let picShapeList = ['pipeline2','pipeline3','light','userimage']
 let cellEchart,bindChartProps
 export default {
     components:{
-        Chart,Slider
+        Slider
     },
     data() {
         return {
@@ -779,7 +772,6 @@ export default {
             progressTypeVal:'percent',
             progressDialogList:[{name:'百分比',value:'percent'},{name:'实际数值',value:'real'}],
             linkUrl:"",
-            isChartShow:false,
             bindChartProps2:null,
             chartLegend:true,
             markLineList:[],//标线 line-chart
@@ -904,14 +896,9 @@ export default {
             if (!state) {
                 return false
             }
-            let labelStr = cell.getAttribute("label")
-            if (state.style.shape.includes('Chart') && labelStr && !labelStr.includes('widget-chart')) {
-                this.isChartShow = true
-                bindChartProps = this.getWidgetProps('chartProps')
-            } else if (state.style.shape === 'image') {
+            if (state.style.shape === 'image') {
                 document.querySelector('#dlbChooseImage').click()
-                let $inputfile = `<input type="file" style="opacity: 0" id="dlbChooseImage" title="" accept=".jpg,.jpge
-                gif,.png,.svg">`;
+                let $inputfile = `<input type="file" style="opacity: 0" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg">`
                 document.getElementById('dlbChooseImage').addEventListener('change', (evt) => {
                     this.dblclickHandle(evt)
                     $('#dlbChooseImage').replaceWith($inputfile)
@@ -1300,10 +1287,6 @@ export default {
                 attrObj = JSON.parse(attr)
             }
             return attrObj
-        },
-        hideChartDialog(options) {
-            this.isChartShow = false
-            this.setWidgetProps('chartProps',options)
         },
         dblclickHandle(e) {
             let graph = this.myEditorUi.editor.graph

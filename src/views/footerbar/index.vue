@@ -74,6 +74,22 @@
               :max-height="heightlen"
             >
               <template
+                slot="paramType"
+              >
+                <Select
+                  v-model="paramsTypeModel"
+                  style="width:240px;height:24px;line-height:24px;"
+                  @on-change="val=>paramTypeSelectChange(val)"
+                >
+                  <Option 
+                    v-for="(d,i) in paramsTypeList" 
+                    :key="i" 
+                    :value="d.value"
+                    :label="d.label"
+                  />
+                </Select>
+              </template>
+              <template
                 slot="paramChoose"
                 slot-scope="{row,index}"
               >
@@ -207,22 +223,21 @@ export default {
             value1: '1',
             dataSourceName:['dataSources','footBar.dataDisplay','footBar.stateModel'],
             singleParamShow:['progress','lineChart', 'gaugeChart'],
-            buttonText:['添加参数', 'delete'],             
             ifShowArrow: false,
             tabsNum: 0,
             nodata: 'noData',
             tablTitles:[
                 {
-                    title: this.$t('dataSources'),
-                    key: 'name'
-                },
-                {
-                    title: this.$t('type'),
-                    key: 'typeName'
-                },
-                {
-                    title: this.$t('name'),
+                    title: this.$t('deviceName'),
                     key: 'deviceName'
+                },
+                {
+                    title: this.$t('deviceType'),
+                    key: 'deviceType'
+                },
+                {
+                    title: this.$t('deviceModal'),
+                    key: 'deviceModal'
                 },
                 {
                     title: this.$t('operation'),
@@ -232,6 +247,8 @@ export default {
                 }
             ],
             dataSourceList: [],
+            paramsTypeList:[{label:'设备参数',value:1},{label:'虚拟参数',value:2}],
+            paramsTypeModel:1,
             heightlen: '190',
             paramsList: [],
             paramOutterList: [{id:new Date().getTime(),model:"",type:false}],
@@ -243,6 +260,10 @@ export default {
             isInitFlag: false,
             ifShowDataFlag: true, // 判断是否显示数据显示tab
             tabParamTitles:[
+                {
+                    title: this.$t('footBar.paramType'),
+                    slot: 'paramType',
+                },
                 {
                     title: this.$t('footBar.paramChoose'),
                     slot: 'paramChoose',

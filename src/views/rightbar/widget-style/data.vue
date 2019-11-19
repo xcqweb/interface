@@ -3,10 +3,9 @@
     <div class="data-sources-top">
       <div
         class="data-sources-listname"
-        style="height:auto;padding-top:5px;"
       >
         <span>
-          {{ dataName }}
+          设备类型
         </span>
       </div>
       <div>
@@ -26,7 +25,7 @@
       </div>
       <div class="data-sources-listname">
         <span>
-          {{ deviceType }}
+          设备型号
         </span>
       </div>
       <div>
@@ -142,21 +141,11 @@ export default{
     },
     data() {
         return {
-          
-            dataName: this.$t('dataSources'),
-            deviceType: this.$t('deviceType'),
             deviceName: this.$t('deviceName'),
             placeText: `${this.$t('search')}${this.$t('deviceName')}`,
             derection: 'right',
-           
             nodata: `${this.$t('noData')}`,
-            dataNameArr: [
-                {
-                    value: '1',
- 
-                    label: `${this.$t('iotText')}`
-                }
-            ],
+            dataNameArr: [],
             deviceNameArr:[],
             deviceNameList:[],
             single: false,
@@ -269,7 +258,6 @@ export default{
                 id: this.deviceNameArr[DeviceIndex].deviceTypeId,
                 name: this.deviceNameArr[DeviceIndex].deviceTypeName || ''
             }
-            // deviceNameChild
             objData.deviceNameChild = []
             this.deviceIdArr.forEach((items, key) => {
                 this.deviceNameList.forEach((item, index) => {
@@ -349,15 +337,13 @@ export default{
 
 <style scoped lang="less">
   .data-sources{
-    padding:5px;
+    padding:0 4px 4px;
     display: flex;
     flex-direction: column;
     height:100%;
     .data-sources-top{
-      height: 156px;
       .data-sources-listname{
-        height:36px;
-        color:11px;
+        margin-top:10px;
         display: flex;
         align-items: flex-end;
       }
