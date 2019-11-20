@@ -20,14 +20,24 @@
     />
     <!-- 模型列表 -->
     <model-list
+      v-model="editing"
       class="device-data"
       :title="$t('dataSource.models')"
       :width="200"
+      :saved="saved"
+      :set-edit-status="setEditStatus"
+      :device-model-id="model.deviceModelId"
+      @on-edit="handleEditModel"
     />
     <!-- 编辑模型 -->
-    <edit-model
+    <component
+      :is="editModelView"
+      v-model="editing"
+      :data="editModel"
       class="device-data flex-full-item"
       :device-model-id="model.deviceModelId"
+      @save="handleSaveModel"
+      @set-edit-status="handleSetEditStatus"
     />
   </div>
 </template>
@@ -45,6 +55,15 @@ export default {
         EditModel,
     },
     mixins: [DatasourceStore],
+    data() {
+        return {
+            editModelView: '',
+            editModel: null,
+            editing: false,
+            saved: false,
+            setEditStatus: false,
+        };
+    },
     methods: {
         handleTypeClick(item) {
             this.model.deviceTypeId = item.deviceTypeId;
@@ -52,7 +71,19 @@ export default {
         handleModelClick(item) {
             this.model.deviceModelId = item.deviceModelId;
         },
-    }
+        handleEditModel(model = null) {
+            this.editModel = model;
+            if (model) {
+                this.editModelView = 'edit-model';
+            }
+        },
+        handleSaveModel() {
+            this.saved = !this.saved;
+        },
+        handleSetEditStatus() {
+            this.setEditStatus = !this.setEditStatus;
+        },
+    },
 };
 </script>
 
