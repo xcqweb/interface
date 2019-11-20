@@ -425,13 +425,7 @@ var valueDialog = function(editorUi, filename, titleText, buttonText, fn) {
     saveContent.appendChild(btnContent)
     this.container = saveContent;
 }
-/**
- * 保存文件弹窗
- */
-let FilenameDialog = function(editorUi,fn, closeOnBtn, cancelFn)
-{
-    closeOnBtn = (closeOnBtn != null) ? closeOnBtn : true
-    var saveContent = editorUi.createDiv('geDialogInfo')
+function dealDefaultThem(editorUi){
     if (!editorUi.theme) {
         editorUi.theme = {
             position: 1,
@@ -439,10 +433,19 @@ let FilenameDialog = function(editorUi,fn, closeOnBtn, cancelFn)
             status: 1
         }
         if (editorUi.isOldApply) {
-           //老应用，默认不启用菜单
-           editorUi.theme.status = 0
-        } 
+            //老应用，默认不启用菜单
+            editorUi.theme.status = 0
+        }
     }
+}
+/**
+ * 保存文件弹窗
+ */
+let FilenameDialog = function(editorUi,fn, closeOnBtn, cancelFn)
+{
+    closeOnBtn = (closeOnBtn != null) ? closeOnBtn : true
+    var saveContent = editorUi.createDiv('geDialogInfo')
+    dealDefaultThem(editorUi)
     saveContent.style.padding="20px 20px 0 20px"
     //默认导航是否启用
     let defaultConfigMenu = document.createElement('div')
@@ -559,6 +562,7 @@ let PreviewDialog = function(editorUi,callback) {
     var genericBtn = mxUtils.button('保存并预览', function()
     {
         autoSaveFlagTerry = 0
+        dealDefaultThem(editorUi)
         editorUi.save().then(res => {
             callback(res.studioId)
             editorUi.hideDialog()

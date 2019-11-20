@@ -112,7 +112,6 @@
   top:0;
   font-size:14px;
   z-index:10;
-  opacity: .9;
   overflow: hidden;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -123,4 +122,13 @@
 }
 .preview-menu-check{
   cursor: pointer;
+}
+.gePreviewMenuIcon{
+  position: fixed;
+  width:100px;
+  height:100px;
+  border-radius:0 100px 100px 0;
+  cursor: pointer;
+  text-align: center;
+  line-height: 100px;
 }

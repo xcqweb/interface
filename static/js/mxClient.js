@@ -13504,7 +13504,6 @@ mxDragSource.prototype.mouseMove = function(evt)
 	{
 		var x = mxEvent.getClientX(evt);
 		var y = mxEvent.getClientY(evt);
-		
 		if (this.dragElement.parentNode == null)
 		{
 			document.body.appendChild(this.dragElement);
@@ -57053,7 +57052,6 @@ mxGraph.prototype.fit = function(border, keepOrigin, margin, enabled, ignoreWidt
 mxGraph.prototype.sizeDidChange = function()
 {
 	var bounds = this.getGraphBounds();
-	
 	if (this.container != null)
 	{
 		var border = this.getBorder();
@@ -57095,7 +57093,6 @@ mxGraph.prototype.sizeDidChange = function()
 		if (this.dialect == mxConstants.DIALECT_SVG)
 		{
 			var root = this.view.getDrawPane().ownerSVGElement;
-			
 			root.style.minWidth = Math.max(1, width) + 'px';
 			root.style.minHeight = Math.max(1, height) + 'px';
 			root.style.width = '100%';
