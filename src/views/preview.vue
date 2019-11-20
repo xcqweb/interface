@@ -1,6 +1,6 @@
 <template>
   <div
-    style="height: 100%;overflow:auto;"
+    style="height: 100%;overflow:auto;background:#000;"
   >
     <!-- 内容主体 -->
     <div id="gePreview">

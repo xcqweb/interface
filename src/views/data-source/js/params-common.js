@@ -40,14 +40,14 @@ export default {
             this.getVirtualParams(params);
         },
         getDeviceParams(params) {
-            this.requestUtil.get('api/device/deviceModel/param/normal/select', params).then(res => {
+            this.requestUtil.get(this.urls.normalParam.url, params).then(res => {
                 if (this.getDeviceParamsCallback) {
                     this.getDeviceParamsCallback(res);
                 }
             });
         },
         getVirtualParams(params) {
-            this.requestUtil.get('api/device/deviceModel/param/fictitious/select', params).then(res => {
+            this.requestUtil.get(this.urls.fictitiousParam.url, params).then(res => {
                 if (this.getVirtualParamsCallback) {
                     this.getVirtualParamsCallback(res);
                 }

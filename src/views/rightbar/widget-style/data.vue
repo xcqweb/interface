@@ -1,6 +1,6 @@
 <template>
   <div class="data-sources">
-    <div class="data-sources-top">
+    <div>
       <div
         class="data-sources-listname"
       >
@@ -10,16 +10,16 @@
       </div>
       <div>
         <Select
-          v-model="modelvalue1"
-          :clearable="ifclearSelect"
+          v-model="model.deviceTypeId"
+          :clearable="true"
           style="height:24px"
         >
           <Option
-            v-for="(item, index) in dataNameArr"
-            :key="index"
-            :value="item.value"
+            v-for="(item) in typeData"
+            :key="item.deviceTypeId"
+            :value="item.deviceTypeId"
           >
-            {{ item.label }}
+            {{ item.deviceTypeName }}
           </Option>
         </Select>
       </div>
@@ -30,54 +30,55 @@
       </div>
       <div>
         <Select
-          v-model="modelvalue2"
+          v-model="model.deviceModelId"
           style="height:24px"
-          @on-change="deviceTypeHandle"
         >
           <Option 
-            v-for="(item, index) in deviceNameArr"
-            :key="index"
-            :value="item.deviceTypeId"
+            v-for="(item) in modelData"
+            :key="item.deviceModelId"
+            :value="item.deviceModelId"
           >
-            {{ item.deviceTypeName }}
+            {{ item.deviceModelName }}
           </Option>
         </Select>
       </div>
       <div class="data-sources-listname">
         <span>
-          {{ deviceName }}
+          {{ "设备名称" }}
         </span>
       </div>
     </div>
     <div class="data-sources-center">
       <div class="devicename-input-wrap">
-        <Input 
-          :placetext="placeText"
-          class="inputDeviceName"
-          :derection="derection"
+        <Input
+          v-model="dName"
+          size="small"
+          placeholder="搜索设备名称"
         />
       </div>
       <div
         class="devicename-list-wrap"
       >
         <div
-          v-if="deviceNameList.length"
+          v-if="deviceData.length"
         >
           <CheckboxGroup
-            v-model="deviceNameListArr"
+            v-model="checkModelArr"
             class="devicename-listUl"
             @on-change="checkAllGroupChange"
           >
             <Checkbox
-              v-for="(item) in deviceNameList"
+              v-for="(item) in deviceData"
               :key="item.deviceId"
               :label="item.deviceId"
               size="small"
             >
               <span 
                 :title="item.deviceName" 
-                style="display:inline-block;width:160px;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;"
-              >{{ item.deviceName }}</span>
+                style="display:inline-block;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;"
+              >
+                {{ item.deviceName }}
+              </span>
             </Checkbox>
           </CheckboxGroup>
         </div>
@@ -86,193 +87,105 @@
           class="no-data-wrap"
         >
           <NoData
-            :text="nodata"
+            :text="$t('noData')"
           />
         </div>
       </div> 
-      <div class="devicename-page-wrap">
-        <template v-if="deviceNameList.length">
-          <Page 
-            :current="PAGE_CURRENT" 
-            :page-size="PAGE_SIZE"
-            :total="deviceListTotal"
-            simple
-            @on-change="PageChangeHandle"
-          />
-        </template>
-      </div>
     </div>
     <div class="data-sources-bottom">
       <Button 
         type="primary"
         style="cursor: pointer;"
         long
-        :disabled="!deviceIdArr.length"
+        :disabled="!checkModelArr.length"
         @click.stop.prevent="bindDeviceNameHandle"
       >
-        {{ buttonName }}
+        {{ $t('rightBar.bindText') }}
       </Button>
     </div>
   </div>
 </template>
 
 <script>
-import Input from '../../datasource/input-select'
 import VueEvent from '../../../services/VueEvent.js'
 import NoData from '../../datasource/nodata'
-import {Button,Page,Checkbox,Message,Select,Option, CheckboxGroup} from 'iview'
+import DatasourceStore from '../../data-source/js/datasource-store'
+import {Button,Checkbox,Message,Select,Option, CheckboxGroup,Input} from 'iview'
 
 const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart']
- 
-const dataSourceID = {
-    id: '123',
-    name:'IOT平台' 
-}
 export default{
     components: {
         Button,
-        Input,
-        Page,
         Checkbox,
         Select,
         Option,
         NoData,
-        CheckboxGroup
+        CheckboxGroup,
+        Input
     },
+    mixins: [DatasourceStore],
     data() {
         return {
-            deviceName: this.$t('deviceName'),
-            placeText: `${this.$t('search')}${this.$t('deviceName')}`,
-            derection: 'right',
-            nodata: `${this.$t('noData')}`,
-            dataNameArr: [],
-            deviceNameArr:[],
-            deviceNameList:[],
-            single: false,
-        
-            buttonName: `${this.$t('rightBar.bindText')}`,
-            modelvalue1:'1',
-            modelvalue2:'',
-            ifclearSelect:true,
-            deviceNamePageNumber: 1,
-            deviceListTotal:10,
-            studioIdNew:'',
-            deviceNameListArr:[],
-            deviceIdArr:[],
+            dName:"",
             shapeName: null,
-            PAGE_CURRENT: 1,
-            PAGE_SIZE: 10,
+            checkModelArr:[],
+            bindData:null,
         }
     },
     mounted() {
-        this.studioIdNew = sessionStorage.getItem("applyId") || ''
-        let InputEle1 = document.querySelector('.inputDeviceName input');
-        InputEle1.oninput = this.debounce(this.InputSelectHandle, 1000)
         this.init()
     },
     methods: {
         init() {
             this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
-            let objData = {
-                studioId:this.studioIdNew
+            this.getStudioDeviceData()
+            this.bindData =  this.getCellModelInfo('bindData')
+            if(this.bindData && this.bindData.dataSource) {
+                this.model.deviceModelId = this.bindData.dataSource.deviceTypeChild.id
+                let bindDeviceNames = this.bindData.dataSource.deviceNameChild
+                this.checkModelArr.splice(0)
+                bindDeviceNames.forEach(item=>{
+                    this.checkModelArr.push(item.id)
+                })
             }
-            this.requestUtil.get(this.urls.hasImportDeviceType.url,objData).then((res) => {
-                this.deviceNameArr = res || []
-                if (this.deviceNameArr.length) {
-                    this.modelvalue2 = this.deviceNameArr[0].deviceTypeId
-                    let objDataNew = {
-                        studioId:this.studioIdNew,
-                        deviceTypeId: this.deviceNameArr[0].deviceTypeId,
-                        size:this.PAGE_SIZE,
-                        current:this.PAGE_CURRENT,
-                        type: 1
-                    }
-                    return Promise.all([
-                        this.requestUtil.post(this.urls.deviceEquipList.url, objDataNew)
-                    ])
-                } else {
-                    this.deviceNameList = []
-                    return [[]]
-                }
-            }).then((res) => {
-                const [firstDeviceNameList] = res
-                this.deviceNameList = firstDeviceNameList.records || []
-                this.deviceListTotal = firstDeviceNameList.total || 10
-            })
-        },
-        checkAllGroupChange(data) {
-            this.deviceIdArr = data
-        },
-        deviceTypeHandle(data) {
-            // 清空之前勾选的
-            this.deviceNameListArr = []
-            this.deviceIdArr = []
-            let objData = {
-                studioId:this.studioIdNew,
-                deviceTypeId: data,
-                size:this.PAGE_SIZE,
-                current:this.PAGE_CURRENT,
-                type: 1
-            }
-            this.requestUtil.post(this.urls.deviceEquipList.url, objData).then((res) => {
-                this.deviceNameList = res.records || []
-                this.deviceListTotal = res.total || 10
-            })
         },
         bindDeviceNameHandle() {
-            let startBindData = this.getCellModelInfo('bindData')
-            if (singleDeviceName.includes(this.shapeName) && this.deviceIdArr.length > 1) { // 绑定单个
-               
+            this.bindData = this.getCellModelInfo('bindData')
+            if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个
                 Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
                 // 清空勾选
-                this.deviceNameListArr = []
-                return false
+                this.checkModelArr = []
+                return
             }  
-            if (singleDeviceName.includes(this.shapeName) && startBindData && startBindData.dataSource && startBindData.dataSource.deviceNameChild) {                    
-               
+            if (singleDeviceName.includes(this.shapeName) && this.bindData && this.bindData.dataSource) {                    
                 Message.warning(`${this.$t('rightBar.hasBindDevice')}`)
-                this.deviceNameListArr = []
-                return false
+                this.checkModelArr = []
+                return
             }
-            if (startBindData && startBindData.dataSource) {
-                let deviceTypeData = startBindData.dataSource.deviceTypeChild || {}
-                if (deviceTypeData.id && deviceTypeData.id !== this.modelvalue2) {
-                   
+            if (this.bindData && this.bindData.dataSource) {
+                let deviceTypeData = this.bindData.dataSource.deviceTypeChild
+                if (deviceTypeData  && deviceTypeData.id !== this.model.deviceTypeId) {
                     Message.warning(`${this.$t('rightBar.notAllowBindMultiplyDevice')}`)
-                    this.deviceNameListArr = []
+                    this.checkModelArr = []
                     return false
                 }
             }
             // 组装数据 绑定
-            let DeviceIndex = null
-            let deviceNameIndex = null
-            this.deviceNameArr.forEach((item, index) => {
-                if (item.deviceTypeId === this.modelvalue2) {
-                    DeviceIndex = index
-                }
-            })
             let objData = {}
-            
-            objData.dataSourceChild = dataSourceID
             objData.deviceTypeChild = {
-                id: this.deviceNameArr[DeviceIndex].deviceTypeId,
-                name: this.deviceNameArr[DeviceIndex].deviceTypeName || ''
+                id: this.model.deviceTypeId,
+                name: this.typeData[this.typeData.findIndex(item=>{return item.deviceTypeId == this.model.deviceTypeId})].deviceTypeName
+            }
+            objData.deviceModel = {
+                id: this.model.deviceModelId,
+                name: this.modelData[this.modelData.findIndex(item=>{return item.deviceModelId == this.model.deviceModelId})].deviceModelName
             }
             objData.deviceNameChild = []
-            this.deviceIdArr.forEach((items, key) => {
-                this.deviceNameList.forEach((item, index) => {
-                    if (item.deviceId === items) {
-                        deviceNameIndex = index
-                    }
-                }) 
-                objData.deviceNameChild[key] = {}
-                objData.deviceNameChild[key].id = items
-                objData.deviceNameChild[key].name = this.deviceNameList[deviceNameIndex].deviceName || ''
+            this.checkModelArr.forEach((item) => {
+                objData.deviceNameChild.push({id:item,name:this.deviceData[this.deviceData.findIndex(d=>{return d.deviceId == item})].deviceName})
             })
             if (objData) {
                 VueEvent.$emit('emitDataSourceFooter', objData)
-                this.deviceNameListArr = []
-                this.deviceIdArr = []
             }
         },
         getCellModelInfo(key) {
@@ -288,48 +201,8 @@ export default{
             }
             return bindData
         },
-        debounce(handle, deLay, type) {
-            var timer = null
-            return function() {
-                clearTimeout(timer)
-                timer = setTimeout(() => {
-                    handle.call(this, this.value, type)
-                }, deLay);
-            }
-        },
-        InputSelectHandle(value) {
-            if (!this.modelvalue2) {
-                
-                Message.warning(`${this.$t('rightBar.chooseDeviceType')}`)
-            } else {
-                let objData = {
-                    deviceTypeId : this.modelvalue2,
-                    deviceName: value.trim(),
-                    studioId: this.studioIdNew,
-                    type: 1,
-                    size:this.PAGE_SIZE,
-                    current:this.PAGE_CURRENT,
-                }
-                this.requestUtil.post(this.urls.deviceEquipList.url,objData).then((res) => {
-                    this.deviceNameList = res.records || []
-                    this.deviceListTotal = res.total || 10
-                })
-            }
-        },
-        PageChangeHandle(value) {
-            let objData = {
-                deviceTypeId: this.modelvalue2,
-                studioId: this.studioIdNew,
-                current: value,
-                size:this.PAGE_SIZE,
-                type:1
-            }
-            this.PageChangeAjax(objData)
-        },
-        PageChangeAjax(objData) {
-            this.requestUtil.post(this.urls.deviceEquipList.url, objData).then((res) => {
-                this.deviceNameList = res.records || []
-            })
+        checkAllGroupChange(data) {
+            this.checkModelArr = data
         }
     },      
 }
@@ -341,15 +214,13 @@ export default{
     display: flex;
     flex-direction: column;
     height:100%;
-    .data-sources-top{
-      .data-sources-listname{
-        margin-top:10px;
-        display: flex;
-        align-items: flex-end;
-      }
+    .data-sources-listname{
+      margin-top:10px;
+      display: flex;
+      align-items: flex-end;
     }
     .data-sources-center{
-      flex:1;
+      height:calc(100% - 100px);
       background: #ffffff;
       border:1px solid #d4d4d4;
       border-radius: 2px;
@@ -361,7 +232,9 @@ export default{
       }
       .devicename-list-wrap{
         background: #fff;
-        flex:1;
+        height:100%;
+        overflow-y: auto;
+        overflow-x:hidden;
         .devicename-listUl{
           label{
             width:100%;

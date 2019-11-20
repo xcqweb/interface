@@ -20,6 +20,13 @@
               />
             </Tabs>
           </div>
+          <div
+            v-if="tabsNum==1 && deviceModelId"
+            style="margin-right:20px;cursor:pointer;"
+            @click="addParam"
+          >
+            <span class="icon-add" />添加参数
+          </div>
           <div 
             class="Collapse-title-right"
             :class="ifShowArrow ? 'collapse-active' : ''"
@@ -68,54 +75,18 @@
             <Table
               border
               class="dataShowHide"
-              :show-header="false"
               :columns="tabParamTitles"
               :data="paramOutterList"
               :max-height="heightlen"
             >
               <template
-                slot="paramType"
-              >
-                <Select
-                  v-model="paramsTypeModel"
-                  style="width:240px;height:24px;line-height:24px;"
-                  @on-change="val=>paramTypeSelectChange(val)"
-                >
-                  <Option 
-                    v-for="(d,i) in paramsTypeList" 
-                    :key="i" 
-                    :value="d.value"
-                    :label="d.label"
-                  />
-                </Select>
-              </template>
-              <template
-                slot="paramChoose"
-                slot-scope="{row,index}"
-              >
-                <Select
-                  v-model="row.model"
-                  style="width:240px;height:24px;line-height:24px;"
-                  filterable
-                  :placeholder="$t('footBar.selectTheParameter')"
-                  @on-change="val=>paramSelectChange(val,index)"
-                >
-                  <Option 
-                    v-for="d in paramsList" 
-                    :key="d.paramId" 
-                    :value="d.paramId"
-                    :label="d.paramName"
-                  />
-                </Select>
-              </template>
-              <template
                 slot="paramShow"
-                slot-scope="{row,index}"
+                slot-scope="{row}"
               >
                 <Checkbox
                   v-if="!singleParamShow.includes($store.state.main.widgetInfo.shapeInfo.shape)"
                   v-model="row.type"
-                  @on-change="val=>paramDefaultChange(val,row.id,index)"
+                  @on-change="val=>paramDefaultChange(val,row.id)"
                 >
                   {{ $t('footBar.defaultDisplay') }}
                 </Checkbox>
@@ -129,17 +100,12 @@
               </template>
               <template
                 slot="actions"
-                slot-scope="{ row, index }" 
+                slot-scope="{index}" 
               >
                 <span
-                  v-show="!singleParamShow.includes($store.state.main.widgetInfo.shapeInfo.shape)"
-                  class="icon-add"
-                  @click.stop.prevent="addParamHandle"
-                />
-                <span
-                  v-show="index!==paramOutterList.length-1"
+                  v-show="paramOutterList.length>1"
                   class="icon-delete"
-                  @click.stop.prevent="removeParamHandle(row.id,index)"
+                  @click.stop.prevent="removeParamHandle(index)"
                 />
               </template>
             </Table>
@@ -195,6 +161,12 @@
         </div>
       </div>
     </div>
+    <SelectParams
+      v-model="visible"
+      title="添加参数"
+      :device-model-id="deviceModelId"
+      @callback="addParamDone"
+    />
   </div>
 </template>
 
@@ -216,15 +188,20 @@ export default {
         Select,
         Option,
         NoData,
-        Checkbox
+        Checkbox,
+        SelectParams: (resolve) => {
+            return require(['../data-source/select-params'], resolve)
+        },
     },
     data() {
         return {
+            visible:false,
             value1: '1',
             dataSourceName:['dataSources','footBar.dataDisplay','footBar.stateModel'],
             singleParamShow:['progress','lineChart', 'gaugeChart'],
             ifShowArrow: false,
             tabsNum: 0,
+            deviceModelId:null,
             nodata: 'noData',
             tablTitles:[
                 {
@@ -233,11 +210,11 @@ export default {
                 },
                 {
                     title: this.$t('deviceType'),
-                    key: 'deviceType'
+                    key: 'typeName'
                 },
                 {
                     title: this.$t('deviceModal'),
-                    key: 'deviceModal'
+                    key: 'modelName'
                 },
                 {
                     title: this.$t('operation'),
@@ -248,35 +225,35 @@ export default {
             ],
             dataSourceList: [],
             paramsTypeList:[{label:'设备参数',value:1},{label:'虚拟参数',value:2}],
-            paramsTypeModel:1,
             heightlen: '190',
-            paramsList: [],
-            paramOutterList: [{id:new Date().getTime(),model:"",type:false}],
+            paramOutterList: [],
             stateList:[],
             modelList:[],
-            selectEle: false,
             footerContent: false,
             modelVals:[],//状态列表下的每个模型列表当前的v-model
             isInitFlag: false,
             ifShowDataFlag: true, // 判断是否显示数据显示tab
             tabParamTitles:[
                 {
-                    title: this.$t('footBar.paramType'),
-                    slot: 'paramType',
+                    title: '参数名称',
+                    key: 'paramName',
                 },
                 {
-                    title: this.$t('footBar.paramChoose'),
-                    slot: 'paramChoose',
+                    title:'参数类型',
+                    key: 'paramType',
                 },
                 {
-                    title: this.$t('footBar.paramShow'),
+                    title: `所属部件`,
+                    key: 'partName'
+                },
+                {
+                    title: `默认显示`,
                     slot: 'paramShow'
                 },
                 {
                     title: this.$t('operation'),
                     width: '160',
                     slot: 'actions',
-                    key: 'actions',
                 },
             ],
         }
@@ -288,6 +265,13 @@ export default {
         cellsCount() {
             return this.$store.state.main.widgetInfo.cellsCount
         },
+        selectedKeys() {
+            let res = []
+            this.paramOutterList.forEach(item=>{
+                res.push(item.key)
+            })
+            return res
+        }
     },
     watch:{
         ifShowArrow(val) {
@@ -345,10 +329,9 @@ export default {
                     if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
                         let deviceNameChild = startBindData.dataSource.deviceNameChild || []
                         startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
-                        startBindData.dataSource.dataSourceChild = value.dataSourceChild
                         startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
+                        startBindData.dataSource.deviceModel = value.deviceModel
                         this.setCellModelInfo('bindData',startBindData,cells[i])
-                        console.log("tt-bb")                    
                         if (this.ifShowArrow) {
                             this.isInitFlag = false
                             this.initData()
@@ -405,12 +388,13 @@ export default {
             if (startBindData && startBindData.dataSource) {
                 let deviceNameChild = startBindData.dataSource.deviceNameChild || []
                 deviceTypeId = startBindData.dataSource.deviceTypeChild ? startBindData.dataSource.deviceTypeChild.id : '' //拿到deviceTypeId暂存全局
+                this.deviceModelId  = startBindData.dataSource.deviceModel.id
                 this.dataSourceList = []
                 deviceNameChild.forEach((item) => {
                     let obj = {}
-                    obj.name = startBindData.dataSource.dataSourceChild.name
                     obj.typeName = startBindData.dataSource.deviceTypeChild.name 
                     obj.deviceName = item.name
+                    obj.modelName = startBindData.dataSource.deviceModel.name 
                     this.dataSourceList.push(obj)
                 })
             } else {
@@ -447,28 +431,52 @@ export default {
         },
         initParamsList() {
             let tempObj = this.getCellModelInfo('bindData')
-            if(deviceTypeId) {
-                let param = {
-                    studioId:sessionStorage.getItem("applyId"),
-                    deviceTypeId: deviceTypeId,
-                    type:1,
-                    size:10000,
-                }
-                this.requestUtil.post(this.urls.deviceParamList.url, param).then((res) => {
-                    this.paramsList = res.records
-                })
-            }else{
-                this.paramsList = []
-            }
             if(tempObj && tempObj.params) {
-                let bindParamsList = tempObj.params
-                this.paramOutterList = new Array(bindParamsList.length)
-                bindParamsList.forEach((item,index)=>{ 
-                    this.$set(this.paramOutterList,index,{id:item.id,model:item.paramId,type:item.type})
-                })
+                this.paramOutterList = tempObj.params
             }else{
-                this.paramOutterList = [{id:new Date().getTime(),model:"",type:false}]
+                this.paramOutterList = []
             }
+        },
+        addParam() {
+            this.visible = true
+        },
+        addParamDone(data) {
+            data.forEach((item,index)=>{
+                this.paramOutterList.push({
+                    paramName:item.paramName,
+                    paramId:item.paramId,
+                    paramType:item.type == 'device' ? '设备参数' : '虚拟参数',
+                    partName:item.paramName,
+                    key:item.key,
+                    type:index === 0 ? true : false,
+                })
+            })
+            let tempObj = this.getCellModelInfo('bindData') || {}
+            let list = []
+            if(tempObj && tempObj.params) {
+                list = tempObj.params
+            }
+            list = list.concat(data)
+            tempObj.params = list
+            this.setCellModelInfo('bindData',tempObj)
+        },
+        removeParamHandle(index) {
+            sureDialog(this.myEditorUi,'确定要删除当前参数吗',()=>{
+                this.paramOutterList.splice(index,1)
+                let  tempObj = {params:this.paramOutterList} 
+                this.setCellModelInfo('bindData',tempObj)
+            })
+        },
+        paramDefaultChange(val,id) {
+            this.paramOutterList.forEach(item=>{
+                if(item.id == id) {
+                    item.type = val
+                }else{
+                    item.type = false
+                }
+            })
+            let  tempObj = {params:this.paramOutterList} 
+            this.setCellModelInfo('bindData',tempObj)
         },
         modelSelectChange(modelIndex,stateIndex) {
             //将模型公式绑定在对应的状态上
@@ -546,106 +554,6 @@ export default {
             })
             this.setCellModelInfo('statesInfo',tempStateList)
         },
-        addParamHandle() {
-            this.paramOutterList.unshift({id:new Date().getTime(),model:"",type:false})
-        },
-        removeParamHandle(id,index) {
-            if(index || index === 0) {
-                if(!this.paramOutterList[index].model) {
-                    this.paramOutterList.splice(index , 1)
-                    return
-                }
-            }
-            sureDialog(this.myEditorUi,this.$t('footBar.sureDelCurrentParam'), () => {
-                (index || index === 0) && this.paramOutterList.splice(index , 1)
-                let tempObj = this.getCellModelInfo('bindData')
-                let list = [ ]
-                if(tempObj && tempObj.params) {
-                    list = tempObj.params
-                }
-                if(list.length) {
-                    let resIndex = list.findIndex((item)=>{
-                        return item.id == id
-                    })
-                    if(resIndex != -1) {
-                        list.splice(resIndex,1)
-                        if(!list.length) {
-                            tempObj.params = null
-                        }else{
-                            tempObj.params = list
-                        }
-                        this.setCellModelInfo('bindData',tempObj)
-                    }
-                }
-            })
-        },
-        paramSelectChange(val,index) {
-            if(!val) {
-                return
-            }
-            let tempObj = this.getCellModelInfo('bindData')
-            let list = []
-            if(tempObj && tempObj.params) {
-                list = tempObj.params
-            } 
-            let targetParam = this.paramsList.find((item)=>{
-                return item.paramId == val
-            })
-            let obj = {
-                paramId:targetParam.paramId,
-                paramName:targetParam.paramName,
-                id:this.paramOutterList[index].id,
-                type:this.paramOutterList[index].type
-            }
-            this.paramOutterList[index].model = val
-            let resIndex = list.findIndex((item)=>{
-                return item.id == this.paramOutterList[index].id
-            })
-            if(resIndex != -1) {
-                list[resIndex] = obj
-            }else{
-                list.unshift(obj)
-            }
-            if(!tempObj) {
-                tempObj = { }
-            }
-            if(list.length) {
-                tempObj.params = list
-                this.setCellModelInfo('bindData',tempObj)
-            }
-        },
-        paramDefaultChange(val,id,index) {
-            if(!this.paramOutterList[index].model && val) {
-                Message.warning(this.$t('footBar.pleaseChooseOneParam'))
-                return
-            }
-            this.paramOutterList.forEach(item=>{
-                if(item.id == id) {
-                    item.type = val
-                }else{
-                    item.type = false
-                }
-            })
-            let tempObj = this.getCellModelInfo('bindData')
-            let list = []
-            if(tempObj && tempObj.params) {
-                list = tempObj.params
-            }
-            if(list.length) {
-                list.forEach(item=>{
-                    if(item.id == id) {
-                        item.type = val
-                    }else{
-                        item.type = false
-                    }
-                })
-                if(!tempObj) {
-                    tempObj = { }
-                }
-                tempObj.params = list
-                this.setCellModelInfo('bindData',tempObj)
-            }
-        },
         checkDetDataModel(oldValue, newValue) {
             let oldDeviceNameChild = oldValue.dataSource.deviceNameChild || []
             let newDeviceNameChild = newValue.deviceNameChild || []
@@ -710,6 +618,15 @@ export default {
   bottom: 0;
   z-index: 100;
   background: #fff;
+  .icon-add{
+    width:20px;
+    height: 20px;
+    background: url('../../assets/images/leftsidebar/addpage.png') no-repeat center center;
+    background-size:16px 16px;
+    display: inline-block;
+    cursor: pointer;
+    vertical-align: middle;
+  }
   .Collapse-title-wrap{
     background: #F2F2F2;
     width:100%;
@@ -790,15 +707,6 @@ export default {
             background:#F2F2F2
           }
         }
-      }
-      .icon-add{
-        width:20px;
-        height: 20px;
-        background: url('../../assets/images/leftsidebar/addpage.png') no-repeat center center;
-        background-size:16px 16px;
-        display: inline-block;
-        cursor: pointer;
-        vertical-align: middle;
       }
       .icon-delete{
         width:20px;
