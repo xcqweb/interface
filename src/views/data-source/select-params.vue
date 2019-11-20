@@ -83,6 +83,7 @@ export default {
     data() {
         return {
             visible: false,
+            currentModelId: '',
             selectedItems: [],
             params: [],
             listStyle: {
@@ -107,11 +108,8 @@ export default {
         },
     },
     watch: {
-        value(val) {
-            if (val && this.selectedKeys && this.selectedKeys.length > 0) {
-                this.selectedItems.push(...this.selectedKeys);
-            }
-            this.visible = val;
+        value() {
+            this.setVisible();
         },
         visible(val) {
             if (!val) {
@@ -122,7 +120,8 @@ export default {
         },
     },
     mounted() {
-        this.visible = this.value;
+        this.currentModelId = this.deviceModelId;
+        this.setVisible();
     },
     methods: {
         getDeviceParamsCallback(res) {
@@ -174,7 +173,7 @@ export default {
             this.visible = false;
         },
         submit() {
-            if (this.selectedItems && this.selectedItems) {
+            if (this.selectedItems && this.selectedItems.length > 0) {
                 const data = [];
                 this.transferData.forEach(item => {
                     if (this.selectedItems.includes(item.key)) {
@@ -182,7 +181,7 @@ export default {
                     }
                 });
                 this.cancel();
-                this.$emit('callback', data);
+                this.$emit('callback', data, this.selectedItems);
             } else {
                 Message.error(this.$t('dataSource.atLeaseSelectOneItem'));
             }
@@ -216,6 +215,18 @@ export default {
         handleTransferChange(newTargetKeys) {
             this.selectedItems = newTargetKeys;
         },
+        setVisible() {
+            this.visible = this.value;
+            if (this.visible) {
+                if (this.currentModelId !== this.deviceModelId) {
+                    this.currentModelId = this.deviceModelId;
+                    this.getData();
+                }
+                if (this.selectedKeys && this.selectedKeys.length > 0) {
+                    this.selectedItems.push(...this.selectedKeys);
+                }
+            }
+        }
     },
 };
 </script>
