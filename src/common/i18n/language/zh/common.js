@@ -5,6 +5,7 @@ export default {
     rename: '重命名',
     add: '添加',
     delete: '删除',
+    remove: '移除',
     addToTemplate: '添加到模板',
     dataSources: '数据源',
     dataModel: '数据模型',
@@ -57,6 +58,7 @@ export default {
     downLimit: '下限',
     submit: '提交',
     confirm: '确定',
+    reset: '重置',
     beeline: '直线',
     rectangle: '矩形',
     circle: '圆形',
@@ -106,5 +108,6 @@ export default {
     layoutShape: 'layout组件',
     pageTemplate: '页面模板',
     popupTemplate: '弹窗模板',
-    addShapes: '新增组件库'
+    addShapes: '新增组件库',
+    tooltips: '提示',
 }

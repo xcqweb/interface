@@ -142,7 +142,21 @@ module.exports = {
                 "changeOrigin": true,
                 // "pathRewrite": {"^/api": "/api"}
                 // "pathRewrite": {"^/api": ""}
-            }
+            },
+            '/xj': {
+                target: 'http://10.8.4.152:8003/iot-device',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/xj': ''
+                },
+            },
+            '/wz': {
+                target: 'http://10.8.2.24:8001/api/iot-cds',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/wz': ''
+                },
+            },
         },
     },
     optimization: {

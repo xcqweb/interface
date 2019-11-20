@@ -1,0 +1,24 @@
+
+/* 搜索条件 */
+.params-item,
+.params-item > * {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.params-item {
+  > label {
+    margin-right: 5px;
+    color: #252525;
+  }
+
+  + .params-item {
+    margin-left: 10px;
+  }
+  
+  > .ivu-btn {
+    + .ivu-btn {
+      margin-left: 5px;
+    }
+  }
+}

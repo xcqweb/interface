@@ -27,7 +27,7 @@
 
 <script>
 import MPage from './m-page'
-import MDataS from './m-datasource'
+import MDataS from './m-data-source'
 const alertTip = 'dataSource.haveUnsavedModels'
 import VueEvent from '../services/VueEvent.js'
 import {Message} from 'iview'
