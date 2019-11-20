@@ -181,45 +181,79 @@ class Main {
             menuCon.css('left', `${$("#gePreviewCon").offset().left}px`)
             if (parseTheme.position == 2) {//顶部
                 menuCon.css('width', `${$("#gePreviewCon").width()}px`)
-                let top = menuIcon.height() - menuHeight - 15
                 menuIcon.css({
                     left: `${$("#gePreviewCon").width() / 2 + $("#gePreviewCon").offset().left - menuIcon.width() / 2}px`,
-                    top: `-${top}px`,
-                    borderBottom: `solid 1px ${menuStyle.bgColor}`,
-                    borderRadius: `0 0 100px 100px`
+                    top: `${menuHeight}px`,
+                    background:`${menuStyle.bgColor}`,
+                    borderRadius: '0 0 10px 10px'
                 })
-                menuIcon.html(`<i class="ivu-icon ivu-icon-ios-arrow-down" style="position:relative;top:${menuHeight - 2}px;font-size:24px;color:${menuStyle.bgColor}"></i>`)
+                menuIcon.html(`<i class="ivu-icon ivu-icon-ios-arrow-up" style="position:relative;top:-2px;font-size:24px;color:#ffff"></i>`)
                 let el = document.querySelector(".gePreviewMenu ul")
                 horwheel(el)//支持鼠标滚轮滚动
                 mouseDeal(el)//鼠标向左向右滑动
+                let topTimer
+                let topHide = function() {
+                    menuIcon.css({
+                        top:0
+                    })
+                    menuCon.hide()
+                    if (topTimer) {
+                        clearTimeout(topTimer)
+                        topTimer = null
+                    }
+                }
+                let topHideTimeFun = function() {
+                    topTimer = setTimeout(()=>{
+                        topHide()
+                    }, 10 * 1000)//10s 自动隐藏菜单
+                }
+                topHideTimeFun()
                 menuIcon.on('click', function() {
                     let check = menuCon.data("check")
                     if(check == 1) {
-                        menuIcon.css('top', `-${top + menuHeight}px`)
-                        menuCon.hide()
+                        topHide()
                     }else{
-                        menuIcon.css('top', `-${top}px`)
+                        menuIcon.css('top', `${menuHeight}px`)
                         menuCon.show()
+                        topHideTimeFun()
                     }
                     menuCon.data("check",1 - check)
                 })
             }else{//左侧
-                let left = menuWidth + $("#gePreviewCon").offset().left - menuIcon.width() + 20
+                let left = menuWidth + $("#gePreviewCon").offset().left
                 menuIcon.css({
-                    left: `${left - 4}px`,
+                    height:'40px',
+                    width:'20px',
+                    left: `${left}px`,
+                    lineHeight:`40px`,
                     top: `${$(window).height() / 2 + menuIcon.height() / 2}px`,
-                    borderRight: `solid 1px ${menuStyle.bgColor}`,
-                    borderRadius: `0 100px 100px 0`
+                    background: `${menuStyle.bgColor}`,
+                    borderRadius:'0 10px 10px 0'
                 })
-                menuIcon.html(`<i class="ivu-icon ivu-icon-ios-arrow-forward" style="position:relative;left:39px;font-size:24px;color:${menuStyle.bgColor}"></i>`)
+                menuIcon.html(`<i class="ivu-icon ivu-icon-ios-arrow-back" style="position:relative;left:-2px;font-size:24px;color:#fff;"></i>`)
+                let leftTimer
+                let leftHide = function() {
+                    menuIcon.css('left', `${left - menuWidth}px`)
+                    menuCon.hide()
+                    if (leftTimer) {
+                        clearTimeout(leftTimer)
+                        leftTimer = null
+                    }
+                }
+                let leftHideTimeFun = function() {
+                    leftTimer = setTimeout(() => {
+                        leftHide()
+                    }, 10 * 1000)//10s 自动隐藏菜单
+                }
+                leftHideTimeFun()
                 menuIcon.on('click', function() {
                     let check = menuCon.data("check")
                     if (check == 1) {
-                        menuIcon.css('left', `${$("#gePreviewCon").offset().left - menuIcon.width() + 20}px`)
-                        menuCon.hide()
+                        leftHide()
                     } else {
                         menuIcon.css('left', `${left}px`)
                         menuCon.show()
+                        leftHideTimeFun()
                     }
                     menuCon.data("check", 1 - check)
                 })

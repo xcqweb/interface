@@ -125,10 +125,9 @@
 }
 .gePreviewMenuIcon{
   position: fixed;
-  width:100px;
-  height:100px;
-  border-radius:0 100px 100px 0;
+  width:40px;
+  height:20px;
   cursor: pointer;
   text-align: center;
-  line-height: 100px;
+  line-height: 20px;
 }
