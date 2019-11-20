@@ -35,7 +35,7 @@ export default {
             if (res && res.length > 0) {
                 data = {
                     title: this.$t('dataSource.deviceParameter'),
-                    expand: false,
+                    expand: true,
                     children: [],
                 };
                 const obj = {};
@@ -68,7 +68,7 @@ export default {
             if (res && res.length > 0) {
                 data = {
                     title: this.$t('dataSource.virtualParamter'),
-                    expand: false,
+                    expand: true,
                     children: [],
                 };
                 res.forEach(item => {

@@ -33,9 +33,9 @@ export default {
     },
     methods: {
         getData() {
+            this.deviceParams = null;
+            this.virtualParams = null;
             if (!this.deviceModelId) {
-                this.deviceParams = null;
-                this.virtualParams = null;
                 return;
             }
             const params = {

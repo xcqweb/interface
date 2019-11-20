@@ -15,22 +15,23 @@ export default {
             const typeData = this.$store.state.datasource.typeData;
             if (typeData.length > 0) {
                 const type = typeData[0];
-                this.model.deviceTypeId = type.deviceTypeId;
-                if (this.modelObj[type.deviceTypeId] && this.modelObj[type.deviceTypeId].length > 0) {
-                    this.model.deviceModelId = this.modelObj[type.deviceTypeId][0].deviceModelId;
-                } else {
-                    this.model.deviceModelId = '';
+                if (!this.model.deviceTypeId || !this.modelObj[this.model.deviceTypeId]) {
+                    this.model.deviceTypeId = type.deviceTypeId;
                 }
-            } else {
-                this.model.deviceTypeId = '';
-                this.model.deviceModelId = '';
             }
+            
             return typeData;
         },
         modelData() {
             const key = this.model.deviceTypeId;
             this.modelObj = this.$store.state.datasource.modelObj || {};
-            return key && this.modelObj[key] ? this.modelObj[key] : [];
+            const model = key && this.modelObj[key] ? this.modelObj[key] : [];
+            if (model.length > 0) {
+                this.model.deviceModelId = model[0].deviceModelId;
+            } else {
+                this.model.deviceModelId = '';
+            }
+            return model;
         },
         deviceData() {
             const key = this.model.deviceModelId;

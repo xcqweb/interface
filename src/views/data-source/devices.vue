@@ -16,9 +16,9 @@
           :data="deviceTypeOptions"
           :load-data="getDeviceModel"
           :not-found-text="$t('noData')"
-          change-on-select
           filterable
           transfer
+          @on-change="search"
         />
       </div>
       <div class="params-item">
@@ -26,13 +26,13 @@
           v-model.trim="keyword"
           style="width: 180px;"
           :placeholder="$t('dataSource.enterDeviceNameToSearch')"
-          @keyup.native.enter="search"
+          @keyup.native.enter="search()"
         />
       </div>
       <div class="params-item">
         <Button
           type="primary"
-          @click="search"
+          @click="search()"
         >
           {{ $t('search') }}
         </Button>
@@ -175,10 +175,11 @@ export default {
         this.getDeviceTypes();
     },
     methods: {
-        search() {
+        search(value) {
+            value = value || this.deviceParams;
             this.params.deviceName = this.keyword || '';
-            this.params.deviceTypeId = this.deviceParams[0] || '';
-            this.params.deviceModelId = this.deviceParams[1] || '';
+            this.params.deviceTypeId = value[0] || '';
+            this.params.deviceModelId = value[1] || '';
             this.handlePageChange(1);
         },
         getDevices() {
