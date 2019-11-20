@@ -20,4 +20,7 @@ export default {
     timeSelect: {url: '/api/device/device/time/select/', 'desc':'获取参数默认时长'},
     ifMultipleEdit: {url: '/api/iot-cds/cds/configurationDesignStudio/judgeIsEdit/', 'des': '是否有多人编辑'},
     pentSdbData: {url: '/api/persist/opentsdb/data', 'desc':'趋势图的历史数据'},
+    normalParam: {url: '/api/device/deviceModel/param/normal/select', 'desc': '获取设备参数'},
+    fictitiousParam: {url: 'api/device/deviceModel/param/fictitious/select', 'desc': '获取虚拟参数'},
+   
 }
