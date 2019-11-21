@@ -23,11 +23,6 @@ export default {
             return items;
         },
     },
-    watch: {
-        deviceModelId() {
-            this.getData();
-        },
-    },
     created() {
         this.getData();
     },

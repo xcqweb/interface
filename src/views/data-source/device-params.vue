@@ -29,6 +29,11 @@ export default {
         NoData,
     },
     mixins: [columnCommon, paramsCommon],
+    watch: {
+        deviceModelId() {
+            this.getData();
+        },
+    },
     methods: {
         getDeviceParamsCallback(res) {
             let data = null;
