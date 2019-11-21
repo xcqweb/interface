@@ -11,7 +11,7 @@ async function getLastData(pointParams, fileSystem) {
     for (let item of maps.values()) {
         params.push(item)
     }
-    const res = await geAjax('/api/persist/opentsdb/point/last', 'POST', JSON.stringify(params))
+    const res = await geAjax('/api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(params))
     setterRealData(res,fileSystem)
 }
 
@@ -65,7 +65,7 @@ function setterRealData(res, fileSystem) {
             let paramShowDefault = $(els[i]).data("paramShowDefault")
             let val = null
             if (paramShowDefault) {
-                val = item[paramShowDefault]
+                val = item[paramShowDefault.paramId]
             }
             if(shapeName == 'progress') {//进度条
                 if(!val) {
@@ -142,7 +142,7 @@ function setterRealData(res, fileSystem) {
                         formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + 
                             `<li>${item.timestamp}</li>` +
                             paramShow.map((d) => {
-                                return `<li>${d}=${item[d]}</li>`
+                                return `<li>${d.paramname}=${item[d.paramId]}</li>`
                             }).join('') + "</ul>")
                     }
                     let formatLayerShow = (e)=>{
