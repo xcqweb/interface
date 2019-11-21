@@ -12,7 +12,7 @@ export default {
     importDataSource: {url: 'api/iot-cds/cds/importDataSource','desc': '导入数据源'},
     hasImportDeviceType: {url: 'api/iot-cds/cds/dataSource/deviceTypeList', 'desc': '导入的设备类型'},
     deleteParamList: {url: 'api/iot-cds/cds/dataSourceDeviceParam', 'desc': '删除数据源设备参数'},
-    deleteDeviceList: {url: 'api/iot-cds/cds/dataSourceDevice', 'desc': '删除数据源下设备'},
+    deleteDeviceList: {url: 'api/iot-cds/cds/delConfigDevice', 'desc': '删除数据源下设备'},
     deleteDeviceType: {url: 'api/iot-cds/cds/dataSourceDeviceType/', 'desc': '删除数据源设备类型'},
     getModelList: {url: 'api/iot-cds/cds/model/deviceType', 'desc':"设备类型下模型列表"},
     addModelList: {url: 'api/iot-cds/cds/model', 'desc':'新增修改模型'},

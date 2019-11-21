@@ -11,7 +11,7 @@
         <Input
           v-model="model.describe"
           class="descript-color"
-          :disabled="!currentValue"
+          :disabled="!showForm"
           type="textarea" 
           :placeholder="$t('dataSource.remarkPlaceholder')"
           :autosize="{maxRows: 3, minRows: 3}"
@@ -19,7 +19,7 @@
       </div>
       <div class="addmodel-btn">
         <a
-          v-if="currentValue"
+          v-if="showForm"
           href="javascript:;"
           @click="showRuleModal"
         >
@@ -31,9 +31,10 @@
     <!-- 条件 -->
     <model-rule
       ref="rule"
-      :is-form="currentValue"
-      :logic="logic"
+      :show-form="showForm"
+      :data="data && data.formula"
       :rule-data="ruleData"
+      :reset-data="resetModelRuleData"
       @remove-param="handleRemoveParamsKey"
     />
     <!-- 底部按钮 -->
@@ -41,7 +42,7 @@
       slot="footer"
     >
       <!-- 编辑状态 -->
-      <template v-if="currentValue">
+      <template v-if="showForm">
         <Button @click="cancel">
           {{ $t('cancel') }}
         </Button>
@@ -57,7 +58,7 @@
       <template v-else>
         <Button
           type="primary"
-          @click="setEditStatus"
+          @click="showForm = true"
         >
           {{ $t('dataSource.editModel') }}
         </Button>
@@ -109,6 +110,7 @@ export default {
                 sourceId: '',
                 studioId: '',
                 deviceTypeId: '',
+                deviceModelId: '',
                 formula: '',
                 viewContent: '',
                 describe: '',
@@ -116,8 +118,8 @@ export default {
             },
             ruleKeys: [],
             ruleData: [],
-            logic: '1',
             studioId: '',
+            resetModelRuleData: false,
         };
     },
     watch: {
@@ -130,18 +132,23 @@ export default {
     },
     methods: {
         cancel() {
-            this.currentValue = false;
-            this.$emit('saved', false);
+            if (this.data.sourceId) {
+                this.setModel();
+                this.resetModelRuleData = !this.resetModelRuleData;
+            }
+            this.showForm = false;
         },
         submit() {
             const data = this.$refs.rule.checkRule();
             if (data) {
+                this.model.modelName = this.data.modelName || this.data.editName;
+                if (!this.model.modelName) {
+                    Message.error(this.$t('dataSource.modelNameCanNotEmpty'));
+                    return;
+                }
                 this.loading = true;
                 this.model.formula = JSON.stringify(data);
                 this.model.studioId = this.studioId;
-                this.model.deviceTypeId = this.deviceModelId;
-                this.model.modelName = this.data.modelName;
-                this.model.sourceId = this.data.sourceId;
                 let func, successMsg;
                 if (!this.model.sourceId) {
                     func = 'post';
@@ -152,10 +159,9 @@ export default {
                 }
                 this.requestUtil[func](this.urls.addModelList.url, this.model).then(res => {
                     Message.success(this.$t(successMsg));
-                    this.currentValue = false;
+                    this.showForm = false;
                     this.model.sourceId = res.sourceId;
                     this.loading = false;
-                    this.$emit('saved', true);
                 }).catch(() => {
                     this.loading = false;
                 });
@@ -184,21 +190,11 @@ export default {
             }
         },
         setModel() {
-            const data = this.data;
-            if (data) {
-                let formula = data.formula ? JSON.parse(data.formula) : null;
-                console.log(formula);
-                if (formula) {
-                    this.logic = formula.conditionLogic;
-                    this.ruleData = formula.data;
-                } else {
-                    this.logic = '1';
-                    this.ruleData = [];
-                }
+            const data = this.data || {};
+            let key;
+            for (key in this.model) {
+                this.model[key] = data[key] || '';
             }
-        },
-        setEditStatus() {
-            this.$emit('set-edit-status');
         },
     },
 };

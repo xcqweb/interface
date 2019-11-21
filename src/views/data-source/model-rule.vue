@@ -3,13 +3,13 @@
     <dl class="model-rule-item">
       <dt v-if="model.data.length > 1">
         <Select
-          v-if="isForm"
+          v-if="showForm"
           v-model="model.conditionLogic"
           size="small"
           transfer
         >
           <Option
-            v-for="item in conditionLogical"
+            v-for="item in conditionOptions"
             :key="item.value"
             :value="item.value"
             :label="item.label"
@@ -40,14 +40,14 @@
             </td>
             <td>
               <Select
-                v-if="isForm"
+                v-if="showForm"
                 v-model="row.logical"
                 style="width: 80px;"
                 size="small"
                 transfer
               >
                 <Option
-                  v-for="item in logicalSignList"
+                  v-for="item in logicalOptions"
                   :key="item.value"
                   :value="item.value"
                   :label="$t(item.label)"
@@ -62,7 +62,7 @@
             </td>
             <td>
               <!-- 介于或不介于 -->
-              <template v-if="isForm">
+              <template v-if="showForm">
                 <div
                   v-if="isBetween(row.logical)"
                   class="between-box"
@@ -95,7 +95,7 @@
               </div>
             </td>
             <td
-              v-if="isForm"
+              v-if="showForm"
               class="hide-border"
             >
               <Button 
@@ -129,17 +129,21 @@ export default {
         ruleData: {
             type: Array,
         },
-        logic: {
+        showForm: {
+            type: Boolean,
+        },
+        data: {
             type: String,
         },
-        isForm: {
+        resetData: {
             type: Boolean,
+            default: false,
         },
     },
     data() {
         return {
-            conditionLogical,
-            logicalSignList,
+            conditionOptions: conditionLogical,
+            logicalOptions: logicalSignList,
             model: {
                 conditionLogic: '1',
                 data: []
@@ -153,14 +157,18 @@ export default {
     },
     watch: {
         ruleData() {
-            this.updateData();
+            this.updateModelData();
         },
-        logic(val) {
-            this.model.conditionLogic = val || '1';
+        data() {
+            this.setModel();
+        },
+        resetData() {
+            this.setModel();
         },
     },
     created() {
-        this.updateData();
+        this.setLogicalOptionsObj();
+        this.setModel();
     },
     methods: {
         assign(obj, data) {
@@ -178,10 +186,6 @@ export default {
             this.$emit('remove-param', key);
         },
         checkRule() {
-            if (this.modelName) {
-                Message.error(this.$t('dataSource.modelNameCanNotEmpty'));
-                return;
-            }
             if (this.model.data.length === 0) {
                 Message.error(this.$t('dataSource.ruleIsRequired'));
                 return;
@@ -212,14 +216,16 @@ export default {
         ruleIsEmpty(label) {
             Message.error(this.$t('dataSource.ruleCanNotEmpty', {label}));
         },
+        setLogicalOptionsObj() {
+            const data = {};
+            this.logicalOptions.forEach(item => {
+                data[item.value] = item.label;
+            });
+            this.$logicalOptionsObj = data;
+        },
         getLogicalText(value) {
-            const data = this.logicalSignList;
-            const len = data.length;
-            let i;
-            for (i = 0; i < len; i++) {
-                if (data[i].value === value) {
-                    return this.$t(data[i].label);
-                }
+            if (this.$logicalOptionsObj && this.$logicalOptionsObj.hasOwnProperty(value)) {
+                return this.$t(this.$logicalOptionsObj[value]);
             }
             return value;
         },
@@ -233,7 +239,7 @@ export default {
         isBetween(logical) {
             return logical === '1' || logical === '2';
         },
-        updateData() {
+        updateModelData() {
             if (this.ruleData) {
                 const newData = [];
                 this.ruleData.forEach(param => {
@@ -247,6 +253,16 @@ export default {
                 if (newData.length > 0) {
                     this.model.data.push(...newData);
                 }
+            }
+        },
+        setModel() {
+            const data = this.data ? JSON.parse(this.data) : null;
+            if (data) {
+                this.model.conditionLogic = data.conditionLogic;
+                this.model.data = data.data;
+            } else {
+                this.model.conditionLogic = '1';
+                this.model.data = [];
             }
         },
     },

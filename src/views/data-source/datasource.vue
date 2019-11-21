@@ -43,30 +43,27 @@
     <!-- 移除确认弹窗 -->
     <component
       :is="removeView"
-      v-model="visible"
-      :content="content"
+      v-model="removeVisible"
+      :content="removeContent"
       :data="removeData"
-      @callback="getStudioDeviceData"
+      @callback="removeCallback"
     />
   </div>
 </template>
 
 <script>
-import {Modal} from 'iview'
+import {Message} from 'iview'
 import DeviceData from './device-data'
 import DeviceParams from './device-params'
 import DatasourceStore from './js/datasource-store'
+import removeCommon from './js/remove-common'
 
 export default {
     components: {
-        Modal,
         DeviceData,
         DeviceParams,
-        RemoveDevice: (resolve) => {
-            return require(['./remove-device'], resolve);
-        },
     },
-    mixins: [DatasourceStore],
+    mixins: [DatasourceStore, removeCommon],
     props: {
         reloadData: {
             type: Boolean,
@@ -76,11 +73,6 @@ export default {
     data() {
         return {
             paramData: [],
-            // 移除操作确认属性
-            visible: false,
-            removeView: '',
-            removeData: [],
-            content: '',
         };
     },
     watch: {
@@ -98,10 +90,6 @@ export default {
         handleModelClick(item) {
             this.model.deviceModelId = item.deviceModelId;
         },
-        showRemoveModal() {
-            this.removeView = 'remove-device';
-            this.visible = true;
-        },
         handleTypeRemove(items) {
             const ids = [];
             items.forEach(type => {
@@ -118,7 +106,7 @@ export default {
                 }
             });
             this.removeData = ids;
-            this.content = this.$t('dataSource.confirmToRemoveDeviceType');
+            this.removeContent = this.$t('dataSource.confirmToRemoveDeviceType');
             this.showRemoveModal();
         },
         handleModelRemove(items) {
@@ -132,14 +120,23 @@ export default {
                 }
             });
             this.removeData = ids;
-            this.content = this.$t('dataSource.confirmToRemoveDeviceModel');
+            this.removeContent = this.$t('dataSource.confirmToRemoveDeviceModel');
             this.showRemoveModal();
         },
         handleDeviceRemove(items) {
             this.removeData = items;
-            this.content = this.$t('dataSource.confirmToRemoveDevice');
+            this.removeContent = this.$t('dataSource.confirmToRemoveDevice');
             this.showRemoveModal();
-        }
+        },
+        removeCallback() {
+            const params = {
+                ids: this.removeData,
+            };
+            this.requestUtil.post(this.urls.deleteDeviceList.url, params).then(() => {
+                Message.success(this.$t('dataSource.removeDeviceSuccessfully'));
+                this.getStudioDeviceData();
+            });
+        },
     },
 };
 </script>

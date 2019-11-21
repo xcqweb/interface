@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import {Modal, Button, Message} from 'iview'
+import {Modal, Button} from 'iview'
 
 export default {
     components: {
@@ -46,9 +46,6 @@ export default {
         },
         content: {
             type: String,
-        },
-        data: {
-            type: Array,
         },
     },
     data() {
@@ -72,14 +69,8 @@ export default {
     },
     methods: {
         submit() {
-            const params = {
-                ids: this.data,
-            };
-            this.requestUtil.post('api/iot-cds/cds/delConfigDevice', params).then(() => {
-                Message.success(this.$t('dataSource.removeDeviceSuccessfully'));
-                this.cancel();
-                this.$emit('callback');
-            });
+            this.cancel();
+            this.$emit('callback');
         },
         cancel() {
             this.visible = false;

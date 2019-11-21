@@ -10,20 +10,20 @@ export default {
     },
     data() {
         return {
-            currentValue: false,
+            showForm: false,
             studioId: ''
         };
     },
     watch: {
         value(val) {
-            this.currentValue = val;
+            this.showForm = val;
         },
-        currentValue(val) {
+        showForm(val) {
             this.$emit('input', val);
         },
     },
     created() {
         this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-        this.currentValue = this.value;
+        this.showForm = this.value;
     },
 }
