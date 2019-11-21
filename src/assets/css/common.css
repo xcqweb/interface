@@ -286,7 +286,7 @@ td.mxPopupMenuIcon {
 .ivu-modal {
 	top: 0 !important;
 	height: 100%;
-	overflow: hidden;
+	//overflow: hidden;
 }
 .ivu-modal-content {
 	top: 50%;
