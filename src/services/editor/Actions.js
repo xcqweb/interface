@@ -199,19 +199,14 @@ Actions.prototype.init = function()
     }, true)
     // 预览
     this.addAction('previewapply', function (){
-        let dlg = new PreviewDialog(ui, (id,windowPage) => {
+        let dlg = new PreviewDialog(ui,function(){
             let page = router.resolve({
                 path: "/interface_preview",
                 query: {
-                    id: id
+                    id: sessionStorage.getItem('applyId')
                 }
             })
-            let openWin=function (url) {
-                $('body').append($('<a href="' + url + '" target="_blank" id="openWin_preview"></a>'))
-                document.getElementById("openWin_preview").click()//点击事件
-                $('#openWin').remove()
-            }
-            openWin(page.href)
+            window.open(page.href,'_blank')
         })
         ui.showDialog(dlg.container, 410, 160, true, false, null, null, '预览')
     }, true, null, Editor.ctrlKey + '+Shift+L');

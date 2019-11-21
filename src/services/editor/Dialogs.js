@@ -549,7 +549,7 @@ let FilenameDialog = function(editorUi,fn, closeOnBtn, cancelFn)
 /**
  * 发布弹窗
  */
-let PreviewDialog = function(editorUi,callback) {
+let PreviewDialog = function(editorUi,fun) {
     var saveContent = editorUi.createDiv('geDialogInfo');
     // 链接
     var nameTitle = document.createElement('p')
@@ -557,16 +557,15 @@ let PreviewDialog = function(editorUi,callback) {
     nameTitle.className = 'geDialogInfoTitle';
     saveContent.appendChild(nameTitle)
 
+    autoSaveFlagTerry = 0
+    dealDefaultThem(editorUi)
+    editorUi.save(true)
+
     // 保存按钮
     var btnContent = editorUi.createDiv('btnContent');
-    var genericBtn = mxUtils.button('保存并预览', function()
-    {
-        autoSaveFlagTerry = 0
-        dealDefaultThem(editorUi)
-        editorUi.save().then(res => {
-            callback(res.studioId)
-            editorUi.hideDialog()
-        })
+    var genericBtn = mxUtils.button('保存并预览', function(){
+        fun()
+        editorUi.hideDialog()
     });
     genericBtn.className = 'geBtn gePrimaryBtn';
     // 取消按钮

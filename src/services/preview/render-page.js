@@ -270,7 +270,7 @@ class PreviewPage {
             }else{
                 this.gePreview.style.background = viewBackground
             }
-        } else { //弹窗是点弹窗关闭时候清空的内容和关闭ws连接
+        } else { //点弹窗关闭时候清空的内容和关闭ws连接
             // 弹窗页面
             let layerContent = this.createDialog(page)
             layerContent.innerHTML = ''
@@ -426,7 +426,7 @@ class PreviewPage {
         cellHtml.style.transform = `rotate(${cell.rotation}deg) ${cell.flipV == 1 ? ' scaleY(-1)' : ''} ${cell.flipH == 1 ? ' scaleX(-1)' : ''}`;
         // 字体大小
         cellHtml.style.fontSize = `${cell.fontSize}px`
-        if(cellHtml.shapeName == 'rectangle') {
+        if (shapeName == 'rectangle') {
             cellHtml.style.borderRadius = `${cell.arcSize * Math.min(cell.width,cell.height) * 0.01}px`
         }
         cellHtml.style.fontWeight = `${cell.fontWeight == 1 ? 'bold' : 'normal'}`
@@ -457,7 +457,7 @@ class PreviewPage {
             if (cell.bindData.params) {
                 let defaultParamIndex = 0
                 cell.bindData.params.forEach((item)=>{
-                    paramShow.push(item.paramName)
+                    paramShow.push({paramName:item.paramName,paramId:item.paramId})
                 })
                 let singleParamShow = ['progress', 'lineChart', 'gaugeChart']
                 if (!singleParamShow.includes(shapeName)) {
@@ -494,7 +494,7 @@ class PreviewPage {
                                     flatFormulaAttr = flatFormulaAttr.concat(...item)
                                 })
                                 flatFormulaAttr.forEach((d) => {
-                                    resParams.push(d.paramName)
+                                    resParams.push(d.paramId)
                                 })
                             }
                         })
@@ -513,14 +513,17 @@ class PreviewPage {
         return cellHtml
     }
     initWsParams(cellHtml, devices, paramShow, resParams) {
+        let dealParamShow = paramShow.map(item=>{
+            return item.paramId
+        })
         if (devices) {
             devices.forEach((item) => {
                 cellHtml.className += ` point_${item.id}`
                 let resArr
                 if (resParams && resParams.length) {
-                    resArr = Array.from(new Set(resParams.concat(paramShow)))
+                    resArr = Array.from(new Set(resParams.concat(dealParamShow)))
                 }else{
-                    resArr = Array.from(new Set(paramShow))
+                    resArr = Array.from(new Set(dealParamShow))
                 }
                 if (resArr.length) {
                     this.wsParams.push({
