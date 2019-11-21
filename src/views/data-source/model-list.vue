@@ -4,6 +4,7 @@
     :width="width"
   >
     <div
+      v-show="deviceModelId"
       slot="header"
       class="addmodel-btn"
     >
@@ -32,7 +33,10 @@
           @mouseover="handleMouseover(index)"
           @mouseout="handleMouseout()"
         >
-          <p @dblclick="handleRename(item, index)">
+          <p
+            :title="item.modelName"
+            @dblclick="handleRename(item, index)"
+          >
             {{ item.modelName }}
           </p>
           <dropdown
