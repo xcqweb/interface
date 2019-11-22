@@ -182,7 +182,7 @@ module.exports = {
                 parallel: true,
                 sourceMap: true
             }),
-            new OptimizeCSSAssetsPlugin(),
+            isDev ? [] : new OptimizeCSSAssetsPlugin(),
         ],
     },
     devtool: isDev ? 'eval-source-map' : 'source-map',

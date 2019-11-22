@@ -48,6 +48,7 @@ async function getSubscribeInfos(pointParams) {
         item.subscribeType = 'realtime_datahub'
         item.pushRate = 500
         item.params = item.keys
+        item.sourceId = item.pointId
         params.subscribeInfos.push(item)
     }
     let data = await geAjax('/api/pubsub/subscribe', 'POST', JSON.stringify(params))
