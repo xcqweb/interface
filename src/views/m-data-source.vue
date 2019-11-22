@@ -32,11 +32,16 @@
     </ul>
     <!--主体内容-->
     <div class="datasource-body flex-full-item">
+      <!-- 数据源 -->
       <datasource
         v-show="dataType === 0"
         :reload-data="deviceDataChange"
       />
-      <datamodel v-show="dataType === 1" />
+      <!-- 数据模型 -->
+      <component
+        :is="modelComponent"
+        v-show="dataType === 1"
+      />
     </div>
     <!-- 导入数据源弹窗 -->
     <devices
@@ -51,13 +56,15 @@
 <script>
 import Devices from './data-source/devices'
 import Datasource from './data-source/datasource'
-import Datamodel from './data-source/datamodel'
+import editingModel from './data-source/js/editing-model'
+
 export default{
     components:{
         Devices,
         Datasource,
-        Datamodel,
+        Datamodel: resolve => require(['./data-source/datamodel'], resolve),
     },
+    mixins: [editingModel],
     data() {
         return {
             // dataType 0: 数据源 1: 数据模型
@@ -70,14 +77,8 @@ export default{
                     id: '1233'
                 }
             ],
+            modelComponent: ''
         }
-    },
-    computed:{
-        modelEditing() {
-            return this.$store.state.main.modelEditing
-        },
-    },
-    mounted() {
     },
     methods: {
         importDataHander() {
@@ -92,7 +93,15 @@ export default{
             console.log(type)
         },
         handleTabClick(index) {
-            this.dataType = index;
+            if (this.dataType === index) {
+                return;
+            }
+            if (this.canGoOn()) {
+                this.dataType = index;
+                if (index === 1) {
+                    this.modelComponent = 'datamodel';
+                }
+            }
         },
         devicesCallback() {
             this.deviceDataChange = !this.deviceDataChange;

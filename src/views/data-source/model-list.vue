@@ -87,8 +87,9 @@ import {Input, Message, Dropdown, DropdownMenu, DropdownItem} from 'iview'
 import NoData from './nodata';
 import DataColumn from './data-column'
 import columnCommon from './js/column-common'
-import modelCommon from './js/model-common';
-import removeCommon from './js/remove-common';
+import modelCommon from './js/model-common'
+import removeCommon from './js/remove-common'
+import editingModel from './js/editing-model'
 
 export default {
     components: {
@@ -99,10 +100,10 @@ export default {
         NoData,
         DataColumn,
     },
-    mixins: [columnCommon, modelCommon, removeCommon],
+    mixins: [columnCommon, modelCommon, removeCommon, editingModel],
     data() {
         return {
-            activeIndex: 0,
+            activeIndex: -1,
             data: [],
             editItem: null,
             loading: false,
@@ -127,6 +128,12 @@ export default {
         getModel() {
             if (this.showForm) {
                 this.showForm = false;
+                // 正在新增模型时，
+                if (this.editItem && !this.editItem.sourceId) {
+                    this.activeIndex = -1;
+                    this.data.splice(0, 1);
+                    this.editItem = null;
+                }
             }
             if (!this.deviceModelId) {
                 this.data = [];
@@ -153,8 +160,7 @@ export default {
             });
         },
         editModel(item, isAddOrEdit = true, index = 0) {
-            if (this.showForm) {
-                Message.error(this.$t('dataSource.haveUnsavedModel'));
+            if (!this.canGoOn()) {
                 return;
             }
             if (!item && isAddOrEdit) {
@@ -180,6 +186,9 @@ export default {
             this.editModel(item, false, index);
         },
         setActiveIndex(index) {
+            if (this.activeIndex === index) {
+                return;
+            }
             this.activeIndex = index;
         },
         handleMouseover(index) {
@@ -206,8 +215,8 @@ export default {
             }
         },
         handleRename(item, index) {
-            if (this.showForm) {
-                Message.error(this.$t('dataSource.haveUnsavedModel'));
+            console.log('rename')
+            if (!this.canGoOn()) {
                 return;
             }
             item.editing = true;
@@ -222,8 +231,7 @@ export default {
             });
         },
         handleDelete(item) {
-            if (this.showForm) {
-                Message.error(this.$t('dataSource.haveUnsavedModel'));
+            if (!this.canGoOn()) {
                 return;
             }
             this.deleteItemId = item.sourceId;

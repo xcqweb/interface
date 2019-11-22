@@ -113,7 +113,6 @@ export default {
             this.$emit('remove', this.selected);
         },
         reset() {
-            this.activeIndex = 0;
             this.selected = [];
             this.indeterminate = false,
             this.checkAll = false;

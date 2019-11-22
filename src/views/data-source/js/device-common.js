@@ -1,13 +1,14 @@
 import NoData from '../nodata';
 import DataColumn from '../data-column'
 import columnCommon from './column-common'
+import editingModel from './editing-model'
 
 export default {
     components: {
         NoData,
         DataColumn,
     },
-    mixins: [columnCommon],
+    mixins: [columnCommon, editingModel],
     props: {
         // checkbox label
         prop: {
@@ -24,13 +25,28 @@ export default {
     },
     data() {
         return {
-            activeIndex: 0,
+            activeIndex: -1,
         };
+    },
+    watch: {
+        data(val) {
+            this.activeIndex = val && val.length > 0 ? 0 : -1;
+        },
+    },
+    created() {
+        if (this.data && this.data.length > 0) {
+            this.activeIndex = 0;
+        }
     },
     methods: {
         handleClick(item, index) {
-            this.activeIndex = index;
-            this.$emit('click', item);
+            if (this.activeIndex === index) {
+                return;
+            }
+            if (this.canGoOn()) {
+                this.activeIndex = index;
+                this.$emit('click', item);
+            }
         },
         getValue(item, key) {
             const type = typeof item;

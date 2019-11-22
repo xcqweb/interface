@@ -9,7 +9,7 @@ export default {
     addModel: 'Add model',
     addModelSuccessfully: 'Add model successfully',
     saveModel: 'Save model',
-    SaveModelSuccess: 'Save model successfully',
+    editModelSuccessfully: 'Edit model successfully',
     editModel: 'Edit model',
     remark: 'Description',
     remarkContent: 'Description content',
