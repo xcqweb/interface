@@ -56,13 +56,15 @@
 <script>
 import Devices from './data-source/devices'
 import Datasource from './data-source/datasource'
+import Datamodel from './data-source/datamodel'
 import editingModel from './data-source/js/editing-model'
 
 export default{
     components:{
         Devices,
         Datasource,
-        Datamodel: resolve => require(['./data-source/datamodel'], resolve),
+        // Datamodel: resolve => require(['./data-source/datamodel'], resolve),
+        Datamodel,
     },
     mixins: [editingModel],
     data() {

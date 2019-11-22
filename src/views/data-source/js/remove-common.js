@@ -1,9 +1,12 @@
 
+import RemoveModal from '@/views/data-source/remove-modal'
+
 export default {
     components: {
-        RemoveModal: (resolve) => {
-            return require(['@/views/data-source/remove-modal'], resolve);
-        },
+        // RemoveModal: (resolve) => {
+        //     return require(['@/views/data-source/remove-modal'], resolve);
+        // },
+        RemoveModal,
     },
     data() {
         return {
