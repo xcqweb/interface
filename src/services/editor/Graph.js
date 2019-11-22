@@ -8063,7 +8063,7 @@ if (typeof mxVertexHandler != 'undefined')
 	
         mxVertexHandler.prototype.updateLinkHint = function(link, links)
         {
-            if ((link == null && (links == null || links.length == 0)) ||
+            /* if ((link == null && (links == null || links.length == 0)) ||
 				this.graph.getSelectionCount() > 1)
             {
                 if (this.linkHint != null)
@@ -8135,14 +8135,14 @@ if (typeof mxVertexHandler != 'undefined')
                     {
                         var div = document.createElement('div');
                         div.style.marginTop = (link != null || i > 0) ? '6px' : '0px';
-                        div.appendChild(this.graph.createLinkForHint(
-                            links[i].getAttribute('href'),
-                            mxUtils.getTextContent(links[i])));
+                        // div.appendChild(this.graph.createLinkForHint(
+                        //     links[i].getAttribute('href'),
+                        //     mxUtils.getTextContent(links[i])));
 						
                         this.linkHint.appendChild(div);
                     }
                 }
-            }
+            } */
         };
 		
         mxEdgeHandler.prototype.updateLinkHint = mxVertexHandler.prototype.updateLinkHint;

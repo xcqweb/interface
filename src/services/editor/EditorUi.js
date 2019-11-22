@@ -2756,7 +2756,7 @@ EditorUi.prototype.updateActionStates = function()
     this.actions.get('autosize').setEnabled(vertexSelected && !isTable && notMenu);
     var oneVertexSelected = vertexSelected && graph.getSelectionCount() == 1;
     this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && (!isTable && shapeName!='tableCell'));
-    this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 && (graph.getModel().getChildCount(graph.getSelectionCell()) > 0 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && !isTable);
+    this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 && (graph.getModel().getChildCount(graph.getSelectionCell()) > 0 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && !isTable && shapeName != 'menulist');
 
     this.actions.get('linkReport').setEnabled(graph.getSelectionCount() == 1 && shapeName === "linkTag");
     this.actions.get('removeFromGroup').setEnabled(oneVertexSelected && graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())) && notMenu && !isTable);
@@ -2780,8 +2780,8 @@ EditorUi.prototype.updateActionStates = function()
     this.actions.get('selectAll').setEnabled(unlocked);
     this.actions.get('selectNone').setEnabled(unlocked);
     this.actions.get('lockUnlock').setEnabled(!graph.isSelectionEmpty() && shapeName!=='tableCell' && shapeName!=='menuCell')
-    this.actions.get('lock').setEnabled(graph.isCellMovable(graph.getSelectionCell()) && !graph.isSelectionEmpty() && graph.getSelectionCount() == 1)
-    this.actions.get('unlock').setEnabled(!graph.isCellMovable(graph.getSelectionCell()) && !graph.isSelectionEmpty() && graph.getSelectionCount() == 1)
+    this.actions.get('lock').setEnabled(graph.isCellMovable(graph.getSelectionCell()) && !graph.isSelectionEmpty() && graph.getSelectionCount() == 1 && shapeName !== 'tableCell' && shapeName !== 'menuCell')
+    this.actions.get('unlock').setEnabled(!graph.isCellMovable(graph.getSelectionCell()) && !graph.isSelectionEmpty() && graph.getSelectionCount() == 1 && shapeName !== 'tableCell' && shapeName !== 'menuCell')
     this.updatePasteActionStates();
 };
 

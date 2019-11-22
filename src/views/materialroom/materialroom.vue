@@ -51,6 +51,7 @@
                           <span 
                             v-if="index >= 3" 
                             class="right-spots" 
+                            @click="menuPopup(index)"
                           />
                         </li>
                       </ul>
@@ -436,19 +437,11 @@ export default {
             }
             this.arrListTables = index === 0 ? this.baseAssembly : (index === 1 ? this.tablesAssembly : this.emptyArray)
             this.isactive = index
-            this.addListHandle(index)
         },
-        addListHandle(index) {
-            let newMouse = this.mounseHandle()
-            this.$nextTick(() => {
-                const assemblyListEl = document.querySelector('.left-side-listactive .right-spots')
-                if (assemblyListEl) {
-                    newMouse(assemblyListEl,'mouseover',(event) => {
-                        this.assemblyListHandle(event, this.POSITION_LEFT,index)
-                        $('.left-side-listactive .right-spots').css({'pointer-events': 'none'})
-                    }, false)
-                }
-            })
+        menuPopup(index) {
+            console.log(index)
+            this.assemblyListHandle(event, this.POSITION_LEFT,index)
+            $('.left-side-listactive .right-spots').css({'pointer-events': 'none'})
         },
         selectMaterialList(index) {
             this.isactive2 = index

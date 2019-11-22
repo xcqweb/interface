@@ -524,6 +524,25 @@ Actions.prototype.init = function()
             }
         }
     }
+    function dealLockCell(isLock,cells){
+        graph.setCellStyles(mxConstants.STYLE_MOVABLE, isLock,cells);
+        graph.setCellStyles(mxConstants.STYLE_RESIZABLE, isLock, cells);
+        graph.setCellStyles(mxConstants.STYLE_ROTATABLE, isLock, cells);
+        graph.setCellStyles(mxConstants.STYLE_DELETABLE, isLock, cells);
+        graph.setCellStyles(mxConstants.STYLE_EDITABLE, isLock, cells);
+        graph.setCellStyles('connectable', isLock, cells);
+    }
+    function lockCell(isLock){
+        graph.getModel().beginUpdate();
+        let cells = graph.getSelectionCells();
+        for(let i=0;i<cells.length;i++){
+            if (cells[i].children && cells[i].children.length){
+                dealLockCell(isLock, cells[i].children)
+            }
+        }
+        dealLockCell(isLock)
+        graph.getModel().endUpdate();
+    }
     this.addAction('delete', function(evt)
     {
         deleteCells(evt != null && mxEvent.isShiftDown(evt));
@@ -546,24 +565,10 @@ Actions.prototype.init = function()
     this.addAction('selectAll', function() { graph.selectAll(null, true); }, null, null, Editor.ctrlKey + '+A');
     this.addAction('selectNone', function() { graph.clearSelection(); }, null, null, Editor.ctrlKey + '+Shift+A');
     this.addAction('lock',()=>{
-        graph.getModel().beginUpdate();
-        graph.setCellStyles(mxConstants.STYLE_MOVABLE, 0);
-        graph.setCellStyles(mxConstants.STYLE_RESIZABLE, 0);
-        graph.setCellStyles(mxConstants.STYLE_ROTATABLE, 0);
-        graph.setCellStyles(mxConstants.STYLE_DELETABLE, 0);
-        graph.setCellStyles(mxConstants.STYLE_EDITABLE, 0);
-        graph.setCellStyles('connectable', 0);
-        graph.getModel().endUpdate();
+        lockCell(0)
     },null, null, Editor.ctrlKey + '+L');
     this.addAction('unlock', () => {
-        graph.getModel().beginUpdate();
-        graph.setCellStyles(mxConstants.STYLE_MOVABLE, 1);
-        graph.setCellStyles(mxConstants.STYLE_RESIZABLE, 1);
-        graph.setCellStyles(mxConstants.STYLE_ROTATABLE, 1);
-        graph.setCellStyles(mxConstants.STYLE_DELETABLE, 1);
-        graph.setCellStyles(mxConstants.STYLE_EDITABLE, 1);
-        graph.setCellStyles('connectable', 1);
-        graph.getModel().endUpdate();
+        lockCell(1)
     }, null, null, Editor.ctrlKey + '+Shift+L');
     this.addAction('lockUnlock', function()
     {
