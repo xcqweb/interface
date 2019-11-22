@@ -12,9 +12,9 @@ export default {
                         this.$_showingEditMessage = false;
                     }, 1.5 * 1000);
                 }
-                return true;
+                return false;
             }
-            return false;
+            return true;
         },
         
     },

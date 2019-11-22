@@ -1,6 +1,7 @@
 <template>
-  <modal
+  <Modal
     v-model="visible"
+    class="custom-modal"
     :title="$t('tooltips')"
     :width="460"
     :mask-closable="false"
@@ -28,7 +29,7 @@
         {{ $t('confirm') }}
       </Button>
     </div>
-  </modal>
+  </Modal>
 </template>
 
 <script>

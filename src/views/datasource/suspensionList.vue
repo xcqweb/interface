@@ -39,7 +39,7 @@ export default{
     },
     methods: {
         clickHandle(id) {
-            if (!this.modelEditing) {
+            if (this.modelEditing) {
                 Message.warning(this.$t(alertTip))
                 return false
             }
