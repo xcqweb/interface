@@ -28,13 +28,13 @@
 <script>
 import MPage from './m-page'
 import MDataS from './m-data-source'
-const alertTip = 'dataSource.haveUnsavedModels'
+import editingModel from './data-source/js/editing-model'
 import VueEvent from '../services/VueEvent.js'
-import {Message} from 'iview'
 export default {
     components:{
         MPage,MDataS
     },
+    mixins: [editingModel],
     data() {
         return{
             tab:1,
@@ -43,21 +43,9 @@ export default {
             tabShow: true
         }
     },
-    computed:{
-        modelEditing() {
-            return this.$store.state.main.modelEditing
-        }
-    },
-    created() {
-        
-    },
-    mounted() {
-        
-    },
     methods: {
         changeTab(index) {
-            if (!this.modelEditing && index === 1) {
-                Message.warning(this.$t(alertTip))
+            if (!this.canGoOn() && index === 1) {
                 return false
             }
             this.tab = index

@@ -17,6 +17,7 @@ export default {
     watch: {
         value(val) {
             this.showForm = val;
+            this.$store.commit('modelEditing', val);
         },
         showForm(val) {
             this.$emit('input', val);

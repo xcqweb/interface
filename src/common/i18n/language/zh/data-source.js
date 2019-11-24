@@ -22,7 +22,7 @@ export default {
     remarkPlaceholder: '描述内容',
     rule: '条件',
     addRule: '添加条件',
-    haveUnsavedModel: '当前模型正在编辑，请先保存',
+    haveUnsavedModels: '当前模型正在编辑，请先保存',
     haveNotSelectedDevice: '你未选择设备类型',
     confirmToDeleteModel: '确定要删除模型“{name}”吗？',
     confirmToCancelDeleteModel : '此模型还未保存，取消将会删除该新建模型？',

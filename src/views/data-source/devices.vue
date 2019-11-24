@@ -1,7 +1,7 @@
 <template>
   <Modal
     v-model="visible"
-    class="devices-modal"
+    class="devices-modal custom-modal"
     :title="$t('importDataSource')"
     :width="720"
     :mask-closable="false"

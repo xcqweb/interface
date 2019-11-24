@@ -80,6 +80,7 @@
 import {Input, Button, Message} from 'iview';
 import DataColumn from './data-column'
 import ModelRule from './model-rule'
+import SelectParams from './select-params'
 import columnCommon from './js/column-common'
 import modelCommon from './js/model-common'
 
@@ -89,9 +90,10 @@ export default {
         Button,
         DataColumn,
         ModelRule,
-        SelectParams: (resolve) => {
-            return require(['./select-params'], resolve);
-        },
+        SelectParams,
+        // SelectParams: (resolve) => {
+        //     return require(['./select-params'], resolve);
+        // },
     },
     mixins: [columnCommon, modelCommon],
     props: {

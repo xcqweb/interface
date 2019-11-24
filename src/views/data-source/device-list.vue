@@ -26,10 +26,5 @@ import deviceCommon from './js/device-common'
 
 export default {
     mixins: [deviceCommon],
-    watch: {
-        data() {
-            this.activeIndex = 0;
-        },
-    }
 };
 </script>
