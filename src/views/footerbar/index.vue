@@ -179,7 +179,6 @@ import VueEvent from '../../services/VueEvent.js'
 import {sureDialog} from '../../services/Utils'
 const allShapes = ['image','userimage','tableCell','rectangle','ellipse','light','progress','lineChart','gaugeChart','tableBox'] //可以绑定数据的控件
 const supportDataShow = ['rectangle','ellipse','tableCell','progress','lineChart', 'gaugeChart']// 支持显示参数
-let deviceTypeId = null
 export default {
     components:{
         Tabs,
@@ -387,7 +386,6 @@ export default {
             let startBindData = this.getCellModelInfo('bindData')
             if (startBindData && startBindData.dataSource) {
                 let deviceNameChild = startBindData.dataSource.deviceNameChild || []
-                deviceTypeId = startBindData.dataSource.deviceTypeChild ? startBindData.dataSource.deviceTypeChild.id : '' //拿到deviceTypeId暂存全局
                 this.deviceModelId  = startBindData.dataSource.deviceModel.id
                 this.dataSourceList = []
                 deviceNameChild.forEach((item) => {
@@ -404,10 +402,10 @@ export default {
         initModelList() {
             //模型列表
             this.modelVals.splice(0)
-            if(deviceTypeId) {
+            if(this.deviceModelId) {
                 let objData = {
                     studioId: sessionStorage.getItem("applyId"),
-                    deviceTypeId:deviceTypeId
+                    deviceModelId:this.deviceModelId
                 }
                 this.requestUtil.post(this.urls.getModelList.url, objData).then((res) => {
                     if(res.returnObj) {

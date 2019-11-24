@@ -263,10 +263,10 @@ class PreviewPage {
             this.gePreview.style.width = contentWidth + 'px'
             this.gePreview.style.height = contentHeight + 'px'
             if (pageStyle && pageStyle.backgroundUrl) {
-                this.gePreview.style.backgroundColor = viewBackground
                 pageStyle.backgroundUrl = pageStyle.backgroundUrl.replace(/getechFileSystem\//, fileSystem)
                 this.gePreview.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
                 this.gePreview.style.backgroundSize = "100% 100%"
+                this.gePreview.style.backgroundColor = viewBackground
             }else{
                 this.gePreview.style.background = viewBackground
             }

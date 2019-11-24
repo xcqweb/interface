@@ -60,16 +60,10 @@ export default{
     },
     data() {
         return {
-            // dataType 0: 数据源 1: 数据模型
+            // 0: 数据源 1: 数据模型
             dataType: 0,
             deviceDataChange: false,
             devicesVisible: false,
-            dataSourceList: [
-                {
-                    name: 'iotPlatform',
-                    id: '1233'
-                }
-            ],
         }
     },
     computed:{
@@ -85,11 +79,6 @@ export default{
         },
         triggerCancel() {
             this.devicesVisible = false
-        },
-        getDeviceType(type) { // 两个地方去更新
-            // type 1 : 初始进来 2 点击导入数据源进入
-            // this.$refs.datasourceright.initData(type)
-            console.log(type)
         },
         handleTabClick(index) {
             this.dataType = index;

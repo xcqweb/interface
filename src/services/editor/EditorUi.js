@@ -2713,8 +2713,6 @@ EditorUi.prototype.updateActionStates = function()
 {
     var graph = this.editor.graph;
     var vertexSelected = false;
-    var edgeSelected = false;
-
     var cells = graph.getSelectionCells();
     // 选择全部的控件的shapeName总和
     var shapeNameStr = '';

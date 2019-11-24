@@ -62,7 +62,7 @@ export default {
     beeline: '直线',
     rectangle: '矩形',
     circle: '圆形',
-    ellipse: '椭圆',
+    ellipse: '圆形',
     button: '按钮',
     menu: '菜单',
     table: '表格',

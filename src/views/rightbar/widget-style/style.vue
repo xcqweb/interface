@@ -1019,12 +1019,10 @@ export default {
         changeFont(d,e) {
             this.fontText = d
             let graph = this.myEditorUi.editor.graph
-            graph.getModel().beginUpdate()
             let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells()
             let key = mxConstants.STYLE_FONTSIZE
             graph.setCellStyles(key,d, ss)
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [key],'values', [+d], 'cells', ss))
-            graph.getModel().endUpdate()
             this.showFont = false
             e && e.stopPropagation()
         },
@@ -1040,7 +1038,6 @@ export default {
         setBold() {
             this.isSetBold = !this.isSetBold
             let graph = this.myEditorUi.editor.graph
-            graph.getModel().beginUpdate()
             let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells();
             let bold = 0
             if(this.isSetBold) {
@@ -1048,7 +1045,6 @@ export default {
             }
             graph.setCellStyles('fontStyle', bold, ss);
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontStyle'],'values', [bold], 'cells',ss))
-            graph.getModel().endUpdate()
         },
         hideFont() {
             this.showFont = false
@@ -1061,11 +1057,9 @@ export default {
                     this.fontColor = color
                 }
                 let graph = this.myEditorUi.editor.graph
-                graph.getModel().beginUpdate()
                 let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells()
                 graph.setCellStyles('fontColor', color, ss);
                 this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontColor'],'values', [color], 'cells', ss))
-                graph.getModel().endUpdate()
             });
         },
         pickBgColor() {
@@ -1076,10 +1070,8 @@ export default {
                     this.bgColor = color
                 }
                 let graph = this.myEditorUi.editor.graph
-                graph.getModel().beginUpdate()
                 graph.setCellStyles('fillColor', color, graph.getSelectionCells());
                 this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fillColor'],'values', [color], 'cells', graph.getSelectionCells()))
-                graph.getModel().endUpdate
             });
         },
         pickBorderColor() {
@@ -1090,14 +1082,12 @@ export default {
                     this.borderColor = color
                 }
                 let graph = this.myEditorUi.editor.graph
-                graph.getModel().beginUpdate()
                 let key = 'strokeColor'
                 if(this.shapeName.includes('image')) {
                     key = 'imageBorder'
                 }
                 graph.setCellStyles(key, color, graph.getSelectionCells());
                 this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [key],'values', [color], 'cells', graph.getSelectionCells()))
-                graph.getModel().endUpdate()
             });
         },
         hideBorderLine() {
@@ -1106,7 +1096,6 @@ export default {
         changeBorderLine(d,e) {
             this.borderLineCls = d
             let graph = this.myEditorUi.editor.graph
-            graph.getModel().beginUpdate()
             let keys = [mxConstants.STYLE_DASHED],values = [null]
             if(d.includes('dash')) {
                 keys = [mxConstants.STYLE_DASHED]
@@ -1116,17 +1105,14 @@ export default {
                 graph.setCellStyles(keys[i], values[i]);
             }
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', keys,'values', values, 'cells', graph.getSelectionCells()))
-            graph.getModel().endUpdate()
             this.showBorderLine = false
             e.stopPropagation()
         },
         changeBorderLineBold(d,e) {
             this.borderLineBoldText = d
             let graph = this.myEditorUi.editor.graph
-            graph.getModel().beginUpdate()
             graph.setCellStyles('strokeWidth', d, graph.getSelectionCells());
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['strokeWidth'],'values', [d], 'cells', graph.getSelectionCells()))
-            graph.getModel().endUpdate()
             this.showBorderLineBold = false
             e && e.stopPropagation()
         },
@@ -1140,7 +1126,6 @@ export default {
             this.arrowCls = d
             let keys = [],values = [],keys2 = [],values2 = []
             let graph = this.myEditorUi.editor.graph
-            graph.getModel().beginUpdate()
             if(d.includes('left')) {
                 keys = [mxConstants.STYLE_STARTARROW, 'startFill']
                 values = [mxConstants.ARROW_CLASSIC, 1]
@@ -1171,7 +1156,6 @@ export default {
                 graph.setCellStyles(keys[i], values[i]);
             }
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys',keys,'values', values, 'cells', graph.getSelectionCells()));
-            graph.getModel().endUpdate()
             this.showArrowDialog = false
             e.stopPropagation()
         },
