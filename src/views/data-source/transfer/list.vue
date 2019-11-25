@@ -43,7 +43,7 @@
             :value="isCheck(item)"
             :disabled="item.disabled"
           />
-          <span>{{ showLabel(item) }}</span>
+          <span :title="showLabel(item)">{{ showLabel(item) }}</span>
         </li>
         <li :class="prefixCls + '-content-not-found'">
           {{ notFoundText }}
