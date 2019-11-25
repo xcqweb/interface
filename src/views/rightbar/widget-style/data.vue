@@ -51,7 +51,7 @@
     <div class="data-sources-center">
       <div class="devicename-input-wrap">
         <Input
-          v-model="dName"
+          v-model.trim="dName"
           size="small"
           placeholder="搜索设备名称"
         />
@@ -69,6 +69,7 @@
           >
             <Checkbox
               v-for="(item) in deviceData"
+              v-show="!dName || item.deviceName.includes(dName)"
               :key="item.deviceId"
               :label="item.deviceId"
               size="small"
@@ -131,6 +132,11 @@ export default{
             checkModelArr:[],
             bindData:null,
         }
+    },
+    watch: {
+        'model.deviceTypeId'() {
+          this.dName = '';
+        },
     },
     mounted() {
         this.init()
