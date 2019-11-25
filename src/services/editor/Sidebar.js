@@ -1653,7 +1653,6 @@ Sidebar.prototype.addUserPalette = function (expand) {
         })
         axios.all(requests).then(res=>{
             res.forEach(item=>{
-                console.log(item)
                 let array = []
                 item.materialList.forEach(d=>{
                     array.push(this.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl}`, d.picWidth ? parseInt(d.picWidth / 1.5) : 300, d.picHeight ? parseInt(d.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
