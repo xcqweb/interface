@@ -2,7 +2,7 @@
   <div class="materialroom">
     <Modal
       v-model="showmarerial"
-      width="720px"
+      width="70vw"
       class="materialroom-model"
       :title="$t(materialAlertName)"
       :mask-closable="false"
@@ -22,9 +22,11 @@
               <div class="assembly-left materialtabs-left">
                 <div class="assembly-seach-wrapper">
                   <input 
-                    type="text" 
-                    :placeholder="$t('materialRoom.searchShapeName')" 
+                    v-model="keyWidget" 
+                    type="text"
+                    :placeholder="$t('materialRoom.searchShapeName')"
                     class="assembly-seach-icon"
+                    @input="searchWidget"
                   >
                   <div
                     v-if="leftshowIf"
@@ -44,14 +46,29 @@
                           v-for="(item,index) in assemblyArrayName"
                           :key="index"
                           class="assembly-icon"
-                          :class="index === isactive ? 'left-side-listactive' : ''"
-                          @click="selectAssemblyList($event,index, item.materialLibraryId)"
+                          :class="{'left-side-listactive':index === isActive,'hover': popUpType==1&&isShowPopMenu&&index==hoverIndex}"
+                          @click="selectAssemblyList(index, item.materialLibraryId)"
+                          @dblclick="dblRename(index)"
                         >
-                          <span class="left-assembly-left">{{ $t(item.name) }}</span>
+                          <span
+                            v-if="!item.isEdit"
+                            class="left-assembly-left"
+                          >
+                            {{ $t(item.name) }}
+                          </span>
+                          <input
+                            v-if="item.isEdit"
+                            v-model="item.model"
+                            v-focus
+                            class="editPageInput"
+                            @blur="saveLayoutName(index)"
+                          >
                           <span 
-                            v-if="index >= 3" 
+                            v-if="index >= 3 && !item.isEdit" 
                             class="right-spots" 
-                            @click="menuPopup(index)"
+                            @mousemove="menuPopupShow($event,index)"
+                            @mouseenter="menuPopupShow($event,index)"
+                            @mouseout="menuMouseoutDeal($event)"
                           />
                         </li>
                       </ul>
@@ -64,97 +81,49 @@
                   v-if="arrListTables.length"
                   class="assembly-right-wrapper"
                 >
-                  <template v-if="!ifselectFrom">
-                    <template v-if="+isactive >= 2">
-                      <li 
-                        v-for="(item, index) in arrListTables"
-                        :key="item.materialId"
-                        class="user-uploadimage"
-                      >
-                        <div>
-                          <span :style="'background:url(' + (item.image) + ') no-repeat center center;background-size:100px 60px;'" />
-                          <label
-                            class="right-spots-assemly"
-                            @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.materialId)" 
-                          />
-                        </div>
-                        <span
-                          style="display:block;width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
-                          :class="index === isactive3 ? 'right-list-listactive' : ''"
-                        >
-                          <span
-                            class="left-assembly-left"
-                          >
-                            {{ $t(item.name) }}
-                          </span>
-                          <span class="right-spots" />
-                        </span>
-                      </li>
-                    </template>
-                    <template v-else>
-                      <li
-                        v-for="(item) in arrListTables"
-                        :key="item.materialId"
-                      >
-                        <div>
-                          <span 
-                            class="right-background-size" 
-                            :style="'background:url(' + (DIR_ + item.image) + ') no-repeat center center;'" 
-                          />
-                          <label class="right-spots-assemly" />
-                        </div>
-                        <span>
-                          {{ $t(item.name) }}
-                        </span>
-                      </li>
-                    </template>
-                  </template>
-                  <template v-else>
-                    <template 
-                      v-if="newArr.length"
+                  <li 
+                    v-for="(item, index) in arrListTables"
+                    :key="item.materialId || index"
+                    class="user-uploadimage"
+                  >
+                    <div>
+                      <span
+                        v-if="isActive>=2"
+                        :style="'background:url(' + (item.image) + ') no-repeat center center;'"
+                        @mouseenter="menuPopupHide"
+                      />
+                      <span
+                        v-else 
+                        :style="'background:url(' + (DIR_+item.image) + ') no-repeat center center;'"
+                      />
+                      <label
+                        v-if="isActive>=2"
+                        class="right-spots-assemly"
+                        @click="renameWidget($event,index)"
+                      />
+                    </div>
+                    <span
+                      style="display:block;width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center;"
                     >
-                      <li 
-                        v-for="(item, index) in newArr"
-                        :key="index"
+                      <span
+                        v-if="!item.isEdit"
+                        class="left-assembly-left"
+                        :title="item.name"
+                        @mouseenter="menuPopupHide"
+                        @dblclick="dblRenameWidget(index)"
                       >
-                        <div>
-                          <span :style="'background:url(' + (DIR_ + item.image) + ') no-repeat center center;background-size:60px 60px;'" />
-                          <label class="right-spots-assemly" />
-                        </div>
-                        <span>
-                          {{ item.name }}
-                        </span>
-                      </li>
-                    </template>
-                    <template 
-                      v-if="newArr2.length"
-                    >
-                      <li 
-                        v-for="(item, index) in newArr2"
-                        :key="index"
-                        class="user-uploadimage"
+                        {{ $t(item.name) }}
+                      </span>
+                      <input
+                        v-if="item.isEdit"
+                        v-model="item.model"
+                        v-focus
+                        class="editPageInput"
+                        style="width:100%;"
+                        @blur="saveWidgetName(index)"
                       >
-                        <div>
-                          <span :style="'background:url(' + (item.image) + ') no-repeat center center;background-size:100px 60px;'" />
-                          <label
-                            class="right-spots-assemly"
-                            @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.materialId)" 
-                          />
-                        </div>
-                        <span
-                          style="display:block;width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
-                          :class="index === isactive3 ? 'right-list-listactive' : ''"
-                        >
-                          <span
-                            class="left-assembly-left"
-                          >
-                            {{ item.name }}
-                          </span>
-                          <span class="right-spots" />
-                        </span>
-                      </li>
-                    </template>
-                  </template>
+                    </span>
+                  </li>
                 </ul>
                 <div
                   v-else
@@ -179,7 +148,7 @@
                     v-for="(item,index) in materialArrayName"
                     :key="index"
                     class="material-icon left-page-icon"
-                    :class="index === isactive2 ? 'left-side-listactive' : ''"
+                    :class="index === isActive2 ? 'left-side-listactive' : ''"
                     @click="selectMaterialList(index)"
                   > 
                     {{ $t(item) }}
@@ -187,35 +156,44 @@
                 </ul>
               </div>
               <div class="material-right materialtabs-right">
-                <template
-                  v-if="isactive2 === 0"
+                <ul
+                  v-if="materials.length"
+                  class="material-right-wrapper"
                 >
-                  <ul
-                    v-if="pageMaterial.length"
-                    class="material-right-wrapper"
+                  <li
+                    v-for="(item,index) in materials"
+                    :key="item.pageTemplateId"
+                    class="user-uploadimage"
                   >
-                    <li
-                      v-for="(item, index) in pageMaterial"
-                      :key="item.pageTemplateId"
-                      class="user-uploadimage"
-                    >
-                      <div>
-                        <!--eslint-disable-->
+                    <div>
+                      <!--eslint-disable-->
                         <span
                           style="display:flex;justify-content:center;align-items:center"
+                          @mouseenter="menuPopupHide"
                           v-html="item.picUrl"
                         />
                         <label 
                           class="right-spots-assemly" 
-                          @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.pageTemplateId)"
+                           @click="renameTemplate($event,index)"
                         />
                       </div>
                       <span
-                        style="width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
-                        :class="index === isactive3 ? 'right-list-listactive' : ''"
+                        v-if="!item.isEdit"
+                        @dblclick="dblRenameTemplate(index)"
+                        @mouseenter="menuPopupHide"
+                        :title="item.name"
+                        style="width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center;cursor:pointer;"
                       >
                         {{ item.name }}
                       </span>
+                       <input
+                        v-if="item.isEdit"
+                        v-model="item.model"
+                        v-focus
+                        class="editPageInput"
+                        style="width:100%;"
+                        @blur="saveTemplateName(index)"
+                      >
                     </li>
                   </ul>
                   <div
@@ -226,54 +204,13 @@
                       {{ $t(nodata) }}
                     </span>
                   </div>
-                </template>
-                <template
-                  v-if="isactive2 === 1"
-                >
-                  <ul
-                    v-if="alertMaterial.length"
-                    class="material-right-wrapper"
-                  >
-                    <li
-                      v-for="(item, index) in alertMaterial"
-                      :key="item.pageTemplateId"
-                      class="user-uploadimage"
-                    >
-                      <div>
-                        <!--eslint-disable-->
-                        <span 
-                          style="display:flex;justify-content:center;align-items:center"
-                          v-html="item.picUrl"
-                        />
-                        <label 
-                          class="right-spots-assemly" 
-                          @click="MiddassemblyListHandle($event,POSITION_RIGHT,index, item.pageTemplateId)"
-                        />
-                      </div>
-                      <span
-                        style="width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center"
-                        :class="index === isactive3 ? 'right-list-listactive' : ''"
-                      >
-                        {{ item.name }}
-                      </span>
-                    </li>
-                  </ul>
-                  <div 
-                    v-else
-                    class="right-nodata"
-                  >
-                    <span>
-                      {{ $t(nodata) }}
-                    </span>
-                  </div>
-                </template>
               </div>
             </div>
           </TabPane>
         </Tabs>
       </div>
       <div class="materialtabs-footer">
-        <template v-if="isactive >= 2 && tabNumeber === 0">
+        <template v-if="isActive >= 2 && tabNumber === 0">
           <span>
             <Upload 
               action="api/iot-cds/sources/material"
@@ -293,27 +230,39 @@
           </span>
         </template>
       </div>
+       <ul
+        v-if="isShowPopMenu"
+        :style="popMenuStyle"
+        @mouseleave="menuPopupHide"
+        class="materialModelMenu"
+      >
+        <li class="pop-menu rename" @click="popReanme">
+          重命名
+        </li>
+        <li class="pop-menu delete" @click="popDel">
+          删除
+        </li>
+      </ul>
     </Modal>
   </div>
 </template>
 <script>
 import {Tabs,TabPane,Modal, Upload, Message, Button} from 'iview'
-import {sureDialog, getCookie,setCookie} from '../../services/Utils'
-const ROOT_LEN = 2 // 新增组件时计算长度使用
+import {getCookie,setCookie,sureDialog} from '../../services/Utils'
+const ROOT_LEN = 1 // 新增组件时计算长度使用
 export default {
     components: {
         Tabs,
         TabPane,
         Modal,
         Upload,
-        Button
+        Button,
     },
     data() {
         return {
             materialAlertName: 'materialLibrary',
             showmarerial: true,
-            madeltext: ['cancel', 'uploadShape'],
-            showOktext: true,
+            madeltext: ['cancel','上传组件'],
             assemblyArrayName: [
                 {
                     name: 'generalShape',
@@ -322,10 +271,6 @@ export default {
                 {
                     name: 'chartShape',
                     materialLibraryId: '2'
-                },
-                {
-                    name: 'layoutShape',
-                    materialLibraryId: 'e76e6a1b18e493472bc869d835811711'
                 }
             ],
             materialArrayName: ['pageTemplate', 'popupTemplate'],
@@ -352,35 +297,22 @@ export default {
                 {image:'gaugeChart.svg',name :'dashboard'}
             ],
             arrListTables: [],
-            emptyArray: [],
-            isactive: 0,
-            isactive2: 0,
-            isactive3: null,
-            tabNumeber: 0,
-            renderIndex: 0,
-            modelleftmenus: {
-                'rename': 'rename',
-                'delete': 'delete'
-            },
-            modelrightmenus: {
-                'rename': 'rename',
-                'delete': 'delete'
-            },
-            POSITION_LEFT: 'left',
-            POSITION_RIGHT: 'right',
-            ismouseenter: false,
-            allMaterial: [],
-            pageMaterial: [],
-            alertMaterial: [],
+            arrListTableIndex:-1,
+            isActive: 0,
+            isActive2: -1,
+            tabNumber: 0,
+            materials: [],
             nodata: 'noData',
             leftshowIf: true, // 搜索素材 展示左侧素材库列表
-            ifselectFrom: false, // 是否来自搜索
-            userMaterialAll: [],
-            newArr: [],
-            newArr2: [],
             headers:{
                 'Authorization': `Bearer ${getCookie('token')}`
-            }
+            },
+            isShowPopMenu:false,
+            popUpType:1,
+            popMenuStyle:{left:'126px',top:0},
+            hoverIndex:-1,
+            keyWidget:"",
+            templateIndex:0,
         }
     },
     created() {
@@ -396,91 +328,222 @@ export default {
                 data.forEach((item) => {
                     let obj = {
                         name: item.libraryName,
-                        materialLibraryId: item.materialLibraryId
+                        materialLibraryId: item.materialLibraryId,
+                        isEdit:false,
+                        model:item.libraryName,
                     }
                     this.assemblyArrayName.push(obj)
                 })
             })
-            let oInp = document.querySelector('.assembly-seach-icon')
-            oInp.oninput = this.debounce(this.selectMaterial, 1000)
+        },
+        searchWidget() {
+
+        },
+        menuPopupShow(evt,index) {
+            this.popUpType = 1 //组件库
+            this.hoverIndex = index
+            this.isShowPopMenu = true
+            let el = document.querySelector(".left-max-height")
+            this.popMenuStyle.top = `${evt.target.offsetTop + 35 - el.scrollTop}px`
+        },
+        menuPopupHide() {
+            this.isShowPopMenu = false
+        },
+        menuMouseoutDeal(evt) {
+            let target = evt.toElement || evt.relatedTarget
+            if(target.className != 'materialModelMenu' && !target.className.includes('pop-menu')) {
+                this.menuPopupHide()
+            }
+        },
+        popReanme() {
+            if(this.popUpType == 1) {
+                this.$set(this.assemblyArrayName[this.hoverIndex],'isEdit',true)
+            }else if(this.popUpType == 2) {
+                this.$set(this.arrListTables[this.arrListTableIndex],'isEdit',true)
+            }else if(this.popUpType == 3) {
+                this.$set(this.materials[this.templateIndex],'isEdit',true)
+            }
+            this.menuPopupHide()
+        },
+        popDel() {
+            if(this.popUpType == 1) {
+                let materialLibraryId = this.assemblyArrayName[this.hoverIndex].materialLibraryId
+                sureDialog(this.myEditorUi,`确定要删除组件库-${this.assemblyArrayName[this.hoverIndex].model}`,()=>{
+                    this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then(res=>{
+                        if(res.code == 0) {
+                            this.assemblyArrayName.splice(this.hoverIndex,1)
+                            Message.info('删除成功')
+                        }
+                    })
+                })
+            }else if(this.popUpType == 2 ) {
+                let materialId = this.arrListTables[this.arrListTableIndex].materialId
+                sureDialog(this.myEditorUi,`确定要删除组件-${this.arrListTables[this.arrListTableIndex].model}`,()=>{
+                    this.requestUtil.delete(this.urls.materialRightList.url + `/${materialId}`).then(res=>{
+                        if(res.code == 0) {
+                            this.arrListTables.splice(this.arrListTableIndex,1)
+                            Message.info('删除成功')
+                        }
+                    })
+                })
+            }else if(this.popUpType == 3 ) {
+                let pageTemplateId = this.materials[this.templateIndex].pageTemplateId
+                sureDialog(this.myEditorUi,`确定要删除模板-${this.materials[this.templateIndex].model}`,()=>{
+                    this.requestUtil.delete(this.urls.addTemplate.url + `/${pageTemplateId}`).then(res=>{
+                        if(res.code == 0) {
+                            this.materials.splice(this.templateIndex,1)
+                            Message.info('删除成功')
+                        }
+                    })
+                })
+            }
+        },
+        saveLayoutName(index) {
+            if(this.assemblyArrayName[index].name === this.assemblyArrayName[index].model) {
+                this.$set(this.assemblyArrayName[index],'isEdit',false)
+                return
+            }
+            
+            let data = {
+                materialLibraryId:this.assemblyArrayName[index].materialLibraryId,
+                libraryName:this.assemblyArrayName[index].model
+            }
+            this.requestUtil.put(this.urls.materialList.url,data).then(res=>{
+                if(res.libraryName) {
+                    this.$set(this.assemblyArrayName[index],'name',res.libraryName)
+                    Message.info('保存成功')
+                    this.$set(this.assemblyArrayName[index],'isEdit',false)//会触发blur事件
+                }
+            })
+        },
+        dblRename(index) {
+            if(index > 2) {
+                this.$set(this.assemblyArrayName[index],'isEdit',true)
+            }
         },
         cancel() {
             this.$emit('triggerCancel')
-
         },
-        selectAssemblyList(evt,index, materialLibraryId) {
-            let target = null
-            if (!evt) {
-                target = 'auto'
-            } else {
-                target = evt.target.parentElement.className
+        renameWidget(evt,index) {
+            this.arrListTableIndex = index
+            this.popUpType = 2 //右侧组件
+            this.isShowPopMenu = true
+            let el = document.querySelector(".assembly-right.materialtabs-right")
+            let con = evt.target.parentElement
+            this.popMenuStyle.left = `${evt.target.offsetLeft + con.offsetLeft + 30}px`
+            this.popMenuStyle.top = `${evt.target.offsetTop + con.offsetTop - el.scrollTop + 44}px`
+        },
+        saveWidgetName(index) {
+            if(this.arrListTables[index].name === this.arrListTables[index].model) {
+                this.$set(this.arrListTables[index],'isEdit',false)
+                return
             }
-            if (!target.includes('left-side-listactive') || target === 'auto') {
-                this.emptyArray = []
-                if (index >= 2) {
-                    // 获取组件库id 上传组件时候要用
-                    this.uploadData = {
-                        materialLibraryId: materialLibraryId
-                    }
-                    this.requestUtil.get(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
-                        let data = res.materialList
-                        data.forEach((item) => {
-                            let obj = {
-                                name: item.descript,
-                                image: item.picUrl,
-                                materialId: item.materialId
-                            }
-                            this.emptyArray.push(obj)
-                        })
+            let data = {
+                materialId:this.arrListTables[index].materialId,
+                descript:this.arrListTables[index].model
+            }
+            this.requestUtil.put(this.urls.materialRightList.url,data).then(res=>{
+                if(res.descript) {
+                    this.$set(this.arrListTables[index],'name',res.descript)
+                    Message.info('修改成功')
+                    this.$set(this.arrListTables[index],'isEdit',false)//会触发blur事件
+                }
+            })
+        },
+        dblRenameWidget(index) {
+            this.popUpType = 2 //右侧组件
+            this.$set(this.arrListTables[index],'isEdit',true)
+        },
+        renameTemplate(evt,index) {
+            this.templateIndex = index
+            this.popUpType = 3 //右侧模板
+            this.isShowPopMenu = true
+            let el = document.querySelector(".material-right-wrapper")
+            let con = evt.target.parentElement
+            this.popMenuStyle.left = `${evt.target.offsetLeft + con.offsetLeft + 30}px`
+            this.popMenuStyle.top = `${evt.target.offsetTop + con.offsetTop - el.scrollTop + 44}px`
+        },
+        saveTemplateName(index) {
+            if(this.materials[index].name === this.materials[index].model) {
+                this.$set(this.materials[index],'isEdit',false)
+                return
+            }
+            let data = {
+                pageTemplateId:this.materials[index].pageTemplateId,
+                name:this.materials[index].model
+            }
+            this.requestUtil.put(this.urls.addTemplate.url,data).then(res=>{
+                if(res.name) {
+                    this.$set(this.materials[index],'name',res.name)
+                    Message.info('修改成功')
+                    this.$set(this.materials[index],'isEdit',false)//会触发blur事件
+                }
+            })
+        },
+        dblRenameTemplate(index) {
+            this.popUpType = 3 //右侧模板
+            this.$set(this.materials[index],'isEdit',true)
+        },
+        selectAssemblyList(index, materialLibraryId) {
+            if(index == this.isActive) {
+                return
+            }
+            this.isActive = index
+            if (index >= 2) {
+                this.arrListTables = []
+                this.uploadData = {
+                    materialLibraryId: materialLibraryId
+                }
+                this.requestUtil.get(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
+                    let data = res.materialList
+                    data.forEach((item) => {
+                        let obj = {
+                            name: item.descript,
+                            image: item.picUrl,
+                            isEdit:false,
+                            model:item.descript,
+                            materialId: item.materialId
+                        }
+                        this.arrListTables.push(obj)
                     })
+                })
+            }else{
+                if(index === 0) {
+                    this.arrListTables = this.baseAssembly
+                }else{
+                    this.arrListTables = this.tablesAssembly
                 }
             }
-            this.arrListTables = index === 0 ? this.baseAssembly : (index === 1 ? this.tablesAssembly : this.emptyArray)
-            this.isactive = index
-        },
-        menuPopup(index) {
-            console.log(index)
-            this.assemblyListHandle(event, this.POSITION_LEFT,index)
-            $('.left-side-listactive .right-spots').css({'pointer-events': 'none'})
         },
         selectMaterialList(index) {
-            this.isactive2 = index
-            this.getSelectMaterial(this.isactive2)
-        },
-        getSelectMaterial(index) {
-            let data = ''
-            if (+index === 0) {
-                data = {
-                    type: 'normal'
-                }
-            } else if(+index === 1) {
-                data = {
-                    type: 'dialog'
-                }
+            if(index == this.isActive2) {
+                return
             }
-            if ((this.pageMaterial.length && +index === 0) || (this.alertMaterial.length && +index === 1)) {
-                return false
+            this.isActive2 = index
+            let data = {type:'normal'}
+            if(index == 1) {
+                data.type = 'dialog'
             }
+            this.materials = []
             this.requestUtil.get(this.urls.addTemplate.url,data).then((res) => {
                 let data = res.records || []
                 data.forEach((item) => {
                     let obj = {
                         picUrl: item.picUrl,
                         pageTemplateId: item.pageTemplateId,
-                        name: item.name
+                        name: item.name,
+                        isEdit:false,
+                        model:item.name,
+                        type:item.type,
                     }
-                    if (+index === 0) {
-                        this.pageMaterial.push(obj)
-                    } else if (+index === 1) {
-                        this.alertMaterial.push(obj)
-                    }
+                    this.materials.push(obj)
                 })
             })
         },
         tabsSwitch(type) {
-            this.tabNumeber = type
-            if(this.tabNumeber === 1) { // 默认是页面模版
-                this.getSelectMaterial(0)
+            this.tabNumber = type
+            if(this.tabNumber === 1) { // 默认是页面模版
+                this.selectMaterialList(0)
             }
         },
         addassemblyFn() {
@@ -493,55 +556,9 @@ export default {
                 libraryType: 1
             }
             this.requestUtil.post(this.urls.materialList.url, data).then((res) => {
-                this.assemblyArrayName.push({name: name,materialLibraryId: res.materialLibraryId})
-                this.selectAssemblyList('',num + ROOT_LEN,res.materialLibraryId)
+                this.assemblyArrayName.push({name: name,materialLibraryId: res.materialLibraryId,isEdit:true,model:name})
+                this.selectAssemblyList(num + ROOT_LEN,res.materialLibraryId)
             })
-        },
-        debounce(handle, deLay) {
-            var timer = null
-            // 触发 拿到组件
-            this.requestUtil.get(this.urls.materialRightList.url).then((res) => {
-                let data = res || []
-                data.forEach((item) => {
-                    let obj = {
-                        name: item.descript,
-                        image: item.picUrl,
-                        materialId: item.materialId
-                    }
-                    this.userMaterialAll.push(obj)
-                })
-            })
-            return function() {
-                clearTimeout(timer)
-                timer = setTimeout(() => {
-                    handle.call(this, this.value)
-                }, deLay);
-            }
-        },
-        selectMaterial(value) {
-            this.newArr = []
-            this.newArr2 = []
-            let basicArr = [...this.baseAssembly, ...this.tablesAssembly]
-            let userArr = this.userMaterialAll || []
-            if (value !== '') {
-                this.leftshowIf = false
-                this.ifselectFrom = true
-                basicArr.forEach(item => {
-                    if(item.name.includes(value.trim())) {
-                        this.newArr.push(item)
-                    }
-                })
-                userArr.forEach(item => {
-                    if(item.name.includes(value.trim())) {
-                        this.newArr2.push(item)
-                    }
-                })
-            } else {
-                this.newArr = []
-                this.newArr2 = []
-                this.leftshowIf = true
-                this.ifselectFrom = false
-            }
         },
         uploadSucc(res) {
             let addpicObj = {
@@ -549,8 +566,7 @@ export default {
                 name: res.descript,
                 materialId: res.materialId
             }
-            this.emptyArray.push(addpicObj)
-            this.arrListTables = this.emptyArray
+            this.arrListTables.push(addpicObj)
             Message.info(this.$t('uploadSuccessfully'))
         },
         uploadErr(res,file,fileList) {
@@ -568,9 +584,6 @@ export default {
                 })
                 return
             }
-            setTimeout ( () => {
-                Message.info(this.$t('uploadFailed'))
-            }, 500);
         },
         handleFormatError() {
             setTimeout ( () => {
@@ -582,242 +595,14 @@ export default {
                 Message.warning(this.$t('materialRoom.imageSizeRequirement'))
             }, 1000);
         },
-        mounseHandle() {
-            if(window.addEventListener) { // 对浏览器兼容的判断
-                return function(el, type, fn, capture) {
-                    el.addEventListener(type, fn, capture)
-                }
-            } else if(window.attachEvent) {
-                return function(el, type, fn, capture) {
-                    el.attachEvent(type, fn, capture)
-                }
-            }
-        },
-        MiddassemblyListHandle(evt,type,index,materialId) {
-            this.isactive3 = index
-            this.assemblyListHandle(evt,type,index,materialId)
-        },
-        assemblyListHandle(evt, type,index, materialId) {
-            evt.preventDefault();
-            evt.stopPropagation()
-            var menulist = document.createElement('ul')
-            if (document.querySelector('#materialModelMenu')) {
-                document.querySelector('#materialModelMenu').remove()
-            }
-            menulist.id = 'materialModelMenu';
-            for (var key in this.modelleftmenus) {
-                var menu = document.createElement('li')
-                menu.innerText = this.$t(this.modelleftmenus[key])
-                menu.className = key
-                menu.setAttribute('data-type', key)
-                menulist.appendChild(menu)
-            }
-            const wrapperElent = document.querySelector('.materialtabs')
-            wrapperElent.appendChild(menulist)
-            menulist.style.left = evt.clientX + 'px';
-            menulist.style.top = evt.clientY + 'px';
-            let newMousHandele = this.mounseHandle()
-            // 点击文档document 隐藏
-            this.documentClick(newMousHandele)
-            this.liClickHandle(newMousHandele ,menulist, type, index, materialId)
-        },
-        documentClick(fn) {
-            fn(document,'click', (evt) => {
-                if (evt.target.parentNode && evt.target.parentNode.id !== 'materialModelMenu' && evt.target.className !== 'right-spots') {
-                    this.hideMaterialModelMenu();
-                }
-            });
-        },
-        liClickHandle(fn, el, type,index, materialId) {
-            fn(el, 'click',(evt) => {
-                evt.stopPropagation()
-                let target = evt.target;
-                let actionType = target.getAttribute('data-type')
-                let element = ''
-                if (type === this.POSITION_RIGHT) {
-                    if (this.tabNumeber === 0) {
-                        element = document.querySelector('.assembly-right-wrapper .right-list-listactive')
-                    } else {
-                        element = document.querySelector('.material-right-wrapper .right-list-listactive')
-                    }
-                } else if (type === this.POSITION_LEFT) {
-                    element = document.querySelector('.assembly-list>li.left-side-listactive')
-                }
-                switch(actionType) {
-                    case 'rename':
-                        this.renameHandle(element,actionType,type,index,materialId)
-                        break;
-                    case 'delete':
-                        this.deleteHandle(element, actionType, type,index, materialId)
-                        break;
-                    default:
-                        break;
-                }
-            })
-        },
-        hideMaterialModelMenu() {
-            $('.left-side-listactive .right-spots').css({'pointer-events': 'auto'})
-            $('#materialModelMenu').hide()
-        },
-        /*
-          @tabNumeber 0组件库; 1模版库
-          @type left素材库列表 right右侧素材列表
-        */
-        renameHandle(ele, actionType, type,index, materialId) {
-            let editInput = document.createElement('input');
-            editInput.id = 'editPageInput'
-            let oldVal = ele.innerText
-            editInput.value = oldVal
-            ele.innerText = ''
-            ele.appendChild(editInput)
-            editInput.onfocus = function() {
-                this.select()
-            }
-            editInput.focus()
-            let saveFn = () => {
-                let name = editInput.value.trim()
-                document.body.removeEventListener('click', saveFn)
-                if (!name) {
-                    ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
-                    Message.warning(this.$t('materialRoom.pageNameCouldNotEmpty'))
-                } else if (name.length > 20) {
-                    ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
-                    Message.warning(this.$t('materialRoom.pageNameCouldNotExceed'));
-                } else {
-                    if (name !== oldVal) {
-                        if (this.tabNumeber === 0) {
-                            let data1 = {
-                                materialLibraryId:this.uploadData.materialLibraryId ? this.uploadData.materialLibraryId : '' ,
-                                libraryName: name,
-                            }
-                            let data2 = {
-                                materialId:materialId || '',
-                                descript: name,
-                            }
-                            if (type === 'left') {
-                                this.requestUtil.put(this.urls.materialList.url,data1).then((res) => {
-                                    if (res.libraryName) {
-                                        Message.info(this.$t('modifySuccessfully'))
-                                        ele.innerHTML = `<span class="left-assembly-left">${name}</span><span class="right-spots"></span>`
-                                    }
-                                }).catch(() => {
-                                    ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
-                                    Message.error(this.$t('modifyFailed'))
-                                    return false
-                                })
-                            } else if (type === 'right') {
-                                this.requestUtil.put(this.urls.materialRightList.url,data2).then((res) => {
-                                    if (res.descript) {
-                                        Message.info(this.$t('modifySuccessfully'))
-                                        ele.innerHTML = `<span class="left-assembly-left">${name}</span><span class="right-spots"></span>`
-                                    }
-                                }).catch(() => {
-                                    ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
-                                    Message.info(this.$t('modifyFailed'))
-                                    return false
-                                })
-                                
-                            }
-                        } else if (this.tabNumeber === 1) {
-                            let data = {
-                                pageTemplateId:materialId,
-                                name: name
-                            }
-                            this.requestUtil.put(this.urls.addTemplate.url,data).then((res) => {
-                                if (res.name) {
-                                    Message.info(this.$t('modifySuccessfully'))
-                                    ele.innerHTML = `<span class="left-assembly-left">${name}</span><span class="right-spots"></span>`
-                                }
-                            }).catch(() => {
-                                ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
-                                Message.info(this.$t('modifyFailed'))
-                                return false
-                            })
-                        }
-                    }else {
-                        ele.innerHTML = `<span class="left-assembly-left">${oldVal}</span><span class="right-spots"></span>`
-                    }
-                }
-                this.addListHandle()
-            }
-            let newMousHandele = this.mounseHandle()
-            newMousHandele(document.body, 'click', saveFn)
-            newMousHandele(editInput, 'click', function(e) {
-                if (e.stopPropagation) {
-                    e.stopPropagation()
-                } else {
-                    e.cancelBubble = true
-                }
-            }, true)
-            newMousHandele(editInput, 'keydown', function(e) {
-                if (e.keyCode === 13) {
-                    saveFn()
-                }
-            })
-            this.hideMaterialModelMenu()
-        },
-        deleteHandle(ele, actionType, type,index, materialId) {
-            let materialLibraryId = this.uploadData.materialLibraryId
-            if (+this.tabNumeber === 0) {
-                if (type === this.POSITION_LEFT) {
-                    this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
-                        if (res.code === '0') {
-                            sureDialog(this.myEditorUi, this.$t('materialRoom.confirmToDeleteShapes', {name: ele.innerText}), () => {
-                                this.assemblyArrayName.splice(index ,1)
-                                let lastLen = this.assemblyArrayName.length - 1
-                                let materialLibraryid = this.assemblyArrayName[lastLen].materialLibraryId
-                                this.selectAssemblyList('',lastLen,materialLibraryid)
-                                Message.warning(this.$t('deleteSuccessfully'))
-                            })
-                        }
-                    }).catch(() => {
-                        Message.warning(this.$t('modifyFailed'))
-                    })
-                } else if (type === this.POSITION_RIGHT) {
-                    this.requestUtil.delete(this.urls.materialRightList.url + `/${materialId}`,).then((res) => {
-                        if (this.arrListTables[index].materialId === materialId && res.code === '0') {
-                            sureDialog(this.myEditorUi, this.$t('materialRoom.confirmToDeleteShape', {name: ele.innerText}), () => {
-                                this.arrListTables.splice(index,1)
-                                Message.warning(this.$t('deleteSuccessfully'))
-                            })
-                        }
-                    }).catch(() => {
-                        Message.warning(this.$t('modifyFailed'))
-                        return false
-                    })
-                }
-            } else if (+this.tabNumeber === 1) {
-                this.requestUtil.delete(this.urls.addTemplate.url + `/${materialId}`,).then((res) => {
-                    let textDelete = +this.isactive2 === 1 ? 'confirmToDeletePopupTemplate' : 'confirmToDeletePageTemplate'
-                    textDelete = 'materialRoom.' + textDelete
-                    if (res.code === '0') {
-                        sureDialog(this.myEditorUi, this.$t(textDelete, {name: ele.innerText}), () => {
-                            if (+this.isactive2 === 1) {
-                                this.alertMaterial.splice(index, 1)
-                            } else if(+this.isactive2 === 0) {
-                                this.pageMaterial.splice(index, 1)
-                            }
-                            Message.warning(this.$t('deleteSuccessfully'))
-                        })
-                    }
-                }).catch(() => {
-                    Message.warning(this.$t('modifyFailed'))
-                })
-            }
-            
-            this.hideMaterialModelMenu()
-        },
     }
-    
 }
 </script>
 <style lang="less">
-body{
     .materialroom-model{
         .ivu-modal-wrap{
           .ivu-modal{
               .ivu-modal-content{
-                  width:700px;
                   background-color:#f5f5f5 !important;
                   .ivu-modal-header{
                       height: 36px;
@@ -838,9 +623,11 @@ body{
                       padding: 0;
                       .materialtabs{
                           position: relative;
+                          height:60vh;
                           .ivu-tabs {
                               padding:0px;
                               display:flex;
+                              height: 100%;
                               flex-direction:column;
                               .ivu-tabs-bar{
                                   height: 38px;
@@ -875,6 +662,7 @@ body{
                               }
                               .ivu-tabs-content{
                                   flex:1;
+                                  height:100%;
                                   .ivu-tabs-tabpane{
                                       height:100%;
                                       .commom-wrapper{
@@ -887,6 +675,9 @@ body{
                                               padding:5px;
                                               .assembly-seach-wrapper{
                                                   box-sizing: border-box;
+                                                  display: flex;
+                                                  height:100%;
+                                                  flex-direction: column;
                                                   .assembly-seach-icon{
                                                       padding:0 16px 0 5px;
                                                       width:100%;
@@ -909,7 +700,7 @@ body{
                                                       cursor: pointer;
                                                   }
                                                   .left-max-height{
-                                                    height:240px;
+                                                    height: calc(100% - 72px);
                                                     overflow-y: auto;
                                                     .assembly-list{
                                                         .assembly-icon{
@@ -923,6 +714,16 @@ body{
                                                             color:#252525;
                                                             cursor: pointer;
                                                             display: flex;
+                                                            &:hover,&.hover{
+                                                               color:#fff;
+                                                               background: url(../../assets/images/material/subassembly2_ic_check.png) no-repeat left center;
+                                                               background-color: #277AE0;
+                                                                .right-spots{
+                                                                  background: url('../../assets/images/leftsidebar/more1_ic.png') no-repeat center center;
+                                                                  background-size:16px 16px;
+                                                                   visibility: visible;
+                                                                }
+                                                            }
                                                             .left-assembly-left{
                                                               width:100px;
                                                               overflow:hidden;
@@ -932,25 +733,22 @@ body{
                                                               display:block;
                                                             }
                                                             &.left-side-listactive{
-                                                                background-color: #277AE0;
                                                                 color:#fff;
+                                                                background: url(../../assets/images/material/subassembly2_ic_check.png) no-repeat left center;
+                                                                background-color: #277AE0;
                                                                 .right-spots{
-                                                                    background: url('../../assets/images/leftsidebar/more1_ic.png') no-repeat center center;
-                                                                    background-size:16px 16px;
-                                                                }
-                                                                #editPageInput{
-                                                                  border:none;
-                                                                  height:25px;
-                                                                  width:100%;
+                                                                  background: url('../../assets/images/leftsidebar/more1_ic.png') no-repeat center center;
+                                                                  background-size:16px 16px;
+                                                                  visibility: visible;
                                                                 }
                                                             }
                                                             &>.right-spots{
                                                                 display:block;
                                                                 width:24px;
                                                                 height:24px;
+                                                                visibility: hidden;
                                                                 background: url(../../assets/images/material/more2_ic.png) no-repeat center center;
                                                                 background-size: 16px 16px;
-                                                                // float:right;
                                                                 position: relative;
                                                             }
                                                         }
@@ -958,6 +756,9 @@ body{
                                                   }
                                               }
                                               .material-list {
+                                                 li{
+                                                   cursor: pointer;
+                                                 }
                                                   &>li:first-child{
                                                       &.material-icon{
                                                           width:100%;
@@ -1000,7 +801,6 @@ body{
                                           .materialtabs-right{
                                               flex:1;
                                               padding:5px;
-                                              height: 300px;
                                               overflow-y: auto;
                                               .right-nodata{
                                                   height:100%;
@@ -1014,10 +814,11 @@ body{
                                                   display: flex;
                                                   flex-wrap:wrap;
                                                   overflow-y:auto; 
+                                                  max-height: 100%;
                                                   &>li{
                                                       width:100px;
-                                                      height:130px;
-                                                      margin-right:5px;
+                                                      height:130px; 
+                                                      margin-right: 10px;
                                                       &>div{
                                                           width:100px;
                                                           height: 100px;
@@ -1047,13 +848,13 @@ body{
                                                             white-space: nowrap;
                                                             flex:1;
                                                             display:block;
+                                                            cursor: pointer;
                                                           }
                                                       }
                                                   }
                                                   &>li.user-uploadimage{
                                                     width:100px;
                                                     height:130px;
-                                                    margin-right:5px;
                                                     &>div{
                                                         width:100px;
                                                         height: 100px;
@@ -1066,7 +867,6 @@ body{
                                                             display: block;
                                                             width:72px;
                                                             height: 72px;
-                                                            // border: 1px dashed #E1E1E1;
                                                         }
                                                         .right-spots-assemly{
                                                           display: block;
@@ -1087,14 +887,6 @@ body{
                                                           text-align: center;
                                                           line-height: 30px;
                                                           color: #252525;
-                                                          &.right-list-listactive{
-                                                            &>#editPageInput{
-                                                              border:none;
-                                                              height:30px;
-                                                              text-align: center;
-                                                              width:100%;
-                                                            }
-                                                          }
                                                       }
                                                   }
                                               }
@@ -1163,39 +955,11 @@ body{
                                                           text-align: center;
                                                           line-height: 30px;
                                                           color: #252525;
-                                                          &.right-list-listactive{
-                                                            &>#editPageInput{
-                                                              border:none;
-                                                              height:30px;
-                                                              text-align: center
-                                                            }
-                                                          }
                                                       }
                                                   }
                                               }
                                           }
                                       }
-                                  }
-                              }
-                          }
-                          #materialModelMenu{
-                              width:115px;
-                              background: #F5F5F5;
-                              color:#252525;
-                              border:1px solid #CCCCCC;
-                              position: fixed;
-                              border-radius: 2px;
-                              z-index: 999999;
-                              box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
-                              li{
-                                  height: 24px;
-                                  font-size: 14px;
-                                  padding: 0 15px;
-                                  cursor: default;
-                                  line-height: 24px;
-                                  &:hover{
-                                    background: #3d91f7;
-                                    color:#fff;
                                   }
                               }
                           }
@@ -1264,7 +1028,35 @@ body{
           }
         }
     }
-}
+    .materialModelMenu{
+      position: absolute;
+      width:115px;
+      background: #F5F5F5;
+      color:#252525;
+      border:1px solid #CCCCCC;
+      border-radius: 2px;
+      z-index: 999999;
+      box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
+      li{
+          height: 24px;
+          font-size: 14px;
+          padding: 0 15px;
+          cursor: pointer;
+          line-height: 24px;
+          &:hover{
+            background: #3d91f7;
+            color:#fff;
+          }
+    }
+  }
+  .editPageInput{
+    border:none;
+    outline: none;
+    background:#fff;
+    height:24px;
+    line-height: 24px;
+    width:120px;
+  }
 </style>
 
 

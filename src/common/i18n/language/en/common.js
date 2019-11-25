@@ -103,7 +103,6 @@ export default {
     uploadShape: 'Upload Shape',
     generalShape: 'Basic Shape',
     chartShape: 'Icon Shape',
-    layoutShape: 'Layout',
     pageTemplate: 'Page template',
     popupTemplate: 'Popup template',
     addShapes: 'Add Shape Library'

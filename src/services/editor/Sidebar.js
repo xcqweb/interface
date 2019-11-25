@@ -11,6 +11,7 @@ import requestUtil from '../request'
 import Urls from '../../constants/url'
 import VueEvent from '../VueEvent'
 import { tipDialog, sureDialog } from '../Utils'
+import axios from 'axios';
 var basicXmlFns = [];
 let startCurrentPageIndex = null
 let startCurrentDialogIndex = null
@@ -109,12 +110,10 @@ Sidebar.prototype.init = function(type)
         layoutTitle.remove()
         layout.remove()
         this.addUserPalette(false); // 自定义控件
-        this.addLayoutPalette(false) // layout
     } else {
         this.addPagePalette();//页面管理
         this.addGeneralPalette(true);//基础控件
         this.addUserPalette(false); // 自定义控件
-        this.addLayoutPalette(false) // layout
     }
 };
 
@@ -1518,12 +1517,6 @@ Sidebar.prototype.addStencilPalette = function(id, title, stencilFile, style, ig
     }), true, true);
     basicXmlFns = fns;
 };
-/**
- * 图元管理
- */
-Sidebar.prototype.addBasicXml = function() {
-    this.addPaletteFunctions('primitiveManage', '图元管理', true, basicXmlFns);
-}
 Sidebar.prototype.addBasicPalette = function()
 {
     this.addStencilPalette('basic', mxResources.get('basic'), '/static/stencils/basic.xml',
@@ -1628,7 +1621,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
     ];
     //封装
-    this.addPaletteFunctions('general', '基本控件', (expand != null) ? expand : true, fns);
+    this.addPaletteFunctions('general', '基本组件', (expand != null) ? expand : true, fns);
     let fnsChart=[
         this.addEntry('lineChart',()=>{
             let cell = new mxCell(`<div class="widget-chart chart"/>`, new mxGeometry(0, 0, 380, 200), 'shape=lineChart;html=1;strokeColor=none;fillColor=none;overflow=fill;')
@@ -1637,26 +1630,12 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         }),
         this.createVertexTemplateEntry('shape=gaugeChart;html=1;strokeColor=none;fillColor=none;overflow=fill;', 270, 270, `<div class="widget-chart chart"/>`, '仪表盘'),
     ]
-    this.addPaletteFunctions('chart', '图表控件', false, fnsChart);
+    this.addPaletteFunctions('chart', '图表组件', false, fnsChart);
    };
-/**/
-Sidebar.prototype.addLayoutPalette = function (expand) {
-    let materialLibraryId = 'e76e6a1b18e493472bc869d835811711'
-    let Array1 = []
-    requestUtil.get(Urls.materialList.url + `/${materialLibraryId}`).then((res) => {
-        let that = this
-        let data = res.materialList || []
-        data.forEach((item) => {
-            Array1.push(that.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${item.picUrl}`, item.picWidth ? (item.picWidth / 1.5) : 300, item.picHeight ? (item.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${item.picUrl}`))
-        })
-        this.addPaletteFunctions('layout', 'layout控件', false, Array1);
-    })
-}
 /*
 addUserPalette
 */
 Sidebar.prototype.addUserPalette = function (expand) {
-    var that = this;
     let arr = []
     requestUtil.get(Urls.materialList.url).then((res) => {
         let data = res.records || []
@@ -1667,15 +1646,19 @@ Sidebar.prototype.addUserPalette = function (expand) {
             }
             arr.push(obj)
         })
+        let requests=[]
         arr.forEach((item) => {
-            let Array1 = []
-            requestUtil.get(Urls.materialList.url + `/${item.materialLibraryId}`).then((res) => {
-                let that = this
-                let data = res.materialList
-                data.forEach((item) => {
-                    Array1.push(that.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${item.picUrl}`, item.picWidth ? parseInt(item.picWidth / 1.5) : 300, item.picHeight ? parseInt(item.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${item.picUrl}`))
+            let request = requestUtil.get(Urls.materialList.url + `/${item.materialLibraryId}`)
+            requests.push(request)
+        })
+        axios.all(requests).then(res=>{
+            res.forEach(item=>{
+                console.log(item)
+                let array = []
+                item.materialList.forEach(d=>{
+                    array.push(this.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl}`, d.picWidth ? parseInt(d.picWidth / 1.5) : 300, d.picHeight ? parseInt(d.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
                 })
-                this.addPaletteFunctions('user', `${item.name}`, false, Array1);
+                this.addPaletteFunctions('user', `${item.libraryName}`, false, array)
             })
         })
     })
@@ -3316,29 +3299,12 @@ Sidebar.prototype.addPalette = function(id, title, expanded, onInit)
     // Keeps references to the DOM nodes
     if (id != null)
     {
-    		this.palettes[id] = [elt, outer];
-        // div.className += ' ' + id
+        this.palettes[id] = [elt, outer];
         div.id = id;
     }
     return div;
 };
 
-
-/**
- * 快捷方式
- */
-/* Sidebar.prototype.addPaletteCus = function (onInit) {
-    var div = document.createElement('div');
-    div.className = 'geSidebar';
-
-    // Disables built-in pan and zoom in IE10 and later
-    if (mxClient.IS_POINTER) {
-        div.style.touchAction = 'none';
-    }
-    onInit(div);
-    document.querySelector('.rightbarShortcut').appendChild(div);
-    return div;
-} */
 
 /**
  * Create the given title element.
