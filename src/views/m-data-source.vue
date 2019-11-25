@@ -37,7 +37,7 @@
         v-show="dataType === 0"
         :reload-data="deviceDataChange"
       />
-       <!-- 数据模型 -->
+      <!-- 数据模型 -->
       <component
         :is="modelComponent"
         v-show="dataType === 1"

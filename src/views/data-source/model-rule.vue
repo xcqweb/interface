@@ -264,6 +264,14 @@ export default {
                 this.model.conditionLogic = '1';
                 this.model.data = [];
             }
+            this.emitRuleKeys();
+        },
+        emitRuleKeys() {
+            const keys = [];
+            this.model.data.forEach(item => {
+                keys.push(item.keys);
+            });
+            this.$emit('on-rule-keys', keys);
         },
     },
 }

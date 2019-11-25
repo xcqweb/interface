@@ -135,7 +135,7 @@ export default{
     },
     watch: {
         'model.deviceTypeId'() {
-          this.dName = '';
+            this.dName = '';
         },
     },
     mounted() {

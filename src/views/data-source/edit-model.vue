@@ -36,6 +36,7 @@
       :rule-data="ruleData"
       :reset-data="resetModelRuleData"
       @remove-param="handleRemoveParamsKey"
+      @on-rule-keys="setRuleKeys"
     />
     <!-- 底部按钮 -->
     <div
@@ -184,6 +185,9 @@ export default {
             });
             this.ruleData = ruleData;
             this.ruleKeys = keys;
+        },
+        setRuleKeys(keys) {
+            this.ruleKeys = keys || [];
         },
         handleRemoveParamsKey(key) {
             const index = this.ruleKeys.indexOf(key);
