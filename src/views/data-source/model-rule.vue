@@ -269,7 +269,7 @@ export default {
         emitRuleKeys() {
             const keys = [];
             this.model.data.forEach(item => {
-                keys.push(item.keys);
+                keys.push(item.key);
             });
             this.$emit('on-rule-keys', keys);
         },
