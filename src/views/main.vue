@@ -53,7 +53,6 @@ export default {
             if (index === 2 && this.tabShow) {
                 this.$nextTick(() => {
                     VueEvent.$emit('rightBarTabSwitch')
-                    this.$refs.dataSourceTab.getDeviceType(1)
                     this.tabShow = false
                 })
             } else if (index === 1) {
