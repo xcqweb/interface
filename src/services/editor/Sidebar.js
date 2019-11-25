@@ -1164,6 +1164,7 @@ Sidebar.prototype.createPageContextMenu = function (type) {
                 addPage(actionType)
                 break;
         }
+        this.hidePageContextMenu();
     }.bind(this))
     return menulist;
 }
@@ -1211,8 +1212,8 @@ function createPageList(editorUi, el, data, id, _that) {
             let scrollTopHeight = getIdType === 'normalPages' ? pageScrollTopHeight : dialogesScrollTopHeight
             let currentIndex = getIdType == 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
             menulist.style.display = 'block';
-            menulist.style.left = evt.target.offsetLeft + evt.target.offsetWidth - 100 / 2 + 'px';
-            menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) - scrollTopHeight + 72 + 'px';
+            menulist.style.left = evt.target.offsetLeft + evt.target.offsetWidth - 4 + 'px';
+            menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) - scrollTopHeight + 56 + 'px';
             let classNameList = evt.target.parentNode.className
             if (!classNameList.includes('currentPage')) {
                 evt.target.parentNode.className += classNameList ? ' currentPage' : 'currentPage'
@@ -1275,8 +1276,8 @@ function createPageList(editorUi, el, data, id, _that) {
                     $('.homepage').remove()
                 }
                 menulist.style.display = 'block';
-                menulist.style.left = evt.target.offsetLeft + evt.target.offsetWidth - 100 / 2 + 'px';
-                menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 72 - scrollTopHeight  + 'px';
+                menulist.style.left = evt.target.offsetLeft + evt.target.offsetWidth - 4 + 'px';
+                menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 56 - scrollTopHeight  + 'px';
 
                 let classNameList = evt.target.parentNode.className
                 if (!classNameList.includes('currentPage')) {
