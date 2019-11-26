@@ -29,6 +29,7 @@
       :left-render-format="leftRender"
       :right-render-format="rightRender"
       :left-filter-method="leftFilterMethod"
+      :multiple="multiple"
       style="margin-top: 10px;"
       filterable
       @on-change="handleTransferChange"
