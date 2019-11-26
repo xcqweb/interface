@@ -1,6 +1,11 @@
 export default {
     dataModel: 'Data model',
     deviceType: 'Device type',
+    deviceName: 'Device Name',
+    deviceModel: 'Device model',
+    parameterType: 'Param type',
+    deviceParameter: 'Device param',
+    virtualParamter: 'Visual param',
     models: 'Model list',
     parameters: 'Parameter list',
     enterParameterNameToSearch: 'Input parameter name',
