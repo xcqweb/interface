@@ -97,8 +97,6 @@ function Sidebar(editorUi, container, container2)
 Sidebar.prototype.init = function(type)
 {
     if (type === 'nowload') {
-        let layoutTitle = document.querySelector("#layoutTitle")
-        let layout = document.querySelector("#layout")
         let userTitle = document.querySelectorAll("#userTitle")
         let user = document.querySelectorAll("#user")
         userTitle.forEach((item) => {
@@ -107,8 +105,6 @@ Sidebar.prototype.init = function(type)
         user.forEach((item) => {
             item.remove()
         })
-        layoutTitle.remove()
-        layout.remove()
         this.addUserPalette(false); // 自定义控件
     } else {
         this.addPagePalette();//页面管理
@@ -1654,7 +1650,6 @@ Sidebar.prototype.addUserPalette = function (expand) {
         })
         axios.all(requests).then(res=>{
             res.forEach(item=>{
-                console.log(item)
                 let array = []
                 item.materialList.forEach(d=>{
                     array.push(this.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl}`, d.picWidth ? parseInt(d.picWidth / 1.5) : 300, d.picHeight ? parseInt(d.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))

@@ -1,19 +1,13 @@
 <template>
   <div
     :class="classes"
-    :style="listStyle"
+    :style="style"
   >
     <div
       :class="prefixCls + '-header'"
     >
-      <Checkbox
-        :value="checkedAll"
-        :disabled="checkedAllDisabled"
-        @on-change="toggleSelectAll"
-      />
       <span
         :class="prefixCls + '-header-title'"
-        @click="toggleSelectAll(!checkedAll)"
       >
         {{ title }}
       </span>
@@ -32,23 +26,33 @@
           @on-query-change="handleQueryChange"
         />
       </div>
-      <ul :class="prefixCls + '-content'">
-        <li
-          v-for="(item, index) in filterData"
-          :key="index"
-          :class="itemClasses(item)"
-          @click.prevent="select(item)"
-        >
-          <Checkbox
-            :value="isCheck(item)"
-            :disabled="item.disabled"
-          />
-          <span :title="showLabel(item)">{{ showLabel(item) }}</span>
-        </li>
-        <li :class="prefixCls + '-content-not-found'">
-          {{ notFoundText }}
-        </li>
-      </ul>
+      <checkbox-group
+        :value="checkedKeys"
+        style="height: 100%;"
+        @on-change="handleCheckboxChange"
+      >
+        <ul :class="prefixCls + '-content'">
+          <li
+            v-for="(item, index) in filterData"
+            :key="index"
+            :class="itemClasses(item)"
+            @click.prevent="select(item)"
+          >
+            <checkbox
+              :label="item.key"
+              :disabled="item.disabled"
+              @click.native.stop
+            >
+              <span :title="showLabel(item)">
+                {{ showLabel(item) }}
+              </span>
+            </checkbox>
+          </li>
+          <li :class="prefixCls + '-content-not-found'">
+            {{ notFoundText }}
+          </li>
+        </ul>
+      </checkbox-group>
     </div>
     <div
       v-if="showFooter"
@@ -61,12 +65,13 @@
 
 <script>
 import Search from './search';
-import {Checkbox} from 'iview';
+import {CheckboxGroup, Checkbox} from 'iview';
 
 export default {
     components: {
         Search,
-        Checkbox 
+        CheckboxGroup,
+        Checkbox ,
     },
     props: {
         prefixCls: String,
@@ -86,7 +91,8 @@ export default {
         return {
             showItems: [],
             query: '',
-            showFooter: true
+            showFooter: true,
+            
         };
     },
     computed: {
@@ -111,14 +117,13 @@ export default {
             const validKeysCount = this.validKeysCount;
             return (validKeysCount > 0 ? `${validKeysCount}/` : '') + `${this.filterData.length}`;
         },
-        checkedAll() {
-            return this.filterData.filter(data => !data.disabled).length === this.validKeysCount && this.validKeysCount !== 0;
-        },
-        checkedAllDisabled() {
-            return this.filterData.filter(data => !data.disabled).length <= 0;
-        },
         filterData() {
             return this.showItems.filter(item => this.filterMethod(item, this.query));
+        },
+        style() {
+            const style = this.listStyle || {};
+            style.width = '100%';
+            return style;
         },
     },
     watch: {
@@ -144,28 +149,15 @@ export default {
         showLabel(item) {
             return this.renderFormat(item);
         },
-        isCheck(item) {
-            return this.checkedKeys.some(key => key === item.key);
-        },
         select(item) {
             if (item.disabled) {
                 return;
             }
-            const index = this.checkedKeys.indexOf(item.key);
-            index > -1 ? this.checkedKeys.splice(index, 1) : this.checkedKeys.push(item.key);
-            this.$parent.handleCheckedKeys();
+            const includes = this.checkedKeys.includes(item.key);
+            this.$emit('on-checked-keys-change', includes ? [] : [item.key]);
         },
         updateFilteredData() {
             this.showItems = this.data;
-        },
-        toggleSelectAll(status) {
-            let keys;
-            if (status) {
-                keys = this.filterData.filter(data => !data.disabled || this.checkedKeys.indexOf(data.key) > -1).map(data => data.key);
-            } else {
-                keys = this.filterData.filter(data => data.disabled && this.checkedKeys.indexOf(data.key) > -1).map(data => data.key);
-            }
-            this.$emit('on-checked-keys-change', keys);
         },
         handleQueryClear() {
             this.query = '';
@@ -173,6 +165,9 @@ export default {
         handleQueryChange(val) {
             this.query = val;
         },
+        handleCheckboxChange(data) {
+            this.$emit('on-checked-keys-change', data.splice(data.length - 1, 1));
+        }
     },
 };
 </script>

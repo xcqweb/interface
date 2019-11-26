@@ -20,7 +20,9 @@
           >
             <div class="assembly-wrapper commom-wrapper">
               <div class="assembly-left materialtabs-left">
-                <div class="assembly-seach-wrapper">
+                <div
+                  class="assembly-seach-wrapper"
+                >
                   <input 
                     v-model="keyWidget" 
                     type="text"
@@ -29,51 +31,50 @@
                     @input="searchWidget"
                   >
                   <div
-                    v-if="leftshowIf"
+                    v-show="!keyWidget"
                     class="addassembly"
                     @click="addassemblyFn"
                   >
                     {{ $t('addShapes') }}
                   </div>
-                  <template
-                    v-if="leftshowIf"
+                  <div
+                    v-show="!keyWidget"
+                    class="left-max-height"
                   >
-                    <div class="left-max-height">
-                      <ul
-                        class="assembly-list"
+                    <ul
+                      class="assembly-list"
+                    >
+                      <li
+                        v-for="(item,index) in assemblyArrayName"
+                        :key="index"
+                        class="assembly-icon"
+                        :class="{'left-side-listactive':index === isActive,'hover': popUpType==1&&isShowPopMenu&&index==hoverIndex}"
+                        @click="selectAssemblyList(index, item.materialLibraryId)"
+                        @dblclick="dblRename(index)"
                       >
-                        <li
-                          v-for="(item,index) in assemblyArrayName"
-                          :key="index"
-                          class="assembly-icon"
-                          :class="{'left-side-listactive':index === isActive,'hover': popUpType==1&&isShowPopMenu&&index==hoverIndex}"
-                          @click="selectAssemblyList(index, item.materialLibraryId)"
-                          @dblclick="dblRename(index)"
+                        <span
+                          v-if="!item.isEdit"
+                          class="left-assembly-left"
                         >
-                          <span
-                            v-if="!item.isEdit"
-                            class="left-assembly-left"
-                          >
-                            {{ $t(item.name) }}
-                          </span>
-                          <input
-                            v-if="item.isEdit"
-                            v-model="item.model"
-                            v-focus
-                            class="editPageInput"
-                            @blur="saveLayoutName(index)"
-                          >
-                          <span 
-                            v-if="index >= 3 && !item.isEdit" 
-                            class="right-spots" 
-                            @mousemove="menuPopupShow($event,index)"
-                            @mouseenter="menuPopupShow($event,index)"
-                            @mouseout="menuMouseoutDeal($event)"
-                          />
-                        </li>
-                      </ul>
-                    </div>
-                  </template>
+                          {{ $t(item.name) }}
+                        </span>
+                        <input
+                          v-if="item.isEdit"
+                          v-model="item.model"
+                          v-focus
+                          class="editPageInput"
+                          @blur="saveLayoutName(index)"
+                        >
+                        <span 
+                          v-if="index >= 3 && !item.isEdit" 
+                          class="right-spots" 
+                          @mousemove="menuPopupShow($event,index)"
+                          @mouseenter="menuPopupShow($event,index)"
+                          @mouseout="menuMouseoutDeal($event)"
+                        />
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
               <div class="assembly-right materialtabs-right">
@@ -88,7 +89,7 @@
                   >
                     <div>
                       <span
-                        v-if="isActive>=2"
+                        v-if="item.model"
                         :style="'background:url(' + (item.image) + ') no-repeat center center;'"
                         @mouseenter="menuPopupHide"
                       />
@@ -97,7 +98,7 @@
                         :style="'background:url(' + (DIR_+item.image) + ') no-repeat center center;'"
                       />
                       <label
-                        v-if="isActive>=2"
+                        v-if="item.model"
                         class="right-spots-assemly"
                         @click="renameWidget($event,index)"
                       />
@@ -249,6 +250,7 @@
 <script>
 import {Tabs,TabPane,Modal, Upload, Message, Button} from 'iview'
 import {getCookie,setCookie,sureDialog} from '../../services/Utils'
+let backMaterialLit = [],needRefreshLeft = false
 const ROOT_LEN = 1 // 新增组件时计算长度使用
 export default {
     components: {
@@ -303,7 +305,6 @@ export default {
             tabNumber: 0,
             materials: [],
             nodata: 'noData',
-            leftshowIf: true, // 搜索素材 展示左侧素材库列表
             headers:{
                 'Authorization': `Bearer ${getCookie('token')}`
             },
@@ -313,15 +314,35 @@ export default {
             hoverIndex:-1,
             keyWidget:"",
             templateIndex:0,
+            materialAll:[],
         }
     },
     created() {
     },
     mounted() {
         this.arrListTables = this.baseAssembly
+        backMaterialLit = JSON.parse(JSON.stringify(this.arrListTables))
         this.uploadurl = this.urls.materialList.url
+        this.getAllMaterail()
     },
     methods: {
+        getAllMaterail() {
+            let res = []
+            this.requestUtil.get(this.urls.materialRightList.url).then(data=>{
+                if(data) {
+                    data.forEach(item=>{
+                        res.push({
+                            name: item.descript,
+                            image: item.picUrl,
+                            isEdit:false,
+                            model:item.descript,
+                            materialId: item.materialId
+                        })
+                    })
+                    this.materialAll = [...this.baseAssembly,...this.tablesAssembly,...res]
+                }
+            })
+        },
         init() {
             this.requestUtil.get(this.urls.materialList.url).then((res) => {
                 let data = res.records || []
@@ -337,7 +358,14 @@ export default {
             })
         },
         searchWidget() {
-
+            let keyword = this.keyWidget.trim()
+            if(keyword) {
+                this.arrListTables = this.materialAll.filter(item=>{
+                    return this.$t(`${item.name}`).includes(keyword)
+                })
+            }else{
+                this.arrListTables = backMaterialLit
+            }
         },
         menuPopupShow(evt,index) {
             this.popUpType = 1 //组件库
@@ -422,7 +450,8 @@ export default {
             }
         },
         cancel() {
-            this.$emit('triggerCancel')
+            this.$emit('triggerCancel',needRefreshLeft)
+            needRefreshLeft = false//重置
         },
         renameWidget(evt,index) {
             this.arrListTableIndex = index
@@ -514,6 +543,7 @@ export default {
                     this.arrListTables = this.tablesAssembly
                 }
             }
+            backMaterialLit = JSON.parse(JSON.stringify(this.arrListTables))
         },
         selectMaterialList(index) {
             if(index == this.isActive2) {
@@ -561,9 +591,12 @@ export default {
             })
         },
         uploadSucc(res) {
+            needRefreshLeft = true
             let addpicObj = {
                 image:res.picUrl,
                 name: res.descript,
+                isEdit:false,
+                model:res.descript,
                 materialId: res.materialId
             }
             this.arrListTables.push(addpicObj)
@@ -1053,6 +1086,7 @@ export default {
     border:none;
     outline: none;
     background:#fff;
+    padding-left:5px;
     height:24px;
     line-height: 24px;
     width:120px;

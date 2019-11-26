@@ -1,51 +1,71 @@
 <template>
   <div class="ivu-transfer">
-    <list
-      ref="left"
-      :prefix-cls="prefixCls + '-list'"
-      :data="leftData"
-      :render-format="leftRenderFormat"
-      :checked-keys="leftCheckedKeys"
-      :valid-keys-count="leftValidKeysCount"
-      :list-style="listStyle"
-      :title="localeTitles[0]"
-      :filterable="filterable"
-      :filter-placeholder="localeFilterPlaceholder"
-      :filter-method="leftFilterMethod"
-      :not-found-text="notFoundText"
-      @on-checked-keys-change="handleLeftCheckedKeysChange"
-    />
-    <operation
-      :prefix-cls="prefixCls"
-      :operations="operations"
-      :left-active="leftValidKeysCount > 0"
-      :right-active="rightValidKeysCount > 0"
-    />
-    <list
-      ref="right"
-      :prefix-cls="prefixCls + '-list'"
-      :data="rightData"
-      :render-format="rightRenderFormat"
-      :checked-keys="rightCheckedKeys"
-      :valid-keys-count="rightValidKeysCount"
-      :list-style="listStyle"
-      :title="localeTitles[1]"
-      :filterable="filterable"
-      :filter-placeholder="localeFilterPlaceholder"
-      :filter-method="rightFilterMethod"
-      :not-found-text="notFoundText"
-      @on-checked-keys-change="handleRightCheckedKeysChange"
-    />
+    <template v-if="multiple">
+      <list
+        ref="left"
+        :prefix-cls="prefixCls + '-list'"
+        :data="leftData"
+        :render-format="leftRenderFormat"
+        :checked-keys="leftCheckedKeys"
+        :valid-keys-count="leftValidKeysCount"
+        :list-style="listStyle"
+        :title="localeTitles[0]"
+        :filterable="filterable"
+        :filter-placeholder="localeFilterPlaceholder"
+        :filter-method="leftFilterMethod"
+        :not-found-text="notFoundText"
+        @on-checked-keys-change="handleLeftCheckedKeysChange"
+      />
+      <operation
+        :prefix-cls="prefixCls"
+        :operations="operations"
+        :left-active="leftValidKeysCount > 0"
+        :right-active="rightValidKeysCount > 0"
+      />
+      <list
+        ref="right"
+        :prefix-cls="prefixCls + '-list'"
+        :data="rightData"
+        :render-format="rightRenderFormat"
+        :checked-keys="rightCheckedKeys"
+        :valid-keys-count="rightValidKeysCount"
+        :list-style="listStyle"
+        :title="localeTitles[1]"
+        :filterable="filterable"
+        :filter-placeholder="localeFilterPlaceholder"
+        :filter-method="rightFilterMethod"
+        :not-found-text="notFoundText"
+        @on-checked-keys-change="handleRightCheckedKeysChange"
+      />
+    </template>
+    <template v-else>
+      <single-list
+        :prefix-cls="prefixCls + '-list'"
+        :data="data"
+        :render-format="leftRenderFormat"
+        :checked-keys="singleCheckedKeys"
+        :valid-keys-count="leftValidKeysCount"
+        :list-style="listStyle"
+        :title="localeTitles[0]"
+        :filterable="filterable"
+        :filter-placeholder="localeFilterPlaceholder"
+        :filter-method="leftFilterMethod"
+        :not-found-text="notFoundText"
+        @on-checked-keys-change="handleSingleCheckedKeysChange"
+      />
+    </template>
   </div>
 </template>
 
 <script>
 import List from './list'
+import SingleList from './single-list'
 import Operation from './operation'
 
 export default {
     components: {
         List,
+        SingleList,
         Operation,
     },
     props: {
@@ -117,6 +137,10 @@ export default {
         },
         notFoundText: {
             type: String
+        },
+        multiple: {
+            type: Boolean,
+            default: true,
         }
     },
     data() {
@@ -125,7 +149,8 @@ export default {
             leftData: [],
             rightData: [],
             leftCheckedKeys: [],
-            rightCheckedKeys: []
+            rightCheckedKeys: [],
+            singleCheckedKeys: [],
         };
     },
     computed: {
@@ -163,7 +188,10 @@ export default {
         },
         data() {
             this.splitData(false);
-        }
+        },
+        multiple() {
+            this.splitData(true);
+        },
     },
     mounted() {
         this.splitData(true);
@@ -173,6 +201,11 @@ export default {
             return this[`${direction}Data`].filter(data => !data.disabled && this[`${direction}CheckedKeys`].indexOf(data.key) > -1).map(data => data.key);
         },
         splitData(init = false) {
+            if (!this.multiple) {
+                const len = this.targetKeys.length;
+                this.singleCheckedKeys = len > 0 ? [this.targetKeys[len - 1]] : [];
+                return;
+            }
             this.leftData = [...this.data];
             this.rightData = [];
             if (this.targetKeys.length > 0) {
@@ -220,6 +253,10 @@ export default {
             const sourceSelectedKeys = this.getValidKeys('left');
             const targetSelectedKeys = this.getValidKeys('right');
             this.$emit('on-selected-change', sourceSelectedKeys, targetSelectedKeys);
+        },
+        handleSingleCheckedKeysChange(keys) {
+            this.singleCheckedKeys = keys;
+            this.$emit('on-change', keys);
         },
     },
 };

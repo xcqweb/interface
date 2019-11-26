@@ -6,11 +6,12 @@ import echarts from 'echarts'
 let websocketUrlReal = ''
 //获取最后一笔数据
 async function getLastData(pointParams, fileSystem) {
-    let params = []
+    let paramIds = []
     let maps = dealPointParams(pointParams)
     for (let item of maps.values()) {
-        params.push(item)
+        paramIds.push(item)
     }
+    let params = []
     const res = await geAjax('/api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(params))
     setterRealData(res,fileSystem)
 }
