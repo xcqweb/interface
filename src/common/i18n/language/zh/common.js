@@ -1,4 +1,5 @@
 export default {
+    click: '点击',
     lang: '中文',
     page: '页面',
     popup: '弹窗',
