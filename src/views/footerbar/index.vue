@@ -109,7 +109,7 @@
                 slot-scope="{index}" 
               >
                 <span
-                  v-show="paramOutterList.length>1"
+                  v-show="paramOutterList.length"
                   class="icon-delete"
                   @click.stop.prevent="removeParamHandle(index)"
                 />
@@ -172,6 +172,7 @@
       title="添加参数"
       :device-model-id="deviceModelId"
       :device-id="deviceId"
+      :multiple="multiple"
       @callback="addParamDone"
     />
   </div>
@@ -210,6 +211,7 @@ export default {
             deviceModelId:null,
             deviceId:null,
             nodata: 'noData',
+            multiple:true,
             tablTitles:[
                 {
                     title: this.$t('deviceName'),
@@ -402,6 +404,7 @@ export default {
                     this.dataSourceList.push(obj)
                 })
             } else {
+                this.deviceModelId = null
                 this.dataSourceList = []
             }
         },
@@ -443,8 +446,18 @@ export default {
         },
         addParam() {
             this.visible = true
+            if(this.singleParamShow.includes(this.$store.state.main.widgetInfo.shapeInfo.shape)) {
+                this.multiple = false
+            }else{
+                this.multiple = true
+            }
+            console.log(this.multiple,"tt-aa")
         },
         addParamDone(data) {
+            let isFirstCheck = false
+            if(this.paramOutterList && !this.paramOutterList.length) {
+                isFirstCheck = true
+            }
             data.forEach((item)=>{
                 this.paramOutterList.push({
                     paramName:item.paramName,
@@ -456,6 +469,9 @@ export default {
                     type:false,
                 })
             })
+            if(isFirstCheck) {
+                this.paramOutterList[0].type = true
+            }
             let tempObj = this.getCellModelInfo('bindData')
             tempObj.params = this.paramOutterList
             this.setCellModelInfo('bindData',tempObj)
@@ -540,6 +556,7 @@ export default {
                         this.paramsList = []
                         this.stateList = []
                         this.modelList = []
+                        this.deviceModelId = null
                     } else {
                         startBindData.dataSource.deviceNameChild = objArr
                     }

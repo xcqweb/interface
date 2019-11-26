@@ -17,6 +17,7 @@ export default {
     chooseChangeStateOfWidget: 'Please select the control to switch state',
     chooseStateToBind: 'Please select the state to bind',
     bindText: 'Bind',
+    multiplyBindDevice: 'This control does not allow multiple device names to be bound',
     hasBindDevice: 'This control has been bound to the device name',
     chooseDeviceType: 'Please select device type',
     choosePage: 'Select Page',

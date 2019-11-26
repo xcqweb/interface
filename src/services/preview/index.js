@@ -115,7 +115,6 @@ class Main {
         if(parseTheme.position == 1) {
             menuCon.css({
                 width: `${menuWidth}px`,
-                height: `${$(window).height()}px`,
             })
             menuUl.css({
                 position: 'absolute',
@@ -197,6 +196,7 @@ class Main {
                         top:0
                     })
                     menuCon.hide()
+                    menuCon.data("check", 0)
                     if (topTimer) {
                         clearTimeout(topTimer)
                         topTimer = null
@@ -220,13 +220,15 @@ class Main {
                     menuCon.data("check",1 - check)
                 })
             }else{//左侧
+                let previewConH = $("#gePreviewCon").height()
                 let left = menuWidth + $("#gePreviewCon").offset().left
+                menuCon.css('height', `${previewConH}px`)
                 menuIcon.css({
                     height:'40px',
                     width:'20px',
                     left: `${left}px`,
                     lineHeight:`40px`,
-                    top: `${$(window).height() / 2 + menuIcon.height() / 2}px`,
+                    top: `${previewConH / 2 + menuIcon.height() / 2 }px`,
                     background: `${menuStyle.bgColor}`,
                     borderRadius:'0 10px 10px 0'
                 })
@@ -235,6 +237,7 @@ class Main {
                 let leftHide = function() {
                     menuIcon.css('left', `${left - menuWidth}px`)
                     menuCon.hide()
+                    menuCon.data("check", 0)
                     if (leftTimer) {
                         clearTimeout(leftTimer)
                         leftTimer = null

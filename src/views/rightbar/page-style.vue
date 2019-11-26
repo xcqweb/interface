@@ -56,16 +56,14 @@
       ondragstart="return false;"
       @click="setBackgroundImg"
     >
-      <div
-        :style="bgPicStyle"
-      >
+      <div class="bgCon">
         <img
           :src="bgPic"
           :style="bgPicStyle"
-          style="width:100%;"
+          style="width:72px;"
         >
         <div v-show="isShowBgText">
-          {{ $t('choose') }}{{ $t('rightBar.bgImage') }}
+          {{ $t('choose') }} {{ $t('rightBar.bgImage') }}
         </div>
         <input
           ref="chooseImg"
@@ -97,7 +95,7 @@ export default {
             bgColor:'#fff',
             bgPic:require('../../assets/images/rightsidebar/bg_ic_widget.png'),
             isShowBgText:true,
-            bgPicStyle:{height:'auto'},
+            bgPicStyle:{height:'54px'},
             deleteShowFlag: false
         }
     },
@@ -155,7 +153,7 @@ export default {
                 this.bgPic = require('../../assets/images/rightsidebar/bg_ic_widget.png');
                 mxClient.IS_ADD_IMG = false
                 this.isShowBgText = true
-                this.bgPicStyle = {height:'auto'}
+                this.bgPicStyle = {height:'54px'}
                 this.deleteShowFlag = false
                 this.myEditorUi.editor.graph.view.validateBackground()
             },)
@@ -169,7 +167,7 @@ export default {
             if (this.bgPic) {
                 this.deleteShowFlag = true
                 this.isShowBgText = false
-                this.bgPicStyle = {height:'98px'}
+                this.bgPicStyle = {height:'98px',width: '100%'}
             }            
             this.myEditorUi.editor.graph.view.validateBackground()
         },
@@ -298,6 +296,15 @@ export default {
     }
     .setBackgroundImg {
         cursor: pointer;
+        .bgCon{
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          &>div{
+            margin-top: 2px;
+          }
+        }
     }
     .color-dialog{
         position:absolute;

@@ -238,10 +238,10 @@
         class="materialModelMenu"
       >
         <li class="pop-menu rename" @click="popReanme">
-          重命名
+          {{$t('rename')}}
         </li>
         <li class="pop-menu delete" @click="popDel">
-          删除
+          {{$t('delete')}}
         </li>
       </ul>
     </Modal>
@@ -438,6 +438,7 @@ export default {
             }
             this.requestUtil.put(this.urls.materialList.url,data).then(res=>{
                 if(res.libraryName) {
+                    needRefreshLeft = true
                     this.$set(this.assemblyArrayName[index],'name',res.libraryName)
                     Message.info('保存成功')
                     this.$set(this.assemblyArrayName[index],'isEdit',false)//会触发blur事件
@@ -475,6 +476,7 @@ export default {
                 if(res.descript) {
                     this.$set(this.arrListTables[index],'name',res.descript)
                     Message.info('修改成功')
+                    needRefreshLeft = true
                     this.$set(this.arrListTables[index],'isEdit',false)//会触发blur事件
                 }
             })
@@ -505,6 +507,7 @@ export default {
                 if(res.name) {
                     this.$set(this.materials[index],'name',res.name)
                     Message.info('修改成功')
+                    needRefreshLeft = true
                     this.$set(this.materials[index],'isEdit',false)//会触发blur事件
                 }
             })
