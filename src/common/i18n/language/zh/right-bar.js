@@ -17,7 +17,7 @@ export default {
     chooseChangeStateOfWidget: '请选择要切换状态的控件',
     chooseStateToBind: '请选择要绑定的状态',
     bindText: '绑定',
-    multiplyBindDevice: '此控件不允许绑定多个设备名称',
+    multiplyBindDevice: '此控件不允许绑定多个设备',
     hasBindDevice: '此控件已经绑定设备名称',
     chooseDeviceType: '请选择设备类型',
     choosePage: '选择页面',

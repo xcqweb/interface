@@ -63,7 +63,7 @@
           v-if="deviceData.length"
         >
           <CheckboxGroup
-            :value="checkModelArr"
+            v-model="checkModelArr"
             class="devicename-listUl"
             @on-change="checkAllGroupChange"
           >
@@ -98,6 +98,7 @@
         type="primary"
         style="cursor: pointer;"
         long
+        :disabled="!checkModelArr.length"
         @click.stop.prevent="bindDeviceNameHandle"
       >
         {{ $t('rightBar.bindText') }}
@@ -112,6 +113,7 @@ import NoData from '../../datasource/nodata'
 import DatasourceStore from '../../data-source/js/datasource-store'
 import {Button,Checkbox,Message,Select,Option, CheckboxGroup,Input} from 'iview'
 
+const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart']
 export default{
     components: {
         Button,
@@ -127,7 +129,7 @@ export default{
         return {
             dName:"",
             shapeName: null,
-            checkModelArr:[false],
+            checkModelArr:[],
             bindData:null,
         }
     },
@@ -146,14 +148,24 @@ export default{
             this.bindData =  this.getCellModelInfo('bindData')
             if(this.bindData && this.bindData.dataSource) {
                 this.model.deviceModelId = this.bindData.dataSource.deviceTypeChild.id
-                //let bindDeviceNames = this.bindData.dataSource.deviceNameChild
+                let bindDeviceNames = this.bindData.dataSource.deviceNameChild
+                this.checkModelArr.splice(0)
+                bindDeviceNames.forEach(item=>{
+                    this.checkModelArr.push(item.id)
+                })
             }
         },
         bindDeviceNameHandle() {
             this.bindData = this.getCellModelInfo('bindData')
-            if (this.bindData && this.bindData.dataSource) {                    
+            if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个
+                Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
+                // 清空勾选
+                this.checkModelArr = []
+                return
+            }  
+            if (singleDeviceName.includes(this.shapeName) && this.bindData && this.bindData.dataSource) {                    
                 Message.warning(`${this.$t('rightBar.hasBindDevice')}`)
-
+                this.checkModelArr = []
                 return
             }
             // 组装数据 绑定
@@ -167,7 +179,9 @@ export default{
                 name: this.modelData[this.modelData.findIndex(item=>{return item.deviceModelId == this.model.deviceModelId})].deviceModelName
             }
             objData.deviceNameChild = []
-            
+            this.checkModelArr.forEach((item) => {
+                objData.deviceNameChild.push({id:item,name:this.deviceData[this.deviceData.findIndex(d=>{return d.deviceId == item})].deviceName})
+            })
             if (objData) {
                 VueEvent.$emit('emitDataSourceFooter', objData)
             }
@@ -186,7 +200,7 @@ export default{
             return bindData
         },
         checkAllGroupChange(data) {
-            console.log(data)
+            this.checkModelArr = data
         }
     },      
 }

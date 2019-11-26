@@ -109,7 +109,7 @@
 }
 #gePreview .gePreviewMenu{
   position: fixed;
-  top:0;
+  top:2px;
   font-size:14px;
   z-index:10;
   overflow: hidden;
