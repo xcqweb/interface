@@ -19,7 +19,6 @@ export default {
     bindText: '绑定',
     multiplyBindDevice: '此控件不允许绑定多个设备名称',
     hasBindDevice: '此控件已经绑定设备名称',
-    notAllowBindMultiplyDevice: '此控件不允许绑定多个设备类型',
     chooseDeviceType: '请选择设备类型',
     choosePage: '选择页面',
     choosePageToLink: '请选择要跳转的页面',

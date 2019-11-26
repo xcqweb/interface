@@ -4,6 +4,10 @@ export default {
             type: String,
             default: '',
         },
+        deviceId: {
+            type: String,
+            default: '',
+        }
     },
     data() {
         return {
@@ -36,6 +40,9 @@ export default {
             const params = {
                 deviceModelId: this.deviceModelId,
             };
+            if(this.deviceId) {
+                params.deviceId = this.deviceId
+            }
             this.getDeviceParams(params);
             this.getVirtualParams(params);
         },

@@ -250,7 +250,7 @@
 <script>
 import {Tabs,TabPane,Modal, Upload, Message, Button} from 'iview'
 import {getCookie,setCookie,sureDialog} from '../../services/Utils'
-let backMaterialLit = []
+let backMaterialLit = [],needRefreshLeft = false
 const ROOT_LEN = 1 // 新增组件时计算长度使用
 export default {
     components: {
@@ -450,7 +450,8 @@ export default {
             }
         },
         cancel() {
-            this.$emit('triggerCancel')
+            this.$emit('triggerCancel',needRefreshLeft)
+            needRefreshLeft = false//重置
         },
         renameWidget(evt,index) {
             this.arrListTableIndex = index
@@ -590,9 +591,12 @@ export default {
             })
         },
         uploadSucc(res) {
+            needRefreshLeft = true
             let addpicObj = {
                 image:res.picUrl,
                 name: res.descript,
+                isEdit:false,
+                model:res.descript,
                 materialId: res.materialId
             }
             this.arrListTables.push(addpicObj)
@@ -1082,6 +1086,7 @@ export default {
     border:none;
     outline: none;
     background:#fff;
+    padding-left:5px;
     height:24px;
     line-height: 24px;
     width:120px;

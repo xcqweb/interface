@@ -80,13 +80,19 @@
               :max-height="heightlen"
             >
               <template
+                slot="paramType"
+                slot-scope="{row}"
+              >
+                {{ row.paramType == 'device' ? '设备参数' : '虚拟参数' }}
+              </template>
+              <template
                 slot="paramShow"
                 slot-scope="{row}"
               >
                 <Checkbox
                   v-if="!singleParamShow.includes($store.state.main.widgetInfo.shapeInfo.shape)"
                   v-model="row.type"
-                  @on-change="val=>paramDefaultChange(val,row.id)"
+                  @on-change="val=>paramDefaultChange(val,row.paramId)"
                 >
                   {{ $t('footBar.defaultDisplay') }}
                 </Checkbox>
@@ -165,6 +171,7 @@
       v-model="visible"
       title="添加参数"
       :device-model-id="deviceModelId"
+      :device-id="deviceId"
       @callback="addParamDone"
     />
   </div>
@@ -201,6 +208,7 @@ export default {
             ifShowArrow: false,
             tabsNum: 0,
             deviceModelId:null,
+            deviceId:null,
             nodata: 'noData',
             tablTitles:[
                 {
@@ -314,29 +322,25 @@ export default {
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
             // 拿到之前绑定的 bindData
-            let graph = this.myEditorUi.editor.graph
-            let cells = graph.getSelectionCells()
-            for(let i = 0;i < cells.length;i++) {
-                let startBindData = this.getCellModelInfo('bindData',cells[i])
-                if (!startBindData || !startBindData.dataSource) {
-                    this.setCellModelInfo('bindData',{dataSource:value},cells[i])
+            let startBindData = this.getCellModelInfo('bindData')
+            if (!startBindData || !startBindData.dataSource) {
+                this.setCellModelInfo('bindData',{dataSource:value})
+                if (this.ifShowArrow) {
+                    this.isInitFlag = false
+                    this.initData()
+                }
+            } else {
+                if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
+                    let deviceNameChild = startBindData.dataSource.deviceNameChild || []
+                    startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
+                    startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
+                    startBindData.dataSource.deviceModel = value.deviceModel
+                    this.setCellModelInfo('bindData',startBindData)
                     if (this.ifShowArrow) {
                         this.isInitFlag = false
                         this.initData()
                     }
-                } else {
-                    if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
-                        let deviceNameChild = startBindData.dataSource.deviceNameChild || []
-                        startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
-                        startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
-                        startBindData.dataSource.deviceModel = value.deviceModel
-                        this.setCellModelInfo('bindData',startBindData,cells[i])
-                        if (this.ifShowArrow) {
-                            this.isInitFlag = false
-                            this.initData()
-                        }
-                    } 
-                }
+                } 
             }
         })
     },
@@ -384,9 +388,11 @@ export default {
         // 初始化数据源数据
         initDataSource() {
             let startBindData = this.getCellModelInfo('bindData')
+            console.log(startBindData)
             if (startBindData && startBindData.dataSource) {
                 let deviceNameChild = startBindData.dataSource.deviceNameChild || []
                 this.deviceModelId  = startBindData.dataSource.deviceModel.id
+                this.deviceId = deviceNameChild[0].id
                 this.dataSourceList = []
                 deviceNameChild.forEach((item) => {
                     let obj = {}
@@ -439,41 +445,39 @@ export default {
             this.visible = true
         },
         addParamDone(data) {
-            data.forEach((item,index)=>{
+            data.forEach((item)=>{
                 this.paramOutterList.push({
                     paramName:item.paramName,
                     paramId:item.paramId,
-                    paramType:item.type == 'device' ? '设备参数' : '虚拟参数',
-                    partName:item.paramName,
+                    paramType:item.type,
+                    partName:item.partName,
                     key:item.key,
-                    type:index === 0 ? true : false,
+                    transportSourceId:item.transportSourceId,
+                    type:false,
                 })
             })
-            let tempObj = this.getCellModelInfo('bindData') || {}
-            let list = []
-            if(tempObj && tempObj.params) {
-                list = tempObj.params
-            }
-            list = list.concat(data)
-            tempObj.params = list
+            let tempObj = this.getCellModelInfo('bindData')
+            tempObj.params = this.paramOutterList
             this.setCellModelInfo('bindData',tempObj)
         },
         removeParamHandle(index) {
             sureDialog(this.myEditorUi,'确定要删除当前参数吗',()=>{
                 this.paramOutterList.splice(index,1)
-                let  tempObj = {params:this.paramOutterList} 
+                let tempObj = this.getCellModelInfo('bindData')
+                tempObj.params = this.paramOutterList
                 this.setCellModelInfo('bindData',tempObj)
             })
         },
-        paramDefaultChange(val,id) {
+        paramDefaultChange(val,paramId) {
             this.paramOutterList.forEach(item=>{
-                if(item.id == id) {
-                    item.type = val
+                if(item.paramId == paramId) {
+                    item.type = true
                 }else{
                     item.type = false
                 }
             })
-            let  tempObj = {params:this.paramOutterList} 
+            let tempObj = this.getCellModelInfo('bindData')
+            tempObj.params = this.paramOutterList
             this.setCellModelInfo('bindData',tempObj)
         },
         modelSelectChange(modelIndex,stateIndex) {

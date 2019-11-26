@@ -317,9 +317,11 @@ export default{
                 this.$refs.materialroom.init()
             })
         },
-        triggerCancel() {
+        triggerCancel(data) {
             this.ifshowmarerial = false
-            VueEvent.$emit('select-nodetype') // 兄弟组件传值 改变节点类型 晴空指派方式
+            if(data === true) {
+                VueEvent.$emit('select-nodetype')
+            }
         },
         save() {
             this.myEditorUi.saveFile(true)
