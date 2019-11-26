@@ -18,7 +18,7 @@
             class="leftSidebar-addicon" 
             @click="addPageType(1)"
           >
-            {{ $t('leftBar.addPage') }}
+            {{ $t('Add') }}
           </div>
         </TabPane>
         <TabPane 
@@ -29,7 +29,7 @@
             class="leftSidebar-addicon"
             @click="addPageType(2)"
           >
-            {{ $t('leftBar.addPopup') }}
+            {{ $t('Add') }}
           </div>
         </TabPane>
       </Tabs>

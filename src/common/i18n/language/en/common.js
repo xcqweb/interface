@@ -95,8 +95,8 @@ export default {
     alignHorizonCenter: 'Horizontal center',
     alignVerticalSpace: 'Vertical isometric',
     alignHorizonSpace: 'Horizontal isometric',
-    shapeLibrary: 'Shape library',
-    materialLibrary: 'Material library',
+    shapeLibrary: 'Shape lib',
+    materialLibrary: 'Material lib',
     pleaseInput: 'Please Input',
     logic: 'Logic',
     rangeValue:'Range value',
@@ -105,5 +105,5 @@ export default {
     chartShape: 'Icon Shape',
     pageTemplate: 'Page template',
     popupTemplate: 'Popup template',
-    addShapes: 'Add Shape Library'
+    addShapes: 'Add Shape'
 }

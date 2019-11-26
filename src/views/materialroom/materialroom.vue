@@ -237,10 +237,10 @@
         class="materialModelMenu"
       >
         <li class="pop-menu rename" @click="popReanme">
-          重命名
+          {{$t('rename')}}
         </li>
         <li class="pop-menu delete" @click="popDel">
-          删除
+          {{$t('delete')}}
         </li>
       </ul>
     </Modal>
