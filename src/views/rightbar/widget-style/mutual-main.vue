@@ -8,7 +8,7 @@
         class="title"
         @click="addEvents"
       >
-        <img src="../../../assets/images/rightsidebar/plus_ic.png"> 添加点击事件
+        <img src="../../../assets/images/rightsidebar/plus_ic.png"> {{`${$t('add')}${$t('click')}${$t('state')}`}}
       </div>
       <div
         v-for="(e,index) in events"

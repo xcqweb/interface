@@ -5,7 +5,7 @@
         class="data-sources-listname"
       >
         <span>
-          设备类型
+          {{$t('deviceType')}}
         </span>
       </div>
       <div>
@@ -25,7 +25,7 @@
       </div>
       <div class="data-sources-listname">
         <span>
-          设备型号
+          {{$t('deviceModal')}}
         </span>
       </div>
       <div>
@@ -44,7 +44,7 @@
       </div>
       <div class="data-sources-listname">
         <span>
-          {{ "设备名称" }}
+          {{ $t('deviceName') }}
         </span>
       </div>
     </div>
@@ -53,7 +53,7 @@
         <Input
           v-model.trim="dName"
           size="small"
-          placeholder="搜索设备名称"
+          :placeholder="`${$t('search')}${$t('deviceName')}`"
         />
       </div>
       <div

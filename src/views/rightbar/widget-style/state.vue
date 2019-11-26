@@ -4,7 +4,7 @@
       class="title"
       @click="addStateFun"
     >
-      <img src="../../../assets/images/rightsidebar/plus_ic.png"> 添加状态
+      <img src="../../../assets/images/rightsidebar/plus_ic.png"> {{$t('add') + $t('state')}}
     </div>
     <template
       v-for="(state,index) in states"

@@ -1,4 +1,5 @@
 export default {
+    click: 'Click',
     lang: 'Chinese',
     page: 'page',
     popup: 'Popup',
