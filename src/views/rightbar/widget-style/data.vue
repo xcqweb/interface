@@ -178,9 +178,9 @@ export default{
                 id: this.model.deviceModelId,
                 name: this.modelData[this.modelData.findIndex(item=>{return item.deviceModelId == this.model.deviceModelId})].deviceModelName
             }
-            objData.deviceNameChild = []
+            objData.deviceNameChild = {}
             this.checkModelArr.forEach((item) => {
-                objData.deviceNameChild.push({id:item,name:this.deviceData[this.deviceData.findIndex(d=>{return d.deviceId == item})].deviceName})
+                objData.deviceNameChild = {id:item,name:this.deviceData[this.deviceData.findIndex(d=>{return d.deviceId == item})].deviceName}
             })
             if (objData) {
                 VueEvent.$emit('emitDataSourceFooter', objData)
