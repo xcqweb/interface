@@ -87,8 +87,8 @@ export default {
             selectedItems: [],
             params: [],
             listStyle: {
-                width: '292px',
-                height: '400px',
+                width: '300px',
+                height: '390px',
                 backgroundColor: '#fff',
             },
             deviceParamsData: null,
