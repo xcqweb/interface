@@ -245,9 +245,10 @@ export default {
                 this.ruleData.forEach(param => {
                     const data = this.model.data.filter(item => item.key === param.key);
                     if (data && data.length > 0) {
-                        this.assign(param, data[0]);
+                        newData.push(data[0]);
+                    } else {
+                        newData.push(this.assign({}, param));
                     }
-                    newData.push(param);
                 });
                 this.model.data = newData;
             }
