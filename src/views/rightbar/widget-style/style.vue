@@ -1339,6 +1339,7 @@ export default {
             let yAxisMax = Math.max(...markValArr,...bindChartProps.series[0].data)
             bindChartProps.yAxis.max = yAxisMax
             cellEchart.setOption(bindChartProps)
+            this.setWidgetProps("chartProps",bindChartProps)
         },
         addMark() {//折线chart 添加标线
             this.isAddMark = true
@@ -1406,6 +1407,7 @@ export default {
         chooseLegend() {
             bindChartProps.legend.show = this.chartLegend
             cellEchart.setOption(bindChartProps)
+            this.setWidgetProps("chartProps",bindChartProps)
             this.initLegendChoose()
         },
         pickStyleColor() {
@@ -1421,6 +1423,7 @@ export default {
                 bindChartProps.xAxis.axisLabel.lineStyle = obj
                 bindChartProps.legend.textStyle = obj
                 cellEchart.setOption(bindChartProps)
+                this.setWidgetProps("chartProps",bindChartProps)
             })
         },
         changeLegendChoose(d,e) {
@@ -1462,6 +1465,7 @@ export default {
             bindChartProps.legend = Object.assign({},tempLegend)
             this.showLegendChoose = false
             cellEchart.setOption(bindChartProps)
+            this.setWidgetProps("chartProps",bindChartProps)
             e.stopPropagation()
         },
         initLegendChoose() {

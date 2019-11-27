@@ -15,6 +15,11 @@
 
 <script>
 //mxgraph editor
+window.basePath = './static'
+window.mxDefaultLanguage = 'zh'
+window.mxLoadResources = false
+window.mxClient.languages = ['zh','en']
+
 import '../services/editor/Init'
 import '../services/editor/EditorUi'
 import '../services/editor/Editor'

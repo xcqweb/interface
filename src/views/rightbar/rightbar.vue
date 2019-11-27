@@ -176,7 +176,7 @@ export default {
                 if(cells[i].id != 0 && cells[i].id != 1) {
                     let echartsDom = document.querySelector(`.widget-chart.chart${cells[i].id}`)
                     if(!echartsDom) {
-                        return
+                        continue
                     }
                     echartsDom.style.width = `${cells[i].geometry.width}px`
                     echartsDom.style.height = `${cells[i].geometry.height}px`

@@ -335,11 +335,12 @@ function dealCharts(cell) {
         let myEchart = echarts.init(con)
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params) {
             let titleShow = cell.bindData.params[0].paramName
+            let paramId = cell.bindData.params[0].paramId
+            let paramType = cell.bindData.params[0].paramType
             let titleShowId = cell.bindData.params[0].deviceParamId
-            let devices = cell.bindData.dataSource.deviceNameChild
+            let device = cell.bindData.dataSource.deviceNameChild
             if (cell.shapeName == 'lineChart') {
-                let deviceTypeId = cell.bindData.dataSource.deviceTypeChild.id
-                requestUtil.get(`${urls.timeSelect.url}${deviceTypeId}`).then(res => {
+                requestUtil.get(`${urls.timeSelect.url}${paramId}`,{paramType:paramType == 'device' ? 0 : 1}).then(res => {
                     let checkItem = res.durations.find((item) => {
                         return item.checked === true
                     })
@@ -358,34 +359,26 @@ function dealCharts(cell) {
                         markLineMax = Math.max(...markValArr)
                     }
                     tempOptions.legend.data = tempLegend
-                    devices.forEach((item,index) => {
-                        tempLegend.push(item.name)
-                        tempSeries.push({
-                            type: 'line',
-                            name: item.name,
-                            markLine: markLine,
-                            data: [],
-                            deviceId: item.id, //设备id，额外添加的，匹配数据时候用
-                        })
-                        let pentSdbParams = {
-                            paramIds: [titleShowId],
-                            period:checkItem.duration,
+                    tempLegend.push(device.name)
+                    tempSeries.push({
+                        type: 'line',
+                        name: device.name,
+                        markLine: markLine,
+                        data: [],
+                        deviceId: device.id, //设备id，额外添加的，匹配数据时候用
+                    })
+                    let pentSdbParams = {
+                        paramIds: [titleShowId],
+                        period: checkItem.duration,
+                    }
+                    requestUtil.post(`${urls.pentSdbData.url}`, [pentSdbParams]).then(res => {
+                        for (let key in res.resMap) {
+                            tempOptions.xAxis.data.push(timeFormate(key))
+                            tempSeries[0].data.push(res.resMap[key])
                         }
-                        requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
-                            for (let key in res.resMap) {
-                                if(index === 0) {
-                                    tempOptions.xAxis.data.push(timeFormate(key))
-                                }
-                                tempSeries[index].data.push(res.resMap[key])
-                            }
-                            if(index === 0) {
-                                tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
-                            }
-                            if (index == devices.length - 1) {
-                                tempOptions.series = tempSeries
-                                myEchart.setOption(tempOptions)
-                            }
-                        })
+                        tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
+                        tempOptions.series = tempSeries
+                        myEchart.setOption(tempOptions)
                     })
                 })
             }else {
