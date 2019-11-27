@@ -234,7 +234,7 @@ class PreviewPage {
     subscribeData() {
         if (this.cachCells.length) {
             let modelIdsParam = new Map()
-            let allModels = {}
+            let allModels = new Map()
             this.cachCells.forEach(item=>{
                 let deviceId = item.bindData.dataSource.deviceNameChild.id
                 let statesInfo = item.statesInfo
@@ -256,10 +256,23 @@ class PreviewPage {
                 if (res && res.returnObj) {
                     let params = []
                     res.returnObj.forEach(item=>{
-                        allModels[item.sourceId] = item
+                        allModels.set(item.sourceId,item)
                         if (item.formula) {
                             params = params.concat((this.dealModelFormulaFun(modelIdsParam,item.sourceId,item.formula)))
                         }
+                    })
+                    this.cachCells.forEach(item=>{
+                        let cellStateInfoHasModel = []
+                        let statesInfo = item.statesInfo
+                        if (statesInfo && statesInfo.length) {
+                            cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
+                            statesInfo.forEach((item) => {
+                                if (item.modelFormInfo) {
+                                    cellStateInfoHasModel.push(item)
+                                }
+                            })
+                        }
+                        $(`palette_${item.id}`).data("stateModels", cellStateInfoHasModel)
                     })
                     requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
                         let resParam = [],maps = new Map()
@@ -270,7 +283,7 @@ class PreviewPage {
                             }else{
                                 maps.set(deviceId, [dpId])
                             }
-                            for(let key of maps.values) {
+                            for (let key of maps.keys()) {
                                 resParam.push({
                                     deviceId:key,
                                     params:maps.get(key)
@@ -544,9 +557,7 @@ class PreviewPage {
             let paramShow = []
             if (cell.bindData.params) {
                 let defaultParamIndex = 0
-                cell.bindData.params.forEach((item)=>{
-                    paramShow.push({paramName: item.paramName, paramId: item.deviceParamId})
-                })
+                paramShow = cell.bindData.params
                 let singleParamShow = ['progress', 'lineChart', 'gaugeChart']
                 if (!singleParamShow.includes(shapeName)) {
                     defaultParamIndex = cell.bindData.params.findIndex(item => {
@@ -577,13 +588,15 @@ class PreviewPage {
         return cellHtml
     }
     initWsParams(cellHtml, device, paramShow) {
-        let dealParamShow = paramShow.map(item=>{
-            return item.deviceParamId
+        let dealParamShow = []
+        paramShow.forEach(item=>{
+            if (item.deviceParamId) {
+                dealParamShow.push(item.deviceParamId)
+            }
         })
         cellHtml.className += ` device_${device.id}`
-        let resArr
-        resArr = Array.from(new Set(dealParamShow))
-        if (resArr.length) {
+        if(dealParamShow.length) {
+            let resArr = Array.from(new Set(dealParamShow))
             this.wsParams.push({
                 deviceId: device.id,
                 params: resArr

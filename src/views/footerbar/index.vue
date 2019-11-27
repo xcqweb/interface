@@ -21,7 +21,7 @@
             </Tabs>
           </div>
           <div
-            v-if="tabsNum==1 && deviceModelId"
+            v-if="tabsNum==1 && deviceModelId && footerContent"
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
@@ -247,7 +247,8 @@ export default {
                 },
                 {
                     title:'参数类型',
-                    key: 'paramType',
+                    slot: 'paramType',
+                    key:'paramType',
                 },
                 {
                     title: `所属部件`,

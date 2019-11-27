@@ -1,5 +1,5 @@
 import {geAjax,toDecimal2NoZero,dealLightFill,throttleFun} from './util'
-import {getCookie,throttle} from '../Utils'
+import {getCookie} from '../Utils'
 import echarts from 'echarts'
 
 //获取websocket连接信息
@@ -20,11 +20,11 @@ function dealdeviceParams(deviceParams) {
     deviceParams.forEach(item => {
         let obj = {
             deviceId: item.deviceId,
-            keys: item.params
+            paramIds: item.params
         }
         if (maps.has(item.deviceId)) {
             let tempObj = maps.get(item.deviceId)
-            tempObj.keys = Array.from(new Set(tempObj.keys.concat(obj.keys)))
+            tempObj.paramIds = Array.from(new Set(tempObj.paramIds.concat(obj.paramIds)))
             maps.set(item.deviceId, tempObj)
         } else {
             maps.set(item.deviceId, obj)
@@ -47,7 +47,6 @@ async function getSubscribeInfos(deviceParams) {
     for (let item of maps.values()) {
         item.subscribeType = 'realtime_datahub'
         item.pushRate = 500
-        item.params = item.keys
         item.sourceId = item.deviceId
         params.subscribeInfos.push(item)
     }
@@ -56,9 +55,21 @@ async function getSubscribeInfos(deviceParams) {
     websocketUrlReal = data.data
     return data
 }
-//绑定数据&切换状态的处理方法
 function setterRealData(res, fileSystem) {
-    res.forEach((item)=>{
+    let maps = new Map()
+    let targetArr = []
+    res.forEach(item=>{
+        if (maps.has(item.deviceId)) {
+            let tempObj = maps.get(item.deviceId)
+            maps.set(item.deviceId, Object.assign({},tempObj,item))
+        } else {
+            maps.set(item.deviceId, item)
+        }
+    })
+    for(let val of maps.values()) {
+        targetArr.push(val)
+    }
+    targetArr.forEach((item)=>{
         let els = document.querySelectorAll(`.device_${item.deviceId}`)
         for(let i = 0;i < els.length;i++) {
             let shapeName = $(els[i]).data("shapeName")
@@ -66,7 +77,7 @@ function setterRealData(res, fileSystem) {
             let paramShowDefault = $(els[i]).data("paramShowDefault")
             let val = null
             if (paramShowDefault) {
-                val = item[paramShowDefault.paramId]
+                val = item[paramShowDefault.deviceParamId]
             }
             if(shapeName == 'progress') {//进度条
                 if(!val) {
@@ -143,7 +154,7 @@ function setterRealData(res, fileSystem) {
                         formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + 
                             `<li>${item.timestamp}</li>` +
                             paramShow.map((d) => {
-                                return `<li>${d.paramname}=${item[d.paramId]}</li>`
+                                return `<li>${d.paramName}=${item[d.deviceParamId]}</li>`
                             }).join('') + "</ul>")
                     }
                     let formatLayerShow = (e)=>{
@@ -322,10 +333,7 @@ function initialWs(ws, pageId, applyData, fileSystem) {
         if (dataArr[0] === 'rspCode' || dataArr[1] === 'rspMsg') {
             return
         }
-        let fun = ()=>{
-            setterRealData(JSON.parse(res.data), fileSystem)
-        }
-        throttle(fun, 600)
+        setterRealData(JSON.parse(res.data), fileSystem)
     }
     // 接收异常
     ws.onerror = function() {

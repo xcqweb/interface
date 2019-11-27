@@ -335,7 +335,7 @@ function dealCharts(cell) {
         let myEchart = echarts.init(con)
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params) {
             let titleShow = cell.bindData.params[0].paramName
-            let titleShowId = cell.bindData.params[0].paramId
+            let titleShowId = cell.bindData.params[0].deviceParamId
             let devices = cell.bindData.dataSource.deviceNameChild
             if (cell.shapeName == 'lineChart') {
                 let deviceTypeId = cell.bindData.dataSource.deviceTypeChild.id
@@ -368,7 +368,7 @@ function dealCharts(cell) {
                             deviceId: item.id, //设备id，额外添加的，匹配数据时候用
                         })
                         let pentSdbParams = {
-                            paramids: [titleShowId],
+                            paramIds: [titleShowId],
                             period:checkItem.duration,
                         }
                         requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {

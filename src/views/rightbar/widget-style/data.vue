@@ -5,7 +5,7 @@
         class="data-sources-listname"
       >
         <span>
-          {{$t('deviceType')}}
+          {{ $t('deviceType') }}
         </span>
       </div>
       <div>
@@ -25,7 +25,7 @@
       </div>
       <div class="data-sources-listname">
         <span>
-          {{$t('deviceModal')}}
+          {{ $t('deviceModal') }}
         </span>
       </div>
       <div>
@@ -150,9 +150,7 @@ export default{
                 this.model.deviceModelId = this.bindData.dataSource.deviceTypeChild.id
                 let bindDeviceNames = this.bindData.dataSource.deviceNameChild
                 this.checkModelArr.splice(0)
-                bindDeviceNames.forEach(item=>{
-                    this.checkModelArr.push(item.id)
-                })
+                this.checkModelArr.push(bindDeviceNames.id)
             }
         },
         bindDeviceNameHandle() {
