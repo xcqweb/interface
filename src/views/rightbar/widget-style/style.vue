@@ -772,7 +772,6 @@ export default {
             progressTypeVal:'percent',
             progressDialogList:[{name:'百分比',value:'percent'},{name:'实际数值',value:'real'}],
             linkUrl:"",
-            bindChartProps2:null,
             chartLegend:true,
             markLineList:[],//标线 line-chart
             isAddMark:false,
@@ -867,11 +866,26 @@ export default {
         }else if(this.shapeName.includes('Chart')) {
             bindChartProps = this.getWidgetProps('chartProps')
             if(bindChartProps) {
-                this.bindChartProps2  = Object.assign({},bindChartProps)
                 if(this.shapeName == 'gaugeChart') {
                     this.progressMin = bindChartProps.series.min
                     this.progressMax = bindChartProps.series.max
-                } 
+                } else{
+                    this.chartLegend = bindChartProps.legend.show
+                    this.styleColorBg = bindChartProps.yAxis.splitLine.lineStyle.color
+                    let lineData = bindChartProps.series[0].markLine.data
+                    if(lineData.length) {
+                        lineData.forEach((item)=>{
+                            this.markLineList.push({
+                                markName:item.label,
+                                markValue:item.yAxis,
+                                borderColor:item.lineStyle.color,
+                                borderLineCls:item.lineStyle.type === 'solid' ? 'border-line' : 'border-dash',
+                                borderLineBoldText:item.lineStyle.width,
+                            })
+                        })
+                    }
+                    this.initLegendChoose()
+                }
             }
             this.initChartDom()
         }else if(this.shapeName == 'linkTag') {
@@ -1435,7 +1449,7 @@ export default {
             
                 }
             }
-            tempLegend.mtype = d.type
+            tempLegend.mType = d.type
             switch(d.type) {
                 case 1:
                     tempLegend.x = 'center'
@@ -1469,8 +1483,8 @@ export default {
             e.stopPropagation()
         },
         initLegendChoose() {
-            let mtype = bindChartProps.legend.mtype || 1
-            this.legendChooseText = this.legendChooseList[mtype - 1].text
+            let mType = bindChartProps.legend.mType || 1
+            this.legendChooseText = this.legendChooseList[mType - 1].text
         },
         hideLegendChooseFun() {
             this.showLegendChoose = false
