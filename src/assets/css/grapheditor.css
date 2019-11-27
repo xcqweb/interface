@@ -872,7 +872,7 @@ div.mxWindow .geButton {
 	top: 24px;
 }
 .en .page-tab::after {
-	content: 'page';
+	content: 'Page';
 }
 .data-tab::after {
 	content: "数据源";
