@@ -365,7 +365,7 @@ function dealCharts(cell) {
                             name: item.name,
                             markLine: markLine,
                             data: [],
-                            pointId: item.id, //设备id，额外添加的，匹配数据时候用
+                            deviceId: item.id, //设备id，额外添加的，匹配数据时候用
                         })
                         let pentSdbParams = {
                             paramids: [titleShowId],
@@ -455,7 +455,23 @@ function timeFormate(time) {
     const cmSecond = timeEle.getUTCMilliseconds()
     return `${year}/${month > 9 ? month : '0' + month}/${day > 9 ? day : '0' + day} ${hours > 9 ? hours : '0' + hours}:${minute > 9 ? minute : '0' + minute}:${second > 9 ? second : '0' + second}.${cmSecond}`
 }
+//获取设备id
+function getDeviceId(dpId) {
+    const HEADER_SPLITE = ":"
+    const CENTER_SPLITE = "|"
+    const INVENTED_PARAM = "VP"
+    const DEVICE_PARAM = "P"
+    let strs,deviceId
+    if (dpId.includes(INVENTED_PARAM + HEADER_SPLITE)) {
+        dpId = dpId.substring(3)
+    } else if (dpId.includes(DEVICE_PARAM + HEADER_SPLITE)) {
+        dpId = dpId.substring(2)
+    }
+    strs = dpId.split("\\" + CENTER_SPLITE)
+    deviceId = strs[0]
+    return deviceId
+}
 export {
     removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips,
-    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill, throttleFun, hideFrameLayout
+    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill, throttleFun, hideFrameLayout, getDeviceId
 }

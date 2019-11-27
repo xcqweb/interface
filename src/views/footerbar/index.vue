@@ -100,9 +100,7 @@
                   v-else
                   :value="true"
                   disabled
-                >
-                  {{ $t('defaultDisplay') }}
-                </Checkbox>
+                />
               </template>
               <template
                 slot="actions"
@@ -333,8 +331,7 @@ export default {
                 }
             } else {
                 if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
-                    let deviceNameChild = startBindData.dataSource.deviceNameChild || []
-                    startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
+                    startBindData.dataSource.deviceNameChild = value.deviceNameChild
                     startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
                     startBindData.dataSource.deviceModel = value.deviceModel
                     this.setCellModelInfo('bindData',startBindData)
@@ -392,17 +389,15 @@ export default {
             let startBindData = this.getCellModelInfo('bindData')
             console.log(startBindData)
             if (startBindData && startBindData.dataSource) {
-                let deviceNameChild = startBindData.dataSource.deviceNameChild || []
+                let deviceNameChild = startBindData.dataSource.deviceNameChild
                 this.deviceModelId  = startBindData.dataSource.deviceModel.id
-                this.deviceId = deviceNameChild[0].id
+                this.deviceId = deviceNameChild.id
                 this.dataSourceList = []
-                deviceNameChild.forEach((item) => {
-                    let obj = {}
-                    obj.typeName = startBindData.dataSource.deviceTypeChild.name 
-                    obj.deviceName = item.name
-                    obj.modelName = startBindData.dataSource.deviceModel.name 
-                    this.dataSourceList.push(obj)
-                })
+                let obj = {}
+                obj.typeName = startBindData.dataSource.deviceTypeChild.name 
+                obj.deviceName = deviceNameChild.name
+                obj.modelName = startBindData.dataSource.deviceModel.name 
+                this.dataSourceList.push(obj)
             } else {
                 this.deviceModelId = null
                 this.dataSourceList = []
@@ -451,7 +446,6 @@ export default {
             }else{
                 this.multiple = true
             }
-            console.log(this.multiple,"tt-aa")
         },
         addParamDone(data) {
             let isFirstCheck = false
@@ -466,6 +460,7 @@ export default {
                     partName:item.partName,
                     key:item.key,
                     transportSourceId:item.transportSourceId,
+                    deviceParamId:item.deviceParamId,
                     type:false,
                 })
             })

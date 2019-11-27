@@ -22,5 +22,6 @@ export default {
     pentSdbData: {url: '/api/v2/persist/tsdb/data/keys', 'desc':'趋势图的历史数据'},
     normalParam: {url: '/api/device/deviceModel/param/normal/select', 'desc': '获取设备参数'},
     fictitiousParam: {url: 'api/device/deviceModel/param/fictitious/select', 'desc': '获取虚拟参数'},
+    deviceParamGenerate: {url: 'api/index/deviceParam', 'desc': '生成拼接的设备参数接口'},
    
 }

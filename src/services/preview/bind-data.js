@@ -5,30 +5,29 @@ import echarts from 'echarts'
 //获取websocket连接信息
 let websocketUrlReal = ''
 //获取最后一笔数据
-async function getLastData(pointParams, fileSystem) {
+async function getLastData(deviceParams, fileSystem) {
     let paramIds = []
-    let maps = dealPointParams(pointParams)
+    let maps = dealdeviceParams(deviceParams)
     for (let item of maps.values()) {
         paramIds.push(item)
     }
-    let params = []
-    const res = await geAjax('/api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(params))
+    const res = await geAjax('/api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(paramIds))
     setterRealData(res,fileSystem)
 }
 
-function dealPointParams(pointParams) {
+function dealdeviceParams(deviceParams) {
     let maps = new Map()
-    pointParams.forEach(item => {
+    deviceParams.forEach(item => {
         let obj = {
-            pointId: item.pointId,
+            deviceId: item.deviceId,
             keys: item.params
         }
-        if (maps.has(item.pointId)) {
-            let tempObj = maps.get(item.pointId)
+        if (maps.has(item.deviceId)) {
+            let tempObj = maps.get(item.deviceId)
             tempObj.keys = Array.from(new Set(tempObj.keys.concat(obj.keys)))
-            maps.set(item.pointId, tempObj)
+            maps.set(item.deviceId, tempObj)
         } else {
-            maps.set(item.pointId, obj)
+            maps.set(item.deviceId, obj)
         }
     })
     return maps
@@ -39,17 +38,17 @@ function dealPointParams(pointParams) {
  * @param {*} isReal 是否是实时数据
  * @param {*} modeId 绑定数据时候 viewTool/model/serach 返回的 模型id
  */
-async function getSubscribeInfos(pointParams) {
+async function getSubscribeInfos(deviceParams) {
     let params = {
         subscribeInfos: [],
         networkProtocol: 'websocket',
     };
-    let maps = dealPointParams(pointParams)
+    let maps = dealdeviceParams(deviceParams)
     for (let item of maps.values()) {
         item.subscribeType = 'realtime_datahub'
         item.pushRate = 500
         item.params = item.keys
-        item.sourceId = item.pointId
+        item.sourceId = item.deviceId
         params.subscribeInfos.push(item)
     }
     let data = await geAjax('/api/pubsub/subscribe', 'POST', JSON.stringify(params))
@@ -60,7 +59,7 @@ async function getSubscribeInfos(pointParams) {
 //绑定数据&切换状态的处理方法
 function setterRealData(res, fileSystem) {
     res.forEach((item)=>{
-        let els = document.querySelectorAll(`.point_${item.pointId}`)
+        let els = document.querySelectorAll(`.device_${item.deviceId}`)
         for(let i = 0;i < els.length;i++) {
             let shapeName = $(els[i]).data("shapeName")
             let paramShow = $(els[i]).data("paramShow")
@@ -100,7 +99,7 @@ function setterRealData(res, fileSystem) {
                     if(shapeName == 'lineChart') {
                         let chartDataLen = $(els[i]).data("chartDataLen")
                         options.series.forEach((ser)=>{
-                            if (ser.pointId == item.pointId) {
+                            if (ser.deviceId == item.deviceId) {
                                 if(ser.data.length >= chartDataLen) {
                                     ser.data.shift()
                                 }
@@ -340,9 +339,9 @@ function initialWs(ws, pageId, applyData, fileSystem) {
 
 //实时数据
 function createWsReal(pageId, applyData, fileSystem) {
-    let pointParams = applyData[pageId].wsParams
-    getSubscribeInfos(pointParams).then((res) => {
-        if (pointParams.length === 0 || !websocketUrlReal) {
+    let deviceParams = applyData[pageId].wsParams
+    getSubscribeInfos(deviceParams).then((res) => {
+        if (deviceParams.length === 0 || !websocketUrlReal) {
             return
         }
         const token = getCookie('token')

@@ -7,7 +7,7 @@ let fileSystem //文件服务器host
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
-import {removeEle, destroyWs, insertImage, insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout} from './util'
+import {removeEle, destroyWs, insertImage, getDeviceId,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout} from './util'
 import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -22,6 +22,7 @@ class PreviewPage {
         this.content = parseContent.pages
         this.pagesRank = parseContent.rank
         this.wsParams = []
+        this.cachCells = []
         this.currentPageId = ''
         this.mainProcess = mainProcess
         this.gePreview = gePreview
@@ -231,13 +232,102 @@ class PreviewPage {
         document.getElementById('geDialogs').innerHTML = ''
     }
     subscribeData() {
+        if (this.cachCells.length) {
+            let modelIdsParam = new Map()
+            let allModels = {}
+            this.cachCells.forEach(item=>{
+                let deviceId = item.bindData.dataSource.deviceNameChild.id
+                let statesInfo = item.statesInfo
+                let tempArr = []
+                statesInfo.forEach((d) => {
+                    if (d.modelFormInfo) {
+                        tempArr.push(d.modelFormInfo)
+                    }
+                })
+                if(tempArr.length) {
+                    modelIdsParam.set(tempArr.join("_"), deviceId)
+                }
+            })
+            let modelAllIds = []
+            for (let key of modelIdsParam.keys()) {
+                modelAllIds = modelAllIds.concat(key.split("_"))
+            }
+            requestUtil.post(urls.getModelByIds.url, modelAllIds).then((res) => {
+                if (res && res.returnObj) {
+                    let params = []
+                    res.returnObj.forEach(item=>{
+                        allModels[item.sourceId] = item
+                        if (item.formula) {
+                            params = params.concat((this.dealModelFormulaFun(modelIdsParam,item.sourceId,item.formula)))
+                        }
+                    })
+                    requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
+                        let resParam = [],maps = new Map()
+                        res.forEach(dpId=>{
+                            let deviceId = getDeviceId(dpId)
+                            if (maps.has(deviceId)) {
+                                maps.set(deviceId, maps.get(deviceId).push(dpId))
+                            }else{
+                                maps.set(deviceId, [dpId])
+                            }
+                            for(let key of maps.values) {
+                                resParam.push({
+                                    deviceId:key,
+                                    params:maps.get(key)
+                                })
+                            }
+                        })
+                        this.subscribeDataDeal(resParam)
+                    })
+                }
+            },()=>{
+                this.subscribeDataDeal()
+            })
+        }else{
+            this.subscribeDataDeal()
+        }
+       
+    }
+    dealModelFormulaFun(modelIdsParam,modelId,formula) {
+        let formulaAttr = JSON.parse(formula)
+        let res = []
+        let deviceId
+        for (let key of modelIdsParam.keys()) {
+            let tempArr = key.split("_")
+            let resIndex = tempArr.findIndex((item)=>{
+                return item == modelId
+            })
+            if (resIndex != -1) {
+                deviceId = modelIdsParam.get(key)
+                break
+            }
+        }
+        formulaAttr.data.forEach(item=>{
+            let keyArr = item.key.split('/')
+            let paramId = null
+            if(keyArr.length > 2) {
+                paramId = keyArr[1]
+            }
+            res.push({
+                paramType: keyArr[0] == 'device' ? 0 : 1,
+                deviceId: deviceId,
+                partId: paramId,
+                paramId: keyArr[keyArr.length - 1]
+            })
+        })
+        return res
+    }
+    subscribeDataDeal(res) {
+        if(res && res.length) {
+            this.wsParams = this.wsParams.concat(res)
+        }
         applyData[this.currentPageId] = {
             wsReal: '',
             data: {},
             wsParams: this.wsParams,
             lockWs: false
         }
-        if(this.wsParams.length) {
+        if (this.wsParams.length) {
             createWsReal(this.currentPageId, applyData, fileSystem)
             getLastData(this.wsParams, fileSystem) //低频数据 通过调用最后一笔数据显示
         }
@@ -254,7 +344,10 @@ class PreviewPage {
         let contentHeight = xmlDoc.getAttribute('pageHeight')
         // 页面宽度和高度
         let cells = this.parseCells(root)
+
         this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
+        this.cachCells = []
+        
         if (page.type === 'normal') {
             // 清除全部websocket 和页面内容 、页面上的弹窗
             this.clearPage()
@@ -276,11 +369,7 @@ class PreviewPage {
             layerContent.innerHTML = ''
             this.renderPages(cells, layerContent)
         }
-        $(() => {
-            setTimeout(()=>{
-                this.subscribeData()
-            },600)
-        })
+        this.subscribeData()
         return cells
     }
     // 渲染页面
@@ -451,13 +540,12 @@ class PreviewPage {
         // 绑定事件
         bindEvent(cellHtml, cell, this.mainProcess, applyData,fileSystem)
         $(cellHtml).data("shapeName",shapeName)
-        if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild) {
-            let devices = cell.bindData.dataSource.deviceNameChild
+        if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild) {
             let paramShow = []
             if (cell.bindData.params) {
                 let defaultParamIndex = 0
                 cell.bindData.params.forEach((item)=>{
-                    paramShow.push({paramName:item.paramName,paramId:item.paramId})
+                    paramShow.push({paramName: item.paramName, paramId: item.deviceParamId})
                 })
                 let singleParamShow = ['progress', 'lineChart', 'gaugeChart']
                 if (!singleParamShow.includes(shapeName)) {
@@ -468,69 +556,37 @@ class PreviewPage {
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
                 $(cellHtml).data("paramShow", paramShow)
             }
-            let resParams = []
-            let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
             let modelIdsParam = []
             let statesInfo = cell.statesInfo
+            let device = cell.bindData.dataSource.deviceNameChild
             if (statesInfo && statesInfo.length) {
-                cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
                 statesInfo.forEach((item)=>{
                     if (item.modelFormInfo) {
-                        cellStateInfoHasModel.push(item)
                         modelIdsParam.push(item.modelFormInfo)
                     }
                 })
                 if (modelIdsParam.length) {
-                    requestUtil.post(urls.getModelByIds.url, modelIdsParam).then((res) => {
-                        res.returnObj.forEach((item, index) => {
-                            cellStateInfoHasModel[index + 1].modelFormInfo = item
-                            let formulaAttr
-                            if (item.formula) {
-                                formulaAttr = JSON.parse(item.formula)
-                            }
-                            let flatFormulaAttr = []
-                            if (formulaAttr) {
-                                formulaAttr.data.forEach((item) => {
-                                    flatFormulaAttr = flatFormulaAttr.concat(...item)
-                                })
-                                flatFormulaAttr.forEach((d) => {
-                                    resParams.push(d.paramId)
-                                })
-                            }
-                        })
-                        $(cellHtml).data("stateModels", cellStateInfoHasModel)
-                        this.initWsParams(cellHtml,devices, paramShow, resParams)
-                    },()=>{
-                        this.initWsParams(cellHtml, devices, paramShow)
-                    })
+                    this.cachCells.push(cell)
                 }else{
-                    this.initWsParams(cellHtml, devices, paramShow)
+                    this.initWsParams(cellHtml, device, paramShow)
                 }
             }else{
-                this.initWsParams(cellHtml, devices,paramShow)
+                this.initWsParams(cellHtml, device,paramShow)
             }
         }
         return cellHtml
     }
-    initWsParams(cellHtml, devices, paramShow, resParams) {
+    initWsParams(cellHtml, device, paramShow) {
         let dealParamShow = paramShow.map(item=>{
-            return item.paramId
+            return item.deviceParamId
         })
-        if (devices) {
-            devices.forEach((item) => {
-                cellHtml.className += ` point_${item.id}`
-                let resArr
-                if (resParams && resParams.length) {
-                    resArr = Array.from(new Set(resParams.concat(dealParamShow)))
-                }else{
-                    resArr = Array.from(new Set(dealParamShow))
-                }
-                if (resArr.length) {
-                    this.wsParams.push({
-                        pointId: item.id,
-                        params: resArr
-                    })
-                }
+        cellHtml.className += ` device_${device.id}`
+        let resArr
+        resArr = Array.from(new Set(dealParamShow))
+        if (resArr.length) {
+            this.wsParams.push({
+                deviceId: device.id,
+                params: resArr
             })
         }
     }
