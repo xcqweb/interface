@@ -1605,15 +1605,15 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         //     return this.createEdgeTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '曲线');
 	 	// })),
         // 指示灯
-        this.createVertexTemplateEntry('shape=light;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/light.svg', 72, 72, '', '指示灯'),
+        this.createVertexTemplateEntry('shape=light;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/light.svg', 72, 72, '', '指示灯'),
         // 进度条
         this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/progress.svg', 72, 16, '', '进度条'),
         // 管道1
         this.createVertexTemplateEntry('shape=pipeline1;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline1.svg', 72, 36, '', '管道1'),
         // 管道2
-        this.createVertexTemplateEntry('shape=pipeline2;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline2.svg', 72, 72, '', '管道2'),
+        this.createVertexTemplateEntry('shape=pipeline2;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline2.svg', 72, 72, '', '管道2'),
         // 管道3
-        this.createVertexTemplateEntry('shape=pipeline3;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline3.svg', 60, 40, '', '管道3'),
+        this.createVertexTemplateEntry('shape=pipeline3;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline3.svg', 60, 40, '', '管道3'),
         // 链接
         this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
     ];
@@ -1652,7 +1652,7 @@ Sidebar.prototype.addUserPalette = function (expand) {
             res.forEach(item=>{
                 let array = []
                 item.materialList.forEach(d=>{
-                    array.push(this.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl}`, d.picWidth ? parseInt(d.picWidth / 1.5) : 300, d.picHeight ? parseInt(d.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
+                    array.push(this.createVertexTemplateEntry(`shape=userimage;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl}`, d.picWidth ? parseInt(d.picWidth / 1.5) : 300, d.picHeight ? parseInt(d.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
                 })
                 this.addPaletteFunctions('user', `${item.libraryName}`, false, array)
             })

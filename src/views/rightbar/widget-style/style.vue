@@ -731,7 +731,7 @@ import {sureDialog} from '../../../services/Utils'
 let palettName
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
-let picShapeList = ['pipeline2','pipeline3','light','userimage']
+// let picShapeList = ['pipeline2','pipeline3','light','userimage']
 let cellEchart,bindChartProps
 export default {
     components:{
@@ -898,12 +898,12 @@ export default {
                 this.selectMenu = cellProp.check
             }
         }
-        if(picShapeList.includes(this.shapeName)) {
-            graph.setCellStyles(mxConstants.STYLE_ASPECT, 'fixed', graph.getSelectionCells())
-            graph.getModel().beginUpdate()
-            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],'values', ['fixed'], 'cells', graph.getSelectionCells()))
-            graph.getModel().endUpdate()
-        }
+        // if(picShapeList.includes(this.shapeName)) {
+        //     graph.setCellStyles(mxConstants.STYLE_ASPECT, 'fixed', graph.getSelectionCells())
+        //     graph.getModel().beginUpdate()
+        //     this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],'values', ['fixed'], 'cells', graph.getSelectionCells()))
+        //     graph.getModel().endUpdate()
+        // }
         let dblClickFn = graph.dblClick
         graph.dblClick = (evt, cell) => {
             let state = graph.view.getState(cell)
