@@ -387,7 +387,6 @@ function dealCharts(cell) {
                 myEchart.setOption(options)
             }
         }else {
-            console.log(cell.id, "tt-aa",options)
             myEchart.setOption(options)
         }
     })
