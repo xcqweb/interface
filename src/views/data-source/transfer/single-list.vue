@@ -121,8 +121,7 @@ export default {
             return this.showItems.filter(item => this.filterMethod(item, this.query));
         },
         style() {
-            const style = this.listStyle || {};
-            style.width = '100%';
+            const style = Object.assign({}, this.listStyle || {}, {width: '100%'});
             return style;
         },
     },
