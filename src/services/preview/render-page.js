@@ -266,9 +266,10 @@ class PreviewPage {
                         let statesInfo = item.statesInfo
                         if (statesInfo && statesInfo.length) {
                             cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
-                            statesInfo.forEach((item) => {
-                                if (item.modelFormInfo) {
-                                    cellStateInfoHasModel.push(item)
+                            statesInfo.forEach((d) => {
+                                if (d.modelFormInfo) {
+                                    d.modelFormInfo = allModels.get(d.modelFormInfo)
+                                    cellStateInfoHasModel.push(d)
                                 }
                             })
                         }
@@ -376,6 +377,7 @@ class PreviewPage {
             }else{
                 this.gePreview.style.background = viewBackground
             }
+            $(".gePreview_bg").css('background','#606060')
         } else { //点弹窗关闭时候清空的内容和关闭ws连接
             // 弹窗页面
             let layerContent = this.createDialog(page)

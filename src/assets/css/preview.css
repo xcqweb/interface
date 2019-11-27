@@ -5,6 +5,10 @@
   top: 2px;
   overflow: hidden;
 }
+.gePreview_bg{
+  height: 100%;
+  overflow:auto;
+}
 .gePalette {
   position: absolute;
   display: block;

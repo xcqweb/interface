@@ -1,7 +1,5 @@
 <template>
-  <div
-    style="height: 100%;overflow:auto;background:#000;"
-  >
+  <div class="gePreview_bg">
     <!-- 内容主体 -->
     <div id="gePreview">
       <div
