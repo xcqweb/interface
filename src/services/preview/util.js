@@ -372,13 +372,16 @@ function dealCharts(cell) {
                         period: checkItem.duration,
                     }
                     requestUtil.post(`${urls.pentSdbData.url}`, [pentSdbParams]).then(res => {
-                        for (let key in res.resMap) {
-                            tempOptions.xAxis.data.push(timeFormate(key,false))
-                            tempSeries[0].data.push(res.resMap[key])
+                        if(res && res.length) {
+                            let tempArr = res[0]
+                            for (let key in tempArr.resMap) {
+                                tempOptions.xAxis.data.push(timeFormate(key,false))
+                                tempSeries[0].data.push(tempArr.resMap[key])
+                            }
+                            tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
+                            tempOptions.series = tempSeries
+                            myEchart.setOption(tempOptions)
                         }
-                        tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
-                        tempOptions.series = tempSeries
-                        myEchart.setOption(tempOptions)
                     })
                 })
             }else {
@@ -464,7 +467,7 @@ function getDeviceId(dpId) {
     } else if (dpId.includes(DEVICE_PARAM + HEADER_SPLITE)) {
         dpId = dpId.substring(2)
     }
-    strs = dpId.split("\\" + CENTER_SPLITE)
+    strs = dpId.split(CENTER_SPLITE)
     deviceId = strs[0]
     return deviceId
 }

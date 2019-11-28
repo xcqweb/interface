@@ -34,7 +34,7 @@ export default {
     choosePopup: 'Select popup',
     chooseToSet: 'Please select the one you want to set',
     hasBindVisibleOrHideEvent: 'Visible and hide events are already bounded',
-    addClickEvent:'Add click event'
-
+    addClickEvent:'Add click event',
+    corner: 'Corner',
 }
 

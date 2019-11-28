@@ -190,7 +190,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
             defaultColor.style.margin = '6px 0 3px 0';
             defaultColor.style.fontSize = '12px';
             defaultColor.style.color = '#252525';
-            defaultColor.innerText = '最近使用';
+            defaultColor.innerText = mxResources.get('recentlyUsed');
             odiv.appendChild(defaultColor);
         }
         return odiv;
@@ -202,7 +202,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
     defaultColor.style.margin = '6px 0 3px 0';
     defaultColor.style.fontSize = '12px';
     defaultColor.style.color = '#252525';
-    defaultColor.innerText = '默认颜色';
+    defaultColor.innerText = mxResources.get('defaultColor');
     div.appendChild(defaultColor);
     // Adds presets 默认
     addPresets(this.presetColors,9,'#FFFFFF', true, !isShowBtn);

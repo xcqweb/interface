@@ -130,7 +130,7 @@ function sureDialog(editorUi, info, cb, confirmText, cancelText, title = '') {
     cancelText = resource.get('cancel')
   }
   let dlg = new sureContainer(editorUi, info, confirmText, cancelText,cb)
-  editorUi.showDialog(dlg.container, 410, 160, true, false, null, null, title);
+  editorUi.showDialog(dlg.container, 410, 100, true, false, null, null, title);
 }
 /**
  * 

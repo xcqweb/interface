@@ -32,6 +32,7 @@ export default {
     firstColumnCouldNotEmpty: '第一列不能为空',
     firstColumn: '第一列',
     notEditCanNotAddCondition: '非编辑状态，不能添加条件',
+    ruleCouldNotEmpty: '条件 {index} 所有的值不能为空',
     modelNameCanNotEmpty: '模型名称不能为空',
     ruleIsRequired: '请先添加模型条件',
     ruleCanNotEmpty: '{label}的条件请填写完整',

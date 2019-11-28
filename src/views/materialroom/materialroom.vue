@@ -267,7 +267,7 @@ export default {
         return {
             materialAlertName: 'materialLibrary',
             showmarerial: true,
-            madeltext: ['cancel','上传组件'],
+            madeltext: ['cancel',this.$t('materialRoom.uploadWidget')],
             assemblyArrayName: [
                 {
                     name: 'generalShape',
@@ -399,31 +399,31 @@ export default {
         popDel() {
             if(this.popUpType == 1) {
                 let materialLibraryId = this.assemblyArrayName[this.hoverIndex].materialLibraryId
-                sureDialog(this.myEditorUi,`确定要删除组件库-${this.assemblyArrayName[this.hoverIndex].model}`,()=>{
+                sureDialog(this.myEditorUi,`${this.$t('sureDel')}${this.$t('widgetLib')}-${this.assemblyArrayName[this.hoverIndex].model}`,()=>{
                     this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then(res=>{
                         if(res.code == 0) {
                             this.assemblyArrayName.splice(this.hoverIndex,1)
-                            Message.info('删除成功')
+                            Message.info(this.$t('deleteSuccessfully'))
                         }
                     })
                 })
             }else if(this.popUpType == 2 ) {
                 let materialId = this.arrListTables[this.arrListTableIndex].materialId
-                sureDialog(this.myEditorUi,`确定要删除组件-${this.arrListTables[this.arrListTableIndex].model}`,()=>{
+                sureDialog(this.myEditorUi,`${this.$t('sureDel')}${this.$t('widget')}-${this.arrListTables[this.arrListTableIndex].model}`,()=>{
                     this.requestUtil.delete(this.urls.materialRightList.url + `/${materialId}`).then(res=>{
                         if(res.code == 0) {
                             this.arrListTables.splice(this.arrListTableIndex,1)
-                            Message.info('删除成功')
+                            Message.info(this.$t('deleteSuccessfully'))
                         }
                     })
                 })
             }else if(this.popUpType == 3 ) {
                 let pageTemplateId = this.materials[this.templateIndex].pageTemplateId
-                sureDialog(this.myEditorUi,`确定要删除模板-${this.materials[this.templateIndex].model}`,()=>{
+                sureDialog(this.myEditorUi,`${this.$t('sureDel')}${this.$t('template')}-${this.materials[this.templateIndex].model}`,()=>{
                     this.requestUtil.delete(this.urls.addTemplate.url + `/${pageTemplateId}`).then(res=>{
                         if(res.code == 0) {
                             this.materials.splice(this.templateIndex,1)
-                            Message.info('删除成功')
+                            Message.info(this.$t('deleteSuccessfully'))
                         }
                     })
                 })
@@ -443,7 +443,7 @@ export default {
                 if(res.libraryName) {
                     needRefreshLeft = true
                     this.$set(this.assemblyArrayName[index],'name',res.libraryName)
-                    Message.info('保存成功')
+                    Message.info(this.$t('modifySuccessfully'))
                     this.$set(this.assemblyArrayName[index],'isEdit',false)//会触发blur事件
                 }
             })
@@ -478,7 +478,7 @@ export default {
             this.requestUtil.put(this.urls.materialRightList.url,data).then(res=>{
                 if(res.descript) {
                     this.$set(this.arrListTables[index],'name',res.descript)
-                    Message.info('修改成功')
+                    Message.info(this.$t('modifySuccessfully'))
                     needRefreshLeft = true
                     this.$set(this.arrListTables[index],'isEdit',false)//会触发blur事件
                 }
@@ -509,7 +509,7 @@ export default {
             this.requestUtil.put(this.urls.addTemplate.url,data).then(res=>{
                 if(res.name) {
                     this.$set(this.materials[index],'name',res.name)
-                    Message.info('修改成功')
+                    Message.info(this.$t('modifySuccessfully'))
                     needRefreshLeft = true
                     this.$set(this.materials[index],'isEdit',false)//会触发blur事件
                 }

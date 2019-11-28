@@ -173,7 +173,7 @@ export default {
                     viewContent: '',
                     describe: '',
                     modelName: '',
-                    editName: '新建模型' + (this.data.length + 1),
+                    editName: this.$t('model') + (this.data.length + 1),
                 };
                 this.data.unshift(item);
             }

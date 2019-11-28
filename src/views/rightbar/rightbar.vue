@@ -86,7 +86,7 @@ export default {
                     30,
                     // 类似链接一样设置
                     `<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">${this.$t('rightBar.inputText')}</span>`,
-                    `${this.$t('char')}`,true,true
+                    `${this.$t('text')}`,true,true
                 ),
                 //直线
                 that.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 50, '', `${this.$t('beeline')}`, true,true),
@@ -109,7 +109,7 @@ export default {
                     for (let i = 0; i < 9; i++) {
                         let line = parseInt(i / 3);
                         let xNum = i % 3;
-                        let symbol = new mxCell(i < 3 ? 'Column ' + (i + 1) : '', new mxGeometry(xNum * 100, 30 * line, 100, 30), 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;fillColor=none;');
+                        let symbol = new mxCell(i < 3 ? 'Column ' + (i + 1) : '', new mxGeometry(xNum * 100, 30 * line, 100, 30), 'shape=tableCell;strokeColor=#000000;html=1;whiteSpace=wrap;fillColor=none;deletable=0;');
                         symbol.vertex = true;
                         cell.insert(symbol);
                     }
