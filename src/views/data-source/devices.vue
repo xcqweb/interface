@@ -286,7 +286,7 @@ export default {
         },
         submit() {
             if (!this.selectedItems.length) {
-                this.$Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
+                Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
                 return;
             }
             this.loading = true;
