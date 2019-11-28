@@ -18,6 +18,7 @@
           :not-found-text="$t('noData')"
           filterable
           transfer
+          change-on-select
           @on-change="search"
         />
       </div>
