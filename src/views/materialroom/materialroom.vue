@@ -1,5 +1,8 @@
 <template>
-  <div class="materialroom">
+  <div
+    class="materialroom"
+    style="position: absolute;"
+  >
     <Modal
       v-model="showmarerial"
       width="70vw"
