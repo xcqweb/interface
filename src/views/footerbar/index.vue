@@ -155,14 +155,10 @@
             </div>
           </div>
         </div>
-        <div
+        <NoData
           v-if="!footerContent || (tabsNum === 2 && cellsCount!=1 || tabsNum === 2 && cellsCount==1 && stateList.length <= 1) || (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))"
-          class="no-data-wrap"
-        >
-          <NoData
-            :text="$t(nodata)"
-          />
-        </div>
+          :text="$t(nodata)"
+        />
       </div>
     </div>
     <SelectParams

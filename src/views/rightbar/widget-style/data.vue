@@ -82,14 +82,10 @@
             </Checkbox>
           </CheckboxGroup>
         </div>
-        <div 
+        <NoData
           v-else
-          class="no-data-wrap"
-        >
-          <NoData
-            :text="$t('noData')"
-          />
-        </div>
+          :text="$t('noData')"
+        />
       </div> 
     </div>
     <div class="data-sources-bottom">
@@ -108,7 +104,7 @@
 
 <script>
 import VueEvent from '../../../services/VueEvent.js'
-import NoData from '../../datasource/nodata'
+import NoData from '../../data-source/nodata'
 import DatasourceStore from '../../data-source/js/datasource-store'
 import {Button,Checkbox,Message,Select,Option, CheckboxGroup,Input} from 'iview'
 
