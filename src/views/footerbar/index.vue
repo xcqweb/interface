@@ -25,7 +25,7 @@
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
-            <span class="icon-add" />{{ $t('addParam') }}
+            <span class="icon-add" />{{ $t('footBar.addParam') }}
           </div>
           <div 
             class="Collapse-title-right"
@@ -83,7 +83,7 @@
                 slot="paramType"
                 slot-scope="{row}"
               >
-                {{ row.paramType == 'device' ? $t('deviceParam') : $('virtualParam') }}
+                {{ row.paramType == 'device' ? $t('footBar.deviceParam') : $('footBar.virtualParam') }}
               </template>
               <template
                 slot="paramShow"
@@ -241,20 +241,20 @@ export default {
             ifShowDataFlag: true, // 判断是否显示数据显示tab
             tabParamTitles:[
                 {
-                    title: this.$t('paramName'),
+                    title: this.$t('footBar.paramName'),
                     key: 'paramName',
                 },
                 {
-                    title:this.$t('paramType'),
+                    title:this.$t('footBar.paramType'),
                     slot: 'paramType',
                     key:'paramType',
                 },
                 {
-                    title:this.$t('belongPart'),
+                    title:this.$t('footBar.belongPart'),
                     key: 'partName'
                 },
                 {
-                    title: this.$t('defaultDisplay'),
+                    title: this.$t('footBar.defaultDisplay'),
                     slot: 'paramShow'
                 },
                 {

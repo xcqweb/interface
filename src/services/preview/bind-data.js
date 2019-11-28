@@ -124,7 +124,7 @@ function setterRealData(res, fileSystem) {
                         if(options.xAxis[0].data.length >= chartDataLen) {
                             options.xAxis[0].data.shift()
                         }
-                        options.xAxis[0].data.push(item.timestamp)
+                        options.xAxis[0].data.push(timeFormate(item.timestamp, false))
                     }else {
                         if (!val) {
                             val = 0

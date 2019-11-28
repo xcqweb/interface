@@ -34,7 +34,8 @@ export default {
     choosePopup: '选择弹窗',
     chooseToSet: '请选择要设置的',
     hasBindVisibleOrHideEvent: '已经绑定了显隐事件',
-    addClickEvent:'添加点击事件'
+    addClickEvent:'添加点击事件',
+    corner:'corner',
     
 
 }

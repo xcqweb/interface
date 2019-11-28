@@ -709,7 +709,7 @@
       v-if="shapeName == 'rectangle'"
       class="arcSize-rectangle"
     >
-      <p>圆角</p>
+      <p>{{ $t('rightBar.corner') }}</p>
       <Slider
         :value="$store.state.main.widgetInfo.shapeInfo.arcSize / 100"
         :max="0.5"
@@ -1296,7 +1296,7 @@ export default {
                     this.removeImageRadio()
                 })(e.target.files[0])
                 fr.onerror = function() {
-                    reject('上传失败')
+                    reject(this.$t('uploadFailed'))
                 };
                 fr.readAsDataURL(e.target.files[0])
             }).then((res) => {

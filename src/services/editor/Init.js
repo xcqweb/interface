@@ -21,7 +21,7 @@ let getCookie = function(cname) {
     }
     return '';
 };
-window.mxLanguage = getCookie('language') || 'zh'
+window.mxLanguage = getCookie('language') || 'en'
 window.mxClient.languages = ['zh','en']
 /**
  * Change types

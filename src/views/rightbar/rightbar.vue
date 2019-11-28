@@ -86,7 +86,7 @@ export default {
                     30,
                     // 类似链接一样设置
                     `<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">${this.$t('rightBar.inputText')}</span>`,
-                    `${this.$t('char')}`,true,true
+                    `${this.$t('text')}`,true,true
                 ),
                 //直线
                 that.createEdgeTemplateEntry('shape=beeline;endArrow=none;html=1;', 50, 50, '', `${this.$t('beeline')}`, true,true),

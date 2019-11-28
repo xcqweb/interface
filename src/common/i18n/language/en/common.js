@@ -58,7 +58,7 @@ export default {
     downLimit: 'Lower limit',
     submit: 'Submit',
     confirm: 'Confirm',
-    beeline: 'Straight line',
+    beeline: 'Beeline',
     rectangle: 'Rectangle',
     circle: 'Circle',
     ellipse: 'Ellipse',
@@ -106,5 +106,8 @@ export default {
     chartShape: 'Icon Shape',
     pageTemplate: 'Page template',
     popupTemplate: 'Popup template',
-    addShapes: 'Add Shape'
+    addShapes: 'Add Shape',
+    tooltips: 'Tips', 
+    template:'template',
+    widgetLib:'widget lib'
 }

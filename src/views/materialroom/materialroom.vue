@@ -1,117 +1,58 @@
 <template>
-  <div class="materialroom">
-    <Modal
-      v-model="showmarerial"
-      width="70vw"
-      class="materialroom-model"
-      :title="$t(materialAlertName)"
-      :mask-closable="false"
-      @on-cancel="cancel"
-    >
-      <div class="materialtabs">
-        <Tabs
-          type="card"
-          :animated="false"
-          @on-click="tabsSwitch"
+  <Modal
+    v-model="showmarerial"
+    width="70vw"
+    class="materialroom-model"
+    :title="$t(materialAlertName)"
+    :mask-closable="false"
+  >
+    <div class="materialtabs">
+      <Tabs
+        type="card"
+        :animated="false"
+        @on-click="tabsSwitch"
+      >
+        <!--组件库-->
+        <TabPane 
+          :label="$t('shapeLibrary')"
         >
-          <!--组件库-->
-          <TabPane 
-            :label="$t('shapeLibrary')"
-          >
-            <div class="assembly-wrapper commom-wrapper">
-              <div class="assembly-left materialtabs-left">
+          <div class="assembly-wrapper commom-wrapper">
+            <div class="assembly-left materialtabs-left">
+              <div
+                class="assembly-seach-wrapper"
+              >
+                <input 
+                  v-model="keyWidget" 
+                  type="text"
+                  :placeholder="$t('materialRoom.searchShapeName')"
+                  class="assembly-seach-icon"
+                  @input="searchWidget"
+                >
                 <div
-                  class="assembly-seach-wrapper"
+                  v-show="!keyWidget"
+                  class="addassembly"
+                  @click="addassemblyFn"
                 >
-                  <input 
-                    v-model="keyWidget" 
-                    type="text"
-                    :placeholder="$t('materialRoom.searchShapeName')"
-                    class="assembly-seach-icon"
-                    @input="searchWidget"
-                  >
-                  <div
-                    v-show="!keyWidget"
-                    class="addassembly"
-                    @click="addassemblyFn"
-                  >
-                    {{ $t('addShapes') }}
-                  </div>
-                  <div
-                    v-show="!keyWidget"
-                    class="left-max-height"
-                  >
-                    <ul
-                      class="assembly-list"
-                    >
-                      <li
-                        v-for="(item,index) in assemblyArrayName"
-                        :key="index"
-                        class="assembly-icon"
-                        :class="{'left-side-listactive':index === isActive,'hover': popUpType==1&&isShowPopMenu&&index==hoverIndex}"
-                        @click="selectAssemblyList(index, item.materialLibraryId)"
-                        @dblclick="dblRename(index)"
-                      >
-                        <span
-                          v-if="!item.isEdit"
-                          class="left-assembly-left"
-                        >
-                          {{ $t(item.name) }}
-                        </span>
-                        <input
-                          v-if="item.isEdit"
-                          v-model="item.model"
-                          v-focus
-                          class="editPageInput"
-                          @blur="saveLayoutName(index)"
-                        >
-                        <span 
-                          v-if="index >= 3 && !item.isEdit" 
-                          class="right-spots" 
-                          @mousemove="menuPopupShow($event,index)"
-                          @mouseenter="menuPopupShow($event,index)"
-                          @mouseout="menuMouseoutDeal($event)"
-                        />
-                      </li>
-                    </ul>
-                  </div>
+                  {{ $t('addShapes') }}
                 </div>
-              </div>
-              <div class="assembly-right materialtabs-right">
-                <ul
-                  v-if="arrListTables.length"
-                  class="assembly-right-wrapper"
+                <div
+                  v-show="!keyWidget"
+                  class="left-max-height"
                 >
-                  <li 
-                    v-for="(item, index) in arrListTables"
-                    :key="item.materialId || index"
-                    class="user-uploadimage"
+                  <ul
+                    class="assembly-list"
                   >
-                    <div>
-                      <span
-                        v-if="item.model"
-                        :style="'background:url(' + (item.image) + ') no-repeat center center;'"
-                        @mouseenter="menuPopupHide"
-                      />
-                      <span
-                        v-else 
-                        :style="'background:url(' + (DIR_+item.image) + ') no-repeat center center;'"
-                      />
-                      <label
-                        v-if="item.model"
-                        class="right-spots-assemly"
-                        @click="renameWidget($event,index)"
-                      />
-                    </div>
-                    <span
-                      style="display:block;width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center;"
+                    <li
+                      v-for="(item,index) in assemblyArrayName"
+                      :key="index"
+                      class="assembly-icon"
+                      :class="{'left-side-listactive':index === isActive,'hover': popUpType==1&&isShowPopMenu&&index==hoverIndex}"
+                      @click="selectAssemblyList(index, item.materialLibraryId)"
+                      @dblclick="dblRename(index)"
                     >
                       <span
                         v-if="!item.isEdit"
                         class="left-assembly-left"
-                        :title="item.name"
-                        @mouseenter="menuPopupHide"
-                        @dblclick="dblRenameWidget(index)"
                       >
                         {{ $t(item.name) }}
                       </span>
@@ -120,54 +61,111 @@
                         v-model="item.model"
                         v-focus
                         class="editPageInput"
-                        style="width:100%;"
-                        @blur="saveWidgetName(index)"
+                        @blur="saveLayoutName(index)"
                       >
-                    </span>
-                  </li>
-                </ul>
-                <div
-                  v-else
-                  class="right-nodata"
-                >
-                  <span>
-                    {{ $t(nodata) }}
-                  </span>
+                      <span 
+                        v-if="index >= 3 && !item.isEdit" 
+                        class="right-spots" 
+                        @mousemove="menuPopupShow($event,index)"
+                        @mouseenter="menuPopupShow($event,index)"
+                        @mouseout="menuMouseoutDeal($event)"
+                      />
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
-          </TabPane>
-          <TabPane
-            :label="$t('materialRoom.templateLibs')" 
-          >
-            <div class="material-wrapper commom-wrapper">
-              <div class="material-left materialtabs-left">
-                <ul
-                  class="material-list"
+            <div class="assembly-right materialtabs-right">
+              <ul
+                v-if="arrListTables.length"
+                class="assembly-right-wrapper"
+              >
+                <li 
+                  v-for="(item, index) in arrListTables"
+                  :key="item.materialId || index"
+                  class="user-uploadimage"
                 >
-                  <li
-                    v-for="(item,index) in materialArrayName"
-                    :key="index"
-                    class="material-icon left-page-icon"
-                    :class="index === isActive2 ? 'left-side-listactive' : ''"
-                    @click="selectMaterialList(index)"
-                  > 
-                    {{ $t(item) }}
-                  </li>
-                </ul>
-              </div>
-              <div class="material-right materialtabs-right">
-                <ul
-                  v-if="materials.length"
-                  class="material-right-wrapper"
-                >
-                  <li
-                    v-for="(item,index) in materials"
-                    :key="item.pageTemplateId"
-                    class="user-uploadimage"
+                  <div>
+                    <span
+                      v-if="item.model"
+                      :style="'background:url(' + (item.image) + ') no-repeat center center;'"
+                      @mouseenter="menuPopupHide"
+                    />
+                    <span
+                      v-else 
+                      :style="'background:url(' + (DIR_+item.image) + ') no-repeat center center;'"
+                    />
+                    <label
+                      v-if="item.model"
+                      class="right-spots-assemly"
+                      @click="renameWidget($event,index)"
+                    />
+                  </div>
+                  <span
+                    style="display:block;width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center;"
                   >
-                    <div>
-                      <!--eslint-disable-->
+                    <span
+                      v-if="!item.isEdit"
+                      class="left-assembly-left"
+                      :title="item.name"
+                      @mouseenter="menuPopupHide"
+                      @dblclick="dblRenameWidget(index)"
+                    >
+                      {{ $t(item.name) }}
+                    </span>
+                    <input
+                      v-if="item.isEdit"
+                      v-model="item.model"
+                      v-focus
+                      class="editPageInput"
+                      style="width:100%;"
+                      @blur="saveWidgetName(index)"
+                    >
+                  </span>
+                </li>
+              </ul>
+              <div
+                v-else
+                class="right-nodata"
+              >
+                <span>
+                  {{ $t(nodata) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </TabPane>
+        <TabPane
+          :label="$t('materialRoom.templateLibs')" 
+        >
+          <div class="material-wrapper commom-wrapper">
+            <div class="material-left materialtabs-left">
+              <ul
+                class="material-list"
+              >
+                <li
+                  v-for="(item,index) in materialArrayName"
+                  :key="index"
+                  class="material-icon left-page-icon"
+                  :class="index === isActive2 ? 'left-side-listactive' : ''"
+                  @click="selectMaterialList(index)"
+                > 
+                  {{ $t(item) }}
+                </li>
+              </ul>
+            </div>
+            <div class="material-right materialtabs-right">
+              <ul
+                v-if="materials.length"
+                class="material-right-wrapper"
+              >
+                <li
+                  v-for="(item,index) in materials"
+                  :key="item.pageTemplateId"
+                  class="user-uploadimage"
+                >
+                  <div>
+                    <!--eslint-disable-->
                         <span
                           style="display:flex;justify-content:center;align-items:center"
                           @mouseenter="menuPopupHide"
@@ -245,7 +243,6 @@
         </li>
       </ul>
     </Modal>
-  </div>
 </template>
 <script>
 import {Tabs,TabPane,Modal, Upload, Message, Button} from 'iview'
@@ -396,31 +393,31 @@ export default {
         popDel() {
             if(this.popUpType == 1) {
                 let materialLibraryId = this.assemblyArrayName[this.hoverIndex].materialLibraryId
-                sureDialog(this.myEditorUi,`确定要删除组件库-${this.assemblyArrayName[this.hoverIndex].model}`,()=>{
+                sureDialog(this.myEditorUi,`${this.$t('sureDel')}${this.$t('widgetLib')}-${this.assemblyArrayName[this.hoverIndex].model}`,()=>{
                     this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then(res=>{
                         if(res.code == 0) {
                             this.assemblyArrayName.splice(this.hoverIndex,1)
-                            Message.info('删除成功')
+                            Message.info(this.$t('deleteSuccessfully'))
                         }
                     })
                 })
             }else if(this.popUpType == 2 ) {
                 let materialId = this.arrListTables[this.arrListTableIndex].materialId
-                sureDialog(this.myEditorUi,`确定要删除组件-${this.arrListTables[this.arrListTableIndex].model}`,()=>{
+                sureDialog(this.myEditorUi,`${this.$t('sureDel')}${this.$t('widget')}-${this.arrListTables[this.arrListTableIndex].model}`,()=>{
                     this.requestUtil.delete(this.urls.materialRightList.url + `/${materialId}`).then(res=>{
                         if(res.code == 0) {
                             this.arrListTables.splice(this.arrListTableIndex,1)
-                            Message.info('删除成功')
+                            Message.info(this.$t('deleteSuccessfully'))
                         }
                     })
                 })
             }else if(this.popUpType == 3 ) {
                 let pageTemplateId = this.materials[this.templateIndex].pageTemplateId
-                sureDialog(this.myEditorUi,`确定要删除模板-${this.materials[this.templateIndex].model}`,()=>{
+                sureDialog(this.myEditorUi,`${this.$t('sureDel')}${this.$t('template')}-${this.materials[this.templateIndex].model}`,()=>{
                     this.requestUtil.delete(this.urls.addTemplate.url + `/${pageTemplateId}`).then(res=>{
                         if(res.code == 0) {
                             this.materials.splice(this.templateIndex,1)
-                            Message.info('删除成功')
+                            Message.info(this.$t('deleteSuccessfully'))
                         }
                     })
                 })
@@ -440,7 +437,7 @@ export default {
                 if(res.libraryName) {
                     needRefreshLeft = true
                     this.$set(this.assemblyArrayName[index],'name',res.libraryName)
-                    Message.info('保存成功')
+                    Message.info(this.$t('modifySuccessfully'))
                     this.$set(this.assemblyArrayName[index],'isEdit',false)//会触发blur事件
                 }
             })
@@ -475,7 +472,7 @@ export default {
             this.requestUtil.put(this.urls.materialRightList.url,data).then(res=>{
                 if(res.descript) {
                     this.$set(this.arrListTables[index],'name',res.descript)
-                    Message.info('修改成功')
+                    Message.info(this.$t('modifySuccessfully'))
                     needRefreshLeft = true
                     this.$set(this.arrListTables[index],'isEdit',false)//会触发blur事件
                 }
@@ -506,7 +503,7 @@ export default {
             this.requestUtil.put(this.urls.addTemplate.url,data).then(res=>{
                 if(res.name) {
                     this.$set(this.materials[index],'name',res.name)
-                    Message.info('修改成功')
+                    Message.info(this.$t('modifySuccessfully'))
                     needRefreshLeft = true
                     this.$set(this.materials[index],'isEdit',false)//会触发blur事件
                 }

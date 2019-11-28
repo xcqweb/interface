@@ -7,7 +7,7 @@ import zh from './language/zh'
 
 Vue.use(VueI18n)
 let language = getCookie('language')
-language = language || 'zh'
+language = language || 'en'
 
 export const i18n = new VueI18n({
     locale: language,
