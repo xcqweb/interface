@@ -263,6 +263,7 @@ class PreviewPage {
                     })
                     this.cachCells.forEach(item=>{
                         let cellStateInfoHasModel = []
+                        let deviceId = item.bindData.dataSource.deviceNameChild.id
                         let statesInfo = item.statesInfo
                         if (statesInfo && statesInfo.length) {
                             cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
@@ -273,7 +274,8 @@ class PreviewPage {
                                 }
                             })
                         }
-                        $(`palette_${item.id}`).data("stateModels", cellStateInfoHasModel)
+                        $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel)
+                        $(`#palette_${item.id}`).addClass(`device_${deviceId}`)
                     })
                     requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
                         let resParam = [],maps = new Map()

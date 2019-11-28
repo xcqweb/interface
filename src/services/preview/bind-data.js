@@ -1,4 +1,4 @@
-import {geAjax,toDecimal2NoZero,dealLightFill,throttleFun} from './util'
+import {geAjax, toDecimal2NoZero, dealLightFill, throttleFun, timeFormate} from './util'
 import {getCookie} from '../Utils'
 import echarts from 'echarts'
 
@@ -152,7 +152,7 @@ function setterRealData(res, fileSystem) {
                     let formatLayerEl = $("#formatLayer")
                     let formatLayerElText = () => {
                         formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + 
-                            `<li>${item.timestamp}</li>` +
+                            `<li>${timeFormate(item.timestamp,false)}</li>` +
                             paramShow.map((d) => {
                                 return `<li>${d.paramName}=${item[d.deviceParamId]}</li>`
                             }).join('') + "</ul>")
