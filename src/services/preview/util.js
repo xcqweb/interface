@@ -373,7 +373,7 @@ function dealCharts(cell) {
                     }
                     requestUtil.post(`${urls.pentSdbData.url}`, [pentSdbParams]).then(res => {
                         for (let key in res.resMap) {
-                            tempOptions.xAxis.data.push(timeFormate(key))
+                            tempOptions.xAxis.data.push(timeFormate(key,false))
                             tempSeries[0].data.push(res.resMap[key])
                         }
                         tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
@@ -436,7 +436,7 @@ function throttleFun(fun, delay) {
         return result
     }
 }
-function timeFormate(time) {
+function timeFormate(time,isMilliSecond) {
     time = +time || new Date().getTime()
     const timeEle = new Date(time)
     const year = timeEle.getFullYear()
@@ -446,7 +446,11 @@ function timeFormate(time) {
     const minute = timeEle.getMinutes()
     const second = timeEle.getSeconds()
     const cmSecond = timeEle.getUTCMilliseconds()
-    return `${year}/${month > 9 ? month : '0' + month}/${day > 9 ? day : '0' + day} ${hours > 9 ? hours : '0' + hours}:${minute > 9 ? minute : '0' + minute}:${second > 9 ? second : '0' + second}.${cmSecond}`
+    let res = `${year}/${month > 9 ? month : '0' + month}/${day > 9 ? day : '0' + day} ${hours > 9 ? hours : '0' + hours}:${minute > 9 ? minute : '0' + minute}:${second > 9 ? second : '0' + second}`
+    if(isMilliSecond) {
+        res += `.${cmSecond}`
+    }
+    return res
 }
 //获取设备id
 function getDeviceId(dpId) {
@@ -465,6 +469,6 @@ function getDeviceId(dpId) {
     return deviceId
 }
 export {
-    removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips,
+    removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,
     dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill, throttleFun, hideFrameLayout, getDeviceId
 }

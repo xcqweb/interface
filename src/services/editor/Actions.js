@@ -485,7 +485,6 @@ Actions.prototype.init = function()
             return
         }
         for(let i=0;i<cells.length;i++){
-            console.log(cells[i])
             if(graph.view.getState(cells[i]).style.shape==='tableCell'){//禁止表格里面的多个单元格选中时候删除
                 return
             }
