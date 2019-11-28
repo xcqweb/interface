@@ -10,5 +10,6 @@ export default {
     confirmToDeletePopupTemplate: 'Are you sure you want to delete popup window template - {name}',
     confirmToDeleteShapes: 'Are you sure you want to delete the component library -{name}',
     confirmToDeleteShape: 'Are you sure you want to delete the component -{name}',
+    uploadWidget:'Upload widget',
 }
 

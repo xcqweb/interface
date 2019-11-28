@@ -10,5 +10,6 @@ export default {
     confirmToDeletePopupTemplate: '确定要删除弹窗模板-{name}吗',
     confirmToDeleteShapes: '确定要删除组件库-{name}吗',
     confirmToDeleteShape: '确定要删除组件-{name}吗',
+    uploadWidget: '上传组件',
 }
 

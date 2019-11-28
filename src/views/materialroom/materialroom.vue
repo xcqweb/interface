@@ -1,58 +1,120 @@
 <template>
-  <Modal
-    v-model="showmarerial"
-    width="70vw"
-    class="materialroom-model"
-    :title="$t(materialAlertName)"
-    :mask-closable="false"
+  <div
+    class="materialroom"
+    style="position: absolute;"
   >
-    <div class="materialtabs">
-      <Tabs
-        type="card"
-        :animated="false"
-        @on-click="tabsSwitch"
-      >
-        <!--组件库-->
-        <TabPane 
-          :label="$t('shapeLibrary')"
+    <Modal
+      v-model="showmarerial"
+      width="70vw"
+      class="materialroom-model"
+      :title="$t(materialAlertName)"
+      :mask-closable="false"
+      @on-cancel="cancel"
+    >
+      <div class="materialtabs">
+        <Tabs
+          type="card"
+          :animated="false"
+          @on-click="tabsSwitch"
         >
-          <div class="assembly-wrapper commom-wrapper">
-            <div class="assembly-left materialtabs-left">
-              <div
-                class="assembly-seach-wrapper"
-              >
-                <input 
-                  v-model="keyWidget" 
-                  type="text"
-                  :placeholder="$t('materialRoom.searchShapeName')"
-                  class="assembly-seach-icon"
-                  @input="searchWidget"
-                >
+          <!--组件库-->
+          <TabPane 
+            :label="$t('shapeLibrary')"
+          >
+            <div class="assembly-wrapper commom-wrapper">
+              <div class="assembly-left materialtabs-left">
                 <div
-                  v-show="!keyWidget"
-                  class="addassembly"
-                  @click="addassemblyFn"
+                  class="assembly-seach-wrapper"
                 >
-                  {{ $t('addShapes') }}
-                </div>
-                <div
-                  v-show="!keyWidget"
-                  class="left-max-height"
-                >
-                  <ul
-                    class="assembly-list"
+                  <input 
+                    v-model="keyWidget" 
+                    type="text"
+                    :placeholder="$t('materialRoom.searchShapeName')"
+                    class="assembly-seach-icon"
+                    @input="searchWidget"
                   >
-                    <li
-                      v-for="(item,index) in assemblyArrayName"
-                      :key="index"
-                      class="assembly-icon"
-                      :class="{'left-side-listactive':index === isActive,'hover': popUpType==1&&isShowPopMenu&&index==hoverIndex}"
-                      @click="selectAssemblyList(index, item.materialLibraryId)"
-                      @dblclick="dblRename(index)"
+                  <div
+                    v-show="!keyWidget"
+                    class="addassembly"
+                    @click="addassemblyFn"
+                  >
+                    {{ $t('addShapes') }}
+                  </div>
+                  <div
+                    v-show="!keyWidget"
+                    class="left-max-height"
+                  >
+                    <ul
+                      class="assembly-list"
+                    >
+                      <li
+                        v-for="(item,index) in assemblyArrayName"
+                        :key="index"
+                        class="assembly-icon"
+                        :class="{'left-side-listactive':index === isActive,'hover': popUpType==1&&isShowPopMenu&&index==hoverIndex}"
+                        @click="selectAssemblyList(index, item.materialLibraryId)"
+                        @dblclick="dblRename(index)"
+                      >
+                        <span
+                          v-if="!item.isEdit"
+                          class="left-assembly-left"
+                        >
+                          {{ $t(item.name) }}
+                        </span>
+                        <input
+                          v-if="item.isEdit"
+                          v-model="item.model"
+                          v-focus
+                          class="editPageInput"
+                          @blur="saveLayoutName(index)"
+                        >
+                        <span 
+                          v-if="index >= 3 && !item.isEdit" 
+                          class="right-spots" 
+                          @mousemove="menuPopupShow($event,index)"
+                          @mouseenter="menuPopupShow($event,index)"
+                          @mouseout="menuMouseoutDeal($event)"
+                        />
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="assembly-right materialtabs-right">
+                <ul
+                  v-if="arrListTables.length"
+                  class="assembly-right-wrapper"
+                >
+                  <li 
+                    v-for="(item, index) in arrListTables"
+                    :key="item.materialId || index"
+                    class="user-uploadimage"
+                  >
+                    <div>
+                      <span
+                        v-if="item.model"
+                        :style="'background:url(' + (item.image) + ') no-repeat center center;'"
+                        @mouseenter="menuPopupHide"
+                      />
+                      <span
+                        v-else 
+                        :style="'background:url(' + (DIR_+item.image) + ') no-repeat center center;'"
+                      />
+                      <label
+                        v-if="item.model"
+                        class="right-spots-assemly"
+                        @click="renameWidget($event,index)"
+                      />
+                    </div>
+                    <span
+                      style="display:block;width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center;"
                     >
                       <span
                         v-if="!item.isEdit"
                         class="left-assembly-left"
+                        :title="item.name"
+                        @mouseenter="menuPopupHide"
+                        @dblclick="dblRenameWidget(index)"
                       >
                         {{ $t(item.name) }}
                       </span>
@@ -61,111 +123,54 @@
                         v-model="item.model"
                         v-focus
                         class="editPageInput"
-                        @blur="saveLayoutName(index)"
+                        style="width:100%;"
+                        @blur="saveWidgetName(index)"
                       >
-                      <span 
-                        v-if="index >= 3 && !item.isEdit" 
-                        class="right-spots" 
-                        @mousemove="menuPopupShow($event,index)"
-                        @mouseenter="menuPopupShow($event,index)"
-                        @mouseout="menuMouseoutDeal($event)"
-                      />
-                    </li>
-                  </ul>
+                    </span>
+                  </li>
+                </ul>
+                <div
+                  v-else
+                  class="right-nodata"
+                >
+                  <span>
+                    {{ $t(nodata) }}
+                  </span>
                 </div>
               </div>
             </div>
-            <div class="assembly-right materialtabs-right">
-              <ul
-                v-if="arrListTables.length"
-                class="assembly-right-wrapper"
-              >
-                <li 
-                  v-for="(item, index) in arrListTables"
-                  :key="item.materialId || index"
-                  class="user-uploadimage"
+          </TabPane>
+          <TabPane
+            :label="$t('materialRoom.templateLibs')" 
+          >
+            <div class="material-wrapper commom-wrapper">
+              <div class="material-left materialtabs-left">
+                <ul
+                  class="material-list"
                 >
-                  <div>
-                    <span
-                      v-if="item.model"
-                      :style="'background:url(' + (item.image) + ') no-repeat center center;'"
-                      @mouseenter="menuPopupHide"
-                    />
-                    <span
-                      v-else 
-                      :style="'background:url(' + (DIR_+item.image) + ') no-repeat center center;'"
-                    />
-                    <label
-                      v-if="item.model"
-                      class="right-spots-assemly"
-                      @click="renameWidget($event,index)"
-                    />
-                  </div>
-                  <span
-                    style="display:block;width:98px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap;text-align: center;"
-                  >
-                    <span
-                      v-if="!item.isEdit"
-                      class="left-assembly-left"
-                      :title="item.name"
-                      @mouseenter="menuPopupHide"
-                      @dblclick="dblRenameWidget(index)"
-                    >
-                      {{ $t(item.name) }}
-                    </span>
-                    <input
-                      v-if="item.isEdit"
-                      v-model="item.model"
-                      v-focus
-                      class="editPageInput"
-                      style="width:100%;"
-                      @blur="saveWidgetName(index)"
-                    >
-                  </span>
-                </li>
-              </ul>
-              <div
-                v-else
-                class="right-nodata"
-              >
-                <span>
-                  {{ $t(nodata) }}
-                </span>
+                  <li
+                    v-for="(item,index) in materialArrayName"
+                    :key="index"
+                    class="material-icon left-page-icon"
+                    :class="index === isActive2 ? 'left-side-listactive' : ''"
+                    @click="selectMaterialList(index)"
+                  > 
+                    {{ $t(item) }}
+                  </li>
+                </ul>
               </div>
-            </div>
-          </div>
-        </TabPane>
-        <TabPane
-          :label="$t('materialRoom.templateLibs')" 
-        >
-          <div class="material-wrapper commom-wrapper">
-            <div class="material-left materialtabs-left">
-              <ul
-                class="material-list"
-              >
-                <li
-                  v-for="(item,index) in materialArrayName"
-                  :key="index"
-                  class="material-icon left-page-icon"
-                  :class="index === isActive2 ? 'left-side-listactive' : ''"
-                  @click="selectMaterialList(index)"
-                > 
-                  {{ $t(item) }}
-                </li>
-              </ul>
-            </div>
-            <div class="material-right materialtabs-right">
-              <ul
-                v-if="materials.length"
-                class="material-right-wrapper"
-              >
-                <li
-                  v-for="(item,index) in materials"
-                  :key="item.pageTemplateId"
-                  class="user-uploadimage"
+              <div class="material-right materialtabs-right">
+                <ul
+                  v-if="materials.length"
+                  class="material-right-wrapper"
                 >
-                  <div>
-                    <!--eslint-disable-->
+                  <li
+                    v-for="(item,index) in materials"
+                    :key="item.pageTemplateId"
+                    class="user-uploadimage"
+                  >
+                    <div>
+                      <!--eslint-disable-->
                         <span
                           style="display:flex;justify-content:center;align-items:center"
                           @mouseenter="menuPopupHide"
@@ -243,6 +248,7 @@
         </li>
       </ul>
     </Modal>
+  </div>
 </template>
 <script>
 import {Tabs,TabPane,Modal, Upload, Message, Button} from 'iview'
@@ -261,7 +267,7 @@ export default {
         return {
             materialAlertName: 'materialLibrary',
             showmarerial: true,
-            madeltext: ['cancel','上传组件'],
+            madeltext: ['cancel',this.$t('materialRoom.uploadWidget')],
             assemblyArrayName: [
                 {
                     name: 'generalShape',
