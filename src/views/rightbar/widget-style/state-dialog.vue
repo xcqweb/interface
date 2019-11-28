@@ -11,7 +11,7 @@
         class="geDialogTitle"
         @click="hideState"
       >
-        {{ $t("rightbar.addState") }}
+        {{ $t("rightBar.addState") }}
       </p>
       <div
         class="geDialogInfo"

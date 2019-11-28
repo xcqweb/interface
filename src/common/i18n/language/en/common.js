@@ -1,7 +1,7 @@
 export default {
     click: 'Click',
     lang: 'Chinese',
-    page: 'page',
+    page: 'Page',
     popup: 'Popup',
     rename: 'Rename',
     add: 'Add',

@@ -335,11 +335,12 @@ function dealCharts(cell) {
         let myEchart = echarts.init(con)
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params) {
             let titleShow = cell.bindData.params[0].paramName
-            let titleShowId = cell.bindData.params[0].paramId
-            let devices = cell.bindData.dataSource.deviceNameChild
+            let paramId = cell.bindData.params[0].paramId
+            let paramType = cell.bindData.params[0].paramType
+            let titleShowId = cell.bindData.params[0].deviceParamId
+            let device = cell.bindData.dataSource.deviceNameChild
             if (cell.shapeName == 'lineChart') {
-                let deviceTypeId = cell.bindData.dataSource.deviceTypeChild.id
-                requestUtil.get(`${urls.timeSelect.url}${deviceTypeId}`).then(res => {
+                requestUtil.get(`${urls.timeSelect.url}${paramId}`,{paramType:paramType == 'device' ? 0 : 1}).then(res => {
                     let checkItem = res.durations.find((item) => {
                         return item.checked === true
                     })
@@ -358,34 +359,26 @@ function dealCharts(cell) {
                         markLineMax = Math.max(...markValArr)
                     }
                     tempOptions.legend.data = tempLegend
-                    devices.forEach((item,index) => {
-                        tempLegend.push(item.name)
-                        tempSeries.push({
-                            type: 'line',
-                            name: item.name,
-                            markLine: markLine,
-                            data: [],
-                            pointId: item.id, //设备id，额外添加的，匹配数据时候用
-                        })
-                        let pentSdbParams = {
-                            paramids: [titleShowId],
-                            period:checkItem.duration,
+                    tempLegend.push(device.name)
+                    tempSeries.push({
+                        type: 'line',
+                        name: device.name,
+                        markLine: markLine,
+                        data: [],
+                        deviceId: device.id, //设备id，额外添加的，匹配数据时候用
+                    })
+                    let pentSdbParams = {
+                        paramIds: [titleShowId],
+                        period: checkItem.duration,
+                    }
+                    requestUtil.post(`${urls.pentSdbData.url}`, [pentSdbParams]).then(res => {
+                        for (let key in res.resMap) {
+                            tempOptions.xAxis.data.push(timeFormate(key,false))
+                            tempSeries[0].data.push(res.resMap[key])
                         }
-                        requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
-                            for (let key in res.resMap) {
-                                if(index === 0) {
-                                    tempOptions.xAxis.data.push(timeFormate(key))
-                                }
-                                tempSeries[index].data.push(res.resMap[key])
-                            }
-                            if(index === 0) {
-                                tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
-                            }
-                            if (index == devices.length - 1) {
-                                tempOptions.series = tempSeries
-                                myEchart.setOption(tempOptions)
-                            }
-                        })
+                        tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
+                        tempOptions.series = tempSeries
+                        myEchart.setOption(tempOptions)
                     })
                 })
             }else {
@@ -443,7 +436,7 @@ function throttleFun(fun, delay) {
         return result
     }
 }
-function timeFormate(time) {
+function timeFormate(time,isMilliSecond) {
     time = +time || new Date().getTime()
     const timeEle = new Date(time)
     const year = timeEle.getFullYear()
@@ -453,9 +446,29 @@ function timeFormate(time) {
     const minute = timeEle.getMinutes()
     const second = timeEle.getSeconds()
     const cmSecond = timeEle.getUTCMilliseconds()
-    return `${year}/${month > 9 ? month : '0' + month}/${day > 9 ? day : '0' + day} ${hours > 9 ? hours : '0' + hours}:${minute > 9 ? minute : '0' + minute}:${second > 9 ? second : '0' + second}.${cmSecond}`
+    let res = `${year}/${month > 9 ? month : '0' + month}/${day > 9 ? day : '0' + day} ${hours > 9 ? hours : '0' + hours}:${minute > 9 ? minute : '0' + minute}:${second > 9 ? second : '0' + second}`
+    if(isMilliSecond) {
+        res += `.${cmSecond}`
+    }
+    return res
+}
+//获取设备id
+function getDeviceId(dpId) {
+    const HEADER_SPLITE = ":"
+    const CENTER_SPLITE = "|"
+    const INVENTED_PARAM = "VP"
+    const DEVICE_PARAM = "P"
+    let strs,deviceId
+    if (dpId.includes(INVENTED_PARAM + HEADER_SPLITE)) {
+        dpId = dpId.substring(3)
+    } else if (dpId.includes(DEVICE_PARAM + HEADER_SPLITE)) {
+        dpId = dpId.substring(2)
+    }
+    strs = dpId.split("\\" + CENTER_SPLITE)
+    deviceId = strs[0]
+    return deviceId
 }
 export {
-    removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips,
-    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill, throttleFun, hideFrameLayout
+    removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,
+    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill, throttleFun, hideFrameLayout, getDeviceId
 }

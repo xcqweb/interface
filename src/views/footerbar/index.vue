@@ -21,11 +21,11 @@
             </Tabs>
           </div>
           <div
-            v-if="tabsNum==1 && deviceModelId"
+            v-if="tabsNum==1 && deviceModelId && footerContent"
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
-            <span class="icon-add" />添加参数
+            <span class="icon-add" />{{ $t('addParam') }}
           </div>
           <div 
             class="Collapse-title-right"
@@ -83,7 +83,7 @@
                 slot="paramType"
                 slot-scope="{row}"
               >
-                {{ row.paramType == 'device' ? '设备参数' : '虚拟参数' }}
+                {{ row.paramType == 'device' ? $t('deviceParam') : $('virtualParam') }}
               </template>
               <template
                 slot="paramShow"
@@ -100,9 +100,7 @@
                   v-else
                   :value="true"
                   disabled
-                >
-                  {{ $t('defaultDisplay') }}
-                </Checkbox>
+                />
               </template>
               <template
                 slot="actions"
@@ -169,7 +167,7 @@
     </div>
     <SelectParams
       v-model="visible"
-      title="添加参数"
+      :title="$t('addParam')"
       :device-model-id="deviceModelId"
       :device-id="deviceId"
       :multiple="multiple"
@@ -181,7 +179,7 @@
 <script>
 import {Tabs,TabPane, Table,Select, Option, Message,Checkbox} from 'iview'
 import {mxUtils} from '../../services/mxGlobal'
-import NoData from '../datasource/nodata'
+import NoData from '../data-source/nodata'
 import VueEvent from '../../services/VueEvent.js'
 
 import {sureDialog} from '../../services/Utils'
@@ -227,13 +225,12 @@ export default {
                 },
                 {
                     title: this.$t('operation'),
-                    width: '80',
+                    width: '160',
                     slot: 'actions',
                     key: 'actions',
                 }
             ],
             dataSourceList: [],
-            paramsTypeList:[{label:'设备参数',value:1},{label:'虚拟参数',value:2}],
             heightlen: '190',
             paramOutterList: [],
             stateList:[],
@@ -244,19 +241,20 @@ export default {
             ifShowDataFlag: true, // 判断是否显示数据显示tab
             tabParamTitles:[
                 {
-                    title: '参数名称',
+                    title: this.$t('paramName'),
                     key: 'paramName',
                 },
                 {
-                    title:'参数类型',
-                    key: 'paramType',
+                    title:this.$t('paramType'),
+                    slot: 'paramType',
+                    key:'paramType',
                 },
                 {
-                    title: `所属部件`,
+                    title:this.$t('belongPart'),
                     key: 'partName'
                 },
                 {
-                    title: `默认显示`,
+                    title: this.$t('defaultDisplay'),
                     slot: 'paramShow'
                 },
                 {
@@ -333,8 +331,7 @@ export default {
                 }
             } else {
                 if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
-                    let deviceNameChild = startBindData.dataSource.deviceNameChild || []
-                    startBindData.dataSource.deviceNameChild = [...deviceNameChild,...value.deviceNameChild]
+                    startBindData.dataSource.deviceNameChild = value.deviceNameChild
                     startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
                     startBindData.dataSource.deviceModel = value.deviceModel
                     this.setCellModelInfo('bindData',startBindData)
@@ -390,19 +387,16 @@ export default {
         // 初始化数据源数据
         initDataSource() {
             let startBindData = this.getCellModelInfo('bindData')
-            console.log(startBindData)
             if (startBindData && startBindData.dataSource) {
-                let deviceNameChild = startBindData.dataSource.deviceNameChild || []
+                let deviceNameChild = startBindData.dataSource.deviceNameChild
                 this.deviceModelId  = startBindData.dataSource.deviceModel.id
-                this.deviceId = deviceNameChild[0].id
+                this.deviceId = deviceNameChild.id
                 this.dataSourceList = []
-                deviceNameChild.forEach((item) => {
-                    let obj = {}
-                    obj.typeName = startBindData.dataSource.deviceTypeChild.name 
-                    obj.deviceName = item.name
-                    obj.modelName = startBindData.dataSource.deviceModel.name 
-                    this.dataSourceList.push(obj)
-                })
+                let obj = {}
+                obj.typeName = startBindData.dataSource.deviceTypeChild.name 
+                obj.deviceName = deviceNameChild.name
+                obj.modelName = startBindData.dataSource.deviceModel.name 
+                this.dataSourceList.push(obj)
             } else {
                 this.deviceModelId = null
                 this.dataSourceList = []
@@ -451,7 +445,6 @@ export default {
             }else{
                 this.multiple = true
             }
-            console.log(this.multiple,"tt-aa")
         },
         addParamDone(data) {
             let isFirstCheck = false
@@ -466,6 +459,7 @@ export default {
                     partName:item.partName,
                     key:item.key,
                     transportSourceId:item.transportSourceId,
+                    deviceParamId:item.deviceParamId,
                     type:false,
                 })
             })

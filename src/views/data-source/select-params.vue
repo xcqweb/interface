@@ -75,7 +75,7 @@ export default {
         // 是否可多选
         multiple: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         selectedKeys: {
             type: Array,

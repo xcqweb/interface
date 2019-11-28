@@ -872,7 +872,7 @@ div.mxWindow .geButton {
 	top: 24px;
 }
 .en .page-tab::after {
-	content: 'page';
+	content: 'Page';
 }
 .data-tab::after {
 	content: "数据源";
@@ -1668,6 +1668,7 @@ input.inputTag {
  	position: relative;
  }
  .widget-chart {
+	 position: fixed !important;
 	 width:100%;
 	 height:100%;
  }
@@ -1698,6 +1699,9 @@ input.inputTag {
 	left:6px;
 	font-size:12px;	
  }
+.en .menu-left-cls::after{
+	content:'Left'
+}
   .menu-top-cls {
 	margin-top:7px;
 	width:36px;
@@ -1711,6 +1715,9 @@ input.inputTag {
 	left:6px;
 	font-size:12px;	
  }
+ .en .menu-top-cls::after{
+	content:'Top'
+}
  .menu-pos-con.check{
 	border:solid 2px #3D91F7;
  }

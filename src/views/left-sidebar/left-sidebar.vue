@@ -18,7 +18,7 @@
             class="leftSidebar-addicon" 
             @click="addPageType(1)"
           >
-            {{ $t('Add') }}
+            {{ $t('leftBar.addPage') }}
           </div>
         </TabPane>
         <TabPane 
@@ -29,7 +29,7 @@
             class="leftSidebar-addicon"
             @click="addPageType(2)"
           >
-            {{ $t('Add') }}
+            {{ $t('leftBar.addPopup') }}
           </div>
         </TabPane>
       </Tabs>
@@ -76,7 +76,7 @@
 </template>
 <script>
 import {Tabs, TabPane, Modal} from 'iview'
-const addPageTypeName = ['','leftBar.addPage','leftBar.addPopup']
+const addPageTypeName = ['leftBar.addPage','leftBar.addPopup']
 import VueEvent from '../../services/VueEvent.js'
 export default {
     components: {

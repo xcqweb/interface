@@ -731,7 +731,7 @@ import {sureDialog} from '../../../services/Utils'
 let palettName
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
-let picShapeList = ['pipeline2','pipeline3','light','userimage']
+// let picShapeList = ['pipeline2','pipeline3','light','userimage']
 let cellEchart,bindChartProps
 export default {
     components:{
@@ -772,7 +772,6 @@ export default {
             progressTypeVal:'percent',
             progressDialogList:[{name:'百分比',value:'percent'},{name:'实际数值',value:'real'}],
             linkUrl:"",
-            bindChartProps2:null,
             chartLegend:true,
             markLineList:[],//标线 line-chart
             isAddMark:false,
@@ -867,11 +866,26 @@ export default {
         }else if(this.shapeName.includes('Chart')) {
             bindChartProps = this.getWidgetProps('chartProps')
             if(bindChartProps) {
-                this.bindChartProps2  = Object.assign({},bindChartProps)
                 if(this.shapeName == 'gaugeChart') {
                     this.progressMin = bindChartProps.series.min
                     this.progressMax = bindChartProps.series.max
-                } 
+                } else{
+                    this.chartLegend = bindChartProps.legend.show
+                    this.styleColorBg = bindChartProps.yAxis.splitLine.lineStyle.color
+                    let lineData = bindChartProps.series[0].markLine.data
+                    if(lineData.length) {
+                        lineData.forEach((item)=>{
+                            this.markLineList.push({
+                                markName:item.label,
+                                markValue:item.yAxis,
+                                borderColor:item.lineStyle.color,
+                                borderLineCls:item.lineStyle.type === 'solid' ? 'border-line' : 'border-dash',
+                                borderLineBoldText:item.lineStyle.width,
+                            })
+                        })
+                    }
+                    this.initLegendChoose()
+                }
             }
             this.initChartDom()
         }else if(this.shapeName == 'linkTag') {
@@ -884,12 +898,12 @@ export default {
                 this.selectMenu = cellProp.check
             }
         }
-        if(picShapeList.includes(this.shapeName)) {
-            graph.setCellStyles(mxConstants.STYLE_ASPECT, 'fixed', graph.getSelectionCells())
-            graph.getModel().beginUpdate()
-            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],'values', ['fixed'], 'cells', graph.getSelectionCells()))
-            graph.getModel().endUpdate()
-        }
+        // if(picShapeList.includes(this.shapeName)) {
+        //     graph.setCellStyles(mxConstants.STYLE_ASPECT, 'fixed', graph.getSelectionCells())
+        //     graph.getModel().beginUpdate()
+        //     this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],'values', ['fixed'], 'cells', graph.getSelectionCells()))
+        //     graph.getModel().endUpdate()
+        // }
         let dblClickFn = graph.dblClick
         graph.dblClick = (evt, cell) => {
             let state = graph.view.getState(cell)
@@ -1339,6 +1353,7 @@ export default {
             let yAxisMax = Math.max(...markValArr,...bindChartProps.series[0].data)
             bindChartProps.yAxis.max = yAxisMax
             cellEchart.setOption(bindChartProps)
+            this.setWidgetProps("chartProps",bindChartProps)
         },
         addMark() {//折线chart 添加标线
             this.isAddMark = true
@@ -1406,6 +1421,7 @@ export default {
         chooseLegend() {
             bindChartProps.legend.show = this.chartLegend
             cellEchart.setOption(bindChartProps)
+            this.setWidgetProps("chartProps",bindChartProps)
             this.initLegendChoose()
         },
         pickStyleColor() {
@@ -1421,6 +1437,7 @@ export default {
                 bindChartProps.xAxis.axisLabel.lineStyle = obj
                 bindChartProps.legend.textStyle = obj
                 cellEchart.setOption(bindChartProps)
+                this.setWidgetProps("chartProps",bindChartProps)
             })
         },
         changeLegendChoose(d,e) {
@@ -1432,7 +1449,7 @@ export default {
             
                 }
             }
-            tempLegend.mtype = d.type
+            tempLegend.mType = d.type
             switch(d.type) {
                 case 1:
                     tempLegend.x = 'center'
@@ -1462,11 +1479,12 @@ export default {
             bindChartProps.legend = Object.assign({},tempLegend)
             this.showLegendChoose = false
             cellEchart.setOption(bindChartProps)
+            this.setWidgetProps("chartProps",bindChartProps)
             e.stopPropagation()
         },
         initLegendChoose() {
-            let mtype = bindChartProps.legend.mtype || 1
-            this.legendChooseText = this.legendChooseList[mtype - 1].text
+            let mType = bindChartProps.legend.mType || 1
+            this.legendChooseText = this.legendChooseList[mType - 1].text
         },
         hideLegendChooseFun() {
             this.showLegendChoose = false

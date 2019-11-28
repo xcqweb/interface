@@ -1441,7 +1441,7 @@ var mxResources =
 			}
 		}
 
-		if (mxResources.loadSpecialBundle && mxResources.isLanguageSupported(lan) && lan != mxClient.defaultLanguage)
+		if (mxResources.loadSpecialBundle && mxResources.isLanguageSupported(lan) /* && lan != mxClient.defaultLanguage */)
 		{
 			return basename + '_' + lan + mxResources.extension;
 		}

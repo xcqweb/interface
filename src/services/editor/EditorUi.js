@@ -2793,7 +2793,9 @@ EditorUi.prototype.refresh = function(sizeDidChange)
     var quirks = mxClient.IS_IE && (document.documentMode == null || document.documentMode == 5);
     var w = this.container.clientWidth;
     var h = this.container.clientHeight;
-
+    if (h === 0) {
+        return;
+    }
     if (this.container == document.body)
     {
         w = document.body.clientWidth || document.documentElement.clientWidth;
@@ -2932,7 +2934,7 @@ EditorUi.prototype.createDivs = function()
     this.footerContainer = this.createDiv('geFooterContainer');
     //去掉sidebar 右边的创建的直线
     this.hsplit = this.createDiv('geHsplit');
-    this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));
+    //this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));
 
     // 设置样式
     this.menubarContainer.style.top = '0px';
@@ -3410,6 +3412,7 @@ EditorUi.prototype.isCompatibleString = function(data)
 
 EditorUi.prototype.getIfMulateEdit = function() {
     var ui = this;
+    let resource=window.mxResources
     var editor = ui.editor;
     var id = editor.getApplyId() || sessionStorage.getItem('applyId');
     const objData = {
@@ -3418,7 +3421,7 @@ EditorUi.prototype.getIfMulateEdit = function() {
     };
     editor.ajax(ui, urls.preview.url, 'PUT', objData, (res) => {
     }, (res) => {
-    }, '加载中···', false)
+    }, resource.get('loading'), false)
 }
 /**
  * Adds the label menu items to the given menu and parent.
@@ -3453,7 +3456,7 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
             return false;
         }));
         // 显示弹窗
-        this.showDialog(dlg.container, 410, 266, true, false, null, null, '保存应用')
+        this.showDialog(dlg.container, 410, 266, true, false, null, null, mxResources.get('saveApply'))
         dlg.init()
     }
 };
@@ -3492,6 +3495,7 @@ EditorUi.prototype.saveError = function (res, hideDialog) {
  */
 EditorUi.prototype.save = function(hideDialog=false)
 {
+    let resource = window.mxResources
     return new Promise((resolve, reject) => {
         if (name != null)
         {
@@ -3533,7 +3537,7 @@ EditorUi.prototype.save = function(hideDialog=false)
                                 }, (res) => {
                                     this.saveError(res.responseJSON, hideDialog);
                                     reject(res);
-                                }, '加载中···', hideDialog)
+                                }, resource.get('loading'), hideDialog)
                             }
                         }
                     }, (res) => {
@@ -3551,7 +3555,7 @@ EditorUi.prototype.save = function(hideDialog=false)
                     }, (res) => {
                         this.saveError(res.responseJSON, hideDialog);
                         reject(res);
-                    },'加载中···',hideDialog)
+                    },resource.get('loading'),hideDialog)
                 }
             }
             catch (e)

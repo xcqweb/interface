@@ -10,4 +10,9 @@ export default {
     sureDelCurrentParam: '确定要删除此当前参数吗',
     pleaseChooseOneParam: '请先选中一个参数',
     notAllowMultiplyBind: '不允许重复绑定',
+    deviceParam: '设备参数',
+    virtualParam: '虚拟参数',
+    addParam: '添加参数',
+    paramName: '参数名称',
+    belongPart: '所属部件',
 };
