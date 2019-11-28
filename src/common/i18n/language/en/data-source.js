@@ -8,6 +8,7 @@ export default {
     virtualParamter: 'Visual param',
     models: 'Model list',
     parameters: 'Parameter list',
+    selectedParameters:'Param checked',
     enterParameterNameToSearch: 'Input parameter name',
     enterDeviceNameToSearch: 'Input device name',
     devices: 'Device list',

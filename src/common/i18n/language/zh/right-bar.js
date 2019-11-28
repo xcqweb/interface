@@ -35,7 +35,7 @@ export default {
     chooseToSet: '请选择要设置的',
     hasBindVisibleOrHideEvent: '已经绑定了显隐事件',
     addClickEvent:'添加点击事件',
-    corner:'corner',
+    corner:'圆角',
     
 
 }

@@ -52,7 +52,7 @@
         <Input
           v-model.trim="dName"
           size="small"
-          :placeholder="`${$t('search')}${$t('deviceName')}`"
+          :placeholder="$t('searchDeviceName')"
         />
       </div>
       <div

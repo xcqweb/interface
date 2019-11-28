@@ -252,7 +252,7 @@ class PreviewPage {
             for (let key of modelIdsParam.keys()) {
                 modelAllIds = modelAllIds.concat(key.split("_"))
             }
-            requestUtil.post(urls.getModelByIds.url, modelAllIds).then((res) => {
+            requestUtil.post(urls.getModelByIds.url, Array.from(new Set(modelAllIds))).then((res) => {
                 if (res && res.returnObj) {
                     let params = []
                     res.returnObj.forEach(item=>{

@@ -335,7 +335,7 @@ export default{
         },
         removeEvent(event,index,evet) {
             evet.stopPropagation()
-            sureDialog(this.myEditorUi,`${this.$t("sureToDelActions")}${index + 1}？`,()=>{
+            sureDialog(this.myEditorUi,`${this.$t("rightBar.sureToDelActions")}${index + 1}`,()=>{
                 this.events.splice(index,1)
                 let {id,stateInfo} = event
                 this.removeActions(id,stateInfo)//控件或者页面id

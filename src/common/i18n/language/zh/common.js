@@ -111,5 +111,7 @@ export default {
     addShapes: '新增组件库',
     tooltips: '提示', 
     template: 'templa模板te',
-    widgetLib: '组件库'
+    widgetLib: '组件库',
+    searchDeviceName: '搜索设备名称',
+    model: '新建模型',
 }

@@ -57,7 +57,6 @@ class Main {
         document.getElementsByTagName('title')[0].innerHTML = applyInfo.studioName
         // 设置默认页面
         this.previewPage = new PreviewPage(applyInfo, this, gePreview)
-        this.changePage(this.previewPage.pagesRank.normal[0])
         //初始化菜单
         this.initMenus(applyInfo)
     }
@@ -100,7 +99,8 @@ class Main {
         let pageRankNormal = parseContent.rank.normal
         if (!parseTheme || pageRankNormal.length == 1 || parseTheme.status == 0) {
             //只有一个页面，不渲染菜单 老应用未编辑过的没有theme字段，不渲染菜单 重新编辑过的老应用或者新增的应用，选择不启用菜单，则不渲染
-            return;
+            this.changePage(this.previewPage.pagesRank.normal[0]) //渲染首页面
+            return
         }
         let pages = {}
         pageRankNormal.forEach(item=>{
@@ -142,7 +142,7 @@ class Main {
             menuLi.addClass('preview-menu-check')
             $(menuLi).on('click',function() {
                 $(this).css('background', menuStyle.checkColor).siblings().css('background','unset')
-                _that.changePage(key)
+                _that.changePage(key) //切换页面
             })
             menuLi.css({
                 color: menuStyle.fontColor,
@@ -176,7 +176,7 @@ class Main {
             })
         }
         $(() => {
-            $(".preview-menu-check:eq(0)").click()
+            $(".preview-menu-check:eq(0)").click() //默认点击下第一个页面
             menuCon.css('left', `${$("#gePreviewCon").offset().left}px`)
             if (parseTheme.position == 2) {//顶部
                 menuCon.css('width', `${$("#gePreviewCon").width()}px`)
