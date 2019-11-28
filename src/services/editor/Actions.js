@@ -475,20 +475,16 @@ Actions.prototype.init = function()
     {
         // 取消互动操作
         graph.escape();
-        var cells = graph.getDeletableCells(graph.getSelectionCells());
-        if (cells.length == 1 && graph.view.getState(cells[0]) && graph.view.getState(cells[0]).style.shape === 'tableCell'){
+        let cellSelected = graph.getSelectionCell()
+        if (graph.view.getState(cellSelected) && graph.view.getState(cellSelected).style.shape === 'tableCell') {
             let model = graph.getModel()
             model.beginUpdate()
-            model.setValue(cells[0],'')
+            model.setValue(cellSelected, '')
             model.endUpdate()
-            graph.view.refresh(cells[0])
+            graph.view.refresh(cellSelected)
             return
         }
-        for(let i=0;i<cells.length;i++){
-            if(graph.view.getState(cells[i]).style.shape==='tableCell'){//禁止表格里面的多个单元格选中时候删除
-                return
-            }
-        }
+        var cells = graph.getDeletableCells(graph.getSelectionCells());
         if (cells != null && cells.length > 0)
         {
             const model = graph.getModel();
