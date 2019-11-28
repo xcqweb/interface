@@ -11,7 +11,6 @@
       <div>
         <Select
           v-model="model.deviceTypeId"
-          :clearable="true"
           style="height:24px"
         >
           <Option

@@ -9,7 +9,7 @@ import {
     addPageDialog,
     PreviewDialog
 } from '../editor/Dialogs'
-import {mxUtils}  from '../mxGlobal'
+import {mxUtils, mxResources}  from '../mxGlobal'
 import router from '../../router'
 function Actions(editorUi)
 {
@@ -35,7 +35,7 @@ Actions.prototype.init = function()
         return Action.prototype.isEnabled.apply(this, arguments) && graph.isEnabled();
     };
     // loading···
-    this.addAction('loading', function(text = '加载中···') {
+    this.addAction('loading', function(text = mxResources.get('loading')) {
         var content = ui.createDiv('geDialogInfo')
         var loadingText = document.createElement('p');
         loadingText.id = "loadingText";
@@ -208,7 +208,7 @@ Actions.prototype.init = function()
             })
             window.open(page.href,'_blank')
         })
-        ui.showDialog(dlg.container, 410, 160, true, false, null, null, '预览')
+        ui.showDialog(dlg.container, 410, 160, true, false, null, null, mxResources.get('preview'))
     }, true, null, Editor.ctrlKey + '+Shift+L');
    
      // 文件操作

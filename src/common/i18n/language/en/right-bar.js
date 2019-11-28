@@ -24,7 +24,7 @@ export default {
     choosePageToLink: 'Please select the page to jump to',
     pageHasBindLinkEvents: 'The page is already bound with a jump event',
     eventTypes: 'Event type',
-    visibleOrHide: 'Explicit/implicit',
+    visibleOrHide: 'Visible/Hide',
     change: 'Change',
     sureToDelActions: 'Make sure you want to delete interactive events',
     addState: 'Add state',
@@ -33,8 +33,8 @@ export default {
     bgPicNotOver2M: 'The size of the background picture should not exceed 2M',
     choosePopup: 'Select popup',
     chooseToSet: 'Please select the one you want to set',
-    hasBindVisibleOrHideEvent: 'Explicit and implicit events are already bound',
-    
+    hasBindVisibleOrHideEvent: 'Visible and hide events are already bounded',
+    addClickEvent:'Add click event'
 
 }
 

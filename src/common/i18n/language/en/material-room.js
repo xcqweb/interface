@@ -1,5 +1,5 @@
 export default {
-    searchShapeName:'Search for component names',
+    searchShapeName:'Search components',
     addWidgetLibs: 'Add component lib',
     templateLibs: 'Template lib',
     imageFormatRequirement: 'The image format does not meet the requirements. Only pictures with suffixes of "JPG "," SVG ", "PNG" and "GIF" are allowed to be uploaded',

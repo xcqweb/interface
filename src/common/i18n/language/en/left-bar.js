@@ -1,5 +1,5 @@
 export default {
-    addPage: 'Add',
+    addPage: 'Add page',
     copyPage: 'Copy page',
     emptyPage: 'Blank page',
     addPopup: 'Add popup',

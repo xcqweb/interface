@@ -25,7 +25,7 @@
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
-            <span class="icon-add" />添加参数
+            <span class="icon-add" />{{ $t('addParam') }}
           </div>
           <div 
             class="Collapse-title-right"
@@ -83,7 +83,7 @@
                 slot="paramType"
                 slot-scope="{row}"
               >
-                {{ row.paramType == 'device' ? '设备参数' : '虚拟参数' }}
+                {{ row.paramType == 'device' ? $t('deviceParam') : $('virtualParam') }}
               </template>
               <template
                 slot="paramShow"
@@ -167,7 +167,7 @@
     </div>
     <SelectParams
       v-model="visible"
-      title="添加参数"
+      :title="$t('addParam')"
       :device-model-id="deviceModelId"
       :device-id="deviceId"
       :multiple="multiple"
@@ -179,7 +179,7 @@
 <script>
 import {Tabs,TabPane, Table,Select, Option, Message,Checkbox} from 'iview'
 import {mxUtils} from '../../services/mxGlobal'
-import NoData from '../datasource/nodata'
+import NoData from '../data-source/nodata'
 import VueEvent from '../../services/VueEvent.js'
 
 import {sureDialog} from '../../services/Utils'
@@ -225,13 +225,12 @@ export default {
                 },
                 {
                     title: this.$t('operation'),
-                    width: '80',
+                    width: '160',
                     slot: 'actions',
                     key: 'actions',
                 }
             ],
             dataSourceList: [],
-            paramsTypeList:[{label:'设备参数',value:1},{label:'虚拟参数',value:2}],
             heightlen: '190',
             paramOutterList: [],
             stateList:[],
@@ -242,20 +241,20 @@ export default {
             ifShowDataFlag: true, // 判断是否显示数据显示tab
             tabParamTitles:[
                 {
-                    title: '参数名称',
+                    title: this.$t('paramName'),
                     key: 'paramName',
                 },
                 {
-                    title:'参数类型',
+                    title:this.$t('paramType'),
                     slot: 'paramType',
                     key:'paramType',
                 },
                 {
-                    title: `所属部件`,
+                    title:this.$t('belongPart'),
                     key: 'partName'
                 },
                 {
-                    title: `默认显示`,
+                    title: this.$t('defaultDisplay'),
                     slot: 'paramShow'
                 },
                 {

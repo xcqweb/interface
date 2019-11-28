@@ -40,6 +40,9 @@ export default {
         }else{
             this.langCss = this.$i18n.locale
         }
+        if(this.langCss) {
+            document.body.classList.add(this.langCss)
+        }
     },
 };
 </script>

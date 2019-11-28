@@ -84,14 +84,18 @@ function throttle(func, wait, options) {
   }
 }
 
-function tipDialog(editorUi,tips,title='提示'){
+function tipDialog(editorUi,tips,title){
+  if(!title){
+    let resource = window.mxResources
+    title=resource.get('tips')
+  }
   editorUi.showDialog(new OpenDialog(tips).container, (Editor.useLocalStorage) ? 640 : 320,
     (Editor.useLocalStorage) ? 480 : 80, true, false,null, null, title, null)
   setTimeout(()=>{
     editorUi.hideDialog()
   },1500)
 }
-function sureContainer(editorUi,info,confirmText='确定',cancelText='取消',cb) {
+function sureContainer(editorUi,info,confirmText,cancelText,cb) {
   let {mxUtils} = require('./mxGlobal')
   let saveContent = editorUi.createDiv('geDialogInfo');
   let nameTitle = document.createElement('p')
@@ -117,7 +121,14 @@ function sureContainer(editorUi,info,confirmText='确定',cancelText='取消',cb
   saveContent.appendChild(btnContent)
   this.container = saveContent;
 }
-function sureDialog(editorUi, info, cb, confirmText = '确定', cancelText = '取消', title = '提示') {
+function sureDialog(editorUi, info, cb, confirmText, cancelText, title = '') {
+  let resource = window.mxResources
+  if (!confirmText) {
+    confirmText = resource.get('confirm')
+  }
+  if (!cancelText) {
+    cancelText = resource.get('cancel')
+  }
   let dlg = new sureContainer(editorUi, info, confirmText, cancelText,cb)
   editorUi.showDialog(dlg.container, 410, 160, true, false, null, null, title);
 }

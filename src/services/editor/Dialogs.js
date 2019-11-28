@@ -449,7 +449,7 @@ let FilenameDialog = function(editorUi,fn, closeOnBtn, cancelFn)
     saveContent.style.padding="20px 20px 0 20px"
     //默认导航是否启用
     let defaultConfigMenu = document.createElement('div')
-    defaultConfigMenu.innerHTML = `<div style="font-size:14px;color:#929292;flex:1;">默认导航</div>
+    defaultConfigMenu.innerHTML = `<div style="font-size:14px;color:#929292;flex:1;">${mxResources.get('defaultMenu')}</div>
         <div style="flex:2"><input type="checkbox" class="menu-config-switch menu-config-switch-anim" ${editorUi.theme.status == 1 ? 'checked' : ''}></div>`;
     defaultConfigMenu.style.cssText = "display:flex;height:24px;align-items:center;"
     saveContent.appendChild(defaultConfigMenu)
@@ -476,7 +476,7 @@ let FilenameDialog = function(editorUi,fn, closeOnBtn, cancelFn)
     // 导航位置
     let menuPosCon = document.createElement('div')
     menuPosMsgCon.style.marginTop='15px'
-    menuPosCon.innerHTML = `<span style="font-size:14px;color:#929292;flex:1;">导航位置</span>
+    menuPosCon.innerHTML = `<span style="font-size:14px;color:#929292;flex:1;">${mxResources.get('menuPosition')}</span>
     <div style="flex:2;display:flex;">
         <div class="menu-pos-con ${editorUi.theme.position == 1 ? 'check' : ''}">
             <div class="menu-left-cls check"></div>
@@ -495,7 +495,7 @@ let FilenameDialog = function(editorUi,fn, closeOnBtn, cancelFn)
     // 导航风格
     let menuStyleCon = document.createElement('div')
     menuStyleCon.style.marginTop="15px"
-    menuStyleCon.innerHTML = `<span style="font-size:14px;color:#929292;flex:1;">导航风格</span>
+    menuStyleCon.innerHTML = `<span style="font-size:14px;color:#929292;flex:1;">${mxResources.get('menuStyle')}</span>
     <ul class='menu-style-con'>
         <li class="${editorUi.theme.style == 1 ? 'check' : ''}"><div class="menu1"></div></li>
         <li class="${editorUi.theme.style == 2 ? 'check' : ''}"><div class="menu2"></div></li>
@@ -553,7 +553,7 @@ let PreviewDialog = function(editorUi,fun) {
     var saveContent = editorUi.createDiv('geDialogInfo');
     // 链接
     var nameTitle = document.createElement('p')
-    nameTitle.innerHTML = '保存并预览该应用？';
+    nameTitle.innerHTML = `${mxResources.get('savePreviewApply')}?`;
     nameTitle.className = 'geDialogInfoTitle';
     saveContent.appendChild(nameTitle)
 
@@ -563,7 +563,7 @@ let PreviewDialog = function(editorUi,fun) {
 
     // 保存按钮
     var btnContent = editorUi.createDiv('btnContent');
-    var genericBtn = mxUtils.button('保存并预览', function(){
+    var genericBtn = mxUtils.button(mxResources.get('preview'), function(){
         fun()
         editorUi.hideDialog()
     });

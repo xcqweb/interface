@@ -351,7 +351,11 @@ Editor.prototype.refreshToken = function(refreshToken) {
  * @param {Function} fn
  * @param {Function} errorfn
  */
-Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title = '加载中···',hideDialog=false) {
+Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title,hideDialog=false) {
+    if(!title){
+        let resource = window.mxResources
+        title=resource.get('loading')
+    }
     let _that = this
     let loadingBarInner
     if(!hideDialog){

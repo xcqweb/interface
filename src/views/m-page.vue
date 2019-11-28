@@ -15,10 +15,6 @@
 
 <script>
 //mxgraph editor
-window.basePath = './static'
-window.mxDefaultLanguage = 'zh'
-window.mxLoadResources = false
-window.mxClient.languages = ['zh','en']
 
 import '../services/editor/Init'
 import '../services/editor/EditorUi'
@@ -32,7 +28,7 @@ import '../services/editor/Menus'
 import '../services/editor/Toolbar'
 import '../services/editor/Dialogs'
 
-import {Graph,Editor,EditorUi,mxEvent,mxUtils,mxResources} from '../services/mxGlobal'
+import {Editor,EditorUi,mxEvent,mxUtils,mxResources} from '../services/mxGlobal'
 import Toolbar from './toolbar/toolbar'
 import LeftSideBar from './left-sidebar/left-sidebar'
 import RightBar from './rightbar/rightbar'
@@ -53,11 +49,11 @@ export default {
         }
     },
     created() {
-        mxUtils.getAll(['../static/resources/grapheditor.txt', '../static/default.xml'],xhr=> {
+        mxUtils.getAll([mxResources.getSpecialBundle(window.RESOURCES_PATH,window.mxLanguage), '../static/default.xml'],xhr=> {
             mxResources.parse(xhr[0].getText())
             // 默认配置
             var themes = new Object()
-            themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement()
+            themes[window.Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement()
             // 正常实例化
             let myEditor = new Editor(false, themes)
             let myEditorUi = new EditorUi(myEditor,document.querySelector(".geEditor"))
@@ -93,6 +89,9 @@ export default {
                         const content = JSON.parse(editData.content)
                         myEditorUi.editor.pages = content.pages
                         myEditorUi.editor.pagesRank = content.rank
+                    }else{
+                        myEditor.pages.pageid_1.title = this.$t('page')
+                        myEditor.pages.pageid_2.title = this.$t('popup')
                     }
                     myEditorUi.editor.setFilename(editData.studioName)
                     myEditorUi.editor.setApplyId(editData.studioId)

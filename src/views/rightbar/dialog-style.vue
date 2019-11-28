@@ -218,7 +218,9 @@ export default {
             let editor = this.myEditorUi.editor
             let el = document.querySelector(".dialog-title-m")
             let keys = Object.keys(dialogStyle)
-            el.style.cssText = " "//清空之前的标题style
+            if(el.style) {
+                el.style.cssText = " "//清空之前的标题style
+            }
             for(let i = 0;i < keys.length;i++) {//更改title dom节点位置后，vue的:style失效，采用原生的方式
                 el.style[keys[i]] = dialogStyle[keys[i]]
             }
