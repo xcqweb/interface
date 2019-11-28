@@ -21,6 +21,7 @@ class Main {
         this.pageId = null
         this.evEchartsInit = null
         this.fileSystem = null
+        this.menuStyle = null
     }
 
     // 初始化
@@ -61,10 +62,27 @@ class Main {
         this.initMenus(applyInfo)
     }
     //切换页面
-    changePage(pageId) {
+    changePage(pageId,isAction) { //isAction 是否交互事件触发的
+        let _that = this
+        if(isAction) {
+            $(".gePreviewMenu ul li").each(function() {
+                let attrPageId = $(this).data("pageId")
+                if(attrPageId == pageId) {
+                    $(this).click()
+                    if (_that.menuStyle.position == 1) {
+                        $(".gePreviewMenu ul").animate({scrollTop:$(this).offset().top + "px"},500)
+                    }else{
+                        $(".gePreviewMenu ul").animate({scrollLeft: $(this).offset().left + "px"}, 500)
+                    }
+                    return false //终止each 循环
+                }
+            })
+            return
+        }
         this.pageId = pageId
         // 渲染页面
         this.renderNormal()
+
     }
     // 判断页面类型
     getPageType(id) {
@@ -106,12 +124,13 @@ class Main {
         pageRankNormal.forEach(item=>{
             pages[item] = parseContent.pages[item].title
         })
-        let menuStyle = menuStyles[parseTheme.style - 1]
+        this.menuStyle  = menuStyles[parseTheme.style - 1]
         let menuCon = $(".gePreviewMenu")
         menuCon.data('check',1)
         let menuIcon = $(".gePreviewMenuIcon")
+        menuIcon.attr("data-check",1)
         let menuUl = $("<ul>")
-        menuCon.css({background: menuStyle.bgColor})
+        menuCon.css({background: this.menuStyle.bgColor})
         if(parseTheme.position == 1) {
             menuCon.css({
                 width: `${menuWidth}px`,
@@ -141,11 +160,11 @@ class Main {
             let menuLi = $("<li>")
             menuLi.addClass('preview-menu-check')
             $(menuLi).on('click',function() {
-                $(this).css('background', menuStyle.checkColor).siblings().css('background','unset')
+                $(this).css('background', _that.menuStyle.checkColor).siblings().css('background','unset')
                 _that.changePage(key) //切换页面
             })
             menuLi.css({
-                color: menuStyle.fontColor,
+                color: this.menuStyle.fontColor,
                 width: `${menuWidth - 20}px`,
                 height: `${menuHeight}px`,
                 display: 'inline-block',
@@ -159,6 +178,7 @@ class Main {
             }
             menuLi.html(`${pages[key]}`)
             menuLi.attr('title',pages[key])
+            menuLi.data('pageId',key)//交互事件 跳转页面时候通过这个定位到对应的菜单项
             menuUl.append(menuLi)
         }
         menuCon.append(menuUl)
@@ -183,7 +203,7 @@ class Main {
                 menuIcon.css({
                     left: `${$("#gePreviewCon").width() / 2 + $("#gePreviewCon").offset().left - menuIcon.width() / 2}px`,
                     top: `${menuHeight}px`,
-                    background:`${menuStyle.bgColor}`,
+                    background: `${_that.menuStyle.bgColor}`,
                     borderRadius: '0 0 10px 10px'
                 })
                 menuIcon.html(`<i class="ivu-icon ivu-icon-ios-arrow-up" style="position:relative;top:-2px;font-size:24px;color:#ffff"></i>`)
@@ -196,7 +216,7 @@ class Main {
                         top:0
                     })
                     menuCon.hide()
-                    menuCon.data("check", 0)
+                    menuIcon.attr("data-check", 0)
                     if (topTimer) {
                         clearTimeout(topTimer)
                         topTimer = null
@@ -209,7 +229,7 @@ class Main {
                 }
                 topHideTimeFun()
                 menuIcon.on('click', function() {
-                    let check = menuCon.data("check")
+                    let check = menuIcon.attr("data-check")
                     if(check == 1) {
                         topHide()
                     }else{
@@ -217,7 +237,7 @@ class Main {
                         menuCon.show()
                         topHideTimeFun()
                     }
-                    menuCon.data("check",1 - check)
+                    menuIcon.attr("data-check",1 - check)
                 })
             }else{//左侧
                 let previewConH = $("#gePreviewCon").height()
@@ -229,7 +249,7 @@ class Main {
                     left: `${left}px`,
                     lineHeight:`40px`,
                     top: `${previewConH / 2 + menuIcon.height() / 2 }px`,
-                    background: `${menuStyle.bgColor}`,
+                    background: `${_that.menuStyle.bgColor}`,
                     borderRadius:'0 10px 10px 0'
                 })
                 menuIcon.html(`<i class="ivu-icon ivu-icon-ios-arrow-back" style="position:relative;left:-2px;font-size:24px;color:#fff;"></i>`)
@@ -237,7 +257,7 @@ class Main {
                 let leftHide = function() {
                     menuIcon.css('left', `${left - menuWidth}px`)
                     menuCon.hide()
-                    menuCon.data("check", 0)
+                    menuIcon.attr("data-check", 0)
                     if (leftTimer) {
                         clearTimeout(leftTimer)
                         leftTimer = null
@@ -250,7 +270,7 @@ class Main {
                 }
                 leftHideTimeFun()
                 menuIcon.on('click', function() {
-                    let check = menuCon.data("check")
+                    let check = menuIcon.attr("data-check")
                     if (check == 1) {
                         leftHide()
                     } else {
@@ -258,7 +278,7 @@ class Main {
                         menuCon.show()
                         leftHideTimeFun()
                     }
-                    menuCon.data("check", 1 - check)
+                    menuIcon.attr("data-check", 1 - check)
                 })
             }
         })

@@ -10,7 +10,7 @@ export default {
     groupTitle: 'Group (Ctrl+G)',
     ungroupTitle: 'Ungroup (Ctrl+Shift+U)',
     saveTitle: 'Save (Ctrl+S)',
-    previewTitle: 'Preview (Ctrl+Shift+L)',
+    previewTitle: 'Preview (Ctrl+Shift+P)',
     lock:'Lock (Ctrl+L)',
     unlock:'UnLock (Ctrl+Shift+L)',
 

@@ -209,7 +209,7 @@ Actions.prototype.init = function()
             window.open(page.href,'_blank')
         })
         ui.showDialog(dlg.container, 410, 160, true, false, null, null, mxResources.get('preview'))
-    }, true, null, Editor.ctrlKey + '+Shift+L');
+    }, true, null, Editor.ctrlKey + '+Shift+P');
    
      // 文件操作
     this.addAction('new', function() { ui.actions.get('addPage').funct() });

@@ -4087,7 +4087,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
         keyHandler.bindAction(82, true, 'clearDefaultStyle', true); // Ctrl+Shift+R
         keyHandler.bindAction(83, true, 'save'); // Ctrl+S
         keyHandler.bindAction(79, true, 'publish', true); // Ctrl+Shift+O,
-        keyHandler.bindAction(76, true, 'previewapply', true); // Ctrl+Shift+L,
+        keyHandler.bindAction(80, true, 'previewapply', true); // Ctrl+Shift+P,
         keyHandler.bindAction(65, true, 'selectAll'); // Ctrl+A
         keyHandler.bindAction(65, true, 'selectNone', true); // Ctrl+A
         keyHandler.bindAction(73, true, 'selectVertices', true); // Ctrl+Shift+I

@@ -10,7 +10,7 @@ export default {
     groupTitle: '组合 (Ctrl+G)',
     ungroupTitle: '取消组合 (Ctrl+Shift+U)',
     saveTitle: '保存 (Ctrl+S)',
-    previewTitle: '预览 (Ctrl+Shift+L)',
+    previewTitle: '预览 (Ctrl+Shift+P)',
     lock:'锁定 (Ctrl+L)',
     unlock:'解锁 (Ctrl+Shift+L)',
 
