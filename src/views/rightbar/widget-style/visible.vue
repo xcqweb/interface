@@ -124,7 +124,7 @@ export default{
                 }
             }
             if(!flag) {
-                tipDialog(this.myEditorUi,`${this.$t("rightBar.chooseToSet")}${tipText}`)
+                tipDialog(this.myEditorUi,`${this.$t("rightBar.chooseToSet")} ${tipText}`)
                 return
             } 
             if(!currentItem) {
@@ -137,10 +137,10 @@ export default{
                 }
             }
             if(flag2) {
-                tipDialog(this.myEditorUi,`${this.$t("thisText")}${tipText}${this.$t("rightBar.hasBindVisibleOrHideEvent")}`)
+                tipDialog(this.myEditorUi,`${this.$t("thisText")} ${tipText} ${this.$t("rightBar.hasBindVisibleOrHideEvent")}`)
                 return
             } 
-            this.$emit("submitMutual",{mutualType:2,id:currentItem.id,hide:currentItem.hide,innerType:innerType})
+            this.$emit("submitMutual",{mutualType:2,id:currentItem.id,hide:currentItem.hide,innerType:innerType,isEdit:!!this.currentEditItem})
         },
         checkDialog(item) {
             this.currentDialogItem = item

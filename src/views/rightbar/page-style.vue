@@ -63,7 +63,7 @@
           style="width:72px;"
         >
         <div v-show="isShowBgText">
-          {{ $t('choose') }} {{ $t('rightBar.bgImage') }}
+          {{ $t('rightBar.chooseBgImage') }}
         </div>
         <input
           ref="chooseImg"

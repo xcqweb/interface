@@ -135,4 +135,13 @@
   cursor: pointer;
   text-align: center;
   line-height: 20px;
+  opacity: .86;
+}
+.gePreviewMenuIcon[data-check="0"] i{
+  transition: transform .5s ease;
+  transform: rotate(180deg);
+}
+.gePreviewMenuIcon[data-check="1"] i{
+  transition: transform .5s ease;
+  transform: rotate(0deg);
 }

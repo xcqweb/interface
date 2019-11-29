@@ -34,7 +34,7 @@ function destroyWs(applyData,pageId) {
  * @param {object} data 请求参数
  */
 async function geAjax(url, method = 'GET', data = null) {
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve)=>{
         callAjax()
         function callAjax() {
             let token = getCookie('token')
@@ -60,7 +60,6 @@ async function geAjax(url, method = 'GET', data = null) {
                             callAjax()
                         })
                     }
-                    reject(res)
                 }
             })
         }
@@ -134,8 +133,7 @@ function actionOpen(action, mainProcess) {
         // 打开页面
         const pageType = mainProcess.getPageType(action.link)
         if (pageType === 'normal' && mainProcess.pageId !== action.link) {
-            mainProcess.pageId = action.link
-            mainProcess.renderNormal()
+            mainProcess.changePage(action.link,true)
         } else if (pageType === 'dialog') {
             mainProcess.renderDialog(action.link)
         }

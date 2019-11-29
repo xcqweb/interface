@@ -36,5 +36,6 @@ export default {
     hasBindVisibleOrHideEvent: 'Visible and hide events are already bounded',
     addClickEvent:'Add click event',
     corner: 'Corner',
+    chooseBgImage: 'Choose backgound',
 }
 

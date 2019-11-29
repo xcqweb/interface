@@ -188,40 +188,26 @@ function setterRealData(res, fileSystem) {
  */
 function dealStateFormula(formula, data) {
     if(!formula) {
-        return
+        return false
     }
     formula = JSON.parse(formula)
-    let res1 = true,breakFlag = false,res2 = false
+    let res1 = true,res2 = false
     let logics = formula.data
     if(!logics) {
         return false
     }
     if (!formula.conditionLogic || formula.conditionLogic == 1) { // 顶级条件是and，有一个为false，就返回false
         for(let i = 0;i < logics.length;i++) {
-            for(let j = 0;j < logics[i].length;j++) {
-                if (!dealLogic(logics[i][j],data)) {//子级条件有一个为false，整体为false
-                    breakFlag = true
-                    res1 = false
-                    break 
-                }
-            }
-            if(breakFlag) {
-                break
+            if (!dealLogic(logics[i],data)) {//子级条件有一个为false，整体为false
+                res1 = false
+                break 
             }
         }
         return res1
     }  
     // 顶级条件or
     for (let i = 0; i < logics.length; i++) {
-        for (let j = 0; j < logics[i].length; j++) {
-            if (!dealLogic(logics[i][j],data)) {
-                continue
-            }
-            if (j == logics[i].length - 1) {//子级条件全为true
-                breakFlag = true
-            }
-        }
-        if (breakFlag) {//父级条件有一个为true,整个结果为true
+        if (dealLogic(logics[i], data)) {//子级条件有一个为true，整体为true
             res2 = true
             break
         }
@@ -236,12 +222,13 @@ function dealStateFormula(formula, data) {
 function dealLogic(logic,data) {
     let res = true
     let operate = +logic.logical
-    let param = logic.paramName
+    let tempArr = logic.key.split("/")
+    let paramId = tempArr[tempArr.length - 1]
     let fixed = +logic.fixedValue
     let min = +logic.minValue
     let max = +logic.maxValue
-    let tempParamVal = data[param]
-    if (!data[param] && tempParamVal !== 0) {
+    let tempParamVal = dealDataVal(paramId,data)
+    if (!tempParamVal && tempParamVal !== 0) {
         return false
     }
     let paramVal = +tempParamVal
@@ -270,6 +257,17 @@ function dealLogic(logic,data) {
         case 8: // 小于等于
             res = paramVal <= fixed
             break
+    }
+    return res
+}
+function dealDataVal(paramId, data) {
+    let res = null
+    let keys = Object.keys(data)
+    for(let i = 0;i < keys.length;i++) {
+        if (keys[i].includes(paramId)) {
+            res = data[keys[i]]
+            break
+        }
     }
     return res
 }

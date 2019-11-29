@@ -65,6 +65,7 @@ export default{
     data() {
         return {
             isWidgetClick:false,
+            isEdit:false,
             states:[]
         }
     },
@@ -83,6 +84,7 @@ export default{
         },
         checkCurrent(currentEditItem) { //当前控件和状态选中
             this.isWidgetClick = true
+            this.isEdit = true //编辑模式
             this.currentPageWidgets.forEach(d=>{
                 if(d.id == currentEditItem.id) {
                     d.selected = true
@@ -129,7 +131,7 @@ export default{
                 tipDialog(this.myEditorUi,`该控件已经绑定了${currentStateItem.name}状态`)
                 return
             } 
-            this.$emit("submitMutual",{mutualType:3,id:currentWidgetItem.id,innerType:"palette",stateInfo:currentStateItem})
+            this.$emit("submitMutual",{mutualType:3,id:currentWidgetItem.id,innerType:"palette",stateInfo:currentStateItem,isEdit:this.isEdit})
         },
         checkWidget(item) {
             currentWidgetItem = item

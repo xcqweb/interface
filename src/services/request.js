@@ -40,6 +40,7 @@ axios.interceptors.response.use((res) =>{
                 error.response.config.headers.Authorization = 'Bearer ' + res.token
                 axios.request(error.response.config)
             })
+            return
         }
     }
     return Promise.reject(error)

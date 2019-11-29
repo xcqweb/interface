@@ -402,11 +402,6 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
                 if(!hideDialog){
                     loadingBarInner.style.width = '100%'
                 }
-                setTimeout(() => {
-                    if (res.status !== 418){
-                        errorfn && errorfn(res)
-                    }
-                }, 550)
             }
         })
     }
@@ -416,7 +411,7 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
  */
 Editor.prototype.InitEditor = function(editorUi) {
     // 获取文件服务器地址
-    let getFileSystem = new Promise((resolve, reject) => {
+    let getFileSystem = new Promise((resolve) => {
         this.ajax(editorUi, '/api/console/host/imageHost', 'GET', null, function(res) {
             // 文件服务器地址
             window.fileSystem = res.imageHost
@@ -435,7 +430,7 @@ Editor.prototype.InitEditor = function(editorUi) {
         }else{
             id = applyId
         }
-        editPromise = new Promise((resolve, reject) => {
+        editPromise = new Promise((resolve) => {
             this.ajax(editorUi, '/api/iot-cds/cds/configurationDesignStudio/' + id, 'GET', null, function(res) {
                 resolve(res)
             }, null)
