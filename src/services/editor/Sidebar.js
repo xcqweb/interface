@@ -1542,7 +1542,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             60,
             30,
             // 类似链接一样设置
-            '<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">输入文本</span>',
+            `<span style="display:table-cell;vertical-align: middle;word-break:break-word;line-height:1;">${mxResources.get('inputText')}</span>`,
             // 'text',
             "文字"
         ),
@@ -1563,7 +1563,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             for (let i = 0; i < 3; i++) {
                 let line = parseInt(i / 3);
                 let xNum = i % 3;
-                let symbol = new mxCell('菜单' + (i + 1), new mxGeometry(xNum * 120, 40 * line, 120, 40), 'shape=menuCell;strokeColor=#000000;html=1;whiteSpace=wrap;');
+                let symbol = new mxCell(mxResources.get('menulist') + (i + 1), new mxGeometry(xNum * 120, 40 * line, 120, 40), 'shape=menuCell;strokeColor=#000000;html=1;whiteSpace=wrap;');
                 symbol.vertex = true;
                 cell.insert(symbol);
             }

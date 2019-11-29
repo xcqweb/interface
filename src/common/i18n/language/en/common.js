@@ -6,6 +6,7 @@ export default {
     rename: 'Rename',
     add: 'Add',
     delete: 'Delete',
+    remove: 'Remove',
     addToTemplate: 'Add to template',
     dataSources: 'Data source',
     dataModel: 'Data model',

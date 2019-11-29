@@ -68,3 +68,4 @@ nameCannotOver20Charts=不能超过20个字符
 copyP=副本
 defaultColor=默认颜色
 recentlyUsed=最近使用
+inputText=输入文本
