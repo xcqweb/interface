@@ -505,7 +505,7 @@
         class="item-title"
         style="display:flex;justify-content:space-between;align-items:center;"
       >
-        图例
+        {{ $t('legend') }}
         <i-switch
           v-model="chartLegend"
           size="small"
@@ -543,7 +543,7 @@
         class="item-title"
         style="display:flex;justify-content:space-between;"
       >
-        风格
+        {{ $t('style') }}
         <div
           class="setColor"
           style="width:80%;"
@@ -555,13 +555,13 @@
         class="item-title"
         style="display:flex;justify-content:space-between;"
       >
-        指标
+        {{ $t('marker') }}
         <div
           v-if="!isAddMark"
           style="display:flex;align-items:center;"
           @click="addMark"
         >
-          <img src="../../../assets/images/rightsidebar/plus_ic.png"> 添加
+          <img src="../../../assets/images/rightsidebar/plus_ic.png"> {{ $t('add') }}
         </div>
       </div>
       <div
@@ -569,13 +569,13 @@
         class="addMark-con"
       >
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          名称 <input
+          {{ $t('name') }} <input
             v-model="markName"
             style="width:82%;padding-left:4px;"
           >
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-          数值 <input
+          {{ $t('number') }} <input
             v-model="markValue"
             v-number.minus="1"
             style="width:82%;padding-left:4px;"
@@ -583,7 +583,7 @@
         </div>
         <div style="display:flex;margin-top:10px;"> 
           <div style="margin-right:5.5%;">
-            线条
+            {{ $t('line') }}
           </div>
           <div
             class="setColor"
@@ -650,13 +650,13 @@
             class="mutual-btn"
             @click="cancel()"
           >
-            取消
+            {{ $t('cancel') }}
           </button>
           <button
             class="mutual-btn selected"
             @click="submit()"
           >
-            提交
+            {{ $t('submit') }}
           </button>
         </div>
       </div>
@@ -673,8 +673,8 @@
           <div
             style="display:flex;justify-content:space-between;"
           >
-            <div>名称-{{ item.markName }}</div>
-            数值-{{ item.markValue }}
+            <div>{{ $t('name') }}-{{ item.markName }}</div>
+            {{ $t('number') }}-{{ item.markValue }}
             <img
               src="../../../assets/images/rightsidebar/dele_ic.png"
               @click="delMark(item,index,$event)"
@@ -682,7 +682,7 @@
           </div>
           <div style="display:flex;margin-top:10px;"> 
             <div style="margin-right:5.5%;">
-              线条
+              {{ $t('line') }}
             </div>
             <div
               class="setColor"
@@ -762,20 +762,20 @@ export default {
             tableRow:3,
             tableCol:3,
             pipelineFlow:false,//指示灯下拉框
-            pipelineFlowText:'无指示',
-            pipelineFlowList:[{name:'无指示',value:'none'},{name:'正向流动',value:'forward'},{name:'反向流动',value:'back'}],
+            pipelineFlowText:this.$t('noFlow'),
+            pipelineFlowList:[{name:this.$t('noFlow'),value:'none'},{name:this.$t('forwardFlow'),value:'forward'},{name:this.$t('backwardFlow'),value:'back'}],
             pipelineFlowVal:'none',
             progressMax:100,
             progressMin:0,
             progressDialog:false,
-            progressTypeText:'百分比',
+            progressTypeText:this.$t('percent'),
             progressTypeVal:'percent',
-            progressDialogList:[{name:'百分比',value:'percent'},{name:'实际数值',value:'real'}],
+            progressDialogList:[{name:this.$t('percent'),value:'percent'},{name:this.$t('real'),value:'real'}],
             linkUrl:"",
             chartLegend:true,
             markLineList:[],//标线 line-chart
             isAddMark:false,
-            markName:'指标1',
+            markName:'',
             markValue:0,
             borderColorChart:"#000",
             borderLineClsChart:"border-line",
@@ -788,8 +788,8 @@ export default {
             editMarkLineIndex:0,
             styleColorBg:'#000',
             showLegendChoose:false,
-            legendChooseText:'底部',
-            legendChooseList:[{text:'底部',type:1},{text:'顶部',type:2},{text:'左侧',type:3},{text:'右侧',type:4}],
+            legendChooseText:this.$t('bottom'),
+            legendChooseList:[{text:this.$t('bottom'),type:1},{text:this.$t('top'),type:2},{text:this.$t('left'),type:3},{text:this.$t('right'),type:4}],
         }
     },
     computed: {
@@ -1358,7 +1358,7 @@ export default {
         addMark() {//折线chart 添加标线
             this.isAddMark = true
             this.editMarkLine = null
-            this.markName = `指标${this.markLineList.length + 1}`
+            this.markName = `${this.$t('marker')}${this.markLineList.length + 1}`
         },
         pickChartBorderColor() {//chart mark-line
             this.myEditorUi.pickColor(this.borderColor,color=>{
@@ -1402,7 +1402,7 @@ export default {
         },
         delMark(d,index,evet) {
             evet.stopPropagation()
-            sureDialog(this.myEditorUi,`确定要删除${d.markName}吗`,()=>{
+            sureDialog(this.myEditorUi,`${this.$t('sureDel')} ${d.markName}`,()=>{
                 this.markLineList.splice(index,1)
                 this.setMarkLineFun()
             },)

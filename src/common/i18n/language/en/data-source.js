@@ -18,7 +18,7 @@ export default {
     editModelSuccessfully: 'Edit model successfully',
     editModel: 'Edit model',
     remark: 'Description',
-    remarkContent: 'Description content',
+    remarkPlaceholder: 'Description content',
     rule: 'Condition',
     addRule: 'Add condition',
     haveUnsavedModels: 'You have unsaved models, please save them first',

@@ -110,7 +110,7 @@ export default{
         return {
             isEdit:false,
             typeTab:1,
-            mutualTypes:['跳转','显隐','切换'],
+            mutualTypes:[this.$t('link'),this.$t('visibleOrHide'),this.$t('change')],
             events:[],
             pages:[],//页面
             bindActions:[],

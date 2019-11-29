@@ -475,7 +475,7 @@ export default {
             this.setCellModelInfo('bindData',tempObj)
         },
         removeParamHandle(index) {
-            sureDialog(this.myEditorUi,'确定要删除当前参数吗',()=>{
+            sureDialog(this.myEditorUi,this.$t('footBar.sureDelCurrentParam'),()=>{
                 this.paramOutterList.splice(index,1)
                 let tempObj = this.getCellModelInfo('bindData')
                 tempObj.params = this.paramOutterList
