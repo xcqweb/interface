@@ -120,6 +120,7 @@ export default {
             params: {
                 size: 10,
                 current: 1,
+                studioId: '',
                 deviceName: '',
                 deviceTypeId: '',
                 deviceModelId: '',
@@ -173,6 +174,7 @@ export default {
         this.visible = this.value;
     },
     created() {
+        this.params.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
         this.getDeviceTypes();
     },
     methods: {
@@ -184,7 +186,7 @@ export default {
             this.handlePageChange(1);
         },
         getDevices() {
-            this.requestUtil.get('api/device/device/page', this.params).then(res => {
+            this.requestUtil.post('api/iot-cds/cds/dataSource/selectDataImport', this.params).then(res => {
                 if (res.records && res.records.length > 0) {
                     res.records.forEach((item, index) => {
                         item.index = index;
