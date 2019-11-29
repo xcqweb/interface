@@ -61,6 +61,13 @@ export let data1 = {
             }
         }
     },
+    dataZoom:[{
+        type:'inside',
+        id:'insideX',
+        xAxisIndex:0,
+        zoomOnMouseWheel:true,
+        moveOnMouseMove:true,
+    }],
     series: [{
         name: '图例',
         type: 'line',
