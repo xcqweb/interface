@@ -15,9 +15,9 @@ export default {
             const typeData = this.$store.state.datasource.typeData;
             if (typeData.length > 0) {
                 const type = typeData[0];
-                if (!this.model.deviceTypeId || !this.modelObj[this.model.deviceTypeId]) {
-                    this.model.deviceTypeId = type.deviceTypeId;
-                }
+                this.model.deviceTypeId = type.deviceTypeId;
+            } else {
+                this.model.deviceTypeId = '';
             }
             
             return typeData;
