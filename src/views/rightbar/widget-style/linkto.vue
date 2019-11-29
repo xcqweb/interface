@@ -75,7 +75,7 @@ export default{
                 tipDialog(this.myEditorUi,`${this.$t("pageHasBindLinkEvents")}`)
                 return
             } 
-            this.$emit("submitMutual",{mutualType:1,id:this.currentItem.id,innerType:'page'})
+            this.$emit("submitMutual",{mutualType:1,id:this.currentItem.id,innerType:'page',isEdit:!!this.currentEditItem})
         },
         checkPage(item) {
             this.currentItem = item

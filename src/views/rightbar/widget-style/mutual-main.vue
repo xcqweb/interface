@@ -232,7 +232,7 @@ export default{
                 action.effectAction = 'change'
                 action.stateInfo = data.stateInfo
             }
-            this.setActionInfos(action)
+            this.setActionInfos(action,data.isEdit)
         },
         initActions() {
             let graph = this.myEditorUi.editor.graph
@@ -302,18 +302,27 @@ export default{
             }
             return actions
         },
-        setActionInfos(action) {
+        setActionInfos(action,isEdit) {
             let graph = this.myEditorUi.editor.graph
             let actions = this.getActions(graph)
             let sameFlag = false
-            for(let i = 0;i < actions.length;i++) {//同一个控件只能帮忙弹窗或者页面的一个交互事件
+            for(let i = 0;i < actions.length;i++) {//同一个控件只能绑定弹窗或者页面的一个交互事件
                 if(actions[i].innerType == 'page' && action.mutualType == actions[i].mutualType) {
                     actions[i] = action
                     sameFlag = true
                     break
                 }
             }
-            if(!sameFlag) {
+            if(isEdit) {
+                console.log(action)
+                let res = actions.findIndex(item=>{
+                    return item.mutualType == action.mutualType
+                })
+                if(res != -1) {
+                    actions[res] = action
+                }
+            }
+            if(!sameFlag && !isEdit) {
                 actions.push(action)
             }
             this.setEvents(actions)//重置event列表

@@ -146,9 +146,6 @@ function setterRealData(res, fileSystem) {
                             break
                         }
                     }
-                    if ($(els[i]).attr('id') == 'palette_2') {
-                        console.log(stateIndex, $(els[i]).attr('id'))
-                    }
                     changeEleState(els[i], stateModels[stateIndex],fileSystem)
                 }
                 if (paramShow && paramShow.length) {

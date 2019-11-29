@@ -90,7 +90,7 @@
                 slot-scope="{row}"
               >
                 <Checkbox
-                  v-if="!singleParamShow.includes($store.state.main.widgetInfo.shapeInfo.shape)"
+                  v-if="!singleParamShow.includes(shapeName)"
                   v-model="row.type"
                   @on-change="val=>paramDefaultChange(val,row.paramId)"
                 >
@@ -262,6 +262,14 @@ export default {
         }
     },
     computed: {
+        shapeName() {
+            let shape = null
+            let shapeInfo = this.$store.state.main.widgetInfo.shapeInfo
+            if(shapeInfo) {
+                shape = shapeInfo.shape
+            }
+            return shape
+        },
         footerModelUpdata() {
             return this.$store.state.main.footerModelUpdata
         },
@@ -436,7 +444,7 @@ export default {
         },
         addParam() {
             this.visible = true
-            if(this.singleParamShow.includes(this.$store.state.main.widgetInfo.shapeInfo.shape)) {
+            if(this.singleParamShow.includes(this.shapeName)) {
                 this.multiple = false
             }else{
                 this.multiple = true
@@ -507,12 +515,12 @@ export default {
         },
         footerContentHandle(show) {
             if (show) {
-                if (supportDataShow.includes(this.$store.state.main.widgetInfo.shapeInfo.shape)) { // 数据显示tab 是否展示
+                if (supportDataShow.includes(this.shapeName)) { // 数据显示tab 是否展示
                     this.ifShowDataFlag = true
                 } else {
                     this.ifShowDataFlag = false
                 }
-                if(allShapes.includes(this.$store.state.main.widgetInfo.shapeInfo.shape)) {
+                if(allShapes.includes(this.shapeName)) {
                     this.footerContent = true
                 }else{
                     this.footerContent = false

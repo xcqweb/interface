@@ -36,7 +36,7 @@ export default {
     hasBindVisibleOrHideEvent: '已经绑定了显隐事件',
     addClickEvent:'添加点击事件',
     corner:'圆角',
-    
+    chooseBgImage: '选择背景图案',
 
 }
 
