@@ -3,10 +3,10 @@
     class="page-cls"
   >
     <p style="text-align:center;margin:10px;font-size:14px;">
-      {{ $t('page') }}{{ $t('style') }}
+      {{ $t('pageStyle') }}
     </p>
     <p style="margin-top:10px;">
-      {{ $t('page') }}{{ $t('describe') }}
+      {{ $t('pageDesc') }}
     </p>
     <textarea
       v-model="pageDesc"
@@ -14,7 +14,7 @@
       rows="3"
     />
     <div class="item-title">
-      {{ $t('page') }}{{ $t('size') }}
+      {{ $t('pageSize') }}
     </div>
     <div style="display:flex;">
       <div

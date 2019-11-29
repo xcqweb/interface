@@ -4,10 +4,10 @@
     style="padding:0 4px;"
   >
     <p style="text-align:center;margin:10px;font-size:14px;">
-      {{ $t('popup') }}{{ $t('style') }}
+      {{ $t('popupStyle') }}
     </p>
     <p style="margin-top:1px;">
-      {{ $t('popup') }}{{ $t('describe') }}
+      {{ $t('popupDesc') }}
     </p>
     <textarea
       v-model="dialogDesc"
@@ -16,7 +16,7 @@
       @blur="descChange"
     />
     <div class="item-title">
-      {{ $t('popup') }}{{ $t('size') }}
+      {{ $t('popupSize') }}
     </div>
     <div style="display:flex;">
       <div
@@ -48,7 +48,7 @@
     </div>
     <div class="titleSet">
       <div class="item-title">
-        {{ $t('title') }} {{ $t('text') }}
+        {{ $t('text') }}
       </div>
       <div class="titleCon">
         <div class="itemLine">
@@ -123,7 +123,7 @@
     <div
       class="item-title"
     >
-      {{ $t('title') }}{{ $t('fill') }}
+      {{ $t('fill') }}
     </div>
     <div
       class="item-container"

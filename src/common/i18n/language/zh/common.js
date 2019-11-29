@@ -126,4 +126,10 @@ export default {
     backwardFlow: '反向流动',
     percent: '百分比',
     real: '实际数值',
+    pageStyle:'页面样式',
+    pageDesc:'页面描述',
+    pageSize:'页面大小',
+    popupStyle: '弹窗样式',
+    popupDesc: '弹窗描述',
+    popupSize: '弹窗大小',
 }

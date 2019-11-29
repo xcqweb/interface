@@ -9,7 +9,7 @@ import viewZh from 'iview/dist/locale/zh-CN';
 Vue.use(VueI18n)
 Vue.locale = () => {};
 let language = getCookie('language')
-language = language || 'zh'
+language = language || 'en'
 
 export const i18n = new VueI18n({
     locale: language,

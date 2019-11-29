@@ -254,9 +254,8 @@ export default {
                 height:100%;
                 .ivu-tabs-content{
                     height:100% !important;
-                    // padding:0 6px;
                     .commonPages {
-                        height:180px;
+                        height:40vh;
                         overflow-y: auto;
                         padding:0 6px;
                         .leftSidebar-addicon{
