@@ -61,8 +61,8 @@
     <!-- 分页 -->
     <Page
       :total="total"
-      :current="params.current"
-      :page-size="params.size"
+      :current="pageParams.current"
+      :page-size="pageParams.size"
       show-sizer
       show-elevator
       show-total
@@ -117,9 +117,11 @@ export default {
             deviceParams: [],
             total: 0,
             keyword: '',
-            params: {
-                size: 10,
+            pageParams: {
                 current: 1,
+                size: 10,
+            },
+            params: {
                 studioId: '',
                 deviceName: '',
                 deviceTypeId: '',
@@ -166,7 +168,7 @@ export default {
                 this.selectedItems = [];
                 this.tableData = [];
                 this.total = 0;
-                this.params.current = 1;
+                this.pageParams.current = 1;
             }
         },
     },
@@ -186,7 +188,8 @@ export default {
             this.handlePageChange(1);
         },
         getDevices() {
-            this.requestUtil.post('api/iot-cds/cds/dataSource/selectDataImport', this.params).then(res => {
+            const query = `?size=${this.pageParams.size}&current=${this.pageParams.current}`;
+            this.requestUtil.post('api/iot-cds/cds/dataSource/selectDataImport' + query, this.params).then(res => {
                 if (res.records && res.records.length > 0) {
                     res.records.forEach((item, index) => {
                         item.index = index;
@@ -248,11 +251,11 @@ export default {
             });
         },
         handlePageChange(pageIndex) {
-            this.params.current = pageIndex;
+            this.pageParams.current = pageIndex;
             this.getDevices();
         },
         handlePageSizeChange(pageSize) {
-            this.params.size = pageSize;
+            this.pageParams.size = pageSize;
             this.search();
         },
         handleRowClick(row, index) {
