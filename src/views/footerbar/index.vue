@@ -163,7 +163,7 @@
     </div>
     <SelectParams
       v-model="visible"
-      :title="$t('addParam')"
+      :title="$t('footBar.addParam')"
       :device-model-id="deviceModelId"
       :device-id="deviceId"
       :multiple="multiple"
@@ -537,28 +537,15 @@ export default {
         },
         deleteFooterHandle(data, index) {
             let startBindData = this.getCellModelInfo('bindData')
-            let newDataSource = JSON.parse(JSON.stringify(this.dataSourceList))
             sureDialog(this.myEditorUi,`${this.$t('footBar.sureDelDataSources')}-${data.name}?`,()=>{
                 this.dataSourceList.splice(index, 1)
-                let objArr = startBindData.dataSource.deviceNameChild
-                let deleteEle = newDataSource[index].deviceName
-                let resIndex = objArr.findIndex((item)=>{
-                    return item.name == deleteEle
-                })
-                if(resIndex != -1) {
-                    objArr.splice(resIndex,1)
-                    if (!objArr.length) { // 清空了数据源 要把数据显示和状态模型都清空
-                        startBindData = null
-                        this.clearStateModel()//清空状态里面的模型
-                        this.dataSourceList = []
-                        this.paramsList = []
-                        this.stateList = []
-                        this.modelList = []
-                        this.deviceModelId = null
-                    } else {
-                        startBindData.dataSource.deviceNameChild = objArr
-                    }
-                }
+                startBindData = null
+                this.clearStateModel()//清空状态里面的模型
+                this.dataSourceList = []
+                this.paramsList = []
+                this.stateList = []
+                this.modelList = []
+                this.deviceModelId = null
                 this.setCellModelInfo('bindData',startBindData)
             })
         },

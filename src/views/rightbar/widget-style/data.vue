@@ -145,7 +145,9 @@ export default{
                 this.model.deviceModelId = this.bindData.dataSource.deviceTypeChild.id
                 let bindDeviceNames = this.bindData.dataSource.deviceNameChild
                 this.checkModelArr.splice(0)
-                this.checkModelArr.push(bindDeviceNames.id)
+                if(bindDeviceNames.id) {
+                    this.checkModelArr.push(bindDeviceNames.id)
+                }
             }
         },
         bindDeviceNameHandle() {
@@ -156,11 +158,11 @@ export default{
                 this.checkModelArr = []
                 return
             }  
-            if (singleDeviceName.includes(this.shapeName) && this.bindData && this.bindData.dataSource) {                    
-                Message.warning(`${this.$t('rightBar.hasBindDevice')}`)
-                this.checkModelArr = []
-                return
-            }
+            // if (singleDeviceName.includes(this.shapeName) && this.bindData && this.bindData.dataSource) {                    
+            //     Message.warning(`${this.$t('rightBar.hasBindDevice')}`)
+            //     this.checkModelArr = []
+            //     return
+            // }
             // 组装数据 绑定
             let objData = {}
             objData.deviceTypeChild = {
