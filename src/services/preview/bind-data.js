@@ -223,11 +223,17 @@ function dealLogic(logic,data) {
     let res = true
     let operate = +logic.logical
     let tempArr = logic.key.split("/")
+    let deviceType = tempArr[0]
     let paramId = tempArr[tempArr.length - 1]
+    let tempParamVal
+    if(deviceType == 'device') {
+        tempParamVal = dealDataVal(paramId, data,tempArr[1])
+    }else{
+        tempParamVal = dealDataVal(paramId, data)
+    }
     let fixed = +logic.fixedValue
     let min = +logic.minValue
     let max = +logic.maxValue
-    let tempParamVal = dealDataVal(paramId,data)
     if (!tempParamVal && tempParamVal !== 0) {
         return false
     }
@@ -260,16 +266,16 @@ function dealLogic(logic,data) {
     }
     return res
 }
-function dealDataVal(paramId, data) {
-    let res = null
+//如果是设备需要同时满足参数id和部件id都包含
+function dealDataVal(paramId, data,partId) {
     let keys = Object.keys(data)
     for(let i = 0;i < keys.length;i++) {
         if (keys[i].includes(paramId)) {
-            res = data[keys[i]]
-            break
+            if (!partId || keys[i].includes(partId)) {
+                return data[keys[i]]
+            }
         }
     }
-    return res
 }
 /**
  * 切换该元素的样式状态
