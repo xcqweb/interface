@@ -163,7 +163,7 @@
     </div>
     <SelectParams
       v-model="visible"
-      :title="$t('addParam')"
+      :title="$t('footBar.addParam')"
       :device-model-id="deviceModelId"
       :device-id="deviceId"
       :multiple="multiple"
