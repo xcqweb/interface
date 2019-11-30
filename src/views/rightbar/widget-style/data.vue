@@ -145,7 +145,9 @@ export default{
                 this.model.deviceModelId = this.bindData.dataSource.deviceTypeChild.id
                 let bindDeviceNames = this.bindData.dataSource.deviceNameChild
                 this.checkModelArr.splice(0)
-                this.checkModelArr.push(bindDeviceNames.id)
+                if(bindDeviceNames.id) {
+                    this.checkModelArr.push(bindDeviceNames.id)
+                }
             }
         },
         bindDeviceNameHandle() {
