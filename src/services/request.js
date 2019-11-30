@@ -57,7 +57,6 @@ function dealRequest(url,params,funName,isLoading) {
         }
         axios[funName](url, params)
             .then(response => {
-                console.log(response)
                 if(isLoading) {
                     //loading.close();
                 }
