@@ -592,6 +592,7 @@ export default {
                 libraryType: 1
             }
             this.requestUtil.post(this.urls.materialList.url, data).then((res) => {
+                needRefreshLeft = true
                 this.assemblyArrayName.push({name: name,materialLibraryId: res.materialLibraryId,isEdit:true,model:name})
                 this.selectAssemblyList(num + ROOT_LEN,res.materialLibraryId)
             })

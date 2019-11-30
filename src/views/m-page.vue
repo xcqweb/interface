@@ -85,6 +85,8 @@ export default {
                         // 移动端应用，弹窗页面的宽度跟页面宽度一样
                         dialog.width = page.width
                     }
+                    myEditor.defaultXml[0] = myEditor.createPageXml(page.width, page.height)
+                    myEditor.defaultXml[1] = myEditor.createPageXml(dialog.width, dialog.height)
                     if (editData.content) {
                         const content = JSON.parse(editData.content)
                         myEditorUi.editor.pages = content.pages
@@ -92,6 +94,12 @@ export default {
                     }else{
                         myEditor.pages.pageid_1.title = this.$t('page')
                         myEditor.pages.pageid_2.title = this.$t('popup')
+                        if (!myEditor.pages.pageid_1.xml) {
+                            myEditor.pages.pageid_1.xml = myEditor.defaultXml[0]
+                        }
+                        if (!myEditor.pages.pageid_2.xml) {
+                            myEditor.pages.pageid_2.xml = myEditor.defaultXml[1]
+                        }
                     }
                     myEditorUi.editor.setFilename(editData.studioName)
                     myEditorUi.editor.setApplyId(editData.studioId)
@@ -102,14 +110,6 @@ export default {
                     }else{
                         myEditorUi.theme = null
                     }
-                }
-                myEditor.defaultXml[0] = myEditor.createPageXml(page.width, page.height)
-                myEditor.defaultXml[1] = myEditor.createPageXml(dialog.width, dialog.height)
-                if (!myEditor.pages.pageid_1.xml) {
-                    myEditor.pages.pageid_1.xml = myEditor.defaultXml[0]
-                }
-                if (!myEditor.pages.pageid_2.xml) {
-                    myEditor.pages.pageid_2.xml = myEditor.defaultXml[1]
                 }
                 Vue.prototype.myEditorUi = myEditorUi
                 this.init()
