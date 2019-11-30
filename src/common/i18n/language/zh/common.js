@@ -105,7 +105,7 @@ export default {
     rangeValue:'区间值',
     uploadShape: '上传组件',
     generalShape: '基础组件',
-    chartShape: '图标组件',
+    chartShape: '图表组件',
     pageTemplate: '页面模板',
     popupTemplate: '弹窗模板',
     addShapes: '新增组件库',
