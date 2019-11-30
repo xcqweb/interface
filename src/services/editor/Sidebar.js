@@ -1061,7 +1061,7 @@ Sidebar.prototype.getSvgImage = function () {
 Sidebar.prototype.addTemplate = async function(type) {
     const svgImage = this.getSvgImage();
     const svgImagePic = svgImage.outerHTML;
-    if (svgImagePic.innerHTML) {
+    if (svgImagePic) {
         const editor = this.editorUi.editor;
         var currentPage = editor.pages[editor.currentPage]
         let data = {
@@ -1076,8 +1076,6 @@ Sidebar.prototype.addTemplate = async function(type) {
         }).catch(() => {
             tipDialog(this.editorUi, `添加${type === 'normal' ? '页面模版失败' : '弹窗模版失败'}`)
         })
-    } else {
-        tipDialog(this.editorUi, mxResources.get('notDragWidgetCanNotAddTemplate'))
     }
 }
 

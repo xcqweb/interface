@@ -40,7 +40,6 @@ axios.interceptors.response.use((res) =>{
                 error.response.config.headers.Authorization = 'Bearer ' + res.token
                 axios.request(error.response.config)
             })
-            return
         }
     }
     return Promise.reject(error)
@@ -58,6 +57,7 @@ function dealRequest(url,params,funName,isLoading) {
         }
         axios[funName](url, params)
             .then(response => {
+                console.log(response)
                 if(isLoading) {
                     //loading.close();
                 }

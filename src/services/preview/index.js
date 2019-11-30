@@ -55,6 +55,9 @@ class Main {
         document.getElementsByTagName('title')[0].innerHTML = applyInfo.studioName
         // 设置默认页面
         this.previewPage = new PreviewPage(applyInfo, this, gePreview)
+        window.onresize = ()=>{
+            this.initMenus(applyInfo)
+        }
         //初始化菜单
         this.initMenus(applyInfo)
     }
