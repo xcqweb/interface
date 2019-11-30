@@ -118,7 +118,7 @@ function actionShow(action, mainProcess) {
     if (action.innerType === 'palette') {
         document.getElementById('palette_' + action.link).style.display = '';
     } else {
-        mainProcess.renderDialog(action.link)
+        mainProcess.renderPageFun(action.link)
     }
 }
 
@@ -135,7 +135,7 @@ function actionOpen(action, mainProcess) {
         if (pageType === 'normal' && mainProcess.pageId !== action.link) {
             mainProcess.changePage(action.link,true)
         } else if (pageType === 'dialog') {
-            mainProcess.renderDialog(action.link)
+            mainProcess.renderPageFun(action.link)
         }
     }
 }
@@ -329,7 +329,7 @@ function dealCharts(cell) {
             options = data2
         }
     }
-    document.addEventListener("initEcharts",()=>{
+    let fun = () => {
         let myEchart = echarts.init(con)
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params) {
             let titleShow = cell.bindData.params[0].paramName
@@ -338,7 +338,7 @@ function dealCharts(cell) {
             let titleShowId = cell.bindData.params[0].deviceParamId
             let device = cell.bindData.dataSource.deviceNameChild
             if (cell.shapeName == 'lineChart') {
-                requestUtil.get(`${urls.timeSelect.url}${paramId}`,{paramType:paramType == 'device' ? 0 : 1}).then(res => {
+                requestUtil.get(`${urls.timeSelect.url}${paramId}`, {paramType: paramType == 'device' ? 0 : 1}).then(res => {
                     let checkItem = res.durations.find((item) => {
                         return item.checked === true
                     })
@@ -349,9 +349,9 @@ function dealCharts(cell) {
                     tempOptions.yAxis.name = titleShow
                     let tempLegend = [], tempSeries = []
                     let markLine = tempOptions.series[0].markLine
-                    let markLineMax = 0,markValArr = []
-                    if(markLine && markLine.data && markLine.data.length) {
-                        markLine.data.forEach(item=>{
+                    let markLineMax = 0, markValArr = []
+                    if (markLine && markLine.data && markLine.data.length) {
+                        markLine.data.forEach(item => {
                             markValArr.push(item.yAxis)
                         })
                         markLineMax = Math.max(...markValArr)
@@ -370,10 +370,10 @@ function dealCharts(cell) {
                         period: checkItem.duration,
                     }
                     requestUtil.post(`${urls.pentSdbData.url}`, [pentSdbParams]).then(res => {
-                        if(res && res.length) {
+                        if (res && res.length) {
                             let tempArr = res[0]
                             for (let key in tempArr.resMap) {
-                                tempOptions.xAxis.data.push(timeFormate(key,false))
+                                tempOptions.xAxis.data.push(timeFormate(key, false))
                                 tempSeries[0].data.push(tempArr.resMap[key])
                             }
                             tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
@@ -382,16 +382,17 @@ function dealCharts(cell) {
                         }
                     })
                 })
-            }else {
-                options.series.data = [{value:0,name:titleShow}]
+            } else {
+                options.series.data = [{value: 0, name: titleShow}]
                 options.series.name = titleShow
                 myEchart.setOption(options)
             }
-        }else {
+        } else {
             myEchart.setOption(options)
         }
-    })
-    return con
+    }
+    document.addEventListener("initEcharts", fun)
+    return [con,fun]
 }
  
 function dealLight(cell) {

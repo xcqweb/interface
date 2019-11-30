@@ -26,9 +26,6 @@ class Main {
 
     // 初始化
     async init() {
-        //自定义事件，echart dom 渲染后，通知初始化echarts
-        this.evEchartsInit = document.createEvent('CustomEvent')
-        this.evEchartsInit.initCustomEvent('initEcharts', false, true, null)
         let gePreview = document.getElementById('gePreview')
         let idArr = /id=(.+?)$/.exec(location.search)
         let id = ''
@@ -84,7 +81,7 @@ class Main {
         }
         this.pageId = pageId
         // 渲染页面
-        this.renderNormal()
+        this.renderPageFun(pageId)
 
     }
     // 判断页面类型
@@ -97,18 +94,14 @@ class Main {
         }
         return null
     }
-    // 渲染普通页面
-    renderNormal() {
-        let pageContent = this.previewPage.content[this.pageId]
-        this.previewPage.parsePage(pageContent,this.fileSystem)
-        document.dispatchEvent(this.evEchartsInit)
-    }
-
-    // 渲染弹窗
-    renderDialog(id) {
-        let pageContent = this.previewPage.content[id];
-        this.previewPage.parsePage(pageContent,this.fileSystem)
-        document.dispatchEvent(this.evEchartsInit)
+    // 渲染页面
+    renderPageFun(id) {
+        let pageId = id
+        let pageContent = this.previewPage.content[pageId]
+        this.previewPage.parsePage(pageContent, this.fileSystem)
+        if(this.evEchartsInit) {
+            document.dispatchEvent(this.evEchartsInit)
+        }
     }
 
     initMenus({content,theme}) {
@@ -163,6 +156,10 @@ class Main {
             let menuLi = $("<li>")
             menuLi.addClass('preview-menu-check')
             $(menuLi).on('click',function() {
+                if($(this).hasClass('check')) {
+                    return
+                }
+                $(this).addClass('check').siblings().removeClass('check')
                 $(this).css('background', _that.menuStyle.checkColor).siblings().css('background','unset')
                 _that.changePage(key) //切换页面
             })

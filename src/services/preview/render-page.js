@@ -23,6 +23,7 @@ class PreviewPage {
         this.pagesRank = parseContent.rank
         this.wsParams = []
         this.cachCells = []
+        this.chartRemoveFun = []
         this.currentPageId = ''
         this.mainProcess = mainProcess
         this.gePreview = gePreview
@@ -221,15 +222,24 @@ class PreviewPage {
         return cells    
     }
     // 清空页面内容
-    clearPage() {
-        for (let key in applyData) {
-            destroyWs(applyData, key)
+    clearPage(pageType) {
+        this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
+        this.cachCells = []
+        this.mainProcess.evEchartsInit = null
+        this.chartRemoveFun.forEach(item=>{
+            document.removeEventListener("initEcharts", item)
+        })
+        this.chartRemoveFun = []
+        if (pageType == 'normal') {
+            for (let key in applyData) {
+                destroyWs(applyData, key)
+            }
+            let el = document.querySelector("#gePreviewCon")
+            el.innerHTML = ''
+            //隐藏浮窗
+            hideFrameLayout()
+            document.getElementById('geDialogs').innerHTML = ''
         }
-        let el = document.querySelector("#gePreviewCon")
-        el.innerHTML = ''
-        //隐藏浮窗
-        hideFrameLayout()
-        document.getElementById('geDialogs').innerHTML = ''
     }
     subscribeData() {
         if (this.cachCells.length) {
@@ -360,13 +370,9 @@ class PreviewPage {
         let contentHeight = xmlDoc.getAttribute('pageHeight')
         // 页面宽度和高度
         let cells = this.parseCells(root)
-
-        this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
-        this.cachCells = []
-        
+        this.clearPage(page.type)
         if (page.type === 'normal') {
             // 清除全部websocket 和页面内容 、页面上的弹窗
-            this.clearPage()
             // 正常页面      
             this.renderPages(cells, document.querySelector("#gePreviewCon"))
             this.gePreview.style.width = contentWidth + 'px'
@@ -477,7 +483,14 @@ class PreviewPage {
         } else if (shapeName.includes('pipeline')) {
             cellHtml = dealPipeline(cell)
         } else if (shapeName.includes('Chart')) {
-            cellHtml = dealCharts(cell)
+            if (!this.mainProcess.evEchartsInit) {
+                //自定义事件，echart dom 渲染后，通知初始化echarts
+                this.mainProcess.evEchartsInit = document.createEvent('CustomEvent')
+                this.mainProcess.evEchartsInit.initCustomEvent('initEcharts', false, true, null)
+            }
+            let resFun = dealCharts(cell)
+            cellHtml = resFun[0]
+            this.chartRemoveFun.push(resFun[1])
         } else if (shapeName == 'light') {
             cellHtml = dealLight(cell)
         } else {
