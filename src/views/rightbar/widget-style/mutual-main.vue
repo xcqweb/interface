@@ -110,7 +110,7 @@ export default{
         return {
             isEdit:false,
             typeTab:1,
-            mutualTypes:[this.$t('link'),this.$t('visibleOrHide'),this.$t('change')],
+            mutualTypes:[this.$t('link'),this.$t('rightBar.visibleOrHide'),this.$t('rightBar.change')],
             events:[],
             pages:[],//页面
             bindActions:[],

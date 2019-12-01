@@ -110,7 +110,7 @@ export default {
     popupTemplate: '弹窗模板',
     addShapes: '新增组件库',
     tooltips: '提示', 
-    template: 'templa模板te',
+    template: '模板',
     widgetLib: '组件库',
     searchDeviceName: '搜索设备名称',
     model: '新建模型',

@@ -625,7 +625,7 @@
             <div>{{ borderLineBoldTextChart }}</div>
             <img 
               src="../../../assets/images/menu/down_ic.png"
-              @click="showBorderLineBold=true"
+              @click="showBorderLineBoldChart=true"
             >
             <ul
               v-if="showBorderLineBoldChart"
@@ -1414,9 +1414,9 @@ export default {
             this.isAddMark = true
             this.markName = item.markName
             this.markValue = item.markValue
-            this.borderColor = item.borderColor
-            this.borderLineCls = item.borderLineCls
-            this.borderLineBoldText = item.borderLineBoldText
+            this.borderColorChart = item.borderColor
+            this.borderLineClsChart = item.borderLineCls
+            this.borderLineBoldTextChart = item.borderLineBoldText
         },
         chooseLegend() {
             bindChartProps.legend.show = this.chartLegend
