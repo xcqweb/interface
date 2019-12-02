@@ -57,7 +57,6 @@ addLowerRow=Insert row lower
 addLeftCol=Insert column left
 addRightCol=Insert column right
 selectPic=Select picture
-notDragWidgetCanNotAddTemplate=not allow add temaplate without drag widget to canvas
 sureDel=Sure to delete
 keepAtLeastOne=Keep at least one
 tips=Tips

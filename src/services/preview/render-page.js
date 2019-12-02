@@ -250,7 +250,7 @@ class PreviewPage {
                 let statesInfo = item.statesInfo
                 let tempArr = []
                 statesInfo.forEach((d) => {
-                    if (d.modelFormInfo) {
+                    if (d.modelFormInfo && d.key) {
                         tempArr.push(d.modelFormInfo)
                     }
                 })
@@ -262,52 +262,56 @@ class PreviewPage {
             for (let key of modelIdsParam.keys()) {
                 modelAllIds = modelAllIds.concat(key.split("_"))
             }
-            requestUtil.post(urls.getModelByIds.url, Array.from(new Set(modelAllIds))).then((res) => {
-                if (res && res.returnObj) {
-                    let params = []
-                    res.returnObj.forEach(item=>{
-                        allModels.set(item.sourceId,item)
-                        if (item.formula) {
-                            params = params.concat((this.dealModelFormulaFun(modelIdsParam,item.sourceId,item.formula)))
-                        }
-                    })
-                    this.cachCells.forEach(item=>{
-                        let cellStateInfoHasModel = []
-                        let deviceId = item.bindData.dataSource.deviceNameChild.id
-                        let statesInfo = item.statesInfo
-                        if (statesInfo && statesInfo.length) {
-                            cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
-                            statesInfo.forEach((d) => {
-                                if (d.modelFormInfo) {
-                                    d.modelFormInfo = allModels.get(d.modelFormInfo)
-                                    cellStateInfoHasModel.push(d)
-                                }
-                            })
-                        }
-                        $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`device-node device_${deviceId}`)
-                    })
-                    requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
-                        let resParam = [],maps = new Map()
-                        res.forEach(dpId=>{
-                            let deviceId = getDeviceId(dpId)
-                            if (maps.has(deviceId)) {
-                                maps.set(deviceId, maps.get(deviceId).push(dpId))
-                            }else{
-                                maps.set(deviceId, [dpId])
-                            }
-                            for (let key of maps.keys()) {
-                                resParam.push({
-                                    deviceId:key,
-                                    params:maps.get(key)
-                                })
+            if(modelAllIds.length) {
+                requestUtil.post(urls.getModelByIds.url, Array.from(new Set(modelAllIds))).then((res) => {
+                    if (res && res.returnObj) {
+                        let params = []
+                        res.returnObj.forEach(item=>{
+                            allModels.set(item.sourceId,item)
+                            if (item.formula) {
+                                params = params.concat((this.dealModelFormulaFun(modelIdsParam,item.sourceId,item.formula)))
                             }
                         })
-                        this.subscribeDataDeal(resParam)
-                    })
-                }
-            },()=>{
+                        this.cachCells.forEach(item=>{
+                            let cellStateInfoHasModel = []
+                            let deviceId = item.bindData.dataSource.deviceNameChild.id
+                            let statesInfo = item.statesInfo
+                            if (statesInfo && statesInfo.length) {
+                                cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
+                                statesInfo.forEach((d) => {
+                                    if (d.modelFormInfo && d.key) {
+                                        d.modelFormInfo = allModels.get(d.modelFormInfo)
+                                        cellStateInfoHasModel.push(d)
+                                    }
+                                })
+                            }
+                            $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`device-node device_${deviceId}`)
+                        })
+                        requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
+                            let resParam = [],maps = new Map()
+                            res.forEach(dpId=>{
+                                let deviceId = getDeviceId(dpId)
+                                if (maps.has(deviceId)) {
+                                    maps.set(deviceId, maps.get(deviceId).push(dpId))
+                                }else{
+                                    maps.set(deviceId, [dpId])
+                                }
+                                for (let key of maps.keys()) {
+                                    resParam.push({
+                                        deviceId:key,
+                                        params:maps.get(key)
+                                    })
+                                }
+                            })
+                            this.subscribeDataDeal(resParam)
+                        })
+                    }
+                },()=>{
+                    this.subscribeDataDeal()
+                })
+            }else{
                 this.subscribeDataDeal()
-            })
+            }
         }else{
             this.subscribeDataDeal()
         }
@@ -609,6 +613,7 @@ class PreviewPage {
         $(cellHtml).data("shapeName",shapeName)
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild) {
             let paramShow = []
+            let device = cell.bindData.dataSource.deviceNameChild
             if (cell.bindData.params) {
                 let defaultParamIndex = 0
                 paramShow = cell.bindData.params
@@ -618,12 +623,13 @@ class PreviewPage {
                         return item.type
                     })
                 }
+                 
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
                 $(cellHtml).data("paramShow", paramShow)
+                this.initWsParams(cellHtml, device, paramShow)
             }
             let modelIdsParam = []
             let statesInfo = cell.statesInfo
-            let device = cell.bindData.dataSource.deviceNameChild
             if (statesInfo && statesInfo.length) {
                 statesInfo.forEach((item)=>{
                     if (item.modelFormInfo) {
@@ -632,11 +638,7 @@ class PreviewPage {
                 })
                 if (modelIdsParam.length) {
                     this.cachCells.push(cell)
-                }else{
-                    this.initWsParams(cellHtml, device, paramShow)
-                }
-            }else{
-                this.initWsParams(cellHtml, device,paramShow)
+                } 
             }
         }
         return cellHtml

@@ -15340,11 +15340,11 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 		if (this.graph.getModel().getValue(selectCell)) {
 			let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') || undefined // 获取到元素
 			if ((showOrHide === 'true') && title.includes(mxResources.get('resetHide'))) {
-				title = mxResources.get('resetShow')
+				title = mxResources.get('resetVisible')
 			}
 		} else {
 			if (Object.prototype.toString.call(selectCell) === '[object Object]' && selectCell.hide === true) {
-				title = mxResources.get('resetShow')
+				title = mxResources.get('resetVisible')
 			}
 		}
 	} else {
@@ -15367,7 +15367,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
 			}
 		}
 	} else if (selectCount > 1 ) {
-		if (title.includes(mxResources.get('resetShow'))) {
+		if (title.includes(mxResources.get('resetVisible'))) {
 			title = mxResources.get('resetHide')
 		}
 		let arr3 = shapeName === 'tableBox' ? ['粘贴','组合','取消组合', '设置隐藏', '设置显示'] : ['粘贴', '取消组合', '设置隐藏', '设置显示']

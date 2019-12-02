@@ -167,6 +167,7 @@
       :device-model-id="deviceModelId"
       :device-id="deviceId"
       :multiple="multiple"
+      :selected-keys="selectedKeys"
       @callback="addParamDone"
     />
   </div>
