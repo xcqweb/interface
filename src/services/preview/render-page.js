@@ -279,7 +279,7 @@ class PreviewPage {
                             if (statesInfo && statesInfo.length) {
                                 cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
                                 statesInfo.forEach((d) => {
-                                    if (d.modelFormInfo) {
+                                    if (d.modelFormInfo && d.key) {
                                         d.modelFormInfo = allModels.get(d.modelFormInfo)
                                         cellStateInfoHasModel.push(d)
                                     }
