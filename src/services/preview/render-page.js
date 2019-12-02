@@ -574,6 +574,7 @@ class PreviewPage {
         $(cellHtml).data("shapeName",shapeName)
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild) {
             let paramShow = []
+            let device = cell.bindData.dataSource.deviceNameChild
             if (cell.bindData.params) {
                 let defaultParamIndex = 0
                 paramShow = cell.bindData.params
@@ -583,12 +584,13 @@ class PreviewPage {
                         return item.type
                     })
                 }
+                 
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
                 $(cellHtml).data("paramShow", paramShow)
+                this.initWsParams(cellHtml, device, paramShow)
             }
             let modelIdsParam = []
             let statesInfo = cell.statesInfo
-            let device = cell.bindData.dataSource.deviceNameChild
             if (statesInfo && statesInfo.length) {
                 statesInfo.forEach((item)=>{
                     if (item.modelFormInfo) {
@@ -597,11 +599,7 @@ class PreviewPage {
                 })
                 if (modelIdsParam.length) {
                     this.cachCells.push(cell)
-                }else{
-                    this.initWsParams(cellHtml, device, paramShow)
-                }
-            }else{
-                this.initWsParams(cellHtml, device,paramShow)
+                } 
             }
         }
         return cellHtml
