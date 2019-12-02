@@ -105,7 +105,7 @@ function setterRealData(res, fileSystem) {
                 target.animate({"width":`${percentVal * 100}%`})
                 textEl.html(text)
             }else if(shapeName.includes('Chart')) {
-                let echartsInstance = echarts.getInstanceByDom(els[i])
+                let echartsInstance = echarts.getInstanceByDom($ele)
                 let options = echartsInstance.getOption()
                 if(options) {
                     if(shapeName == 'lineChart') {
@@ -147,7 +147,7 @@ function setterRealData(res, fileSystem) {
                             break
                         }
                     }
-                    changeEleState(els[i], stateModels[stateIndex],fileSystem)
+                    changeEleState($ele, stateModels[stateIndex],fileSystem)
                 }
                 if (paramShow && paramShow.length) {
                     let paramData = $ele.data('paramData')
@@ -158,7 +158,7 @@ function setterRealData(res, fileSystem) {
                         }
                     }
                     paramShow.forEach(d => {
-                        if (item[d.deviceParamId] !== undefined) {
+                        if (item[d.deviceParamId]) {
                             paramData.data[d.paramName] = item[d.deviceParamId]
                         }
                     })

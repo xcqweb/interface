@@ -650,7 +650,7 @@ class PreviewPage {
                 dealParamShow.push(item.deviceParamId)
             }
         })
-        cellHtml.className += ` device_${device.id}`
+        cellHtml.className += `device-node device_${device.id}`
         if(dealParamShow.length) {
             let resArr = Array.from(new Set(dealParamShow))
             this.wsParams.push({
