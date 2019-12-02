@@ -285,7 +285,8 @@ class PreviewPage {
                                     }
                                 })
                             }
-                            $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`device-node device_${deviceId}`)
+                            const className = item.shapeName.includes('progress') || item.shapeName.includes('Chart') ? '' : 'param-show-node'
+                            $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId}`)
                         })
                         requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
                             let resParam = [],maps = new Map()
@@ -421,7 +422,7 @@ class PreviewPage {
             const {clientX, clientY} = e
             $formatLayer.css({left: `${clientX}px`, top: `${clientY}px`})
         }
-        const selector = '.device-node:not(.progress-or-chart)'
+        const selector = '.param-show-node'
         // 先解除设备mouse事件
         $document.off('mouseenter mousemove mouseleave', selector)
         $document.on('mouseenter', selector, function(event) {
@@ -623,8 +624,7 @@ class PreviewPage {
                     defaultParamIndex = cell.bindData.params.findIndex(item => {
                         return item.type
                     })
-                } else {
-                    cellHtml.classList.add('progress-or-chart')
+                    cellHtml.classList.add('param-show-node')
                 }
                  
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
@@ -653,7 +653,7 @@ class PreviewPage {
                 dealParamShow.push(item.deviceParamId)
             }
         })
-        cellHtml.className += ` device-node device_${device.id}`
+        cellHtml.classList.add(`device_${device.id}`)
         if(dealParamShow.length) {
             let resArr = Array.from(new Set(dealParamShow))
             this.wsParams.push({
