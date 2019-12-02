@@ -72,9 +72,10 @@ function setterRealData(res, fileSystem) {
     targetArr.forEach((item)=>{
         let els = document.querySelectorAll(`.device_${item.deviceId}`)
         for(let i = 0;i < els.length;i++) {
-            let shapeName = $(els[i]).data("shapeName")
-            let paramShow = $(els[i]).data("paramShow")
-            let paramShowDefault = $(els[i]).data("paramShowDefault")
+            const $ele = $(els[i])
+            let shapeName = $ele.data("shapeName")
+            let paramShow = $ele.data("paramShow")
+            let paramShowDefault = $ele.data("paramShowDefault")
             let val = null
             if (paramShowDefault) {
                 val = item[paramShowDefault.deviceParamId]
@@ -83,15 +84,15 @@ function setterRealData(res, fileSystem) {
                 if(!val) {
                     val = 0
                 }
-                let progressPropsObj = $(els[i]).data("progressPropsObj")
+                let progressPropsObj = $ele.data("progressPropsObj")
                 let {max,min,type} = progressPropsObj
                 let percentVal = val / (max - min)
                 let text = `${toDecimal2NoZero(percentVal * 100)}%`
                 if(type == 'real') {
                     text = val
                 }
-                let target = $(els[i]).find(".progressbar-common.progressbar")
-                let textEl = $(els[i]).find(".progressbar-text")
+                let target = $ele.find(".progressbar-common.progressbar")
+                let textEl = $ele.find(".progressbar-text")
                 let background = "linear-gradient(to right,#FF280F,#FFA963)"
                 if (percentVal * 100 > 75) {
                     background = "linear-gradient(to right,#D4D7FF,#175FFF)"
@@ -108,7 +109,7 @@ function setterRealData(res, fileSystem) {
                 let options = echartsInstance.getOption()
                 if(options) {
                     if(shapeName == 'lineChart') {
-                        let chartDataLen = $(els[i]).data("chartDataLen")
+                        let chartDataLen = $ele.data("chartDataLen")
                         options.series.forEach((ser)=>{
                             if (ser.deviceId == item.deviceId) {
                                 if(ser.data.length >= chartDataLen) {
@@ -135,9 +136,9 @@ function setterRealData(res, fileSystem) {
                 }
             }else {
                 if(val || val === 0) {
-                    $(els[i]).html(`${val}`)
+                    $ele.html(`${val}`)
                 }
-                let stateModels = $(els[i]).data("stateModels")
+                let stateModels = $ele.data("stateModels")
                 if(stateModels) {
                     let stateIndex = 0 //默认状态 未找到要切换的状态，显示默认
                     for (let j = 1; j < stateModels.length;j++) {
@@ -149,32 +150,21 @@ function setterRealData(res, fileSystem) {
                     changeEleState(els[i], stateModels[stateIndex],fileSystem)
                 }
                 if (paramShow && paramShow.length) {
-                    let formatLayerEl = $("#formatLayer")
-                    let formatLayerElText = () => {
-                        formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + 
-                            `<li>${timeFormate(item.timestamp,false)}</li>` +
-                            paramShow.map((d) => {
-                                return `<li>${d.paramName}=${item[d.deviceParamId]}</li>`
-                            }).join('') + "</ul>")
+                    let paramData = $ele.data('paramData')
+                    if (!paramData) {
+                        paramData = {
+                            time: timeFormate(item.timestamp, false),
+                            data: {}
+                        }
                     }
-                    let formatLayerShow = (e)=>{
-                        let {clientX,clientY} = e
-                        formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
-                        formatLayerElText()
-                        formatLayerEl.show()
-                    }
-                    $(els[i]).mouseenter(e=>{
-                        formatLayerShow(e)
-                        els[i].frameFlag = true
+                    paramShow.forEach(d => {
+                        if (item[d.deviceParamId] !== undefined) {
+                            paramData.data[d.paramName] = item[d.deviceParamId]
+                        }
                     })
-                    $(els[i]).mousemove(throttleFun(formatLayerShow,20))
-                    $(els[i]).mouseleave(() => {
-                        els[i].frameFlag = false
-                        formatLayerEl.html("")
-                        formatLayerEl.hide()
-                    })
-                    if (els[i].frameFlag) { //当前控件显示时候，刷新对应浮窗数据
-                        formatLayerElText()
+                    $ele.data('paramData', paramData)
+                    if ($ele.data('frameFlag')) { //当前控件显示时候，刷新对应浮窗数据
+                        $ele.trigger('mouseenter')
                     }
                 }
             }

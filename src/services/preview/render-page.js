@@ -7,7 +7,7 @@ let fileSystem //文件服务器host
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
-import {removeEle, destroyWs, insertImage, getDeviceId,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout} from './util'
+import {removeEle, destroyWs, insertImage, getDeviceId,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout,throttleFun} from './util'
 import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -284,8 +284,7 @@ class PreviewPage {
                                 }
                             })
                         }
-                        $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel)
-                        $(`#palette_${item.id}`).addClass(`device_${deviceId}`)
+                        $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`device-node device_${deviceId}`)
                     })
                     requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
                         let resParam = [],maps = new Map()
@@ -393,7 +392,45 @@ class PreviewPage {
             this.renderPages(cells, layerContent)
         }
         this.subscribeData()
+        this.bindDeviceEleEvent()
         return cells
+    }
+    // 设备绑定mouse事件
+    bindDeviceEleEvent() {
+        const $formatLayer = $("#formatLayer")
+        const $document = $(document)
+        const formatLayerText = (paramData) => {
+            if (paramData) {
+                const data = paramData.data;
+                let html = '<ul style="height:100%;display:flex;flex-direction:column;justify-content:center;">'
+                html += `<li>${paramData.time}</li>`
+                for (let key in data) {
+                    html += `<li>${key}=${data[key]}</li>`
+                }
+                html += '</ul>'
+                $formatLayer.html(html).show()
+            } else {
+                $formatLayer.html('')
+            }
+        }
+        const formatLayerShow = (e) => {
+            const {clientX, clientY} = e
+            $formatLayer.css({left: `${clientX}px`, top: `${clientY}px`})
+        }
+        // 先解除设备mouse事件
+        $document.off('mouseenter mousemove mouseleave', '.device-node')
+        $document.on('mouseenter', '.device-node', function() {
+            const $ele = $(this)
+            const paramData = $ele.data('paramData')
+            formatLayerText(paramData)
+            $ele.data('frameFlag', !!paramData)
+            formatLayerShow()
+        })
+        $document.on('mousemove', '.device-node', throttleFun(formatLayerShow, 20))
+        $document.on('mouseleave', '.device-node', function() {
+            $(this).data('frameFlag', false)
+            $formatLayer.hide()
+        })
     }
     // 渲染页面
     renderPages(cells, ele) {
