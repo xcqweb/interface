@@ -423,12 +423,12 @@ class PreviewPage {
         }
         // 先解除设备mouse事件
         $document.off('mouseenter mousemove mouseleave', '.device-node')
-        $document.on('mouseenter', '.device-node', function() {
+        $document.on('mouseenter', '.device-node', function(event) {
             const $ele = $(this)
             const paramData = $ele.data('paramData')
             formatLayerText(paramData)
             $ele.data('frameFlag', !!paramData)
-            formatLayerShow()
+            formatLayerShow(event)
         })
         $document.on('mousemove', '.device-node', throttleFun(formatLayerShow, 20))
         $document.on('mouseleave', '.device-node', function() {
@@ -650,7 +650,7 @@ class PreviewPage {
                 dealParamShow.push(item.deviceParamId)
             }
         })
-        cellHtml.className += `device-node device_${device.id}`
+        cellHtml.className += ` device-node device_${device.id}`
         if(dealParamShow.length) {
             let resArr = Array.from(new Set(dealParamShow))
             this.wsParams.push({
