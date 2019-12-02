@@ -1,4 +1,4 @@
-import {geAjax, toDecimal2NoZero, dealLightFill, throttleFun, timeFormate} from './util'
+import {geAjax, toDecimal2NoZero, dealLightFill, timeFormate} from './util'
 import {getCookie} from '../Utils'
 import echarts from 'echarts'
 
