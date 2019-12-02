@@ -105,7 +105,7 @@ function setterRealData(res, fileSystem) {
                 target.animate({"width":`${percentVal * 100}%`})
                 textEl.html(text)
             }else if(shapeName.includes('Chart')) {
-                let echartsInstance = echarts.getInstanceByDom($ele)
+                let echartsInstance = echarts.getInstanceByDom(els[i])
                 let options = echartsInstance.getOption()
                 if(options) {
                     if(shapeName == 'lineChart') {
