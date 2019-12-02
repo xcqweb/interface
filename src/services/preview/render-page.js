@@ -310,6 +310,8 @@ class PreviewPage {
                 },()=>{
                     this.subscribeDataDeal()
                 })
+            }else{
+                this.subscribeDataDeal()
             }
         }else{
             this.subscribeDataDeal()
