@@ -421,17 +421,18 @@ class PreviewPage {
             const {clientX, clientY} = e
             $formatLayer.css({left: `${clientX}px`, top: `${clientY}px`})
         }
+        const selector = '.device-node:not(.progress-or-chart)'
         // 先解除设备mouse事件
-        $document.off('mouseenter mousemove mouseleave', '.device-node')
-        $document.on('mouseenter', '.device-node', function(event) {
+        $document.off('mouseenter mousemove mouseleave', selector)
+        $document.on('mouseenter', selector, function(event) {
             const $ele = $(this)
             const paramData = $ele.data('paramData')
             formatLayerText(paramData)
             $ele.data('frameFlag', !!paramData)
             formatLayerShow(event)
         })
-        $document.on('mousemove', '.device-node', throttleFun(formatLayerShow, 20))
-        $document.on('mouseleave', '.device-node', function() {
+        $document.on('mousemove', selector, throttleFun(formatLayerShow, 20))
+        $document.on('mouseleave', selector, function() {
             $(this).data('frameFlag', false)
             $formatLayer.hide()
         })
@@ -614,7 +615,7 @@ class PreviewPage {
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild) {
             let paramShow = []
             let device = cell.bindData.dataSource.deviceNameChild
-            if (cell.bindData.params) {
+            if (cell.bindData.params && cell.bindData.params.length > 0) {
                 let defaultParamIndex = 0
                 paramShow = cell.bindData.params
                 let singleParamShow = ['progress', 'lineChart', 'gaugeChart']
@@ -622,6 +623,8 @@ class PreviewPage {
                     defaultParamIndex = cell.bindData.params.findIndex(item => {
                         return item.type
                     })
+                } else {
+                    cellHtml.classList.add('progress-or-chart')
                 }
                  
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
