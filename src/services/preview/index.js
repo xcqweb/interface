@@ -19,7 +19,6 @@ class Main {
         this.previewPage = null
         // 当前页面
         this.pageId = null
-        this.evEchartsInit = null
         this.fileSystem = null
         this.menuStyle = null
     }
@@ -102,9 +101,6 @@ class Main {
         let pageId = id
         let pageContent = this.previewPage.content[pageId]
         this.previewPage.parsePage(pageContent, this.fileSystem)
-        if(this.evEchartsInit) {
-            document.dispatchEvent(this.evEchartsInit)
-        }
     }
 
     initMenus({content,theme}) {

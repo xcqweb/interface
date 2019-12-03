@@ -23,7 +23,6 @@ class PreviewPage {
         this.pagesRank = parseContent.rank
         this.wsParams = []
         this.cachCells = []
-        this.chartRemoveFun = []
         this.currentPageId = ''
         this.mainProcess = mainProcess
         this.gePreview = gePreview
@@ -225,11 +224,6 @@ class PreviewPage {
     clearPage(pageType) {
         this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
         this.cachCells = []
-        this.mainProcess.evEchartsInit = null
-        this.chartRemoveFun.forEach(item=>{
-            document.removeEventListener("initEcharts", item)
-        })
-        this.chartRemoveFun = []
         if (pageType == 'normal') {
             for (let key in applyData) {
                 destroyWs(applyData, key)
@@ -526,14 +520,7 @@ class PreviewPage {
         } else if (shapeName.includes('pipeline')) {
             cellHtml = dealPipeline(cell)
         } else if (shapeName.includes('Chart')) {
-            if (!this.mainProcess.evEchartsInit) {
-                //自定义事件，echart dom 渲染后，通知初始化echarts
-                this.mainProcess.evEchartsInit = document.createEvent('CustomEvent')
-                this.mainProcess.evEchartsInit.initCustomEvent('initEcharts', false, true, null)
-            }
-            let resFun = dealCharts(cell)
-            cellHtml = resFun[0]
-            this.chartRemoveFun.push(resFun[1])
+            cellHtml =  dealCharts(cell)
         } else if (shapeName == 'light') {
             cellHtml = dealLight(cell)
         } else {

@@ -391,8 +391,10 @@ function dealCharts(cell) {
             myEchart.setOption(options)
         }
     }
-    document.addEventListener("initEcharts", fun)
-    return [con,fun]
+    $(()=>{
+        fun()
+    })
+    return con
 }
  
 function dealLight(cell) {
