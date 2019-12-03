@@ -331,7 +331,7 @@ function dealCharts(cell) {
     }
     let fun = () => {
         let myEchart = echarts.init(con)
-        if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params) {
+        if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params && cell.bindData.params.length) {
             let titleShow = cell.bindData.params[0].paramName
             let paramId = cell.bindData.params[0].paramId
             let paramType = cell.bindData.params[0].paramType
@@ -367,18 +367,21 @@ function dealCharts(cell) {
                     })
                     let pentSdbParams = {
                         paramIds: [titleShowId],
+                        deviceId: device.id,
                         period: checkItem.duration,
                     }
                     requestUtil.post(`${urls.pentSdbData.url}`, [pentSdbParams]).then(res => {
                         if (res && res.length) {
                             let tempArr = res[0]
-                            for (let key in tempArr.resMap) {
-                                tempOptions.xAxis.data.push(timeFormate(key, false))
-                                tempSeries[0].data.push(tempArr.resMap[key])
+                            if(tempArr) {
+                                for (let key in tempArr.resMap) {
+                                    tempOptions.xAxis.data.push(timeFormate(key, false))
+                                    tempSeries[0].data.push(tempArr.resMap[key])
+                                }
+                                tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
+                                tempOptions.series = tempSeries
+                                myEchart.setOption(tempOptions)
                             }
-                            tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
-                            tempOptions.series = tempSeries
-                            myEchart.setOption(tempOptions)
                         }
                     })
                 })
