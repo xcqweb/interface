@@ -146,10 +146,11 @@ class Main {
                 menuIcon.attr("data-check", 0)
             }
 
-            let menuShow = (iconCss) => {
+            let menuShow = (iconCss,conCss) => {
                 menuCon.show()
                 menuHideFun()
                 menuIcon.css(iconCss)
+                menuCon.css(conCss)
             }
             let dealMenuHide = () => {
                 if (parseTheme.position == 2) {
@@ -203,6 +204,7 @@ class Main {
             }
             menuCon.append(menuUl)
             $(".preview-menu-check:eq(0)").click() //默认第一个页面
+            let that = this
             menuIcon.on('click', function() {
                 let check = menuIcon.attr("data-check")
                 if(check == 1) {
@@ -210,10 +212,10 @@ class Main {
                 }else{
                     menuHideFun()
                     if (parseTheme.position == 2) {
-                        menuShow({'top':`${menuHeight}px`})
+                        menuShow({top: `${menuHeight}px`},{width: `${that.getConWidth()}px`})
                     }else{
                         let left = menuWidth + $("#gePreviewCon").offset().left
-                        menuShow({'left':`${left}px`})
+                        menuShow({left: `${left}px`},{height: `${that.getConHeight()}px`})
                     }
                 }
                 menuIcon.attr("data-check", 1 - check)
