@@ -400,7 +400,7 @@ class PreviewPage {
         const $document = $(document)
         const formatLayerText = (paramData) => {
             if (paramData) {
-                const data = paramData.data;
+                const data = paramData.data
                 let html = '<ul style="height:100%;display:flex;flex-direction:column;justify-content:center;">'
                 html += `<li>${paramData.time}</li>`
                 for (let key in data) {

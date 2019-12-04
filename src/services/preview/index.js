@@ -21,6 +21,7 @@ class Main {
         this.pageId = null
         this.fileSystem = null
         this.menuStyle = null
+        this.applyInfo = null
     }
 
     // 初始化
@@ -37,13 +38,13 @@ class Main {
         }
         const host = await geAjax('/api/console/host/imageHost', 'GET')
         this.fileSystem = host.imageHost
-        let applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudioForPreview/${id}`, 'GET')
-        if (!applyInfo) {
+        this.applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudioForPreview/${id}`, 'GET')
+        if (!this.applyInfo) {
             return
         }
         let token = getCookie('token')
         let refreshToken = getCookie('refreshToken')
-        if ((!token || !refreshToken) && applyInfo.status === 0) { //未登录且应用未发布的情况下
+        if ((!token || !refreshToken) && this.applyInfo.status === 0) { //未登录且应用未发布的情况下
             let notPublishImg = '../../../static/images/apply_not_publish.png'
             gePreview.style.height = "80vh"
             gePreview.style.width = "80vw"
@@ -51,30 +52,29 @@ class Main {
             gePreview.style.backgroundSize = "contain"
             return
         }
-        document.getElementsByTagName('title')[0].innerHTML = applyInfo.studioName
+        document.getElementsByTagName('title')[0].innerHTML = this.applyInfo.studioName
         // 设置默认页面
-        this.previewPage = new PreviewPage(applyInfo, this, gePreview)
-        window.onresize = ()=>{
-            this.initMenus(applyInfo)
-        }
+        this.previewPage = new PreviewPage(this.applyInfo, this, gePreview)
         //初始化菜单
-        this.initMenus(applyInfo)
+        this.initMenus()
     }
     //切换页面
     changePage(pageId,isAction) { //isAction 是否交互事件触发的
-        let _that = this
         if(isAction) {
             let items = $(".gePreviewMenu ul li")
+            let scroolToMenu = ()=>{
+                if (this.menuStyle.position == 1) {
+                    $(".gePreviewMenu ul").animate({scrollTop: $(this).offset().top + "px"}, 500)
+                } else {
+                    $(".gePreviewMenu ul").animate({scrollLeft: $(this).offset().left + "px"}, 500)
+                }
+            }
             if(items.length) { //如果菜单未隐藏,滚动菜单到对应位置并选中
                 items.each(function() {
                     let attrPageId = $(this).data("pageId")
                     if(attrPageId == pageId) {
                         $(this).click() //执行事件切换页面
-                        if (_that.menuStyle.position == 1) {
-                            $(".gePreviewMenu ul").animate({scrollTop:$(this).offset().top + "px"},500)
-                        }else{
-                            $(".gePreviewMenu ul").animate({scrollLeft: $(this).offset().left + "px"}, 500)
-                        }
+                        scroolToMenu()
                         return false //终止each 循环
                     }
                 })
@@ -84,6 +84,17 @@ class Main {
         this.pageId = pageId
         // 渲染页面
         this.renderPageFun(pageId)
+        setTimeout(()=>{
+            let {theme} = this.applyInfo
+            let parseTheme = null
+            if (theme) {
+                parseTheme = JSON.parse(theme)
+                this.updateMenuPos(parseTheme)
+                window.onresize = ()=>{
+                    this.refreshMenuPos(parseTheme)
+                }
+            }
+        })
 
     }
     // 判断页面类型
@@ -103,7 +114,8 @@ class Main {
         this.previewPage.parsePage(pageContent, this.fileSystem)
     }
 
-    initMenus({content,theme}) {
+    initMenus() {
+        let {content, theme} = this.applyInfo
         let parseContent = JSON.parse(content)
         let parseTheme = null
         if(theme) {
@@ -120,167 +132,226 @@ class Main {
             pages[item] = parseContent.pages[item].title
         })
         this.menuStyle  = menuStyles[parseTheme.style - 1]
-        let menuCon = $(".gePreviewMenu")
-        menuCon.data('check',1)
-        let menuIcon = $(".gePreviewMenuIcon")
-        menuIcon.attr("data-check",1)
-        let menuUl = $("<ul>")
-        menuCon.css({background: this.menuStyle.bgColor})
-        if(parseTheme.position == 1) {
-            menuCon.css({
-                width: `${menuWidth}px`,
+        $(()=>{
+            let timer = null
+            let menuCon = $(".gePreviewMenu")
+            let menuIcon = $(".gePreviewMenuIcon")
+            menuIcon.attr("data-check", 1)
+            menuCon.css({background: this.menuStyle.bgColor})
+            let menuUl = $("<ul>")
+
+            let menuHide = (iconCss, ) => {
+                menuIcon.css(iconCss)
+                menuCon.hide()
+                menuIcon.attr("data-check", 0)
+            }
+
+            let menuShow = (iconCss) => {
+                menuCon.show()
+                menuHideFun()
+                menuIcon.css(iconCss)
+            }
+            let dealMenuHide = () => {
+                if (parseTheme.position == 2) {
+                    menuHide({top: 0})
+                } else {
+                    let left = menuWidth + $("#gePreviewCon").offset().left
+                    menuHide({left: `${left - menuWidth}px`})
+                }
+            }
+            let menuHideFun = () => {
+                if (timer) {
+                    window.clearTimeout(timer)
+                    timer = null
+                }
+                timer = setTimeout(() => {
+                    dealMenuHide()
+                }, 10 * 1000)
+            }
+            let checkMenuFun = (key,el)=>{
+                el.addClass('check').siblings().removeClass('check')
+                el.css('background', this.menuStyle.checkColor).siblings().css('background', 'unset')
+                this.changePage(key) //切换页面
+                menuHideFun()
+            }
+            for (let key in pages) {
+                let menuLi = $("<li>")
+                menuLi.addClass('preview-menu-check')
+                $(menuLi).on('click', function() {
+                    if ($(this).hasClass('check')) {
+                        return
+                    }
+                    checkMenuFun(key, $(this))
+                })
+                menuLi.css({
+                    color: this.menuStyle.fontColor,
+                    width: `${menuWidth - 20}px`,
+                    height: `${menuHeight}px`,
+                    display: 'inline-block',
+                    lineHeight: `${menuHeight}px`,
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                })
+                if (parseTheme.position == 1) {
+                    menuLi.css({padding: '0 10px'})
+                }
+                menuLi.html(`${pages[key]}`)
+                menuLi.attr('title', pages[key])
+                menuLi.data('pageId', key)//交互事件 跳转页面时候通过这个定位到对应的菜单项
+                menuUl.append(menuLi)
+            }
+            menuCon.append(menuUl)
+            $(".preview-menu-check:eq(0)").click() //默认第一个页面
+            menuIcon.on('click', function() {
+                let check = menuIcon.attr("data-check")
+                if(check == 1) {
+                    dealMenuHide()
+                }else{
+                    menuHideFun()
+                    if (parseTheme.position == 2) {
+                        menuShow({'top':`${menuHeight}px`})
+                    }else{
+                        let left = menuWidth + $("#gePreviewCon").offset().left
+                        menuShow({'left':`${left}px`})
+                    }
+                }
+                menuIcon.attr("data-check", 1 - check)
             })
-            menuUl.css({
+        })
+    }
+    dealMenuTop(menuIcon) {
+        let conWidth = this.getConWidth()
+        this.setMenuItemStyle(
+            {
+                left: `${conWidth / 2 + $("#gePreviewCon").offset().left - menuIcon.width() / 2}px`,
+                top: `${menuHeight}px`,
+                background: `${this.menuStyle.bgColor}`,
+                borderRadius: '0 0 10px 10px'
+            },
+            {
+                height: `${menuHeight}px`,
+                textAlign: 'center',
+                'width': `${conWidth}px`
+            },
+            '<i class="ivu-icon ivu-icon-ios-arrow-up" style="position:relative;top:-2px;font-size:24px;color:#ffff"></i>',
+            {
+                overflowX: 'scroll',
+                overflowY: 'hidden',
+                whiteSpace: 'nowrap',
+            },
+        )
+        let mouseDeal = function(el) {
+            $(el).mousedown(e => {
+                let left = parseInt($(el).scrollLeft())
+                let downx = e.pageX
+                $(el).mousemove("mousemove", evt => {
+                    let endx = evt.pageX - downx + left
+                    $(el).scrollLeft(endx)
+                })
+            })
+            $(document.body).mouseup(() => {
+                $(el).unbind("mousemove")
+            })
+        }
+        let el = document.querySelector(".gePreviewMenu ul")
+        horwheel(el)//支持鼠标滚轮滚动
+        mouseDeal(el)//鼠标向左向右滑动
+    }
+    getConWidth() {
+        let conWidth = $("#gePreviewCon").width()
+        let docWidth = $(document).width()
+        if (conWidth > docWidth) {
+            conWidth = docWidth
+        }
+        return conWidth
+    }
+    getConHeight() {
+        let previewConH = $("#gePreviewCon").height()
+        let docHeight = $(document).height()
+        if (previewConH > docHeight) {
+            previewConH = docHeight
+        }
+        return previewConH
+    }
+    dealMenuLeft(previewConH,left,menuIcon) {
+        this.setMenuItemStyle(
+            {
+                height: '40px',
+                width: '20px',
+                left: `${left}px`,
+                lineHeight: `40px`,
+                top: `${previewConH / 2 + menuIcon.height() / 2}px`,
+                background: `${this.menuStyle.bgColor}`,
+                borderRadius: '0 10px 10px 0'
+            },
+            {
+                width: `${menuWidth}px`,
+                height: `${previewConH}px`
+            },
+            '<i class="ivu-icon ivu-icon-ios-arrow-back" style="position:relative;left:-2px;font-size:24px;color:#fff;"></i>',
+            {
                 position: 'absolute',
                 left: '0',
                 top: '0',
                 right: '-14px',
                 bottom: '0',
-                height:'100%',
+                height: '100%',
                 overflowY: 'scroll',
-            })
-        }else{
-            menuCon.css({
-                height: `${menuHeight}px`,
-                textAlign: 'center',
-            })
-            menuUl.css({
-                overflowX: 'scroll',
-                overflowY:'hidden',
-                whiteSpace: 'nowrap',
-            })
-        } 
-        let _that = this
-        for(let key in pages) {
-            let menuLi = $("<li>")
-            menuLi.addClass('preview-menu-check')
-            $(menuLi).on('click',function() {
-                if($(this).hasClass('check')) {
-                    return
-                }
-                $(this).addClass('check').siblings().removeClass('check')
-                $(this).css('background', _that.menuStyle.checkColor).siblings().css('background','unset')
-                _that.changePage(key) //切换页面
-            })
-            menuLi.css({
-                color: this.menuStyle.fontColor,
-                width: `${menuWidth - 20}px`,
-                height: `${menuHeight}px`,
-                display: 'inline-block',
-                lineHeight: `${menuHeight}px`,
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-            })
-            if(parseTheme.position == 1) {
-                menuLi.css({padding: '0 10px'})
-            }
-            menuLi.html(`${pages[key]}`)
-            menuLi.attr('title',pages[key])
-            menuLi.data('pageId',key)//交互事件 跳转页面时候通过这个定位到对应的菜单项
-            menuUl.append(menuLi)
-        }
-        menuCon.append(menuUl)
-        let mouseDeal = function(el) {
-            $(el).mousedown(e=> {
-                let left = parseInt($(el).scrollLeft())
-                let downx = e.pageX
-                $(el).mousemove("mousemove", evt=> {
-                    let endx = evt.pageX - downx + left
-                    $(el).scrollLeft(endx)
-                })
-            })
-            $(document.body).mouseup(()=> {
-                $(el).unbind("mousemove")
-            })
-        }
-        $(() => {
-            $(".preview-menu-check:eq(0)").click() //默认点击下第一个页面
+            },
+        )
+    }
+    setMenuItemStyle(iconCss, conCss,  iconHtml, ulCss) {
+        let menuCon = $(".gePreviewMenu")
+        let menuIcon = $(".gePreviewMenuIcon")
+        let menuUl = $(".gePreviewMenu ul")
+        menuIcon.css(iconCss)
+        if(conCss) {
+            menuCon.css(conCss)
             menuCon.css('left', `${$("#gePreviewCon").offset().left}px`)
-            if (parseTheme.position == 2) {//顶部
-                menuCon.css('width', `${$("#gePreviewCon").width()}px`)
-                menuIcon.css({
-                    left: `${$("#gePreviewCon").width() / 2 + $("#gePreviewCon").offset().left - menuIcon.width() / 2}px`,
-                    top: `${menuHeight}px`,
-                    background: `${_that.menuStyle.bgColor}`,
-                    borderRadius: '0 0 10px 10px'
-                })
-                menuIcon.html(`<i class="ivu-icon ivu-icon-ios-arrow-up" style="position:relative;top:-2px;font-size:24px;color:#ffff"></i>`)
-                let el = document.querySelector(".gePreviewMenu ul")
-                horwheel(el)//支持鼠标滚轮滚动
-                mouseDeal(el)//鼠标向左向右滑动
-                let topTimer
-                let topHide = function() {
-                    menuIcon.css({
-                        top:0
-                    })
-                    menuCon.hide()
-                    menuIcon.attr("data-check", 0)
-                    if (topTimer) {
-                        clearTimeout(topTimer)
-                        topTimer = null
-                    }
-                }
-                let topHideTimeFun = function() {
-                    topTimer = setTimeout(()=>{
-                        topHide()
-                    }, 10 * 1000)//10s 自动隐藏菜单
-                }
-                topHideTimeFun()
-                menuIcon.on('click', function() {
-                    let check = menuIcon.attr("data-check")
-                    if(check == 1) {
-                        topHide()
-                    }else{
-                        menuIcon.css('top', `${menuHeight}px`)
-                        menuCon.show()
-                        topHideTimeFun()
-                    }
-                    menuIcon.attr("data-check",1 - check)
-                })
-            }else{//左侧
-                let previewConH = $("#gePreviewCon").height()
-                let left = menuWidth + $("#gePreviewCon").offset().left
-                menuCon.css('height', `${previewConH}px`)
-                menuIcon.css({
-                    height:'40px',
-                    width:'20px',
-                    left: `${left}px`,
-                    lineHeight:`40px`,
-                    top: `${previewConH / 2 + menuIcon.height() / 2 }px`,
-                    background: `${_that.menuStyle.bgColor}`,
-                    borderRadius:'0 10px 10px 0'
-                })
-                menuIcon.html(`<i class="ivu-icon ivu-icon-ios-arrow-back" style="position:relative;left:-2px;font-size:24px;color:#fff;"></i>`)
-                let leftTimer
-                let leftHide = function() {
-                    menuIcon.css('left', `${left - menuWidth}px`)
-                    menuCon.hide()
-                    menuIcon.attr("data-check", 0)
-                    if (leftTimer) {
-                        clearTimeout(leftTimer)
-                        leftTimer = null
-                    }
-                }
-                let leftHideTimeFun = function() {
-                    leftTimer = setTimeout(() => {
-                        leftHide()
-                    }, 10 * 1000)//10s 自动隐藏菜单
-                }
-                leftHideTimeFun()
-                menuIcon.on('click', function() {
-                    let check = menuIcon.attr("data-check")
-                    if (check == 1) {
-                        leftHide()
-                    } else {
-                        menuIcon.css('left', `${left}px`)
-                        menuCon.show()
-                        leftHideTimeFun()
-                    }
-                    menuIcon.attr("data-check", 1 - check)
-                })
+        }
+        if(ulCss) {
+            menuUl.css(ulCss)
+        }
+        if(iconHtml) {
+            menuIcon.html(iconHtml)
+        }
+    }
+    updateMenuPos(parseTheme) {
+        let menuIcon = $(".gePreviewMenuIcon")
+        if (parseTheme.position == 1) {
+            let left = menuWidth + $("#gePreviewCon").offset().left
+            this.dealMenuLeft(this.getConHeight(), left, menuIcon)
+        } else {
+            this.dealMenuTop(menuIcon)
+        }
+    }
+    refreshMenuPos(parseTheme) {
+        let conWidth = this.getConWidth()
+        let menuIcon = $(".gePreviewMenuIcon")
+        let left = menuWidth + $("#gePreviewCon").offset().left
+        let previewConH = this.getConHeight()
+        let check = menuIcon.attr("data-check")
+        let iconStyle,conStyle
+
+        if(check == 1) {
+            if (parseTheme.position == 1) {
+                iconStyle = {left: `${left}px`, top: `${previewConH / 2 + menuIcon.height() / 2}px`}
+                conStyle = {height: `${previewConH}px`, left: `${left}px`}
+            }else{
+                iconStyle = {left: `${conWidth / 2 + $("#gePreviewCon").offset().left - menuIcon.width() / 2}px`}
+                conStyle = {top:`${menuHeight}px`}
             }
-        })
+        }else{
+            if (parseTheme.position == 1) {
+                iconStyle = {left: `${left - menuWidth}px`}
+                conStyle = {left: `${left}px`}
+            }else{
+                iconStyle = {top: 0}
+                conStyle = {'width': `${conWidth}px`, top: `${menuHeight}px`}
+            }
+        }
+        this.setMenuItemStyle(iconStyle, conStyle)
     }
 }
 let mainProcess = new Main()

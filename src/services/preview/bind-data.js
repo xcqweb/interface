@@ -117,15 +117,15 @@ function setterRealData(res, fileSystem) {
                                 }
                                 if(val || val == 0) {
                                     ser.data.push(val)
+                                    let yMax = options.yAxis[0].max
+                                    options.yAxis[0].max = Math.max(yMax, val)
+                                    if (options.xAxis[0].data.length >= chartDataLen) {
+                                        options.xAxis[0].data.shift()
+                                    }
+                                    options.xAxis[0].data.push(timeFormate(item.timestamp, false))
                                 }
                             }
                         })
-                        let yMax = options.yAxis[0].max
-                        options.yAxis[0].max = Math.max(yMax,val)
-                        if(options.xAxis[0].data.length >= chartDataLen) {
-                            options.xAxis[0].data.shift()
-                        }
-                        options.xAxis[0].data.push(timeFormate(item.timestamp, false))
                     }else {
                         if (!val) {
                             val = 0
@@ -158,7 +158,7 @@ function setterRealData(res, fileSystem) {
                         }
                     }
                     paramShow.forEach(d => {
-                        if (item[d.deviceParamId]) {
+                        if (item[d.deviceParamId] || item[d.deviceParamId] == 0) {
                             paramData.data[d.paramName] = item[d.deviceParamId]
                         }
                     })
