@@ -374,7 +374,8 @@ function dealCharts(cell) {
                         if (res && res.length) {
                             let tempArr = res[0]
                             if(tempArr) {
-                                for (let key in tempArr.resMap) {
+                                let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
+                                for (let key of keys) {
                                     tempOptions.xAxis.data.push(timeFormate(key, false))
                                     tempSeries[0].data.push(tempArr.resMap[key])
                                 }
