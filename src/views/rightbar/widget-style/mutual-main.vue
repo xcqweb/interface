@@ -129,27 +129,23 @@ export default{
     },
     methods: {
         init() {
-            let values = Object.values(this.myEditorUi.editor.pages)
-            let pagesVal = values.filter(item=>{
-                return item.type === 'normal'
-            })
-            let dialogVal = values.filter(item=>{
-                return item.type === 'dialog'
-            })
-            this.pages = pagesVal.map(item=>{
-                return {
-                    id:item.id,
-                    title:item.title,
+            this.pages = []
+            this.dialogs = []
+            let pagesAll = this.myEditorUi.editor.pages
+            this.myEditorUi.editor.pagesRank['normal'].forEach(id=>{
+                this.pages.push({
+                    id:id,
+                    title:pagesAll[id].title,
                     selected:false,
-                }
+                })
             })
-            this.dialogs = dialogVal.map(item=>{
-                return {
-                    id:item.id,
-                    title:item.title,
+            this.myEditorUi.editor.pagesRank['dialog'].forEach(id=>{
+                this.dialogs.push({
+                    id:id,
+                    title:pagesAll[id].title,
                     selected:false,
                     hide:true,
-                }
+                })
             })
             let graph = this.myEditorUi.editor.graph
             let cells = graph.getModel().cells
@@ -168,7 +164,7 @@ export default{
                     }else{
                         hide = true
                     }
-                    let titleType = `${title}(${this.myEditorUi.editor.palettesInfo[info].name})` 
+                    let titleType = `${title}` 
                     this.currentPageWidgets.push({
                         id:cells[key].id,
                         title:title,

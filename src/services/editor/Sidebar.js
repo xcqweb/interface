@@ -13,7 +13,6 @@ import VueEvent from '../VueEvent'
 import { tipDialog, sureDialog } from '../Utils'
 import axios from 'axios';
 import { mxResources } from '../mxGlobal';
-var basicXmlFns = [];
 let startCurrentPageIndex = null
 let startCurrentDialogIndex = null
 let CurrentMouseOver = null
@@ -1113,7 +1112,7 @@ Sidebar.prototype.createPageContextMenu = function (type) {
     mxEvent.addListener(menulist, 'click', function (evt) {
         evt.stopPropagation()
         var target = evt.target;
-        var ele = $(".pageList .currentPage").eq(0);
+        var ele = $(".pageList li").eq(CurrentMouseOver);
         let pageType = null
         let element = null
         let newEle = null
@@ -1160,7 +1159,6 @@ Sidebar.prototype.createPageContextMenu = function (type) {
                 if (pageType === 'normal') {
                     $('.left-sidebar-homepage .spanli').click()
                 }
-                // 换id
                 break
             case 'addTemplate':
                 this.editorUi.editor.setXml();
@@ -1364,9 +1362,9 @@ function createPageList(editorUi, el, data, id, _that) {
         }
     }
     if (id.includes('normal')) {
-        $('.normalPages .pageList>li').on('dblclick', (evt)=> {
-            _that.renameNode(evt.currentTarget, editorUi.editor.currentPage)
-        })
+        $(".normalPages .pageList").on("dblclick", "li", evt => {
+          _that.renameNode(evt.currentTarget, editorUi.editor.currentPage);
+        });
         $('.normalPages').on('click', '.pageList>li>.spanli', function (evt) {
             changePage(evt,true)
             let normalArr = document.querySelectorAll('#normalPages li')
@@ -1378,7 +1376,7 @@ function createPageList(editorUi, el, data, id, _that) {
         })
     }
     if (id.includes('dialog')) {
-        $('.dialogPages .pageList>li').on('dblclick', (evt) => {
+        $('.dialogPages .pageList').on('dblclick','li', (evt) => {
             _that.renameNode(evt.currentTarget, editorUi.editor.currentPage)
         })
         $('.dialogPages').on('click', '.pageList>li>.spanli', function (evt) {
@@ -1528,10 +1526,6 @@ Sidebar.prototype.addBasicPalette = function()
         null, null, null, null, []);
 };
 /**
- * 图元列表
- */
-Sidebar.prototype.primitives = ['circle', 'diamond', 'drop', 'pentagram', 'square'];
-/**
  * 基本控件
  */
 Sidebar.prototype.addGeneralPalette = function(expand)
@@ -1598,8 +1592,6 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         }),
         // 图片
         this.createVertexTemplateEntry('shape=image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '<input type="file" style="opacity:0;" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/></label>', '图片'),
-        // 图元
-        // this.createVertexTemplateEntry('shape=primitive;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/primitive.png', 50, 50, '', '图元'),
         // 曲线
         // this.addEntry('curve', mxUtils.bind(this, function()
 	 	// {
@@ -1659,7 +1651,7 @@ Sidebar.prototype.addUserPalette = function (expand) {
             res.forEach(item=>{
                 let array = []
                 item.materialList.forEach(d=>{
-                    array.push(this.createVertexTemplateEntry(`shape=userimage;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl}`, d.picWidth ? parseInt(d.picWidth / 1.5) : 300, d.picHeight ? parseInt(d.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
+                    array.push(this.createVertexTemplateEntry(`shape=userimage;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`, d.picWidth ? parseInt(d.picWidth / 1.5) : 300, d.picHeight ? parseInt(d.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
                 })
                 this.addPaletteFunctions('user', `${item.libraryName}`, false, array)
             })
@@ -1851,19 +1843,14 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
     }
     this.createThumb(cells, this.thumbWidth, this.thumbHeight, elt, title, showLabel, showTitle, width, height);
     var bounds = new mxRectangle(0, 0, width, height);
-    if (cells.length > 1 || cells[0].vertex)
-    {
-        if (!/primitive/.test(cells[0].style)) {
-            // 非图元绑定拖拽插入画布事件
-            var ds = this.createDragSource(elt, this.createDropHandler(cells, true, allowCellsInserted, bounds), this.createDragPreview(width, height), cells, bounds);
-            ds.isGuidesEnabled = mxUtils.bind(this, function()
-            {
-                return this.editorUi.editor.graph.graphHandler.guidesEnabled;
-            });
-        }
-    }
-    else if (cells[0] != null && cells[0].edge)
-    {
+    if (cells.length > 1 || cells[0].vertex){
+        // 非图元绑定拖拽插入画布事件
+        var ds = this.createDragSource(elt, this.createDropHandler(cells, true, allowCellsInserted, bounds), this.createDragPreview(width, height), cells, bounds);
+        ds.isGuidesEnabled = mxUtils.bind(this, function()
+        {
+            return this.editorUi.editor.graph.graphHandler.guidesEnabled;
+        });
+    } else if (cells[0] != null && cells[0].edge){
         var ds = this.createDragSource(elt, this.createDropHandler(cells, false, allowCellsInserted,
             bounds), this.createDragPreview(width, height), cells, bounds);
     }

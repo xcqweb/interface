@@ -877,9 +877,13 @@ window.EditorUi = function(editor, container, lightbox)
             if (cell.style !== 'group') {
 				if (cell.style && cell.style.indexOf('shape') !== -1) {
                     let shapeName = /shape=(.+?);/.exec(cell.style)[1]
-                    shapeName = this.sidebar.primitives.includes(shapeName) ? 'primitive' : shapeName
                     this.editor.palettesInfo[shapeName].num++
-                    cellInfo.setAttribute('palettename', this.editor.palettesInfo[shapeName].name + this.editor.palettesInfo[shapeName].num)
+                    let palettename=this.editor.palettesInfo[shapeName].name
+                    if(shapeName=='userimage'){
+                        palettename = /cusName=(.+?);/.exec(cell.style)[1]
+                    }
+                    palettename +=` (${this.editor.palettesInfo[shapeName].num})`
+                    cellInfo.setAttribute("palettename", palettename)
 				}
             }else{
                 this.editor.palettesInfo['groupNum'].num++

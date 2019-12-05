@@ -573,10 +573,6 @@ Editor.prototype.palettesInfo = {
         name: 'Link',
         num: 0
     },
-    primitive: {
-        name: '图元',
-        num: 0
-    },
     multipleCheck: {
         name: '复选',
         num: 0
