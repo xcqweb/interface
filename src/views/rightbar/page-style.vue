@@ -114,6 +114,7 @@ export default {
                 let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
                 if(bgUrl && bgUrl !== 'none') {
                     this.changeBg(bgUrl)
+                    graph.backgroundUrl = this.bgPic
                 }else{
                     mxClient.IS_ADD_IMG = false
                 }
@@ -185,7 +186,7 @@ export default {
                     editor.pages[editor.currentPage].style = { }
                 }
                 editor.pages[editor.currentPage].style.backgroundUrl = `getechFileSystem/${res.picPath}`
-                this.myEditorUi.graph.setBackgroundImage(`getechFileSystem/${res.picPath}`)
+                editor.graph.backgroundUrl = window.fileSystem + res.picPath
             })
         },
         fileChange(e) {

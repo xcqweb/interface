@@ -202,7 +202,7 @@ export default {
             }
         },
         leftFilterMethod(data, query) {
-            let include = query ? data.paramName.includes(query) : true;
+            let include = query ? data.paramName.toLowerCase().includes(query.toLowerCase()) : true;
             if (this.params[0] === 'device') {
                 include = include && data.type === 'device';
                 if (this.params[1]) {

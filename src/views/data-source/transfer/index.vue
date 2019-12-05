@@ -125,14 +125,14 @@ export default {
             type: Function,
             default(data, query) {
                 const type = ('label' in data) ? 'label' : 'key';
-                return data[type].indexOf(query) > -1;
+                return data[type].toLowerCase().indexOf(query.toLowerCase()) > -1;
             }
         },
         rightFilterMethod: {
             type: Function,
             default(data, query) {
                 const type = ('label' in data) ? 'label' : 'key';
-                return data[type].indexOf(query) > -1;
+                return data[type].toLowerCase().indexOf(query.toLowerCase()) > -1;
             }
         },
         notFoundText: {

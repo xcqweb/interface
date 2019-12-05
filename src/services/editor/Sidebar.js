@@ -1054,6 +1054,11 @@ Sidebar.prototype.getSvgImage = function () {
     let svgImage = graph.getSvg(graph.background, null, null, true, null, true, null, null, null, false);
     let widthlen = parseInt(svgImage.getAttribute('width'));
     let heightLen = parseInt(svgImage.getAttribute('height'));
+    if (graph.backgroundUrl) {
+        svgImage.style.backgroundImage = "url('" + graph.backgroundUrl + "')";
+        svgImage.style.backgroundSize = 'cover';
+    }
+
     svgImage.setAttribute('viewbox', `-${widthlen / 2} 0 ${parseInt(widthlen * 2)} ${heightLen}`);
     return svgImage;
 }
