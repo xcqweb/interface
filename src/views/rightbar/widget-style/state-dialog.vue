@@ -136,6 +136,7 @@
         >
           <button
             class="geBtn"
+            style="margin-right:50px;"
             @click="hideState"
           >
             {{ $t('cancel') }}
