@@ -68,7 +68,7 @@
           >
             <Checkbox
               v-for="(item) in deviceData"
-              v-show="!dName || item.deviceName.includes(dName)"
+              v-show="!dName || item.deviceName.toUpperCase().includes(dName.toUpperCase())"
               :key="item.deviceId"
               :label="item.deviceId"
               size="small"
