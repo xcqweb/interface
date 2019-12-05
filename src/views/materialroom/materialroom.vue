@@ -376,6 +376,7 @@ export default {
             this.isShowPopMenu = true
             let el = document.querySelector(".left-max-height")
             this.popMenuStyle.top = `${evt.target.offsetTop + 35 - el.scrollTop}px`
+            this.popMenuStyle.left = '126px'
         },
         menuPopupHide() {
             this.isShowPopMenu = false
