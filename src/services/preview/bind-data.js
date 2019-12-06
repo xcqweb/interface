@@ -158,8 +158,9 @@ function setterRealData(res, fileSystem) {
                         }
                     }
                     paramShow.forEach(d => {
-                        if (item[d.deviceParamId] || item[d.deviceParamId] == 0) {
-                            paramData.data[d.paramName] = item[d.deviceParamId]
+                        let dpIdVal = item[d.deviceParamId]
+                        if (dpIdVal || dpIdVal == 0) {
+                            paramData.data[d.paramName] = dpIdVal
                         }
                     })
                     $ele.data('paramData', paramData)
