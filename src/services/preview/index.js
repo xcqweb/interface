@@ -84,18 +84,31 @@ class Main {
         this.pageId = pageId
         // 渲染页面
         this.renderPageFun(pageId)
-        setTimeout(()=>{
-            let {theme} = this.applyInfo
-            let parseTheme = null
-            if (theme) {
-                parseTheme = JSON.parse(theme)
-                this.updateMenuPos(parseTheme)
-                window.onresize = ()=>{
-                    this.refreshMenuPos(parseTheme)
+       
+        let res = this.checkIsToInitMenu()
+        if(res[0]) {
+            setTimeout(()=>{
+                this.updateMenuPos(res[1])
+                window.onresize = () => {
+                    this.refreshMenuPos(res[1])
                 }
-            }
-        })
+            })
+        }
 
+    }
+    checkIsToInitMenu() {
+        let res = true
+        let {content, theme} = this.applyInfo
+        let parseTheme = null
+        let parseContent = JSON.parse(content)
+        let pageRankNormal = parseContent.rank.normal
+        if (theme) {
+            parseTheme = JSON.parse(theme)
+        }
+        if (!parseTheme || pageRankNormal.length == 1 || parseTheme.status == 0) {
+            res = false
+        }
+        return [res, parseTheme, parseContent,pageRankNormal]
     }
     // 判断页面类型
     getPageType(id) {
@@ -115,19 +128,16 @@ class Main {
     }
 
     initMenus() {
-        let {content, theme} = this.applyInfo
-        let parseContent = JSON.parse(content)
-        let parseTheme = null
-        if(theme) {
-            parseTheme = JSON.parse(theme)
-        }
-        let pageRankNormal = parseContent.rank.normal
-        if (!parseTheme || pageRankNormal.length == 1 || parseTheme.status == 0) {
+        let resMenu = this.checkIsToInitMenu()
+        if (!resMenu[0]) {
             //只有一个页面，不渲染菜单 老应用未编辑过的没有theme字段，不渲染菜单 重新编辑过的老应用或者新增的应用，选择不启用菜单，则不渲染
             this.changePage(this.previewPage.pagesRank.normal[0]) //渲染首页面
             return
         }
         let pages = {}
+        let parseTheme = resMenu[1]
+        let parseContent = resMenu[2]
+        let pageRankNormal = resMenu[3]
         pageRankNormal.forEach(item=>{
             pages[item] = parseContent.pages[item].title
         })
