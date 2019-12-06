@@ -335,14 +335,13 @@ class Main {
         let previewConH = this.getConHeight()
         let check = menuIcon.attr("data-check")
         let iconStyle,conStyle
-
+        conStyle = {width: `${conWidth}px`};
         if(check == 1) {
             if (parseTheme.position == 1) {
                 iconStyle = {left: `${left}px`, top: `${previewConH / 2 + menuIcon.height() / 2}px`}
                 conStyle = {height: `${previewConH}px`, left: `${left}px`}
             }else{
                 iconStyle = {left: `${conWidth / 2 + $("#gePreviewCon").offset().left - menuIcon.width() / 2}px`}
-                conStyle = {top:`${menuHeight}px`}
             }
         }else{
             if (parseTheme.position == 1) {
@@ -350,7 +349,6 @@ class Main {
                 conStyle = {left: `${left}px`}
             }else{
                 iconStyle = {top: 0}
-                conStyle = {'width': `${conWidth}px`, top: `${menuHeight}px`}
             }
         }
         this.setMenuItemStyle(iconStyle, conStyle)
