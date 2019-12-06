@@ -404,7 +404,7 @@ class PreviewPage {
                 let html = '<ul style="height:100%;display:flex;flex-direction:column;justify-content:center;">'
                 html += `<li>${paramData.time}</li>`
                 for (let key in data) {
-                    html += `<li>${key}=${data[key]}</li>`
+                    html += `<li>${key}=${data[key] ? data[key] : 'NaN'}</li>`
                 }
                 html += '</ul>'
                 $formatLayer.html(html).show()

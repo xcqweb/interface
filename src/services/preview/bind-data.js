@@ -161,6 +161,10 @@ function setterRealData(res, fileSystem) {
                         let dpIdVal = item[d.deviceParamId]
                         if (dpIdVal || dpIdVal == 0) {
                             paramData.data[d.paramName] = dpIdVal
+                        }else{
+                            if(!paramData.data[d.paramName]) {
+                                paramData.data[d.paramName] = null
+                            }
                         }
                     })
                     $ele.data('paramData', paramData)
