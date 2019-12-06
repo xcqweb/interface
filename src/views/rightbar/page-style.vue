@@ -3,10 +3,10 @@
     class="page-cls"
   >
     <p style="text-align:center;margin:10px;font-size:14px;">
-      页面样式
+      {{ $t('pageStyle') }}
     </p>
     <p style="margin-top:10px;">
-      页面描述
+      {{ $t('pageDesc') }}
     </p>
     <textarea
       v-model="pageDesc"
@@ -14,36 +14,13 @@
       rows="3"
     />
     <div class="item-title">
-      页面尺寸
+      {{ $t('pageSize') }}
     </div>
-    <div
-      v-clickOutSide="hideScale"
-      class="item-container"
-      style="justify-content:space-between;position:relative;"
-      @click="showScale=true"
-    >
-      {{ scaleText }}
-      <img src="../../assets/images/menu/down_ic.png">
-      <ul
-        v-if="showScale"
-        class="scale-dialog"
-        @mouseleave="showScale=false"
-        @blur="showScale=false"
-      >
-        <li
-          v-for="(d,index) in scaleList"
-          :key="index"
-          @click="changeScale(d,$event)"
-        >
-          {{ d }}
-        </li>
-      </ul>
-    </div>
-    <div style="display:flex;margin-top:4px;">
+    <div style="display:flex;">
       <div
         class="item-container solidWidth"
       >
-        <span style="color:#797979;margin-right:6px;">宽</span>
+        <span style="color:#797979;margin-right:6px;">{{ $t('width') }}</span>
         <input
           v-model="solidWidth"
           disabled
@@ -53,7 +30,7 @@
         class="item-container"
         style="margin-left:10px;"
       >
-        <span style="color:#797979;margin-right:6px;">高</span>
+        <span style="color:#797979;margin-right:6px;">{{ $t('height') }}</span>
         <input
           v-model="solidHeight"
           v-number="0"
@@ -65,7 +42,7 @@
     <div
       class="item-title"
     >
-      背景颜色
+      {{ $t('rightBar.bgColor') }}
     </div>
     <div
       class="item-container"
@@ -79,16 +56,14 @@
       ondragstart="return false;"
       @click="setBackgroundImg"
     >
-      <div
-        :style="bgPicStyle"
-      >
+      <div class="bgCon">
         <img
           :src="bgPic"
           :style="bgPicStyle"
-          style="width:100%;"
+          style="width:72px;"
         >
         <div v-show="isShowBgText">
-          选择背景图案
+          {{ $t('rightBar.chooseBgImage') }}
         </div>
         <input
           ref="chooseImg"
@@ -115,22 +90,12 @@ export default {
     data() {
         return {
             pageDesc:"",
-            showScale:false,
             solidHeight: 768,
             solidWidth: 1366,
-            scaleText:'1366*768',
             bgColor:'#fff',
-            scaleList:[
-                '2560*1600',
-                '1920*1080',
-                '1440*900',
-                '1366*768',
-                '1280*800',
-                '1024*768',
-            ],
             bgPic:require('../../assets/images/rightsidebar/bg_ic_widget.png'),
             isShowBgText:true,
-            bgPicStyle:{height:'auto'},
+            bgPicStyle:{height:'54px'},
             deleteShowFlag: false
         }
     },
@@ -149,6 +114,7 @@ export default {
                 let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
                 if(bgUrl && bgUrl !== 'none') {
                     this.changeBg(bgUrl)
+                    graph.backgroundUrl = this.bgPic
                 }else{
                     mxClient.IS_ADD_IMG = false
                 }
@@ -159,25 +125,6 @@ export default {
             this.solidWidth = width
             this.solidHeight = height
             this.myEditorUi.setPageFormat({height:height,width:width,x:0,Y:0},true)
-            this.scaleText = width + '*' + height
-        },
-        changeScale(d,e) {
-            this.scaleText = d;
-            this.showScale = false;
-            let arr = d.split("*")
-            this.solidWidth = arr[0]
-            this.solidHeight = arr[1]
-            this.myEditorUi.setPageFormat(
-                {
-                    height: arr[1],
-                    width: arr[0],
-                    x: 0,
-                    y: 0
-                },
-                true
-            )
-            this.centerCanvas()
-            e.stopPropagation()
         },
         centerCanvas() {//居中画布
             let graph = this.myEditorUi.editor.graph
@@ -201,13 +148,13 @@ export default {
             this.$refs.chooseImg.click()
         },
         deleteBgImgHandle() {
-            sureDialog(this.myEditorUi,`确定要删除背景图片吗`,()=>{
+            sureDialog(this.myEditorUi,`${this.$t('rightBar.sureDelBgPic')}`,()=>{
                 let editor = this.myEditorUi.editor
                 editor.pages[editor.currentPage].style.backgroundUrl = ''
                 this.bgPic = require('../../assets/images/rightsidebar/bg_ic_widget.png');
                 mxClient.IS_ADD_IMG = false
                 this.isShowBgText = true
-                this.bgPicStyle = {height:'auto'}
+                this.bgPicStyle = {height:'54px'}
                 this.deleteShowFlag = false
                 this.myEditorUi.editor.graph.view.validateBackground()
             },)
@@ -221,7 +168,7 @@ export default {
             if (this.bgPic) {
                 this.deleteShowFlag = true
                 this.isShowBgText = false
-                this.bgPicStyle = {height:'98px'}
+                this.bgPicStyle = {height:'98px',width: '100%'}
             }            
             this.myEditorUi.editor.graph.view.validateBackground()
         },
@@ -239,13 +186,14 @@ export default {
                     editor.pages[editor.currentPage].style = { }
                 }
                 editor.pages[editor.currentPage].style.backgroundUrl = `getechFileSystem/${res.picPath}`
+                editor.graph.backgroundUrl = window.fileSystem + res.picPath
             })
         },
         fileChange(e) {
             if(e.target.files && e.target.files.length) {
                 let file = e.target.files[0]
                 if (file.size >= 5 * 1024 * 1024) {
-                    tipDialog(this.myEditorUi,`背景图片大小不得超过5M`)
+                    tipDialog(this.myEditorUi,`${this.$t('rightBar.bgPicNotOver5M')}`)
                     return
                 }
                 let  fileTypes = ['jpg','png','jpeg','gif','bmp','svg']
@@ -257,7 +205,7 @@ export default {
                     }
                 }
                 if(!typeFlag) {
-                    tipDialog(this.myEditorUi,`请选择图片文件`)
+                    tipDialog(this.myEditorUi,`${this.$t('rightBar.pleaseChoosePic')}`)
                     return
                 }
                 
@@ -281,9 +229,6 @@ export default {
                 this.bgColor = color
             }
             this.myEditorUi.setBackgroundColor(this.bgColor)
-        },
-        hideScale() {
-            this.showScale = false
         },
     }
 };
@@ -352,6 +297,15 @@ export default {
     }
     .setBackgroundImg {
         cursor: pointer;
+        .bgCon{
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          &>div{
+            margin-top: 2px;
+          }
+        }
     }
     .color-dialog{
         position:absolute;

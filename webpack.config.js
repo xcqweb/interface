@@ -1,10 +1,8 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin') // 复制静态资源的插件
-const argv = require('yargs-parser')(process.argv.slice(2));
-const mode = argv.mode || 'development';
+const isDev = process.env.NODE_ENV === 'development'
 const {VueLoaderPlugin} = require('vue-loader');
-const isDev = mode === 'development';
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');//webpack内置的js压缩插件
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -28,12 +26,6 @@ module.exports = {
                 test: /\.vue$/,
                 loader: 'vue-loader'
             },
-            /*  {
-                test: /mxClient\.js$/,
-                use: {
-                    loader: 'exports-loader?mxClient,mxGraphModel,mxActor,mxShape,mxEventObject,mxGraph,mxPrintPreview,mxEventSource,mxRectangle,mxVertexHandler,mxMouseEvent,mxGraphView,mxImage,mxGeometry,mxRubberband,mxKeyHandler,mxDragSource,mxUtils,mxWindow,mxEvent,mxCodec,mxCell,mxConstants,mxPoint,mxGraphHandler,mxCylinder,mxCellRenderer,mxUndoManager,mxResources,mxEditor'
-                },
-            },  */
             {
                 test: /\.js$/,
                 use: {
@@ -150,7 +142,21 @@ module.exports = {
                 "changeOrigin": true,
                 // "pathRewrite": {"^/api": "/api"}
                 // "pathRewrite": {"^/api": ""}
-            }
+            },
+            '/xj': {
+                target: 'http://10.8.4.152:8003/iot-device',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/xj': ''
+                },
+            },
+            '/wz': {
+                target: 'http://10.8.2.24:8001/api/iot-cds',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/wz': ''
+                },
+            },
         },
     },
     optimization: {
@@ -170,12 +176,16 @@ module.exports = {
         runtimeChunk: {
             name: 'runtime'
         },
-        minimizer: [
-            new UglifyJsPlugin(), //会优化掉 .map文件
-            new OptimizeCSSAssetsPlugin(),
+        minimizer: isDev ? [] : [
+            new UglifyJsPlugin({
+                cache: true,
+                parallel: true,
+                sourceMap: true
+            }),
+            isDev ? [] : new OptimizeCSSAssetsPlugin(),
         ],
     },
-    devtool: '#source-map',
+    devtool: isDev ? 'eval-source-map' : 'source-map',
     resolve: {
         extensions: ['.js', '.jsx','.ts','.tsx', '.less','.json','.css','.vue'],
         alias: {

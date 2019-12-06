@@ -7,7 +7,7 @@ let fileSystem //文件服务器host
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
-import {removeEle, destroyWs, insertImage, insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout} from './util'
+import {removeEle, destroyWs, insertImage, getDeviceId,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout,throttleFun} from './util'
 import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -22,6 +22,7 @@ class PreviewPage {
         this.content = parseContent.pages
         this.pagesRank = parseContent.rank
         this.wsParams = []
+        this.cachCells = []
         this.currentPageId = ''
         this.mainProcess = mainProcess
         this.gePreview = gePreview
@@ -108,7 +109,7 @@ class PreviewPage {
                     let getNodeInfo = new GetNodeInfo(node)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape')
-                    let x, y, width, height, fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, rotation, direction, flipH, flipV, startArrow, endArrow, strokeWidth, fontWeight,edgeProps
+                    let x, y, width, height,arcSize,fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, rotation, direction, flipH, flipV, startArrow, endArrow, strokeWidth, fontWeight,edgeProps
                     styles = node.getAttribute('style')
                     isGroup = styles.indexOf('group') != -1
                     fillColor = getNodeInfo.getStyles('fillColor') || '#FFFFFF'
@@ -123,7 +124,8 @@ class PreviewPage {
                     fontWeight = getNodeInfo.getStyles('fontStyle') || 0
                     strokeStyle = getNodeInfo.getStyles('dashed')
                     strokeWidth = getNodeInfo.getStyles('strokeWidth') || 1
-                    strokeColor = (shapeName.includes('image') ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none';
+                    strokeColor = (shapeName.includes('image') ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none'
+                    arcSize = getNodeInfo.getStyles('arcSize') || 0
                     // 图片地址
                     image = getNodeInfo.getStyles('image') || null
                     x = parseFloat(node.childNodes[0].getAttribute('x')) || 0
@@ -177,6 +179,7 @@ class PreviewPage {
                         fontSize,
                         fontWeight,
                         image,
+                        arcSize,
                         link,
                         actionsInfo,
                         statesInfo,
@@ -218,23 +221,137 @@ class PreviewPage {
         return cells    
     }
     // 清空页面内容
-    clearPage() {
-        for (let key in applyData) {
-            destroyWs(applyData, key)
+    clearPage(pageType) {
+        this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
+        this.cachCells = []
+        if (pageType == 'normal') {
+            for (let key in applyData) {
+                destroyWs(applyData, key)
+            }
+            let el = document.querySelector("#gePreviewCon")
+            el.innerHTML = ''
+            //隐藏浮窗
+            hideFrameLayout()
+            document.getElementById('geDialogs').innerHTML = ''
         }
-        this.gePreview.innerHTML = ''
-        //隐藏浮窗
-        hideFrameLayout()
-        document.getElementById('geDialogs').innerHTML = ''
     }
     subscribeData() {
+        if (this.cachCells.length) {
+            let modelIdsParam = new Map()
+            let allModels = new Map()
+            this.cachCells.forEach(item=>{
+                let deviceId = item.bindData.dataSource.deviceNameChild.id
+                let statesInfo = item.statesInfo
+                let tempArr = []
+                statesInfo.forEach((d) => {
+                    if (d.modelFormInfo && d.key) {
+                        tempArr.push(d.modelFormInfo)
+                    }
+                })
+                if(tempArr.length) {
+                    modelIdsParam.set(tempArr.join("_"), deviceId)
+                }
+            })
+            let modelAllIds = []
+            for (let key of modelIdsParam.keys()) {
+                modelAllIds = modelAllIds.concat(key.split("_"))
+            }
+            if(modelAllIds.length) {
+                requestUtil.post(urls.getModelByIds.url, Array.from(new Set(modelAllIds))).then((res) => {
+                    if (res && res.returnObj) {
+                        let params = []
+                        res.returnObj.forEach(item=>{
+                            allModels.set(item.sourceId,item)
+                            if (item.formula) {
+                                params = params.concat((this.dealModelFormulaFun(modelIdsParam,item.sourceId,item.formula)))
+                            }
+                        })
+                        this.cachCells.forEach(item=>{
+                            let cellStateInfoHasModel = []
+                            let deviceId = item.bindData.dataSource.deviceNameChild.id
+                            let statesInfo = item.statesInfo
+                            if (statesInfo && statesInfo.length) {
+                                cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
+                                statesInfo.forEach((d) => {
+                                    if (d.modelFormInfo && d.key) {
+                                        d.modelFormInfo = allModels.get(d.modelFormInfo)
+                                        cellStateInfoHasModel.push(d)
+                                    }
+                                })
+                            }
+                            const className = item.shapeName.includes('progress') || item.shapeName.includes('Chart') ? '' : 'param-show-node'
+                            $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId}`)
+                        })
+                        requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
+                            let resParam = [],maps = new Map()
+                            res.forEach(dpId=>{
+                                let deviceId = getDeviceId(dpId)
+                                if (maps.has(deviceId)) {
+                                    maps.set(deviceId, maps.get(deviceId).push(dpId))
+                                }else{
+                                    maps.set(deviceId, [dpId])
+                                }
+                                for (let key of maps.keys()) {
+                                    resParam.push({
+                                        deviceId:key,
+                                        params:maps.get(key)
+                                    })
+                                }
+                            })
+                            this.subscribeDataDeal(resParam)
+                        })
+                    }
+                },()=>{
+                    this.subscribeDataDeal()
+                })
+            }else{
+                this.subscribeDataDeal()
+            }
+        }else{
+            this.subscribeDataDeal()
+        }
+       
+    }
+    dealModelFormulaFun(modelIdsParam,modelId,formula) {
+        let formulaAttr = JSON.parse(formula)
+        let res = []
+        let deviceId
+        for (let key of modelIdsParam.keys()) {
+            let tempArr = key.split("_")
+            let resIndex = tempArr.findIndex((item)=>{
+                return item == modelId
+            })
+            if (resIndex != -1) {
+                deviceId = modelIdsParam.get(key)
+                break
+            }
+        }
+        formulaAttr.data.forEach(item=>{
+            let keyArr = item.key.split('/')
+            let paramId = null
+            if(keyArr.length > 2) {
+                paramId = keyArr[1]
+            }
+            res.push({
+                paramType: keyArr[0] == 'device' ? 0 : 1,
+                deviceId: deviceId,
+                partId: paramId,
+                paramId: keyArr[keyArr.length - 1]
+            })
+        })
+        return res
+    }
+    subscribeDataDeal(res) {
+        if(res && res.length) {
+            this.wsParams = this.wsParams.concat(res)
+        }
         applyData[this.currentPageId] = {
             wsReal: '',
             data: {},
             wsParams: this.wsParams,
             lockWs: false
         }
-        if(this.wsParams.length) {
+        if (this.wsParams.length) {
             createWsReal(this.currentPageId, applyData, fileSystem)
             getLastData(this.wsParams, fileSystem) //低频数据 通过调用最后一笔数据显示
         }
@@ -251,37 +368,72 @@ class PreviewPage {
         let contentHeight = xmlDoc.getAttribute('pageHeight')
         // 页面宽度和高度
         let cells = this.parseCells(root)
-        this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
+        this.clearPage(page.type)
         if (page.type === 'normal') {
             // 清除全部websocket 和页面内容 、页面上的弹窗
-            this.clearPage()
             // 正常页面      
-            this.renderPages(cells, this.gePreview)
+            this.renderPages(cells, document.querySelector("#gePreviewCon"))
             this.gePreview.style.width = contentWidth + 'px'
             this.gePreview.style.height = contentHeight + 'px'
             if (pageStyle && pageStyle.backgroundUrl) {
-                this.gePreview.style.backgroundColor = viewBackground
                 pageStyle.backgroundUrl = pageStyle.backgroundUrl.replace(/getechFileSystem\//, fileSystem)
                 this.gePreview.style.background = `url(${pageStyle.backgroundUrl}) no-repeat center center`
                 this.gePreview.style.backgroundSize = "100% 100%"
+                this.gePreview.style.backgroundColor = viewBackground
             }else{
                 this.gePreview.style.background = viewBackground
             }
-        } else { //弹窗是点弹窗关闭时候清空的内容和关闭ws连接
+            $(".gePreview_bg").css('background','#606060')
+        } else { //点弹窗关闭时候清空的内容和关闭ws连接
             // 弹窗页面
             let layerContent = this.createDialog(page)
             layerContent.innerHTML = ''
             this.renderPages(cells, layerContent)
         }
-        $(() => {
-            setTimeout(()=>{
-                this.subscribeData()
-            },600)
-        })
+        this.subscribeData()
+        this.bindDeviceEleEvent()
         return cells
     }
+    // 设备绑定mouse事件
+    bindDeviceEleEvent() {
+        const $formatLayer = $("#formatLayer")
+        const $document = $(document)
+        const formatLayerText = (paramData) => {
+            if (paramData) {
+                const data = paramData.data
+                let html = '<ul style="height:100%;display:flex;flex-direction:column;justify-content:center;">'
+                html += `<li>${paramData.time}</li>`
+                for (let key in data) {
+                    html += `<li>${key}=${data[key]}</li>`
+                }
+                html += '</ul>'
+                $formatLayer.html(html).show()
+            } else {
+                $formatLayer.html('')
+            }
+        }
+        const formatLayerShow = (e) => {
+            const {clientX, clientY} = e
+            $formatLayer.css({left: `${clientX}px`, top: `${clientY}px`})
+        }
+        const selector = '.param-show-node'
+        // 先解除设备mouse事件
+        $document.off('mouseenter mousemove mouseleave', selector)
+        $document.on('mouseenter', selector, function(event) {
+            const $ele = $(this)
+            const paramData = $ele.data('paramData')
+            formatLayerText(paramData)
+            $ele.data('frameFlag', !!paramData)
+            formatLayerShow(event)
+        })
+        $document.on('mousemove', selector, throttleFun(formatLayerShow, 20))
+        $document.on('mouseleave', selector, function() {
+            $(this).data('frameFlag', false)
+            $formatLayer.hide()
+        })
+    }
     // 渲染页面
-    renderPages(cells, ele = this.gePreview) {
+    renderPages(cells, ele) {
         for (let i = 0;i < cells.length;i++) {
             let cell = cells[i]
             let cellHtml = this.renderCell(cell)
@@ -295,11 +447,14 @@ class PreviewPage {
 
     // 渲染控件节点
     renderCell(cell) {
+        console.log(cell)
         const shapeName = cell.shapeName
         let cellHtml
         if (shapeName.includes('image')) {
             // 图片
-            cell.image = cell.image.replace(/getechFileSystem\//, fileSystem)
+            if(cell.image) {
+                cell.image = cell.image.replace(/getechFileSystem\//, fileSystem)
+            }
             cellHtml = insertImage(cell)
             $(cellHtml).data("defaultImg", cell.image)
         } else if (shapeName === 'linkTag') {
@@ -365,7 +520,7 @@ class PreviewPage {
         } else if (shapeName.includes('pipeline')) {
             cellHtml = dealPipeline(cell)
         } else if (shapeName.includes('Chart')) {
-            cellHtml = dealCharts(cell)
+            cellHtml =  dealCharts(cell)
         } else if (shapeName == 'light') {
             cellHtml = dealLight(cell)
         } else {
@@ -420,6 +575,9 @@ class PreviewPage {
         cellHtml.style.transform = `rotate(${cell.rotation}deg) ${cell.flipV == 1 ? ' scaleY(-1)' : ''} ${cell.flipH == 1 ? ' scaleX(-1)' : ''}`;
         // 字体大小
         cellHtml.style.fontSize = `${cell.fontSize}px`
+        if (shapeName == 'rectangle') {
+            cellHtml.style.borderRadius = `${cell.arcSize * Math.min(cell.width,cell.height) * 0.01}px`
+        }
         cellHtml.style.fontWeight = `${cell.fontWeight == 1 ? 'bold' : 'normal'}`
         // 字体颜色
         cellHtml.style.color = `${cell.fontColor}`
@@ -442,80 +600,52 @@ class PreviewPage {
         // 绑定事件
         bindEvent(cellHtml, cell, this.mainProcess, applyData,fileSystem)
         $(cellHtml).data("shapeName",shapeName)
-        if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild) {
-            let devices = cell.bindData.dataSource.deviceNameChild
+        if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild) {
             let paramShow = []
-            let defaultParamIndex = -1
-            if (cell.bindData.params) {
-                cell.bindData.params.forEach((item)=>{
-                    paramShow.push(item.paramName)
-                })
-                defaultParamIndex = cell.bindData.params.findIndex(item => {
-                    return item.type
-                })
-            }
-            if (defaultParamIndex != -1) {
+            let device = cell.bindData.dataSource.deviceNameChild
+            if (cell.bindData.params && cell.bindData.params.length > 0) {
+                let defaultParamIndex = 0
+                paramShow = cell.bindData.params
+                let singleParamShow = ['progress', 'lineChart', 'gaugeChart']
+                if (!singleParamShow.includes(shapeName)) {
+                    defaultParamIndex = cell.bindData.params.findIndex(item => {
+                        return item.type
+                    })
+                    cellHtml.classList.add('param-show-node')
+                }
+                 
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
+                $(cellHtml).data("paramShow", paramShow)
+                this.initWsParams(cellHtml, device, paramShow)
             }
-            $(cellHtml).data("paramShow", paramShow)
-            let resParams = []
-            let cellStateInfoHasModel = [] //默认状态以及绑定了模型公式的状态
             let modelIdsParam = []
             let statesInfo = cell.statesInfo
             if (statesInfo && statesInfo.length) {
-                cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
                 statesInfo.forEach((item)=>{
                     if (item.modelFormInfo) {
-                        cellStateInfoHasModel.push(item)
                         modelIdsParam.push(item.modelFormInfo)
                     }
                 })
                 if (modelIdsParam.length) {
-                    requestUtil.post(urls.getModelByIds.url, modelIdsParam).then((res) => {
-                        res.returnObj.forEach((item, index) => {
-                            cellStateInfoHasModel[index + 1].modelFormInfo = item
-                            let formulaAttr
-                            if (item.formula) {
-                                formulaAttr = JSON.parse(item.formula)
-                            }
-                            let flatFormulaAttr = []
-                            if (formulaAttr) {
-                                formulaAttr.data.forEach((item) => {
-                                    flatFormulaAttr = flatFormulaAttr.concat(...item)
-                                })
-                                flatFormulaAttr.forEach((d) => {
-                                    resParams.push(d.paramName)
-                                })
-                            }
-                        })
-                        $(cellHtml).data("stateModels", cellStateInfoHasModel)
-                        this.initWsParams(cellHtml,devices, paramShow, resParams)
-                    })
-                }else{
-                    this.initWsParams(cellHtml, devices, paramShow)
-                }
-            }else{
-                this.initWsParams(cellHtml, devices,paramShow)
+                    this.cachCells.push(cell)
+                } 
             }
         }
         return cellHtml
     }
-    initWsParams(cellHtml, devices, paramShow, resParams) {
-        if (devices) {
-            devices.forEach((item) => {
-                cellHtml.className += ` point_${item.id}`
-                let resArr
-                if (resParams && resParams.length) {
-                    resArr = Array.from(new Set(resParams.concat(paramShow)))
-                }else{
-                    resArr = Array.from(new Set(paramShow))
-                }
-                if (resArr.length) {
-                    this.wsParams.push({
-                        pointId: item.id,
-                        params: resArr
-                    })
-                }
+    initWsParams(cellHtml, device, paramShow) {
+        let dealParamShow = []
+        paramShow.forEach(item=>{
+            if (item.deviceParamId) {
+                dealParamShow.push(item.deviceParamId)
+            }
+        })
+        cellHtml.classList.add(`device_${device.id}`)
+        if(dealParamShow.length) {
+            let resArr = Array.from(new Set(dealParamShow))
+            this.wsParams.push({
+                deviceId: device.id,
+                params: resArr
             })
         }
     }

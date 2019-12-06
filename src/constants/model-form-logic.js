@@ -11,35 +11,35 @@ const conditionLogical = [
 const logicalSignList = [
     {
         value: '1',
-        label: '介于'
+        label: 'between'
     },
     {
         value: '2',
-        label: '未介于'
+        label: 'notBetween'
     },
     {
         value: '3',
-        label: '等于'
+        label: 'equal'
     },
     {
         value: '4',
-        label: '不等于'
+        label: 'notEqualTo'
     },
     {
         value: '5',
-        label: '大于'
+        label: 'moreThan'
     },
     {
         value: '6',
-        label: '小于'
+        label: 'lessThan'
     },
     {
         value: '7',
-        label: '大于等于'
+        label: 'moreThanOrEqual'
     },
     {
         value: '8',
-        label: '小于等于'
+        label: 'lessThanOrEqual'
     }
 ]
 

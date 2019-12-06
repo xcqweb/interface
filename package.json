@@ -4,8 +4,8 @@
   "description": "demo",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --hot --mode=development",
-    "build": "webpack --max_old_space_size=4096 --mode=production",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --mode=development",
+    "build": "cross-env NODE_ENV=production webpack --max_old_space_size=4096 --mode=production",
     "lint": "eslint --ext .js --ext .vue src/",
     "lint-fix": "eslint --fix --ext .js --ext .jsx --ext .vue src/"
   },
@@ -29,6 +29,7 @@
     "canvg": "^2.0.0",
     "clean-webpack-plugin": "^2.0.1",
     "copy-webpack-plugin": "^5.0.3",
+    "cross-env": "^6.0.3",
     "css-loader": "^2.1.1",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
@@ -69,6 +70,7 @@
     "canvas-nest.js": "^2.0.4",
     "echarts": "^4.2.1",
     "exports-loader": "^0.7.0",
+    "horwheel": "^1.0.1",
     "mxgraph": "^4.0.1",
     "nprogress": "^0.2.0",
     "script-loader": "^0.7.2",

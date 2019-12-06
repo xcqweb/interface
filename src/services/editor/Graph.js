@@ -1649,19 +1649,19 @@ Graph.prototype.getPageLayout = function()
     }
     else
     {
-        // Computes untransformed graph bounds
-        var x = Math.ceil(bounds.x / this.view.scale - this.view.translate.x);
-        var y = Math.ceil(bounds.y / this.view.scale - this.view.translate.y);
-        var w = Math.floor(bounds.width / this.view.scale);
-        var h = Math.floor(bounds.height / this.view.scale);
-		
-        var x0 = Math.floor(x / size.width);
-        var y0 = Math.floor(y / size.height);
-        var w0 = Math.ceil((x + w) / size.width) - x0;
-        var h0 = Math.ceil((y + h) / size.height) - y0;
-		
-        //return new mxRectangle(x0, y0, w0, h0); // 控件超出边界 固定宽高
-         return new mxRectangle(0, 0, 1, 1);
+      // Computes untransformed graph bounds
+      var x = Math.ceil(bounds.x / this.view.scale - this.view.translate.x);
+      var y = Math.ceil(bounds.y / this.view.scale - this.view.translate.y);
+      var w = Math.floor(bounds.width / this.view.scale);
+      var h = Math.floor(bounds.height / this.view.scale);
+
+      var x0 = Math.floor(x / size.width);
+      var y0 = Math.floor(y / size.height);
+      var w0 = Math.ceil((x + w) / size.width) - x0;
+      var h0 = Math.ceil((y + h) / size.height) - y0;
+
+      //return new mxRectangle(x0, y0, w0, h0);
+      return new mxRectangle(0, 0, 1, 1); // 控件超出边界 固定画布宽高
     }
 };
 
@@ -6546,7 +6546,7 @@ if (typeof mxVertexHandler != 'undefined')
             var head = 26;
             var tail = 10;
 			
-            if (label.length > max)
+            if (label && label.length > max)
             {
                 label = label.substring(0, head) + '...' + label.substring(label.length - tail);
             }
@@ -8063,7 +8063,7 @@ if (typeof mxVertexHandler != 'undefined')
 	
         mxVertexHandler.prototype.updateLinkHint = function(link, links)
         {
-            if ((link == null && (links == null || links.length == 0)) ||
+            /* if ((link == null && (links == null || links.length == 0)) ||
 				this.graph.getSelectionCount() > 1)
             {
                 if (this.linkHint != null)
@@ -8135,14 +8135,14 @@ if (typeof mxVertexHandler != 'undefined')
                     {
                         var div = document.createElement('div');
                         div.style.marginTop = (link != null || i > 0) ? '6px' : '0px';
-                        div.appendChild(this.graph.createLinkForHint(
-                            links[i].getAttribute('href'),
-                            mxUtils.getTextContent(links[i])));
+                        // div.appendChild(this.graph.createLinkForHint(
+                        //     links[i].getAttribute('href'),
+                        //     mxUtils.getTextContent(links[i])));
 						
                         this.linkHint.appendChild(div);
                     }
                 }
-            }
+            } */
         };
 		
         mxEdgeHandler.prototype.updateLinkHint = mxVertexHandler.prototype.updateLinkHint;

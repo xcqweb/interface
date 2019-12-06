@@ -1,4 +1,5 @@
 export let data1 = {
+    color: ['#3D91F7', '#61C3FA', '#A838D8', '#EE6B5F', '#6DDAA6', '#F7B83D'],
     legend: {
         show:true,
         data: ['图例'],
@@ -60,10 +61,18 @@ export let data1 = {
             }
         }
     },
+    dataZoom:[{
+        type:'inside',
+        id:'insideX',
+        xAxisIndex:0,
+        zoomOnMouseWheel:true,
+        moveOnMouseMove:true,
+    }],
     series: [{
         name: '图例',
         type: 'line',
         data: [10, 52, 200, 334, 390, 330, 220],
+        connectNulls: true,
         markLine: {
             silent: true,
             data: [],
@@ -79,10 +88,13 @@ export let data2 = {
     series: {
         name:'仪表盘',
         type: 'gauge',
-        radius:'80%',
+        radius:'100%',
         detail: {
             show:false,
             formatter: '{value}%'
+        },
+        title: {
+            show:false
         },
         data: [{name:'',value:50}],
         min: 0,

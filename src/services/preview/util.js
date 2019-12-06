@@ -34,7 +34,7 @@ function destroyWs(applyData,pageId) {
  * @param {object} data 请求参数
  */
 async function geAjax(url, method = 'GET', data = null) {
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve)=>{
         callAjax()
         function callAjax() {
             let token = getCookie('token')
@@ -60,7 +60,6 @@ async function geAjax(url, method = 'GET', data = null) {
                             callAjax()
                         })
                     }
-                    reject(res)
                 }
             })
         }
@@ -119,7 +118,7 @@ function actionShow(action, mainProcess) {
     if (action.innerType === 'palette') {
         document.getElementById('palette_' + action.link).style.display = '';
     } else {
-        mainProcess.renderDialog(action.link)
+        mainProcess.renderPageFun(action.link)
     }
 }
 
@@ -134,10 +133,9 @@ function actionOpen(action, mainProcess) {
         // 打开页面
         const pageType = mainProcess.getPageType(action.link)
         if (pageType === 'normal' && mainProcess.pageId !== action.link) {
-            mainProcess.pageId = action.link
-            mainProcess.renderNormal()
+            mainProcess.changePage(action.link,true)
         } else if (pageType === 'dialog') {
-            mainProcess.renderDialog(action.link)
+            mainProcess.renderPageFun(action.link)
         }
     }
 }
@@ -331,80 +329,74 @@ function dealCharts(cell) {
             options = data2
         }
     }
-    document.addEventListener("initEcharts",()=>{
+    let fun = () => {
         let myEchart = echarts.init(con)
-        if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params) {
+        if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params && cell.bindData.params.length) {
             let titleShow = cell.bindData.params[0].paramName
-            let devices = cell.bindData.dataSource.deviceNameChild
+            let paramId = cell.bindData.params[0].paramId
+            let paramType = cell.bindData.params[0].paramType
+            let titleShowId = cell.bindData.params[0].deviceParamId
+            let device = cell.bindData.dataSource.deviceNameChild
             if (cell.shapeName == 'lineChart') {
-                let deviceTypeId = cell.bindData.dataSource.deviceTypeChild.id
-                requestUtil.get(`${urls.timeSelect.url}${deviceTypeId}`).then(res => {
+                requestUtil.get(`${urls.timeSelect.url}${paramId}`, {paramType: paramType == 'device' ? 0 : 1}).then(res => {
                     let checkItem = res.durations.find((item) => {
                         return item.checked === true
                     })
+                    let tempOptions = JSON.parse(JSON.stringify(options))
                     let chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
                     $(con).data("chartDataLen", chartDataLen)
-                    let nowTs = +new Date()
-                    options.xAxis.data = []
-                    options.yAxis.name = titleShow
+                    tempOptions.xAxis.data = []
+                    tempOptions.yAxis.name = titleShow
                     let tempLegend = [], tempSeries = []
-                    let markLine = options.series[0].markLine
-                    let markLineMax = 0,markValArr = []
-                    if(markLine && markLine.data && markLine.data.length) {
-                        markLine.data.forEach(item=>{
+                    let markLine = tempOptions.series[0].markLine
+                    let markLineMax = 0, markValArr = []
+                    if (markLine && markLine.data && markLine.data.length) {
+                        markLine.data.forEach(item => {
                             markValArr.push(item.yAxis)
                         })
                         markLineMax = Math.max(...markValArr)
                     }
-                    options.legend.data = tempLegend
-                    devices.forEach((item,index) => {
-                        tempLegend.push(item.name)
-                        tempSeries.push({
-                            type: 'line',
-                            name: item.name,
-                            markLine: markLine,
-                            data: [],
-                            pointId: item.id, //设备id，额外添加的，匹配数据时候用
-                        })
-                        let pentSdbParams = {
-                            pointId: item.id,
-                            key: titleShow,
-                            schame: 'iot',
-                            startTs: nowTs - checkItem.duration * 1000,
-                            endTs: nowTs,
+                    tempOptions.legend.data = tempLegend
+                    tempLegend.push(device.name)
+                    tempSeries.push({
+                        type: 'line',
+                        name: device.name,
+                        markLine: markLine,
+                        data: [],
+                        deviceId: device.id, //设备id，额外添加的，匹配数据时候用
+                    })
+                    let pentSdbParams = {
+                        paramIds: [titleShowId],
+                        deviceId: device.id,
+                        period: checkItem.duration,
+                    }
+                    requestUtil.post(`${urls.pentSdbData.url}`, [pentSdbParams]).then(res => {
+                        if (res && res.length) {
+                            let tempArr = res[0]
+                            if(tempArr) {
+                                let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
+                                for (let key of keys) {
+                                    tempOptions.xAxis.data.push(timeFormate(key, false))
+                                    tempSeries[0].data.push(tempArr.resMap[key])
+                                }
+                                tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
+                                tempOptions.series = tempSeries
+                                myEchart.setOption(tempOptions)
+                            }
                         }
-                        let refreshToken = getCookie('refreshToken')
-                        geAjax('/api/auth/refreshToken', 'POST', {
-                            refreshToken
-                        }).then(res => {
-                            setCookie('token', res.token);
-                            setCookie('refreshToken', res.refreshToken)
-                            requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
-                                for (let key in res.resMap) {
-                                    if(index === 0) {
-                                        options.xAxis.data.push(timeFormate(key))
-                                    }
-                                    tempSeries[index].data.push(res.resMap[key])
-                                }
-                                if(index === 0) {
-                                    options.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
-                                }
-                                if (index == devices.length - 1) {
-                                    options.series = tempSeries
-                                    myEchart.setOption(options)
-                                }
-                            })
-                        })
                     })
                 })
-            }else {
-                options.series.data = [{value:0,name:titleShow}]
+            } else {
+                options.series.data = [{value: 0, name: titleShow}]
                 options.series.name = titleShow
                 myEchart.setOption(options)
             }
-        }else {
+        } else {
             myEchart.setOption(options)
         }
+    }
+    $(()=>{
+        fun()
     })
     return con
 }
@@ -452,7 +444,7 @@ function throttleFun(fun, delay) {
         return result
     }
 }
-function timeFormate(time) {
+function timeFormate(time,isMilliSecond) {
     time = +time || new Date().getTime()
     const timeEle = new Date(time)
     const year = timeEle.getFullYear()
@@ -462,9 +454,29 @@ function timeFormate(time) {
     const minute = timeEle.getMinutes()
     const second = timeEle.getSeconds()
     const cmSecond = timeEle.getUTCMilliseconds()
-    return `${year}/${month > 9 ? month : '0' + month}/${day > 9 ? day : '0' + day} ${hours > 9 ? hours : '0' + hours}:${minute > 9 ? minute : '0' + minute}:${second > 9 ? second : '0' + second}.${cmSecond}`
+    let res = `${year}/${month > 9 ? month : '0' + month}/${day > 9 ? day : '0' + day} ${hours > 9 ? hours : '0' + hours}:${minute > 9 ? minute : '0' + minute}:${second > 9 ? second : '0' + second}`
+    if(isMilliSecond) {
+        res += `.${cmSecond}`
+    }
+    return res
+}
+//获取设备id
+function getDeviceId(dpId) {
+    const HEADER_SPLITE = ":"
+    const CENTER_SPLITE = "|"
+    const INVENTED_PARAM = "VP"
+    const DEVICE_PARAM = "P"
+    let strs,deviceId
+    if (dpId.includes(INVENTED_PARAM + HEADER_SPLITE)) {
+        dpId = dpId.substring(3)
+    } else if (dpId.includes(DEVICE_PARAM + HEADER_SPLITE)) {
+        dpId = dpId.substring(2)
+    }
+    strs = dpId.split(CENTER_SPLITE)
+    deviceId = strs[0]
+    return deviceId
 }
 export {
-    removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips,
-    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill, throttleFun, hideFrameLayout
+    removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,
+    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, dealLightFill, throttleFun, hideFrameLayout, getDeviceId
 }

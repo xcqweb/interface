@@ -4,10 +4,10 @@
     style="padding:0 4px;"
   >
     <p style="text-align:center;margin:10px;font-size:14px;">
-      弹窗样式
+      {{ $t('popupStyle') }}
     </p>
     <p style="margin-top:1px;">
-      弹框描述
+      {{ $t('popupDesc') }}
     </p>
     <textarea
       v-model="dialogDesc"
@@ -16,25 +16,28 @@
       @blur="descChange"
     />
     <div class="item-title">
-      弹框尺寸
+      {{ $t('popupSize') }}
     </div>
-    <div style="display:flex;margin-top:4px;">
+    <div style="display:flex;">
       <div
         class="item-container"
       >
-        <span style="color:#797979;margin:0 6px;">宽</span>
+        <span style="color:#797979;margin:0 6px;">{{ $t('width') }}</span>
         <input
           v-model="dialogWidth"
           v-number="0"
+          :disabled="isMobileApp"
           @keyup.enter="changeScaleInput"
           @blur="changeScaleInput"
         >
       </div>
       <div
         class="item-container"
+
+        
         style="margin-left:10px;"
       >
-        <span style="color:#797979;margin:0 6px;">高</span>
+        <span style="color:#797979;margin:0 6px;">{{ $t('height') }}</span>
         <input
           v-model="dialogHeight"
           v-number="0"
@@ -45,7 +48,7 @@
     </div>
     <div class="titleSet">
       <div class="item-title">
-        标题文本
+        {{ $t('text') }}
       </div>
       <div class="titleCon">
         <div class="itemLine">
@@ -120,7 +123,7 @@
     <div
       class="item-title"
     >
-      标题填充
+      {{ $t('fill') }}
     </div>
     <div
       class="item-container"
@@ -141,6 +144,7 @@ let valignArr = [],dialogStyle
 export default {
     data() {
         return {
+            isMobileApp: false,
             dialogDesc:"",
             showFont:false,
             dialogHeight: 400,
@@ -176,6 +180,7 @@ export default {
             let graph = this.myEditorUi.editor.graph
             let editor = this.myEditorUi.editor
             dialogStyle = editor.pages[editor.currentPage].style
+            this.isMobileApp = editor.getAppType() === 1
             this.dialogWidth = graph.pageFormat.width || 600
             this.dialogHeight = graph.pageFormat.height || 400
             this.fontText = parseInt(dialogStyle.fontSize || 12)
@@ -213,7 +218,9 @@ export default {
             let editor = this.myEditorUi.editor
             let el = document.querySelector(".dialog-title-m")
             let keys = Object.keys(dialogStyle)
-            el.style.cssText = " "//清空之前的标题style
+            if(el.style) {
+                el.style.cssText = " "//清空之前的标题style
+            }
             for(let i = 0;i < keys.length;i++) {//更改title dom节点位置后，vue的:style失效，采用原生的方式
                 el.style[keys[i]] = dialogStyle[keys[i]]
             }

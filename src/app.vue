@@ -37,8 +37,13 @@ export default {
     mounted() {
         if(this.$i18n.locale == 'zh') {
             this.langCss = ''
+            document.title = "格创东智界面工具"
         }else{
             this.langCss = this.$i18n.locale
+            document.title = "Getech Interface Tool"
+        }
+        if(this.langCss) {
+            document.body.classList.add(this.langCss)
         }
     },
 };

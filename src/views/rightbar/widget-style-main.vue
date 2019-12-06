@@ -6,7 +6,7 @@
         :class="{'selected':tab==1}"
         @click="changeTab(1)"
       >
-        样式
+        {{ $t('style') }}
       </div>
       <div
         v-if="stateList.includes(shapeName) && cellsCount==1"
@@ -14,7 +14,7 @@
         :class="{'selected':tab==2}"
         @click="changeTab(2)"
       >
-        状态
+        {{ $t('state') }}
       </div>
       <div
         v-if="actionList.includes(shapeName) && cellsCount==1"
@@ -22,15 +22,15 @@
         :class="{'selected':tab==3}"
         @click="changeTab(3)"
       >
-        交互
+        {{ $t('action') }}
       </div>
       <div
-        v-if="dataList.includes(shapeName) && cellsCount==1"
+        v-if="dataList.includes(shapeName) && isShowDataTab"
         class="tab"
         :class="{'selected':tab==4}"
         @click="changeTab(4)"
       >
-        数据
+        {{ $t('data') }}
       </div>
     </div>
     <Style
@@ -64,7 +64,8 @@ export default{
             refresh:0,//切换控件刷新子组件
             stateList:['rectangle','image','userimage','tableCell','light','ellipse'],
             actionList:['menuCell','rectangle','image','userimage','button','ellipse','text','tableCell'],
-            dataList:['image','userimage','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart'],
+            dataList:['image','userimage','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart','tableBox'],
+            isShowDataTab:true,
         }
     },
     computed: {
@@ -88,6 +89,19 @@ export default{
             }
         },
     },
+    created() {
+        let graph = this.myEditorUi.editor.graph
+        let cells = graph.getSelectionCells()
+        if(cells.length > 1) {
+            this.isShowDataTab = false
+        }
+        /*  for(let i = 0;i < cells.length;i++) { //批量绑定数据源的
+            if(i < cells.length - 1 && this.getCellShapeName(cells[i]) != this.getCellShapeName(cells[i + 1])) {
+                this.isShowDataTab = false
+                break
+            }
+        } */
+    },
     mounted() {
         VueEvent.$off('rightBarTabSwitch')
         VueEvent.$on('rightBarTabSwitch',()=>{
@@ -100,6 +114,15 @@ export default{
             if (this.tab === 4) {
                 VueEvent.$emit('isShowFootBar',{show:true,isUp:true})
             }
+        },
+        getCellShapeName(cell) {
+            let graph = this.myEditorUi.editor.graph
+            let shapeName = ''
+            let cellState = graph.view.getState(cell)
+            if(cellState) {
+                shapeName =  cellState.style.shape
+            }
+            return shapeName
         },
     },      
 }

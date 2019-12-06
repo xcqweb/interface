@@ -11,7 +11,7 @@
         class="geDialogTitle"
         @click="hideState"
       >
-        添加状态
+        {{ $t("rightBar.addState") }}
       </p>
       <div
         class="geDialogInfo"
@@ -34,7 +34,7 @@
                 class="text"
                 :class="animateCls"
               >
-                文本
+                {{ $t("text") }}
               </div>
             </div>
             <i-checkbox
@@ -42,7 +42,7 @@
               style="width:100%;text-align:center;margin-top:8px;"
               @on-change="changeAnimate"
             >
-              触发时闪烁
+              {{ $t("rightBar.attachBlink") }}
             </i-checkbox>
           </div>
           <div
@@ -50,10 +50,10 @@
             class="state-desc"
           >
             <div style="text-align:left;">
-              <p>状态名称</p>
+              <p>{{ $t('rightBar.stateName') }}</p>
               <input v-model="stateName">
               <p style="margin-top:10px;">
-                描述
+                {{ $t("describe") }}
               </p>
               <textarea v-model="stateDesc" />
             </div>
@@ -70,7 +70,7 @@
                 :class="{'selected':typeTab==4}"
                 @click="changeTab(4)"
               >
-                图片
+                {{ $t("image") }}
               </div>
               <div
                 v-if="!picList.includes(shapeName) || shapeName=='light'"
@@ -79,7 +79,7 @@
                 style="border-top-left-radius:2px;border-bottom-left-radius:2px;"
                 @click="changeTab(1)"
               >
-                填充
+                {{ $t("fill") }}
               </div>
               <div
                 v-if=" shapeName!=='light'"
@@ -87,7 +87,7 @@
                 :class="{'selected':typeTab==2}"
                 @click="changeTab(2)"
               >
-                边框
+                {{ $t("border") }}
               </div>
               <div
                 v-if="!picList.includes(shapeName)&&shapeName!=='light'"
@@ -96,7 +96,7 @@
                 :class="{'selected':typeTab==3}"
                 @click="changeTab(3)"
               >
-                文本
+                {{ $t("text") }}
               </div>
             </div>
             <div
@@ -118,7 +118,7 @@
                   style="width:100%;"
                 >
                 <div v-show="isShowBgText">
-                  选择图片
+                  {{ $t('choosePic') }}
                 </div>
                 <input
                   ref="chooseImg"
@@ -136,14 +136,15 @@
         >
           <button
             class="geBtn"
+            style="margin-right:50px;"
             @click="hideState"
           >
-            取消
+            {{ $t('cancel') }}
           </button><button
             class="geBtn gePrimaryBtn"
             @click="submitState"
           >
-            提交
+            {{ $t('submit') }}
           </button>
         </div>
       </div>
@@ -186,7 +187,7 @@ export default{
             this.animateCls = editStateTemp.animateCls
             this.animateCheck = this.animateCls != ''
             this.stateDesc = editStateTemp.desc
-            if(this.stateDesc == '暂无描述') {
+            if(this.stateDesc == `${this.$t("noDescribe")}`) {
                 this.stateDesc = ''
             }
             style = editStateTemp.style
@@ -197,7 +198,7 @@ export default{
             let graph = this.myEditorUi.editor.graph
             let states = this.$parent.getStates(graph)
             let index = states.length
-            this.stateName = `状态${index}`
+            this.stateName = `${this.$t("state")}${index}`
         }
         this.$nextTick(()=>{
             let dlg = new ColorDialog(this.myEditorUi,style.background, null,null,false)
@@ -276,7 +277,7 @@ export default{
         fileChange(e) {
             if(e.target.files && e.target.files.length) {
                 if (e.target.files[0].size >= 2 * 1024 * 1024) {
-                    tipDialog(this.myEditorUi,`背景图片大小不得超过2M`)
+                    tipDialog(this.myEditorUi,`${this.$t('rightBar.bgPicNotOver2M')}`)
                     return false
                 }
                 // 预览图片

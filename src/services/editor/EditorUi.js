@@ -877,9 +877,13 @@ window.EditorUi = function(editor, container, lightbox)
             if (cell.style !== 'group') {
 				if (cell.style && cell.style.indexOf('shape') !== -1) {
                     let shapeName = /shape=(.+?);/.exec(cell.style)[1]
-                    shapeName = this.sidebar.primitives.includes(shapeName) ? 'primitive' : shapeName
                     this.editor.palettesInfo[shapeName].num++
-                    cellInfo.setAttribute('palettename', this.editor.palettesInfo[shapeName].name + this.editor.palettesInfo[shapeName].num)
+                    let palettename=this.editor.palettesInfo[shapeName].name
+                    if(shapeName=='userimage'){
+                        palettename = /cusName=(.+?);/.exec(cell.style)[1]
+                    }
+                    palettename +=` (${this.editor.palettesInfo[shapeName].num})`
+                    cellInfo.setAttribute("palettename", palettename)
 				}
             }else{
                 this.editor.palettesInfo['groupNum'].num++
@@ -2712,11 +2716,9 @@ EditorUi.prototype.addUndoListener = function()
 EditorUi.prototype.updateActionStates = function()
 {
     var graph = this.editor.graph;
-    var selected = !graph.isSelectionEmpty();
     var vertexSelected = false;
-    var edgeSelected = false;
-
     var cells = graph.getSelectionCells();
+    var edgeSelected = false
     // 选择全部的控件的shapeName总和
     var shapeNameStr = '';
     if (cells != null)
@@ -2743,7 +2745,7 @@ EditorUi.prototype.updateActionStates = function()
     var shapeName = state && state.style.shape;
     var actions = ['cut', 'copy', 'bold', 'underline','paste', 'delete', 'duplicate',
         'editLink', 'backgroundColor', 'borderColor', 'group','ungroup','resetHide',
-	               'edit', 'toFront', 'toBack', 'lockUnlock',
+	               'edit', 'toFront', 'toBack', 'lockUnlock','lock','unlock',
 	               'fillColor', 'gradientColor', 'fontColor',
 	               'formattedText', 'strokeColor', 'turn', 'flipH', 'flipV', 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'];
 
@@ -2752,23 +2754,12 @@ EditorUi.prototype.updateActionStates = function()
     var notMenu = shapeNameStr.indexOf('menuCell') == -1 && shapeNameStr.indexOf('menulist') == -1;
     // 判断当前是否是表格
     var isTable = shapeNameStr.indexOf('tableBox') != -1 || shapeNameStr.indexOf('tableCell') != -1;
-  /*   for (var i = 0; i < actions.length; i++)
-    {
-        if (shapeName === 'menuCell' && menuDisabled.indexOf(actions[i]) != -1) { // 单个菜单
-            this.actions.get(actions[i]).setEnabled(!selected);
-        } else {
-            this.actions.get(actions[i]).setEnabled(selected);
-        }
-    } */
 
     this.actions.get('rotation').setEnabled(vertexSelected && shapeName !== 'menuCell');
     this.actions.get('autosize').setEnabled(vertexSelected && !isTable && notMenu);
     var oneVertexSelected = vertexSelected && graph.getSelectionCount() == 1;
-    // 暂时注释掉
-    // this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && (shapeName !== 'menuCell' && shapeName !== 'menulist' && !isTable));
-    // this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 &&
-	// 	(graph.getModel().getChildCount(graph.getSelectionCell()) > 0 ||
-	// 	(oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) &&  shapeName !== "menulist" && !isTable);
+    this.actions.get('group').setEnabled((graph.getSelectionCount() > 1 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && (!isTable && shapeName!='tableCell'));
+    this.actions.get('ungroup').setEnabled(graph.getSelectionCount() == 1 && (graph.getModel().getChildCount(graph.getSelectionCell()) > 0 || (oneVertexSelected && graph.isContainer(graph.getSelectionCell()))) && !isTable && shapeName != 'menulist');
 
     this.actions.get('linkReport').setEnabled(graph.getSelectionCount() == 1 && shapeName === "linkTag");
     this.actions.get('removeFromGroup').setEnabled(oneVertexSelected && graph.getModel().isVertex(graph.getModel().getParent(graph.getSelectionCell())) && notMenu && !isTable);
@@ -2791,25 +2782,10 @@ EditorUi.prototype.updateActionStates = function()
     this.actions.get('selectEdges').setEnabled(unlocked);
     this.actions.get('selectAll').setEnabled(unlocked);
     this.actions.get('selectNone').setEnabled(unlocked);
-
-    // 菜单单元格禁用
-    // var menuCellDisabled = ['copy', 'cut', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
-    // if (shapeName == 'menuCell') {
-    //     for (let i = 0; i < menuCellDisabled.length; i++) {
-    //         this.actions.get(menuCellDisabled[i]).setEnabled(false);
-    //     }
-    // }
-
-    // 表格单元格禁用
-    // var tableCellDisabled = ['copy', 'cut', 'delete', 'duplicate', 'top', 'bottom', 'verticalcenter', 'horizontalcenter', 'verticalalign', 'horizontalalign'];
-    // if (shapeName == 'tableCell') {
-    //     for (let i = 0; i < tableCellDisabled.length; i++) {
-    //         this.actions.get(tableCellDisabled[i]).setEnabled(false);
-    //     }
-    // }
-
+    this.actions.get('lockUnlock').setEnabled(!graph.isSelectionEmpty() && shapeName!=='tableCell' && shapeName!=='menuCell')
+    this.actions.get('lock').setEnabled(graph.isCellMovable(graph.getSelectionCell()) && !graph.isSelectionEmpty() && graph.getSelectionCount() == 1 && shapeName !== 'tableCell' && shapeName !== 'menuCell')
+    this.actions.get('unlock').setEnabled(!graph.isCellMovable(graph.getSelectionCell()) && !graph.isSelectionEmpty() && graph.getSelectionCount() == 1 && shapeName !== 'tableCell' && shapeName !== 'menuCell')
     this.updatePasteActionStates();
-    // this.updatePasteActionStates(shapeName);
 };
 
 /**
@@ -2821,7 +2797,9 @@ EditorUi.prototype.refresh = function(sizeDidChange)
     var quirks = mxClient.IS_IE && (document.documentMode == null || document.documentMode == 5);
     var w = this.container.clientWidth;
     var h = this.container.clientHeight;
-
+    if (h === 0) {
+        return;
+    }
     if (this.container == document.body)
     {
         w = document.body.clientWidth || document.documentElement.clientWidth;
@@ -2960,7 +2938,7 @@ EditorUi.prototype.createDivs = function()
     this.footerContainer = this.createDiv('geFooterContainer');
     //去掉sidebar 右边的创建的直线
     this.hsplit = this.createDiv('geHsplit');
-    this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));
+    //this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));
 
     // 设置样式
     this.menubarContainer.style.top = '0px';
@@ -3069,8 +3047,8 @@ EditorUi.prototype.createUi = function()
 
    /*  if (footer != null)
     {
-        // this.footerContainer.appendChild(footer);
-        // this.container.appendChild(this.footerContainer);
+        this.footerContainer.appendChild(footer);
+        this.container.appendChild(this.footerContainer);
     }
  */
     if (this.sidebar != null && this.sidebarFooterContainer)
@@ -3087,7 +3065,7 @@ EditorUi.prototype.createUi = function()
 
     // 多个toolbar功能区
     var containerList = []
-    for(let i=2;i<7;i++){
+    for(let i=2;i<8;i++){
         containerList.push(document.querySelector('.geToolbar.geToolbar' + i))
     }
     // 创建 toolbar
@@ -3438,6 +3416,7 @@ EditorUi.prototype.isCompatibleString = function(data)
 
 EditorUi.prototype.getIfMulateEdit = function() {
     var ui = this;
+    let resource=window.mxResources
     var editor = ui.editor;
     var id = editor.getApplyId() || sessionStorage.getItem('applyId');
     const objData = {
@@ -3446,7 +3425,7 @@ EditorUi.prototype.getIfMulateEdit = function() {
     };
     editor.ajax(ui, urls.preview.url, 'PUT', objData, (res) => {
     }, (res) => {
-    }, '加载中···', false)
+    }, resource.get('loading'), false)
 }
 /**
  * Adds the label menu items to the given menu and parent.
@@ -3456,19 +3435,19 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
     if (!forceDialog && this.editor.filename != null)
     {
         // 新建保存
-        this.save(this.editor.getOrCreateFilename(), this.editor.getDescribe());
+        this.save();
     }
     else
     {
         if(hideDialog){
-            this.save(this.editor.getOrCreateFilename(), this.editor.getDescribe(),hideDialog)
+            this.save(hideDialog)
             return
         }
         // 编辑保存
-        var dlg = new FilenameDialog(this, this.editor.getOrCreateFilename(), '保存', mxUtils.bind(this, function(name, des)
+        var dlg = new FilenameDialog(this,mxUtils.bind(this, function()
         {
             autoSaveFlagTerry = 0
-            this.save(name, des);
+            this.save()
         }), null, mxUtils.bind(this, function(name)
         {
             if (name != null && name.length > 0)
@@ -3481,44 +3460,42 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
             return false;
         }));
         // 显示弹窗
-        this.showDialog(dlg.container, 410, 266, true, false, null, null, '保存文件');
-        dlg.init();
+        this.showDialog(dlg.container, 410, 266, true, false, null, null, mxResources.get('saveApply'))
+        dlg.init()
     }
 };
 /**
  * 保存成功
  * 和退出当前页面
  */
-EditorUi.prototype.saveSuccess = function (res, hideDialog) {
+EditorUi.prototype.saveSuccess = function (res, hideDialogFlag) {
     this.editor.setFilename(res.studioName)
     this.editor.setDescribe(res.descript)
     this.editor.setApplyId(res.studioId)
+    this.editor.setAppType(res.appType)
     if (res && res.studioId){
         sessionStorage.setItem('applyId',res.studioId)
     }
-    setTimeout(() => {
-        if (!hideDialog){
-            this.hideDialog()
-            this.editor.tipInfo(this, true, '保存');
-        }
-    }, 350);
+    if (!hideDialogFlag) {
+      this.hideDialog();
+      this.editor.tipInfo(this, true, "保存");
+    }
 }
 /**
  * 保存失败
  */
-EditorUi.prototype.saveError = function (res, hideDialog) {
-    setTimeout(() => {
-        if (!hideDialog){
-            this.hideDialog()
-            this.editor.tipInfo(this, null, res.message);
-        }
-    }, 350);
-}
+EditorUi.prototype.saveError = function(res, hideDialogFlag) {
+  if (!hideDialogFlag) {
+    this.hideDialog();
+    this.editor.tipInfo(this, null, res.message);
+  }
+};
 /**
  * 保存当前应用
  */
-EditorUi.prototype.save = function(name, des,hideDialog=false)
+EditorUi.prototype.save = function(hideDialog=false)
 {
+    let resource = window.mxResources
     return new Promise((resolve, reject) => {
         if (name != null)
         {
@@ -3534,13 +3511,16 @@ EditorUi.prototype.save = function(name, des,hideDialog=false)
                 // 页面信息
                 var pages = editor.pages;
                 var data = {
-                    studioName: name,
-                    descript: des,
+                    theme:JSON.stringify(ui.theme),
                     applyCon: editor.pagesNameList().join(),
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
                     lockStatus: 1
                 }
-                var id = editor.getApplyId() || sessionStorage.getItem('applyId')
+                const svgImg = ui.sidebar.getSvgImage();
+                if (svgImg && svgImg.outerHTML) {
+                    data.picUrl = svgImg.outerHTML
+                }  
+                let id = editor.getApplyId() || sessionStorage.getItem('applyId')
                 if (id) {
                     // 编辑保存
                     data.studioId = id
@@ -3557,13 +3537,17 @@ EditorUi.prototype.save = function(name, des,hideDialog=false)
                                 }, (res) => {
                                     this.saveError(res.responseJSON, hideDialog);
                                     reject(res);
-                                }, '加载中···', hideDialog)
+                                }, resource.get('loading'), hideDialog)
                             }
                         }
                     }, (res) => {
                         reject(res);
                     }, true, true)
                 } else {
+                    data.studioName = "新建应用";
+                    data.appType = 0;
+                    data.lengthWidth = "1366*768";
+                    data.classifyId = "5766489a98ca72f47fefbd981295a733";              
                     editor.ajax(ui, urls.preview.url, 'POST', data,(res) => {
                         this.saveSuccess(res,hideDialog);
                         setCookie('saveIotCds', 'post');
@@ -3571,7 +3555,7 @@ EditorUi.prototype.save = function(name, des,hideDialog=false)
                     }, (res) => {
                         this.saveError(res.responseJSON, hideDialog);
                         reject(res);
-                    },'加载中···',hideDialog)
+                    },resource.get('loading'),hideDialog)
                 }
             }
             catch (e)
@@ -3807,7 +3791,6 @@ EditorUi.prototype.createKeyHandler = function(editor)
 
                 if (resize)
                 {
-                    // Resizes all selected vertices
                     graph.getModel().beginUpdate();
                     try
                     {
@@ -4104,7 +4087,7 @@ EditorUi.prototype.createKeyHandler = function(editor)
         keyHandler.bindAction(82, true, 'clearDefaultStyle', true); // Ctrl+Shift+R
         keyHandler.bindAction(83, true, 'save'); // Ctrl+S
         keyHandler.bindAction(79, true, 'publish', true); // Ctrl+Shift+O,
-        keyHandler.bindAction(76, true, 'previewapply', true); // Ctrl+Shift+L,
+        keyHandler.bindAction(80, true, 'previewapply', true); // Ctrl+Shift+P,
         keyHandler.bindAction(65, true, 'selectAll'); // Ctrl+A
         keyHandler.bindAction(65, true, 'selectNone', true); // Ctrl+A
         keyHandler.bindAction(73, true, 'selectVertices', true); // Ctrl+Shift+I
@@ -4121,6 +4104,8 @@ EditorUi.prototype.createKeyHandler = function(editor)
         keyHandler.bindAction(86, true, 'paste'); // Ctrl+V
         keyHandler.bindAction(71, true, 'group'); // Ctrl+G
 		keyHandler.bindAction(85, true, 'ungroup', true); // Ctrl+Shift+U
+        keyHandler.bindAction(76, true, 'lock'); // Ctrl+L
+        keyHandler.bindAction(76, true, 'unlock',true); // Ctrl+Shift+L
         keyHandler.bindKey(13, function() { if (graph.isEnabled()) { graph.startEditingAtCell(); }}); // Enter
     }
 

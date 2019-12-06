@@ -16,6 +16,12 @@ Vue.directive('visible', {
         deal(el, isVisible)
     }
 })
+Vue.directive('focus', {
+    inserted: function(el) {
+        el.focus()
+        el.select()
+    }
+})
 Vue.directive('clickOutSide', {
     bind: function(el, {value}) {
         let clickOutside = value

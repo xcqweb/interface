@@ -612,6 +612,7 @@ Menus.prototype.addMenuItems = function(menu, keys, parent, trigger, sprites)
 Menus.prototype.createPopupMenu = function(menu, cell, evt)
 {
     var graph = this.editorUi.editor.graph;
+    let resource = window.mxResources
     menu.smartSeparators = true;
     // 未选择节点
     if (graph.isSelectionEmpty())
@@ -641,7 +642,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                     }
                     if (shapeName == 'image') {
                         // 编辑图片
-                        this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = '<label class="imageRadio" style="margin:1px 0"><input type="file" id="chooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/>选择图片...</label>';
+                        this.addMenuItem(menu, 'image', null, evt).firstChild.innerHTML = `<label class="imageRadio" style="margin:1px 0"><input type="file" id="chooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/>${resource.get('selectPic')}...</label>`;
                     } else if (shapeName == 'menuCell') {
                         // 菜单
                         this.addMenuItems(menu, ['insertMenuBefore', 'insertMenuAfter', 'delete'], null, evt);

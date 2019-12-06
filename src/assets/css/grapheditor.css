@@ -248,19 +248,6 @@ body ::-webkit-scrollbar-thumb:hover {
 	background:transparent;
 	border-bottom:none;
 }
-/* .geSidebarContainer button {
-	text-overflow:ellipsis;
-	overflow:hidden;
-	height: 26px;
-	color: #3b72a8;
-	border: 1px solid #D4D4D4;
-	border-radius: 2px;
-	background: #fff;
-	margin: 0;
-	padding: 0;
-	cursor: pointer;
-	outline: none;
-} */
 .geToolbarContainer .geToolbar {
 	padding-top: 16px;
 	overflow: hidden;
@@ -285,9 +272,11 @@ body ::-webkit-scrollbar-thumb:hover {
 	width: 110px;
 }
 .geToolbarContainer .geToolbar6 {
+	width: 110px;
+}
+.geToolbarContainer .geToolbar7 {
 	width: 172px;
 }
- 
 .geToolbarContainer .geSeparator {
 	float:left;
 	width:1px;
@@ -393,19 +382,6 @@ div.mxWindow .geButton {
 	height: 16px;
 	cursor: pointer;
 	padding: 8px 7px;
-}
-.geSidebarContainer #primitiveManageTitle {
-	display: none;
-}
-#primitiveManage {
-	margin: 20px 0;
-	border: none;
-}
-#primitiveManage .geItem {
-	margin: 0 10px;
-}
-#primitiveManage .geItemTitle {
-	display: none;
 }
 .geSidebarContainer .geSidebar .pageList li{
 	line-height: 24px;
@@ -699,15 +675,6 @@ div.mxWindow .geButton {
 	border-color: #d6dee1;
 	color: #999999;
 }
-.geDialog .geDialogInfo .primitiveIcon {
-	width: 24px;
-	height: 24px;
-	padding: 5px;
-	margin-right: 24px;
-}
-.geDialog .geDialogInfo .primitiveIcon:hover {
-	background-color: #D9E6F6;
-}
 .geDialog .geDialogInfo select, .geDialog .geDialogInfo input[type="text"] {
 	width: 200px;
 	outline: none;
@@ -795,7 +762,7 @@ div.mxWindow .geButton {
 @media print {
 	div.geNoPrint { display: none !important; }
 }
-.geToolbar3 .geSprite, .geToolbar6 .geSprite, .geToolbar4 .geSprite, .geToolbar5 .geSprite {
+.geToolbar3 .geSprite, .geToolbar6 .geSprite, .geToolbar4 .geSprite, .geToolbar5 .geSprite, .geToolbar7 .geSprite{
 	width: 48px;
 	height: 24px;
 	padding: 4px 16px;
@@ -817,7 +784,10 @@ div.mxWindow .geButton {
 }
 .geSprite-save::after {
 	content: '保存';
-	left: 6px;
+	left: 12px;
+}
+.en .geSprite-save::after {
+	content: 'Save';
 }
 .geSprite-zoomin {
 	background-image: url(../images/menu/zoomin.png);
@@ -826,12 +796,18 @@ div.mxWindow .geButton {
 	content: '缩放';
 	left: 37px;
 }
+.en .geSprite-zoomin::after {
+	content: 'Scale';
+}
 .geSprite-fullscreen {
 	background-image: url(../images/menu/fullscreen.png);
 }
 .geSprite-fullscreen::after {
 	content: '全屏';
 	left: 0;
+}
+.en .geSprite-fullscreen::after {
+	content: 'Full';
 }
 .geSprite-zoomout {
 	background-image: url(../images/menu/zoomout.png);
@@ -844,6 +820,10 @@ div.mxWindow .geButton {
 	content: '撤销';
 	left: 13px;
 }
+.en .geSprite-undo::after {
+	content: 'Undo';
+	left: 8px;
+}
 .geSprite-redo {
 	background-image: url(../images/menu/redo.png);
 }
@@ -851,9 +831,17 @@ div.mxWindow .geButton {
 	content: '重做';
 	left: 13px;
 }
+.en .geSprite-redo::after {
+	content: 'Redo';
+	left: 9px;
+}
 .geSprite-align::after {
 	content: '对齐';
 	left: 13px;
+}
+.en .geSprite-align::after {
+	content: 'Align';
+	left: 6px;
 }
 .page-tab::after {
 	content: "页面";
@@ -862,13 +850,16 @@ div.mxWindow .geButton {
 	top: 24px;
 }
 .en .page-tab::after {
-	content: 'page';
+	content: 'Page';
 }
 .data-tab::after {
 	content: "数据源";
 	position: relative;
 	font-size: 12px;
 	top: 24px;
+}
+.en .data-tab::after {
+	content: "Data";
 }
 .geSprite-left-align {
 	background-image: url(../images/menu/align_left_ic.png);
@@ -917,12 +908,19 @@ div.mxWindow .geButton {
 	content: '顶层';
 	left: 10px;
 }
+.en .geSprite-tofront::after {
+	content: 'Top';
+}
 .geSprite-toback {
 	background-image: url(../images/menu/toback.png);
 }
 .geSprite-toback::after {
 	content: '底层';
 	left: 10px;
+}
+.en .geSprite-toback::after {
+	content: 'Bottom';
+	left: 3px;
 }
 .geSprite-group {
 	background-image: url(../images/menu/group.png);
@@ -931,12 +929,41 @@ div.mxWindow .geButton {
 	content: '组合';
 	left: 13px;
 }
+.en .geSprite-group::after {
+	content: 'Group';
+	left: 6px;
+}
 .geSprite-ungroup {
 	background-image: url(../images/menu/ungroup.png);
 }
 .geSprite-ungroup::after {
 	content: '取消组合';
 	left: 0px;
+}
+.en .geSprite-ungroup::after {
+	content: 'Ungroup';
+	transform: scale(0.9);
+}
+.geSprite-lock {
+	background-image: url(../images/menu/lock.png);
+}
+.geSprite-lock::after {
+	content: '锁定';
+	left: 13px;
+}
+.en .geSprite-lock::after {
+	content: 'Lock';
+	left: 10px;
+}
+.geSprite-unlock {
+	background-image: url(../images/menu/unlock.png);
+}
+.geSprite-unlock::after {
+	content: '解锁';
+}
+.en .geSprite-unlock::after {
+	content: 'Unlock';
+	left: 6px;
 }
 .geSprite-linkreport {
 	background-image: url(/static/images/menu/link.png);
@@ -950,7 +977,12 @@ div.mxWindow .geButton {
 }
 .geSprite-preview::after {
 	content: '预览';
-	left: 6px;
+	left: 12px;
+}
+.en .geSprite-preview::after {
+	content: 'Preview';
+	transform: scale(0.9);
+	left: 3px;
 }
 .geSprite-material {
 	background-image: url(../images/menu/materiallibrary_ic.png);
@@ -960,12 +992,9 @@ div.mxWindow .geButton {
 	content: '素材库';
 	left: 6px;
 }
-.geSprite-publish {
-	background-image: url(/static/images/menu/publish.png);
-}
-.geSprite-publish::after {
-	content: '发布';
-	left: 6px;
+.en .geSprite-material::after {
+	content: 'Lib';
+	left: 16px;
 }
 .geSprite-limit {
 	cursor: pointer;
@@ -1399,10 +1428,6 @@ input.inputTag {
 	color: #fff;
 	background-color: #3D91F7;
 }
-#pageContextMenu li:nth-of-type(2), #pageContextMenu li:nth-of-type(4) {
-	margin-bottom: 6px;
-	/* border-bottom: 1px solid #cccccc; */
-}
 .formatPannel {
 	height: calc(100% - 34px);
 	overflow-x: hidden;
@@ -1616,3 +1641,142 @@ input.inputTag {
  .progressbar-wrap .progressbar {
  	position: relative;
  }
+ .widget-chart {
+	 position: fixed !important;
+	 width:100%;
+	 height:100%;
+ }
+ .menu-pos-con-dlg{
+	display: flex;
+	align-items:center;
+ }
+ .menu-pos-con-dlg .menu-pos-con{
+	width:48px;
+	height: 48px;
+	border-radius: 2px;
+	border:solid 1px #C5C5C5;
+	display: flex;
+	align-items: start;
+	justify-content: center;
+	cursor: pointer;
+ }
+ .menu-left-cls {
+	margin-top:7px;
+	width:36px;
+	background: url(../images/menu/menu-pos-left.png);
+	background-size: 100% 100%;
+}
+ .menu-left-cls::after{
+	content:'左侧';
+	position: relative;
+	bottom:-17px;
+	left:6px;
+	font-size:12px;	
+ }
+.en .menu-left-cls::after{
+	content:'Left'
+}
+  .menu-top-cls {
+	margin-top:7px;
+	width:36px;
+	background: url(../images/menu/menu-pos-top.png);
+	background-size: 100% 100%;
+}
+ .menu-top-cls::after{
+	content:'顶部';
+	position: relative;
+	bottom:-17px;
+	left:6px;
+	font-size:12px;	
+ }
+ .en .menu-top-cls::after{
+	content:'Top'
+}
+ .menu-pos-con.check{
+	border:solid 2px #3D91F7;
+ }
+ .menu-left-cls.check{
+	margin-top:6px;
+ }
+  .menu-top-cls.check{
+	margin-top:6px;
+ }
+ .menu-style-con{
+	flex:2;
+ }
+ .menu-style-con li{
+	width:36px;
+	height:36px;
+	display: inline-block;
+	padding:2px;
+	border:1px solid #C5C5C5;
+	border-radius:2px;
+	margin-right: 10px;
+	cursor: pointer;
+ }
+ .menu-style-con li.check{
+	 border:2px solid #3D91F7;
+ }
+ .menu-style-con li .menu1{
+	height: 100%;
+	background:#161D21;
+ }
+ .menu-style-con li .menu2{
+	height: 100%;
+	background:#4672A5;
+ }
+ .menu-style-con li .menu3{
+	height: 100%;
+	background:#2E6F1D;
+ }
+ .menu-style-con li .menu4{
+	height: 100%;
+	background:#D9D9D9;
+ }
+ .menu-config-switch{
+	width: 49px;
+	height: 24px;
+	position: relative;
+	border: 1px solid #dfdfdf;
+	background-color: #fdfdfd;
+	box-shadow: #dfdfdf 0 0 0 0 inset;
+	border-radius: 20px;
+	background-clip: content-box;
+	display: inline-block;
+	-webkit-appearance: none;
+	user-select: none;
+	outline: none;
+}
+.menu-config-switch:before {
+	content: '';
+	width: 22px;
+	height: 22px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	border-radius: 20px;
+	background-color: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.menu-config-switch:checked {
+	border-color: #3D91F7;
+	box-shadow: #3D91F7 0 0 0 16px inset;
+	background-color: #3D91F7;
+}
+.menu-config-switch:checked:before {
+	left: 26px;
+}
+.menu-config-switch.menu-config-switch-anim {
+	transition: border cubic-bezier(0, 0, 0, 1) 0.4s, box-shadow cubic-bezier(0, 0, 0, 1) 0.4s;
+}
+.menu-config-switch.menu-config-switch-anim:before {
+	transition: left 0.3s;
+}
+.menu-config-switch.menu-config-switch-anim:checked {
+	box-shadow: #3D91F7 0 0 0 16px inset;
+	background-color: #3D91F7;
+	transition: border ease 0.4s, box-shadow ease 0.4s, background-color ease 1.2s;
+}
+.menu-config-switch.menu-config-switch-anim:checked:before {
+	transition: left 0.3s;
+}

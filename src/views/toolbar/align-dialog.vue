@@ -2,9 +2,8 @@
   <div
     v-clickOutSide="hideDialog"
     class="mxPopupMenu geToolbarMenu"
-    style="display: inline; z-index:22; left:49.9%; top: 38px;"
+    style="display: inline; z-index:22; left:42.4%; top: 40px;"
     @mouseleave="hideDialog()"
-    @blur="hideDialog()"
   >
     <table class="mxPopupMenu">
       <tbody>
@@ -37,14 +36,14 @@ export default{
     data() {
         return {
             alignList:[
-                {cls:'geSprite-left-align',text:'左对齐'},
-                {cls:'geSprite-right-align',text:'右对齐'},
-                {cls:'geSprite-top-align',text:'上对齐'},
-                {cls:'geSprite-bottom-align',text:'下对齐'},
-                {cls:'geSprite-vertical-center',text:'垂直居中对齐'},
-                {cls:'geSprite-horizon-center',text:'水平居中对齐'},
-                {cls:'geSprite-vertical-align',text:'垂直等间距'},
-                {cls:'geSprite-horizon-align',text:'水平等间距'},
+                {cls:'geSprite-left-align',text:this.$t('alignLeft')},
+                {cls:'geSprite-right-align',text:this.$t('alignRight')},
+                {cls:'geSprite-top-align',text:this.$t('alignTop')},
+                {cls:'geSprite-bottom-align',text:this.$t('alignBottom')},
+                {cls:'geSprite-vertical-center',text:this.$t('alignVerticalCenter')},
+                {cls:'geSprite-horizon-center',text:this.$t('alignHorizonCenter')},
+                {cls:'geSprite-vertical-align',text:this.$t('alignVerticalSpace')},
+                {cls:'geSprite-horizon-align',text:this.$t('alignHorizonSpace')},
             ],
             classTtype:[],
         }

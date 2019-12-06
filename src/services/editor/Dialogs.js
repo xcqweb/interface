@@ -32,6 +32,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
     input.style.border = '1px solid #D4D4D4';
     input.style.backgroundColor = '#fff';
     input.style.borderRadius = '2px';
+    input.setAttribute('spellcheck',"false")
     //input.setAttribute('disabled',"");
 
     var rect = document.createElement('input')
@@ -189,7 +190,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
             defaultColor.style.margin = '6px 0 3px 0';
             defaultColor.style.fontSize = '12px';
             defaultColor.style.color = '#252525';
-            defaultColor.innerText = '最近使用';
+            defaultColor.innerText = mxResources.get('recentlyUsed');
             odiv.appendChild(defaultColor);
         }
         return odiv;
@@ -201,7 +202,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
     defaultColor.style.margin = '6px 0 3px 0';
     defaultColor.style.fontSize = '12px';
     defaultColor.style.color = '#252525';
-    defaultColor.innerText = '默认颜色';
+    defaultColor.innerText = mxResources.get('defaultColor');
     div.appendChild(defaultColor);
     // Adds presets 默认
     addPresets(this.presetColors,9,'#FFFFFF', true, !isShowBtn);
@@ -424,220 +425,147 @@ var valueDialog = function(editorUi, filename, titleText, buttonText, fn) {
     saveContent.appendChild(btnContent)
     this.container = saveContent;
 }
+function dealDefaultThem(editorUi){
+    if (!editorUi.theme) {
+        editorUi.theme = {
+            position: 1,
+            style: 1,
+            status: 1
+        }
+        if (editorUi.isOldApply) {
+            //老应用，默认不启用菜单
+            editorUi.theme.status = 0
+        }
+    }
+}
 /**
  * 保存文件弹窗
  */
-let FilenameDialog = function(editorUi, filename, buttonText, fn, label, validateFn, content, helpLink, closeOnBtn, cancelFn)
+let FilenameDialog = function(editorUi,fn, closeOnBtn, cancelFn)
 {
-    closeOnBtn = (closeOnBtn != null) ? closeOnBtn : true;
-	
+    closeOnBtn = (closeOnBtn != null) ? closeOnBtn : true
     var saveContent = editorUi.createDiv('geDialogInfo')
-    // 文件名称
-    var nameTitle = document.createElement('p')
-    nameTitle.innerHTML = '文件名称'
-    nameTitle.className = 'geDialogInfoTitle';	
-    saveContent.appendChild(nameTitle)
-	
-    var nameInput = document.createElement('input');
-    nameInput.setAttribute('value', filename || '');
-    nameInput.className = 'saveFileInput'
-    saveContent.appendChild(nameInput)
+    dealDefaultThem(editorUi)
+    saveContent.style.padding="20px 20px 0 20px"
+    //默认导航是否启用
+    let defaultConfigMenu = document.createElement('div')
+    defaultConfigMenu.innerHTML = `<div style="font-size:14px;color:#929292;flex:1;">${mxResources.get('defaultMenu')}</div>
+        <div style="flex:2"><input type="checkbox" class="menu-config-switch menu-config-switch-anim" ${editorUi.theme.status == 1 ? 'checked' : ''}></div>`;
+    defaultConfigMenu.style.cssText = "display:flex;height:24px;align-items:center;"
+    saveContent.appendChild(defaultConfigMenu)
 
-    // 文件描述
-    var desTitle = document.createElement('p');
-    desTitle.innerHTML = '文件描述';
-    desTitle.style.margin = "9px 0 5px";
-    desTitle.style.color = "#929292";
-    saveContent.appendChild(desTitle)
-	
-    var descInput = document.createElement('input');
-    descInput.setAttribute('value', editorUi.editor.getDescribe() || '');
-    descInput.className = 'saveFileInput'
-    saveContent.appendChild(descInput)
+    let menuPosMsgCon = document.createElement("div")
+    menuPosMsgCon.style.display = editorUi.theme.status == 1 ? "block" : "none"
 
+    $(defaultConfigMenu).on("change", "input", function() {
+       if ($(this).prop("checked")) {
+          editorUi.theme.status = 1
+          menuPosMsgCon.style.display = 'block'
+          $(".geDialog").css("minHeight", "266px")
+       } else {
+          editorUi.theme.status = 0
+          menuPosMsgCon.style.display = "none"
+          $(".geDialog").css('minHeight','auto')
+       }
+     })
+    this.init = function() {
+        if(editorUi.theme.status !=1){
+            $(".geDialog").css("minHeight", "auto")
+        }
+    }
+    // 导航位置
+    let menuPosCon = document.createElement('div')
+    menuPosMsgCon.style.marginTop='15px'
+    menuPosCon.innerHTML = `<span style="font-size:14px;color:#929292;flex:1;">${mxResources.get('menuPosition')}</span>
+    <div style="flex:2;display:flex;">
+        <div class="menu-pos-con ${editorUi.theme.position == 1 ? 'check' : ''}">
+            <div class="menu-left-cls check"></div>
+        </div>
+        <div class="menu-pos-con ${editorUi.theme.position == 2 ? 'check' : ''}" style="margin-left:20px;">
+            <div class="menu-top-cls"><div>
+        </div>
+    </div>`;
+    menuPosCon.className = 'menu-pos-con-dlg'
+    menuPosMsgCon.appendChild(menuPosCon)
+    $(menuPosCon).on('click','.menu-pos-con',(evt)=>{
+        let el = evt.currentTarget
+        $(el).addClass('check').siblings().removeClass('check')
+    })
+ 
+    // 导航风格
+    let menuStyleCon = document.createElement('div')
+    menuStyleCon.style.marginTop="15px"
+    menuStyleCon.innerHTML = `<span style="font-size:14px;color:#929292;flex:1;">${mxResources.get('menuStyle')}</span>
+    <ul class='menu-style-con'>
+        <li class="${editorUi.theme.style == 1 ? 'check' : ''}"><div class="menu1"></div></li>
+        <li class="${editorUi.theme.style == 2 ? 'check' : ''}"><div class="menu2"></div></li>
+        <li class="${editorUi.theme.style == 3 ? 'check' : ''}"><div class="menu3"></div></li>
+        <li class="${editorUi.theme.style == 4 ? 'check' : ''}"><div class="menu4"></div></li>
+    </ul>
+    `
+    menuStyleCon.className = 'menu-pos-con-dlg'
+    menuPosMsgCon.appendChild(menuStyleCon)
+    $(menuStyleCon).on('click', 'li', (evt) => {
+        let el = evt.currentTarget
+        $(el).addClass('check').siblings().removeClass('check')
+    })
+    saveContent.appendChild(menuPosMsgCon)
     // 按钮
-    var btnContent = editorUi.createDiv('btnContent');
-    var genericBtn = mxUtils.button(buttonText, function()
-    {
-        if (validateFn == null || validateFn(nameInput.value))
-        {			
-            fn(nameInput.value, descInput.value);
-        }
+    var btnContent = editorUi.createDiv('btnContent')
+    btnContent.style.marginTop="5px"
+    btnContent.style.marginBottom='25px'
+    var genericBtn = mxUtils.button(mxResources.get('save'), function()
+    {   
+        $(".menu-pos-con").each((index, item) => {
+            if ($(item).hasClass('check')) {
+                editorUi.theme.position = index + 1
+                return false
+            }
+        })
+        $(".menu-style-con li").each((index,item)=>{
+            if($(item).hasClass('check')){
+                editorUi.theme.style = index + 1
+                return false
+            }
+        })
+        fn()
     });
-    genericBtn.className = 'geBtn gePrimaryBtn';
-	
-    this.init = function()
-    {
-        if (label == null && content != null)
-        {
-            return;
-        }
-		
-        nameInput.focus();
-		
-        if (mxClient.IS_GC || mxClient.IS_FF || document.documentMode >= 5 || mxClient.IS_QUIRKS)
-        {
-            nameInput.select();
-        }
-        else
-        {
-            document.execCommand('selectAll', false, null);
-        }
-		
-        // Installs drag and drop handler for links
-        if (Graph.fileSupport)
-        {
-            // Setup the dnd listeners
-            var dlg = saveContent.parentNode;
-            var graph = editorUi.editor.graph;
-            var dropElt = null;
-            mxEvent.addListener(dlg, 'dragleave', function(evt)
-            {
-                if (dropElt != null)
-			    {
-                    dropElt.style.backgroundColor = '';
-			    	dropElt = null;
-			    }
-			    
-                evt.stopPropagation();
-                evt.preventDefault();
-            });
-			
-            mxEvent.addListener(dlg, 'dragover', mxUtils.bind(this, function(evt)
-            {
-                // IE 10 does not implement pointer-events so it can't have a drop highlight
-                if (dropElt == null && (!mxClient.IS_IE || document.documentMode > 10))
-                {
-                    dropElt = nameInput;
-                    dropElt.style.backgroundColor = '#ebf2f9';
-                }
-				
-                evt.stopPropagation();
-                evt.preventDefault();
-            }));
-					
-            mxEvent.addListener(dlg, 'drop', mxUtils.bind(this, function(evt)
-            {
-			    if (dropElt != null)
-			    {
-                    dropElt.style.backgroundColor = '';
-			    	dropElt = null;
-			    }
-
-			    if (mxUtils.indexOf(evt.dataTransfer.types, 'text/uri-list') >= 0)
-			    {
-			    	nameInput.value = decodeURIComponent(evt.dataTransfer.getData('text/uri-list'));
-			    	genericBtn.click();
-			    }
-
-			    evt.stopPropagation();
-			    evt.preventDefault();
-            }));
-        }
-    };
+    genericBtn.className = 'geBtn gePrimaryBtn'
     var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
     {
-        editorUi.hideDialog();
+        editorUi.hideDialog()
 		
         if (cancelFn != null)
         {
-            cancelFn();
+            cancelFn(mxResources.get('cancel'))
         }
     });
-    cancelBtn.className = 'geBtn';
-	
-    if (editorUi.editor.cancelFirst)
-    {
-        btnContent.appendChild(cancelBtn);
-    }
-	
-    if (helpLink != null)
-    {
-        var helpBtn = mxUtils.button(mxResources.get('help'), function()
-        {
-            editorUi.editor.graph.openLink(helpLink);
-        });
-		
-        helpBtn.className = 'geBtn';	
-        btnContent.appendChild(helpBtn);
-    }
-
-    mxEvent.addListener(nameInput, 'keypress', function(e)
-    {
-        if (e.keyCode == 13)
-        {
-            genericBtn.click();
-        }
-    });
-	
-    btnContent.appendChild(genericBtn);
-	
-    if (!editorUi.editor.cancelFirst)
-    {
-        btnContent.appendChild(cancelBtn);
-    }
+    cancelBtn.className = 'geBtn'
+    btnContent.appendChild(cancelBtn)
+    btnContent.appendChild(genericBtn)
     saveContent.appendChild(btnContent)
-    this.container = saveContent;
+    this.container = saveContent
 };
 /**
  * 发布弹窗
  */
-let PreviewDialog = function(editorUi,callback) {
+let PreviewDialog = function(editorUi,fun) {
     var saveContent = editorUi.createDiv('geDialogInfo');
     // 链接
     var nameTitle = document.createElement('p')
-    nameTitle.innerHTML = '保存并预览该应用？';
+    nameTitle.innerHTML = `${mxResources.get('savePreviewApply')}?`;
     nameTitle.className = 'geDialogInfoTitle';
     saveContent.appendChild(nameTitle)
 
-    // 保存按钮
-    var btnContent = editorUi.createDiv('btnContent');
-    var genericBtn = mxUtils.button('保存并预览', function()
-    {
-        autoSaveFlagTerry = 0
-        editorUi.save(editorUi.editor.filename || '新建应用', editorUi.editor.describe || '').then(res => {
-            callback(res.studioId)
-            editorUi.hideDialog()
-        })
-    });
-    genericBtn.className = 'geBtn gePrimaryBtn';
-    // 取消按钮
-    var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
-    {
-        editorUi.hideDialog();
-    });
-    cancelBtn.className = 'geBtn';
-    btnContent.appendChild(cancelBtn);
-    btnContent.appendChild(genericBtn);
-	
-    saveContent.appendChild(btnContent)
-    this.container = saveContent;
-}
-/**
- * 发布弹窗
- */
-let PublishDialog = function(editorUi) {
-    var saveContent = editorUi.createDiv('geDialogInfo');
-    let editor = editorUi.editor;
-    // 链接
-    var nameTitle = document.createElement('p')
-    nameTitle.innerHTML = '发布之后，生成的应用将在平台展示。';
-    nameTitle.className = 'geDialogInfoTitle';
-    saveContent.appendChild(nameTitle)
+    autoSaveFlagTerry = 0
+    dealDefaultThem(editorUi)
+    editorUi.save(true)
 
     // 保存按钮
     var btnContent = editorUi.createDiv('btnContent');
-    var genericBtn = mxUtils.button('保存并发布', function()
-    {
-        editorUi.hideDialog();
-        editorUi.save(editor.filename, editor.describe).then(res => {
-            editor.ajax(editorUi, '/api/viewtool/publish/' + editor.getApplyId() + '/1', 'PUT', null, function() {
-                editor.tipInfo(editorUi, true, '发布');
-            }, function() {
-                editor.tipInfo(editorUi, false, '发布');
-            });
-            editorUi.hideDialog();
-        });
+    var genericBtn = mxUtils.button(mxResources.get('preview'), function(){
+        fun()
+        editorUi.hideDialog()
     });
     genericBtn.className = 'geBtn gePrimaryBtn';
     // 取消按钮
@@ -1959,6 +1887,6 @@ var LayersWindow = function(editorUi, x, y, w, h)
 };
 
 export {
-    OpenDialog, ColorDialog, AboutDialog, valueDialog,PreviewDialog, PublishDialog, tipDialog, ImageDialog,
+    OpenDialog, ColorDialog, AboutDialog, valueDialog,PreviewDialog, tipDialog, ImageDialog,
     addPageDialog,EditDiagramDialog, LinkDialog, OutlineWindow, LayersWindow, FilenameDialog
 }

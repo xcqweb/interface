@@ -1,9 +1,8 @@
-import VueEvent from '../services/VueEvent.js'
 const state = {
     type:0,//0=页面 1=弹窗 2=普通控件
     widgetInfo:{},//当前组件信息
     rand:0,//监听控件切换的刷新 随机数字
-    modelEditing: true, // 模型是否处于编辑状态
+    modelEditing: false, // 模型是否处于编辑状态
     footerModelUpdata: false // 是否刷新底部状态模型
 }
 
@@ -21,11 +20,11 @@ const mutations = {
         let geo = graph.model.getGeometry(cell)
         let shapeInfo = stateWidget && stateWidget.style
         widgetInfo.shapeInfo = shapeInfo
-
         let cellInfo = graph.getModel().getValue(cell)
-        let widgetName = cellInfo && cellInfo.attributes && cellInfo.attributes['palettename'] && cellInfo.attributes['palettename'].nodeValue || '' //控件名称
-        widgetInfo.widgetName = widgetName
-
+        if (cellInfo && cellInfo.attributes && cellInfo.attributes['palettename']) {
+            let widgetName = cellInfo.attributes['palettename'].nodeValue || '' //控件名称
+            widgetInfo.widgetName = widgetName
+        }
         let edgeArr = new Array(2).fill(0)
         let edgeInfo = 1 //没有直线
         let cellsSameFlagEdge = { //选中多个控件时候，如果位置大小相同就显示值，否则显示空
@@ -144,12 +143,13 @@ const mutations = {
         let fontSize = 12
         let isSetBold = false
         let color = '',bgColor = '',borderColor = '',borderBold = 1
-        let align = mxConstants.ALIGN_CENTER,valign = mxConstants.ALIGN_MIDDLE,borderLineCls,arrow1,arrow2
+        let align = mxConstants.ALIGN_CENTER, valign = mxConstants.ALIGN_MIDDLE, borderLineCls, arrow1, arrow2, lock, arcSize
         if (stateWidget) {
             fontSize = parseFloat(mxUtils.getValue(stateWidget.style, mxConstants.STYLE_FONTSIZE, 0));
             isSetBold = mxUtils.getValue(stateWidget.style, 'fontStyle', 0) === 1
             color = mxUtils.getValue(stateWidget.style, 'fontColor', null)
             bgColor = mxUtils.getValue(stateWidget.style, 'fillColor', null)
+            arcSize = mxUtils.getValue(stateWidget.style, 'arcSize', 0)
             borderColor = mxUtils.getValue(stateWidget.style, 'strokeColor', null)
             if(shapeInfo.shape.includes('image')) {
                 borderColor = mxUtils.getValue(stateWidget.style, 'imageBorder', "#000000")
@@ -162,11 +162,14 @@ const mutations = {
                 arrow1 = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_STARTARROW, null)
                 arrow2 = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_ENDARROW, null)
             }
+            lock = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_MOVABLE,1)
+            widgetInfo.lock = lock
         }
         widgetInfo.fontSize = fontSize
         widgetInfo.isSetBold = isSetBold
         widgetInfo.color = color
         widgetInfo.bgColor = bgColor
+        widgetInfo.arcSize = arcSize
         widgetInfo.borderColor = borderColor
         widgetInfo.borderBold = borderBold
         widgetInfo.align = align
@@ -191,14 +194,6 @@ const mutations = {
 
         let temp = Object.assign({},state.widgetInfo, widgetInfo)
         state.widgetInfo = temp
-        cells.forEach(item => {
-            if (graph.model.isEdge(item)) {
-                VueEvent.$emit('edgePropsUpdate', {
-                    geo: dealEdgePosition(item),
-                    cell: item
-                })
-            }
-        })
     },
     widgetChange(state,rand) {
         state.rand = rand

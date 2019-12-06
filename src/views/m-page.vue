@@ -15,6 +15,7 @@
 
 <script>
 //mxgraph editor
+
 import '../services/editor/Init'
 import '../services/editor/EditorUi'
 import '../services/editor/Editor'
@@ -27,7 +28,7 @@ import '../services/editor/Menus'
 import '../services/editor/Toolbar'
 import '../services/editor/Dialogs'
 
-import {Graph,Editor,EditorUi,mxEvent,mxUtils,mxResources} from '../services/mxGlobal'
+import {Editor,EditorUi,mxEvent,mxUtils,mxResources} from '../services/mxGlobal'
 import Toolbar from './toolbar/toolbar'
 import LeftSideBar from './left-sidebar/left-sidebar'
 import RightBar from './rightbar/rightbar'
@@ -48,24 +49,68 @@ export default {
         }
     },
     created() {
-        mxUtils.getAll(['../static/resources/grapheditor.txt', '../static/default.xml'],xhr=> {
+        mxUtils.getAll([mxResources.getSpecialBundle(window.RESOURCES_PATH,window.mxLanguage), '../static/default.xml'],xhr=> {
             mxResources.parse(xhr[0].getText())
             // 默认配置
             var themes = new Object()
-            themes[Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement()
+            themes[window.Graph.prototype.defaultThemeName] = xhr[1].getDocumentElement()
             // 正常实例化
             let myEditor = new Editor(false, themes)
             let myEditorUi = new EditorUi(myEditor,document.querySelector(".geEditor"))
             myEditorUi.editor.InitEditor(myEditorUi).then(res => {
+                const page = {
+                    width: 1366,
+                    height: 768
+                }
+                const dialog = {
+                    width: 600,
+                    height: 400
+                }
                 // 编辑
                 if (res[1]) {
-                    var editData = res[1]
-                    var content = JSON.parse(editData.content)
-                    myEditorUi.editor.pages = content.pages
-                    myEditorUi.editor.pagesRank = content.rank
+                    const editData = res[1]
+                    // pc默认1366*768，mobile默认360*640
+                    if (!editData.lengthWidth) {
+                        myEditorUi.isOldApply = true
+                        if (editData.appType === 1) {
+                            editData.lengthWidth = '360*640'
+                        } else {
+                            editData.lengthWidth = '1366*768'
+                        }
+                    }
+                    const lengthWidth = editData.lengthWidth.split('*')
+                    page.width = lengthWidth[0] * 1
+                    page.height = lengthWidth[1] * 1
+                    if (editData.appType === 1) {
+                        // 移动端应用，弹窗页面的宽度跟页面宽度一样
+                        dialog.width = page.width * 2 / 3 
+                        dialog.height = page.height * 2 / 3
+                    }
+                    myEditor.defaultXml[0] = myEditor.createPageXml(page.width, page.height)
+                    myEditor.defaultXml[1] = myEditor.createPageXml(dialog.width, dialog.height)
+                    if (editData.content) {
+                        const content = JSON.parse(editData.content)
+                        myEditorUi.editor.pages = content.pages
+                        myEditorUi.editor.pagesRank = content.rank
+                    }else{
+                        myEditor.pages.pageid_1.title = this.$t('page')
+                        myEditor.pages.pageid_2.title = this.$t('popup')
+                        if (!myEditor.pages.pageid_1.xml) {
+                            myEditor.pages.pageid_1.xml = myEditor.defaultXml[0]
+                        }
+                        if (!myEditor.pages.pageid_2.xml) {
+                            myEditor.pages.pageid_2.xml = myEditor.defaultXml[1]
+                        }
+                    }
                     myEditorUi.editor.setFilename(editData.studioName)
                     myEditorUi.editor.setApplyId(editData.studioId)
+                    myEditorUi.editor.setAppType(editData.appType)
                     myEditorUi.editor.setDescribe(editData.descript)
+                    if(editData.theme) {
+                        myEditorUi.theme = JSON.parse(editData.theme)
+                    }else{
+                        myEditorUi.theme = null
+                    }
                 }
                 Vue.prototype.myEditorUi = myEditorUi
                 this.init()
@@ -88,10 +133,6 @@ export default {
             this.$refs.toolbar.init();
             this.$refs.leftsidebar.init();
             this.$refs.rightbar.init()
-            let applyId = sessionStorage.getItem('applyId')
-            if(!applyId) {
-                this.myEditorUi.saveFile(true,true)
-            }
             timer = setInterval(()=> {
                 this.myEditorUi.saveFile(true,true)
             },1000 * 60 * 1)//1分钟自动保存一次

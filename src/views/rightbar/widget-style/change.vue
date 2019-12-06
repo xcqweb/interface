@@ -4,7 +4,7 @@
       style="height:42%;"
     >
       <p style="margin-bottom: 2px;margin-top:10px;">
-        选择组件
+        {{ $t('rightBar.chooseWidget') }}
       </p>
       <ul class="widget-con">
         <li
@@ -22,7 +22,7 @@
       style="height:25%;"
     >
       <p style="margin-bottom: 2px;margin-top:10px;">
-        选择状态
+        {{ $t('rightBar.chooseState') }}
       </p>
       <ul
         class="widget-con"
@@ -43,13 +43,13 @@
         class="mutual-btn"
         @click="hide()"
       >
-        取消
+        {{ $t('cancel') }}
       </button>
       <button
         class="mutual-btn selected"
         @click="submit()"
       >
-        提交
+        {{ $t('submit') }}
       </button>
     </div>
   </div>
@@ -65,6 +65,7 @@ export default{
     data() {
         return {
             isWidgetClick:false,
+            isEdit:false,
             states:[]
         }
     },
@@ -83,6 +84,7 @@ export default{
         },
         checkCurrent(currentEditItem) { //当前控件和状态选中
             this.isWidgetClick = true
+            this.isEdit = true //编辑模式
             this.currentPageWidgets.forEach(d=>{
                 if(d.id == currentEditItem.id) {
                     d.selected = true
@@ -107,11 +109,11 @@ export default{
         submit() {
             let sameFlag = false
             if(!currentWidgetItem) {
-                tipDialog(this.myEditorUi,`请选择要切换状态的控件`)
+                tipDialog(this.myEditorUi,`${this.$t('rightBar.chooseChangeStateOfWidget')}`)
                 return
             }
             if(!currentStateItem) {
-                tipDialog(this.myEditorUi,`请选择要绑定的状态`)
+                tipDialog(this.myEditorUi,`${this.$t('rightBar.chooseStateToBind')}`)
                 return
             }
             for(let i = 0;i < this.bindActions.length;i++) {
@@ -129,7 +131,7 @@ export default{
                 tipDialog(this.myEditorUi,`该控件已经绑定了${currentStateItem.name}状态`)
                 return
             } 
-            this.$emit("submitMutual",{mutualType:3,id:currentWidgetItem.id,innerType:"palette",stateInfo:currentStateItem})
+            this.$emit("submitMutual",{mutualType:3,id:currentWidgetItem.id,innerType:"palette",stateInfo:currentStateItem,isEdit:this.isEdit})
         },
         checkWidget(item) {
             currentWidgetItem = item
@@ -162,8 +164,8 @@ export default{
             if(!states.length) {
                 states = [{
                     "id":'state_0',
-                    "name":"默认",
-                    "desc":'默认',
+                    "name":`${this.$t('defaultText')}`,
+                    "desc":`${this.$t('defaultText')}`,
                     'animateCls':'',
                     "style":{
                         background:this.$store.state.main.widgetInfo.bgColor,

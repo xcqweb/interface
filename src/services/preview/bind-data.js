@@ -1,33 +1,33 @@
-import {geAjax,toDecimal2NoZero,dealLightFill,throttleFun} from './util'
-import {getCookie,throttle} from '../Utils'
+import {geAjax, toDecimal2NoZero, dealLightFill, timeFormate} from './util'
+import {getCookie} from '../Utils'
 import echarts from 'echarts'
 
 //获取websocket连接信息
 let websocketUrlReal = ''
 //获取最后一笔数据
-async function getLastData(pointParams, fileSystem) {
-    let params = []
-    let maps = dealPointParams(pointParams)
+async function getLastData(deviceParams, fileSystem) {
+    let paramIds = []
+    let maps = dealdeviceParams(deviceParams)
     for (let item of maps.values()) {
-        params.push(item)
+        paramIds.push(item)
     }
-    const res = await geAjax('/api/persist/opentsdb/point/last', 'POST', JSON.stringify(params))
+    const res = await geAjax('/api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(paramIds))
     setterRealData(res,fileSystem)
 }
 
-function dealPointParams(pointParams) {
+function dealdeviceParams(deviceParams) {
     let maps = new Map()
-    pointParams.forEach(item => {
+    deviceParams.forEach(item => {
         let obj = {
-            pointId: item.pointId,
-            keys: item.params
+            deviceId: item.deviceId,
+            paramIds: item.params
         }
-        if (maps.has(item.pointId)) {
-            let tempObj = maps.get(item.pointId)
-            tempObj.keys = Array.from(new Set(tempObj.keys.concat(obj.keys)))
-            maps.set(item.pointId, tempObj)
+        if (maps.has(item.deviceId)) {
+            let tempObj = maps.get(item.deviceId)
+            tempObj.paramIds = Array.from(new Set(tempObj.paramIds.concat(obj.paramIds)))
+            maps.set(item.deviceId, tempObj)
         } else {
-            maps.set(item.pointId, obj)
+            maps.set(item.deviceId, obj)
         }
     })
     return maps
@@ -38,16 +38,16 @@ function dealPointParams(pointParams) {
  * @param {*} isReal 是否是实时数据
  * @param {*} modeId 绑定数据时候 viewTool/model/serach 返回的 模型id
  */
-async function getSubscribeInfos(pointParams) {
+async function getSubscribeInfos(deviceParams) {
     let params = {
         subscribeInfos: [],
         networkProtocol: 'websocket',
     };
-    let maps = dealPointParams(pointParams)
+    let maps = dealdeviceParams(deviceParams)
     for (let item of maps.values()) {
         item.subscribeType = 'realtime_datahub'
         item.pushRate = 500
-        item.params = item.keys
+        item.sourceId = item.deviceId
         params.subscribeInfos.push(item)
     }
     let data = await geAjax('/api/pubsub/subscribe', 'POST', JSON.stringify(params))
@@ -55,31 +55,44 @@ async function getSubscribeInfos(pointParams) {
     websocketUrlReal = data.data
     return data
 }
-//绑定数据&切换状态的处理方法
 function setterRealData(res, fileSystem) {
-    res.forEach((item)=>{
-        let els = document.querySelectorAll(`.point_${item.pointId}`)
+    let maps = new Map()
+    let targetArr = []
+    res.forEach(item=>{
+        if (maps.has(item.deviceId)) {
+            let tempObj = maps.get(item.deviceId)
+            maps.set(item.deviceId, Object.assign({},tempObj,item))
+        } else {
+            maps.set(item.deviceId, item)
+        }
+    })
+    for(let val of maps.values()) {
+        targetArr.push(val)
+    }
+    targetArr.forEach((item)=>{
+        let els = document.querySelectorAll(`.device_${item.deviceId}`)
         for(let i = 0;i < els.length;i++) {
-            let shapeName = $(els[i]).data("shapeName")
-            let paramShow = $(els[i]).data("paramShow")
-            let paramShowDefault = $(els[i]).data("paramShowDefault")
+            const $ele = $(els[i])
+            let shapeName = $ele.data("shapeName")
+            let paramShow = $ele.data("paramShow")
+            let paramShowDefault = $ele.data("paramShowDefault")
             let val = null
             if (paramShowDefault) {
-                val = item[paramShowDefault]
+                val = item[paramShowDefault.deviceParamId]
             }
             if(shapeName == 'progress') {//进度条
                 if(!val) {
                     val = 0
                 }
-                let progressPropsObj = $(els[i]).data("progressPropsObj")
+                let progressPropsObj = $ele.data("progressPropsObj")
                 let {max,min,type} = progressPropsObj
                 let percentVal = val / (max - min)
                 let text = `${toDecimal2NoZero(percentVal * 100)}%`
                 if(type == 'real') {
                     text = val
                 }
-                let target = $(els[i]).find(".progressbar-common.progressbar")
-                let textEl = $(els[i]).find(".progressbar-text")
+                let target = $ele.find(".progressbar-common.progressbar")
+                let textEl = $ele.find(".progressbar-text")
                 let background = "linear-gradient(to right,#FF280F,#FFA963)"
                 if (percentVal * 100 > 75) {
                     background = "linear-gradient(to right,#D4D7FF,#175FFF)"
@@ -94,34 +107,38 @@ function setterRealData(res, fileSystem) {
             }else if(shapeName.includes('Chart')) {
                 let echartsInstance = echarts.getInstanceByDom(els[i])
                 let options = echartsInstance.getOption()
-                if(shapeName == 'lineChart') {
-                    let chartDataLen = $(els[i]).data("chartDataLen")
-                    options.series.forEach((ser)=>{
-                        if (ser.pointId == item.pointId) {
-                            if(ser.data.length >= chartDataLen) {
-                                ser.data.shift()
+                if(options) {
+                    if(shapeName == 'lineChart') {
+                        let chartDataLen = $ele.data("chartDataLen")
+                        options.series.forEach((ser)=>{
+                            if (ser.deviceId == item.deviceId) {
+                                if(ser.data.length >= chartDataLen) {
+                                    ser.data.shift()
+                                }
+                                if(val || val == 0) {
+                                    ser.data.push(val)
+                                    let yMax = options.yAxis[0].max
+                                    options.yAxis[0].max = Math.max(yMax, val)
+                                    if (options.xAxis[0].data.length >= chartDataLen) {
+                                        options.xAxis[0].data.shift()
+                                    }
+                                    options.xAxis[0].data.push(timeFormate(item.timestamp, false))
+                                }
                             }
-                            if (val || val == 0) {
-                                ser.data.push(val)
-                            }
+                        })
+                    }else {
+                        if (!val) {
+                            val = 0
                         }
-                    })
-                    if(options.xAxis[0].data.length >= chartDataLen) {
-                        options.xAxis[0].data.shift()
+                        options.series[0].data[0].value = val
                     }
-                    options.xAxis[0].data.push(item.timestamp)
-                }else {
-                    if (!val) {
-                        val = 0
-                    }
-                    options.series[0].data[0].value = val
+                    echartsInstance.setOption(options)
                 }
-                echartsInstance.setOption(options)
             }else {
                 if(val || val === 0) {
-                    $(els[i]).html(`${val}`)
+                    $ele.html(`${val}`)
                 }
-                let stateModels = $(els[i]).data("stateModels")
+                let stateModels = $ele.data("stateModels")
                 if(stateModels) {
                     let stateIndex = 0 //默认状态 未找到要切换的状态，显示默认
                     for (let j = 1; j < stateModels.length;j++) {
@@ -130,36 +147,25 @@ function setterRealData(res, fileSystem) {
                             break
                         }
                     }
-                    changeEleState(els[i], stateModels[stateIndex],fileSystem)
+                    changeEleState($ele, stateModels[stateIndex],fileSystem)
                 }
                 if (paramShow && paramShow.length) {
-                    let formatLayerEl = $("#formatLayer")
-                    let formatLayerElText = () => {
-                        formatLayerEl.html("<ul style='height:100%;display:flex;flex-direction:column;justify-content:center;'>" + 
-                        `<li>${item.timestamp}</li>` +
-                        paramShow.map((d) => {
-                            return `<li>${d}=${item[d]}</li>`
-                        }).join('') + "</ul>")
+                    let paramData = $ele.data('paramData')
+                    if (!paramData) {
+                        paramData = {
+                            time: timeFormate(item.timestamp, false),
+                            data: {}
+                        }
                     }
-                    let formatLayerShow = (e)=>{
-                        let {clientX,clientY} = e
-                        formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
-                        formatLayerElText()
-                        formatLayerEl.show()
-                    }
-                    let formatLayerMove = (e)=> {
-                        console.log(e + "-" + new Date().getTime())
-                        let {clientX,clientY} = e
-                        formatLayerEl.css({left:`${clientX}px`,top:`${clientY}px`})
-                    }
-                    $(els[i]).mouseenter(formatLayerShow)
-                    $(els[i]).mousemove(throttleFun(formatLayerMove,16))
-                    $(els[i]).mouseleave(() => {
-                        formatLayerEl.html("")
-                        formatLayerEl.hide()
+                    paramShow.forEach(d => {
+                        let dpIdVal = item[d.deviceParamId]
+                        if (dpIdVal || dpIdVal == 0) {
+                            paramData.data[d.paramName] = dpIdVal
+                        }
                     })
-                    if (formatLayerEl.is(':visible')) {
-                        formatLayerElText()
+                    $ele.data('paramData', paramData)
+                    if ($ele.data('frameFlag')) { //当前控件显示时候，刷新对应浮窗数据
+                        $ele.trigger('mouseenter')
                     }
                 }
             }
@@ -172,38 +178,27 @@ function setterRealData(res, fileSystem) {
  * @param {} data 公式中参数的实际值
  */
 function dealStateFormula(formula, data) {
+    if(!formula) {
+        return false
+    }
     formula = JSON.parse(formula)
-    let res1 = true,breakFlag = false,res2 = false
+    let res1 = true,res2 = false
     let logics = formula.data
     if(!logics) {
         return false
     }
     if (!formula.conditionLogic || formula.conditionLogic == 1) { // 顶级条件是and，有一个为false，就返回false
         for(let i = 0;i < logics.length;i++) {
-            for(let j = 0;j < logics[i].length;j++) {
-                if (!dealLogic(logics[i][j],data)) {//子级条件有一个为false，整体为false
-                    breakFlag = true
-                    res1 = false
-                    break 
-                }
-            }
-            if(breakFlag) {
-                break
+            if (!dealLogic(logics[i],data)) {//子级条件有一个为false，整体为false
+                res1 = false
+                break 
             }
         }
         return res1
     }  
     // 顶级条件or
     for (let i = 0; i < logics.length; i++) {
-        for (let j = 0; j < logics[i].length; j++) {
-            if (!dealLogic(logics[i][j],data)) {
-                continue
-            }
-            if (j == logics[i].length - 1) {//子级条件全为true
-                breakFlag = true
-            }
-        }
-        if (breakFlag) {//父级条件有一个为true,整个结果为true
+        if (dealLogic(logics[i], data)) {//子级条件有一个为true，整体为true
             res2 = true
             break
         }
@@ -218,12 +213,19 @@ function dealStateFormula(formula, data) {
 function dealLogic(logic,data) {
     let res = true
     let operate = +logic.logical
-    let param = logic.paramName
+    let tempArr = logic.key.split("/")
+    let deviceType = tempArr[0]
+    let paramId = tempArr[tempArr.length - 1]
+    let tempParamVal
+    if(deviceType == 'device') {
+        tempParamVal = dealDataVal(paramId, data,tempArr[1])
+    }else{
+        tempParamVal = dealDataVal(paramId, data)
+    }
     let fixed = +logic.fixedValue
     let min = +logic.minValue
     let max = +logic.maxValue
-    let tempParamVal = data[param]
-    if (!data[param] && tempParamVal !== 0) {
+    if (!tempParamVal && tempParamVal !== 0) {
         return false
     }
     let paramVal = +tempParamVal
@@ -254,6 +256,17 @@ function dealLogic(logic,data) {
             break
     }
     return res
+}
+//如果是设备需要同时满足参数id和部件id都包含
+function dealDataVal(paramId, data,partId) {
+    let keys = Object.keys(data)
+    for(let i = 0;i < keys.length;i++) {
+        if (keys[i].includes(paramId)) {
+            if (!partId || keys[i].includes(partId)) {
+                return data[keys[i]]
+            }
+        }
+    }
 }
 /**
  * 切换该元素的样式状态
@@ -315,7 +328,7 @@ function initialWs(ws, pageId, applyData, fileSystem) {
         if (dataArr[0] === 'rspCode' || dataArr[1] === 'rspMsg') {
             return
         }
-        throttle(setterRealData(JSON.parse(res.data),fileSystem), 600)
+        setterRealData(JSON.parse(res.data), fileSystem)
     }
     // 接收异常
     ws.onerror = function() {
@@ -329,9 +342,9 @@ function initialWs(ws, pageId, applyData, fileSystem) {
 
 //实时数据
 function createWsReal(pageId, applyData, fileSystem) {
-    let pointParams = applyData[pageId].wsParams
-    getSubscribeInfos(pointParams).then((res) => {
-        if (pointParams.length === 0 || !websocketUrlReal) {
+    let deviceParams = applyData[pageId].wsParams
+    getSubscribeInfos(deviceParams).then((res) => {
+        if (deviceParams.length === 0 || !websocketUrlReal) {
             return
         }
         const token = getCookie('token')

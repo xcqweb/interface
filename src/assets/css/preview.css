@@ -1,9 +1,13 @@
 #gePreview {
   position: relative;
   margin: 0 auto;
-  overflow-x: hidden;
-  left: 2px;
-  top: 2px;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+}
+.gePreview_bg{
+  height: 100%;
+  overflow:auto;
 }
 .gePalette {
   position: absolute;
@@ -71,6 +75,7 @@
   height: calc(100% - 36px);
   padding: 0 20px;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   position: relative;
 }
 #gePreview .gePalette .buttonTag{
@@ -86,17 +91,17 @@
   min-width: 120px;
   min-height: 60px;
   max-height: 400px;
+  opacity:0.86;
   padding: 6px;
   background: #fff;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   border: 1px solid #333;
   border-radius: 4px;
   display:none;
   left: -9999px;
   top: -9999px;
   z-index: 99999;
-  display: flex;
-  align-items:center;
   animation: opacity .4s ease .6s;
 }
 .buttonTag {
@@ -104,4 +109,38 @@
   outline: none;
   width: 100%;
   height: 100%;
+}
+#gePreview .gePreviewMenu{
+  position: fixed;
+  top:0px;
+  font-size:14px;
+  z-index:10;
+  overflow: hidden;
+  opacity:0.86;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.preview-menu-check{
+  cursor: pointer;
+}
+.gePreviewMenuIcon{
+  position: fixed;
+  width:40px;
+  height:20px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 20px;
+  opacity: .86;
+}
+.gePreviewMenuIcon[data-check="0"] i{
+  transition: transform .5s ease;
+  transform: rotate(180deg);
+}
+.gePreviewMenuIcon[data-check="1"] i{
+  transition: transform .5s ease;
+  transform: rotate(0deg);
 }

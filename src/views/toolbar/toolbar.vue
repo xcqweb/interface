@@ -10,7 +10,7 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
-        title="放大"
+        :title="$t('toolbar.zoomIn')"
         :class="{'mxDisabled':$store.state.main.type == 1}"
         @click.stop.prevent="zoom('in')"
       >
@@ -21,7 +21,7 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geLabel"
-        title="缩放 (Alt+Mousewheel)"
+        :title="$t('toolbar.zoomInAndOut')"
         :class="{'mxDisabled':$store.state.main.type == 1}"
         style="white-space: nowrap; position: relative; overflow: hidden; width: 50px;text-align:center;"
         @click.stop.prevent="isShowScale = true && $store.state.main.type !== 1"
@@ -32,7 +32,7 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
-        title="缩小"
+        :title="$t('toolbar.zoomOut')"
         :class="{'mxDisabled':$store.state.main.type == 1}"
         @click.stop.prevent="zoom('out')"
       >
@@ -42,7 +42,7 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
-        title="全屏 (F11)"
+        :title="$t('toolbar.fullScreen')"
         @click.stop.prevent="fullscreen('out')"
       >
         <div class="geSprite geSprite-fullscreen" />
@@ -54,7 +54,7 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
-        title="撤销 (Ctrl+Z)"
+        :title="$t('toolbar.undoTitle')"
       >
         <div class="geSprite geSprite-undo" />
       </a>
@@ -63,7 +63,7 @@
         href="javascript:void(0);"
         class="del_use_flag_terry geButton"
         style="margin-left:12px;"
-        title="重做 (Ctrl+Y)"
+        :title="$t('toolbar.redoTitle')"
       >
         <div class="geSprite geSprite-redo" />
       </a> 
@@ -74,7 +74,6 @@
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
         style="width:48px;display:flex;align-items:center;justify-content:center;"
-        :title="alignText"
         @click="dealAlign(alignCls)"
         @mouseover.stop.prevent="showAlignDialog=true"
       >
@@ -89,7 +88,7 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
-        title="移至最前 (Ctrl+Shift+F)"
+        :title="$t('toolbar.topTitle')"
         style="margin-left:12px;"
       >
         <div class="geSprite geSprite-tofront" />
@@ -99,7 +98,7 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
-        title="移至最后 (Ctrl+Shift+B)"
+        :title="$t('toolbar.bottomTitle')"
         style="margin-left:12px;"
       >
         <div class="geSprite geSprite-toback" />
@@ -111,7 +110,7 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
-        title="组合 (Ctrl+G)"
+        :title="$t('toolbar.groupTitle')"
       >
         <div class="geSprite geSprite-group" />
       </a>
@@ -120,7 +119,7 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="del_use_flag_terry geButton"
-        title="取消组合 (Ctrl+Shift+U)"
+        :title="$t('toolbar.ungroupTitle')"
         style="margin-left:12px;"
       >
         <div class="geSprite geSprite-ungroup" />
@@ -128,10 +127,35 @@
     </div>
     <div class="geToolbar geToolbar6">
       <a
+        ref="lock"
+        href="javascript:void(0);"
+        ondragstart="return false;"
+        class="del_use_flag_terry geButton"
+        :title="$t('toolbar.lock')"
+      >
+        <div
+          class="geSprite geSprite-lock"
+        />
+      </a>
+      <a
+        ref="unlock"
+        href="javascript:void(0);"
+        ondragstart="return false;"
+        class="del_use_flag_terry geButton"
+        style="margin-left:12px;"
+        :title="$t('toolbar.unlock')"
+      >
+        <div
+          class="geSprite geSprite-unlock"
+        />
+      </a>
+    </div>
+    <div class="geToolbar geToolbar7">
+      <a
         href="javascript:void(0);"
         ondragstart="return false;"
         class="geButton"
-        title="素材库"
+        :title="$t('materialLibrary')"
         @click.stop.prevent="materialLab"
       >
         <div class="geSprite geSprite-material" />
@@ -140,7 +164,7 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="geButton"
-        title="保存 (Ctrl+S)"
+        :title="$t('toolbar.saveTitle')"
         style="margin-left:12px;"
         @click.stop.prevent="save"
       >
@@ -151,7 +175,7 @@
         href="javascript:void(0);"
         ondragstart="return false;"
         class="geButton"
-        title="预览 (Ctrl+Shift+L)"
+        :title="$t('toolbar.previewTitle')"
         style="margin-left:12px;"
       >
         <div class="geSprite geSprite-preview" />
@@ -190,9 +214,13 @@ export default{
             isShowScale:false,
             showAlignDialog:false,
             alignCls:'geSprite-left-align',
-            alignText:'左对齐',
             ifshowmarerial: false
         }
+    },
+    computed: {
+        lock() {
+            return this.$store.state.main.widgetInfo.lock
+        },
     },
     created() {
     },
@@ -216,18 +244,16 @@ export default{
         },
         init() {
             this.$nextTick(() => {
-                let keys = [
-                    'undo', 'redo', 'toFront', 'toBack', 'group', 'ungroup', 'previewapply'
-                ]
+                let keys = ['undo', 'redo', 'toFront', 'toBack', 'group', 'ungroup', 'previewapply','lock','unlock']
                 keys.forEach(key=>{
-                    let action = this.myEditorUi.actions.get(key);
+                    let action = this.myEditorUi.actions.get(key)
                     let elt = this.$refs[key]
                     this.myEditorUi.toolbar.initElement(elt)
-                    this.myEditorUi.toolbar.addClickHandler(elt, action.funct);
-                    elt.setEnabled(action.enabled);
+                    this.myEditorUi.toolbar.addClickHandler(elt, action.funct)
+                    elt.setEnabled(action.enabled)
                     action.addListener('stateChanged', function() {
-                        elt.setEnabled(action.enabled);
-                    });
+                        elt.setEnabled(action.enabled)
+                    })
                 })
             })
         },
@@ -253,7 +279,6 @@ export default{
         },
         changeAlign(d) {
             this.alignCls = d.cls
-            this.alignText = d.text
             this.dealAlign(d.cls)
             this.showAlignDialog = false
         },
@@ -292,9 +317,11 @@ export default{
                 this.$refs.materialroom.init()
             })
         },
-        triggerCancel() {
+        triggerCancel(data) {
             this.ifshowmarerial = false
-            VueEvent.$emit('select-nodetype') // 兄弟组件传值 改变节点类型 晴空指派方式
+            if(data === true) {
+                VueEvent.$emit('select-nodetype')
+            }
         },
         save() {
             this.myEditorUi.saveFile(true)

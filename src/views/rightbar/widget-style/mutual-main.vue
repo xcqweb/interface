@@ -8,7 +8,7 @@
         class="title"
         @click="addEvents"
       >
-        <img src="../../../assets/images/rightsidebar/plus_ic.png"> 添加点击事件
+        <img src="../../../assets/images/rightsidebar/plus_ic.png"> {{ $t('rightBar.addClickEvent') }}
       </div>
       <div
         v-for="(e,index) in events"
@@ -22,7 +22,7 @@
         <div
           style="flex:1;"
         >
-          <div>事件类型-{{ mutualTypes[e.type-1] }}</div>
+          <div>{{ $t("rightBar.eventTypes") }}-{{ mutualTypes[e.type-1] }}</div>
           <div>
             {{ e.title }}<span v-if="e.type==3">-{{ e.stateName }}</span>
           </div>
@@ -40,7 +40,7 @@
       style="padding:10px 4px;height:100%;"
     >
       <p style="margin-bottom: 2px;">
-        类型
+        {{ $t("type") }}
       </p>
       <div class="type-tab-con">
         <div
@@ -49,14 +49,14 @@
           style="border-top-left-radius:2px;border-bottom-left-radius:2px;"
           @click="changeTab(1)"
         >
-          跳转
+          {{ $t("link") }}
         </div>
         <div
           class="type-tab"
           :class="{'selected':typeTab==2}"
           @click="changeTab(2)"
         >
-          显/隐
+          {{ $t("rightBar.visibleOrHide") }}
         </div>
         <div
           class="type-tab"
@@ -64,7 +64,7 @@
           :class="{'selected':typeTab==3}"
           @click="changeTab(3)"
         >
-          切换
+          {{ $t("rightBar.change") }}
         </div>
       </div>
       <LinkTo
@@ -110,7 +110,7 @@ export default{
         return {
             isEdit:false,
             typeTab:1,
-            mutualTypes:['跳转','显隐','切换'],
+            mutualTypes:[this.$t('link'),this.$t('rightBar.visibleOrHide'),this.$t('rightBar.change')],
             events:[],
             pages:[],//页面
             bindActions:[],
@@ -129,27 +129,23 @@ export default{
     },
     methods: {
         init() {
-            let values = Object.values(this.myEditorUi.editor.pages)
-            let pagesVal = values.filter(item=>{
-                return item.type === 'normal'
-            })
-            let dialogVal = values.filter(item=>{
-                return item.type === 'dialog'
-            })
-            this.pages = pagesVal.map(item=>{
-                return {
-                    id:item.id,
-                    title:item.title,
+            this.pages = []
+            this.dialogs = []
+            let pagesAll = this.myEditorUi.editor.pages
+            this.myEditorUi.editor.pagesRank['normal'].forEach(id=>{
+                this.pages.push({
+                    id:id,
+                    title:pagesAll[id].title,
                     selected:false,
-                }
+                })
             })
-            this.dialogs = dialogVal.map(item=>{
-                return {
-                    id:item.id,
-                    title:item.title,
+            this.myEditorUi.editor.pagesRank['dialog'].forEach(id=>{
+                this.dialogs.push({
+                    id:id,
+                    title:pagesAll[id].title,
                     selected:false,
                     hide:true,
-                }
+                })
             })
             let graph = this.myEditorUi.editor.graph
             let cells = graph.getModel().cells
@@ -168,7 +164,7 @@ export default{
                     }else{
                         hide = true
                     }
-                    let titleType = `${title}(${this.myEditorUi.editor.palettesInfo[info].name})` 
+                    let titleType = `${title}` 
                     this.currentPageWidgets.push({
                         id:cells[key].id,
                         title:title,
@@ -232,7 +228,7 @@ export default{
                 action.effectAction = 'change'
                 action.stateInfo = data.stateInfo
             }
-            this.setActionInfos(action)
+            this.setActionInfos(action,data.isEdit)
         },
         initActions() {
             let graph = this.myEditorUi.editor.graph
@@ -302,18 +298,27 @@ export default{
             }
             return actions
         },
-        setActionInfos(action) {
+        setActionInfos(action,isEdit) {
             let graph = this.myEditorUi.editor.graph
             let actions = this.getActions(graph)
             let sameFlag = false
-            for(let i = 0;i < actions.length;i++) {//同一个控件只能帮忙弹窗或者页面的一个交互事件
+            for(let i = 0;i < actions.length;i++) {//同一个控件只能绑定弹窗或者页面的一个交互事件
                 if(actions[i].innerType == 'page' && action.mutualType == actions[i].mutualType) {
                     actions[i] = action
                     sameFlag = true
                     break
                 }
             }
-            if(!sameFlag) {
+            if(isEdit) {
+                console.log(action)
+                let res = actions.findIndex(item=>{
+                    return item.mutualType == action.mutualType
+                })
+                if(res != -1) {
+                    actions[res] = action
+                }
+            }
+            if(!sameFlag && !isEdit) {
                 actions.push(action)
             }
             this.setEvents(actions)//重置event列表
@@ -335,7 +340,7 @@ export default{
         },
         removeEvent(event,index,evet) {
             evet.stopPropagation()
-            sureDialog(this.myEditorUi,`确定要删除交互事件${index + 1}吗`,()=>{
+            sureDialog(this.myEditorUi,`${this.$t("rightBar.sureToDelActions")}${index + 1}`,()=>{
                 this.events.splice(index,1)
                 let {id,stateInfo} = event
                 this.removeActions(id,stateInfo)//控件或者页面id

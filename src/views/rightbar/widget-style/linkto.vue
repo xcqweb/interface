@@ -4,7 +4,7 @@
       style="height:60%;"
     >
       <p style="margin-bottom: 2px;margin-top:10px;">
-        选择页面
+        {{ $t('rightBar.choosePage') }}
       </p>
       <ul class="widget-con">
         <li
@@ -22,13 +22,13 @@
         class="mutual-btn"
         @click="back()"
       >
-        取消
+        {{ $t('cancel') }}
       </button>
       <button
         class="mutual-btn selected"
         @click="submit()"
       >
-        提交
+        {{ $t('submit') }}
       </button>
     </div>
   </div>
@@ -59,7 +59,7 @@ export default{
                 }
             }
             if(!flag) {
-                tipDialog(this.myEditorUi,'请选择要跳转的页面')
+                tipDialog(this.myEditorUi,`${this.$t('rightBar.choosePageToLink')}`)
                 return
             } 
             if(!this.currentItem) {
@@ -72,10 +72,10 @@ export default{
                 }
             }
             if(flag2) {
-                tipDialog(this.myEditorUi,'该页面已经绑定了跳转事件')
+                tipDialog(this.myEditorUi,`${this.$t("pageHasBindLinkEvents")}`)
                 return
             } 
-            this.$emit("submitMutual",{mutualType:1,id:this.currentItem.id,innerType:'page'})
+            this.$emit("submitMutual",{mutualType:1,id:this.currentItem.id,innerType:'page',isEdit:!!this.currentEditItem})
         },
         checkPage(item) {
             this.currentItem = item
