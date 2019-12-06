@@ -92,7 +92,7 @@
                 <Checkbox
                   v-if="!singleParamShow.includes(shapeName)"
                   v-model="row.type"
-                  @on-change="val=>paramDefaultChange(val,row.paramId)"
+                  @on-change="val=>paramDefaultChange(val,row.key)"
                 >
                   {{ $t('footBar.defaultDisplay') }}
                 </Checkbox>
@@ -456,17 +456,23 @@ export default {
             if(this.paramOutterList && !this.paramOutterList.length) {
                 isFirstCheck = true
             }
+            let allKeys = []
+            this.paramOutterList.forEach(item=>{
+                allKeys.push(item.key)
+            })
             data.forEach((item)=>{
-                this.paramOutterList.push({
-                    paramName:item.paramName,
-                    paramId:item.paramId,
-                    paramType:item.type,
-                    partName:item.partName,
-                    key:item.key,
-                    transportSourceId:item.transportSourceId,
-                    deviceParamId:item.deviceParamId,
-                    type:false,
-                })
+                if(!allKeys.includes(item.key)) {
+                    this.paramOutterList.push({
+                        paramName:item.paramName,
+                        paramId:item.paramId,
+                        paramType:item.type,
+                        partName:item.partName,
+                        key:item.key,
+                        transportSourceId:item.transportSourceId,
+                        deviceParamId:item.deviceParamId,
+                        type:false,
+                    })
+                }
             })
             if(isFirstCheck) {
                 this.paramOutterList[0].type = true
@@ -483,10 +489,10 @@ export default {
                 this.setCellModelInfo('bindData',tempObj)
             })
         },
-        paramDefaultChange(val,paramId) {
+        paramDefaultChange(val,key) {
             this.paramOutterList.forEach(item=>{
-                if(item.paramId == paramId) {
-                    item.type = true
+                if(item.key == key) {
+                    item.type = !item.type
                 }else{
                     item.type = false
                 }
