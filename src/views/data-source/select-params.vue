@@ -3,7 +3,7 @@
     v-model="visible"
     class="devices-modal custom-modal"
     :title="title"
-    :width="720"
+    :width="960"
     :mask-closable="false"
   >
     <!-- 搜索条件栏 -->
@@ -15,6 +15,8 @@
           style="width: 180px;"
           :data="items"
           :not-found-text="$t('noData')"
+          :clearable="false"
+          change-on-select
           filterable
           transfer
         />
@@ -23,6 +25,7 @@
     <!-- 穿梭框 -->
     <transfer
       ref="transfer"
+      class="params-transfer"
       :data="transferData"
       :target-keys="selectedItems"
       :list-style="listStyle"
@@ -88,7 +91,7 @@ export default {
             selectedItems: [],
             params: [],
             listStyle: {
-                width: '300px',
+                width: '422px',
                 height: '390px',
                 backgroundColor: '#fff',
             },
@@ -116,6 +119,13 @@ export default {
             if (!val) {
                 this.$emit('input', val);
                 this.selectedItems = [];
+                this.params = [];
+            }
+        },
+        items(data) {
+            if (data && data.length > 0) {
+                this.params = [data[0].value];
+            } else {
                 this.params = [];
             }
         },
@@ -188,7 +198,7 @@ export default {
             }
         },
         leftRender(item) {
-            if (this.params.length > 0) {
+            if (this.params.length > 1) {
                 return item.label;
             } else {
                 return this.rightRender(item);
@@ -196,9 +206,9 @@ export default {
         },
         rightRender(item) {
             if (item.type === 'device') {
-                return this.$t('dataSource.deviceParameter') + ' / ' + item.partName + ' / ' + item.label;
+                return item.partName + ' / ' + item.label;
             } else {
-                return this.$t('dataSource.virtualParamter') + ' / ' + item.label;
+                return item.label;
             }
         },
         leftFilterMethod(data, query) {
@@ -232,6 +242,15 @@ export default {
 };
 </script>
 
-<style>
-
+<style lang="less">
+.params-transfer {
+    .ivu-transfer-list-content-item {
+        padding: 7px 8px;
+        text-overflow: inherit;
+    }
+    
+    .ivu-checkbox-wrapper {
+        margin-right: 0;
+    }
+}
 </style>
