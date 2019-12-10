@@ -71,7 +71,6 @@
       </div>
     </div>
     <div class="geSidebarContainer-bottom" />
-    <div class="geSidebarContainer-bottom2" />
   </div>
 </template>
 <script>
@@ -244,9 +243,6 @@ export default {
         .geSidebarContainer-bottom{
             flex:1;
             overflow-y: auto;
-        }
-        .geSidebarContainer-bottom2{
-            height:30px;
         }
         .left-geSidebarContainer{
             border-bottom: solid 1px #ccc;

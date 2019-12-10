@@ -1651,7 +1651,7 @@ Sidebar.prototype.addUserPalette = function (expand) {
             res.forEach(item=>{
                 let array = []
                 item.materialList.forEach(d=>{
-                    array.push(this.createVertexTemplateEntry(`shape=userimage;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`, d.picWidth ? parseInt(d.picWidth / 1.5) : 300, d.picHeight ? parseInt(d.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
+                    array.push(this.createVertexTemplateEntry(`shape=userimage;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`, d.picWidth&&d.picWidth!=1 ? parseInt(d.picWidth / 1.5) : 200, d.picHeight&&d.picHeight!=1 ? parseInt(d.picHeight / 1.5) : 150, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
                 })
                 this.addPaletteFunctions('user', `${item.libraryName}`, false, array)
             })

@@ -128,11 +128,13 @@ export default {
     },
     methods: {
         init() {
-            this.myEditorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
+            let graph = this.myEditorUi.editor.graph
+            graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
             this.$refs.leftsidebar.init();
             this.$refs.rightbar.init()
+            this.myEditorUi.initDiagramConWidth = this.myEditorUi.diagramContainer.offsetWidth
             timer = setInterval(()=> {
                 this.myEditorUi.saveFile(true,true)
             },1000 * 60 * 1)//1分钟自动保存一次

@@ -67,4 +67,4 @@ nameCannotOver20Charts=Name cant't over 20 charts
 copyP=copy
 defaultColor=Default color
 recentlyUsed=Recently used
-inputText=input text
+collapseExpand=Collapse/Expand

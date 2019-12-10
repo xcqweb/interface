@@ -301,11 +301,6 @@ export default {
         if(this.footerContent) {
             this.initData()
         }
-        window.onresize = ()=>{
-            if(this.ifShowArrow) {
-                this.ifShowArrow = false
-            }
-        }
         VueEvent.$off('rightBarTabSwitch')
         VueEvent.$off('isShowFootBar')
         VueEvent.$off('emitDataSourceFooter')
@@ -368,26 +363,12 @@ export default {
            
         },
         dealFootbarHeight(val) {
-            let graph = this.myEditorUi.editor.graph
-            let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
-            let wh = document.documentElement.clientHeight
-            let dialogTitleEle = document.querySelector('.dialog-title-m')
-            let dialogTop = 0
-            if(dialogTitleEle) {
-                dialogTop = dialogTitleEle.offsetTop
-            }
             if(val) {
-                el.style.height = wh - 72 - 226 + 'px'
-                if(dialogTitleEle) {
-                    dialogTitleEle.style.top = dialogTop - 200 + 'px'
-                }
+                this.myEditorUi.footerHeight = 226
             }else{
-                el.style.height = wh - 72 - 26 + 'px'
-                if(dialogTitleEle) {
-                    dialogTitleEle.style.top = dialogTop + 200 + 'px'
-                }
+                this.myEditorUi.footerHeight = 26
             }
-            graph.refresh()
+            this.myEditorUi.refresh()
         },
         // 初始化数据源数据
         initDataSource() {
@@ -623,9 +604,9 @@ export default {
 
 <style lang="less" scoped>
 .newfooter-wraper {
-  width: calc(100% - 458px);
   position: absolute;
   left: 209px;
+  right:250px;
   bottom: 0;
   z-index: 100;
   background: #fff;
