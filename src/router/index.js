@@ -11,12 +11,12 @@ const Main = () => import("@views/main.vue")
 let routes = [
     {
         path: '*',
-        redirect: 'interface'
+        redirect: '/interface/interface'
     }, {
         path: '/',
-        redirect: 'interface'
+        redirect: '/interface/interface'
     }, {
-        path: '/interface',
+        path: '/interface/interface',
         name: 'Interface',
         component: Main,
         meta: {
@@ -24,7 +24,7 @@ let routes = [
         }
     },
     {
-        path: '/interface_preview',
+        path: '/interface/interface_preview',
         name: 'Preview',
         component: Preview,
         meta: {
