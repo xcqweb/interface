@@ -10,4 +10,4 @@ RUN echo 'Asia/Shanghai' >/etc/timezone
 EXPOSE 80/tcp
 
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY ./interface  /usr/share/nginx/html/
+COPY ./interface  /usr/share/nginx/html/interface
