@@ -16,7 +16,7 @@ let routes = [
         path: '/',
         redirect: 'interface'
     }, {
-        path: 'interface',
+        path: '/interface',
         name: 'Interface',
         component: Main,
         meta: {
@@ -24,7 +24,7 @@ let routes = [
         }
     },
     {
-        path: 'interface_preview',
+        path: '/interface_preview',
         name: 'Preview',
         component: Preview,
         meta: {
