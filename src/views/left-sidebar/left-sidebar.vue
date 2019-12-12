@@ -380,6 +380,7 @@ export default {
         },
         popReanme(evt,index) {
             this.dealIsEdit(evt,index,true)
+            this.menuPopupHide()
         },
         saveName(evt,index,title) {
             this.dealIsEdit(evt,index,false)

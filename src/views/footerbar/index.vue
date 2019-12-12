@@ -345,6 +345,9 @@ export default {
             }else{
                 this.myEditorUi.footerHeight = 26
             }
+            if(this.$store.state.main.type === 1) {
+                VueEvent.$emit("refreshDialogTitle")
+            }
             this.myEditorUi.refresh()
         },
         // 初始化数据源数据

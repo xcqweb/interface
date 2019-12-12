@@ -407,7 +407,6 @@ window.EditorUi = function(editor, container, lightbox)
     mxEvent.addGestureListeners(document, mxUtils.bind(this, function(evt)
     {
         graph.popupMenuHandler.hideMenu();
-        // this.sidebar.hidePageContextMenu();
     }));
 
     let dblClickFn = graph.dblClick;
