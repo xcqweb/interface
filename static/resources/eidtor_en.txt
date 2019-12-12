@@ -59,7 +59,6 @@ tips=Tips
 confirm=Confirm
 apply=Apply
 nameCannotEmpty=Name can't emtpy
-nameCannotOver20Charts=Name cant't over 20 charts
 copyP=copy
 defaultColor=Default color
 recentlyUsed=Recently used

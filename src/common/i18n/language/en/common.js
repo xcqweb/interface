@@ -138,4 +138,6 @@ export default {
     addTemplate: 'Add template',
     copyP:'copy',
     addSuccess:'add Success',
+    pageNameCanNotEmpty:'Page name can not empty',
+    popupNameCanNotEmpty:'Popup name can not empty',
 }

@@ -59,7 +59,6 @@ tips=提示
 confirm=确定
 apply=应用
 nameCannotEmpty=名字不能为空
-nameCannotOver20Charts=不能超过20个字符
 copyP=副本
 defaultColor=默认颜色
 recentlyUsed=最近使用

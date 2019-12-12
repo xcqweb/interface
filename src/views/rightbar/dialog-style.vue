@@ -164,10 +164,7 @@ export default {
     },
     mounted() {
         window.onresize = ()=>{
-            let timer = setTimeout(()=>{
-                window.clearTimeout(timer)
-                this.centerCanvas()
-            },50)
+            this.centerCanvas()
         }
         this.initPage()
         VueEvent.$off("refreshDialogTitle")
@@ -224,6 +221,9 @@ export default {
             dialogStyle = Object.assign({},dialogStyle,param)
             let editor = this.myEditorUi.editor
             let el = document.querySelector(".dialog-title-m")
+            if(!el) {
+                return
+            }
             let keys = Object.keys(dialogStyle)
             if(el.style) {
                 el.style.cssText = " "//清空之前的标题style
@@ -234,22 +234,25 @@ export default {
             editor.pages[editor.currentPage].style = dialogStyle
         },
         centerCanvas() {//居中画布
-            let graph = this.myEditorUi.editor.graph
-            let con = graph.container
-            let canvasView = con.children[0]//画布
-            let conWidth = con.clientWidth
-            let conHeight = con.clientHeight
-            let {clientWidth,clientHeight} = con.children[1] //svg
-            con.scrollLeft = (clientWidth - conWidth) / 2
-            con.scrollTop = (clientHeight - conHeight - 36) / 2
-            this.canvasOffsetTop = canvasView.offsetTop
-            this.canvasOffsetLeft = canvasView.offsetLeft
-            let dialogStyleTemp = {
-                top:`${this.canvasOffsetTop - 36}px`,
-                left:`${this.canvasOffsetLeft}px`,
-                width:`${this.dialogWidth}px`,
-            }
-            this.commitStyleFun(dialogStyleTemp)
+            let timer = setTimeout(()=>{
+                window.clearTimeout(timer)
+                let graph = this.myEditorUi.editor.graph
+                let con = graph.container
+                let canvasView = con.children[0]//画布
+                let conWidth = con.clientWidth
+                let conHeight = con.clientHeight
+                let {clientWidth,clientHeight} = con.children[1] //svg
+                con.scrollLeft = (clientWidth - conWidth) / 2
+                con.scrollTop = (clientHeight - conHeight - 36) / 2
+                this.canvasOffsetTop = canvasView.offsetTop
+                this.canvasOffsetLeft = canvasView.offsetLeft
+                let dialogStyleTemp = {
+                    top:`${this.canvasOffsetTop - 36}px`,
+                    left:`${this.canvasOffsetLeft}px`,
+                    width:`${this.dialogWidth}px`,
+                }
+                this.commitStyleFun(dialogStyleTemp)
+            })
         },
         changeAlignIndex(type,index) {
             valignArr = [this.fontText + 5,36,36 * 2 - this.fontText - 10]

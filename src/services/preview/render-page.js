@@ -633,23 +633,20 @@ class PreviewPage {
         return cellHtml
     }
     initWsParams(cellHtml, device, paramShow) {
-        device.forEach(d=>{
-            cellHtml.classList.add(`device_${deviceId}`)
-            let dealParamShow = []
-            let deviceId = d.id
-            paramShow.forEach(item=>{
-                if (item.deviceParamId) {
-                    dealParamShow.push(item.deviceParamId)
-                }
-            })
-            if(dealParamShow.length) {
-                let resArr = Array.from(new Set(dealParamShow))
-                this.wsParams.push({
-                    deviceId: deviceId,
-                    params: resArr
-                })
+        let dealParamShow = []
+        paramShow.forEach(item=>{
+            if (item.deviceParamId) {
+                dealParamShow.push(item.deviceParamId)
             }
         })
+        cellHtml.classList.add(`device_${device.id}`)
+        if(dealParamShow.length) {
+            let resArr = Array.from(new Set(dealParamShow))
+            this.wsParams.push({
+                deviceId: device.id,
+                params: resArr
+            })
+        }
     }
 }
 

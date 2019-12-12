@@ -90,11 +90,17 @@
                 slot-scope="{row}"
               >
                 <Checkbox
+                  v-if="!singleParamShow.includes(shapeName)"
                   v-model="row.type"
                   @on-change="val=>paramDefaultChange(val,row.key)"
                 >
                   {{ $t('footBar.defaultDisplay') }}
                 </Checkbox>
+                <Checkbox
+                  v-else
+                  :value="true"
+                  disabled
+                />
               </template>
               <template
                 slot="actions"
@@ -159,7 +165,8 @@
       v-model="visible"
       :title="$t('footBar.addParam')"
       :device-model-id="deviceModelId"
-      :device-id="deviceId" 
+      :device-id="deviceId"
+      :multiple="multiple"
       :selected-keys="selectedKeys"
       @callback="addParamDone"
     />
@@ -167,7 +174,7 @@
 </template>
 
 <script>
-import {Tabs,TabPane, Table,Select, Option,Checkbox} from 'iview'
+import {Tabs,TabPane, Table,Select, Option, Message,Checkbox} from 'iview'
 import {mxUtils} from '../../services/mxGlobal'
 import NoData from '../data-source/nodata'
 import VueEvent from '../../services/VueEvent.js'
@@ -197,8 +204,9 @@ export default {
             ifShowArrow: false,
             tabsNum: 0,
             deviceModelId:null,
-            deviceId:null,            
+            deviceId:null,
             nodata: 'noData',
+            multiple:true,
             tablTitles:[
                 {
                     title: this.$t('deviceName'),
@@ -345,6 +353,9 @@ export default {
             }else{
                 this.myEditorUi.footerHeight = 26
             }
+            if(this.$store.state.main.type === 1) {
+                VueEvent.$emit("refreshDialogTitle")
+            }
             this.myEditorUi.refresh()
         },
         // 初始化数据源数据
@@ -353,18 +364,13 @@ export default {
             if (startBindData && startBindData.dataSource) {
                 let deviceNameChild = startBindData.dataSource.deviceNameChild
                 this.deviceModelId  = startBindData.dataSource.deviceModel.id
+                this.deviceId = deviceNameChild.id
                 this.dataSourceList = []
-                if(!Array.isArray(deviceNameChild)) {
-                    deviceNameChild = [deviceNameChild]
-                }
-                this.deviceId = deviceNameChild[0].id
-                deviceNameChild.forEach(item=>{
-                    let obj = {}
-                    obj.typeName = startBindData.dataSource.deviceTypeChild.name 
-                    obj.deviceName = item.name
-                    obj.modelName = startBindData.dataSource.deviceModel.name 
-                    this.dataSourceList.push(obj)
-                })
+                let obj = {}
+                obj.typeName = startBindData.dataSource.deviceTypeChild.name 
+                obj.deviceName = deviceNameChild.name
+                obj.modelName = startBindData.dataSource.deviceModel.name 
+                this.dataSourceList.push(obj)
             } else {
                 this.deviceModelId = null
                 this.dataSourceList = []
@@ -408,6 +414,11 @@ export default {
         },
         addParam() {
             this.visible = true
+            if(this.singleParamShow.includes(this.shapeName)) {
+                this.multiple = false
+            }else{
+                this.multiple = true
+            }
         },
         addParamDone(data) {
             let isFirstCheck = false
@@ -427,7 +438,7 @@ export default {
                         partName:item.partName,
                         key:item.key,
                         transportSourceId:item.transportSourceId,
-                        deviceParamId:item.deviceParamId,                        
+                        deviceParamId:item.deviceParamId,
                         type:false,
                     })
                 }
@@ -522,6 +533,19 @@ export default {
                 }
             })
             this.setCellModelInfo('statesInfo',tempStateList)
+        },
+        checkDetDataModel(oldValue, newValue) {
+            let oldDeviceNameChild = oldValue.dataSource.deviceNameChild || []
+            let newDeviceNameChild = newValue.deviceNameChild || []
+            for(let i = 0; i <= oldDeviceNameChild.length - 1; i++) {
+                for(let j = 0; j <= newDeviceNameChild.length - 1; j++) {
+                    if (oldDeviceNameChild[i].id === newDeviceNameChild[j].id) {
+                        Message.warning(this.$t('notAllowMultiplyBind'))
+                        return false
+                    }
+                }
+            }
+            return true
         },
         getCellModelInfo(key,cell) {
             let graph = this.myEditorUi.editor.graph
