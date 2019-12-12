@@ -109,6 +109,7 @@ import DatasourceStore from '../../data-source/js/datasource-store'
 import {Button,Checkbox,Message,Select,Option, CheckboxGroup,Input} from 'iview'
 
 const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart']
+//lineChart 多设备 多参数 gaugeChart 单设备 多参数
 export default{
     components: {
         Button,
@@ -123,10 +124,14 @@ export default{
     data() {
         return {
             dName:"",
-            shapeName: null,
             checkModelArr:[],
             bindData:null,
         }
+    },
+    computed: {
+        shapeName() {
+            return this.$store.state.main.widgetInfo.shapeInfo.shape
+        },
     },
     watch: {
         'model.deviceTypeId'() {
@@ -138,15 +143,20 @@ export default{
     },
     methods: {
         init() {
-            this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
             this.getStudioDeviceData()
             this.bindData =  this.getCellModelInfo('bindData')
             if(this.bindData && this.bindData.dataSource) {
                 this.model.deviceModelId = this.bindData.dataSource.deviceTypeChild.id
                 let bindDeviceNames = this.bindData.dataSource.deviceNameChild
-                this.checkModelArr.splice(0)
-                if(bindDeviceNames.id) {
-                    this.checkModelArr.push(bindDeviceNames.id)
+                if(Array.isArray(bindDeviceNames)) {
+                    bindDeviceNames.forEach(item=>{
+                        this.checkModelArr.push(item.id)
+                    })
+                }else{
+                    this.checkModelArr.splice(0)
+                    if(bindDeviceNames.id) {
+                        this.checkModelArr.push(bindDeviceNames.id)
+                    }
                 }
             }
         },
@@ -173,10 +183,29 @@ export default{
                 id: this.model.deviceModelId,
                 name: this.modelData[this.modelData.findIndex(item=>{return item.deviceModelId == this.model.deviceModelId})].deviceModelName
             }
-            objData.deviceNameChild = {}
-            this.checkModelArr.forEach((item) => {
-                objData.deviceNameChild = {id:item,name:this.deviceData[this.deviceData.findIndex(d=>{return d.deviceId == item})].deviceName}
-            })
+            if(this.shapeName === 'lineChart') {
+                objData.deviceNameChild = []
+                if(this.bindData && this.bindData.deviceModel) {
+                    if(this.model.deviceModelId != this.bindData.deviceModel.id) {
+                        Message.warning(`${this.$t('rightBar.notAllowBindMyltiplyDeviceModel')}`)
+                    }else{
+                        let deviceNameChildTemp = this.bindData.deviceNameChild
+                        if(!Array.isArray(deviceNameChildTemp)) {
+                            objData.deviceNameChild.push(deviceNameChildTemp)
+                        }
+                    }
+                }
+                let tempArr = []
+                this.checkModelArr.forEach((item) => {
+                    tempArr.push({id:item,name:this.deviceData[this.deviceData.findIndex(d=>{return d.deviceId == item})].deviceName})
+                })
+                objData.deviceNameChild = objData.deviceNameChild.concat(tempArr)
+            }else{
+                objData.deviceNameChild = {}
+                this.checkModelArr.forEach((item) => {
+                    objData.deviceNameChild = {id:item,name:this.deviceData[this.deviceData.findIndex(d=>{return d.deviceId == item})].deviceName}
+                })
+            }
             if (objData) {
                 VueEvent.$emit('emitDataSourceFooter', objData)
             }

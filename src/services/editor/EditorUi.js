@@ -15,6 +15,7 @@ import {ChangePageSetup} from './Init'
 import {Format} from './Format'
 import urls from '../../constants/url'
 import { setCookie, tipDialog} from '../Utils'
+import VueEvent from '../VueEvent'
 window.autoSaveFlagTerry = 0
 window.EditorUi = function(editor, container, lightbox)
 {
@@ -90,8 +91,6 @@ window.EditorUi = function(editor, container, lightbox)
         this.diagramContainer.onmousedown = textEditing;
         this.sidebarContainer.onselectstart = textEditing;
         this.sidebarContainer.onmousedown = textEditing;
-        this.formatContainer.onselectstart = textEditing;
-        this.formatContainer.onmousedown = textEditing;
         this.rightBarContainer.onselectstart = textEditing;
         this.rightBarContainer.onmousedown = textEditing;
         this.footerContainer.onselectstart = textEditing;
@@ -158,20 +157,20 @@ window.EditorUi = function(editor, container, lightbox)
     this.hoverIcons = this.createHoverIcons();
 
     // Adds tooltip when mouse is over scrollbars to show space-drag panning option
-    mxEvent.addListener(this.diagramContainer, 'mousemove', mxUtils.bind(this, function(evt)
-    {
-        var off = mxUtils.getOffset(this.diagramContainer);
+    // mxEvent.addListener(this.diagramContainer, 'mousemove', mxUtils.bind(this, function(evt)
+    // {
+    //     var off = mxUtils.getOffset(this.diagramContainer);
 
-        if (mxEvent.getClientX(evt) - off.x - this.diagramContainer.clientWidth > 0 ||
-			mxEvent.getClientY(evt) - off.y - this.diagramContainer.clientHeight > 0)
-        {
-            this.diagramContainer.setAttribute('title', mxResources.get('panTooltip'));
-        }
-        else
-        {
-            this.diagramContainer.removeAttribute('title');
-        }
-    }));
+    //     if (mxEvent.getClientX(evt) - off.x - this.diagramContainer.clientWidth > 0 ||
+	// 		mxEvent.getClientY(evt) - off.y - this.diagramContainer.clientHeight > 0)
+    //     {
+    //         this.diagramContainer.setAttribute('title', mxResources.get('panTooltip'));
+    //     }
+    //     else
+    //     {
+    //         this.diagramContainer.removeAttribute('title');
+    //     }
+    // }));
 
    	// Escape key hides dialogs, adds space+drag panning
     var spaceKeyPressed = false;
@@ -990,7 +989,7 @@ EditorUi.compactUi = true;
 /**
  * Specifies the size of the split bar.
  */
-EditorUi.prototype.splitSize = (mxClient.IS_TOUCH || mxClient.IS_POINTER) ? 1 : 1;
+EditorUi.prototype.splitSize = (mxClient.IS_TOUCH || mxClient.IS_POINTER) ? 12 : 12;
 
 /**
  * Specifies the height of the menubar. Default is 34.
@@ -1019,7 +1018,7 @@ EditorUi.prototype.toolbarHeight = 72;
 /**
  * 底部栏的高度
  */
-EditorUi.prototype.footerHeight = 0;
+EditorUi.prototype.footerHeight = 26;
 
 /**
  * Specifies the height of the optional sidebarFooterContainer. Default is 34.
@@ -2101,27 +2100,6 @@ EditorUi.prototype.toggleToolbarPanel = function(forceHide)
     this.refresh();
     this.fireEvent(new mxEventObject('toolbarHeightChanged'));
 };
-/**
- * 关闭左侧边面板
- */
-EditorUi.prototype.toggleSidebarPanel = function(forceHide)
-{
-    this.sidebarWidth = forceHide ? 0 : 208;
-    this.sidebarContainer.style.display = forceHide ? 'none' : '';
-    this.refresh();
-    this.fireEvent(new mxEventObject('sidebarWidthChanged'));
-};
-/**
- * 关闭右侧面板
- */
-EditorUi.prototype.toggleRightPanel = function(forceHide)
-{
-    this.rightWidth = forceHide ? 0 : 240;
-    this.formatContainer.style.display = forceHide ? 'none' : '';
-    this.refresh();
-    //this.format.refresh();
-    this.fireEvent(new mxEventObject('formatWidthChanged'));
-};
 
 /**
  * Adds support for placeholders in labels.
@@ -2160,15 +2138,6 @@ EditorUi.prototype.isDiagramEmpty = function()
     var model = this.editor.graph.getModel();
 
     return model.getChildCount(model.root) == 1 && model.getChildCount(model.getChildAt(model.root, 0)) == 0;
-};
-
-/**
- * Hook for allowing selection and context menu for certain events.
- */
-EditorUi.prototype.isSelectionAllowed = function(evt)
-{
-    return mxEvent.getSource(evt).nodeName == 'SELECT' || (mxEvent.getSource(evt).nodeName == 'INPUT' &&
-		mxUtils.isAncestorNode(this.formatContainer, mxEvent.getSource(evt)));
 };
 
 /**
@@ -2787,130 +2756,142 @@ EditorUi.prototype.updateActionStates = function()
     this.actions.get('unlock').setEnabled(!graph.isCellMovable(graph.getSelectionCell()) && !graph.isSelectionEmpty() && graph.getSelectionCount() == 1 && shapeName !== 'tableCell' && shapeName !== 'menuCell')
     this.updatePasteActionStates();
 };
+EditorUi.prototype.zeroOffset = new mxPoint(0, 0);
+EditorUi.prototype.getDiagramContainerOffset = function() {
+  return this.zeroOffset;
+};
 
 /**
  * 刷新视图.
  */
 EditorUi.prototype.refresh = function(sizeDidChange)
 {
-    sizeDidChange = (sizeDidChange != null) ? sizeDidChange : true;
-    var quirks = mxClient.IS_IE && (document.documentMode == null || document.documentMode == 5);
-    var w = this.container.clientWidth;
-    var h = this.container.clientHeight;
-    if (h === 0) {
-        return;
-    }
-    if (this.container == document.body)
-    {
-        w = document.body.clientWidth || document.documentElement.clientWidth;
-        h = (quirks) ? document.body.clientHeight || document.documentElement.clientHeight : document.documentElement.clientHeight;
-    }
+   sizeDidChange = sizeDidChange != null ? sizeDidChange : true;
 
-    // Workaround for bug on iOS see
-    // http://stackoverflow.com/questions/19012135/ios-7-ipad-safari-landscape-innerheight-outerheight-layout-issue
-    // FIXME: Fix if footer visible
-    var off = 0;
+   var quirks =
+     mxClient.IS_IE &&
+     (document.documentMode == null || document.documentMode == 5);
+   var w = this.container.clientWidth;
+   var h = this.container.clientHeight;
 
-    if (mxClient.IS_IOS && !window.navigator.standalone)
-    {
-        if (window.innerHeight != document.documentElement.clientHeight)
-        {
-            off = document.documentElement.clientHeight - window.innerHeight;
-            window.scrollTo(0, 0);
-        }
-    }
+   if (this.container == document.body) {
+     w = document.body.clientWidth || document.documentElement.clientWidth;
+     h = quirks
+       ? document.body.clientHeight || document.documentElement.clientHeight
+       : document.documentElement.clientHeight;
+   }
 
-    var tmp = 0;
+   var off = 0;
 
-    if (this.menubar != null)
-    {
-        this.menubarContainer.style.height = this.menubarHeight + 'px';
-        tmp += this.menubarHeight;
-    }
+   if (mxClient.IS_IOS && !window.navigator.standalone) {
+     if (window.innerHeight != document.documentElement.clientHeight) {
+       off = document.documentElement.clientHeight - window.innerHeight;
+       window.scrollTo(0, 0);
+     }
+   }
 
-    if (this.toolbar != null)
-    {
-        this.toolbarContainer.style.top = this.menubarHeight + 'px';
-        this.toolbarContainer.style.height = this.toolbarHeight + 'px';
-        tmp += this.toolbarHeight;
-    }
+   var effHsplitPosition = Math.max(
+     0,
+     Math.min(this.hsplitPosition, w - this.splitSize - 20)
+   );
+   var tmp = 0;
 
-    if (tmp > 0 && !mxClient.IS_QUIRKS)
-    {
-        tmp += 0;
-    }
+   if (this.menubar != null) {
+     this.menubarContainer.style.height = this.menubarHeight + "px";
+     tmp += this.menubarHeight;
+   }
 
-    var fw = (this.format != null) ? this.rightWidth : 0;
-    this.sidebarContainer.style.top = tmp + 'px';
-    this.sidebarContainer.style.width = this.sidebarWidth + 'px';
-    this.rightBarContainer.style.top = tmp + 'px';
-    this.rightBarContainer.style.width = fw + 'px';
-    this.rightBarContainer.style.display = (this.rightWidth != 0) ? '' : 'none';
+   if (this.toolbar != null) {
+     this.toolbarContainer.style.top = this.menubarHeight + "px";
+     this.toolbarContainer.style.height = this.toolbarHeight + "px";
+     tmp += this.toolbarHeight;
+   }
 
-    this.formatContainer.style.top = '0px';
-    //this.formatContainer.style.width = fw + 'px';
-    this.formatContainer.style.height = '50%';
-    this.formatContainer.style.display = (this.format != null) ? '' : 'none';
+   var sidebarFooterHeight = 0;
 
-    this.diagramContainer.style.left = (this.hsplit && this.hsplit.parentNode != null) ? (this.sidebarWidth + this.splitSize) + 'px' : '0px';
-    this.diagramContainer.style.top = this.sidebarContainer.style.top;
-    this.hsplit.style.top = this.sidebarContainer.style.top;
-    this.hsplit.style.bottom = (this.footerHeight + off) + 'px';
-    this.hsplit.style.left = this.sidebarWidth + 'px';
+   if (this.sidebarFooterContainer != null) {
+     var bottom = this.footerHeight + off;
+     sidebarFooterHeight = Math.max(
+       0,
+       Math.min(h - tmp - bottom, this.sidebarFooterHeight)
+     );
+     this.sidebarFooterContainer.style.width = effHsplitPosition + "px";
+     this.sidebarFooterContainer.style.height = sidebarFooterHeight + "px";
+     this.sidebarFooterContainer.style.bottom = bottom + "px";
+   }
 
-    if (this.tabContainer != null)
-    {
-        this.tabContainer.style.left = this.diagramContainer.style.left;
-    }
-    quirks = true;
-    if (quirks)
-    {
-        this.menubarContainer.style.width = w + 'px';
-        //this.toolbarContainer.style.width = this.menubarContainer.style.width;
-        var sidebarHeight = Math.max(0, h - this.footerHeight - this.menubarHeight - this.toolbarHeight) + 3;
-        this.sidebarContainer.style.height = sidebarHeight  + 'px';
-        this.formatContainer.style.height = sidebarHeight + 'px';
-        this.rightBarContainer.style.height = sidebarHeight + 'px';
-        this.diagramContainer.style.width = (this.hsplit&&this.hsplit.parentNode != null) ? Math.max(0, w - this.sidebarWidth - this.splitSize - fw) + 'px' : w + 'px';
-        var diagramHeight = Math.max(0, h - this.footerHeight - this.menubarHeight - this.toolbarHeight);
+   this.sidebarContainer.style.top = tmp+"px";
+   this.sidebarContainer.style.width = effHsplitPosition + "px";
+   this.rightBarContainer.style.top = tmp + "px";
+   this.rightBarContainer.style.width = this.rightWidth + "px";
+   this.rightBarContainer.style.display = this.rightWidth != 0 ? "" : "none";
 
-        if (this.tabContainer != null)
-        {
-            this.tabContainer.style.width = this.diagramContainer.style.width;
-            this.tabContainer.style.bottom = (this.footerHeight + off) + 'px';
-            diagramHeight -= this.tabContainer.clientHeight;
-        }
+   var diagContOffset = this.getDiagramContainerOffset();
+   var contLeft = this.hsplit.parentNode != null ? effHsplitPosition + this.splitSize : 0;
+   this.diagramContainer.style.left = contLeft + diagContOffset.x + "px";
+   this.diagramContainer.style.top = tmp + diagContOffset.y + "px";
+   this.diagramContainer.style.right = this.rightWidth + "px";
+   this.footerContainer.style.height = this.footerHeight + "px";
+   this.hsplit.style.top = this.sidebarContainer.style.top;
+   this.hsplit.style.bottom = this.footerHeight + off + "px";
+   this.hsplit.style.left = effHsplitPosition + "px";
+   this.footerContainer.style.display = this.footerHeight == 0 ? "none" : "";
 
-        this.diagramContainer.style.height = diagramHeight-25 + 'px';
-        this.hsplit.style.height = diagramHeight + 'px';
-    }
-    else
-    {
-        if (this.footerHeight > 0)
-        {
-            this.footerContainer.style.bottom = off + 'px';
-        }
+   if (this.tabContainer != null) {
+     this.tabContainer.style.left = contLeft + "px";
+   }
 
-        this.diagramContainer.style.right = fw + 'px';
-        var th = 0;
+   if (quirks) {
+     this.menubarContainer.style.width = w + "px";
+     this.toolbarContainer.style.width = this.menubarContainer.style.width;
+     var sidebarHeight = Math.max(
+       0,
+       h - this.footerHeight - this.menubarHeight - this.toolbarHeight
+     );
+     this.sidebarContainer.style.height = sidebarHeight - sidebarFooterHeight + "px";
+     this.diagramContainer.style.width =
+       this.hsplit.parentNode != null
+         ? Math.max(0, w - effHsplitPosition - this.splitSize - rightWidth) + "px"
+         : w + "px";
+     this.footerContainer.style.width = this.menubarContainer.style.width;
+     var diagramHeight = Math.max(
+       0,
+       h - this.footerHeight - this.menubarHeight - this.toolbarHeight
+     );
 
-        if (this.tabContainer != null)
-        {
-            this.tabContainer.style.bottom = (this.footerHeight + off) + 'px';
-            this.tabContainer.style.right = this.diagramContainer.style.right;
-            th = this.tabContainer.clientHeight;
-        }
+     if (this.tabContainer != null) {
+       this.tabContainer.style.width = this.diagramContainer.style.width;
+       this.tabContainer.style.bottom = this.footerHeight + off + "px";
+       diagramHeight -= this.tabContainer.clientHeight;
+     }
 
-        this.sidebarContainer.style.bottom = (this.footerHeight + off) + 'px';
-        this.rightBarContainer.style.bottom = (this.footerHeight + off) + 'px';
-        this.formatContainer.style.bottom = (this.footerHeight + off) + 'px';
-        this.diagramContainer.style.bottom = (this.footerHeight + off + th) + 'px';
-    }
+     this.diagramContainer.style.height = diagramHeight + "px";
+     this.hsplit.style.height = diagramHeight + "px";
+   } else {
+     if (this.footerHeight > 0) {
+       this.footerContainer.style.bottom = off + "px";
+     }
 
-    if (sizeDidChange)
-    {
-        this.editor.graph.sizeDidChange();
-    }
+     this.diagramContainer.style.right = this.rightWidth + "px";
+     var th = 0;
+
+     if (this.tabContainer != null) {
+       this.tabContainer.style.bottom = this.footerHeight + off + "px";
+       this.tabContainer.style.right = this.diagramContainer.style.right;
+       th = this.tabContainer.clientHeight;
+     }
+
+     this.sidebarContainer.style.bottom = this.footerHeight + sidebarFooterHeight + off + "px";
+     this.diagramContainer.style.bottom = this.footerHeight + off + th + "px";
+   }
+   let footBar = document.querySelector(".newfooter-wraper")
+   if(footBar){
+       footBar.style.left = contLeft + diagContOffset.x + "px"
+       footBar.style.right = this.rightWidth + "px"
+   }
+   if (sizeDidChange) {
+     this.editor.graph.sizeDidChange();
+   }
 };
 
 /**
@@ -2930,36 +2911,25 @@ EditorUi.prototype.createDivs = function()
     this.toolbarContainer = document.querySelector(".geToolbarContainer");
     this.sidebarContainer = document.querySelector('.geSidebarContainer');
     this.sidebarContainerBottom = document.querySelector('.geSidebarContainer-bottom');
-    this.formatContainer = document.querySelector('.geSidebarContainer.geFormatContainer');
 
     this.rightBarContainer = document.querySelector('.geSidebarContainer.geRightBarContainer');
-    //this.paletteManageContainer = document.querySelector('.geSidebarContainer.gePaletteManageContainer');
     this.diagramContainer = this.createDiv('geDiagramContainer');
     this.footerContainer = this.createDiv('geFooterContainer');
     //去掉sidebar 右边的创建的直线
     this.hsplit = this.createDiv('geHsplit');
-    //this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));
+    this.hsplit.setAttribute('title', mxResources.get('collapseExpand'));
 
     // 设置样式
     this.menubarContainer.style.top = '0px';
     this.menubarContainer.style.left = '0px';
     this.menubarContainer.style.right = '0px';
     this.sidebarContainer.style.left = '0px';
-    this.formatContainer.style.right = '0px';
     this.rightBarContainer.style.right = '0px';
-    //this.paletteManageContainer.style.right = '0px';
-    //this.paletteManageContainer.style.zIndex = '1';
     this.diagramContainer.style.right = ((this.format != null) ? this.rightWidth : 0) + 'px';
-   /*  this.footerContainer.style.left = '0px';
-    this.footerContainer.style.right = '0px';
-    this.footerContainer.style.bottom = '0px';
-    this.footerContainer.style.zIndex = mxPopupMenu.prototype.zIndex - 2; */
+  
     this.hsplit.style.width = this.splitSize + 'px';
     this.sidebarFooterContainer = this.createSidebarFooterContainer();
 
-    // 左侧侧边栏
-    // const leftgeSidebarContainer = document.querySelector('.left-geSidebarContainer');
-    //this.sidebarContainer.appendChild(leftgeSidebarContainer);
     if (this.sidebarFooterContainer)
     {
         this.sidebarFooterContainer.style.left = '0px';
@@ -3012,45 +2982,12 @@ EditorUi.prototype.createUi = function()
         this.setStatusText(this.editor.getStatus());
         this.menubar.container.appendChild(this.statusContainer);
 
-        // Inserts into DOM
         this.container.appendChild(this.menubarContainer);
     }
 
-    // 生成左侧边栏
-    // this.sidebar = (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer);
     this.sidebar = (this.editor.chromeless) ? null : this.createSidebar(this.sidebarContainer, this.sidebarContainerBottom);
-
-    /* if (this.sidebar != null)
-    {
-        this.container.appendChild(this.sidebarContainer);
-    } */
-
-    // 生成交互/样式侧边栏
-    this.format = (this.editor.chromeless || !this.formatEnabled) ? null : this.createFormat(this.formatContainer);
-    /* if (this.format != null)
-    {
-        this.rightBarContainer.appendChild(this.formatContainer);
-    } */
-
-    // 生成控件管理 2.0屏蔽掉
-    //this.paletteManage = (this.editor.chromeless || !this.formatEnabled) ? null : this.createPaletteManage(this.paletteManageContainer);
-   /*  if (this.paletteManage != null)
-    {
-        this.rightBarContainer.appendChild(this.paletteManageContainer);
-    } */
-     /* if (this.container){
-        this.container.appendChild(this.rightBarContainer);
-     } */
-
-    // 生成底部
-    //var footer = (this.editor.chromeless) ? null : this.createFooter();
-
-   /*  if (footer != null)
-    {
-        this.footerContainer.appendChild(footer);
-        this.container.appendChild(this.footerContainer);
-    }
- */
+     // 生成交互/样式侧边栏
+    this.format = (this.editor.chromeless || !this.formatEnabled) ? null : this.createFormat(this.formatContainer)
     if (this.sidebar != null && this.sidebarFooterContainer)
     {
         this.container.appendChild(this.sidebarFooterContainer);
@@ -3078,16 +3015,16 @@ EditorUi.prototype.createUi = function()
         }
         this.container.appendChild(this.toolbarContainer);
     }
-
     // HSplit
     if (this.sidebar != null)
     {
         this.container.appendChild(this.hsplit);
-
         this.addSplitHandler(this.hsplit, true, 0, mxUtils.bind(this, function(value)
         {
-            this.hsplitPosition = value;
-            this.refresh();
+            this.hsplitPosition = value
+            if (value <= this.initDiagramConWidth + this.sidebarWidth) {
+              this.refresh();
+            }
         }));
     }
 };
@@ -3128,9 +3065,9 @@ EditorUi.prototype.createToolbar = function(container)
 /**
  * Creates a new sidebar for the given container.
  */
-EditorUi.prototype.createSidebar = function (container, container2)
+EditorUi.prototype.createSidebar = function (container, sidebarContainerBottom)
 {   
-    return new Sidebar(this, container, container2);
+    return new Sidebar(this, container, sidebarContainerBottom);
 };
 
 /**
@@ -3218,6 +3155,7 @@ EditorUi.prototype.addSplitHandler = function(elt, horizontal, dx, onChange)
         moveHandler(evt);
         initial = null;
         start = null;
+        VueEvent.$emit('refreshDialogTitle')
     }
 
     mxEvent.addGestureListeners(elt, function(evt)
@@ -3560,6 +3498,7 @@ EditorUi.prototype.save = function(hideDialog=false)
             }
             catch (e)
             {
+                console.log(e)
                 editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
             }
         }
@@ -4203,7 +4142,7 @@ EditorUi.prototype.destroy = function()
     }
 
     var c = [this.menubarContainer, this.toolbarContainer, this.sidebarContainer,
-	         this.formatContainer, this.rightBarContainer, /* this.paletteManageContainer, */ this.diagramContainer, /*this.footerContainer*/,
+	         this.rightBarContainer, this.diagramContainer,
 	         this.chromelessToolbar, this.hsplit, this.sidebarFooterContainer,
 	         this.layersDialog];
 

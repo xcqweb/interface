@@ -54,7 +54,6 @@ Format.prototype.init = function()
     });
 	
     graph.getSelectionModel().addListener(mxEvent.CHANGE, this.update);
-    //this.refresh();
 };
 
 /**

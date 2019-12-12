@@ -223,7 +223,6 @@ export default {
         },
         updateBackgroundColor(color)  {
             if(color == 'none') {
-
                 this.bgColor = `url(${Dialog.prototype.noColorImage})`
             }else{
                 this.bgColor = color

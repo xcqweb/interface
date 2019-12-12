@@ -33,13 +33,11 @@ td {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 html {
-	overflow: hidden;
 	height: 100%;
-	min-width: 1280px;
-	overflow-x: auto;
 }
 body {
 	height: 100%;
+	overflow: hidden;
 	position: relative;
 }
 input {

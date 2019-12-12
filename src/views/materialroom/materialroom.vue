@@ -579,7 +579,7 @@ export default {
         },
         tabsSwitch(type) {
             this.tabNumber = type
-            if(this.tabNumber === 1) { // 默认是页面模版
+            if(this.tabNumber === 1) { // 默认是页面模板
                 this.selectMaterialList(0)
             }
         },
@@ -613,7 +613,7 @@ export default {
         uploadErr(res,file,fileList) {
             if(res.status == 418) {
                 let refreshToken = getCookie('refreshToken')
-                this.requestUtil.post('/api/auth/refreshToken', {refreshToken}).then(res => {
+                this.requestUtil.post('api/auth/refreshToken', {refreshToken}).then(res => {
                     setCookie('token', res.token)
                     setCookie('refreshToken', res.refreshToken)
                     let formData = new FormData()
