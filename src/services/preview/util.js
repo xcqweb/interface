@@ -46,13 +46,13 @@ async function geAjax(url, method = 'GET', data = null) {
                     "Authorization": 'Bearer ' + token
                 },
                 data:data,
-                url,
+                url:`${window.location.origin}/${url}`,
                 success: function(res) {
                     resolve(res)
                 },
                 error:function(res) {
                     if (res.status == 418) {
-                        geAjax('/api/auth/refreshToken', 'POST', {
+                        geAjax('api/auth/refreshToken', 'POST', {
                             refreshToken
                         }).then(res => {
                             setCookie('token', res.token);

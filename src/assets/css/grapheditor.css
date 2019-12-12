@@ -48,7 +48,6 @@ body ::-webkit-scrollbar-thumb:hover {
 	text-decoration:none;
 }
 .geMenubarContainer, .geToolbarContainer, .geDiagramContainer, .geSidebarContainer, .geFooterContainer, .geHsplit, .geVsplit {
-	overflow:hidden;
 	position:absolute;
 	cursor:default;
 }
@@ -330,7 +329,6 @@ div.mxWindow .geButton {
 }
 .geSidebarContainer {
 	background:#F2F2F2;
-	overflow:hidden;
 	position:absolute;
 	z-index: 2;
 }

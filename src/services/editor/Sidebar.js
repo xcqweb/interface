@@ -19,11 +19,11 @@ let CurrentMouseOver = null
 let pageScrollTopHeight = 0
 let dialogesScrollTopHeight = 0
 let shapeScrollTopHeight = 0
-function Sidebar(editorUi, container, container2)
+function Sidebar(editorUi, container, containerbottom)
 {
     this.editorUi = editorUi;
     this.container = container;
-    this.containerbottom = container2
+    this.containerbottom = containerbottom
     this.palettes = new Object();
     this.taglist = new Object();
     this.showTooltips = true;
@@ -31,7 +31,6 @@ function Sidebar(editorUi, container, container2)
     this.graph.cellRenderer.antiAlias = false;
     this.graph.foldingEnabled = false;
     this.graph.container.style.visibility = 'hidden';
-    document.body.appendChild(this.graph.container);
 	
     this.pointerUpHandler = mxUtils.bind(this, function()
     {
@@ -107,7 +106,6 @@ Sidebar.prototype.init = function(type)
         })
         this.addUserPalette(false); // 自定义控件
     } else {
-        this.addPagePalette();//页面管理
         this.addGeneralPalette(true);//基础控件
         this.addUserPalette(false); // 自定义控件
     }
@@ -596,339 +594,6 @@ Sidebar.prototype.cloneCell = function(cell, value)
 };
 
 /**
- * Adds shape search UI. 搜索
- */
-Sidebar.prototype.addSearchPalette = function(expand)
-{
-    var elt = document.createElement('div');
-    elt.style.visibility = 'hidden';
-    // this.container.appendChild(elt);
-    this.containerbottom.appendChild(elt);
-		
-    var div = document.createElement('div');
-    div.className = 'geSidebar';
-    div.style.boxSizing = 'border-box';
-    div.style.overflow = 'hidden';
-    div.style.width = '100%';
-    div.style.padding = '8px';
-    div.style.paddingTop = '14px';
-    div.style.paddingBottom = '0px';
-
-    if (!expand)
-    {
-        //不为被隐藏的对象保留其物理空间，即该对象在页面上彻底消失。style
-        div.style.display = 'none';
-    }
-	
-    var inner = document.createElement('div');
-    inner.style.whiteSpace = 'nowrap';
-    inner.style.textOverflow = 'clip';
-    inner.style.paddingBottom = '8px';
-    inner.style.cursor = 'default';
-
-    //添加标题
-    var filenameDiv = document.createElement('div');
-    filenameDiv.setAttribute('id', 'filename');
-    filenameDiv.style.width = '100%';
-    filenameDiv.style.textAlign = 'center';
-    filenameDiv.innerText = this.editorUi.editor.filename || mxResources.get('unsave');
-    inner.appendChild(filenameDiv);
-    //
-
-    var input = document.createElement('input')
-
-    input.setAttribute('placeholder', mxResources.get('searchShapes'));//搜索图形
-    input.setAttribute('type', 'text');
-
-    input.style.fontSize = '12px';
-    input.style.overflow = 'hidden';
-    input.style.boxSizing = 'border-box';
-    input.style.border = 'solid 1px #d5d5d5';
-    input.style.borderRadius = '4px';
-    input.style.width = '100%';
-    input.style.outline = 'none';
-    input.style.padding = '6px';
-    inner.appendChild(input);
-
-    var cross = document.createElement('img');
-    cross.setAttribute('src', Sidebar.prototype.searchImage);
-    //Sidebar.prototype.searchImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/search.png'
-    cross.setAttribute('title', mxResources.get('search'));//搜索
-    cross.style.position = 'relative';
-    cross.style.left = '-18px';
-	
-    if (mxClient.IS_QUIRKS)
-    {
-        input.style.height = '28px';
-        cross.style.top = '-4px';
-    }
-    else
-    {
-        cross.style.top = '1px';
-    }
-
-    // Needed to block event transparency in IE
-    cross.style.background = 'url(\'' + this.editorUi.editor.transparentImage + '\')';
-	
-    var find;
-
-    inner.appendChild(cross);
-    div.appendChild(inner);
-
-    var center = document.createElement('center');
-    var button = mxUtils.button(mxResources.get('moreResults'), function()
-    {
-        find();
-    });
-    button.style.display = 'none';
-	
-    // Workaround for inherited line-height in quirks mode
-    button.style.lineHeight = 'normal';
-    button.style.marginTop = '4px';
-    button.style.marginBottom = '8px';
-    center.style.paddingTop = '4px';
-    center.style.paddingBottom = '8px';
-	
-    center.appendChild(button);
-    div.appendChild(center);
-	
-    var searchTerm = '';
-    var active = false;
-    var complete = false;
-    var page = 0;
-    var hash = new Object();
-
-    // Count is dynamically updated below
-    var count = 12;
-	
-    var clearDiv = mxUtils.bind(this, function()
-    {
-        active = false;
-        this.currentSearch = null;
-        var child = div.firstChild;
-		
-        while (child != null)
-        {
-            var next = child.nextSibling;
-			
-            if (child != inner && child != center)
-            {
-                child.parentNode.removeChild(child);
-            }
-			
-            child = next;
-        }
-    });
-		
-    mxEvent.addListener(cross, 'click', function()
-    {
-        if (cross.getAttribute('src') == Dialog.prototype.closeImage)
-        {
-            cross.setAttribute('src', Sidebar.prototype.searchImage);
-            cross.setAttribute('title', mxResources.get('search'));
-            button.style.display = 'none';
-            input.value = '';
-            searchTerm = '';
-            clearDiv();
-        }
-
-        input.focus();
-    });
-
-    find = mxUtils.bind(this, function()
-    {
-        // Shows 4 rows (minimum 4 results)
-        count = 4 * Math.max(1, Math.floor(this.container.clientWidth / (this.thumbWidth + 10)));
-        this.hideTooltip();
-		
-        if (input.value != '')
-        {
-            if (center.parentNode != null)
-            {
-                if (searchTerm != input.value)
-                {
-                    clearDiv();
-                    searchTerm = input.value;
-                    hash = new Object();
-                    complete = false;
-                    page = 0;
-                }
-				
-                if (!active && !complete)
-                {
-                    button.setAttribute('disabled', 'true');
-                    button.style.display = '';
-                    button.style.cursor = 'wait';
-                    button.innerHTML = mxResources.get('loading') + '...';
-                    active = true;
-					
-                    // Ignores old results
-                    var current = new Object();
-                    this.currentSearch = current;
-					
-                    this.searchEntries(searchTerm, count, page, mxUtils.bind(this, function(results, len, more, terms)
-                    {
-                        if (this.currentSearch == current)
-                        {
-                            results = (results != null) ? results : [];
-                            active = false;
-                            page++;
-                            center.parentNode.removeChild(center);
-                            this.insertSearchHint(div, searchTerm, count, page, results, len, more, terms);
-
-                            for (var i = 0; i < results.length; i++)
-                            {
-                                var elt = results[i]();
-								
-                                // Avoids duplicates in results
-                                if (hash[elt.innerHTML] == null)
-                                {
-                                    hash[elt.innerHTML] = '1';
-                                    div.appendChild(results[i]());
-                                }
-                            }
-							
-                            if (more)
-                            {
-                                button.removeAttribute('disabled');
-                                button.innerHTML = mxResources.get('moreResults');
-                            }
-                            else
-                            {
-                                button.innerHTML = mxResources.get('reset');
-                                button.style.display = 'none';
-                                complete = true;
-                            }
-							
-                            button.style.cursor = '';
-                            div.appendChild(center);
-                        }
-                    }), mxUtils.bind(this, function()
-                    {
-                        // TODO: Error handling
-                        button.style.cursor = '';
-                    }));
-                }
-            }
-        }
-        else
-        {
-            clearDiv();
-            input.value = '';
-            searchTerm = '';
-            hash = new Object();
-            button.style.display = 'none';
-            complete = false;
-            input.focus();
-        }
-    });
-	
-    mxEvent.addListener(input, 'keydown', mxUtils.bind(this, function(evt)
-    {
-        if (evt.keyCode == 13 /* Enter */)
-        {
-            find();
-            mxEvent.consume(evt);
-        }
-    }));
-	
-    mxEvent.addListener(input, 'focus', function()
-    {
-        input.style.paddingRight = '';
-    });
-	
-    mxEvent.addListener(input, 'blur', function()
-    {
-        input.style.paddingRight = '20px';
-    });
-
-    input.style.paddingRight = '20px';
-	
-    mxEvent.addListener(input, 'keyup', mxUtils.bind(this, function(evt)
-    {
-        if (input.value == '')
-        {
-            cross.setAttribute('src', Sidebar.prototype.searchImage);
-            cross.setAttribute('title', mxResources.get('search'));
-        }
-        else
-        {
-            cross.setAttribute('src', Dialog.prototype.closeImage);
-            cross.setAttribute('title', mxResources.get('reset'));
-        }
-		
-        if (input.value == '')
-        {
-            complete = true;
-            button.style.display = 'none';
-        }
-        else if (input.value != searchTerm)
-        {
-            button.style.display = 'none';
-            complete = false;
-        }
-        else if (!active)
-        {
-            if (complete)
-            {
-                button.style.display = 'none';
-            }
-            else
-            {
-                button.style.display = '';
-            }
-        }
-    }));
-
-    // Workaround for blocked text selection in Editor
-    mxEvent.addListener(input, 'mousedown', function(evt)
-    {
-    	if (evt.stopPropagation)
-    	{
-    		evt.stopPropagation();
-    	}
-    	
-    	evt.cancelBubble = true;
-    });
-    
-    // Workaround for blocked text selection in Editor
-    mxEvent.addListener(input, 'selectstart', function(evt)
-    {
-    	if (evt.stopPropagation)
-    	{
-    		evt.stopPropagation();
-    	}
-    	
-    	evt.cancelBubble = true;
-    });
-
-    var outer = document.createElement('div');
-    outer.appendChild(div);
-    this.container.appendChild(outer);
-	
-    // Keeps references to the DOM nodes
-    this.palettes['search'] = [elt, outer];
-};
-
-/**
- * Adds the general palette to the sidebar.
- */
-Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, results, len, more, terms)
-{
-    if (results.length == 0 && page == 1)
-    {
-        var err = document.createElement('div');
-        err.className = 'geTitle';
-        err.style.cssText = 'background-color:transparent;border-color:transparent;' +
-			'color:gray;padding:6px 0px 0px 0px !important;margin:4px 8px 4px 8px;' +
-			'text-align:center;cursor:default !important';
-		
-        mxUtils.write(err, mxResources.get('noResultsFor', [searchTerm]));
-        div.appendChild(err);
-    }
-};
-
-/**
  * 删除页面
  * @param {object} ele 当前的节点
  */
@@ -1025,26 +690,9 @@ Sidebar.prototype.copyPage = function (ele,pageType) {
     style:{},
     type: pageType
   };
-  let _li = document.createElement('li');
   let resPage = this.editorUi.editor.addPage(page,pageType);
-  _li.setAttribute('data-pageid', resPage.id);
-    _li.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${titleText}</span><span class="right-icon-dolt"></span>`;
   let changeRank = this.editorUi.editor.pagesRank[resPage.type];
-  // 根据类型插入列表
-   changeRank.push(resPage.id);
-   if (pageType === 'normal') {
-    $("#normalPages").append(_li);
-   }
-   if (pageType === 'dialog') {
-    $("#dialogPages").append(_li);
-   }
-   this.editorUi.editor.pagesRank[resPage.type] = [].concat(changeRank);
-    if (pageType === 'normal') {
-        $("#normalPages li:last-child .spanli").click();
-    }
-    if (pageType === 'dialog') {
-        $("#dialogPages li:last-child .spanli").click();
-    }
+ changeRank.push(resPage.id);
 }
 // 获取缩略图
 Sidebar.prototype.getSvgImage = function () {
@@ -1061,7 +709,7 @@ Sidebar.prototype.getSvgImage = function () {
     svgImage.setAttribute('viewbox', `-${widthlen / 2} 0 ${parseInt(widthlen * 2)} ${heightLen}`);
     return svgImage;
 }
-/*添加模版*/
+/*添加模板*/
 Sidebar.prototype.addTemplate = async function(type) {
     const svgImage = this.getSvgImage();
     const svgImagePic = svgImage.outerHTML;
@@ -1075,10 +723,10 @@ Sidebar.prototype.addTemplate = async function(type) {
         }
         requestUtil.post(Urls.addTemplate.url, data).then((res) => {
             if (res.picUrl) {
-                tipDialog(this.editorUi, `添加${type === 'normal' ? '页面模版成功' : '弹窗模版成功' }`)
+                tipDialog(this.editorUi, `添加${type === 'normal' ? '页面模板成功' : '弹窗模板成功' }`)
             }
         }).catch(() => {
-            tipDialog(this.editorUi, `添加${type === 'normal' ? '页面模版失败' : '弹窗模版失败'}`)
+            tipDialog(this.editorUi, `添加${type === 'normal' ? '页面模板失败' : '弹窗模板失败'}`)
         })
     }
 }
@@ -1651,7 +1299,7 @@ Sidebar.prototype.addUserPalette = function (expand) {
             res.forEach(item=>{
                 let array = []
                 item.materialList.forEach(d=>{
-                    array.push(this.createVertexTemplateEntry(`shape=userimage;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`, d.picWidth&&d.picWidth!=1 ? parseInt(d.picWidth / 1.5) : 200, d.picHeight&&d.picHeight!=1 ? parseInt(d.picHeight / 1.5) : 150, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
+                    array.push(this.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`, d.picWidth&&d.picWidth!=1 ? parseInt(d.picWidth / 1.5) : 200, d.picHeight&&d.picHeight!=1 ? parseInt(d.picHeight / 1.5) : 150, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
                 })
                 this.addPaletteFunctions('user', `${item.libraryName}`, false, array)
             })
@@ -3259,12 +2907,10 @@ Sidebar.prototype.addPaletteFunctions = function(id, title, expanded, fns)
 Sidebar.prototype.addPalette = function(id, title, expanded, onInit)
 {
     var elt = this.createTitle(title, id);
-    // this.container.appendChild(elt);
     this.containerbottom.appendChild(elt);
     var div = document.createElement('div');
     div.className = 'geSidebar';
 	
-    // Disables built-in pan and zoom in IE10 and later
     if (mxClient.IS_POINTER)
     {
         div.style.touchAction = 'none';

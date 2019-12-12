@@ -6,7 +6,6 @@
  * Constructs the actions object for the given UI.
  */
 import {
-    addPageDialog,
     PreviewDialog
 } from '../editor/Dialogs'
 import {mxUtils, mxResources}  from '../mxGlobal'
@@ -144,13 +143,6 @@ Actions.prototype.init = function()
         window.openKey = 'open';		
         ui.openFile();
     });
-
-    // 增加页面
-    this.addAction('addPage', function(type) {
-        type = type || 'add';
-        var dlg = new addPageDialog(ui, type)
-        ui.showDialog(dlg.container, 400, 270, true, false, null, null, type == 'rename' ? '编辑页面' : '新建页面');
-    })
     /**
      * 获取节点坐标信息
      * @param {mxCell} mxCell 
@@ -1080,11 +1072,6 @@ Actions.prototype.init = function()
 	
     // 编辑图片
     this.addAction('image', function(e) {
-        // var cell = graph.getSelectionCell();
-        // var dlg = new ImageDialog(ui, cell)
-        // ui.showDialog(dlg.container, 410, 370, true, false, null, null, '选择图片');
-        // dlg.init()
-        // 本地图片
         let timer = setTimeout(() => {
             removeImageRadio();
             clearTimeout(timer)

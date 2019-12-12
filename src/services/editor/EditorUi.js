@@ -15,6 +15,7 @@ import {ChangePageSetup} from './Init'
 import {Format} from './Format'
 import urls from '../../constants/url'
 import { setCookie, tipDialog} from '../Utils'
+import VueEvent from '../VueEvent'
 window.autoSaveFlagTerry = 0
 window.EditorUi = function(editor, container, lightbox)
 {
@@ -2847,9 +2848,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
        0,
        h - this.footerHeight - this.menubarHeight - this.toolbarHeight
      );
-     this.sidebarContainer.style.height =
-       sidebarHeight - sidebarFooterHeight + "px";
-     this.rightBarContainer.style.height = sidebarHeight + "px";
+     this.sidebarContainer.style.height = sidebarHeight - sidebarFooterHeight + "px";
      this.diagramContainer.style.width =
        this.hsplit.parentNode != null
          ? Math.max(0, w - effHsplitPosition - this.splitSize - rightWidth) + "px"
@@ -2882,9 +2881,7 @@ EditorUi.prototype.refresh = function(sizeDidChange)
        th = this.tabContainer.clientHeight;
      }
 
-     this.sidebarContainer.style.bottom =
-       this.footerHeight + sidebarFooterHeight + off + "px";
-     this.rightBarContainer.style.bottom = this.footerHeight + off + "px";
+     this.sidebarContainer.style.bottom = this.footerHeight + sidebarFooterHeight + off + "px";
      this.diagramContainer.style.bottom = this.footerHeight + off + th + "px";
    }
    let footBar = document.querySelector(".newfooter-wraper")
@@ -2933,9 +2930,6 @@ EditorUi.prototype.createDivs = function()
     this.hsplit.style.width = this.splitSize + 'px';
     this.sidebarFooterContainer = this.createSidebarFooterContainer();
 
-    // 左侧侧边栏
-    // const leftgeSidebarContainer = document.querySelector('.left-geSidebarContainer');
-    //this.sidebarContainer.appendChild(leftgeSidebarContainer);
     if (this.sidebarFooterContainer)
     {
         this.sidebarFooterContainer.style.left = '0px';
@@ -3071,9 +3065,9 @@ EditorUi.prototype.createToolbar = function(container)
 /**
  * Creates a new sidebar for the given container.
  */
-EditorUi.prototype.createSidebar = function (container, container2)
+EditorUi.prototype.createSidebar = function (container, sidebarContainerBottom)
 {   
-    return new Sidebar(this, container, container2);
+    return new Sidebar(this, container, sidebarContainerBottom);
 };
 
 /**
@@ -3161,6 +3155,7 @@ EditorUi.prototype.addSplitHandler = function(elt, horizontal, dx, onChange)
         moveHandler(evt);
         initial = null;
         start = null;
+        VueEvent.$emit('refreshDialogTitle')
     }
 
     mxEvent.addGestureListeners(elt, function(evt)
@@ -3503,6 +3498,7 @@ EditorUi.prototype.save = function(hideDialog=false)
             }
             catch (e)
             {
+                console.log(e)
                 editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
             }
         }

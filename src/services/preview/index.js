@@ -36,9 +36,9 @@ class Main {
         if (!id) {
             return
         }
-        const host = await geAjax('/api/console/host/imageHost', 'GET')
+        const host = await geAjax('api/console/host/imageHost', 'GET')
         this.fileSystem = host.imageHost
-        this.applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudioForPreview/${id}`, 'GET')
+        this.applyInfo = await geAjax(`api/iot-cds/cds/configurationDesignStudioForPreview/${id}`, 'GET')
         if (!this.applyInfo) {
             return
         }

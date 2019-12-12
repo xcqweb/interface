@@ -11,7 +11,7 @@ async function getLastData(deviceParams, fileSystem) {
     for (let item of maps.values()) {
         paramIds.push(item)
     }
-    const res = await geAjax('/api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(paramIds))
+    const res = await geAjax('api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(paramIds))
     setterRealData(res,fileSystem)
 }
 
@@ -50,7 +50,7 @@ async function getSubscribeInfos(deviceParams) {
         item.sourceId = item.deviceId
         params.subscribeInfos.push(item)
     }
-    let data = await geAjax('/api/pubsub/subscribe', 'POST', JSON.stringify(params))
+    let data = await geAjax('api/pubsub/subscribe', 'POST', JSON.stringify(params))
     data = JSON.parse(data)
     websocketUrlReal = data.data
     return data

@@ -132,4 +132,10 @@ export default {
     popupStyle: 'Popup style',
     popupDesc: 'Popup describe',
     popupSize: 'Popup size',
+    setHome: 'Set home',
+    copyPage: 'Copy page',
+    copyPopup: 'Copy popup',
+    addTemplate: 'Add template',
+    copyP:'copy',
+    addSuccess:'add Success',
 }

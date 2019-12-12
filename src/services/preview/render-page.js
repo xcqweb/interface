@@ -291,13 +291,13 @@ class PreviewPage {
                                 }else{
                                     maps.set(deviceId, [dpId])
                                 }
-                                for (let key of maps.keys()) {
-                                    resParam.push({
-                                        deviceId:key,
-                                        params:maps.get(key)
-                                    })
-                                }
                             })
+                            for (let key of maps.keys()) {
+                                resParam.push({
+                                    deviceId:key,
+                                    params:maps.get(key)
+                                })
+                            }
                             this.subscribeDataDeal(resParam)
                         })
                     }
@@ -613,7 +613,6 @@ class PreviewPage {
                     })
                     cellHtml.classList.add('param-show-node')
                 }
-                 
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
                 $(cellHtml).data("paramShow", paramShow)
                 this.initWsParams(cellHtml, device, paramShow)
@@ -634,20 +633,23 @@ class PreviewPage {
         return cellHtml
     }
     initWsParams(cellHtml, device, paramShow) {
-        let dealParamShow = []
-        paramShow.forEach(item=>{
-            if (item.deviceParamId) {
-                dealParamShow.push(item.deviceParamId)
+        device.forEach(d=>{
+            cellHtml.classList.add(`device_${deviceId}`)
+            let dealParamShow = []
+            let deviceId = d.id
+            paramShow.forEach(item=>{
+                if (item.deviceParamId) {
+                    dealParamShow.push(item.deviceParamId)
+                }
+            })
+            if(dealParamShow.length) {
+                let resArr = Array.from(new Set(dealParamShow))
+                this.wsParams.push({
+                    deviceId: deviceId,
+                    params: resArr
+                })
             }
         })
-        cellHtml.classList.add(`device_${device.id}`)
-        if(dealParamShow.length) {
-            let resArr = Array.from(new Set(dealParamShow))
-            this.wsParams.push({
-                deviceId: device.id,
-                params: resArr
-            })
-        }
     }
 }
 

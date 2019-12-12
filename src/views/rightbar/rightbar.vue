@@ -1,7 +1,7 @@
 <template>
   <div
     class="geSidebarContainer geRightBarContainer"
-    style="top:72px;right:0;z-index:2;height:100%;"
+    style="right:0;bottom:0;z-index:2;"
   >
     <div class="rightbarShortcut">
       <div
@@ -45,7 +45,7 @@ export default {
     mounted() {
         VueEvent.$off('refreshCurrentPage')
         VueEvent.$on('refreshCurrentPage',(type)=>{
-            this.$store.dispatch('pageTabIndex',type)
+            this.$store.dispatch('pageTabIndex',type - 1)
             this.centerCanvas()
             this.refresh++
         })

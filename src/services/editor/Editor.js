@@ -330,7 +330,7 @@ Editor.prototype.refreshToken = function(refreshToken) {
     return new Promise((resolve, rejec) => {
         $.ajax({
             method: 'POST',
-            url: '/api/auth/refreshToken',
+            url: `${window.location.origin}/api/auth/refreshToken`,
             data: {
                 refreshToken
             },
@@ -385,7 +385,7 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
                 }
             },
             data: method == 'GET' ? data : data ? JSON.stringify(data) : '',
-            url,
+            url:`${window.location.origin}/${url}`,
             success: function(res) {
                 if(!hideDialog){
                     loadingBarInner.style.width = '100%';
@@ -412,7 +412,7 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
 Editor.prototype.InitEditor = function(editorUi) {
     // 获取文件服务器地址
     let getFileSystem = new Promise((resolve) => {
-        this.ajax(editorUi, '/api/console/host/imageHost', 'GET', null, function(res) {
+        this.ajax(editorUi, 'api/console/host/imageHost', 'GET', null, function(res) {
             // 文件服务器地址
             window.fileSystem = res.imageHost
             resolve(res)
@@ -431,7 +431,7 @@ Editor.prototype.InitEditor = function(editorUi) {
             id = applyId
         }
         editPromise = new Promise((resolve) => {
-            this.ajax(editorUi, '/api/iot-cds/cds/configurationDesignStudio/' + id, 'GET', null, function(res) {
+            this.ajax(editorUi, 'api/iot-cds/cds/configurationDesignStudio/' + id, 'GET', null, function(res) {
                 resolve(res)
             }, null)
         })
@@ -467,7 +467,7 @@ Editor.prototype.uploadFile = function(editorUi, url, method, data, fn = functio
                 loadingBarInner.style.width = '20%'
             },
             data: data,
-            url,
+            url:`${window.location.origin}/${url}`,
             success: function(res) {
                 loadingBarInner.style.width = '100%'
                 setTimeout(() => {
@@ -681,41 +681,6 @@ Editor.prototype.pagesNameList = function() {
         pages.push(this.pages[key].title)
     }
     return pages
-}
-/**
- * 添加页面
- * @param {object} page 新增的页面
- * @returns {boolean} 添加成功返回true，失败返回false
- */
-Editor.prototype.addPage = function(page,type) {
-    page.xml = page.xml || this.defaultXml[type];
-    let id = 1;
-    for (let pageid in this.pages) {
-        const idNum = parseInt(pageid.match(/^pageid\_([0-9]+)/)[1]);
-        id < idNum && (id = idNum);
-    }
-
-    id = 'pageid_' + (id + 1);
-    page.id = id;
-    this.pages[id] = page;
-    return page;
-}
-/**
- * 删除页面
- */
-Editor.prototype.deletePage = function(id, type) {
-    this.pagesRank[type].splice(this.pagesRank[type].indexOf(id), 1);
-    delete this.pages[id];
-}
-/**
- * 设置页面顺序
- */
-Editor.prototype.pagesRankReset = function(arr) {
-    let obj = {};
-    for (let key of arr) {
-        obj[key] = this.pages[key]
-    }
-    this.pages = Object.assign(obj)
 }
 /**
  * 更新xml内容
