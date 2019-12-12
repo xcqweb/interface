@@ -30,7 +30,7 @@
               <span
                 v-if="!d.isEdit"
                 class="page-menu-name"
-                @dblclick="popReanme(index)"
+                @dblclick="popReanme($event,index)"
               >
                 {{ d.title }}
               </span>
@@ -38,11 +38,14 @@
                 v-if="d.isEdit"
                 v-model="d.title"
                 v-focus
+                maxlength="20"
                 class="editPageInput"
                 style="width:100%;"
-                @blur="saveName(index)"
+                @blur="saveName($event,index,d.title)"
+                @keyup.enter="saveName($event,index,d.title)"
               >
               <span
+                v-if="!d.isEdit"
                 class="right-icon-dolt" 
                 @mousemove="menuPopupShow($event,index)"
                 @mouseenter="menuPopupShow($event,index)"
@@ -71,7 +74,7 @@
               <span
                 v-if="!d.isEdit"
                 class="page-menu-name"
-                @dblclick="popReanme(index)"
+                @dblclick="popReanme($event,index)"
               >
                 {{ d.title }}
               </span>
@@ -79,9 +82,11 @@
                 v-if="d.isEdit"
                 v-model="d.title"
                 v-focus
+                maxlength="20"
                 class="editPageInput"
                 style="width:100%;"
-                @blur="saveName(index)"
+                @blur="saveName($event,index,d.title)"
+                @keyup.enter="saveName($event,index,d.title)"
               >
               <span
                 class="right-icon-dolt"
@@ -205,7 +210,7 @@ export default {
             for (let key of targetList) {
                 let temp = allPages[key]
                 temp.isEdit = false
-                temp.model = temp.title
+                temp.bkTitle = temp.title
                 resList.push(temp)
             }
         },
@@ -363,18 +368,35 @@ export default {
             this.pages.unshift(tempPage)
             this.menuPopupHide()
         },
-        popReanme(index) {
-            if(!index) {
+        dealIsEdit(evt,index,flag) {
+            if(!index && index !== 0) {
                 index = this.hoverIndex[this.typeTab - 1]
             }
             if(this.typeTab == 1) {
-                this.$set(this.pages[index],"isEdit",true)
+                this.$set(this.pages[index],"isEdit",flag)
             }else{
-                this.$set(this.dialogs[index],"isEdit",true)
+                this.$set(this.dialogs[index],"isEdit",flag)
             }
         },
-        saveName() {
-
+        popReanme(evt,index) {
+            this.dealIsEdit(evt,index,true)
+        },
+        saveName(evt,index,title) {
+            this.dealIsEdit(evt,index,false)
+            if(!title || !title.trim()) {
+                if(this.typeTab == 1) {
+                    this.$set(this.pages[index],'title',this.pages[index].bkTitle)
+                    tipDialog(this.myEditorUi, this.$t("pageNameCanNotEmpty"))
+                }else{
+                    this.$set(this.dialogs[index],'title',this.dialogs[index].bkTitle)
+                    tipDialog(this.myEditorUi, this.$t("popupNameCanNotEmpty"))
+                }
+                return
+            }
+            if(this.typeTab == 2) {
+                $(".dialog-title-m").html(title)
+                VueEvent.$emit('refreshAction')
+            }
         },
         delCurrentDal(index,list) {
             let resIndex = -1

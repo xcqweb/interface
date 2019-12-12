@@ -224,6 +224,9 @@ export default {
             dialogStyle = Object.assign({},dialogStyle,param)
             let editor = this.myEditorUi.editor
             let el = document.querySelector(".dialog-title-m")
+            if(!el) {
+                return
+            }
             let keys = Object.keys(dialogStyle)
             if(el.style) {
                 el.style.cssText = " "//清空之前的标题style

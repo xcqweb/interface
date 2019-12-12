@@ -3155,7 +3155,9 @@ EditorUi.prototype.addSplitHandler = function(elt, horizontal, dx, onChange)
         moveHandler(evt);
         initial = null;
         start = null;
-        VueEvent.$emit('refreshDialogTitle')
+        if(evt.target.className==='geHsplit'){
+            VueEvent.$emit('refreshDialogTitle')
+        }
     }
 
     mxEvent.addGestureListeners(elt, function(evt)

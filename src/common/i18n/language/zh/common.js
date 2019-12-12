@@ -138,4 +138,6 @@ export default {
     addTemplate: '添加到模板',
     copyP:'副本',
     addSuccess:'添加成功',
+    pageNameCanNotEmpty:'页面名称不能为空',
+    popupNameCanNotEmpty:'弹窗名称不能为空',
 }
