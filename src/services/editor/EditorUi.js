@@ -2139,6 +2139,13 @@ EditorUi.prototype.isDiagramEmpty = function()
     return model.getChildCount(model.root) == 1 && model.getChildCount(model.getChildAt(model.root, 0)) == 0;
 };
 
+EditorUi.prototype.isSelectionAllowed = function(evt)
+{
+    return mxEvent.getSource(evt).nodeName == 'SELECT' || (mxEvent.getSource(evt).nodeName == 'INPUT' &&
+		mxUtils.isAncestorNode(this.formatContainer, mxEvent.getSource(evt)));
+};
+
+
 /**
  * Installs dialog if browser window is closed without saving
  * This must be disabled during save and image export.

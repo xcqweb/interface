@@ -93,8 +93,8 @@ export default {
                         myEditorUi.editor.pages = content.pages
                         myEditorUi.editor.pagesRank = content.rank
                     }else{
-                        myEditor.pages.pageid_1.title = this.$t('page')
-                        myEditor.pages.pageid_2.title = this.$t('popup')
+                        myEditor.pages.pageid_1.title = `${this.$t('page')}1`
+                        myEditor.pages.pageid_2.title = `${this.$t('popup')}1`
                         if (!myEditor.pages.pageid_1.xml) {
                             myEditor.pages.pageid_1.xml = myEditor.defaultXml[0]
                         }
@@ -138,9 +138,9 @@ export default {
             this.$refs.leftsidebar.init();
             this.$refs.rightbar.init()
             this.myEditorUi.initDiagramConWidth = this.myEditorUi.diagramContainer.offsetWidth
-            timer = setInterval(()=> {
-                this.myEditorUi.saveFile(true,true)
-            },1000 * 60 * 1)//1分钟自动保存一次
+            // timer = setInterval(()=> {
+            //     this.myEditorUi.saveFile(true,true)
+            // },1000 * 60 * 1)//1分钟自动保存一次
         },
         updateZoom() {
             this.$refs.toolbar.updateZoom()

@@ -493,7 +493,7 @@ export default {
             this.templateIndex = index
             this.popUpType = 3 //右侧模板
             this.isShowPopMenu = true
-            let el = document.querySelector(".material-right-wrapper")
+            let el = document.querySelector(".material-right.materialtabs-right")
             let con = evt.target.parentElement
             this.popMenuStyle.left = `${evt.target.offsetLeft + con.offsetLeft + 30}px`
             this.popMenuStyle.top = `${evt.target.offsetTop + con.offsetTop - el.scrollTop + 44}px`
@@ -854,8 +854,6 @@ export default {
                                               .assembly-right-wrapper{
                                                   display: flex;
                                                   flex-wrap:wrap;
-                                                  overflow-y:auto; 
-                                                  max-height: 100%;
                                                   &>li{
                                                       width:100px;
                                                       height:130px; 
@@ -934,7 +932,6 @@ export default {
                                               .material-right-wrapper{
                                                   display: flex;
                                                   flex-wrap:wrap;
-                                                  overflow-y:auto; 
                                                   &>li{
                                                       width:100px;
                                                       height:130px;

@@ -197,7 +197,7 @@ export default {
         init() {
             this.myEditorUi.sidebar.init()
             this.getPages()
-            this.checkPage(0)
+            this.checkPage(0,true)
         },
         getPages() {
             let pagesRank = this.myEditorUi.editor.pagesRank
@@ -215,7 +215,7 @@ export default {
             }
         },
         changeCurrentPage(list,index,flag) {
-            if(!flag ) {//删除当前页时候，不需要设置页面信息
+            if(!flag ) {//不需要设置当前页面信息
                 this.myEditorUi.editor.setXml()
             }
             let id = list[index].id

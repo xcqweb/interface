@@ -654,8 +654,8 @@ Sidebar.prototype.addPagePalette = function() {
         }
     })
     $('.geSidebarContainer-bottom').on('mouseleave', '.geSidebar>a', function (evt) {
-            evt.preventDefault()
-            $('.suspension-showShapename').remove()
+        evt.preventDefault()
+        $('.suspension-showShapename').remove()
     })
 }
 
