@@ -21,7 +21,7 @@
             </Tabs>
           </div>
           <div
-            v-if="tabsNum==1 && deviceModelId && footerContent"
+            v-if="tabsNum === 1 && ifShowDataFlag && dataSourceList.length"
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >

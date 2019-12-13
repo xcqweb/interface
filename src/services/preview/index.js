@@ -139,7 +139,10 @@ class Main {
         let parseContent = resMenu[2]
         let pageRankNormal = resMenu[3]
         pageRankNormal.forEach(item=>{
-            pages[item] = parseContent.pages[item].title
+            let tempPage =  parseContent.pages[item]
+            if(tempPage) {
+                pages[item] = tempPage.title
+            }
         })
         this.menuStyle  = menuStyles[parseTheme.style - 1]
         $(()=>{

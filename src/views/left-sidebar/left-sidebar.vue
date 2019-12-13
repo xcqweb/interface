@@ -209,9 +209,11 @@ export default {
             let allPages = this.myEditorUi.editor.pages
             for (let key of targetList) {
                 let temp = allPages[key]
-                temp.isEdit = false
-                temp.bkTitle = temp.title
-                resList.push(temp)
+                if(temp) {
+                    temp.isEdit = false
+                    temp.bkTitle = temp.title
+                    resList.push(temp)
+                }
             }
         },
         changeCurrentPage(list,index,flag) {
