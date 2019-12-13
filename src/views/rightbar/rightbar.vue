@@ -74,9 +74,7 @@ export default {
                 this.$store.commit('getWidgetInfo',graph)
                 this.dealChartsRefresh(graph)
             })
-            graph.addListener(mxEvent.REFRESH,()=>{
-                this.dealChartsRefresh(graph)
-            })
+             
             let ele = this.$refs.shortCutWrapper
             shortCutWidgets = [
                 // 文字
@@ -154,6 +152,7 @@ export default {
                 VueEvent.$emit('isShowFootBar',{show:isBindData})
             }
             this.inited = true
+            this.dealChartsRefresh(graph)
         },
         getCellShapeName(cell) {
             let graph = this.myEditorUi.editor.graph
