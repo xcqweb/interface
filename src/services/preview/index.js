@@ -80,7 +80,7 @@ class Main {
             setTimeout(()=>{
                 this.updateMenuPos(res[1])
                 window.onresize = () => {
-                    this.refreshMenuPos(res[1])
+                    //this.refreshMenuPos(res[1])
                 }
             })
         }
@@ -324,6 +324,10 @@ class Main {
     }
     updateMenuPos(parseTheme) {
         let menuIcon = $(".gePreviewMenuIcon")
+        let check = menuIcon.attr("data-check")
+        if(check != 1) {
+            return
+        }
         if (parseTheme.position == 1) {
             let left = menuWidth + $("#gePreviewCon").offset().left
             this.dealMenuLeft(this.getConHeight(), left, menuIcon)
