@@ -181,7 +181,9 @@ export default {
                     echartsDom.style.height = `${cells[i].geometry.height}px`
                     let cellEchart = echarts.init(echartsDom)
                     let bindChartProps = this.getWidgetProps('chartProps',cells[i])
-                    cellEchart.setOption(bindChartProps)
+                    if(bindChartProps) {
+                        cellEchart.setOption(bindChartProps)
+                    }
                 }
             }
         },

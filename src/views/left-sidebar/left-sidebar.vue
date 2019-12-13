@@ -251,6 +251,7 @@ export default {
             }
         },
         addPageType(type) {
+            this.myEditorUi.editor.setXml()//保存当页面信息
             this.modelshow = true
             this.alertTitleName = this.$t(addPageTypeName[type - 1])
             let params = {'type': pageTypeArr[type - 1]}
@@ -267,7 +268,6 @@ export default {
                     this.templates.push(obj)
                 })
             })
-            
         },
         eventClickList(index) {
             if(index == this.templateIndex) {
@@ -293,7 +293,6 @@ export default {
             let xml
             if (this.templateIndex == 0) {
                 xml = this.myEditorUi.editor.defaultXml[this.typeTab - 1]
-               
             } else { // 弹窗和页面模版
                 let content = this.templates[this.templateIndex].content
                 xml = JSON.parse(content).xml
@@ -305,7 +304,6 @@ export default {
                 style:{},
                 type: this.typeTab == 2 ? 'dialog' : 'normal'
             }
-            this.myEditorUi.editor.setXml()
             this.dealNewPage(page)
         },
         dealNewPage(page) {
@@ -323,7 +321,6 @@ export default {
             this.isShowPopMenu = false
         },
         copyPage() {
-            this.myEditorUi.editor.setXml()//先保存下之前的页面信息
             let currentPage = this.getCurrPageOrDialog()
             let type =  pageTypeArr[this.typeTab - 1]
             let page = {
