@@ -731,7 +731,6 @@ import {sureDialog} from '../../../services/Utils'
 let palettName
 let alignArr = [mxConstants.ALIGN_LEFT,mxConstants.ALIGN_CENTER,mxConstants.ALIGN_RIGHT]
 let valignArr = [mxConstants.ALIGN_TOP,mxConstants.ALIGN_MIDDLE,mxConstants.ALIGN_BOTTOM]
-// let picShapeList = ['pipeline2','pipeline3','light','userimage']
 let cellEchart,bindChartProps
 export default {
     components:{
@@ -833,7 +832,10 @@ export default {
         this.borderColor =  this.dealDefaultColor(this.$store.state.main.widgetInfo.borderColor)
         this.borderLineBoldText =  this.$store.state.main.widgetInfo.borderBold
         this.borderLineCls = this.$store.state.main.widgetInfo.borderLineCls
-        if(this.shapeName == 'beeline') {
+        if(this.shapeName == 'rectangle') {
+            graph.setCellStyles(mxConstants.STYLE_ROUNDED, 1, graph.getSelectionCells())
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ROUNDED],'values', [1], 'cells', graph.getSelectionCells()))
+        }else if(this.shapeName == 'beeline') {
             this.arrowCls = this.$store.state.main.widgetInfo.arrowCls
         }else if(this.shapeName == 'tableBox') {
             let res = this.getRowColNum()
@@ -898,12 +900,6 @@ export default {
                 this.selectMenu = cellProp.check
             }
         }
-        // if(picShapeList.includes(this.shapeName)) {
-        //     graph.setCellStyles(mxConstants.STYLE_ASPECT, 'fixed', graph.getSelectionCells())
-        //     graph.getModel().beginUpdate()
-        //     this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ASPECT],'values', ['fixed'], 'cells', graph.getSelectionCells()))
-        //     graph.getModel().endUpdate()
-        // }
         let dblClickFn = graph.dblClick
         graph.dblClick = (evt, cell) => {
             let state = graph.view.getState(cell)
@@ -1116,7 +1112,7 @@ export default {
                 values = ['1']
             }
             for (let i = 0; i < keys.length; i++) {
-                graph.setCellStyles(keys[i], values[i]);
+                graph.setCellStyles(keys[i], values[i])
             }
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', keys,'values', values, 'cells', graph.getSelectionCells()))
             this.showBorderLine = false
@@ -1125,7 +1121,7 @@ export default {
         changeBorderLineBold(d,e) {
             this.borderLineBoldText = d
             let graph = this.myEditorUi.editor.graph
-            graph.setCellStyles('strokeWidth', d, graph.getSelectionCells());
+            graph.setCellStyles('strokeWidth', d, graph.getSelectionCells())
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['strokeWidth'],'values', [d], 'cells', graph.getSelectionCells()))
             this.showBorderLineBold = false
             e && e.stopPropagation()
