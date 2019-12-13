@@ -455,6 +455,7 @@ export default {
         width:208px;
         display:flex;
         flex-direction: column;
+        z-index:3;
         .geSidebarContainer-bottom{
             flex:1;
             overflow-y: auto;

@@ -283,11 +283,13 @@ class PreviewPage {
                             $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId}`)
                         })
                         requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
-                            let resParam = [],maps = new Map()
+                            let resParam = [],maps = new Map(),tempArr
                             res.forEach(dpId=>{
                                 let deviceId = getDeviceId(dpId)
                                 if (maps.has(deviceId)) {
-                                    maps.set(deviceId, maps.get(deviceId).push(dpId))
+                                    tempArr =  maps.get(deviceId)
+                                    tempArr.push(dpId)
+                                    maps.set(deviceId,tempArr)
                                 }else{
                                     maps.set(deviceId, [dpId])
                                 }
@@ -327,17 +329,20 @@ class PreviewPage {
             }
         }
         formulaAttr.data.forEach(item=>{
-            let keyArr = item.key.split('/')
-            let paramId = null
-            if(keyArr.length > 2) {
-                paramId = keyArr[1]
+            let tempKey = item.key
+            if(tempKey) {
+                let keyArr = tempKey.split('/')
+                let paramId = null
+                if(keyArr.length > 2) {
+                    paramId = keyArr[1]
+                }
+                res.push({
+                    paramType: keyArr[0] == 'device' ? 0 : 1,
+                    deviceId: deviceId,
+                    partId: paramId,
+                    paramId: keyArr[keyArr.length - 1]
+                })
             }
-            res.push({
-                paramType: keyArr[0] == 'device' ? 0 : 1,
-                deviceId: deviceId,
-                partId: paramId,
-                paramId: keyArr[keyArr.length - 1]
-            })
         })
         return res
     }

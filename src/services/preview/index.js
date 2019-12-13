@@ -62,29 +62,31 @@ class Main {
     changePage(pageId,isAction) { //isAction 是否交互事件触发的
         if(isAction) {
             let items = $(".gePreviewMenu ul li")
-            items.each(function() {
-                let attrPageId = $(this).data("pageId")
-                if(attrPageId == pageId) {
-                    $(this).click() //执行事件切换页面
-                    return false //终止each 循环
-                }
-            })
-            return
+            if(items.length) {//启用菜单
+                items.each(function() {
+                    let attrPageId = $(this).data("pageId")
+                    if(attrPageId == pageId) {
+                        $(this).click() //执行事件切换页面
+                        return false //终止each 循环
+                    }
+                })
+                return
+            }
         }
         this.pageId = pageId
         // 渲染页面
         this.renderPageFun(pageId)
-       
-        let res = this.checkIsToInitMenu()
-        if(res[0]) {
-            setTimeout(()=>{
-                this.updateMenuPos(res[1])
-                window.onresize = () => {
-                    //this.refreshMenuPos(res[1])
-                }
-            })
+        if(!isAction) {
+            let res = this.checkIsToInitMenu()
+            if(res[0]) {
+                setTimeout(()=>{
+                    this.updateMenuPos(res[1])
+                    window.onresize = () => {
+                        this.refreshMenuPos(res[1])
+                    }
+                })
+            }
         }
-
     }
     checkIsToInitMenu() {
         let res = true

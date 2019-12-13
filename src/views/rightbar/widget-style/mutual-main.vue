@@ -310,7 +310,6 @@ export default{
                 }
             }
             if(isEdit) {
-                console.log(action)
                 let res = actions.findIndex(item=>{
                     return item.mutualType == action.mutualType
                 })
