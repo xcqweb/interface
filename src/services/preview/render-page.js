@@ -244,7 +244,7 @@ class PreviewPage {
                 let statesInfo = item.statesInfo
                 let tempArr = []
                 statesInfo.forEach((d) => {
-                    if (d.modelFormInfo && d.key) {
+                    if (d.modelFormInfo) {
                         tempArr.push(d.modelFormInfo)
                     }
                 })
@@ -273,7 +273,7 @@ class PreviewPage {
                             if (statesInfo && statesInfo.length) {
                                 cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
                                 statesInfo.forEach((d) => {
-                                    if (d.modelFormInfo && d.key) {
+                                    if (d.modelFormInfo) {
                                         d.modelFormInfo = allModels.get(d.modelFormInfo)
                                         cellStateInfoHasModel.push(d)
                                     }

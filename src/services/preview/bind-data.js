@@ -147,7 +147,7 @@ function setterRealData(res, fileSystem) {
                             break
                         }
                     }
-                    changeEleState($ele, stateModels[stateIndex],fileSystem)
+                    changeEleState(els[i], stateModels[stateIndex],fileSystem)
                 }
                 if (paramShow && paramShow.length) {
                     let paramData = $ele.data('paramData')
@@ -217,6 +217,9 @@ function dealStateFormula(formula, data) {
 function dealLogic(logic,data) {
     let res = true
     let operate = +logic.logical
+    if(!logic.key) {
+        return false
+    }
     let tempArr = logic.key.split("/")
     let deviceType = tempArr[0]
     let paramId = tempArr[tempArr.length - 1]

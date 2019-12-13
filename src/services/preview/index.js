@@ -62,24 +62,14 @@ class Main {
     changePage(pageId,isAction) { //isAction 是否交互事件触发的
         if(isAction) {
             let items = $(".gePreviewMenu ul li")
-            let scroolToMenu = ()=>{
-                if (this.menuStyle.position == 1) {
-                    $(".gePreviewMenu ul").animate({scrollTop: $(this).offset().top + "px"}, 500)
-                } else {
-                    $(".gePreviewMenu ul").animate({scrollLeft: $(this).offset().left + "px"}, 500)
+            items.each(function() {
+                let attrPageId = $(this).data("pageId")
+                if(attrPageId == pageId) {
+                    $(this).click() //执行事件切换页面
+                    return false //终止each 循环
                 }
-            }
-            if(items.length) { //如果菜单未隐藏,滚动菜单到对应位置并选中
-                items.each(function() {
-                    let attrPageId = $(this).data("pageId")
-                    if(attrPageId == pageId) {
-                        $(this).click() //执行事件切换页面
-                        scroolToMenu()
-                        return false //终止each 循环
-                    }
-                })
-                return
-            } 
+            })
+            return
         }
         this.pageId = pageId
         // 渲染页面
