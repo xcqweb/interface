@@ -256,8 +256,9 @@ class PreviewPage {
             for (let key of modelIdsParam.keys()) {
                 modelAllIds = modelAllIds.concat(key.split("_"))
             }
+            modelAllIds = Array.from(new Set(modelAllIds))
             if(modelAllIds.length) {
-                requestUtil.post(urls.getModelByIds.url, Array.from(new Set(modelAllIds))).then((res) => {
+                requestUtil.post(urls.getModelByIds.url, modelAllIds).then((res) => {
                     if (res && res.returnObj) {
                         let params = []
                         res.returnObj.forEach(item=>{
@@ -282,26 +283,32 @@ class PreviewPage {
                             const className = item.shapeName.includes('progress') || item.shapeName.includes('Chart') ? '' : 'param-show-node'
                             $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId}`)
                         })
-                        requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
-                            let resParam = [],maps = new Map(),tempArr
-                            res.forEach(dpId=>{
-                                let deviceId = getDeviceId(dpId)
-                                if (maps.has(deviceId)) {
-                                    tempArr =  maps.get(deviceId)
-                                    tempArr.push(dpId)
-                                    maps.set(deviceId,tempArr)
-                                }else{
-                                    maps.set(deviceId, [dpId])
-                                }
-                            })
-                            for (let key of maps.keys()) {
-                                resParam.push({
-                                    deviceId:key,
-                                    params:maps.get(key)
+                        if(params.length) {
+                            requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
+                                let resParam = [],maps = new Map(),tempArr
+                                res.forEach(dpId=>{
+                                    let deviceId = getDeviceId(dpId)
+                                    if (maps.has(deviceId)) {
+                                        tempArr =  maps.get(deviceId)
+                                        tempArr.push(dpId)
+                                        maps.set(deviceId,tempArr)
+                                    }else{
+                                        maps.set(deviceId, [dpId])
+                                    }
                                 })
-                            }
-                            this.subscribeDataDeal(resParam)
-                        })
+                                for (let key of maps.keys()) {
+                                    resParam.push({
+                                        deviceId:key,
+                                        params:maps.get(key)
+                                    })
+                                }
+                                this.subscribeDataDeal(resParam)
+                            },()=>{
+                                this.subscribeDataDeal()
+                            })
+                        }else{
+                            this.subscribeDataDeal()
+                        }
                     }
                 },()=>{
                     this.subscribeDataDeal()

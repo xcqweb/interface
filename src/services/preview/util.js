@@ -373,7 +373,7 @@ function dealCharts(cell) {
                     requestUtil.post(`${urls.pentSdbData.url}`, [pentSdbParams]).then(res => {
                         if (res && res.length) {
                             let tempArr = res[0]
-                            if(tempArr) {
+                            if(tempArr && tempArr.resMap) {
                                 let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
                                 for (let key of keys) {
                                     tempOptions.xAxis.data.push(timeFormate(key, false))

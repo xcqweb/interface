@@ -2,8 +2,8 @@
 // urlParams is null when used for embedding
 window.urlParams = window.urlParams || {};
 
-window.RESOURCES_PATH = window.RESOURCES_PATH || '/static/resources/eidtor';
-window.STENCIL_PATH = window.STENCIL_PATH || '/static/stencils';
+window.RESOURCES_PATH = window.RESOURCES_PATH || 'static/resources/eidtor';
+window.STENCIL_PATH = window.STENCIL_PATH || 'static/stencils';
 window.IMAGE_PATH = window.IMAGE_PATH || 'static/images/default';
 window.STYLE_PATH = window.STYLE_PATH || 'static';
 // 设置默认地址
