@@ -49,7 +49,7 @@ export default {
         }
     },
     created() {
-        let pathA = window.location.host + '/' + window.location.pathname;
+        let pathA = window.location.host + window.location.pathname;
         mxUtils.getAll([mxResources.getSpecialBundle(window.RESOURCES_PATH,window.mxLanguage), pathA + '/static/default.xml'],xhr=> {
             mxResources.parse(xhr[0].getText())
             // 默认配置
