@@ -591,7 +591,7 @@ let tipDialog = function(editorUi, flag, info) {
     var tipContent = editorUi.createDiv('tipDialogInfo');
     // 图标
     var img = document.createElement('img')
-    img.setAttribute('src', flag ? '/static/images/default/success.png' : '/static/images/default/error.png');
+    img.setAttribute('src', flag ? window.PREFIX_PATH + '/static/images/default/success.png' : window.PREFIX_PATH + '/static/images/default/error.png');
     tipContent.appendChild(img)
     // 内容
     var infoText = document.createElement('p')

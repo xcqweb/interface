@@ -2,13 +2,12 @@
 // urlParams is null when used for embedding
 window.urlParams = window.urlParams || {};
 
-var pathA = '/interface';
-// var pathA = window.location.host + '/interface';
+window.PREFIX_PATH = '/interface';
+window.RESOURCES_PATH = PREFIX_PATH + '/static/resources/eidtor';
+window.STENCIL_PATH = PREFIX_PATH + '/static/stencils';
+window.IMAGE_PATH = PREFIX_PATH + '/static/images/default';
+window.STYLE_PATH = PREFIX_PATH + '/static';
 
-window.RESOURCES_PATH = pathA + '/static/resources/eidtor';
-window.STENCIL_PATH = pathA + '/static/stencils';
-window.IMAGE_PATH = pathA + '/static/images/default';
-window.STYLE_PATH = pathA + '/static';
 /* window.RESOURCES_PATH = window.RESOURCES_PATH || '/static/resources/eidtor';
 window.STENCIL_PATH = window.STENCIL_PATH || '/static/stencils';
 window.IMAGE_PATH = window.IMAGE_PATH || 'static/images/default';

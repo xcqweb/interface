@@ -262,7 +262,7 @@ function showTips(flag = true, title = '请求') {
     document.body.appendChild(bg)
     // 图标
     let icon = document.createElement('img');
-    icon.setAttribute('src', `/static/images/icon/defalult/${flag ? 'error' : 'success'}.png`)
+    icon.setAttribute('src', `${window.PREFIX_PATH}/static/images/icon/defalult/${flag ? 'error' : 'success'}.png`)
     // 文本
     let msg = document.createElement('p')
     msg.innerHTML = `${title}${flag ? '成功' : '失败'}`
