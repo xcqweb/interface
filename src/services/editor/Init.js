@@ -2,7 +2,8 @@
 // urlParams is null when used for embedding
 window.urlParams = window.urlParams || {};
 
-var pathA = window.location.host + '/interface';
+var pathA = '/interface';
+// var pathA = window.location.host + '/interface';
 
 window.RESOURCES_PATH = pathA + '/static/resources/eidtor';
 window.STENCIL_PATH = pathA + '/static/stencils';
