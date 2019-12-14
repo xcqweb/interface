@@ -2,7 +2,7 @@
 // urlParams is null when used for embedding
 window.urlParams = window.urlParams || {};
 
-window.PREFIX_PATH = '/interface';
+window.PREFIX_PATH = '@/assets';
 window.RESOURCES_PATH = PREFIX_PATH + '/static/resources/eidtor';
 window.STENCIL_PATH = PREFIX_PATH + '/static/stencils';
 window.IMAGE_PATH = PREFIX_PATH + '/static/images/default';
