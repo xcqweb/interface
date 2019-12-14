@@ -1,0 +1,22 @@
+<shapes name="jevin">
+  <shape name="drop" viewBox="0 0 19 25">
+    <path d="M3727.78,1370.35L3735,1380l7.22-9.65A9,9,0,1,0,3727.78,1370.35Z" transform="translate(-3725.5 -1355.5)"/>
+  </shape>
+  <shape name="circle" viewBox="0 0 25 25">
+    <ellipse cx="12.5" cy="12.5" rx="12" ry="12" stroke-width="1"/>
+  </shape>
+  <shape name="square" viewBox="0 0 21 21">
+    <rect stroke-width="1" stroke="red" x="0.5" y="0.5" width="20" height="20"/>
+  </shape>
+  <shape name="diamond" viewBox="0 0 25 25">
+    <path d="M3819,1368l12-12,12,12-12,12Z" transform="translate(-3818.5 -1355.5)"/>
+  </shape>
+  <shape name="pentagram" viewBox="0 0 691.24 651.26">
+    <path d="M345.7,534.5c2.5,0,4.9,0.6,7.1,1.7l196.4,102.1L511.7,422c-0.8-4.9,0.8-9.9,4.4-13.3l159.1-153.3l-219.7-31.6
+			c-4.9-0.7-9.2-3.8-11.5-8.2L345.6,18.9l-98.3,196.8c-2.2,4.5-6.5,7.6-11.5,8.2L16.2,255.4l159,153.3c3.6,3.4,5.2,8.4,4.4,13.3
+			L142,638.4l196.5-102.1C340.7,535.1,343.1,534.5,345.7,534.5L345.7,534.5z"/>
+  </shape>
+  <shape name="endArrow" viewBox="0 0 25 25">
+    <path d="M962.011 61.978l-150.243 40.261 39.115 39.139-788.895 788.873 31.75 31.75 788.895-788.873 39.115 39.115z"/>
+  </shape>
+</shapes>

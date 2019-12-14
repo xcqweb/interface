@@ -1,0 +1,8 @@
+<svg 
+ xmlns="http://www.w3.org/2000/svg"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ width="37.5px" height="19.5px">
+<path fill-rule="evenodd"  stroke="rgb(125, 125, 125)" stroke-width="1px" stroke-linecap="butt" stroke-linejoin="miter" fill="none"
+ d="M2.498,0.500 L34.499,0.500 C35.603,0.500 36.499,1.395 36.499,2.500 L36.499,16.500 C36.499,17.605 35.603,18.500 34.499,18.500 L2.498,18.500 C1.395,18.500 0.499,17.605 0.499,16.500 L0.499,2.500 C0.499,1.395 1.395,0.500 2.498,0.500 Z"/>
+<text font-family="Microsoft YaHei" fill="rgb(37, 37, 37)" font-size="8px" x="5.5px" y="12.4059999999999px">button</text>
+</svg>
