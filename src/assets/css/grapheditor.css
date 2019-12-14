@@ -617,7 +617,7 @@ div.mxWindow .geButton {
 }
 .geDialog .geDialogTitle::after {
 	content: '';
-	background: url(/static/images/default/closeDialog.png);
+	background: url(../../../static/images/default/closeDialog.png);
 	background-size: 16px 16px;
 	width: 16px;
 	height: 16px;
