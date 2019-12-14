@@ -49,7 +49,7 @@ export default {
         }
     },
     created() {
-        mxUtils.getAll([mxResources.getSpecialBundle(window.RESOURCES_PATH,window.mxLanguage), '../static/default.xml'],xhr=> {
+        mxUtils.getAll([mxResources.getSpecialBundle(window.RESOURCES_PATH,window.mxLanguage), window.PREFIX_PATH + '/static/default.xml'],xhr=> {
             mxResources.parse(xhr[0].getText())
             // 默认配置
             var themes = new Object()

@@ -2005,7 +2005,7 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
     portraitSpan.style.float = "left";
     portraitSpan.style.width = "24px";
     portraitSpan.style.height = "32px";
-    portraitSpan.style.backgroundImage = 'url(/static/images/icons/portrait.png)';
+    portraitSpan.style.backgroundImage = 'url('+ window.PREFIX_PATH +'/static/images/icons/portrait.png)';
     formatDiv.appendChild(portraitSpan);
 
     // 横屏
@@ -2017,7 +2017,7 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
     landscapeSpan.style.float = "left";
     landscapeSpan.style.height = "24px";
     landscapeSpan.style.width = "32px";
-    landscapeSpan.style.backgroundImage = 'url(/static/images/icons/landscape.png)';
+    landscapeSpan.style.backgroundImage = 'url('+ window.PREFIX_PATH +'/static/images/icons/landscape.png)';
     landscapeSpan.style.margin = "4px 0 0 10px";
     formatDiv.appendChild(landscapeSpan)
 
@@ -2116,8 +2116,8 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
                         landscapeCheckBox.removeAttribute('checked');
                         landscapeCheckBox.defaultChecked = false;
                         landscapeCheckBox.checked = false;
-                        landscapeSpan.style.backgroundImage = 'url(/static/images/icons/landscape.png)';
-                        portraitSpan.style.backgroundImage = 'url(/static/images/icons/portrait_checked.png)';
+                        landscapeSpan.style.backgroundImage = 'url('+ window.PREFIX_PATH +'/static/images/icons/landscape.png)';
+                        portraitSpan.style.backgroundImage = 'url('+ window.PREFIX_PATH +'/static/images/icons/portrait_checked.png)';
                         portraitSpan.style.border = '1px solid #3D91F7';
                         landscapeSpan.style.border = '1px solid #C4C4C4';
                         detected = true;
@@ -2132,8 +2132,8 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
                         landscapeCheckBox.setAttribute('checked', 'checked');
                         landscapeCheckBox.defaultChecked = true;
                         landscapeCheckBox.checked = true;
-                        portraitSpan.style.backgroundImage = 'url(/static/images/icons/portrait.png)';
-                        landscapeSpan.style.backgroundImage = 'url(/static/images/icons/landscape_checked.png)';
+                        portraitSpan.style.backgroundImage = 'url('+ window.PREFIX_PATH +'/static/images/icons/portrait.png)';
+                        landscapeSpan.style.backgroundImage = 'url('+ window.PREFIX_PATH +'/static/images/icons/landscape_checked.png)';
                         portraitSpan.style.border = '1px solid #C4C4C4';
                         landscapeSpan.style.border = '1px solid #3D91F7';
                         detected = true;
@@ -2221,8 +2221,8 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
     mxEvent.addListener(portraitSpan, 'click', function(evt)
     {
         portraitCheckBox.checked = true;
-        landscapeSpan.style.backgroundImage = 'url(/static/images/icons/landscape.png)';
-        portraitSpan.style.backgroundImage = 'url(/static/images/icons/portrait_checked.png)';
+        landscapeSpan.style.backgroundImage = 'url('+ window.PREFIX_PATH +'/static/images/icons/landscape.png)';
+        portraitSpan.style.backgroundImage = 'url('+ window.PREFIX_PATH +'/static/images/icons/portrait_checked.png)';
         portraitSpan.style.border = '1px solid #3D91F7';
         landscapeSpan.style.border = '1px solid #C4C4C4';
         update(evt);
@@ -2233,8 +2233,8 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
     mxEvent.addListener(landscapeSpan, 'click', function(evt)
     {
         landscapeCheckBox.checked = true;
-        portraitSpan.style.backgroundImage = 'url(/static/images/icons/portrait.png)';
-        landscapeSpan.style.backgroundImage = 'url(/static/images/icons/landscape_checked.png)';
+        portraitSpan.style.backgroundImage = 'url('+ window.PREFIX_PATH +'/static/images/icons/portrait.png)';
+        landscapeSpan.style.backgroundImage = 'url('+ window.PREFIX_PATH +'/static/images/icons/landscape_checked.png)';
         portraitSpan.style.border = '1px solid #C4C4C4';
         landscapeSpan.style.border = '1px solid #3D91F7';
         update(evt);

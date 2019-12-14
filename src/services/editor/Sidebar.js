@@ -108,11 +108,11 @@ Sidebar.prototype.init = function(type)
 /**
  * Sets the default font size.
  */
-Sidebar.prototype.collapsedImage = '/static/images/icons/colspan.png'
+Sidebar.prototype.collapsedImage = window.PREFIX_PATH + '/static/images/icons/colspan.png'
 /**
  * Sets the default font size.
  */
-Sidebar.prototype.expandedImage = '/static/images/icons/expand.png'
+Sidebar.prototype.expandedImage = window.PREFIX_PATH + '/static/images/icons/expand.png'
 
 /**
  * Sets the default font size.
@@ -695,7 +695,7 @@ Sidebar.prototype.addStencilPalette = function(id, title, stencilFile, style, ig
 };
 Sidebar.prototype.addBasicPalette = function()
 {
-    this.addStencilPalette('basic', mxResources.get('basic'), '/static/stencils/basic.xml',
+    this.addStencilPalette('basic', mxResources.get('basic'), window.PREFIX_PATH + '/static/stencils/basic.xml',
         ';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1;aspect=fixed',
         null, null, null, null, []);
 };
@@ -765,7 +765,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '表格');
         }),
         // 图片
-        this.createVertexTemplateEntry('shape=image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '<input type="file" style="opacity:0;" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/></label>', '图片'),
+        this.createVertexTemplateEntry('shape=image;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '<input type="file" style="opacity:0;" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/></label>', '图片'),
         // 曲线
         // this.addEntry('curve', mxUtils.bind(this, function()
 	 	// {
@@ -778,15 +778,15 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         //     return this.createEdgeTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '曲线');
 	 	// })),
         // 指示灯
-        this.createVertexTemplateEntry('shape=light;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/light.svg', 72, 72, '', '指示灯'),
+        this.createVertexTemplateEntry('shape=light;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/light.svg', 72, 72, '', '指示灯'),
         // 进度条
-        this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/progress.svg', 72, 16, '', '进度条'),
+        this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/progress.svg', 72, 16, '', '进度条'),
         // 管道1
-        this.createVertexTemplateEntry('shape=pipeline1;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline1.svg', 72, 36, '', '管道1'),
+        this.createVertexTemplateEntry('shape=pipeline1;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/pipeline1.svg', 72, 36, '', '管道1'),
         // 管道2
-        this.createVertexTemplateEntry('shape=pipeline2;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline2.svg', 72, 72, '', '管道2'),
+        this.createVertexTemplateEntry('shape=pipeline2;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/pipeline2.svg', 72, 72, '', '管道2'),
         // 管道3
-        this.createVertexTemplateEntry('shape=pipeline3;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline3.svg', 60, 40, '', '管道3'),
+        this.createVertexTemplateEntry('shape=pipeline3;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/pipeline3.svg', 60, 40, '', '管道3'),
         // 链接
         this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
     ];
@@ -876,7 +876,7 @@ Sidebar.prototype.createTitle = function(label, id)
     // 页面管理一栏，增加添加页面管理的icon
     if (id === 'pageManage') {
         var img = document.createElement('img');
-        img.setAttribute('src', '/static/images/icons/addPage.png');
+        img.setAttribute('src', window.PREFIX_PATH + '/static/images/icons/addPage.png');
         img.setAttribute('id', 'addPage');
         img.addEventListener('click', function(e) {
             e = e || window.event;
@@ -1005,7 +1005,7 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
             elt.style.backgroundImage = `url(${imageurl})`;
             elt.style.backgroundSize = '40px 40px'
         } else {
-            elt.style.backgroundImage = 'url(/static/stencils/basic/' + shapeName + '.png)';
+            elt.style.backgroundImage = 'url(' + window.PREFIX_PATH + '/static/stencils/basic/' + shapeName + '.png)';
         }
         elt.style.backgroundPosition = `center center`
         elt.style.backgroundRepeat = `no-repeat`
