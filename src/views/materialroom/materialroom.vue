@@ -281,7 +281,7 @@ export default {
             ],
             materialArrayName: ['pageTemplate', 'popupTemplate'],
             uploadData:{},
-            DIR_: `../../../static/stencils/basic/`,
+            DIR_: `${window.PREFIX_PATH}/static/stencils/basic/`,
             baseAssembly: [
                 {image:'text.svg', name :'text'},
                 {image:'rectangle.svg',name :'rectangle'},
