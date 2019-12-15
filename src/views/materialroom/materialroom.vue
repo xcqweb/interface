@@ -217,7 +217,7 @@
         <template v-if="isActive >= 2 && tabNumber === 0">
           <span>
             <Upload 
-              action="api/iot-cds/sources/material"
+              :action="picAction"
               :show-upload-list="false"
               :with-credentials="true"
               :headers="headers"
@@ -265,6 +265,7 @@ export default {
     },
     data() {
         return {
+            picAction:`${window.location.origin}api/iot-cds/sources/material`,
             materialAlertName: 'materialLibrary',
             showmarerial: true,
             madeltext: ['cancel',this.$t('materialRoom.uploadWidget')],
