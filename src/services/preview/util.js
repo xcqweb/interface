@@ -382,8 +382,12 @@ function dealCharts(cell) {
                                 tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
                                 tempOptions.series = tempSeries
                                 myEchart.setOption(tempOptions)
+                            }else{
+                                myEchart.setOption(options)
                             }
                         }
+                    },()=>{
+                        myEchart.setOption(options)
                     })
                 })
             } else {
