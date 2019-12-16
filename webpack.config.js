@@ -9,7 +9,6 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const postCssPlugin = require("autoprefixer")({overrideBrowserslist: [ "> 1%",
     "last 2 versions",
     "not ie <= 8"]})
-
 // 清除dist文件
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 module.exports = {
@@ -109,7 +108,7 @@ module.exports = {
             filename: 'index.html',
             template: 'index.html',
             inject: true,
-            favicon: path.resolve('./favicon1.ico') // 增加
+            favicon: path.resolve('./favicon.ico') // 增加
         }),
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
@@ -138,7 +137,7 @@ module.exports = {
         },
         proxy: {
             "/api": {
-                "target": "http://10.74.20.25:81",
+                "target": "http://10.74.20.25",
                 "changeOrigin": true,
                 // "pathRewrite": {"^/api": "/api"}
                 // "pathRewrite": {"^/api": ""}
