@@ -647,7 +647,7 @@ Sidebar.prototype.addPagePalette = function() {
             ele.style.position = 'absolute'
             ele.style.backgroundColor="#ffffff"
             ele.style.border="1px solid #d4d4d4"
-            ele.style.left = '210px'
+            ele.style.left = `${$(".geSidebarContainer").width()}px`
             ele.style.top = evt.target.offsetTop + 8 + 70 - shapeScrollTopHeight + 'px'
             ele.style.zIndex='100'
             document.body.appendChild(ele);
@@ -1562,6 +1562,11 @@ Sidebar.prototype.createDragSource = function(elt, dropHandler, preview, cells, 
 	
     var dragSource = mxUtils.makeDraggable(elt, this.editorUi.editor.graph, mxUtils.bind(this, function(graph, evt, target, x, y)
     {
+        let {pageFormat} = graph
+        if(x<0 || y<0 || x>pageFormat.width || y>pageFormat.height){
+            dragSource.reset()
+            return
+        }
         if (this.updateThread != null)
         {
             window.clearTimeout(this.updateThread);
@@ -1732,8 +1737,9 @@ Sidebar.prototype.createDragSource = function(elt, dropHandler, preview, cells, 
         {
             ui.hoverIcons.setDisplay('');
         }
-		
-        dragExit.apply(this, arguments);
+		if(graph){
+            dragExit.apply(this, arguments);
+        }
     };
 	
     dragSource.dragOver = function(graph, evt)

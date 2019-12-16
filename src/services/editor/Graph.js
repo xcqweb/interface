@@ -3147,7 +3147,6 @@ HoverIcons.prototype.init = function()
 	    {
 	    	connectionHandlerActive = false;
 	    	var evt = me.getEvent();
-	    	
 	    	if (this.isResetEvent(evt))
 	    	{
 	    		this.reset();

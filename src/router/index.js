@@ -1,9 +1,11 @@
     
-import Vue from 'vue';
-import Router from 'vue-router';
+import Vue from 'vue'
+import Router from 'vue-router'
+const isDev = process.env.NODE_ENV === 'development'
+window.PREFIX_PATH = isDev ? '' : '/interface'
 
 
-Vue.use(Router);
+Vue.use(Router)
 
 const Preview = () => import("@views/preview.vue")
 const Main = () => import("@views/main.vue")
