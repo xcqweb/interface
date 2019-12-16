@@ -513,7 +513,6 @@ export default {
         },
         deleteFooterHandle(data, index) {
             let startBindData = this.getCellModelInfo('bindData')
-            console.log(data)
             sureDialog(this.myEditorUi,`${this.$t('footBar.sureDelDataSources')}-${data.deviceName}?`,()=>{
                 this.dataSourceList.splice(index, 1)
                 startBindData = null
