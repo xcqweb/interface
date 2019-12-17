@@ -1,9 +1,11 @@
     
-import Vue from 'vue';
-import Router from 'vue-router';
+import Vue from 'vue'
+import Router from 'vue-router'
+const isDev = process.env.NODE_ENV === 'development'
+window.PREFIX_PATH = isDev ? '' : '/interface'
 
 
-Vue.use(Router);
+Vue.use(Router)
 
 const Preview = () => import("@views/preview.vue")
 const Main = () => import("@views/main.vue")
@@ -11,12 +13,12 @@ const Main = () => import("@views/main.vue")
 let routes = [
     {
         path: '*',
-        redirect: '/interface'
+        redirect: window.PREFIX_PATH + '/interface'
     }, {
         path: '/',
-        redirect: '/interface'
+        redirect: window.PREFIX_PATH + '/interface'
     }, {
-        path: '/interface',
+        path: window.PREFIX_PATH + '/interface',
         name: 'Interface',
         component: Main,
         meta: {
@@ -24,7 +26,7 @@ let routes = [
         }
     },
     {
-        path: '/interface_preview',
+        path: window.PREFIX_PATH + '/interface_preview',
         name: 'Preview',
         component: Preview,
         meta: {

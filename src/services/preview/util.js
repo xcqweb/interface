@@ -46,13 +46,13 @@ async function geAjax(url, method = 'GET', data = null) {
                     "Authorization": 'Bearer ' + token
                 },
                 data:data,
-                url,
+                url:`${window.location.origin}/${url}`,
                 success: function(res) {
                     resolve(res)
                 },
                 error:function(res) {
                     if (res.status == 418) {
-                        geAjax('/api/auth/refreshToken', 'POST', {
+                        geAjax('api/auth/refreshToken', 'POST', {
                             refreshToken
                         }).then(res => {
                             setCookie('token', res.token);
@@ -262,7 +262,7 @@ function showTips(flag = true, title = '请求') {
     document.body.appendChild(bg)
     // 图标
     let icon = document.createElement('img');
-    icon.setAttribute('src', `/static/images/icon/defalult/${flag ? 'error' : 'success'}.png`)
+    icon.setAttribute('src', `${window.PREFIX_PATH}/static/images/icon/defalult/${flag ? 'error' : 'success'}.png`)
     // 文本
     let msg = document.createElement('p')
     msg.innerHTML = `${title}${flag ? '成功' : '失败'}`
@@ -373,7 +373,7 @@ function dealCharts(cell) {
                     requestUtil.post(`${urls.pentSdbData.url}`, [pentSdbParams]).then(res => {
                         if (res && res.length) {
                             let tempArr = res[0]
-                            if(tempArr) {
+                            if(tempArr && tempArr.resMap) {
                                 let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
                                 for (let key of keys) {
                                     tempOptions.xAxis.data.push(timeFormate(key, false))
@@ -382,8 +382,12 @@ function dealCharts(cell) {
                                 tempOptions.yAxis.max = Math.max(...tempSeries[0].data, markLineMax)
                                 tempOptions.series = tempSeries
                                 myEchart.setOption(tempOptions)
+                            }else{
+                                myEchart.setOption(options)
                             }
                         }
+                    },()=>{
+                        myEchart.setOption(options)
                     })
                 })
             } else {

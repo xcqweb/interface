@@ -34,7 +34,7 @@ axios.interceptors.response.use((res) =>{
     if (error.response) {
         if (error.response.status == 418) {
             let refreshToken = getCookie('refreshToken')
-            post('/api/auth/refreshToken', {refreshToken}).then(res => {
+            post('api/auth/refreshToken', {refreshToken}).then(res => {
                 setCookie('token', res.token)
                 setCookie('refreshToken', res.refreshToken)
                 error.response.config.headers.Authorization = 'Bearer ' + res.token

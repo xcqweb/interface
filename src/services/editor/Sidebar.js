@@ -9,21 +9,14 @@
  */
 import requestUtil from '../request'
 import Urls from '../../constants/url'
-import VueEvent from '../VueEvent'
-import { tipDialog, sureDialog } from '../Utils'
 import axios from 'axios';
 import { mxResources } from '../mxGlobal';
-let startCurrentPageIndex = null
-let startCurrentDialogIndex = null
-let CurrentMouseOver = null
-let pageScrollTopHeight = 0
-let dialogesScrollTopHeight = 0
 let shapeScrollTopHeight = 0
-function Sidebar(editorUi, container, container2)
+function Sidebar(editorUi, container, containerbottom)
 {
     this.editorUi = editorUi;
     this.container = container;
-    this.containerbottom = container2
+    this.containerbottom = containerbottom
     this.palettes = new Object();
     this.taglist = new Object();
     this.showTooltips = true;
@@ -31,7 +24,6 @@ function Sidebar(editorUi, container, container2)
     this.graph.cellRenderer.antiAlias = false;
     this.graph.foldingEnabled = false;
     this.graph.container.style.visibility = 'hidden';
-    document.body.appendChild(this.graph.container);
 	
     this.pointerUpHandler = mxUtils.bind(this, function()
     {
@@ -107,20 +99,20 @@ Sidebar.prototype.init = function(type)
         })
         this.addUserPalette(false); // 自定义控件
     } else {
-        this.addPagePalette();//页面管理
         this.addGeneralPalette(true);//基础控件
         this.addUserPalette(false); // 自定义控件
+        this.addPagePalette()
     }
 };
 
 /**
  * Sets the default font size.
  */
-Sidebar.prototype.collapsedImage = '/static/images/icons/colspan.png'
+Sidebar.prototype.collapsedImage = window.PREFIX_PATH + '/static/images/icons/colspan.png'
 /**
  * Sets the default font size.
  */
-Sidebar.prototype.expandedImage = '/static/images/icons/expand.png'
+Sidebar.prototype.expandedImage = window.PREFIX_PATH + '/static/images/icons/expand.png'
 
 /**
  * Sets the default font size.
@@ -594,458 +586,6 @@ Sidebar.prototype.cloneCell = function(cell, value)
 	
     return clone;
 };
-
-/**
- * Adds shape search UI. 搜索
- */
-Sidebar.prototype.addSearchPalette = function(expand)
-{
-    var elt = document.createElement('div');
-    elt.style.visibility = 'hidden';
-    // this.container.appendChild(elt);
-    this.containerbottom.appendChild(elt);
-		
-    var div = document.createElement('div');
-    div.className = 'geSidebar';
-    div.style.boxSizing = 'border-box';
-    div.style.overflow = 'hidden';
-    div.style.width = '100%';
-    div.style.padding = '8px';
-    div.style.paddingTop = '14px';
-    div.style.paddingBottom = '0px';
-
-    if (!expand)
-    {
-        //不为被隐藏的对象保留其物理空间，即该对象在页面上彻底消失。style
-        div.style.display = 'none';
-    }
-	
-    var inner = document.createElement('div');
-    inner.style.whiteSpace = 'nowrap';
-    inner.style.textOverflow = 'clip';
-    inner.style.paddingBottom = '8px';
-    inner.style.cursor = 'default';
-
-    //添加标题
-    var filenameDiv = document.createElement('div');
-    filenameDiv.setAttribute('id', 'filename');
-    filenameDiv.style.width = '100%';
-    filenameDiv.style.textAlign = 'center';
-    filenameDiv.innerText = this.editorUi.editor.filename || mxResources.get('unsave');
-    inner.appendChild(filenameDiv);
-    //
-
-    var input = document.createElement('input')
-
-    input.setAttribute('placeholder', mxResources.get('searchShapes'));//搜索图形
-    input.setAttribute('type', 'text');
-
-    input.style.fontSize = '12px';
-    input.style.overflow = 'hidden';
-    input.style.boxSizing = 'border-box';
-    input.style.border = 'solid 1px #d5d5d5';
-    input.style.borderRadius = '4px';
-    input.style.width = '100%';
-    input.style.outline = 'none';
-    input.style.padding = '6px';
-    inner.appendChild(input);
-
-    var cross = document.createElement('img');
-    cross.setAttribute('src', Sidebar.prototype.searchImage);
-    //Sidebar.prototype.searchImage = (!mxClient.IS_SVG) ? IMAGE_PATH + '/search.png'
-    cross.setAttribute('title', mxResources.get('search'));//搜索
-    cross.style.position = 'relative';
-    cross.style.left = '-18px';
-	
-    if (mxClient.IS_QUIRKS)
-    {
-        input.style.height = '28px';
-        cross.style.top = '-4px';
-    }
-    else
-    {
-        cross.style.top = '1px';
-    }
-
-    // Needed to block event transparency in IE
-    cross.style.background = 'url(\'' + this.editorUi.editor.transparentImage + '\')';
-	
-    var find;
-
-    inner.appendChild(cross);
-    div.appendChild(inner);
-
-    var center = document.createElement('center');
-    var button = mxUtils.button(mxResources.get('moreResults'), function()
-    {
-        find();
-    });
-    button.style.display = 'none';
-	
-    // Workaround for inherited line-height in quirks mode
-    button.style.lineHeight = 'normal';
-    button.style.marginTop = '4px';
-    button.style.marginBottom = '8px';
-    center.style.paddingTop = '4px';
-    center.style.paddingBottom = '8px';
-	
-    center.appendChild(button);
-    div.appendChild(center);
-	
-    var searchTerm = '';
-    var active = false;
-    var complete = false;
-    var page = 0;
-    var hash = new Object();
-
-    // Count is dynamically updated below
-    var count = 12;
-	
-    var clearDiv = mxUtils.bind(this, function()
-    {
-        active = false;
-        this.currentSearch = null;
-        var child = div.firstChild;
-		
-        while (child != null)
-        {
-            var next = child.nextSibling;
-			
-            if (child != inner && child != center)
-            {
-                child.parentNode.removeChild(child);
-            }
-			
-            child = next;
-        }
-    });
-		
-    mxEvent.addListener(cross, 'click', function()
-    {
-        if (cross.getAttribute('src') == Dialog.prototype.closeImage)
-        {
-            cross.setAttribute('src', Sidebar.prototype.searchImage);
-            cross.setAttribute('title', mxResources.get('search'));
-            button.style.display = 'none';
-            input.value = '';
-            searchTerm = '';
-            clearDiv();
-        }
-
-        input.focus();
-    });
-
-    find = mxUtils.bind(this, function()
-    {
-        // Shows 4 rows (minimum 4 results)
-        count = 4 * Math.max(1, Math.floor(this.container.clientWidth / (this.thumbWidth + 10)));
-        this.hideTooltip();
-		
-        if (input.value != '')
-        {
-            if (center.parentNode != null)
-            {
-                if (searchTerm != input.value)
-                {
-                    clearDiv();
-                    searchTerm = input.value;
-                    hash = new Object();
-                    complete = false;
-                    page = 0;
-                }
-				
-                if (!active && !complete)
-                {
-                    button.setAttribute('disabled', 'true');
-                    button.style.display = '';
-                    button.style.cursor = 'wait';
-                    button.innerHTML = mxResources.get('loading') + '...';
-                    active = true;
-					
-                    // Ignores old results
-                    var current = new Object();
-                    this.currentSearch = current;
-					
-                    this.searchEntries(searchTerm, count, page, mxUtils.bind(this, function(results, len, more, terms)
-                    {
-                        if (this.currentSearch == current)
-                        {
-                            results = (results != null) ? results : [];
-                            active = false;
-                            page++;
-                            center.parentNode.removeChild(center);
-                            this.insertSearchHint(div, searchTerm, count, page, results, len, more, terms);
-
-                            for (var i = 0; i < results.length; i++)
-                            {
-                                var elt = results[i]();
-								
-                                // Avoids duplicates in results
-                                if (hash[elt.innerHTML] == null)
-                                {
-                                    hash[elt.innerHTML] = '1';
-                                    div.appendChild(results[i]());
-                                }
-                            }
-							
-                            if (more)
-                            {
-                                button.removeAttribute('disabled');
-                                button.innerHTML = mxResources.get('moreResults');
-                            }
-                            else
-                            {
-                                button.innerHTML = mxResources.get('reset');
-                                button.style.display = 'none';
-                                complete = true;
-                            }
-							
-                            button.style.cursor = '';
-                            div.appendChild(center);
-                        }
-                    }), mxUtils.bind(this, function()
-                    {
-                        // TODO: Error handling
-                        button.style.cursor = '';
-                    }));
-                }
-            }
-        }
-        else
-        {
-            clearDiv();
-            input.value = '';
-            searchTerm = '';
-            hash = new Object();
-            button.style.display = 'none';
-            complete = false;
-            input.focus();
-        }
-    });
-	
-    mxEvent.addListener(input, 'keydown', mxUtils.bind(this, function(evt)
-    {
-        if (evt.keyCode == 13 /* Enter */)
-        {
-            find();
-            mxEvent.consume(evt);
-        }
-    }));
-	
-    mxEvent.addListener(input, 'focus', function()
-    {
-        input.style.paddingRight = '';
-    });
-	
-    mxEvent.addListener(input, 'blur', function()
-    {
-        input.style.paddingRight = '20px';
-    });
-
-    input.style.paddingRight = '20px';
-	
-    mxEvent.addListener(input, 'keyup', mxUtils.bind(this, function(evt)
-    {
-        if (input.value == '')
-        {
-            cross.setAttribute('src', Sidebar.prototype.searchImage);
-            cross.setAttribute('title', mxResources.get('search'));
-        }
-        else
-        {
-            cross.setAttribute('src', Dialog.prototype.closeImage);
-            cross.setAttribute('title', mxResources.get('reset'));
-        }
-		
-        if (input.value == '')
-        {
-            complete = true;
-            button.style.display = 'none';
-        }
-        else if (input.value != searchTerm)
-        {
-            button.style.display = 'none';
-            complete = false;
-        }
-        else if (!active)
-        {
-            if (complete)
-            {
-                button.style.display = 'none';
-            }
-            else
-            {
-                button.style.display = '';
-            }
-        }
-    }));
-
-    // Workaround for blocked text selection in Editor
-    mxEvent.addListener(input, 'mousedown', function(evt)
-    {
-    	if (evt.stopPropagation)
-    	{
-    		evt.stopPropagation();
-    	}
-    	
-    	evt.cancelBubble = true;
-    });
-    
-    // Workaround for blocked text selection in Editor
-    mxEvent.addListener(input, 'selectstart', function(evt)
-    {
-    	if (evt.stopPropagation)
-    	{
-    		evt.stopPropagation();
-    	}
-    	
-    	evt.cancelBubble = true;
-    });
-
-    var outer = document.createElement('div');
-    outer.appendChild(div);
-    this.container.appendChild(outer);
-	
-    // Keeps references to the DOM nodes
-    this.palettes['search'] = [elt, outer];
-};
-
-/**
- * Adds the general palette to the sidebar.
- */
-Sidebar.prototype.insertSearchHint = function(div, searchTerm, count, page, results, len, more, terms)
-{
-    if (results.length == 0 && page == 1)
-    {
-        var err = document.createElement('div');
-        err.className = 'geTitle';
-        err.style.cssText = 'background-color:transparent;border-color:transparent;' +
-			'color:gray;padding:6px 0px 0px 0px !important;margin:4px 8px 4px 8px;' +
-			'text-align:center;cursor:default !important';
-		
-        mxUtils.write(err, mxResources.get('noResultsFor', [searchTerm]));
-        div.appendChild(err);
-    }
-};
-
-/**
- * 删除页面
- * @param {object} ele 当前的节点
- */
-Sidebar.prototype.deletePage = function (ele, pageType) {
-    // 删除后应该显示的页面
-    const restList = this.editorUi.editor.pagesRank[pageType]
-    let titleP = pageType === 'normal' ? mxResources.get('page') : mxResources.get("popup")
-    if (restList.length <= 1) {
-        tipDialog(this.editorUi, mxResources.get('keepAtLeastOne') + titleP)
-        return;
-    }  
-    sureDialog(this.editorUi, `${mxResources.get('sureDel')}${titleP}`, () => {
-        var target;
-        var type = this.editorUi.editor.pages[this.editorUi.editor.currentPage].type
-        if (ele.prev().length) {
-            target = ele.prev().children('.spanli');
-        } else if (ele.next().length) {
-            target = ele.next().addClass('left-sidebar-homepage').children('.spanli');
-        } else if (type == 'dialog' && !!$("#normalPages li").first()) {
-            target = $("#normalPages li").first().children('.spanli');
-        } else if (type == 'noraml' && !!$("#dialogPages li").first()) {
-            target = $("#dialogPages li").first().children('.spanli');
-        }
-        // 删除页面数据
-        this.editorUi.editor.deletePage(ele.data('pageid'), type)
-        target.click();
-        // 移除节点
-        ele.remove()
-    })
-    
-}
-/**/
-Sidebar.prototype.renameNode = function(ele, pageType) {
-    if (!ele.innerText){
-        return
-    }
-    let editInput = document.createElement('input');
-    editInput.id = 'editPageInput';
-    let oldVal = ele.innerText
-    editInput.value = oldVal;
-    ele.innerText = '';
-    ele.appendChild(editInput);
-    editInput.onfocus = function() {
-        this.select()
-    }
-    editInput.focus();
-    let saveFn = () => {
-        let name = editInput.value.trim()
-        mxEvent.removeListener(document.body, 'click', saveFn);
-        let titleP = pageType === 'normal' ? mxResources.get('page') : mxResources.get("popup")
-        if (!name) {
-            tipDialog(this.editorUi, `${titleP}${mxResources.get("nameCannotEmpty")}`);
-            ele.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${oldVal}</span><span class="right-icon-dolt"></span>`
-        } else if (name.length > 20) {
-            tipDialog(this.editorUi, `${titleP}${mxResources.get('nameCannotOver20Charts')}`);
-            ele.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${oldVal}</span><span class="right-icon-dolt"></span>`;
-        } else {
-            this.editorUi.editor.pages[ele.getAttribute('data-pageid')].title = name
-            $(".dialog-title-m").html(name)
-            VueEvent.$emit('refreshAction')
-            ele.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${name}</span><span class="right-icon-dolt"></span>`;
-        }
-    }
-    mxEvent.addListener(document.body, 'click', saveFn);
-    // 回车
-    mxEvent.addListener(editInput, 'click', function(e) {
-        if (e.stopPropagation) {
-            e.stopPropagation();
-        } else {
-            e.cancelBubble = true;
-        }
-    }, true);
-    // 回车
-    mxEvent.addListener(editInput, 'keydown', function(e) {
-        if (e.keyCode === 13) {
-            saveFn();
-        }
-    });
-}
-/*复制页面*/
-Sidebar.prototype.copyPage = function (ele,pageType) {
-
- let  id = '';
- const currtitle = ele.innerText
- var xml = this.editorUi.editor.defaultXml[pageType];
- var currentPage = this.editorUi.editor.pages[this.editorUi.editor.currentPage]
- xml = currentPage.xml
- id = currentPage.id
-    let titleText = `${currtitle}_${mxResources.get('copyP')}`
- let page = {
-    title: titleText,
-    xml,
-    id,
-    style:{},
-    type: pageType
-  };
-  let _li = document.createElement('li');
-  let resPage = this.editorUi.editor.addPage(page,pageType);
-  _li.setAttribute('data-pageid', resPage.id);
-    _li.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${titleText}</span><span class="right-icon-dolt"></span>`;
-  let changeRank = this.editorUi.editor.pagesRank[resPage.type];
-  // 根据类型插入列表
-   changeRank.push(resPage.id);
-   if (pageType === 'normal') {
-    $("#normalPages").append(_li);
-   }
-   if (pageType === 'dialog') {
-    $("#dialogPages").append(_li);
-   }
-   this.editorUi.editor.pagesRank[resPage.type] = [].concat(changeRank);
-    if (pageType === 'normal') {
-        $("#normalPages li:last-child .spanli").click();
-    }
-    if (pageType === 'dialog') {
-        $("#dialogPages li:last-child .spanli").click();
-    }
-}
 // 获取缩略图
 Sidebar.prototype.getSvgImage = function () {
     const editor = this.editorUi.editor;
@@ -1062,382 +602,15 @@ Sidebar.prototype.getSvgImage = function () {
     svgImage.setAttribute('viewbox', `-${widthlen / 2} 0 ${parseInt(widthlen * 2)} ${heightLen}`);
     return svgImage;
 }
-/*添加模版*/
-Sidebar.prototype.addTemplate = async function(type) {
-    const svgImage = this.getSvgImage();
-    const svgImagePic = svgImage.outerHTML;
-    if (svgImagePic) {
-        const editor = this.editorUi.editor;
-        var currentPage = editor.pages[editor.currentPage]
-        let data = {
-            content: JSON.stringify(currentPage),
-            pic: svgImagePic,
-            type: type
-        }
-        requestUtil.post(Urls.addTemplate.url, data).then((res) => {
-            if (res.picUrl) {
-                tipDialog(this.editorUi, `添加${type === 'normal' ? '页面模版成功' : '弹窗模版成功' }`)
-            }
-        }).catch(() => {
-            tipDialog(this.editorUi, `添加${type === 'normal' ? '页面模版失败' : '弹窗模版失败'}`)
-        })
-    }
-}
 
-/**
- * 页面右键菜单
- */
-Sidebar.prototype.createPageContextMenu = function (type) {
-    var menulist = document.createElement('ul')
-    if (document.querySelector('#pageContextMenu')) {
-        document.querySelector('#pageContextMenu').remove()
-    }
-    menulist.id = 'pageContextMenu';
-    let menus = {
-        'copy': mxResources.get('copyPage'),
-        'addTemplate': mxResources.get('addTemplate'),
-        'rename': mxResources.get('rename'),
-        'delete': mxResources.get('delete'),
-    }
-    if (+type === 1) { // 弹窗
-        menus.copy = mxResources.get('copyPopup')
-    }  
-    for (var key in menus) {
-        var menu = document.createElement('li')
-        menu.innerText = menus[key]
-        menu.className = key
-        menu.setAttribute('data-type', key)
-        menulist.appendChild(menu)
-    }
-    document.body.appendChild(menulist);
-    mxEvent.addListener(menulist, 'click', function (evt) {
-        evt.stopPropagation()
-        var target = evt.target;
-        var ele = $(".pageList li").eq(CurrentMouseOver);
-        let pageType = null
-        let element = null
-        let newEle = null
-        if (ele.parent().attr('id') === 'normalPages') {
-            pageType = 'normal'
-            element = document.querySelectorAll('#normalPages li')[CurrentMouseOver]
-            newEle = $('#normalPages li').eq(CurrentMouseOver)
-        } else {
-            pageType = 'dialog'
-            element = document.querySelectorAll('#dialogPages li')[CurrentMouseOver]
-            newEle = $('#dialogPages li').eq(CurrentMouseOver)
-        }
-        // 操作类型
-        var actionType = target.getAttribute('data-type');
-        // 添加页面
-        var addPage = this.editorUi.actions.get('addPage').funct;
-        let index = this.editorUi.editor.pagesRank[pageType].indexOf(ele.data('pageid'))
-        switch (actionType) {
-            case 'delete':
-                this.deletePage(newEle, pageType)
-                break;
-            case 'rename':
-                this.renameNode(element, pageType)
-                break;
-            case 'copy':
-                this.editorUi.editor.setXml();
-                this.copyPage(element, pageType)
-                break;
-            case 'homepage':
-                let pagesRankArr = JSON.parse(JSON.stringify(this.editorUi.editor.pagesRank[pageType]))
-                let newValue = pagesRankArr[index]
-                this.editorUi.editor.pagesRank[pageType].splice(index, 1)
-                this.editorUi.editor.pagesRank[pageType].unshift(newValue)
-                var targetEle = null
-                if (pageType === 'normal') {
-                    targetEle = document.querySelector('#normalPages')
-                } else {
-                    targetEle = document.querySelector('#dialogPages')
-                }
-                const first = targetEle.firstChild
-                targetEle.insertBefore(element, first)
-                $('.left-sidebar-homepage').removeClass('left-sidebar-homepage')
-                element.className = 'left-sidebar-homepage'
-                if (pageType === 'normal') {
-                    $('.left-sidebar-homepage .spanli').click()
-                }
-                break
-            case 'addTemplate':
-                this.editorUi.editor.setXml();
-                this.addTemplate(pageType)
-                break;
-            default:
-                addPage(actionType)
-                break;
-        }
-        this.hidePageContextMenu();
-    }.bind(this))
-    return menulist;
-}
-
-function createPageList(editorUi, el, data, id, _that) {
-    // 页面列表
-    editorUi.editor.setCurrentType(id == 'normalPages' ? 'normal' : 'dialog');
-    var pageListEle = document.createElement('ul');
-    pageListEle.className = "pageList";
-    pageListEle.id = id;
-    for (var i in data) {
-        var page = document.createElement('li')
-        if (data[i].type === 'normal' && i === '0') { // 首页
-            page.className = 'left-sidebar-homepage'
-        }
-        page.setAttribute('data-pageid', data[i].id);
-        page.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${data[i].title}</span><span class="right-icon-dolt"></span>`;
-        pageListEle.appendChild(page)
-    }
-    el.appendChild(pageListEle)
-
-    $('.commonPages').on('mouseenter', '.pageList>li>.right-icon-dolt', function (evt) {
-            evt.preventDefault();
-            let LIArr = evt.target.parentNode.parentNode.children
-            for (var i = 0; i < LIArr.length; i++) {
-                if (LIArr[i] === evt.target.parentNode) {
-                    CurrentMouseOver = i
-                }
-            }
-            var menulist = document.getElementById('pageContextMenu');
-            var targetElement = document.querySelector("#pageContextMenu .rename")
-            const textlen = menulist.firstChild.innerText
-            if (!$(this).parent().hasClass('left-sidebar-homepage') && textlen.indexOf('弹窗') === -1) {
-                if (!$('#pageContextMenu').children('.homepage').length) {
-                    const Oli = document.createElement('li')
-                    Oli.className = 'homepage'
-                    Oli.innerText = mxResources.get('setHome')
-                    Oli.setAttribute('data-type', 'homepage')
-                    menulist.insertBefore(Oli, targetElement)
-                }
-            } else {
-                $('.homepage').remove()
-            }
-            let getIdType = evt.target.parentNode.parentNode.id
-            let scrollTopHeight = getIdType === 'normalPages' ? pageScrollTopHeight : dialogesScrollTopHeight
-            let currentIndex = getIdType == 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
-            menulist.style.display = 'block';
-            menulist.style.left = evt.target.offsetLeft + evt.target.offsetWidth - 4 + 'px';
-            menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) - scrollTopHeight + 56 + 'px';
-            let classNameList = evt.target.parentNode.className
-            if (!classNameList.includes('currentPage')) {
-                evt.target.parentNode.className += classNameList ? ' currentPage' : 'currentPage'
-            }
-            for (var i = 0; i < LIArr.length; i++) {
-                if (i !== currentIndex && i !== CurrentMouseOver) {
-                    if (LIArr[i].className.includes('left-sidebar-homepage')) {
-                        LIArr[i].className = 'left-sidebar-homepage'
-                    } else {
-                        LIArr[i].className = ''
-                    }
-                }
-            }
-            $('#pageContextMenu').mouseleave((e) => {
-                e.preventDefault();
-                // 要重新获取一下 currentIndex
-                if (evt.target.parentNode) {
-                    let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
-                    if (currentIndex !== CurrentMouseOver) {
-                        if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
-                            LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
-                        } else {
-                            LIArr[CurrentMouseOver].className = ''
-                        }
-                    }
-                    _that.hidePageContextMenu()
-                } else {
-                    _that.hidePageContextMenu()
-                }
-                
-            })
-    })
-    $('.commonPages').on('mousemove', '.pageList>li>.right-icon-dolt', function (evt) {
-            event.preventDefault();
-            let widthLen = evt.target.offsetLeft
-            let getIdType = evt.target.parentNode.parentNode.id
-            let scrollTopHeight = getIdType === 'normalPages' ? pageScrollTopHeight : dialogesScrollTopHeight
-            let HeightLen = evt.target.offsetTop - scrollTopHeight + 72 + 4
-            let LIArr = evt.target.parentNode.parentNode.children
-            for (var i = 0; i < LIArr.length; i++) {
-                if (LIArr[i] === evt.target.parentNode) {
-                    CurrentMouseOver = i
-                }
-            }
-            
-            let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
-            if (evt.clientX > widthLen && evt.clientX < widthLen + (evt.target.offsetWidth - 4)) {
-                var menulist = document.getElementById('pageContextMenu');
-                var targetElement = document.querySelector("#pageContextMenu .rename")
-                const textlen = menulist.firstChild.innerText
-                if (!$(this).parent().hasClass('left-sidebar-homepage') && textlen.indexOf('弹窗') === -1) {
-                    if (!$('#pageContextMenu').children('.homepage').length) {
-                        const Oli = document.createElement('li')
-                        Oli.className = 'homepage'
-                        Oli.innerText = '设为首页'
-                        Oli.setAttribute('data-type', 'homepage')
-                        menulist.insertBefore(Oli, targetElement)
-                    }
-                } else {
-                    $('.homepage').remove()
-                }
-                menulist.style.display = 'block';
-                menulist.style.left = evt.target.offsetLeft + evt.target.offsetWidth - 4 + 'px';
-                menulist.style.top = evt.target.offsetTop + (evt.target.offsetHeight / 1.5) + 56 - scrollTopHeight  + 'px';
-
-                let classNameList = evt.target.parentNode.className
-                if (!classNameList.includes('currentPage')) {
-                    evt.target.parentNode.className += classNameList ? ' currentPage' : 'currentPage'
-                }
-                for (var i = 0; i < LIArr.length; i++) {
-                    if (i !== currentIndex && i !== CurrentMouseOver) {
-                        if (LIArr[i].className.includes('left-sidebar-homepage')) {
-                            LIArr[i].className = 'left-sidebar-homepage'
-                        } else {
-                            LIArr[i].className = ''
-                        }
-                    }
-
-                }
-                $('#pageContextMenu').mouseleave(() => {
-                    // 要重新获取一下 currentIndex
-                    if (evt.target && evt.target.parentNode) {
-                        let currentIndex = getIdType === 'normalPages' ? startCurrentPageIndex : startCurrentDialogIndex
-                        if (currentIndex !== CurrentMouseOver) {
-                            if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
-                                LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
-                            } else {
-                                LIArr[CurrentMouseOver].className = ''
-                            }
-                        }
-                        _that.hidePageContextMenu()
-                    } else {
-                        _that.hidePageContextMenu()
-                    }
-                })
-            } else {
-                if (currentIndex !== CurrentMouseOver) {
-                    // 是主页 还是要设定为主页
-                    if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
-                        LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
-                    } else {
-                        LIArr[CurrentMouseOver].className = ''
-                    }
-                }
-                _that.hidePageContextMenu()
-            }
-            if (evt.clientY < HeightLen) {
-                if (currentIndex !== CurrentMouseOver) {
-                    if (LIArr[CurrentMouseOver].className.includes('left-sidebar-homepage')) {
-                        LIArr[CurrentMouseOver].className = 'left-sidebar-homepage'
-                    } else {
-                        LIArr[CurrentMouseOver].className = ''
-                    }
-                }
-                _that.hidePageContextMenu()
-            }
-    })
-    $('.commonPages').on('mouseenter','.pageList>li>.spanli', (evt) => {
-        event.preventDefault();
-        _that.hidePageContextMenu()
-    })
-    function changePage(e, dis) {
-        let target = e.target
-        if (((target.parentNode.nodeName === 'LI') && target.parentNode.className !== 'currentPage')) {
-            // 目标页面名称
-            var nextTitle = target.parentElement.getAttribute('data-pageid');
-            // 已选中节点
-            if (editorUi.editor.currentPage !== nextTitle && editorUi.editor.pages[editorUi.editor.currentPage]) {
-                editorUi.editor.setXml();
-            }
-            // 切换到新的页面
-            $(".currentPage").removeClass('currentPage')
-            editorUi.editor.setCurrentPage(nextTitle)
-            if (!target.parentNode.className) {
-                target.parentNode.className += "currentPage"
-            } else {
-                target.parentNode.className += " currentPage"
-            }
-            var doc = mxUtils.parseXml(editorUi.editor.pages[nextTitle].xml)
-            editorUi.editor.setGraphXml(doc.documentElement,dis)
-            VueEvent.$emit('refreshCurrentPage', id == 'normalPages' ? 0 : 1)
-        }
-    }
-    if (id.includes('normal')) {
-        $(".normalPages .pageList").on("dblclick", "li", evt => {
-          _that.renameNode(evt.currentTarget, editorUi.editor.currentPage);
-        });
-        $('.normalPages').on('click', '.pageList>li>.spanli', function (evt) {
-            changePage(evt,true)
-            let normalArr = document.querySelectorAll('#normalPages li')
-            for (let j = 0; j <= normalArr.length - 1; j++) {
-                if (normalArr[j].className.includes('currentPage')) {
-                    startCurrentPageIndex = j
-                }
-            }
-        })
-    }
-    if (id.includes('dialog')) {
-        $('.dialogPages .pageList').on('dblclick','li', (evt) => {
-            _that.renameNode(evt.currentTarget, editorUi.editor.currentPage)
-        })
-        $('.dialogPages').on('click', '.pageList>li>.spanli', function (evt) {
-            changePage(evt,true)
-            let normalArr = document.querySelectorAll('#dialogPages li')
-            for (let j = 0; j <= normalArr.length - 1; j++) {
-                if (normalArr[j].className.includes('currentPage')) {
-                    startCurrentDialogIndex = j
-                }
-            }
-        })
-    }
-    mxEvent.addListener(pageListEle, 'contextmenu', function (evt) {
-        evt.preventDefault();
-    })
-    return pageListEle;
-}
 Sidebar.prototype.hidePageContextMenu = function() {
     document.getElementById('pageContextMenu') ?  document.getElementById('pageContextMenu').style.display = 'none' : null;
 }
-Sidebar.prototype.tabsSwitch = function(type) {
-    this.createPageContextMenu(type)
-}
+
 Sidebar.prototype.addPagePalette = function() {
-    var normalPages = []
-    var dialogPages = [];
-    var pages = this.editorUi.editor.pages;
-    // 页面
-    for (let key of this.editorUi.editor.pagesRank.normal) {
-        pages[key] && normalPages.push(pages[key]);
-    }
-    for (let key of this.editorUi.editor.pagesRank.dialog) {
-        pages[key] && dialogPages.push(pages[key]);
-    }
-    const normalPagesEl = document.querySelector('.normalPages')
-    const dialogPagesEl = document.querySelector('.dialogPages')
-    createPageList(this.editorUi,normalPagesEl, normalPages, 'normalPages', this)
-    createPageList(this.editorUi, dialogPagesEl, dialogPages, 'dialogPages', this)
-    // 得到最开始的currentpage
-    setTimeout(() => {
-        let normalArr = document.querySelectorAll('#normalPages li')
-        for (let j = 0; j <= normalArr.length - 1; j++) {
-            if (normalArr[j].className.includes('currentPage')) {
-                startCurrentPageIndex = j
-            }
-        }
-    })
-    this.createPageContextMenu()
-    setTimeout(() => {
-        $(".normalPages").scroll(function() {
-            pageScrollTopHeight = parseInt($(".normalPages").scrollTop())
-        })
-        $(".dialogPages").scroll(function () {
-            dialogesScrollTopHeight = parseInt($(".dialogPages").scrollTop())
-        })
-    })
     $(".geSidebarContainer-bottom").scroll(function () {
         shapeScrollTopHeight = parseInt($(".geSidebarContainer-bottom").scrollTop())
     })
-    
     // 鼠标滑过 悬浮控件名字
     let controlName = ['text', 'beeline', 'rectangle', 'ellipse', 'menulist', 'button', 'tableBox', 'image', 'light', 'pipeline1', 'progress', 'pipeline2', 'pipeline3', 'linkTag', 'lineChart', 'gaugeChart']
     let controlNameText = {
@@ -1475,17 +648,18 @@ Sidebar.prototype.addPagePalette = function() {
             ele.style.position = 'absolute'
             ele.style.backgroundColor="#ffffff"
             ele.style.border="1px solid #d4d4d4"
-            ele.style.left = '210px'
+            ele.style.left = `${$(".geSidebarContainer").width()}px`
             ele.style.top = evt.target.offsetTop + 8 + 70 - shapeScrollTopHeight + 'px'
             ele.style.zIndex='100'
             document.body.appendChild(ele);
         }
     })
     $('.geSidebarContainer-bottom').on('mouseleave', '.geSidebar>a', function (evt) {
-            evt.preventDefault()
-            $('.suspension-showShapename').remove()
+        evt.preventDefault()
+        $('.suspension-showShapename').remove()
     })
 }
+
 /**
  * 添加给定的模板控件.
  */
@@ -1522,7 +696,7 @@ Sidebar.prototype.addStencilPalette = function(id, title, stencilFile, style, ig
 };
 Sidebar.prototype.addBasicPalette = function()
 {
-    this.addStencilPalette('basic', mxResources.get('basic'), '/static/stencils/basic.xml',
+    this.addStencilPalette('basic', mxResources.get('basic'), window.PREFIX_PATH + '/static/stencils/basic.xml',
         ';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1;aspect=fixed',
         null, null, null, null, []);
 };
@@ -1592,7 +766,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
             return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '表格');
         }),
         // 图片
-        this.createVertexTemplateEntry('shape=image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '<input type="file" style="opacity:0;" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/></label>', '图片'),
+        this.createVertexTemplateEntry('shape=image;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '<input type="file" style="opacity:0;" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/></label>', '图片'),
         // 曲线
         // this.addEntry('curve', mxUtils.bind(this, function()
 	 	// {
@@ -1605,15 +779,15 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         //     return this.createEdgeTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '曲线');
 	 	// })),
         // 指示灯
-        this.createVertexTemplateEntry('shape=light;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/light.svg', 72, 72, '', '指示灯'),
+        this.createVertexTemplateEntry('shape=light;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/light.svg', 72, 72, '', '指示灯'),
         // 进度条
-        this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/progress.svg', 72, 16, '', '进度条'),
+        this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/progress.svg', 72, 16, '', '进度条'),
         // 管道1
-        this.createVertexTemplateEntry('shape=pipeline1;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline1.svg', 72, 36, '', '管道1'),
+        this.createVertexTemplateEntry('shape=pipeline1;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/pipeline1.svg', 72, 36, '', '管道1'),
         // 管道2
-        this.createVertexTemplateEntry('shape=pipeline2;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline2.svg', 72, 72, '', '管道2'),
+        this.createVertexTemplateEntry('shape=pipeline2;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/pipeline2.svg', 72, 72, '', '管道2'),
         // 管道3
-        this.createVertexTemplateEntry('shape=pipeline3;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/pipeline3.svg', 60, 40, '', '管道3'),
+        this.createVertexTemplateEntry('shape=pipeline3;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/pipeline3.svg', 60, 40, '', '管道3'),
         // 链接
         this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
     ];
@@ -1652,7 +826,7 @@ Sidebar.prototype.addUserPalette = function (expand) {
             res.forEach(item=>{
                 let array = []
                 item.materialList.forEach(d=>{
-                    array.push(this.createVertexTemplateEntry(`shape=userimage;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`, d.picWidth ? parseInt(d.picWidth / 1.5) : 300, d.picHeight ? parseInt(d.picHeight / 1.5) : 170, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
+                    array.push(this.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`, d.picWidth&&d.picWidth!=1 ? parseInt(d.picWidth / 1.5) : 200, d.picHeight&&d.picHeight!=1 ? parseInt(d.picHeight / 1.5) : 150, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
                 })
                 this.addPaletteFunctions('user', `${item.libraryName}`, false, array)
             })
@@ -1703,7 +877,7 @@ Sidebar.prototype.createTitle = function(label, id)
     // 页面管理一栏，增加添加页面管理的icon
     if (id === 'pageManage') {
         var img = document.createElement('img');
-        img.setAttribute('src', '/static/images/icons/addPage.png');
+        img.setAttribute('src', window.PREFIX_PATH + '/static/images/icons/addPage.png');
         img.setAttribute('id', 'addPage');
         img.addEventListener('click', function(e) {
             e = e || window.event;
@@ -1832,7 +1006,7 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
             elt.style.backgroundImage = `url(${imageurl})`;
             elt.style.backgroundSize = '40px 40px'
         } else {
-            elt.style.backgroundImage = 'url(/static/stencils/basic/' + shapeName + '.png)';
+            elt.style.backgroundImage = 'url(' + window.PREFIX_PATH + '/static/stencils/basic/' + shapeName + '.png)';
         }
         elt.style.backgroundPosition = `center center`
         elt.style.backgroundRepeat = `no-repeat`
@@ -2389,6 +1563,11 @@ Sidebar.prototype.createDragSource = function(elt, dropHandler, preview, cells, 
 	
     var dragSource = mxUtils.makeDraggable(elt, this.editorUi.editor.graph, mxUtils.bind(this, function(graph, evt, target, x, y)
     {
+        let {pageFormat} = graph
+        if(x<0 || y<0 || x>pageFormat.width || y>pageFormat.height){
+            dragSource.reset()
+            return
+        }
         if (this.updateThread != null)
         {
             window.clearTimeout(this.updateThread);
@@ -2559,8 +1738,9 @@ Sidebar.prototype.createDragSource = function(elt, dropHandler, preview, cells, 
         {
             ui.hoverIcons.setDisplay('');
         }
-		
-        dragExit.apply(this, arguments);
+		if(graph){
+            dragExit.apply(this, arguments);
+        }
     };
 	
     dragSource.dragOver = function(graph, evt)
@@ -3260,12 +2440,10 @@ Sidebar.prototype.addPaletteFunctions = function(id, title, expanded, fns)
 Sidebar.prototype.addPalette = function(id, title, expanded, onInit)
 {
     var elt = this.createTitle(title, id);
-    // this.container.appendChild(elt);
     this.containerbottom.appendChild(elt);
     var div = document.createElement('div');
     div.className = 'geSidebar';
 	
-    // Disables built-in pan and zoom in IE10 and later
     if (mxClient.IS_POINTER)
     {
         div.style.touchAction = 'none';

@@ -21,7 +21,7 @@
             </Tabs>
           </div>
           <div
-            v-if="tabsNum==1 && deviceModelId && footerContent"
+            v-if="tabsNum === 1 && ifShowDataFlag && dataSourceList.length"
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
@@ -301,11 +301,6 @@ export default {
         if(this.footerContent) {
             this.initData()
         }
-        window.onresize = ()=>{
-            if(this.ifShowArrow) {
-                this.ifShowArrow = false
-            }
-        }
         VueEvent.$off('rightBarTabSwitch')
         VueEvent.$off('isShowFootBar')
         VueEvent.$off('emitDataSourceFooter')
@@ -326,25 +321,10 @@ export default {
         })
         // 绑定数据源
         VueEvent.$on('emitDataSourceFooter', (value) => {
-            // 拿到之前绑定的 bindData
-            let startBindData = this.getCellModelInfo('bindData')
-            if (!startBindData || !startBindData.dataSource) {
-                this.setCellModelInfo('bindData',{dataSource:value})
-                if (this.ifShowArrow) {
-                    this.isInitFlag = false
-                    this.initData()
-                }
-            } else {
-                if (this.checkDetDataModel(startBindData, value)) { // 不存在重复的
-                    startBindData.dataSource.deviceNameChild = value.deviceNameChild
-                    startBindData.dataSource.deviceTypeChild = value.deviceTypeChild
-                    startBindData.dataSource.deviceModel = value.deviceModel
-                    this.setCellModelInfo('bindData',startBindData)
-                    if (this.ifShowArrow) {
-                        this.isInitFlag = false
-                        this.initData()
-                    }
-                } 
+            this.setCellModelInfo('bindData',{dataSource:value})
+            if (this.ifShowArrow) {
+                this.isInitFlag = false
+                this.initData()
             }
         })
     },
@@ -368,26 +348,15 @@ export default {
            
         },
         dealFootbarHeight(val) {
-            let graph = this.myEditorUi.editor.graph
-            let el = document.querySelector(".geDiagramContainer.geDiagramBackdrop")
-            let wh = document.documentElement.clientHeight
-            let dialogTitleEle = document.querySelector('.dialog-title-m')
-            let dialogTop = 0
-            if(dialogTitleEle) {
-                dialogTop = dialogTitleEle.offsetTop
-            }
             if(val) {
-                el.style.height = wh - 72 - 226 + 'px'
-                if(dialogTitleEle) {
-                    dialogTitleEle.style.top = dialogTop - 200 + 'px'
-                }
+                this.myEditorUi.footerHeight = 226
             }else{
-                el.style.height = wh - 72 - 26 + 'px'
-                if(dialogTitleEle) {
-                    dialogTitleEle.style.top = dialogTop + 200 + 'px'
-                }
+                this.myEditorUi.footerHeight = 26
             }
-            graph.refresh()
+            if(this.$store.state.main.type === 1) {
+                VueEvent.$emit("refreshDialogTitle")
+            }
+            this.myEditorUi.refresh()
         },
         // 初始化数据源数据
         initDataSource() {
@@ -544,7 +513,7 @@ export default {
         },
         deleteFooterHandle(data, index) {
             let startBindData = this.getCellModelInfo('bindData')
-            sureDialog(this.myEditorUi,`${this.$t('footBar.sureDelDataSources')}-${data.name}?`,()=>{
+            sureDialog(this.myEditorUi,`${this.$t('footBar.sureDelDataSources')}-${data.deviceName}?`,()=>{
                 this.dataSourceList.splice(index, 1)
                 startBindData = null
                 this.clearStateModel()//清空状态里面的模型
@@ -623,9 +592,9 @@ export default {
 
 <style lang="less" scoped>
 .newfooter-wraper {
-  width: calc(100% - 458px);
   position: absolute;
   left: 209px;
+  right:250px;
   bottom: 0;
   z-index: 100;
   background: #fff;

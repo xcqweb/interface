@@ -48,7 +48,6 @@ body ::-webkit-scrollbar-thumb:hover {
 	text-decoration:none;
 }
 .geMenubarContainer, .geToolbarContainer, .geDiagramContainer, .geSidebarContainer, .geFooterContainer, .geHsplit, .geVsplit {
-	overflow:hidden;
 	position:absolute;
 	cursor:default;
 }
@@ -330,7 +329,6 @@ div.mxWindow .geButton {
 }
 .geSidebarContainer {
 	background:#F2F2F2;
-	overflow:hidden;
 	position:absolute;
 	z-index: 2;
 }
@@ -481,9 +479,9 @@ div.mxWindow .geButton {
 	background-color: #b3b3b3;
 }
 .geHsplit {
-	/* cursor:col-resize; */
+	cursor:col-resize;
 	background-color:#e5e5e5;
-	/* background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHBAMAAADdS/HjAAAAGFBMVEUzMzP///9tbW1QUFCKiopBQUF8fHxfX1/IXlmXAAAAHUlEQVQImWMQEGAQFWUQFmYQF2cQEmIQE2MQEQEACy4BF67hpEwAAAAASUVORK5CYII=); */
+	background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHBAMAAADdS/HjAAAAGFBMVEUzMzP///9tbW1QUFCKiopBQUF8fHxfX1/IXlmXAAAAHUlEQVQImWMQEGAQFWUQFmYQF2cQEmIQE2MQEQEACy4BF67hpEwAAAAASUVORK5CYII=);
 	background-repeat:no-repeat;
 	background-position:center center;
 }
@@ -619,7 +617,7 @@ div.mxWindow .geButton {
 }
 .geDialog .geDialogTitle::after {
 	content: '';
-	background: url(/static/images/default/closeDialog.png);
+	background: url(../../../static/images/default/closeDialog.png);
 	background-size: 16px 16px;
 	width: 16px;
 	height: 16px;

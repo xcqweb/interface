@@ -3147,7 +3147,6 @@ HoverIcons.prototype.init = function()
 	    {
 	    	connectionHandlerActive = false;
 	    	var evt = me.getEvent();
-	    	
 	    	if (this.isResetEvent(evt))
 	    	{
 	    		this.reset();
@@ -6570,7 +6569,6 @@ if (typeof mxVertexHandler != 'undefined')
             // Hides menu when editing starts
             this.addListener(mxEvent.START_EDITING, function(sender, evt)
             {
-                //this.sidebar.hidePageContextMenu();
                 this.popupMenuHandler.hideMenu();
             });
 		

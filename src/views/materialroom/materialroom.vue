@@ -217,7 +217,7 @@
         <template v-if="isActive >= 2 && tabNumber === 0">
           <span>
             <Upload 
-              action="api/iot-cds/sources/material"
+              :action="picAction"
               :show-upload-list="false"
               :with-credentials="true"
               :headers="headers"
@@ -265,6 +265,7 @@ export default {
     },
     data() {
         return {
+            picAction:`${window.location.origin}/api/iot-cds/sources/material`,
             materialAlertName: 'materialLibrary',
             showmarerial: true,
             madeltext: ['cancel',this.$t('materialRoom.uploadWidget')],
@@ -280,7 +281,7 @@ export default {
             ],
             materialArrayName: ['pageTemplate', 'popupTemplate'],
             uploadData:{},
-            DIR_: `../../../static/stencils/basic/`,
+            DIR_: `${window.PREFIX_PATH}/static/stencils/basic/`,
             baseAssembly: [
                 {image:'text.svg', name :'text'},
                 {image:'rectangle.svg',name :'rectangle'},
@@ -493,7 +494,7 @@ export default {
             this.templateIndex = index
             this.popUpType = 3 //右侧模板
             this.isShowPopMenu = true
-            let el = document.querySelector(".material-right-wrapper")
+            let el = document.querySelector(".material-right.materialtabs-right")
             let con = evt.target.parentElement
             this.popMenuStyle.left = `${evt.target.offsetLeft + con.offsetLeft + 30}px`
             this.popMenuStyle.top = `${evt.target.offsetTop + con.offsetTop - el.scrollTop + 44}px`
@@ -579,7 +580,7 @@ export default {
         },
         tabsSwitch(type) {
             this.tabNumber = type
-            if(this.tabNumber === 1) { // 默认是页面模版
+            if(this.tabNumber === 1) { // 默认是页面模板
                 this.selectMaterialList(0)
             }
         },
@@ -613,7 +614,7 @@ export default {
         uploadErr(res,file,fileList) {
             if(res.status == 418) {
                 let refreshToken = getCookie('refreshToken')
-                this.requestUtil.post('/api/auth/refreshToken', {refreshToken}).then(res => {
+                this.requestUtil.post('api/auth/refreshToken', {refreshToken}).then(res => {
                     setCookie('token', res.token)
                     setCookie('refreshToken', res.refreshToken)
                     let formData = new FormData()
@@ -854,8 +855,6 @@ export default {
                                               .assembly-right-wrapper{
                                                   display: flex;
                                                   flex-wrap:wrap;
-                                                  overflow-y:auto; 
-                                                  max-height: 100%;
                                                   &>li{
                                                       width:100px;
                                                       height:130px; 
@@ -934,7 +933,6 @@ export default {
                                               .material-right-wrapper{
                                                   display: flex;
                                                   flex-wrap:wrap;
-                                                  overflow-y:auto; 
                                                   &>li{
                                                       width:100px;
                                                       height:130px;

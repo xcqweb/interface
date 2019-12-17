@@ -6,7 +6,6 @@
  * Constructs the actions object for the given UI.
  */
 import {
-    addPageDialog,
     PreviewDialog
 } from '../editor/Dialogs'
 import {mxUtils, mxResources}  from '../mxGlobal'
@@ -65,81 +64,6 @@ Actions.prototype.init = function()
         ui.showDialog(content, 410, 80, true, false, null, null, '');
         return loadingBarInner;
     })
-    // 是否展示左侧菜单
-    function toggleSidebar() {
-        if (ui.sidebarContainer.style.display == 'none' && (graph.isPaletteEnabled() || graph.isPageManageEnabled())) {
-            ui.toggleSidebarPanel(false);
-        }
-        if (!graph.isPaletteEnabled() && !graph.isPageManageEnabled()) {
-            ui.toggleSidebarPanel(true);
-        } else {
-            ui.toggleSidebarPanel(false);
-        }
-    }
-    // 是否展示右侧菜单
-    function toggleRightSide() {
-        if (!graph.isPaletteManageEnabled() && !graph.isFormatManageEnabled()) {
-            ui.toggleRightPanel(true);
-        } else if (ui.rightBarContainer.style.display == 'none') {
-            ui.toggleRightPanel(false);
-        }
-    }
-    // 菜单操作
-    var field = null;
-    // 控件栏
-    field = this.addAction('palette', function() {
-        $("#general").toggle();
-        $("#generalTitle").toggle();
-        graph.setPaletteEnabled(!graph.isPaletteEnabled());
-        toggleSidebar();
-    }, true)		
-    // 设置是否显示状态切换
-    field.setToggleAction(true);
-    field.setSelectedCallback(function() { return graph.isPaletteEnabled(); });
-
-    // 页面列表栏
-    field = this.addAction('pageList', function() {
-        $("#pageManage").toggle();
-        $("#pageManageTitle").toggle();
-        graph.setPageManageEnabled(!graph.isPageManageEnabled());
-        toggleSidebar();
-    }, true)
-    field.setToggleAction(true);
-    field.setSelectedCallback(function() { return graph.isPageManageEnabled(); });
-	
-    // 控件管理栏
-    field = this.addAction('paletteManage', function() {
-        $(".gePaletteManageContainer").toggle();
-        graph.setPaletteManageEnabled(!graph.isPaletteManageEnabled());
-        toggleRightSide();
-    }, true)
-    field.setToggleAction(true);
-    field.setSelectedCallback(function() { return graph.isPaletteManageEnabled(); });
-
-    // 交互样式
-    field = this.addAction('formatManage', function() {
-        $(".geFormatContainer").toggle();
-        graph.setFormatManageEnabled(!graph.isFormatManageEnabled());
-        toggleRightSide();
-    }, true)
-    field.setToggleAction(true);
-    field.setSelectedCallback(function() { return graph.isFormatManageEnabled(); });
-	
-    // 工具栏
-    field = this.addAction('toolbar', function() {
-        graph.setToolbarEnabled(!graph.isToolbarEnabled());
-        ui.toggleToolbarPanel(!graph.isToolbarEnabled())
-    }, true)
-    field.setToggleAction(true);
-    field.setSelectedCallback(function() { return graph.isToolbarEnabled(); });
-	
-    field = null;
-    // 全屏
-    /* this.addAction('fullScreen', function() {
-        mxUtils.fullScreen()
-    }) */
-    // 菜单部分排版操作
-    // 文本左对齐
     this.addAction('leftalign', function() {
         ui.menus.createStyleChangeFunction([mxConstants.STYLE_ALIGN], [mxConstants.ALIGN_LEFT])()
     }, false)
@@ -201,7 +125,7 @@ Actions.prototype.init = function()
     this.addAction('previewapply', function (){
         let dlg = new PreviewDialog(ui,function(){
             let page = router.resolve({
-                path: "/interface_preview",
+                path: window.PREFIX_PATH + "/interface_preview",
                 query: {
                     id: sessionStorage.getItem('applyId')
                 }
@@ -219,13 +143,6 @@ Actions.prototype.init = function()
         window.openKey = 'open';		
         ui.openFile();
     });
-
-    // 增加页面
-    this.addAction('addPage', function(type) {
-        type = type || 'add';
-        var dlg = new addPageDialog(ui, type)
-        ui.showDialog(dlg.container, 400, 270, true, false, null, null, type == 'rename' ? '编辑页面' : '新建页面');
-    })
     /**
      * 获取节点坐标信息
      * @param {mxCell} mxCell 
@@ -1155,11 +1072,6 @@ Actions.prototype.init = function()
 	
     // 编辑图片
     this.addAction('image', function(e) {
-        // var cell = graph.getSelectionCell();
-        // var dlg = new ImageDialog(ui, cell)
-        // ui.showDialog(dlg.container, 410, 370, true, false, null, null, '选择图片');
-        // dlg.init()
-        // 本地图片
         let timer = setTimeout(() => {
             removeImageRadio();
             clearTimeout(timer)

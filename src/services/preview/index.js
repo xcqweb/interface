@@ -36,9 +36,9 @@ class Main {
         if (!id) {
             return
         }
-        const host = await geAjax('/api/console/host/imageHost', 'GET')
+        const host = await geAjax('api/console/host/imageHost', 'GET')
         this.fileSystem = host.imageHost
-        this.applyInfo = await geAjax(`/api/iot-cds/cds/configurationDesignStudioForPreview/${id}`, 'GET')
+        this.applyInfo = await geAjax(`api/iot-cds/cds/configurationDesignStudioForPreview/${id}`, 'GET')
         if (!this.applyInfo) {
             return
         }
@@ -62,39 +62,31 @@ class Main {
     changePage(pageId,isAction) { //isAction 是否交互事件触发的
         if(isAction) {
             let items = $(".gePreviewMenu ul li")
-            let scroolToMenu = ()=>{
-                if (this.menuStyle.position == 1) {
-                    $(".gePreviewMenu ul").animate({scrollTop: $(this).offset().top + "px"}, 500)
-                } else {
-                    $(".gePreviewMenu ul").animate({scrollLeft: $(this).offset().left + "px"}, 500)
-                }
-            }
-            if(items.length) { //如果菜单未隐藏,滚动菜单到对应位置并选中
+            if(items.length) {//启用菜单
                 items.each(function() {
                     let attrPageId = $(this).data("pageId")
                     if(attrPageId == pageId) {
                         $(this).click() //执行事件切换页面
-                        scroolToMenu()
                         return false //终止each 循环
                     }
                 })
                 return
-            } 
+            }
         }
         this.pageId = pageId
         // 渲染页面
         this.renderPageFun(pageId)
-       
-        let res = this.checkIsToInitMenu()
-        if(res[0]) {
-            setTimeout(()=>{
-                this.updateMenuPos(res[1])
-                window.onresize = () => {
-                    this.refreshMenuPos(res[1])
-                }
-            })
+        if(!isAction) {
+            let res = this.checkIsToInitMenu()
+            if(res[0]) {
+                setTimeout(()=>{
+                    this.updateMenuPos(res[1])
+                    window.onresize = () => {
+                        this.refreshMenuPos(res[1])
+                    }
+                })
+            }
         }
-
     }
     checkIsToInitMenu() {
         let res = true
@@ -139,7 +131,10 @@ class Main {
         let parseContent = resMenu[2]
         let pageRankNormal = resMenu[3]
         pageRankNormal.forEach(item=>{
-            pages[item] = parseContent.pages[item].title
+            let tempPage =  parseContent.pages[item]
+            if(tempPage) {
+                pages[item] = tempPage.title
+            }
         })
         this.menuStyle  = menuStyles[parseTheme.style - 1]
         $(()=>{
@@ -331,6 +326,10 @@ class Main {
     }
     updateMenuPos(parseTheme) {
         let menuIcon = $(".gePreviewMenuIcon")
+        let check = menuIcon.attr("data-check")
+        if(check != 1) {
+            return
+        }
         if (parseTheme.position == 1) {
             let left = menuWidth + $("#gePreviewCon").offset().left
             this.dealMenuLeft(this.getConHeight(), left, menuIcon)

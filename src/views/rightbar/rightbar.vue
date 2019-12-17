@@ -1,7 +1,7 @@
 <template>
   <div
     class="geSidebarContainer geRightBarContainer"
-    style="top:72px;right:0;z-index:2;"
+    style="right:0;bottom:0;z-index:2;"
   >
     <div class="rightbarShortcut">
       <div
@@ -45,7 +45,7 @@ export default {
     mounted() {
         VueEvent.$off('refreshCurrentPage')
         VueEvent.$on('refreshCurrentPage',(type)=>{
-            this.$store.dispatch('pageTabIndex',type)
+            this.$store.dispatch('pageTabIndex',type - 1)
             this.centerCanvas()
             this.refresh++
         })
@@ -74,14 +74,12 @@ export default {
                 this.$store.commit('getWidgetInfo',graph)
                 this.dealChartsRefresh(graph)
             })
-            graph.addListener(mxEvent.REFRESH,()=>{
-                this.dealChartsRefresh(graph)
-            })
+             
             let ele = this.$refs.shortCutWrapper
             shortCutWidgets = [
                 // 文字
                 that.createVertexTemplateEntry(
-                    "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;image=/static/stencils/basic/image.png",
+                    "shape=text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;image=" + window.PREFIX_PATH + "/static/stencils/basic/image.png",
                     60,
                     30,
                     // 类似链接一样设置
@@ -116,7 +114,7 @@ export default {
                     return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, `${this.$t('table')}`,true,true);
                 }),
                 // 图片
-                that.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=/static/stencils/basic/image.png', that.defaultImageWidth, that.defaultImageHeight, '', `${this.$t('image')}`,true,true),
+                that.createVertexTemplateEntry('shape=image;image;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/image.png', that.defaultImageWidth, that.defaultImageHeight, '', `${this.$t('image')}`,true,true),
             ]
             for (let i = 0; i < shortCutWidgets.length; i++) {
                 ele.appendChild(shortCutWidgets[i](ele))
@@ -154,6 +152,7 @@ export default {
                 VueEvent.$emit('isShowFootBar',{show:isBindData})
             }
             this.inited = true
+            this.dealChartsRefresh(graph)
         },
         getCellShapeName(cell) {
             let graph = this.myEditorUi.editor.graph
@@ -182,7 +181,9 @@ export default {
                     echartsDom.style.height = `${cells[i].geometry.height}px`
                     let cellEchart = echarts.init(echartsDom)
                     let bindChartProps = this.getWidgetProps('chartProps',cells[i])
-                    cellEchart.setOption(bindChartProps)
+                    if(bindChartProps) {
+                        cellEchart.setOption(bindChartProps)
+                    }
                 }
             }
         },

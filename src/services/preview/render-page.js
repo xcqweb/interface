@@ -244,7 +244,7 @@ class PreviewPage {
                 let statesInfo = item.statesInfo
                 let tempArr = []
                 statesInfo.forEach((d) => {
-                    if (d.modelFormInfo && d.key) {
+                    if (d.modelFormInfo) {
                         tempArr.push(d.modelFormInfo)
                     }
                 })
@@ -256,8 +256,9 @@ class PreviewPage {
             for (let key of modelIdsParam.keys()) {
                 modelAllIds = modelAllIds.concat(key.split("_"))
             }
+            modelAllIds = Array.from(new Set(modelAllIds))
             if(modelAllIds.length) {
-                requestUtil.post(urls.getModelByIds.url, Array.from(new Set(modelAllIds))).then((res) => {
+                requestUtil.post(urls.getModelByIds.url, modelAllIds).then((res) => {
                     if (res && res.returnObj) {
                         let params = []
                         res.returnObj.forEach(item=>{
@@ -273,7 +274,7 @@ class PreviewPage {
                             if (statesInfo && statesInfo.length) {
                                 cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
                                 statesInfo.forEach((d) => {
-                                    if (d.modelFormInfo && d.key) {
+                                    if (d.modelFormInfo) {
                                         d.modelFormInfo = allModels.get(d.modelFormInfo)
                                         cellStateInfoHasModel.push(d)
                                     }
@@ -282,24 +283,32 @@ class PreviewPage {
                             const className = item.shapeName.includes('progress') || item.shapeName.includes('Chart') ? '' : 'param-show-node'
                             $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId}`)
                         })
-                        requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
-                            let resParam = [],maps = new Map()
-                            res.forEach(dpId=>{
-                                let deviceId = getDeviceId(dpId)
-                                if (maps.has(deviceId)) {
-                                    maps.set(deviceId, maps.get(deviceId).push(dpId))
-                                }else{
-                                    maps.set(deviceId, [dpId])
-                                }
+                        if(params.length) {
+                            requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
+                                let resParam = [],maps = new Map(),tempArr
+                                res.forEach(dpId=>{
+                                    let deviceId = getDeviceId(dpId)
+                                    if (maps.has(deviceId)) {
+                                        tempArr =  maps.get(deviceId)
+                                        tempArr.push(dpId)
+                                        maps.set(deviceId,tempArr)
+                                    }else{
+                                        maps.set(deviceId, [dpId])
+                                    }
+                                })
                                 for (let key of maps.keys()) {
                                     resParam.push({
                                         deviceId:key,
                                         params:maps.get(key)
                                     })
                                 }
+                                this.subscribeDataDeal(resParam)
+                            },()=>{
+                                this.subscribeDataDeal()
                             })
-                            this.subscribeDataDeal(resParam)
-                        })
+                        }else{
+                            this.subscribeDataDeal()
+                        }
                     }
                 },()=>{
                     this.subscribeDataDeal()
@@ -327,17 +336,20 @@ class PreviewPage {
             }
         }
         formulaAttr.data.forEach(item=>{
-            let keyArr = item.key.split('/')
-            let paramId = null
-            if(keyArr.length > 2) {
-                paramId = keyArr[1]
+            let tempKey = item.key
+            if(tempKey) {
+                let keyArr = tempKey.split('/')
+                let paramId = null
+                if(keyArr.length > 2) {
+                    paramId = keyArr[1]
+                }
+                res.push({
+                    paramType: keyArr[0] == 'device' ? 0 : 1,
+                    deviceId: deviceId,
+                    partId: paramId,
+                    paramId: keyArr[keyArr.length - 1]
+                })
             }
-            res.push({
-                paramType: keyArr[0] == 'device' ? 0 : 1,
-                deviceId: deviceId,
-                partId: paramId,
-                paramId: keyArr[keyArr.length - 1]
-            })
         })
         return res
     }
@@ -613,7 +625,6 @@ class PreviewPage {
                     })
                     cellHtml.classList.add('param-show-node')
                 }
-                 
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
                 $(cellHtml).data("paramShow", paramShow)
                 this.initWsParams(cellHtml, device, paramShow)

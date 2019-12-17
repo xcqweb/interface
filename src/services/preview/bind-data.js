@@ -11,7 +11,7 @@ async function getLastData(deviceParams, fileSystem) {
     for (let item of maps.values()) {
         paramIds.push(item)
     }
-    const res = await geAjax('/api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(paramIds))
+    const res = await geAjax('api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(paramIds))
     setterRealData(res,fileSystem)
 }
 
@@ -50,7 +50,7 @@ async function getSubscribeInfos(deviceParams) {
         item.sourceId = item.deviceId
         params.subscribeInfos.push(item)
     }
-    let data = await geAjax('/api/pubsub/subscribe', 'POST', JSON.stringify(params))
+    let data = await geAjax('api/pubsub/subscribe', 'POST', JSON.stringify(params))
     data = JSON.parse(data)
     websocketUrlReal = data.data
     return data
@@ -147,7 +147,7 @@ function setterRealData(res, fileSystem) {
                             break
                         }
                     }
-                    changeEleState($ele, stateModels[stateIndex],fileSystem)
+                    changeEleState(els[i], stateModels[stateIndex],fileSystem)
                 }
                 if (paramShow && paramShow.length) {
                     let paramData = $ele.data('paramData')
@@ -217,6 +217,9 @@ function dealStateFormula(formula, data) {
 function dealLogic(logic,data) {
     let res = true
     let operate = +logic.logical
+    if(!logic.key) {
+        return false
+    }
     let tempArr = logic.key.split("/")
     let deviceType = tempArr[0]
     let paramId = tempArr[tempArr.length - 1]

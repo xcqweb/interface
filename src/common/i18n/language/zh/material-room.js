@@ -1,7 +1,7 @@
 export default {
     searchShapeName:'搜索组件名称',
     addWidgetLibs: '新增组件库',
-    templateLibs: '模版库',
+    templateLibs: '模板库',
     imageFormatRequirement: '图片格式不符合要求,只允许上传后缀名为"jpg", "svg", "png", "gif"的图片',
     imageSizeRequirement: '图片大小不符合要求,每个文件大小不超过 2M(2048KB)',
     pageNameCouldNotEmpty: '页面名称不能为空',

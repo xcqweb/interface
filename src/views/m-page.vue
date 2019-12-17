@@ -49,7 +49,7 @@ export default {
         }
     },
     created() {
-        mxUtils.getAll([mxResources.getSpecialBundle(window.RESOURCES_PATH,window.mxLanguage), '../static/default.xml'],xhr=> {
+        mxUtils.getAll([mxResources.getSpecialBundle(window.RESOURCES_PATH,window.mxLanguage), window.PREFIX_PATH + '/static/default.xml'],xhr=> {
             mxResources.parse(xhr[0].getText())
             // 默认配置
             var themes = new Object()
@@ -93,8 +93,8 @@ export default {
                         myEditorUi.editor.pages = content.pages
                         myEditorUi.editor.pagesRank = content.rank
                     }else{
-                        myEditor.pages.pageid_1.title = this.$t('page')
-                        myEditor.pages.pageid_2.title = this.$t('popup')
+                        myEditor.pages.pageid_1.title = `${this.$t('page')}1`
+                        myEditor.pages.pageid_2.title = `${this.$t('popup')}1`
                         if (!myEditor.pages.pageid_1.xml) {
                             myEditor.pages.pageid_1.xml = myEditor.defaultXml[0]
                         }
@@ -111,6 +111,9 @@ export default {
                     }else{
                         myEditorUi.theme = null
                     }
+                }else{//本地开发刚开始是新建的应用，没有应用id（该分支主要是开发时候用)
+                    myEditor.defaultXml[0] = myEditor.createPageXml(1366,768)
+                    myEditor.defaultXml[1] = myEditor.createPageXml(600,400)
                 }
                 Vue.prototype.myEditorUi = myEditorUi
                 this.init()
@@ -128,11 +131,13 @@ export default {
     },
     methods: {
         init() {
-            this.myEditorUi.editor.graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
+            let graph = this.myEditorUi.editor.graph
+            graph.view.addListener(mxEvent.EVENT_SCALE, this.updateZoom);
             this.myEditorUi.editor.addListener('resetGraphView', this.updateZoom);
             this.$refs.toolbar.init();
             this.$refs.leftsidebar.init();
             this.$refs.rightbar.init()
+            this.myEditorUi.initDiagramConWidth = this.myEditorUi.diagramContainer.offsetWidth
             timer = setInterval(()=> {
                 this.myEditorUi.saveFile(true,true)
             },1000 * 60 * 1)//1分钟自动保存一次

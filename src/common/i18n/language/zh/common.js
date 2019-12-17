@@ -132,4 +132,12 @@ export default {
     popupStyle: '弹窗样式',
     popupDesc: '弹窗描述',
     popupSize: '弹窗大小',
+    setHome: '设为首页',
+    copyPage: '复制页面',
+    copyPopup: '复制弹窗',
+    addTemplate: '添加到模板',
+    copyP:'副本',
+    addSuccess:'添加成功',
+    pageNameCanNotEmpty:'页面名称不能为空',
+    popupNameCanNotEmpty:'弹窗名称不能为空',
 }

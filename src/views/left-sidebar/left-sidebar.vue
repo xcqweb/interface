@@ -20,6 +20,39 @@
           >
             {{ $t('leftBar.addPage') }}
           </div>
+          <ul>
+            <li
+              v-for="(d,index) in pages"
+              :key="d.id"
+              :class="{'hover':index == pageIndex || isShowPopMenu&&index==hoverIndex[typeTab-1]}"
+              @click="checkPage(index)"
+            >
+              <span
+                v-if="!d.isEdit"
+                class="page-menu-name"
+                @dblclick="popReanme($event,index)"
+              >
+                {{ d.title }}
+              </span>
+              <input
+                v-if="d.isEdit"
+                v-model="d.title"
+                v-focus
+                maxlength="20"
+                class="editPageInput"
+                style="width:100%;"
+                @blur="saveName($event,index,d.title)"
+                @keyup.enter="saveName($event,index,d.title)"
+              >
+              <span
+                v-if="!d.isEdit"
+                class="right-icon-dolt" 
+                @mousemove="menuPopupShow($event,index)"
+                @mouseenter="menuPopupShow($event,index)"
+                @mouseout="menuMouseoutDeal($event)"
+              />
+            </li>
+          </ul>
         </TabPane>
         <TabPane 
           :label="$t('popup')" 
@@ -31,31 +64,62 @@
           >
             {{ $t('leftBar.addPopup') }}
           </div>
+          <ul>
+            <li
+              v-for="(d,index) in dialogs"
+              :key="d.id"
+              :class="index == dialogIndex || isShowPopMenu&&index==hoverIndex[typeTab-1] ? 'hover' : ''"
+              @click="checkDialog(index)"
+            >
+              <span
+                v-if="!d.isEdit"
+                class="page-menu-name"
+                @dblclick="popReanme($event,index)"
+              >
+                {{ d.title }}
+              </span>
+              <input
+                v-if="d.isEdit"
+                v-model="d.title"
+                v-focus
+                maxlength="20"
+                class="editPageInput"
+                style="width:100%;"
+                @blur="saveName($event,index,d.title)"
+                @keyup.enter="saveName($event,index,d.title)"
+              >
+              <span
+                class="right-icon-dolt"
+                @mousemove="menuPopupShow($event,index)"
+                @mouseenter="menuPopupShow($event,index)"
+                @mouseout="menuMouseoutDeal($event)"
+              />
+            </li>
+          </ul>
         </TabPane>
       </Tabs>
-      <div>
-        <Modal
-          v-model="modelshow"
-          class="left-sidebar-model"
-          :title="alertTitleName"
-          @on-ok="save"
-          @on-cancel="cancel"
+      <Modal
+        v-model="modelshow"
+        class="left-sidebar-model"
+        width="60vw"
+        :title="alertTitleName"
+        @on-ok="templateToPage"
+      >
+        <ul
+          class="left-sidebar-list"
         >
-          <ul
-            class="left-sidebar-list"
+          <li
+            v-for="(item,index) in templates" 
+            :key="index" 
+            @click="eventClickList(index)"
           >
-            <li
-              v-for="(item,index) in alertContent" 
-              :key="index" 
+            <span 
+              :class="templateIndex==index ? 'left-side-listactive' : ''"
             >
-              <span 
-                :class="index === isactive ? 'left-side-listactive' : ''"
-                @click="eventClickList(index)"
-              >
-                <template v-if="index === 0">
-                  <span />
-                </template>
-                <!--eslint-disable-->
+              <template v-if="index === 0">
+                <span />
+              </template>
+              <!--eslint-disable-->
               <template v-if="index >= 1">
                 <span 
                   style="display:flex;justify-content:center;align-items:center"
@@ -68,16 +132,39 @@
           </li>
         </ul>
       </Modal>
-      </div>
     </div>
     <div class="geSidebarContainer-bottom" />
-    <div class="geSidebarContainer-bottom2" />
+    <ul
+        v-if="isShowPopMenu"
+        :style="popMenuStyle"
+        @mouseleave="menuPopupHide"
+        class="materialModelMenu"
+      >
+       <li class="pop-menu rename" @click="copyPage">
+          {{typeTab ==1 ? $t('copyPage') : $t('copyPopup')}}
+        </li>
+        <li class="pop-menu delete" @click="addTemplateFun">
+          {{$t('addTemplate')}}
+        </li>
+        <li class="pop-menu delete" @click="setHome" v-if="typeTab==1 && hoverIndex[typeTab-1]!=0">
+          {{$t('setHome')}}
+        </li>
+        <li class="pop-menu rename" @click="popReanme">
+          {{$t('rename')}}
+        </li>
+        <li class="pop-menu delete" @click="popDel" v-if="typeTab==1&&pages.length>1 || typeTab==2&&dialogs.length>1">
+          {{$t('delete')}}
+        </li>
+      </ul>
   </div>
 </template>
 <script>
+import {mxUtils} from '../../services/mxGlobal'
+import {tipDialog, sureDialog} from '../../services/Utils'
 import {Tabs, TabPane, Modal} from 'iview'
 const addPageTypeName = ['leftBar.addPage','leftBar.addPopup']
 import VueEvent from '../../services/VueEvent.js'
+let pageTypeArr = ['normal','dialog']
 export default {
     components: {
         Tabs,
@@ -88,15 +175,17 @@ export default {
         return {
             modelshow: false,
             alertTitleName:'',
-            alertContent:[],
-            pageModal: [],
-            alertModal:[],
-            isactive: 0,
-            ifclickHander:0,
-            nomralType: 0
+            typeTab:1,
+            templateIndex:0,
+            pageIndex:0,
+            dialogIndex:0,
+            templates:[],
+            pages:[],
+            dialogs:[],
+            isShowPopMenu:false,
+            popMenuStyle:{left:'202px',top:'70px'},
+            hoverIndex:[-1,-1],
         }
-    },
-    created() {
     },
     mounted() {
         VueEvent.$off('select-nodetype')
@@ -107,27 +196,67 @@ export default {
     methods: {
         init() {
             this.myEditorUi.sidebar.init()
-            this.$nextTick(() => {
-                $("#normalPages li:first-child .spanli").click()
-            })
+            this.getPages()
+            this.checkPage(0,true)
+        },
+        getPages() {
+            let pagesRank = this.myEditorUi.editor.pagesRank
+            this.getpagesDeal(this.pages, pagesRank.normal)
+            this.getpagesDeal(this.dialogs, pagesRank.dialog)
+        },
+        getpagesDeal(resList,targetList) {
+            resList.splice(0)
+            let allPages = this.myEditorUi.editor.pages
+            for (let key of targetList) {
+                let temp = allPages[key]
+                if(temp) {
+                    temp.isEdit = false
+                    temp.bkTitle = temp.title
+                    resList.push(temp)
+                }
+            }
+        },
+        changeCurrentPage(list,index,flag) {
+            if(!flag ) {//不需要设置当前页面信息
+                this.myEditorUi.editor.setXml()
+            }
+            let id = list[index].id
+            let xml = list[index].xml
+            if(!xml) {
+                xml = this.myEditorUi.editor.defaultXml[this.typeTab - 1]
+            }
+            this.myEditorUi.editor.currentPage = id
+            let doc = mxUtils.parseXml(xml)
+            this.myEditorUi.editor.setGraphXml(doc.documentElement)
+            VueEvent.$emit('refreshCurrentPage',  this.typeTab)
+        },
+        checkPage(index,flag) {
+            this.pageIndex = index
+            this.changeCurrentPage(this.pages,index,flag)
+        },
+        checkDialog(index,flag) {
+            this.dialogIndex = index
+            this.changeCurrentPage(this.dialogs,index,flag)
         },
         tabsSwitch(type) {
-            // 0 页面 1 弹窗
-            this.nomralType = type
-            this.myEditorUi.sidebar.tabsSwitch(type)
-            this.checkHasCurrent(type)
+            // 1 页面 2 弹窗
+            if(type + 1 == this.typeTab) {
+                return
+            }
+            this.typeTab = type + 1
+            if(this.typeTab == 1) {
+                this.checkPage(this.pageIndex)
+            }else{
+                this.checkDialog(this.dialogIndex)
+            }
         },
         addPageType(type) {
-            // 1添加页面 2添加弹窗
-            this.myEditorUi.editor.setXml();
+            this.myEditorUi.editor.setXml()//保存当页面信息
             this.modelshow = true
-            this.alertTitleName = this.$t(addPageTypeName[type])
-            let data = {
-                'type': +type === 1 ? 'normal' : 'dialog'
-            }
-            this.pageModal = [{'name': 'leftBar.emptyPage',picUrl: '',content: '',pageTemplateId: ''}]
-            this.alertModal = [{'name': 'leftBar.emptyPopup',picUrl: '',content: '',pageTemplateId:''}]
-            this.requestUtil.get(this.urls.addTemplate.url, data).then((res) => {
+            this.alertTitleName = this.$t(addPageTypeName[type - 1])
+            let params = {'type': pageTypeArr[type - 1]}
+            this.templates = [{'name': 'leftBar.emptyPage',picUrl: '',content: '',pageTemplateId: ''}]
+            this.requestUtil.get(this.urls.addTemplate.url, params).then((res) => {
                 let data = res.records || []
                 data.forEach(item => {
                     let obj = {
@@ -136,101 +265,186 @@ export default {
                         pageTemplateId: item.pageTemplateId,
                         content:item.content
                     } 
-                    if (type === 1) {
-                        this.pageModal.push(obj)
-                    } else if (type === 2) {
-                        this.alertModal.push(obj)
-                    }
+                    this.templates.push(obj)
                 })
-                if (type === 1) {
-                    this.alertContent = this.pageModal
-                } else if (type === 2) {
-                    this.alertContent = this.alertModal
-                }
             })
-            
         },
         eventClickList(index) {
-            this.isactive = index
+            if(index == this.templateIndex) {
+                return
+            }
+            this.templateIndex = index
         },
-        save() {
-            this.alertAddPage(this.nomralType,this.isactive)
+        getPageIdMax() {
+            let idMax = 1
+            for (let id in this.myEditorUi.editor.pages) {//所有页面中的id的最大值
+                const idTemp = parseInt(id.match(/^pageid_([0-9]+)/)[1])
+                if(idMax < idTemp) {
+                    idMax = idTemp
+                }
+            }
+            idMax = 'pageid_' + (idMax + 1)
+            return idMax
         },
-        cancel() {
-
+        templateToPage() {
+            let maxLen = this.typeTab == 1 ? this.pages.length : this.dialogs.length
+            let titleText = `${this.typeTab == 1 ? this.$t('page') : this.$t('popup')}${maxLen + 1}`
+            let page
+            let xml
+            if (this.templateIndex == 0) {
+                xml = this.myEditorUi.editor.defaultXml[this.typeTab - 1]
+            } else { // 弹窗和页面模版
+                let content = this.templates[this.templateIndex].content
+                xml = JSON.parse(content).xml
+            }
+            page = {
+                id:"",
+                title: titleText,
+                xml,
+                style:{},
+                type: this.typeTab == 2 ? 'dialog' : 'normal'
+            }
+            this.dealNewPage(page)
         },
-        checkHasCurrent(type) {
-            this.$nextTick(() => {
-                if (+type === 0) {
-                    $(".normalPages").scrollTop(0)
-                    $('#normalPages >li:first-child .spanli').click()
-                } else if (+type === 1) {
-                    $(".dialogPages").scrollTop(0)
-                    $('#dialogPages >li:first-child .spanli').click()
+        dealNewPage(page) {
+            page.id = this.getPageIdMax()
+            this.myEditorUi.editor.pages[page.id] = page
+            this.myEditorUi.editor.pagesRank[page.type].push(page.id)
+            this.getPages()
+            if(this.typeTab == 1) {
+                this.checkPage(this.pages.length - 1)
+            }else{
+                this.checkDialog(this.dialogs.length - 1)
+            }
+        },
+        menuPopupHide() {
+            this.isShowPopMenu = false
+        },
+        copyPage() {
+            let currentPage = this.getCurrPageOrDialog()
+            let type =  pageTypeArr[this.typeTab - 1]
+            let page = {
+                title: `${currentPage.title}_${this.$t('copyP')}`,
+                xml:currentPage.xml,
+                id:'',
+                style:{},
+                type,
+            }
+            this.dealNewPage(page)
+            this.menuPopupHide()
+        },
+        getCurrPageOrDialog() {
+            let targetLists = this.typeTab == 1 ? this.pages : this.dialogs
+            return targetLists[this.hoverIndex[this.typeTab - 1]]
+        },
+        addTemplateFun() {
+            this.myEditorUi.editor.setXml()
+            const svgImage =  this.myEditorUi.sidebar.getSvgImage()
+            const svgImagePic = svgImage.outerHTML
+            if (svgImagePic) {
+                let currentPage = this.getCurrPageOrDialog()
+                let params = {
+                    content: JSON.stringify(currentPage),
+                    pic: svgImagePic,
+                    type: pageTypeArr[this.typeTab - 1]
+                }
+                this.requestUtil.post(this.urls.addTemplate.url, params).then((res) => {
+                    if (res.picUrl) {
+                        tipDialog(this.myEditorUi, `${this.$t('addSuccess')}`)
+                    }
+                })
+            }
+        },
+        setHome() {
+            let tmepType = pageTypeArr[this.typeTab - 1]
+            let tempIndex = this.hoverIndex[this.typeTab - 1]
+            let tempVal = this.myEditorUi.editor.pagesRank[tmepType][tempIndex]
+            this.myEditorUi.editor.pagesRank[tmepType].splice(tempIndex, 1)
+            this.myEditorUi.editor.pagesRank[tmepType].unshift(tempVal)
+            
+            let tempPage = this.pages[tempIndex]//更新视图页面
+            this.pages.splice(tempIndex,1)
+            this.pages.unshift(tempPage)
+            this.menuPopupHide()
+        },
+        dealIsEdit(evt,index,flag) {
+            if(!index && index !== 0) {
+                index = this.hoverIndex[this.typeTab - 1]
+            }
+            if(this.typeTab == 1) {
+                this.$set(this.pages[index],"isEdit",flag)
+            }else{
+                this.$set(this.dialogs[index],"isEdit",flag)
+            }
+        },
+        popReanme(evt,index) {
+            this.dealIsEdit(evt,index,true)
+            this.menuPopupHide()
+        },
+        saveName(evt,index,title) {
+            this.dealIsEdit(evt,index,false)
+            if(!title || !title.trim()) {
+                if(this.typeTab == 1) {
+                    this.$set(this.pages[index],'title',this.pages[index].bkTitle)
+                    tipDialog(this.myEditorUi, this.$t("pageNameCanNotEmpty"))
+                }else{
+                    this.$set(this.dialogs[index],'title',this.dialogs[index].bkTitle)
+                    tipDialog(this.myEditorUi, this.$t("popupNameCanNotEmpty"))
+                }
+                return
+            }
+            if(this.typeTab == 2) {
+                $(".dialog-title-m").html(title)
+                VueEvent.$emit('refreshAction')
+            }
+        },
+        delCurrentDal(index,list) {
+            let resIndex = -1
+            let tempIndex = this.hoverIndex[this.typeTab - 1]
+            if(index == tempIndex) {//处理删除当前选中项后，设置当前页的问题
+                if(index == list.length - 1) {
+                    resIndex = 0
+                }else{
+                    resIndex = index
+                }
+            }
+            list.splice(tempIndex,1)
+            if(resIndex != -1) {
+                this.myEditorUi.editor.currentPage = list[resIndex].id
+                if(this.typeTab == 1) {
+                    this.checkPage(resIndex,true)
+                }else{
+                    this.checkDialog(resIndex,true)
+                }
+            }
+        },
+        popDel() {
+            sureDialog(this.myEditorUi, `${this.$t('sureDel')} ?`, () => {
+                let type = pageTypeArr[this.typeTab - 1]
+                let currentPage = this.getCurrPageOrDialog()
+                let targetIndex = this.myEditorUi.editor.pagesRank[type].indexOf(currentPage.id)
+                this.myEditorUi.editor.pagesRank[type].splice(targetIndex,1)
+                delete this.myEditorUi.editor.pages[currentPage.id]
+                if(this.typeTab == 1) {
+                    this.delCurrentDal(this.pageIndex,this.pages)
+                }else{
+                    this.delCurrentDal(this.dialogIndex,this.dialogs)
                 }
             })
         },
-        alertAddPage(typePage, listNumber) {
-            const pagesRank = this.myEditorUi.editor.pagesRank
-            const pages = this.myEditorUi.editor.pages
-            let nameArr = []
-            let namebefore = ''
-            if (+typePage === 0) {
-                namebefore = this.$t('page')
-                nameArr = [...pagesRank.normal]
-            } 
-            if (+typePage === 1) {
-                namebefore = this.$t('popup')
-                nameArr = [...pagesRank.dialog]
+        menuPopupShow(evt,index) {
+            this.hoverIndex[this.typeTab - 1] = index
+            this.isShowPopMenu = true
+            let el = document.querySelector(".normalPages ")
+            this.popMenuStyle.top = `${evt.target.offsetTop - el.scrollTop}px`
+            this.popMenuStyle.left = `${evt.target.offsetLeft + 20}px`
+        },
+        menuMouseoutDeal(evt) {
+            let target = evt.toElement || evt.relatedTarget
+            if(target.className != 'materialModelMenu' && !target.className.includes('pop-menu')) {
+                this.menuPopupHide()
             }
-            let nameMax = nameArr.length
-            let titleText = `${namebefore}${nameMax + 1}`
-            let page = null
-            let id = 1;
-            for (let pageid in pages) {
-                const idNum = parseInt(pageid.match(/^pageid_([0-9]+)/)[1]);
-                id < idNum && (id = idNum);
-            }
-            id = 'pageid_' + (id + 1);
-            if (+listNumber === 0) {
-                let xml = this.myEditorUi.editor.defaultXml[typePage];
-                page = {
-                    id,
-                    title: titleText,
-                    xml,
-                    style:{},
-                    type: typePage === 1 ? 'dialog' : 'normal'
-                };
-            } else { // 弹窗和页面模版
-                let content = +typePage === 0 ? this.pageModal[listNumber].content : this.alertModal[listNumber].content;
-                let xml = JSON.parse(content).xml
-                page = {
-                    id,
-                    title: titleText,
-                    xml,
-                    style:{},
-                    type: typePage === 1 ? 'dialog' : 'normal'
-                };
-            }
-            let _li = document.createElement('li');
-            // _li.setAttribute('data-pageid', id);
-            _li.setAttribute('data-pageid', id);
-            _li.innerHTML = `<span class="spanli" style="flex:1;width:150px;overflow:hidden;text-overflow:ellipsis;white-space: nowrap">${titleText}</span><span class="right-icon-dolt"></span>`;
-            this.myEditorUi.editor.pages[id] = page
-            if (+typePage === 0) {
-                $("#normalPages").append(_li);
-            }
-            if (+typePage === 1) {
-                $("#dialogPages").append(_li);
-            }
-            this.myEditorUi.editor.pagesRank[page.type].push(id);
-            if (+typePage === 0) {
-                $("#normalPages li:last-child .spanli").click();
-            }
-            if (+typePage === 1) {
-                $("#dialogPages li:last-child .spanli").click();
-            }
-        }
+        },
     }
 }
 </script>
@@ -241,12 +455,10 @@ export default {
         width:208px;
         display:flex;
         flex-direction: column;
+        z-index:3;
         .geSidebarContainer-bottom{
             flex:1;
             overflow-y: auto;
-        }
-        .geSidebarContainer-bottom2{
-            height:30px;
         }
         .left-geSidebarContainer{
             border-bottom: solid 1px #ccc;
@@ -268,77 +480,6 @@ export default {
                             font-size: 11px;
                             color:#797979;
                             cursor: pointer;
-                        }
-                        .pageList>li{
-                            height:24px;
-                            line-height: 24px;
-                            padding-left:18px;
-                            display: flex;
-                            background:url(../../assets/images/material/page2_ic.png) no-repeat left center;
-                            background-size:16px 16px;
-                            cursor: pointer;
-                            &.currentPage{
-                                color:#fff;
-                                background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
-                                background-size:16px 16px;
-                                &.left-sidebar-homepage{
-                                background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
-                                }
-                                .right-icon-dolt{
-                                    display: block
-                                }
-                            }
-                            #editPageInput{
-                                height: 25px;
-                                border:none;
-                            }
-                            &.left-sidebar-homepage{
-                                background: url(../../assets/images/leftsidebar/homepage.png) no-repeat left center;
-                            }
-                            .right-icon-dolt{
-                                display: none;
-                                float:right;
-                                width:20px;
-                                height:24px;
-                                background: url('../../assets/images/leftsidebar/more1_ic.png') no-repeat left center;
-                                background-size:16px 16px;
-                                position: relative;
-                                z-index:100
-                            }
-                            &:hover{
-                                color:#fff;
-                                background: #3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
-                                background-size:16px 16px;
-                                .right-icon-dolt{
-                                    display: block
-                                }
-                                &.left-sidebar-homepage{
-                                background: #3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
-                                }
-                                #editPageInput{
-                                    height: 25px;
-                                    border:none;
-                                }
-                            }
-                        }
-                        #dialogPages>li{
-                            background:url('../../assets/images/leftsidebar/popup2_ic.png') no-repeat left center;
-                            background-size:16px 16px;
-                            &.currentPage{
-                                color:#fff;
-                                background-color:#3d91f7;
-                                background: #3d91f7 url('../../assets/images/leftsidebar/popup1_ic.png') no-repeat left center;
-                                background-size:16px 16px;
-                            }
-                            &:hover{
-                                color:#fff;
-                                background: #3d91f7 url('../../assets/images/leftsidebar/popup1_ic.png') no-repeat left center;
-                                background-size:16px 16px;
-                                #editPageInput{
-                                    height: 25px;
-                                    border:none;
-                                }
-                            }
                         }
                     }
                 }
@@ -366,91 +507,161 @@ export default {
                 color:#252525 !important;
                 }
             }
+            li{
+              height:24px;
+              line-height: 24px;
+              padding-left:18px;
+              display: flex;
+              background-size:16px 16px;
+              cursor: pointer;
+              &:not(:first-child){
+                background:url(../../assets/images/material/page2_ic.png) no-repeat left center;
+              }
+              &:first-child{
+                background:url(../../assets/images/leftsidebar/homepage.png) no-repeat left center;
+              }
+              &:hover,&.hover{
+                  &:not(:first-child){
+                    background:#3d91f7 url(../../assets/images/material/page1_ic.png) no-repeat left center;
+                  }
+                  &:first-child{
+                    background:#3d91f7 url(../../assets/images/leftsidebar/homepageactive.png) no-repeat left center;
+                  }
+                  color:#fff;
+                  .right-icon-dolt{
+                      display: block;
+                  }
+              }
+          }
+        }
+        .page-menu-name{
+            flex:1;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space: nowrap;
+        }
+        .right-icon-dolt{
+            display: none;
+            float:right;
+            width:20px;
+            height:24px;
+            background: url('../../assets/images/leftsidebar/more1_ic.png') no-repeat left center;
+            background-size:16px 16px;
+            position: relative;
+            z-index:100
         }
     }
 </style>
 <style lang="less">
-body{
-    .left-sidebar-model{
-        height:100%;
-        .ivu-modal-wrap{
-            .ivu-modal{
-                .ivu-modal-content{
-                    width:600px;
-                    background-color:#f5f5f5 !important;
-                    .ivu-modal-header{
+.left-sidebar-model{
+    height:100%;
+    .ivu-modal-wrap{
+        .ivu-modal{
+            .ivu-modal-content{
+                background-color:#f5f5f5 !important;
+                .ivu-modal-header{
+                    height: 36px;
+                    padding:0;
+                    .ivu-modal-header-inner{
+                        text-align: center;
                         height: 36px;
-                        padding:0;
-                        .ivu-modal-header-inner{
-                            text-align: center;
-                            height: 36px;
-                            line-height: 36px;
-                            color:#252525;
-                            font-size: 12px;
-                            background: linear-gradient(0deg,#d8d8d8,#e4e3e4);
-                            font-weight: normal;
-                            border-top-left-radius: 6px;
-                            border-top-right-radius: 6px;
-                        }
+                        line-height: 36px;
+                        color:#252525;
+                        font-size: 12px;
+                        background: linear-gradient(0deg,#d8d8d8,#e4e3e4);
+                        font-weight: normal;
+                        border-top-left-radius: 6px;
+                        border-top-right-radius: 6px;
                     }
-                    .ivu-modal-body{
-                        height: 300px !important;
-                        overflow-y: auto;
-                        .left-sidebar-list{
-                            &>li{
+                }
+                .ivu-modal-body{
+                    overflow-y: auto;
+                    .left-sidebar-list{
+                        height:50vh;
+                        overflow-y: scroll;
+                        &>li{
+                            width:120px;
+                            height: 110px;
+                            float:left;
+                            margin-right:10px;
+                            &>span{
+                                display: inline-block;
                                 width:120px;
-                                height: 110px;
-                                float:left;
-                                margin-right:10px;
+                                height: 80px;
+                                background:#ffffff;
+                                padding:5px;
+                                box-sizing: border-box;
+                                box-shadow:darkgrey 1px 1px 5px 1px;
+                                overflow: hidden;
+                                &.left-side-listactive{
+                                    padding:3px;
+                                    border:2px solid #3D91F7
+                                }
                                 &>span{
                                     display: inline-block;
-                                    width:120px;
-                                    height: 80px;
-                                    background:#ffffff;
-                                    padding:5px;
-                                    box-sizing: border-box;
-                                    box-shadow:darkgrey 1px 1px 5px 1px;
-                                    overflow: hidden;
-                                    &.left-side-listactive{
-                                        padding:3px;
-                                        border:2px solid #3D91F7
-                                    }
-                                    &>span{
-                                        display: inline-block;
-                                        width:100%;
-                                        height: 100%;
-                                    }
+                                    width:100%;
+                                    height: 100%;
                                 }
-                                &>label{
-                                    display: inline-block;
-                                    width:120px;
-                                    height:20px;
-                                    text-align: center;
-                                    line-height: 20px;
-                                    font-size: 12px;
-                                    color:#252525;
-                                }
+                            }
+                            &>label{
+                                display: inline-block;
+                                width:120px;
+                                height:20px;
+                                text-align: center;
+                                line-height: 20px;
+                                font-size: 12px;
+                                color:#252525;
                             }
                         }
                     }
-                    .ivu-modal-close{
-                        position: absolute;
-                        top:10px;
-                        width:16px;
-                        height:16px;
-                        background: url(../../assets/images/default/closeDialog.png) no-repeat center center;
-                        background-size: 16px 16px;
-                        .ivu-icon{
-                            display:none;
-                        }
+                }
+                .ivu-modal-close{
+                    position: absolute;
+                    top:10px;
+                    width:16px;
+                    height:16px;
+                    background: url(../../assets/images/default/closeDialog.png) no-repeat center center;
+                    background-size: 16px 16px;
+                    .ivu-icon{
+                        display:none;
                     }
-                    .ivu-modal-footer{
-                        border-top:none;
-                    }
+                }
+                .ivu-modal-footer{
+                    border-top:none;
                 }
             }
         }
     }
+}
+.materialModelMenu{
+  position: absolute;
+  width:115px;
+  background: #F5F5F5;
+  color:#252525;
+  border:1px solid #CCCCCC;
+  border-radius: 2px;
+  z-index: 999999;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.3);
+  li{
+    height: 24px;
+    font-size: 14px;
+    padding: 0 15px;
+    cursor: pointer;
+    line-height: 24px;
+    &:hover{
+      background: #3d91f7;
+      color:#fff;
+    }
+  }
+}
+.editPageInput{
+  border:none;
+  outline: none;
+  background:#fff;
+  padding-left:5px;
+  height:24px;
+  line-height: 24px;
+  width:120px;
 }
 </style>
 

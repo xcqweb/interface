@@ -310,7 +310,6 @@ export default{
                 }
             }
             if(isEdit) {
-                console.log(action)
                 let res = actions.findIndex(item=>{
                     return item.mutualType == action.mutualType
                 })
@@ -377,7 +376,9 @@ export default{
         },
         editEvent(e) {
             let tempList = this.pages
-            if(e.type == 2) {
+            if(e.type == 1) {
+                tempList = this.pages
+            }else  if(e.type == 2) {
                 if(e.innerType == 'palette') {
                     tempList = this.currentPageWidgets
                     this.visibleTypeTab = 2
@@ -385,18 +386,18 @@ export default{
                     tempList = this.dialogs
                     this.visibleTypeTab = 1
                 }
-                tempList.forEach(item=>{
-                    if(item.id === e.id) {
-                        this.currentEditItem = item
-                        item.selected = true
-                    }else{
-                        item.selected = false
-                    }
-                })
             }else if(e.type == 3) {
                 this.$refs.change.checkCurrent(e)
             }
             this.isEdit = true
+            tempList.forEach(item=>{
+                if(item.id === e.id) {
+                    this.currentEditItem = item
+                    item.selected = true
+                }else{
+                    item.selected = false
+                }
+            })
             if(e.type == 3) {
                 this.changeTab(e.type,true)
             }else {
