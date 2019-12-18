@@ -83,7 +83,7 @@
                 slot="paramType"
                 slot-scope="{row}"
               >
-                {{ row.paramType == 'device' ? $t('footBar.deviceParam') : $('footBar.virtualParam') }}
+                {{ row.paramType == 'device' ? $t('footBar.deviceParam') : $t('footBar.virtualParam') }}
               </template>
               <template
                 slot="paramShow"
@@ -361,10 +361,12 @@ export default {
         // 初始化数据源数据
         initDataSource() {
             let startBindData = this.getCellModelInfo('bindData')
+            console.log(startBindData)
             if (startBindData && startBindData.dataSource) {
                 let deviceNameChild = startBindData.dataSource.deviceNameChild
                 this.deviceModelId  = startBindData.dataSource.deviceModel.id
                 this.deviceId = deviceNameChild.id
+                console.log(this.deviceId,"tt-aa")
                 this.dataSourceList = []
                 let obj = {}
                 obj.typeName = startBindData.dataSource.deviceTypeChild.name 

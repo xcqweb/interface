@@ -52,7 +52,7 @@ class Main {
             gePreview.style.backgroundSize = "contain"
             return
         }
-        document.getElementsByTagName('title')[0].innerHTML = this.applyInfo.studioName
+        document.title = this.applyInfo.studioName
         // 设置默认页面
         this.previewPage = new PreviewPage(this.applyInfo, this, gePreview)
         //初始化菜单

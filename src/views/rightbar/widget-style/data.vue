@@ -108,7 +108,7 @@ import NoData from '../../data-source/nodata'
 import DatasourceStore from '../../data-source/js/datasource-store'
 import {Button,Checkbox,Message,Select,Option, CheckboxGroup,Input} from 'iview'
 
-const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart']
+const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart','lineChart']
 export default{
     components: {
         Button,
@@ -152,6 +152,7 @@ export default{
         },
         bindDeviceNameHandle() {
             this.bindData = this.getCellModelInfo('bindData')
+            console.log(this.bindData)
             if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个
                 Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
                 // 清空勾选

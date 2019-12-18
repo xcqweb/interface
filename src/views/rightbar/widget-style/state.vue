@@ -153,8 +153,8 @@ export default{
             let cell = graph.getSelectionCell()
             let statesTemp = [{
                 "id":'state_0',
-                "name":`${this.$t("defaultText")}`,
-                "desc":`${this.$t("defaultText")}`,
+                "name":this.$t("defaultText"),
+                "desc":this.$t("defaultText"),
                 'animateCls':'',
                 "style":{
                     background:this.$store.state.main.widgetInfo.bgColor,

@@ -132,6 +132,7 @@ class PreviewPage {
                     y = parseFloat(node.childNodes[0].getAttribute('y')) || 0
                     width = parseFloat(node.childNodes[0].getAttribute('width'))
                     hide = item.getAttribute('hide');
+
                     height = parseFloat(node.childNodes[0].getAttribute('height'))
                     if(shapeName == 'beeline') {
                         edgeProps = {}
@@ -285,8 +286,9 @@ class PreviewPage {
                         })
                         if(params.length) {
                             requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
-                                let resParam = [],maps = new Map(),tempArr
+                                let resParam = [],maps = new Map()
                                 res.forEach(dpId=>{
+                                    let tempArr = []
                                     let deviceId = getDeviceId(dpId)
                                     if (maps.has(deviceId)) {
                                         tempArr =  maps.get(deviceId)
@@ -610,8 +612,9 @@ class PreviewPage {
             }
         }
         // 绑定事件
-        bindEvent(cellHtml, cell, this.mainProcess, applyData,fileSystem)
+        $(cellHtml).data('hide',cell.hide)
         $(cellHtml).data("shapeName",shapeName)
+        bindEvent(cellHtml, cell, this.mainProcess, applyData,fileSystem)
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild) {
             let paramShow = []
             let device = cell.bindData.dataSource.deviceNameChild

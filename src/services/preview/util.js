@@ -116,7 +116,8 @@ function insertEdge(cell) {
  */
 function actionShow(action, mainProcess) {
     if (action.innerType === 'palette') {
-        document.getElementById('palette_' + action.link).style.display = '';
+        let hide = $('#palette_' + action.link).data('hide')
+        document.getElementById('palette_' + action.link).style.display = hide === 'true' ? 'block' : 'none'
     } else {
         mainProcess.renderPageFun(action.link)
     }
@@ -216,7 +217,8 @@ function actionChange(action, fileSystem) {
  */
 function actionHide(action, applyData) {
     if (action.innerType === 'palette') {
-        document.getElementById('palette_' + action.link).style.display = 'none';
+        let hide = $('#palette_' + action.link).data('hide')
+        document.getElementById('palette_' + action.link).style.display = hide === 'true' ? 'block' : 'none'
     } else if (document.getElementById(action.link)) {
         removeEle(document.getElementById(action.link));
         removeEle(document.getElementById('bg_' + action.link));

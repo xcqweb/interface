@@ -111,6 +111,7 @@ export default {
                     }else{
                         myEditorUi.theme = null
                     }
+                    document.title = `组态工具-${editData.studioName}`
                 }else{//本地开发刚开始是新建的应用，没有应用id（该分支主要是开发时候用)
                     myEditor.defaultXml[0] = myEditor.createPageXml(1366,768)
                     myEditor.defaultXml[1] = myEditor.createPageXml(600,400)
