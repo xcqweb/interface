@@ -88,6 +88,7 @@ export default {
         return {
             visible: false,
             currentModelId: '',
+            currentDeviceId: '',
             selectedItems: [],
             params: [],
             listStyle: {
@@ -229,8 +230,9 @@ export default {
         setVisible() {
             this.visible = this.value;
             if (this.visible) {
-                if (this.currentModelId !== this.deviceModelId) {
+                if (this.currentModelId !== this.deviceModelId || this.currentDeviceId !== this.deviceId) {
                     this.currentModelId = this.deviceModelId;
+                    this.currentDeviceId = this.deviceId;
                     this.getData();
                 }
                 if (this.selectedKeys && this.selectedKeys.length > 0) {
