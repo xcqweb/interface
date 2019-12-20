@@ -415,6 +415,8 @@ export default {
             }
         },
         addParam() {
+            let deviceNameChild = startBindData.dataSource.deviceNameChild
+            this.deviceId = deviceNameChild.id
             this.visible = true
             if(this.singleParamShow.includes(this.shapeName)) {
                 this.multiple = false
