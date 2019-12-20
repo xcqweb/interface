@@ -153,7 +153,7 @@ function setterRealData(res, fileSystem) {
                     let paramData = $ele.data('paramData')
                     if (!paramData) {
                         paramData = {
-                            time: timeFormate(item.timestamp, false),
+                            time:"",
                             data: {}
                         }
                     }
@@ -161,6 +161,7 @@ function setterRealData(res, fileSystem) {
                         let dpIdVal = item[d.deviceParamId]
                         if (dpIdVal || dpIdVal == 0) {
                             paramData.data[d.paramName] = dpIdVal
+                            paramData.time = timeFormate(item.timestamp, false)
                         }else{
                             if(!paramData.data[d.paramName]) {
                                 paramData.data[d.paramName] = null
