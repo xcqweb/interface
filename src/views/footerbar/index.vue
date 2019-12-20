@@ -415,6 +415,7 @@ export default {
             }
         },
         addParam() {
+            let startBindData = this.getCellModelInfo("bindData")
             let deviceNameChild = startBindData.dataSource.deviceNameChild
             this.deviceId = deviceNameChild.id
             this.visible = true
