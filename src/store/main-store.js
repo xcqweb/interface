@@ -152,7 +152,7 @@ const mutations = {
             arcSize = mxUtils.getValue(stateWidget.style, 'arcSize', 0)
             borderColor = mxUtils.getValue(stateWidget.style, 'strokeColor', null)
             if(shapeInfo.shape.includes('image')) {
-                borderColor = mxUtils.getValue(stateWidget.style, 'imageBorder', "#000000")
+                borderColor = mxUtils.getValue(stateWidget.style, 'imageBorder', null)
             }
             borderBold = mxUtils.getValue(stateWidget.style, 'strokeWidth', 1)
             align = mxUtils.getValue(stateWidget.style, mxConstants.STYLE_ALIGN, mxConstants.ALIGN_CENTER)

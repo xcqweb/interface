@@ -727,7 +727,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         // 圆形
         this.createVertexTemplateEntry('shape=ellipse;whiteSpace=wrap;html=1;strokeColor=#000;aspect=fixed;', 36, 36, '', '圆形', null, null, '圆形'),
         // 横向菜单
-        this.addEntry('menulist', function()
+       /*  this.addEntry('menulist', function()
         {
             var cell = new mxCell('', new mxGeometry(0, 0, 360, 40), 'shape=menulist;group;selectBackgroundColor=#3B72A8;selectedFontColor=#3B72A8;');
             cell.vertex = true;
@@ -739,9 +739,8 @@ Sidebar.prototype.addGeneralPalette = function(expand)
                 symbol.vertex = true;
                 cell.insert(symbol);
             }
-            // 
             return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '菜单');
-        }),
+        }), */
         // 按钮
         this.createVertexTemplateEntry('shape=button;html=1;strokeColor=#000;fillColor=none;verticalAlign=middle;align=center;', 70, 40, '<div style="display: inline-block;text-align:inherit;text-decoration: inherit;">BUTTON</div>', '按钮'),
         // 表格，通过html生成   
@@ -767,19 +766,8 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         }),
         // 图片
         this.createVertexTemplateEntry('shape=image;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '<input type="file" style="opacity:0;" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/></label>', '图片'),
-        // 曲线
-        // this.addEntry('curve', mxUtils.bind(this, function()
-	 	// {
-        //     var cell = new mxCell('', new mxGeometry(0, 0, 50, 50), 'shape=curve;curved=1;endArrow=none;html=1;');
-        //     cell.geometry.setTerminalPoint(new mxPoint(0, 50), true);
-        //     cell.geometry.setTerminalPoint(new mxPoint(50, 0), false);
-        //     cell.geometry.points = [new mxPoint(50, 50), new mxPoint(0, 0)];
-        //     cell.geometry.relative = true;
-        //     cell.edge = true;
-        //     return this.createEdgeTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '曲线');
-	 	// })),
         // 指示灯
-        this.createVertexTemplateEntry('shape=light;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/light.svg', 72, 72, '', '指示灯'),
+        this.createVertexTemplateEntry('shape=light;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/light.png', 72, 72, '', '指示灯'),
         // 进度条
         this.createVertexTemplateEntry('shape=progress;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/progress.svg', 72, 16, '', '进度条'),
         // 管道1
@@ -790,6 +778,7 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         this.createVertexTemplateEntry('shape=pipeline3;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/pipeline3.svg', 60, 40, '', '管道3'),
         // 链接
         this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
+        this.createVertexTemplateEntry('shape=triangle;triangle;whiteSpace=wrap;strokeColor=#000;html=1;', 60, 80, '', '三角形', null, null, '三角形'),
     ];
     //封装
     this.addPaletteFunctions('general', mxResources.get('basic'), (expand != null) ? expand : true, fns);
@@ -808,6 +797,12 @@ addUserPalette
 */
 Sidebar.prototype.addUserPalette = function (expand) {
     let arr = []
+    let dealSize=(size)=>{
+        if(size>500){
+            size = 500
+        }
+        return size
+    }
     requestUtil.get(Urls.materialList.url).then((res) => {
         let data = res.records || []
         data.forEach((item) => {
@@ -826,7 +821,7 @@ Sidebar.prototype.addUserPalette = function (expand) {
             res.forEach(item=>{
                 let array = []
                 item.materialList.forEach(d=>{
-                    array.push(this.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`, d.picWidth&&d.picWidth!=1 ? parseInt(d.picWidth / 1.5) : 200, d.picHeight&&d.picHeight!=1 ? parseInt(d.picHeight / 1.5) : 150, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
+                    array.push(this.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`, d.picWidth&&d.picWidth!=1 ? dealSize(parseInt(d.picWidth / 1.5)) : 200, d.picHeight&&d.picHeight!=1 ? dealSize(parseInt(d.picHeight / 1.5)) : 150, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
                 })
                 this.addPaletteFunctions('user', `${item.libraryName}`, false, array)
             })
@@ -985,12 +980,10 @@ Sidebar.prototype.createThumb = function(cells, width, height, parent, title, sh
 Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, width, height, allowCellsInserted, type, imageurl)
 {
     var elt = document.createElement('a');
-    var ui = this.editorUi;
     elt.setAttribute('href', "javascript:void(0);");
     elt.setAttribute('ondragstart', 'return false;');
     elt.className = 'geItem';
     elt.style.overflow = 'hidden';
-    var border = (mxClient.IS_QUIRKS) ? 8 + 2 * this.thumbPadding : 2 * this.thumbBorder;
     elt.style.width = '46px'
     elt.style.height = '46px'
     var shapeName = /shape=(.+?);/.exec(cells[0].style)[1];
@@ -1004,9 +997,12 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
     } else {
         if (type === 'layout') {
             elt.style.backgroundImage = `url(${imageurl})`;
-            elt.style.backgroundSize = '40px 40px'
+            elt.style.backgroundSize = '36px 36px'
         } else {
             elt.style.backgroundImage = 'url(' + window.PREFIX_PATH + '/static/stencils/basic/' + shapeName + '.png)';
+        }
+        if(shapeName=='light'){
+            elt.style.backgroundSize = '36px 36px'
         }
         elt.style.backgroundPosition = `center center`
         elt.style.backgroundRepeat = `no-repeat`

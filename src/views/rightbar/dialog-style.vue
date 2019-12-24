@@ -21,6 +21,7 @@
     <div style="display:flex;">
       <div
         class="item-container"
+        :class="{isMobileApp:'solidWidth'}"
       >
         <span style="color:#797979;margin:0 6px;">{{ $t('width') }}</span>
         <input

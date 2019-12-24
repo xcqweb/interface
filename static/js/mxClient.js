@@ -15338,7 +15338,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
     }
     if (typeof this.graph.getModel().getValue(selectCell) === 'object') {
         if (this.graph.getModel().getValue(selectCell)) {
-            let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide') || undefined // 获取到元素
+            let showOrHide = this.graph.getModel().getValue(selectCell).getAttribute('hide')// 获取到元素
             if ((showOrHide === 'true') && title.includes(mxResources.get('resetHide'))) {
                 title = mxResources.get('resetVisible')
             }
@@ -15347,9 +15347,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
                 title = mxResources.get('resetVisible')
             }
         }
-    } else {
     }
-	
     let ifshowPaste = false
     if (selectCount === 1) { // 单个组件
         if (!this.graph.getModel().isEdge(selectCell) && !this.graph.isSwimlane(selectCell) && this.graph.getModel().getChildCount(selectCell) > 0 && shapeName !== 'menulist') {

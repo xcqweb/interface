@@ -3412,7 +3412,7 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
 };
 /**
  * 保存成功
- * 和退出当前页面
+ *  
  */
 EditorUi.prototype.saveSuccess = function (res, hideDialogFlag) {
     this.editor.setFilename(res.studioName)

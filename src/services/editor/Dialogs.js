@@ -110,7 +110,7 @@ var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
     function addPresets(presets, rowLength, defaultColor, addResetOption,isRecent)
     {
         if (!isShowBtn){
-            presets = ['#D0021B', '#F5A623', '#F8E71C', '#7ED321', '#4A90E2', '#BD10E0', '#4A4A4A', '#9B9B9B']
+            presets = ['none','#D0021B', '#F5A623','#7ED321', '#4A90E2', '#BD10E0', '#4A4A4A', '#9B9B9B']
         }
         rowLength = (rowLength != null) ? rowLength : 9;
         var odiv = document.createElement('div');
@@ -157,15 +157,15 @@ var ColorDialog = function(editorUi, color, apply, cancelFn,isShowBtn=true)
 						
                         mxEvent.addListener(td, 'click', function()
                         {
-                            if (clr == 'none')
-                            {
-                                picker.fromString('ffffff');
-                                input.value = 'none';
-                            }
-                            else
+                            if (clr != 'none')
                             {
                                 picker.fromString(clr);
                                 rect.style.backgroundColor = `${clr}`
+                            }else{
+                                setTimeout(() => {
+                                    input.value="none"
+                                    rect.style.background = 'url(\'' + Dialog.prototype.noColorImage + '\')';
+                                }, 100)
                             }
                         });
                     }
@@ -598,9 +598,7 @@ let tipDialog = function(editorUi, flag, info) {
     infoText.className = 'tipText'
     infoText.innerHTML = info + (flag === null ? '' : flag ? '成功' : '失败');
     tipContent.appendChild(infoText)
-    setTimeout(function() {
-        editorUi.hideDialog()
-    }, 3000)
+    editorUi.hideDialog()
     return tipContent
 }
 

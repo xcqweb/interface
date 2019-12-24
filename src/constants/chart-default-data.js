@@ -5,16 +5,18 @@ export let data1 = {
         data: ['图例'],
         x:'center',
         y:'bottom',
+        padding:[40,0,0,0],
         orient: 'horizontal',
         textStyle:{
             
         }
     },
     grid:{
-        top:45,
-        bottom:45,
-        left:45,
-        right:45
+        top:60,
+        bottom:30,
+        left:30,
+        right:30,
+        containLabel: true
     },
     tooltip: {
         trigger: 'axis'
@@ -89,6 +91,7 @@ export let data2 = {
         name:'仪表盘',
         type: 'gauge',
         radius:'100%',
+        center: ['50%', '62%'],
         detail: {
             show:false,
             formatter: '{value}%'

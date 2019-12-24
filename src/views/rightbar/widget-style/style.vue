@@ -899,6 +899,8 @@ export default {
             if(cellProp) {
                 this.selectMenu = cellProp.check
             }
+        }else if(this.shapeName == 'light') {
+            this.initLightStates()
         }
         let dblClickFn = graph.dblClick
         graph.dblClick = (evt, cell) => {
@@ -943,6 +945,28 @@ export default {
             }
             cellEchart.setOption(options)
             graph.getModel().endUpdate()
+        },
+        initLightStates() {
+            let bindStates = this.getWidgetProps("statesInfo")
+            if(bindStates) {
+                return
+            }
+            let states = []
+            for(let i = 0;i < 4;i++) {
+                let obj = {
+                    "id":`state_${i}`,
+                    "name":i === 0 ? this.$t("defaultText") : `${this.$t("state")}${i}`,
+                    "desc":i === 0 ? this.$t("defaultText") : `${this.$t("state")}${i}`,
+                    'animateCls':i === 0 ? '' : 'animate-blink',
+                    'style':{},
+                    'imgInfo':{
+                        url:i === 0 ? `../../../../static/stencils/basic/light.png` : `../../../../static/stencils/basic/light${i}.png`,
+                    },
+                    'check':false
+                }
+                states.push(obj)
+            }
+            this.setModeInfoStates(states)
         },
         dealNumber(number) {
             if(number) {
@@ -1267,6 +1291,19 @@ export default {
             cellInfo.setAttribute(widgetProp,newAttr)
             graph.getModel().setValue(cell, cellInfo)
         },
+        setModeInfoStates(states) {
+            let graph = this.myEditorUi.editor.graph
+            let cell = graph.getSelectionCell()
+            let modelInfo = graph.getModel().getValue(cell)
+            if (!mxUtils.isNode(modelInfo)) {
+                var doc = mxUtils.createXmlDocument()
+                var obj = doc.createElement('object')
+                obj.setAttribute('label', modelInfo || '')
+                modelInfo = obj
+            }
+            modelInfo.setAttribute('statesInfo', JSON.stringify(states))
+            graph.getModel().setValue(cell, modelInfo)
+        },
         getWidgetProps(widgetProp) {
             let cellInfo = this.getCellInfo()
             if (!mxUtils.isNode(cellInfo)) {
@@ -1456,23 +1493,23 @@ export default {
                     tempLegend.x = 'center'
                     tempLegend.y = 'top'
                     tempLegend.orient = 'horizontal'
-                    tempLegend.padding = [10,0,0,0]
                     break
                 case 3:
                     tempLegend.x = 'left'
-                    tempLegend.y = 'center'
+                    tempLegend.y = 'middle'
                     tempLegend.orient = 'vertical'
-                    tempLegend.padding = [0,0,0,-30]
                     bindChartProps.grid.left = 60
+                    bindChartProps.grid.right = 30
                     break
                 case 4:
                     tempLegend.x = 'right'
-                    tempLegend.y = 'center'
+                    tempLegend.y = 'middle'
                     tempLegend.orient = 'vertical'
-                    tempLegend.padding = [0,-30,0,0]
+                    bindChartProps.grid.right = 60
+                    bindChartProps.grid.left = 30
                     break
             }
-            bindChartProps.legend = Object.assign({},tempLegend)
+            bindChartProps.legend = Object.assign(bindChartProps.legend,tempLegend)
             this.showLegendChoose = false
             cellEchart.setOption(bindChartProps)
             this.setWidgetProps("chartProps",bindChartProps)

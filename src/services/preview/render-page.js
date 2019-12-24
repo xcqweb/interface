@@ -7,7 +7,7 @@ let fileSystem //文件服务器host
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
-import {removeEle, destroyWs, insertImage, getDeviceId,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout,throttleFun} from './util'
+import {removeEle, destroyWs, insertImage, getDeviceId,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout,throttleFun,dealTriangle} from './util'
 import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -91,7 +91,7 @@ class PreviewPage {
                     node = item.childNodes[0]
                     value = item.getAttribute('label')
                 } else {
-                    node = item;
+                    node = item
                     value = node.getAttribute('value')
                 }
                 // 节点父节点
@@ -107,6 +107,7 @@ class PreviewPage {
                     let statesInfo = JSON.parse(item.getAttribute('statesInfo'))
                     // 节点参数信息
                     let getNodeInfo = new GetNodeInfo(node)
+                    console.log(getNodeInfo)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape')
                     let x, y, width, height,arcSize,fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, rotation, direction, flipH, flipV, startArrow, endArrow, strokeWidth, fontWeight,edgeProps
@@ -285,29 +286,7 @@ class PreviewPage {
                             $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId}`)
                         })
                         if(params.length) {
-                            requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
-                                let resParam = [],maps = new Map()
-                                res.forEach(dpId=>{
-                                    let tempArr = []
-                                    let deviceId = getDeviceId(dpId)
-                                    if (maps.has(deviceId)) {
-                                        tempArr =  maps.get(deviceId)
-                                        tempArr.push(dpId)
-                                        maps.set(deviceId,tempArr)
-                                    }else{
-                                        maps.set(deviceId, [dpId])
-                                    }
-                                })
-                                for (let key of maps.keys()) {
-                                    resParam.push({
-                                        deviceId:key,
-                                        params:maps.get(key)
-                                    })
-                                }
-                                this.subscribeDataDeal(resParam)
-                            },()=>{
-                                this.subscribeDataDeal()
-                            })
+                            this.deviceParamGenerateFun(params)
                         }else{
                             this.subscribeDataDeal()
                         }
@@ -321,7 +300,31 @@ class PreviewPage {
         }else{
             this.subscribeDataDeal()
         }
-       
+    }
+    deviceParamGenerateFun(params) {
+        requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
+            let resParam = [],maps = new Map()
+            res.forEach(dpId=>{
+                let tempArr = []
+                let deviceId = getDeviceId(dpId)
+                if (maps.has(deviceId)) {
+                    tempArr =  maps.get(deviceId)
+                    tempArr.push(dpId)
+                    maps.set(deviceId,Array.from(new Set(tempArr)))
+                }else{
+                    maps.set(deviceId, [dpId])
+                }
+            })
+            for (let key of maps.keys()) {
+                resParam.push({
+                    deviceId:key,
+                    params:maps.get(key)
+                })
+            }
+            this.subscribeDataDeal(resParam)
+        },()=>{
+            this.subscribeDataDeal()
+        })
     }
     dealModelFormulaFun(modelIdsParam,modelId,formula) {
         let formulaAttr = JSON.parse(formula)
@@ -341,14 +344,14 @@ class PreviewPage {
             let tempKey = item.key
             if(tempKey) {
                 let keyArr = tempKey.split('/')
-                let paramId = null
+                let partId = null
                 if(keyArr.length > 2) {
-                    paramId = keyArr[1]
+                    partId = keyArr[1]
                 }
                 res.push({
                     paramType: keyArr[0] == 'device' ? 0 : 1,
                     deviceId: deviceId,
-                    partId: paramId,
+                    partId: partId,
                     paramId: keyArr[keyArr.length - 1]
                 })
             }
@@ -482,7 +485,7 @@ class PreviewPage {
         } else if (shapeName === 'menuCell' || shapeName === 'menulist') {
             // 菜单
             cellHtml = document.createElement('div')
-            cellHtml.innerHTML = cell.value;
+            cellHtml.innerHTML = cell.value
         }  else if (shapeName === 'text') {
             // 文本
             cellHtml = document.createElement('span')
@@ -537,13 +540,15 @@ class PreviewPage {
             cellHtml =  dealCharts(cell)
         } else if (shapeName == 'light') {
             cellHtml = dealLight(cell)
-        } else {
+        } else if(shapeName == 'triangle') {
+            cellHtml = dealTriangle(cell)
+        }else {
             // 其他
             cellHtml = document.createElement('p');
             if(shapeName === 'ellipse') {
                 cellHtml.style.borderRadius = "50%"
             }
-            cellHtml.innerHTML = cell.value;
+            cellHtml.innerHTML = cell.value
         }
         if (shapeName !== 'text') {
             if (cell.verticalAlign === 'top') {
@@ -555,7 +560,7 @@ class PreviewPage {
             }
         }
         cellHtml.style.textAlign = cell.align
-        if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress'].includes(shapeName)) {
+        if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress','triangle'].includes(shapeName)) {
             cellHtml.style.backgroundColor = 'transparent'
         }else{
             if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none') && shapeName != 'tableBox') {
@@ -564,7 +569,7 @@ class PreviewPage {
                 cellHtml.style.backgroundColor = cell.fillColor
             }
         }
-        if(shapeName != 'beeline') {
+        if(shapeName != 'beeline' && shapeName != 'triangle') {
             let borderStyle = 'solid'
             if(cell.strokeStyle) {
                 borderStyle = 'dashed'
@@ -630,7 +635,7 @@ class PreviewPage {
                 }
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
                 $(cellHtml).data("paramShow", paramShow)
-                this.initWsParams(cellHtml, device, paramShow)
+                this.initWsParams(cellHtml, device, paramShow,shapeName,cell.bindData.subParams)
             }
             let modelIdsParam = []
             let statesInfo = cell.statesInfo
@@ -647,20 +652,38 @@ class PreviewPage {
         }
         return cellHtml
     }
-    initWsParams(cellHtml, device, paramShow) {
+    initWsParams(cellHtml, device, paramShow,shapeName,subParams) {
+        if(shapeName === 'lineChart') {
+            this.dealLineChartWsParams(cellHtml,device,subParams)
+        } else{
+            cellHtml.classList.add(`device_${device.id}`)
+        }
         let dealParamShow = []
         paramShow.forEach(item=>{
             if (item.deviceParamId) {
                 dealParamShow.push(item.deviceParamId)
             }
         })
-        cellHtml.classList.add(`device_${device.id}`)
         if(dealParamShow.length) {
             let resArr = Array.from(new Set(dealParamShow))
             this.wsParams.push({
                 deviceId: device.id,
                 params: resArr
             })
+        }
+    }
+    
+    dealLineChartWsParams(cellHtml,device,subParams) {
+        if(!Array.isArray(device)) {//兼容旧应用的趋势图
+            device = [device]
+        }
+        device.forEach(item=>{
+            cellHtml.classList.add(`device_${item.id}`)
+        })
+        if(subParams) {
+            this.wsParams = this.wsParams.concat(subParams)
+            $(cellHtml).data('subParams',subParams)
+            $(cellHtml).data('devices',device)
         }
     }
 }

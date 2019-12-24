@@ -83,8 +83,8 @@ export default {
                     page.height = lengthWidth[1] * 1
                     if (editData.appType === 1) {
                         // 移动端应用，弹窗页面的宽度跟页面宽度一样
-                        dialog.width = page.width * 2 / 3 
-                        dialog.height = page.height * 2 / 3
+                        dialog.width = parseInt(page.width * 2 / 3)
+                        dialog.height = parseInt(page.height * 2 / 3)
                     }
                     myEditor.defaultXml[0] = myEditor.createPageXml(page.width, page.height)
                     myEditor.defaultXml[1] = myEditor.createPageXml(dialog.width, dialog.height)

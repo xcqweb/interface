@@ -1,4 +1,4 @@
-import {geAjax, toDecimal2NoZero, dealLightFill, timeFormate} from './util'
+import {geAjax, toDecimal2NoZero, timeFormate,dealDefaultParams} from './util'
 import {getCookie} from '../Utils'
 import echarts from 'echarts'
 
@@ -70,12 +70,17 @@ function setterRealData(res, fileSystem) {
         targetArr.push(val)
     }
     targetArr.forEach((item)=>{
-        let els = document.querySelectorAll(`.device_${item.deviceId}`)
+        let els = document.querySelectorAll(`.device_${item.deviceId}`) //多设备情况下，会多次走这个地方
         for(let i = 0;i < els.length;i++) {
             const $ele = $(els[i])
+            let paramShowDefault
+            let defaultParam = $(els[i]).data("defaultParam")
+            if(defaultParam) {
+                $ele.data("paramShowDefault",dealDefaultParams(item.deviceId,defaultParam,$ele.data('subParams')))
+            }
             let shapeName = $ele.data("shapeName")
             let paramShow = $ele.data("paramShow")
-            let paramShowDefault = $ele.data("paramShowDefault")
+            paramShowDefault = $ele.data("paramShowDefault")
             let val = null
             if (paramShowDefault) {
                 val = item[paramShowDefault.deviceParamId]
@@ -105,7 +110,7 @@ function setterRealData(res, fileSystem) {
                 target.animate({"width":`${percentVal * 100}%`})
                 textEl.html(text)
             }else if(shapeName.includes('Chart')) {
-                let echartsInstance = echarts.getInstanceByDom(els[i])
+                let echartsInstance = echarts.getInstanceByDom($ele.find('.chart-con')[0])
                 let options = echartsInstance.getOption()
                 if(options) {
                     if(shapeName == 'lineChart') {
@@ -153,7 +158,7 @@ function setterRealData(res, fileSystem) {
                     let paramData = $ele.data('paramData')
                     if (!paramData) {
                         paramData = {
-                            time: timeFormate(item.timestamp, false),
+                            time:"",
                             data: {}
                         }
                     }
@@ -161,6 +166,7 @@ function setterRealData(res, fileSystem) {
                         let dpIdVal = item[d.deviceParamId]
                         if (dpIdVal || dpIdVal == 0) {
                             paramData.data[d.paramName] = dpIdVal
+                            paramData.time = timeFormate(item.timestamp, false)
                         }else{
                             if(!paramData.data[d.paramName]) {
                                 paramData.data[d.paramName] = null
@@ -287,10 +293,6 @@ function changeEleState(el, stateInfo,fileSystem) {
     }else{
         //去掉动画样式
         el.classList.remove('animate-blink')
-    }
-    if (shapeName == 'light') {
-        dealLightFill(el, stateInfo.style.background)
-        return
     }
     let imgInfo = stateInfo.imgInfo
     for (let key in stateInfo.style) {

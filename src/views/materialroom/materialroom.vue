@@ -69,7 +69,7 @@
                           @blur="saveLayoutName(index)"
                         >
                         <span 
-                          v-if="index >= 3 && !item.isEdit" 
+                          v-if="index >= 2 && item.libraryType==1 && !item.isEdit" 
                           class="right-spots" 
                           @mousemove="menuPopupShow($event,index)"
                           @mouseenter="menuPopupShow($event,index)"
@@ -93,12 +93,12 @@
                     <div>
                       <span
                         v-if="item.model"
-                        :style="'background:url(' + (item.image) + ') no-repeat center center;'"
+                        :style="'background:url(' + (item.image) + ') no-repeat center center;background-size: contain;'"
                         @mouseenter="menuPopupHide"
                       />
                       <span
                         v-else 
-                        :style="'background:url(' + (DIR_+item.image) + ') no-repeat center center;'"
+                        :style="'background:url(' + (DIR_+item.image) + ') no-repeat center center;background-size:36px;'"
                       />
                       <label
                         v-if="item.model"
@@ -292,7 +292,7 @@ export default {
                 {image:'tableBox.svg', name :'table'},
                 {image:'image.svg', name :'image'},
                 {image:'linkTag.svg',name : 'Link'},
-                {image:'light.svg', name :'light'},
+                {image:'light.png', name :'light'},
                 {image:'progress.svg', name :'progressBar'},
                 {image:'pipeline1.svg', name :'pipeline1'},
                 {image:'pipeline2.svg',name :'pipeline2'},
@@ -355,6 +355,7 @@ export default {
                         name: item.libraryName,
                         materialLibraryId: item.materialLibraryId,
                         isEdit:false,
+                        libraryType:item.libraryType,
                         model:item.libraryName,
                     }
                     this.assemblyArrayName.push(obj)

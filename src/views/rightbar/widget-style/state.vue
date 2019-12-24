@@ -1,6 +1,7 @@
 <template>
   <div style="padding:0 4px;">
     <div
+      v-if="shapeName!=='light'"
       class="title"
       @click="addStateFun"
     >
@@ -18,6 +19,7 @@
         <div style="display:flex;justify-content:space-between;">
           {{ state.name }}
           <img
+            v-if="shapeName!=='light'"
             src="../../../assets/images/rightsidebar/dele_ic.png"
             @click="removeState(state,index,$event)"
           >
@@ -30,10 +32,10 @@
             <span>{{ $t("fill") }}</span>
             <li
               class="rect"
-              :style="{background:state.style.background || '#ECEFF4'}"
+              :style="{background:state.style.background || '#fff'}"
             />
           </template>
-          <template v-if="picList.includes(shapeName) && state.imgInfo">
+          <template v-if="state.imgInfo">
             <span>{{ $t("image") }}</span>
             <img
               :src="state.imgInfo.url"
@@ -44,7 +46,7 @@
             <span :style="{marginLeft:picList.includes(shapeName) && !state.imgInfo ? 0 : '15px'}">{{ $t("border") }}</span>
             <li
               class="rect"
-              :style="{background:state.style.borderColor || '#7D7D7D'}"
+              :style="{background:!state.style.borderColor || state.style.borderColor=='none' ? defalutImg : state.style.borderColor}"
             />
           </template>
           <template v-if="!picList.includes(shapeName) && shapeName!='light'">
@@ -53,7 +55,7 @@
             </span>
             <li
               class="rect"
-              :style="{background:state.style.color || '#252525'}"
+              :style="{background:state.style.color || '#fff'}"
             />
           </template>
         </ul>
@@ -70,7 +72,7 @@
 <script>
 import StateDialog from './state-dialog'
 import {sureDialog} from '../../../services/Utils'
-import {mxUtils} from '../../../services/mxGlobal'
+import {mxUtils,Dialog} from '../../../services/mxGlobal'
 import VueEvent from '../../../services/VueEvent'
 //import {syncWidget} from '../../../services/sync-widgets'
 export default{
@@ -81,7 +83,8 @@ export default{
             states:[],
             editState:null,
             shapeName:'',
-            picList:['image','userimage'],
+            picList:['image','userimage','light'],
+            defalutImg:`url(${Dialog.prototype.noColorImage})`
         }
     },
     computed:{
@@ -228,8 +231,10 @@ export default{
         },
         editStateFun(state) {
             //需要重新从model获取state，防止该状态绑定模型后，直接点编辑，未拿到模型信息
-            this.editState = state
-            this.isAdd = true
+            if(this.shapeName !== 'light') {
+                this.editState = state
+                this.isAdd = true
+            }
         },
     },      
 }

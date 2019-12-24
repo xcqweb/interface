@@ -26,11 +26,7 @@
                 :class="animateCls"
               />
               <div
-                v-if="shapeName=='light'"
-                class="image_light"
-              />
-              <div
-                v-if="!picList.includes(shapeName) && shapeName!='light' "
+                v-if="!picList.includes(shapeName)"
                 class="text"
                 :class="animateCls"
               >
@@ -73,7 +69,7 @@
                 {{ $t("image") }}
               </div>
               <div
-                v-if="!picList.includes(shapeName) || shapeName=='light'"
+                v-if="!picList.includes(shapeName)"
                 class="type-tab"
                 :class="{'selected':typeTab==1}"
                 style="border-top-left-radius:2px;border-bottom-left-radius:2px;"
@@ -82,7 +78,6 @@
                 {{ $t("fill") }}
               </div>
               <div
-                v-if=" shapeName!=='light'"
                 class="type-tab"
                 :class="{'selected':typeTab==2}"
                 @click="changeTab(2)"
@@ -90,7 +85,7 @@
                 {{ $t("border") }}
               </div>
               <div
-                v-if="!picList.includes(shapeName)&&shapeName!=='light'"
+                v-if="!picList.includes(shapeName)"
                 class="type-tab"
                 style="border-top-right-radius:2px;border-bottom-right-radius:2px;"
                 :class="{'selected':typeTab==3}"
@@ -179,6 +174,7 @@ export default{
         document.querySelector('body').appendChild(component.$el)
         this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
         if (this.picList.includes(this.shapeName)) {
+            style.borderColor = "none"
             this.typeTab = 4
         }
         if(this.editState) {
@@ -323,13 +319,6 @@ export default{
     background:url('../../../assets/images/menu/rightBar/bg_ic2x.png') no-repeat center center;
     background-size:contain;
   }
-  .image_light{
-    height:56px;
-    width:56px;
-    background:url('../../../../static/stencils/basic/light.png') no-repeat center center;
-    background-size:contain;
-  }
-  
 }
 .image-con{
   width:100%;
@@ -377,6 +366,7 @@ export default{
     border:1px solid rgba(212,212,212,1);
     border-radius:2px 0px 0px 2px;
     .type-tab{
+      cursor: pointer;
       flex:1;
       text-align:center;
       &.selected{

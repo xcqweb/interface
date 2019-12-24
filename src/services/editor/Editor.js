@@ -616,6 +616,10 @@ Editor.prototype.palettesInfo = {
     groupNum: {
         name:'组合',
         num:0,
+    },
+    triangle:{
+        name:'三角形',
+        num:0,
     }
 }
 /**
