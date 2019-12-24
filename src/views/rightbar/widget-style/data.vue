@@ -161,7 +161,7 @@ export default{
             }
         },
         bindDeviceNameHandle() {
-            /* this.bindData = this.getCellModelInfo('bindData')
+            this.bindData = this.getCellModelInfo('bindData')
             if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个
                 Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
                 // 清空勾选
@@ -208,7 +208,7 @@ export default{
             }
             if (objData) {
                 VueEvent.$emit('emitDataSourceFooter', objData)
-            } */
+            }
         },
         getCellModelInfo(key) {
             let graph = this.myEditorUi.editor.graph

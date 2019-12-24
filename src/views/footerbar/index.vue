@@ -442,7 +442,7 @@ export default {
             if (!Array.isArray(deviceNameChild)) {
                 deviceNameChild = [deviceNameChild]
             }
-            this.deviceId = deviceNameChild[0].id
+            this.deviceId = deviceNameChild[0].id            
             this.visible = true
         },
         addParamDone(data) {
