@@ -183,7 +183,9 @@ const allShapes = [
     "progress",
     "lineChart",
     "gaugeChart",
-    "tableBox"
+    "tableBox",
+    'triangle',
+    'pentagram'
 ]; //可以绑定数据的控件
 const supportDataShow = [
     "rectangle",
@@ -191,7 +193,9 @@ const supportDataShow = [
     "tableCell",
     "progress",
     "lineChart",
-    "gaugeChart"
+    "gaugeChart",
+    'triangle',
+    'pentagram'
 ]; // 支持显示参数
 export default {
     components: {
@@ -559,14 +563,14 @@ export default {
             this.setCellModelInfo("statesInfo", [...this.stateList]);
         },
         clearStateBtn(pos) {
-            let tempStateList = this.getCellModelInfo("statesInfo");
-            tempStateList.forEach((item, index) => {
-                if (index == pos) {
-                    item.modelFormInfo = null;
+            let tempStateList = this.getCellModelInfo("statesInfo")
+            for(let i = 0;i < tempStateList.length;i++) {
+                if(i === pos) {
+                    tempStateList[i].modelFormInfo = null
+                    break
                 }
-                return;
-            });
-            this.setCellModelInfo("statesInfo", tempStateList);
+            }
+            this.setCellModelInfo("statesInfo", tempStateList)
         },
         footerContentHandle(show) {
             if (show) {
