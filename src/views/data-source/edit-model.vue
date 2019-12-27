@@ -9,7 +9,7 @@
           {{ $t('dataSource.remark') }}
         </p>
         <Input
-          v-model="model.describe"
+          v-model="model.descript"
           class="descript-color"
           :disabled="!showForm"
           type="textarea" 
@@ -116,7 +116,7 @@ export default {
                 deviceModelId: '',
                 formula: '',
                 viewContent: '',
-                describe: '',
+                descript: '',
                 modelName: '',
             },
             ruleKeys: [],

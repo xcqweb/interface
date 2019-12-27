@@ -960,7 +960,7 @@ export default {
                     'animateCls':i === 0 ? '' : 'animate-blink',
                     'style':{},
                     'imgInfo':{
-                        url:i === 0 ? `../../../../static/stencils/basic/light.png` : `../../../../static/stencils/basic/light${i}.png`,
+                        url:i === 0 ? `../../../..${window.PREFIX_PATH}/static/stencils/basic/light.png` : `../../../..${window.PREFIX_PATH}/static/stencils/basic/light${i}.png`,
                     },
                     'check':false
                 }

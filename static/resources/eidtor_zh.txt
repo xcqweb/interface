@@ -64,3 +64,6 @@ defaultColor=默认颜色
 recentlyUsed=最近使用
 inputText=输入文本
 collapseExpand=收起/展开
+triangle=三角形
+pentagram=五角星
+

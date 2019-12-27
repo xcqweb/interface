@@ -171,7 +171,7 @@ export default {
                     deviceModelId: this.deviceModelId,
                     formula: '',
                     viewContent: '',
-                    describe: '',
+                    descript: '',
                     modelName: '',
                     editName: this.$t('model') + (this.data.length + 1),
                 };

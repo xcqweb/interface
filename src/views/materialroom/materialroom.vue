@@ -296,7 +296,9 @@ export default {
                 {image:'progress.svg', name :'progressBar'},
                 {image:'pipeline1.svg', name :'pipeline1'},
                 {image:'pipeline2.svg',name :'pipeline2'},
-                {image:'pipeline3.svg',name :'pipeline3'}
+                {image:'pipeline3.svg',name :'pipeline3'},
+                {image:'triangle.png',name :'triangle'},
+                {image:'pentagram.png',name :'pentagram'},
             ],
             tablesAssembly: [
                 {image:'lineChart.svg',name :'trend'},

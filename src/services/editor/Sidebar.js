@@ -12,6 +12,7 @@ import Urls from '../../constants/url'
 import axios from 'axios';
 import { mxResources } from '../mxGlobal';
 let shapeScrollTopHeight = 0
+let basicXmlFns = []
 function Sidebar(editorUi, container, containerbottom)
 {
     this.editorUi = editorUi;
@@ -99,9 +100,11 @@ Sidebar.prototype.init = function(type)
         })
         this.addUserPalette(false); // 自定义控件
     } else {
-        this.addGeneralPalette(true);//基础控件
-        this.addUserPalette(false); // 自定义控件
-        this.addPagePalette()
+        this.addBasicPalette(()=>{//基础控件
+            this.addChartPalette()// 图表控件
+            this.addUserPalette(false) // 自定义控件
+            this.addWidgetNameShow() //添加基本控件的悬浮名称显示
+        })
     }
 };
 
@@ -607,12 +610,12 @@ Sidebar.prototype.hidePageContextMenu = function() {
     document.getElementById('pageContextMenu') ?  document.getElementById('pageContextMenu').style.display = 'none' : null;
 }
 
-Sidebar.prototype.addPagePalette = function() {
+Sidebar.prototype.addWidgetNameShow = function() {
     $(".geSidebarContainer-bottom").scroll(function () {
         shapeScrollTopHeight = parseInt($(".geSidebarContainer-bottom").scrollTop())
     })
     // 鼠标滑过 悬浮控件名字
-    let controlName = ['text', 'beeline', 'rectangle', 'ellipse', 'menulist', 'button', 'tableBox', 'image', 'light', 'pipeline1', 'progress', 'pipeline2', 'pipeline3', 'linkTag', 'lineChart', 'gaugeChart']
+    let controlName = ['text', 'beeline', 'rectangle', 'ellipse', 'menulist', 'button', 'tableBox', 'image', 'light', 'pipeline1', 'progress', 'pipeline2', 'pipeline3', 'linkTag', 'lineChart', 'gaugeChart','triangle','pentagram']
     let controlNameText = {
         'text': mxResources.get('text'),
         'beeline': mxResources.get('beeline'),
@@ -630,6 +633,8 @@ Sidebar.prototype.addPagePalette = function() {
         'linkTag': mxResources.get('link'),
         'lineChart': mxResources.get('lineChart'),
         'gaugeChart': mxResources.get('gaugeChart'),
+        'triangle':mxResources.get('triangle'),
+        'pentagram':mxResources.get('pentagram'),
     }
     $('.geSidebarContainer-bottom').on('mouseenter', '.geSidebar>a', function (evt) {
         evt.preventDefault()
@@ -663,47 +668,45 @@ Sidebar.prototype.addPagePalette = function() {
 /**
  * 添加给定的模板控件.
  */
-Sidebar.prototype.addStencilPalette = function(id, title, stencilFile, style, ignore, onInit, scale, tags, customFns)
+Sidebar.prototype.addStencilPalette = function(id, title, stencilFile, style, ignore, onInit, scale, tags, customFns,cb)
 {
+    basicXmlFns = this.addGeneralPalette()
     scale = (scale != null) ? scale : 1;
-	
-    var fns = [];
-	
-    if (customFns != null)
-    {
-        for (var i = 0; i < customFns.length; i++)
-        {
-            fns.push(customFns[i]);
-        }
-    }
+	let shapeCount = 0
     mxStencilRegistry.loadStencilSet(stencilFile, mxUtils.bind(this, function(packageName, stencilName, displayName, w, h)
     {
         if (ignore == null || mxUtils.indexOf(ignore, stencilName) < 0)
         {
+            shapeCount++
             var tmp = this.getTagsForStencil(packageName, stencilName);
             var tmpTags = (tags != null) ? tags[stencilName] : null;
-
             if (tmpTags != null)
             {
                 tmp.push(tmpTags);
             }
-            fns.push(this.createVertexTemplateEntry('shape=' + packageName + stencilName.toLowerCase() + style,
-                Math.round(w * scale), Math.round(h * scale), '', '', null, null,
-                this.filterTags(tmp.join(' '))));
+            if(stencilName=='pentagram'){
+                let fn = this.createVertexTemplateEntry('shape=' + packageName + stencilName.toLowerCase() + style, w, h, '', '五角星', null, null,"五角星")
+                basicXmlFns.push(fn)
+            }
+            if(shapeCount>=5){
+                this.addPaletteFunctions('general', mxResources.get('basic'),true, basicXmlFns)
+                if(cb){
+                    cb()
+                }
+            }
         }
     }), true, true);
-    basicXmlFns = fns;
 };
-Sidebar.prototype.addBasicPalette = function()
+Sidebar.prototype.addBasicPalette = function(cb)
 {
-    this.addStencilPalette('basic', mxResources.get('basic'), window.PREFIX_PATH + '/static/stencils/basic.xml',
+    this.addStencilPalette('general', mxResources.get('basic'), window.PREFIX_PATH + '/static/stencils/basic.xml',
         ';whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1;aspect=fixed',
-        null, null, null, null, []);
+        null, null, null, null, [],cb)
 };
 /**
  * 基本控件
  */
-Sidebar.prototype.addGeneralPalette = function(expand)
+Sidebar.prototype.addGeneralPalette = function()
 {
     var that = this;
     var fns = [
@@ -778,10 +781,16 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         this.createVertexTemplateEntry('shape=pipeline3;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/pipeline3.svg', 60, 40, '', '管道3'),
         // 链接
         this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
+        // 三角形
         this.createVertexTemplateEntry('shape=triangle;triangle;whiteSpace=wrap;strokeColor=#000;html=1;', 60, 80, '', '三角形', null, null, '三角形'),
+        //五角星
     ];
-    //封装
-    this.addPaletteFunctions('general', mxResources.get('basic'), (expand != null) ? expand : true, fns);
+    return fns
+};
+/**
+ * 图表组件
+ */
+Sidebar.prototype.addChartPalette=function(){
     let fnsChart=[
         this.addEntry('lineChart',()=>{
             let cell = new mxCell(`<div class="widget-chart chart"/>`, new mxGeometry(0, 0, 380, 200), 'shape=lineChart;html=1;strokeColor=none;fillColor=none;overflow=fill;')
@@ -790,10 +799,10 @@ Sidebar.prototype.addGeneralPalette = function(expand)
         }),
         this.createVertexTemplateEntry('shape=gaugeChart;html=1;strokeColor=none;fillColor=none;overflow=fill;', 270, 270, `<div class="widget-chart chart"/>`, '仪表盘'),
     ]
-    this.addPaletteFunctions('chart', mxResources.get('chart'), false, fnsChart);
-   };
+    this.addPaletteFunctions('chart', mxResources.get('chart'), false, fnsChart)
+}
 /*
-addUserPalette
+用户自定义的组件
 */
 Sidebar.prototype.addUserPalette = function (expand) {
     let arr = []

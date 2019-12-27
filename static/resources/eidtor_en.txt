@@ -64,3 +64,5 @@ defaultColor=Default color
 recentlyUsed=Recently used
 inputText=Input text
 collapseExpand=Collapse/Expand
+triangle=Triangle
+pentagram=Pentagram

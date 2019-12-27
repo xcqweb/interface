@@ -65,49 +65,49 @@
     </foreground>
   </shape>
   <shape name="drop" h="50" w="50" aspect="variable" strokewidth="inherit">
-  <connections>
-  <constraint x="0.5" y="0" perimeter="0" name="N"/>
-  <constraint x="0.5" y="1" perimeter="0" name="S"/>
-  <constraint x="0" y="0.5" perimeter="0" name="W"/>
-  <constraint x="0.93" y="0.5" perimeter="0" name="E"/>
-  </connections>
-  <background>
-  <path>
-    <move x="41" y="28.5"/>
-    <line x="25" y="50"/>
-    <line x="9" y="28.5"/>
-    <arc rx="19" ry="19" x-axis-rotation="0" large-arc-flag="1" sweep-flag="1" x="41" y="28.5"/>
-    <close/>
-  </path>
-  </background>
-  <foreground>
-  <fillstroke/>
-  </foreground>
+    <connections>
+    <constraint x="0.5" y="0" perimeter="0" name="N"/>
+    <constraint x="0.5" y="1" perimeter="0" name="S"/>
+    <constraint x="0" y="0.5" perimeter="0" name="W"/>
+    <constraint x="0.93" y="0.5" perimeter="0" name="E"/>
+    </connections>
+    <background>
+    <path>
+        <move x="41" y="28.5"/>
+        <line x="25" y="50"/>
+        <line x="9" y="28.5"/>
+        <arc rx="19" ry="19" x-axis-rotation="0" large-arc-flag="1" sweep-flag="1" x="41" y="28.5"/>
+        <close/>
+    </path>
+    </background>
+    <foreground>
+    <fillstroke/>
+    </foreground>
   </shape>
   <shape name="pentagram" h="50" w="50" aspect="variable" strokewidth="inherit">
-  <connections>
-  <constraint x="0.5" y="0" perimeter="0" name="N"/>
-  <constraint x="0.5" y="1" perimeter="0" name="S"/>
-  <constraint x="0" y="0.5" perimeter="0" name="W"/>
-  <constraint x="0.93" y="0.5" perimeter="0" name="E"/>
-  </connections>
-  <background>
-  <path>
-  <move x="0" y="20"/>
-  <line x="17" y="18"/>
-  <line x="25" y="0"/>
-  <line x="34" y="18"/>
-  <line x="50" y="20"/>
-  <line x="38" y="31"/>
-  <line x="41" y="50"/>
-  <line x="25" y="42"/>
-  <line x="9" y="50"/>
-  <line x="12" y="31"/>
-  <close/>
-  </path>
-  </background>
-  <foreground>
-  <fillstroke/>
-  </foreground>
+    <connections>
+    <constraint x="0.5" y="0" perimeter="0" name="N"/>
+    <constraint x="0.5" y="1" perimeter="0" name="S"/>
+    <constraint x="0" y="0.5" perimeter="0" name="W"/>
+    <constraint x="0.93" y="0.5" perimeter="0" name="E"/>
+    </connections>
+    <background>
+    <path>
+    <move x="0" y="20"/>
+    <line x="17" y="18"/>
+    <line x="25" y="0"/>
+    <line x="34" y="18"/>
+    <line x="50" y="20"/>
+    <line x="38" y="31"/>
+    <line x="41" y="50"/>
+    <line x="25" y="42"/>
+    <line x="9" y="50"/>
+    <line x="12" y="31"/>
+    <close/>
+    </path>
+    </background>
+    <foreground>
+    <fillstroke/>
+    </foreground>
   </shape>
 </shapes>

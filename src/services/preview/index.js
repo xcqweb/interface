@@ -1,4 +1,4 @@
-import {geAjax} from './util'
+import {geAjax,loadShapeXml} from './util'
 import {getCookie} from '../Utils'
 import PreviewPage from './render-page'
 import horwheel from "horwheel";
@@ -22,6 +22,7 @@ class Main {
         this.fileSystem = null
         this.menuStyle = null
         this.applyInfo = null
+        this.shapeXmls = null
     }
 
     // 初始化
@@ -42,6 +43,7 @@ class Main {
         if (!this.applyInfo) {
             return
         }
+        this.shapeXmls = await loadShapeXml()
         let token = getCookie('token')
         let refreshToken = getCookie('refreshToken')
         if ((!token || !refreshToken) && this.applyInfo.status === 0) { //未登录且应用未发布的情况下

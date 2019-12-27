@@ -4526,7 +4526,6 @@ mxStencilRegistry.parseStencilSet = function(root, postStencilLoad, install)
                 {
                     packageName = packageName.toLowerCase();
                     var stencilName = name.replace(/ /g,"_");
-						
                     if (install)
                     {
                         mxStencilRegistry.addStencil(packageName + stencilName.toLowerCase(), new mxStencil(shape));

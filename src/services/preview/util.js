@@ -1,5 +1,6 @@
 import {getCookie, setCookie} from '../Utils'
 import {data1,data2} from '../../constants/chart-default-data'
+import {mxUtils} from '../../services/mxGlobal'
 import echarts from 'echarts'
 import requestUtil from '../../services/request'
 import urls from '../../constants/url'
@@ -534,27 +535,36 @@ function getDeviceId(dpId) {
     deviceId = strs[0]
     return deviceId
 }
-function insertSvg(shapeXmls,key, w, h, x, y, fillColor = 'none', strokeColor = '#333',strokeWidth = 1) {
-    let con = document.createElement('div')
+function insertSvg(shapeXmls,key,cell) {
+    let {width,height,fillColor,strokeColor,strokeWidth,strokeStyle} = cell
     let inner = shapeXmls[key].path
     inner.setAttribute('fill', fillColor)
     inner.setAttribute('stroke', strokeColor)
-    inner.setAttribute('stroke-width', strokeWidth);
+    inner.setAttribute('stroke-width', strokeWidth)
+    inner.setAttribute('vector-effect','non-scaling-stroke')
+    let dashArr = '0 0'
+    if(strokeStyle) {
+        dashArr = `${strokeWidth * 3} ${strokeWidth * 3}`
+    }
+    inner.setAttribute('stroke-dasharray',dashArr)
     let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     svg.setAttribute('viewBox', shapeXmls[key].viewBox)
-    svg.setAttribute('width', w)
-    svg.setAttribute('height', h)
+    svg.setAttribute('width', width)
+    svg.setAttribute('height', height)
     svg.innerHTML = inner.outerHTML
-    con.appendChild(svg)
-    return con
+    return svg
 }
 function dealTriangle(cell) {
-    let {width,height,fillColor,strokeColor,strokeWidth,value,fontColor} = cell
+    let {width,height,fillColor,strokeColor,strokeWidth,value,fontColor,strokeStyle} = cell
     let con = document.createElement('div')
     let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     svg.setAttribute('width', width)
     svg.setAttribute('height', height)
-    svg.innerHTML = `<path d="M ${strokeWidth} ${strokeWidth} L ${width - strokeWidth} ${height / 2 - strokeWidth} L ${strokeWidth} ${height - strokeWidth} Z" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${strokeWidth}">`
+    let dashArr = '0 0'
+    if(strokeStyle) {
+        dashArr = `${strokeWidth * 3} ${strokeWidth * 3}`
+    }
+    svg.innerHTML = `<path d="M ${strokeWidth} ${strokeWidth} L ${width - strokeWidth} ${height / 2 - strokeWidth} L ${strokeWidth} ${height - strokeWidth} Z" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${strokeWidth}" stroke-dasharray="${dashArr}">`
     con.appendChild(svg)
     let textCon = document.createElement('div')
     textCon.style.cssText = `width:${width}px;height:${height}px;position:absolute;color:${fontColor};left:0;top:0;`
@@ -562,7 +572,37 @@ function dealTriangle(cell) {
     con.appendChild(textCon)
     return con
 }
+function dealPentagram(mainProcess,cell) {
+    let {width,height,value,fontColor} = cell
+    let con = document.createElement('div')
+    let content = insertSvg(mainProcess.shapeXmls,'pentagram',cell)
+    con.appendChild(content)
+    let textCon = document.createElement('div')
+    textCon.style.cssText = `width:${width}px;height:${height}px;position:absolute;color:${fontColor};left:0;top:0;`
+    textCon.innerHTML = `${value}`
+    con.appendChild(textCon)
+    return con
+}
+/**
+ * 加载控件的xml配置文档
+ */
+function loadShapeXml() {
+    return new Promise((resolve) => {
+        mxUtils.get('/static/stencils/preview.xml', function(res) {
+            let root = res.getXml();
+            let obj = {};
+            const shapes = root.documentElement.getElementsByTagName('shape');
+            for (let shape of shapes) {
+                obj[shape.getAttribute('name')] = {
+                    viewBox: shape.getAttribute('viewBox'),
+                    path: shape.childNodes[1]
+                };
+            }
+            resolve(obj)
+        })    
+    })
+}
 export {
-    removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,
+    removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,dealPentagram,loadShapeXml,
     dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout, getDeviceId,dealDefaultParams,insertSvg
 }

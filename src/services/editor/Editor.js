@@ -510,7 +510,7 @@ Editor.prototype.palettesInfo = {
         num: 0
     },
     'pentagram': {
-        name: 'pentagram',
+        name: '五角星',
         num: 0
     },
     rectangle: {

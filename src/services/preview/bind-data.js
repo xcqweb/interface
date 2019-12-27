@@ -317,15 +317,20 @@ function reconnect(pageId,applyData) {
     if (!applyData[pageId] || applyData[pageId].lockWs) {return;}
     applyData[pageId].lockWs = true
     // 3s重连
-    setTimeout(function() {
-        createWsReal(pageId,applyData)
-        applyData[pageId].lockWs = false
-    }, 3000)
+    if(!applyData[pageId].timer) {
+        applyData[pageId].timer = setInterval(function() {
+            createWsReal(pageId,applyData)
+            applyData[pageId].lockWs = false
+        }, 3000)
+    }
 }
 
 function initialWs(ws, pageId, applyData, fileSystem) {
     // websocket连接成功
     ws.onopen = function() {
+        if(applyData[pageId].timer) {
+            clearInterval(applyData[pageId].timer)
+        }
     }
     // 接收消息
     ws.onmessage = function(res) {
@@ -359,6 +364,9 @@ function createWsReal(pageId, applyData, fileSystem) {
         const token = getCookie('token')
         let ws = new WebSocket(res.data, token) // 提交时使用这个
         initialWs(ws, pageId, applyData, fileSystem)
+        if(applyData[pageId].wsReal) {
+            applyData[pageId].wsReal.close()
+        }
         applyData[pageId].wsReal = ws
     })
 }

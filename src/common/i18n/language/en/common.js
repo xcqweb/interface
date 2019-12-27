@@ -140,4 +140,6 @@ export default {
     addSuccess:'add Success',
     pageNameCanNotEmpty:'Page name can not empty',
     popupNameCanNotEmpty:'Popup name can not empty',
+    triangle:'Triangle',
+    pentagram:'Pentagram',
 }

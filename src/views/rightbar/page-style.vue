@@ -116,6 +116,7 @@ export default {
                     this.changeBg(bgUrl)
                     graph.backgroundUrl = this.bgPic
                 }else{
+                    graph.backgroundUrl = null
                     mxClient.IS_ADD_IMG = false
                 }
             }else {
@@ -150,7 +151,9 @@ export default {
         deleteBgImgHandle() {
             sureDialog(this.myEditorUi,`${this.$t('rightBar.sureDelBgPic')}`,()=>{
                 let editor = this.myEditorUi.editor
+                let graph = editor.graph
                 editor.pages[editor.currentPage].style.backgroundUrl = ''
+                graph.backgroundUrl = null
                 this.bgPic = require('../../assets/images/rightsidebar/bg_ic_widget.png');
                 mxClient.IS_ADD_IMG = false
                 this.isShowBgText = true

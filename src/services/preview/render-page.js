@@ -7,7 +7,7 @@ let fileSystem //文件服务器host
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
-import {removeEle, destroyWs, insertImage, getDeviceId,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout,throttleFun,dealTriangle} from './util'
+import {removeEle, destroyWs, insertImage, getDeviceId,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout,throttleFun,dealTriangle,dealPentagram} from './util'
 import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -365,6 +365,7 @@ class PreviewPage {
         applyData[this.currentPageId] = {
             wsReal: '',
             data: {},
+            timer:null,
             wsParams: this.wsParams,
             lockWs: false
         }
@@ -542,7 +543,9 @@ class PreviewPage {
             cellHtml = dealLight(cell)
         } else if(shapeName == 'triangle') {
             cellHtml = dealTriangle(cell)
-        }else {
+        } else if(shapeName == 'pentagram') {
+            cellHtml = dealPentagram(this.mainProcess,cell)
+        } else {
             // 其他
             cellHtml = document.createElement('p');
             if(shapeName === 'ellipse') {
@@ -560,7 +563,7 @@ class PreviewPage {
             }
         }
         cellHtml.style.textAlign = cell.align
-        if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress','triangle'].includes(shapeName)) {
+        if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress','triangle','pentagram'].includes(shapeName)) {
             cellHtml.style.backgroundColor = 'transparent'
         }else{
             if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none') && shapeName != 'tableBox') {
@@ -569,7 +572,7 @@ class PreviewPage {
                 cellHtml.style.backgroundColor = cell.fillColor
             }
         }
-        if(shapeName != 'beeline' && shapeName != 'triangle') {
+        if(shapeName != 'beeline' && shapeName != 'triangle' && shapeName != 'pentagram') {
             let borderStyle = 'solid'
             if(cell.strokeStyle) {
                 borderStyle = 'dashed'

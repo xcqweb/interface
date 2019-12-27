@@ -71,20 +71,6 @@ Menus.prototype.init = function()
         this.addSubmenu('pageScale', menu, parent);
         this.addMenuItems(menu, ['zoomIn', 'zoomOut'], parent);
     })));
-    /* this.put('pageScale', new Menu(mxUtils.bind(this, function(menu, parent)
-    {
-        var scales = [0.25, 0.5, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4];
-        for (var i = 0; i < scales.length; i++)
-        {
-            (function(scale)
-            {
-                menu.addItem((scale * 100) + '%', null, function()
-                {
-                    graph.zoomTo(scale);
-                }, parent);
-            })(scales[i]);
-        }
-    }))); */
     // 文件
     this.put('file', new Menu(mxUtils.bind(this, function(menu, parent)
     {
@@ -636,7 +622,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                         this.addMenuItems(menu, ['copy', 'cut', 'paste', '-', 'toFront', 'toBack', '-', 'group', 'ungroup', '-'], null, evt);
                     } 
                     menu.addSeparator();
-                    let arr = ['rectangle', 'ellipse', 'button', 'menulist', 'image', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag', 'text', 'light', 'progress', 'pipeline1', 'pipeline2', 'pipeline3', 'userimage', 'gaugeChart', 'lineChart']
+                    let arr = ['rectangle', 'ellipse', 'button', 'menulist', 'image', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag', 'text', 'light', 'progress', 'pipeline1', 'pipeline2', 'pipeline3', 'userimage', 'gaugeChart', 'lineChart','triangle','pentagram']
                     if (arr.includes(shapeName)) {
                         this.addMenuItems(menu, ['resetHide', '-', 'delete'], null, evt);
                     }
