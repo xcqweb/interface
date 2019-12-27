@@ -410,7 +410,7 @@ function dealCharts(cell) {
                                     data: [],
                                     deviceId: device.id, //设备id，额外添加的，匹配数据时候用
                                 })
-                                if(tempArr && tempArr.resMap) {
+                                if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
                                     let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
                                     for (let key of keys) {
                                         if(i == 0) {
@@ -446,6 +446,7 @@ function dealCharts(cell) {
         $(selectCon).on('change','select',function() {
             let params = $(con).data("paramShow")
             $(this).data("defaultParam",params[$(this).val()])
+            fun()
         })
     }
     $(()=>{
