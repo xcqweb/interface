@@ -226,6 +226,7 @@ class PreviewPage {
     clearPage(pageType) {
         this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
         this.cachCells = []
+        this.mainProcess.realData = []
         if (pageType == 'normal') {
             for (let key in applyData) {
                 destroyWs(applyData, key)
@@ -370,8 +371,8 @@ class PreviewPage {
             lockWs: false
         }
         if (this.wsParams.length) {
-            createWsReal(this.currentPageId, applyData, fileSystem)
-            getLastData(this.wsParams, fileSystem) //低频数据 通过调用最后一笔数据显示
+            createWsReal(this.currentPageId, applyData, fileSystem,this.mainProcess)
+            getLastData(this.wsParams, fileSystem,this.mainProcess) //低频数据 通过调用最后一笔数据显示
         }
     }
     // 解析页面
@@ -538,7 +539,7 @@ class PreviewPage {
         } else if (shapeName.includes('pipeline')) {
             cellHtml = dealPipeline(cell)
         } else if (shapeName.includes('Chart')) {
-            cellHtml =  dealCharts(cell)
+            cellHtml =  dealCharts(this.mainProcess,cell)
         } else if (shapeName == 'light') {
             cellHtml = dealLight(cell)
         } else if(shapeName == 'triangle') {
@@ -683,7 +684,6 @@ class PreviewPage {
         if(subParams) {
             this.wsParams = this.wsParams.concat(subParams)
             $(cellHtml).data('subParams',subParams)
-            $(cellHtml).data('devices',device)
         }
     }
 }

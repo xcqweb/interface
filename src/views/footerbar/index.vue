@@ -166,7 +166,7 @@
 </template>
 
 <script>
-import {Tabs, TabPane, Table, Select, Option, Checkbox} from "iview";
+import {Tabs, TabPane, Table, Select, Option, Checkbox,Message} from "iview";
 import {mxUtils} from "../../services/mxGlobal";
 import {getDeviceId} from '../../services/preview/util'
 import NoData from "../data-source/nodata";
@@ -544,14 +544,26 @@ export default {
         paramDefaultChange(val, key) {
             this.paramOutterList.forEach(item => {
                 if (item.key == key) {
-                    item.type = !item.type
+                    item.type = !item.type 
                 } else {
                     item.type = false
                 }
-            });
-            let tempObj = this.getCellModelInfo("bindData");
+            })
+            if(this.shapeName.includes('Chart')) {
+                let flag = true
+                for(let i = 0;i < this.paramOutterList.length;i++) {
+                    if(this.paramOutterList[i].type === true) {
+                        flag = false
+                    }
+                }
+                if(flag) {
+                    Message.warning(`${this.$t('rightBar.atLeastChooseOneParam')}`)
+                    return
+                }
+            }
+            let tempObj = this.getCellModelInfo("bindData")
             tempObj.params = this.paramOutterList;
-            this.setCellModelInfo("bindData", tempObj);
+            this.setCellModelInfo("bindData", tempObj)
         },
         modelSelectChange(modelIndex, stateIndex) {
             //将模型公式绑定在对应的状态上

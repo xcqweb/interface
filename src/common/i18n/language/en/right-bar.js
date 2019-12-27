@@ -38,6 +38,7 @@ export default {
     addClickEvent: "Add click event",
     corner: "Corner",
     chooseBgImage: "Choose backgound",
-    notAllowBindMyltiplyDeviceModel: "Multiply device models can't allow to bind"
+    notAllowBindMyltiplyDeviceModel: "Multiply device models can't allow to bind",
+    atLeastChooseOneParam:"Please choose on param",
 };
 

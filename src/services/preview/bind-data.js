@@ -5,14 +5,14 @@ import echarts from 'echarts'
 //获取websocket连接信息
 let websocketUrlReal = ''
 //获取最后一笔数据
-async function getLastData(deviceParams, fileSystem) {
+async function getLastData(deviceParams, fileSystem,mainProcess) {
     let paramIds = []
     let maps = dealdeviceParams(deviceParams)
     for (let item of maps.values()) {
         paramIds.push(item)
     }
     const res = await geAjax('api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(paramIds))
-    setterRealData(res,fileSystem)
+    setterRealData(res,fileSystem,mainProcess)
 }
 
 function dealdeviceParams(deviceParams) {
@@ -55,7 +55,7 @@ async function getSubscribeInfos(deviceParams) {
     websocketUrlReal = data.data
     return data
 }
-function setterRealData(res, fileSystem) {
+function setterRealData(res, fileSystem,mainProcess) {
     let maps = new Map()
     let targetArr = []
     res.forEach(item=>{
@@ -73,15 +73,14 @@ function setterRealData(res, fileSystem) {
         let els = document.querySelectorAll(`.device_${item.deviceId}`) //多设备情况下，会多次走这个地方
         for(let i = 0;i < els.length;i++) {
             const $ele = $(els[i])
-            let paramShowDefault
-            let defaultParam = $(els[i]).data("defaultParam")
-            if(defaultParam) {
-                $ele.data("paramShowDefault",dealDefaultParams(item.deviceId,defaultParam,$ele.data('subParams')))
-            }
             let shapeName = $ele.data("shapeName")
             let paramShow = $ele.data("paramShow")
-            paramShowDefault = $ele.data("paramShowDefault")
             let val = null
+            let paramShowDefault = $ele.data("paramShowDefault")
+            if(shapeName.includes('Chart') && paramShowDefault) {
+                $ele.data("paramShowDefault",dealDefaultParams(item.deviceId,paramShowDefault,$ele.data('subParams')))
+                paramShowDefault = $ele.data("paramShowDefault")
+            }
             if (paramShowDefault) {
                 val = item[paramShowDefault.deviceParamId]
             }
@@ -132,6 +131,13 @@ function setterRealData(res, fileSystem) {
                             }
                         })
                     }else {
+                        let realDataIds = mainProcess.realData.map(item=>item.deviceParamId)
+                        if(!realDataIds.includes(item.deviceParamId)) {
+                            mainProcess.realData.push(item)
+                        }else{
+                            let index = realDataIds.indexOf(item.deviceParamId)
+                            mainProcess.realData[index] = item
+                        }
                         if (!val) {
                             val = 0
                         }
@@ -325,7 +331,7 @@ function reconnect(pageId,applyData) {
     }
 }
 
-function initialWs(ws, pageId, applyData, fileSystem) {
+function initialWs(ws, pageId, applyData, fileSystem,mainProcess) {
     // websocket连接成功
     ws.onopen = function() {
         if(applyData[pageId].timer) {
@@ -342,7 +348,7 @@ function initialWs(ws, pageId, applyData, fileSystem) {
         if (dataArr[0] === 'rspCode' || dataArr[1] === 'rspMsg') {
             return
         }
-        setterRealData(JSON.parse(res.data), fileSystem)
+        setterRealData(JSON.parse(res.data), fileSystem,mainProcess)
     }
     // 接收异常
     ws.onerror = function() {
@@ -355,7 +361,7 @@ function initialWs(ws, pageId, applyData, fileSystem) {
 }
 
 //实时数据
-function createWsReal(pageId, applyData, fileSystem) {
+function createWsReal(pageId, applyData, fileSystem,mainProcess) {
     let deviceParams = applyData[pageId].wsParams
     getSubscribeInfos(deviceParams).then((res) => {
         if (deviceParams.length === 0 || !websocketUrlReal) {
@@ -363,7 +369,7 @@ function createWsReal(pageId, applyData, fileSystem) {
         }
         const token = getCookie('token')
         let ws = new WebSocket(res.data, token) // 提交时使用这个
-        initialWs(ws, pageId, applyData, fileSystem)
+        initialWs(ws, pageId, applyData, fileSystem,mainProcess)
         if(applyData[pageId].wsReal) {
             applyData[pageId].wsReal.close()
         }

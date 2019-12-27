@@ -23,6 +23,7 @@ class Main {
         this.menuStyle = null
         this.applyInfo = null
         this.shapeXmls = null
+        this.realData = [] //最后一笔数据或者实时推送过来的数据的备份
     }
 
     // 初始化
