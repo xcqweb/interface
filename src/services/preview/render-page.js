@@ -629,13 +629,10 @@ class PreviewPage {
             if (cell.bindData.params && cell.bindData.params.length > 0) {
                 let defaultParamIndex = 0
                 paramShow = cell.bindData.params
-                let singleParamShow = ['progress', 'lineChart', 'gaugeChart']
-                if (!singleParamShow.includes(shapeName)) {
-                    defaultParamIndex = cell.bindData.params.findIndex(item => {
-                        return item.type
-                    })
-                    cellHtml.classList.add('param-show-node')
-                }
+                defaultParamIndex = cell.bindData.params.findIndex(item => {
+                    return item.type
+                })
+                cellHtml.classList.add('param-show-node')
                 $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
                 $(cellHtml).data("paramShow", paramShow)
                 this.initWsParams(cellHtml, device, paramShow,shapeName,cell.bindData.subParams)

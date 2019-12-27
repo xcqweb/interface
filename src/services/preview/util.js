@@ -314,8 +314,16 @@ function dealPipeline(cell) {
     return con
 }
 function createSelect(params) {
+    let defaultParamIndex = 0
+    defaultParamIndex = params.findIndex(item => {
+        return item.type
+    })
+    let defaultParam = params[defaultParamIndex]
+    params.splice(defaultParamIndex,1)
+    params.unshift(defaultParam)
     let select = document.createElement('select')
     select.style.cssText = "width:132px;"
+
     params.forEach((item,index)=>{
         select.innerHTML += `<option value=${index}>${item.partName || ""} ${item.partName ? '/' : ''} ${item.paramName}</option>`
     })
