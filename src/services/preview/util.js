@@ -361,7 +361,7 @@ function dealCharts(mainProcess,cell) {
             options = data2
         }
     }
-    let fun = (isRefresh) => {
+    let fun = () => {
         let myEchart = echarts.init(chartCon)
         if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params && cell.bindData.params.length) {
             let temp = $(con).data("paramShowDefault")
@@ -446,18 +446,14 @@ function dealCharts(mainProcess,cell) {
                         })
                     })
                 } else {
-                    if(isRefresh) {
-                        let data = mainProcess.realData.find(item=>{
-                            return item.deviceId = devices[0].id
-                        })
-                        let val = 0
-                        if(data) {
-                            val = data[temp.deviceParamId] || 0
-                        }
-                        options.series.data = [{value: val, name: titleShow}]
-                    }else{
-                        options.series.data = [{value: 0, name: titleShow}]
+                    let data = mainProcess.realData.find(item=>{
+                        return item.deviceId = devices[0].id
+                    })
+                    let val = 0
+                    if(data) {
+                        val = data[temp.deviceParamId] || 0
                     }
+                    options.series.data = [{value: val, name: titleShow}]
                     options.series.name = titleShow
                     myEchart.setOption(options)
                 }
@@ -471,8 +467,8 @@ function dealCharts(mainProcess,cell) {
     if(needAddEvent) {
         $(selectCon).on('change','select',function() {
             let params = $(con).data("paramShow")
-            $(this).data("paramShowDefault",params[$(this).val()])
-            fun(true)
+            $(con).data("paramShowDefault",params[$(this).val()])
+            fun()
         })
     }
     $(()=>{
