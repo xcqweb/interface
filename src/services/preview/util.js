@@ -598,7 +598,7 @@ function dealPentagram(mainProcess,cell) {
  */
 function loadShapeXml() {
     return new Promise((resolve) => {
-        mxUtils.get(`../../..${window.PREFIX_PATH}/static/stencils/preview.xml`, function(res) {
+        mxUtils.get(`../../..${window.PREFIX_PATH}/static/stencils/preview.xml`, function(res) {            
             let root = res.getXml();
             let obj = {};
             const shapes = root.documentElement.getElementsByTagName('shape');
