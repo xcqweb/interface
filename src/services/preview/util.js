@@ -453,6 +453,7 @@ function dealCharts(cell) {
     if(needAddEvent) {
         $(selectCon).on('change','select',function() {
             let params = $(con).data("paramShow")
+            console.log($(this).val(),params[$(this).val()])
             $(this).data("defaultParam",params[$(this).val()])
             fun()
         })
@@ -597,7 +598,7 @@ function dealPentagram(mainProcess,cell) {
  */
 function loadShapeXml() {
     return new Promise((resolve) => {
-        mxUtils.get('/static/stencils/preview.xml', function(res) {
+        mxUtils.get('../../../static/stencils/preview.xml', function(res) {
             let root = res.getXml();
             let obj = {};
             const shapes = root.documentElement.getElementsByTagName('shape');
