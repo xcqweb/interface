@@ -453,8 +453,7 @@ function dealCharts(cell) {
     if(needAddEvent) {
         $(selectCon).on('change','select',function() {
             let params = $(con).data("paramShow")
-            console.log($(this).val(),params[$(this).val()])
-            $(this).data("defaultParam",params[$(this).val()])
+            $(this).data("paramShowDefault",params[$(this).val()])
             fun()
         })
     }
