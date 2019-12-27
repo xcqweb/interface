@@ -453,6 +453,7 @@ function dealCharts(cell) {
     if(needAddEvent) {
         $(selectCon).on('change','select',function() {
             let params = $(con).data("paramShow")
+            console.log($(this).val(),params[$(this).val()])
             $(this).data("defaultParam",params[$(this).val()])
             fun()
         })
@@ -488,7 +489,7 @@ function dealDefaultParams(deviceId,defaultParam,subParams) {
  
 function dealLight() {
     let con = document.createElement('div')
-    con.style.background = `url('../../../static/stencils/basic/light.png') no-repeat`
+    con.style.background = `url('../../..${window.PREFIX_PATH}/static/stencils/basic/light.png') no-repeat`
     con.style.backgroundPosition = "center center"
     con.style.backgroundSize = "100% 100%"
     return con
@@ -597,7 +598,7 @@ function dealPentagram(mainProcess,cell) {
  */
 function loadShapeXml() {
     return new Promise((resolve) => {
-        mxUtils.get('/static/stencils/preview.xml', function(res) {
+        mxUtils.get(`../../..${window.PREFIX_PATH}/static/stencils/preview.xml`, function(res) {
             let root = res.getXml();
             let obj = {};
             const shapes = root.documentElement.getElementsByTagName('shape');
