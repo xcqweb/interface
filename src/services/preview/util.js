@@ -545,22 +545,6 @@ function timeFormate(time,isMilliSecond) {
     }
     return res
 }
-//获取设备id
-function getDeviceId(dpId) {
-    const HEADER_SPLITE = ":"
-    const CENTER_SPLITE = "|"
-    const INVENTED_PARAM = "VP"
-    const DEVICE_PARAM = "P"
-    let strs,deviceId
-    if (dpId.includes(INVENTED_PARAM + HEADER_SPLITE)) {
-        dpId = dpId.substring(3)
-    } else if (dpId.includes(DEVICE_PARAM + HEADER_SPLITE)) {
-        dpId = dpId.substring(2)
-    }
-    strs = dpId.split(CENTER_SPLITE)
-    deviceId = strs[0]
-    return deviceId
-}
 function insertSvg(shapeXmls,key,cell) {
     let {width,height,fillColor,strokeColor,strokeWidth,strokeStyle} = cell
     let inner = shapeXmls[key].path
@@ -632,5 +616,5 @@ function loadShapeXml() {
 }
 export {
     removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,dealPentagram,loadShapeXml,
-    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout, getDeviceId,dealDefaultParams,insertSvg
+    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout,dealDefaultParams,insertSvg
 }

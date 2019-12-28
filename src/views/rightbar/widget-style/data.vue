@@ -185,14 +185,14 @@ export default{
             }
             if(this.shapeName === 'lineChart') {
                 objData.deviceNameChild = []
-                if(this.bindData && this.bindData.deviceModel) {
-                    if(this.model.deviceModelId != this.bindData.deviceModel.id) {
+                if(this.bindData && this.bindData.dataSource.deviceModel) {
+                    if(this.model.deviceModelId != this.bindData.dataSource.deviceModel.id) {
                         Message.warning(`${this.$t('rightBar.notAllowBindMyltiplyDeviceModel')}`)
-                    }else{
-                        let deviceNameChildTemp = this.bindData.deviceNameChild
-                        if(!Array.isArray(deviceNameChildTemp)) {
-                            objData.deviceNameChild.push(deviceNameChildTemp)
-                        }
+                        return
+                    }
+                    let deviceNameChildTemp = this.bindData.deviceNameChild
+                    if(!Array.isArray(deviceNameChildTemp)) {
+                        objData.deviceNameChild.push(deviceNameChildTemp)
                     }
                 }
                 let tempArr = []

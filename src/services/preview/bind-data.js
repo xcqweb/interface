@@ -147,7 +147,7 @@ function setterRealData(res, fileSystem,mainProcess) {
                 }
             }else {
                 if(val || val === 0) {
-                    if(shapeName == 'triangle' || shapeName == 'pentagram') {
+                    if(shapeName == 'triangle' || shapeName.includes('pentagram')) {
                         $ele.find(".text-show").html(val)
                     }else{
                         $ele.html(val)

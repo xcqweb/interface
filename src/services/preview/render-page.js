@@ -7,7 +7,7 @@ let fileSystem //文件服务器host
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
-import {removeEle, destroyWs, insertImage, getDeviceId,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout,throttleFun,dealTriangle,dealPentagram} from './util'
+import {removeEle, destroyWs, insertImage,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout,throttleFun,dealTriangle,dealPentagram} from './util'
 import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -305,15 +305,14 @@ class PreviewPage {
     deviceParamGenerateFun(params) {
         requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
             let resParam = [],maps = new Map()
-            res.forEach(dpId=>{
+            res.forEach(item=>{
                 let tempArr = []
-                let deviceId = getDeviceId(dpId)
-                if (maps.has(deviceId)) {
-                    tempArr =  maps.get(deviceId)
-                    tempArr.push(dpId)
-                    maps.set(deviceId,Array.from(new Set(tempArr)))
+                if (maps.has(item.deviceId)) {
+                    tempArr =  maps.get(item.deviceId)
+                    tempArr.push(item.deviceParamId)
+                    maps.set(item.deviceId,Array.from(new Set(tempArr)))
                 }else{
-                    maps.set(deviceId, [dpId])
+                    maps.set(item.deviceId, [item.deviceParamId])
                 }
             })
             for (let key of maps.keys()) {
@@ -544,7 +543,7 @@ class PreviewPage {
             cellHtml = dealLight(cell)
         } else if(shapeName == 'triangle') {
             cellHtml = dealTriangle(cell)
-        } else if(shapeName == 'pentagram') {
+        } else if(shapeName.includes('pentagram')) {
             cellHtml = dealPentagram(this.mainProcess,cell)
         } else {
             // 其他
@@ -573,7 +572,7 @@ class PreviewPage {
                 cellHtml.style.backgroundColor = cell.fillColor
             }
         }
-        if(shapeName != 'beeline' && shapeName != 'triangle' && shapeName != 'pentagram') {
+        if(shapeName != 'beeline' && shapeName != 'triangle' && !shapeName.includes('pentagram')) {
             let borderStyle = 'solid'
             if(cell.strokeStyle) {
                 borderStyle = 'dashed'

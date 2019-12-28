@@ -168,7 +168,6 @@
 <script>
 import {Tabs, TabPane, Table, Select, Option, Checkbox,Message} from "iview";
 import {mxUtils} from "../../services/mxGlobal";
-import {getDeviceId} from '../../services/preview/util'
 import NoData from "../data-source/nodata";
 import VueEvent from "../../services/VueEvent.js";
 
@@ -502,15 +501,14 @@ export default {
             }
             this.requestUtil.post(this.urls.deviceParamGenerate.url,generateParams).then((res)=>{
                 let resParam = [],maps = new Map()
-                res.forEach(dpId=>{
+                res.forEach(item=>{
                     let tempArr = []
-                    let deviceId = getDeviceId(dpId)
-                    if (maps.has(deviceId)) {
-                        tempArr =  maps.get(deviceId)
-                        tempArr.push(dpId)
-                        maps.set(deviceId,Array.from(new Set(tempArr)))
+                    if (maps.has(item.deviceId)) {
+                        tempArr =  maps.get(item.deviceId)
+                        tempArr.push(item.deviceParamId)
+                        maps.set(item.deviceId,Array.from(new Set(tempArr)))
                     }else{
-                        maps.set(deviceId, [dpId])
+                        maps.set(item.deviceId, [item.deviceParamId])
                     }
                 })
                 for (let key of maps.keys()) {
@@ -521,7 +519,7 @@ export default {
                 }
                 if(resParam.length) {
                     let tempObj = this.getCellModelInfo("bindData")
-                    tempObj.subParams = resParam //生成订阅参数
+                    tempObj.subParams = resParam
                     this.setCellModelInfo("bindData", tempObj)
                 }
             })
