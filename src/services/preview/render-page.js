@@ -579,9 +579,7 @@ class PreviewPage {
                 borderStyle = 'dashed'
             }
             cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
-        }else{
-            cellHtml.style.pointerEvents = 'none'
-        }
+        } 
         cellHtml.style.width = (cell.width + parseInt(cell.strokeWidth)) + 'px'
         cellHtml.style.height = (cell.height + parseInt(cell.strokeWidth)) + 'px'
         if(shapeName === 'tableBox' || shapeName === 'menulist') {
@@ -659,18 +657,20 @@ class PreviewPage {
         } else{
             cellHtml.classList.add(`device_${device.id}`)
         }
-        let dealParamShow = []
-        paramShow.forEach(item=>{
-            if (item.deviceParamId) {
-                dealParamShow.push(item.deviceParamId)
-            }
-        })
-        if(dealParamShow.length) {
-            let resArr = Array.from(new Set(dealParamShow))
-            this.wsParams.push({
-                deviceId: device.id,
-                params: resArr
+        if(device.id) {
+            let dealParamShow = []
+            paramShow.forEach(item=>{
+                if (item.deviceParamId) {
+                    dealParamShow.push(item.deviceParamId)
+                }
             })
+            if(dealParamShow.length) {
+                let resArr = Array.from(new Set(dealParamShow)) 
+                this.wsParams.push({
+                    deviceId: device.id,
+                    params: resArr
+                })
+            }
         }
     }
     

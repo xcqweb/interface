@@ -377,77 +377,80 @@ function dealCharts(mainProcess,cell) {
                     let tempOptions = JSON.parse(JSON.stringify(options))
                     tempOptions.xAxis.data = []
                     tempOptions.yAxis.name = titleShow
+                    tempOptions.legend.data = []
                     let tempLegend = [], tempSeries = []
                     let markLine = tempOptions.series[0].markLine
                     let markLineMax = 0, markValArr = []
                     let paramIds = []
                     devices.forEach((device,index)=>{
-                        paramIds[index] = dealDefaultParams(device.id,temp,$(con).data('subParams')).deviceParamId
-                    })
-                    requestUtil.get(`${urls.timeSelect.url}${paramId}`, {paramType: paramType == 'device' ? 0 : 1}).then(res => {
-                        let checkItem = res.durations.find((item) => {
-                            return item.checked === true
-                        })
-                        let chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
-                        $(con).data("chartDataLen", chartDataLen)
-                        if (markLine && markLine.data && markLine.data.length) {
-                            markLine.data.forEach(item => {
-                                markValArr.push(item.yAxis)
-                            })
-                            markLineMax = Math.max(...markValArr)
+                        let tempPId = dealDefaultParams(device.id,temp,$(con).data('subParams')).deviceParamId
+                        if(tempPId) {
+                            paramIds[index] = tempPId
                         }
-                        let pentSdbParams = []
-                        devices.forEach((item,index)=>{
-                            pentSdbParams.push({
-                                paramIds:[paramIds[index]],
-                                deviceId:item.id,
-                                period:checkItem.duration,
+                    })
+                    if(paramIds.length) {
+                        requestUtil.get(`${urls.timeSelect.url}${paramId}`, {paramType: paramType == 'device' ? 0 : 1}).then(res => {
+                            let checkItem = res.durations.find((item) => {
+                                return item.checked === true
+                            })
+                            let chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
+                            $(con).data("chartDataLen", chartDataLen)
+                            if (markLine && markLine.data && markLine.data.length) {
+                                markLine.data.forEach(item => {
+                                    markValArr.push(item.yAxis)
+                                })
+                                markLineMax = Math.max(...markValArr)
+                            }
+                            let pentSdbParams = []
+                            devices.forEach((item,index)=>{
+                                pentSdbParams.push({
+                                    paramIds:[paramIds[index]],
+                                    deviceId:item.id,
+                                    period:checkItem.duration,
+                                })
+                            })
+                            requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
+                                if (res && res.length) {
+                                    let xAxisData = []
+                                    for(let i = 0;i < res.length;i++) {
+                                        let tempArr = res[i]
+                                        let device = devices[i]
+                                        tempLegend.push(device.name)
+                                        tempOptions.legend.data = tempLegend
+                                        tempSeries.push({
+                                            type: 'line',
+                                            name: device.name,
+                                            markLine: markLine,
+                                            data: [],
+                                            deviceId: device.id, //设备id，额外添加的，匹配数据时候用
+                                        })
+                                        if(JSON.stringify(res[i]) === '{}') {
+                                            continue
+                                        }
+                                        if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
+                                            let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
+                                            xAxisData = []
+                                            for (let key of keys) {
+                                                xAxisData.push(timeFormate(key, false))
+                                                tempSeries[i].data.push(tempArr.resMap[key])
+                                            }
+                                            tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
+                                            tempOptions.series = tempSeries
+                                        }
+                                    }
+                                    tempOptions.xAxis.data = xAxisData
+                                    myEchart.setOption(tempOptions)
+                                }
+                            },()=>{
+                                myEchart.setOption(options)
                             })
                         })
-                        let hasData = false
-                        requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
-                            if (res && res.length) {
-                                for(let i = 0;i < res.length;i++) {
-                                    if(JSON.stringify(res[i]) === '{}') {
-                                        continue
-                                    }
-                                    let tempArr = res[i]
-                                    let device = devices[i]
-                                    tempLegend.push(device.name)
-                                    tempOptions.legend.data = tempLegend
-                                    tempSeries.push({
-                                        type: 'line',
-                                        name: device.name,
-                                        markLine: markLine,
-                                        data: [],
-                                        deviceId: device.id, //设备id，额外添加的，匹配数据时候用
-                                    })
-                                    if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
-                                        let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
-                                        for (let key of keys) {
-                                            if(i == 0) {
-                                                tempOptions.xAxis.data.push(timeFormate(key, false))//x轴数据一样 ，只放一次
-                                            }
-                                            tempSeries[i].data.push(tempArr.resMap[key])
-                                        }
-                                        tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
-                                        tempOptions.series = tempSeries
-                                        hasData = true
-                                    }
-                                }
-                                if(hasData) {
-                                    myEchart.setOption(tempOptions)
-                                }else{
-                                    myEchart.setOption(options)//默认图表
-                                }
-                            }
-                        },()=>{
-                            myEchart.setOption(options)
-                        })
-                    })
+                    }else{
+                        myEchart.setOption(tempOptions)
+                    }
                 } else {
                     let data = mainProcess.realData.find(item=>{
-                        return item.deviceId = devices[0].id
+                        return item.deviceId == devices[0].id
                     })
                     let val = 0
                     if(data) {
@@ -477,17 +480,17 @@ function dealCharts(mainProcess,cell) {
     return con
 }
 function dealDefaultParams(deviceId,defaultParam,subParams) {
-    if(defaultParam.deviceParamId) {
+    let {partId,paramId} = defaultParam
+    let resDeviceParamArr,resDeviceParam = null
+    if(!subParams) {
         return defaultParam
     }
-    let {partId,paramId} = defaultParam
-    let resDeviceParamArr,resDeviceParam
     resDeviceParamArr = subParams.find(item=>{
-        return item.deviceId = deviceId
+        return item.deviceId == deviceId
     })
-    if(resDeviceParamArr && resDeviceParamArr.length) {
-        for(let i = 0;i < resDeviceParamArr.length;i++) {
-            let item = resDeviceParamArr[i]
+    if(resDeviceParamArr && resDeviceParamArr.params.length) {
+        for(let i = 0;i < resDeviceParamArr.params.length;i++) {
+            let item = resDeviceParamArr.params[i]
             if (item.includes(paramId)) {
                 if (!partId || item.includes(partId)) {
                     resDeviceParam = item
@@ -590,6 +593,7 @@ function dealTriangle(cell) {
     svg.innerHTML = `<path d="M ${strokeWidth} ${strokeWidth} L ${width - strokeWidth} ${height / 2 - strokeWidth} L ${strokeWidth} ${height - strokeWidth} Z" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${strokeWidth}" stroke-dasharray="${dashArr}">`
     con.appendChild(svg)
     let textCon = document.createElement('div')
+    textCon.className = "text-show"
     textCon.style.cssText = `width:${width}px;height:${height}px;position:absolute;color:${fontColor};left:0;top:0;`
     textCon.innerHTML = `${value}`
     con.appendChild(textCon)
@@ -601,6 +605,7 @@ function dealPentagram(mainProcess,cell) {
     let content = insertSvg(mainProcess.shapeXmls,'pentagram',cell)
     con.appendChild(content)
     let textCon = document.createElement('div')
+    textCon.className = "text-show"
     textCon.style.cssText = `width:${width}px;height:${height}px;position:absolute;color:${fontColor};left:0;top:0;`
     textCon.innerHTML = `${value}`
     con.appendChild(textCon)

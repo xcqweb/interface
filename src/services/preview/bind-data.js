@@ -77,7 +77,7 @@ function setterRealData(res, fileSystem,mainProcess) {
             let paramShow = $ele.data("paramShow")
             let val = null
             let paramShowDefault = $ele.data("paramShowDefault")
-            if(shapeName.includes('Chart') && paramShowDefault) {
+            if(shapeName == 'lineChart' && paramShowDefault) {
                 $ele.data("paramShowDefault",dealDefaultParams(item.deviceId,paramShowDefault,$ele.data('subParams')))
                 paramShowDefault = $ele.data("paramShowDefault")
             }
@@ -147,7 +147,11 @@ function setterRealData(res, fileSystem,mainProcess) {
                 }
             }else {
                 if(val || val === 0) {
-                    $ele.html(`${val}`)
+                    if(shapeName == 'triangle' || shapeName == 'pentagram') {
+                        $ele.find(".text-show").html(val)
+                    }else{
+                        $ele.html(val)
+                    }
                 }
                 let stateModels = $ele.data("stateModels")
                 if(stateModels) {
