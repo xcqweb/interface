@@ -685,8 +685,8 @@ Sidebar.prototype.addStencilPalette = function(id, title, stencilFile, style, ig
                 tmp.push(tmpTags);
             }
             if(stencilName=='pentagram'){
-                //let fn = this.createVertexTemplateEntry('shape=' + packageName + stencilName.toLowerCase() + style, w, h, '', '五角星', null, null,"五角星")
-                //basicXmlFns.push(fn)
+                let fn = this.createVertexTemplateEntry('shape=' + packageName + stencilName.toLowerCase() + style, w, h, '', '五角星', null, null,"五角星")
+                basicXmlFns.push(fn)
             }
             if(shapeCount>=5){
                 this.addPaletteFunctions('general', mxResources.get('basic'),true, basicXmlFns)
