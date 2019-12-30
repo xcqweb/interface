@@ -47847,11 +47847,6 @@ mxCellRenderer.registerShape(mxConstants.SHAPE_ARROW_CONNECTOR, mxArrowConnector
 mxCellRenderer.registerShape(mxConstants.SHAPE_DOUBLE_ELLIPSE, mxDoubleEllipse);
 mxCellRenderer.registerShape(mxConstants.SHAPE_SWIMLANE, mxSwimlane);
 mxCellRenderer.registerShape(mxConstants.SHAPE_IMAGE, mxImageShape);
-// mxCellRenderer.registerShape('circle', mxImageShape);
-// mxCellRenderer.registerShape('square', mxImageShape);
-// mxCellRenderer.registerShape('diamond', mxImageShape);
-// mxCellRenderer.registerShape('drop', mxImageShape);
-// mxCellRenderer.registerShape('pentagram', mxImageShape);
 mxCellRenderer.registerShape('light', mxImageShape);
 mxCellRenderer.registerShape('progress', mxImageShape);
 mxCellRenderer.registerShape('pipeline1', mxImageShape);

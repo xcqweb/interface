@@ -182,7 +182,6 @@ const allShapes = [
     "progress",
     "lineChart",
     "gaugeChart",
-    "tableBox",
     'triangle',
     'pentagram'
 ]; //可以绑定数据的控件
@@ -486,6 +485,9 @@ export default {
             let generateParams = []
             let startBindData = this.getCellModelInfo("bindData")
             let devices = startBindData.dataSource.deviceNameChild
+            if(!Array.isArray(devices)) {
+                devices = [devices]
+            }
             devices.forEach(device => {
                 this.paramOutterList.forEach(p => {
                     generateParams.push({

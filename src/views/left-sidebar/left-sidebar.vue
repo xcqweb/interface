@@ -323,6 +323,7 @@ export default {
             this.isShowPopMenu = false
         },
         copyPage() {
+            this.myEditorUi.editor.setXml()
             let currentPage = this.getCurrPageOrDialog()
             let type =  pageTypeArr[this.typeTab - 1]
             let page = {
