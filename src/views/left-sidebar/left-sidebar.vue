@@ -195,9 +195,11 @@ export default {
     },
     methods: {
         init() {
-            this.myEditorUi.sidebar.init()
-            this.getPages()
-            this.checkPage(0,true)
+            // 读取自定义的xml控件文件后，再初始化
+            this.myEditorUi.sidebar.init('',()=>{
+                this.getPages()
+                this.checkPage(0,true)
+            })
         },
         getPages() {
             let pagesRank = this.myEditorUi.editor.pagesRank
@@ -455,7 +457,7 @@ export default {
         width:208px;
         display:flex;
         flex-direction: column;
-        z-index:3;
+        z-index:4;
         .geSidebarContainer-bottom{
             flex:1;
             overflow-y: auto;

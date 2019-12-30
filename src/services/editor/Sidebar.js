@@ -87,7 +87,7 @@ function Sidebar(editorUi, container, containerbottom)
 /**
  * 原型初始化
  */
-Sidebar.prototype.init = function(type)
+Sidebar.prototype.init = function(type,cb)
 {
     if (type === 'nowload') {
         let userTitle = document.querySelectorAll("#userTitle")
@@ -104,6 +104,7 @@ Sidebar.prototype.init = function(type)
             this.addChartPalette()// 图表控件
             this.addUserPalette(false) // 自定义控件
             this.addWidgetNameShow() //添加基本控件的悬浮名称显示
+            cb&&cb()
         })
     }
 };
@@ -783,10 +784,10 @@ Sidebar.prototype.addGeneralPalette = function()
         this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
         // 三角形
         this.createVertexTemplateEntry('shape=triangle;triangle;whiteSpace=wrap;strokeColor=#000;html=1;', 60, 80, '', '三角形', null, null, '三角形'),
-        //五角星
     ];
     return fns
 };
+
 /**
  * 图表组件
  */
@@ -995,28 +996,23 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
     elt.style.overflow = 'hidden';
     elt.style.width = '46px'
     elt.style.height = '46px'
-    var shapeName = /shape=(.+?);/.exec(cells[0].style)[1];
-    elt.setAttribute('data-shapeName', shapeName)
-    if (!title) {
-        // 图元列表
-        this.thumbWidth = 29;
-        this.thumbHeight = 29;
-        elt.style.width = '33px';
-        elt.style.height = '33px';
-    } else {
-        if (type === 'layout') {
-            elt.style.backgroundImage = `url(${imageurl})`;
-            elt.style.backgroundSize = '36px 36px'
-        } else {
-            elt.style.backgroundImage = 'url(' + window.PREFIX_PATH + '/static/stencils/basic/' + shapeName + '.png)';
-        }
-        if(shapeName=='light'){
-            elt.style.backgroundSize = '36px 36px'
-        }
-        elt.style.backgroundPosition = `center center`
-        elt.style.backgroundRepeat = `no-repeat`
+    let tempArr =  /shape=(.+?);/.exec(cells[0].style)
+    if(!tempArr || !tempArr.length) {
+        return
     }
-	
+    var shapeName = tempArr[1]
+    elt.setAttribute('data-shapeName', shapeName)
+    if (type === 'layout') {
+        elt.style.backgroundImage = `url(${imageurl})`;
+        elt.style.backgroundSize = '36px 36px'
+    } else {
+        elt.style.backgroundImage = 'url(' + window.PREFIX_PATH + '/static/stencils/basic/' + shapeName + '.png)';
+    }
+    if(shapeName=='light'){
+        elt.style.backgroundSize = '36px 36px'
+    }
+    elt.style.backgroundPosition = `center center`
+    elt.style.backgroundRepeat = `no-repeat`
     if (mxClient.IS_IE6)
     {
         elt.style.border = 'none';
@@ -1024,18 +1020,12 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
     this.createThumb(cells, this.thumbWidth, this.thumbHeight, elt, title, showLabel, showTitle, width, height);
     var bounds = new mxRectangle(0, 0, width, height);
     if (cells.length > 1 || cells[0].vertex){
-        // 非图元绑定拖拽插入画布事件
         var ds = this.createDragSource(elt, this.createDropHandler(cells, true, allowCellsInserted, bounds), this.createDragPreview(width, height), cells, bounds);
         ds.isGuidesEnabled = mxUtils.bind(this, function()
         {
             return this.editorUi.editor.graph.graphHandler.guidesEnabled;
         });
-    } else if (cells[0] != null && cells[0].edge){
-        var ds = this.createDragSource(elt, this.createDropHandler(cells, false, allowCellsInserted,
-            bounds), this.createDragPreview(width, height), cells, bounds);
     }
-	
-    // Shows a tooltip with the rendered cell
     if (!mxClient.IS_IOS)
     {
         mxEvent.addGestureListeners(elt, null, mxUtils.bind(this, function(evt)
