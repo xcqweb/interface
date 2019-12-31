@@ -449,7 +449,11 @@ function dealCharts(mainProcess,cell) {
                                                 xAxisData.push(timeFormate(key, false))
                                                 tempSeries[i].data.push(tempArr.resMap[key])
                                             }
-                                            tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
+                                            if(tempOptions.yAxis.max) {
+                                                tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)
+                                            }else{
+                                                tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
+                                            }
                                             tempOptions.series = tempSeries
                                         }
                                     }
@@ -463,7 +467,7 @@ function dealCharts(mainProcess,cell) {
                     }else{
                         myEchart.setOption(tempOptions)
                     }
-                } else {
+                } else {//仪表盘
                     let data = mainProcess.realData.find(item=>{
                         return item.deviceId == devices[0].id
                     })

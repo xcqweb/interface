@@ -130,7 +130,7 @@ function setterRealData(res, fileSystem,mainProcess) {
                                 }
                             }
                         })
-                    }else {
+                    }else {//只有仪表盘切换多个参数时候，需要处理每个参数的历史数据或者实际数据情况
                         let realDataIds = mainProcess.realData.map(item=>item.deviceParamId)
                         if(!realDataIds.includes(item.deviceParamId)) {
                             mainProcess.realData.push(item)

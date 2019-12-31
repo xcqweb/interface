@@ -362,28 +362,28 @@ export default {
                 return;
             }
             //初始化状态列表
-            let tempStateList = this.getCellModelInfo("statesInfo");
+            let tempStateList = this.getCellModelInfo("statesInfo")
             if (tempStateList) {
-                this.stateList = tempStateList;
+                this.stateList = tempStateList
             } else {
-                this.stateList = [];
+                this.stateList = []
             }
-            this.dataSourceList = [];
-            this.initDataSource(); //初始化数据源列表
-            this.initModelList(); //初始化模型列表
-            this.initParamsList(); //初始化参数列表
-            this.isInitFlag = true;
+            this.dataSourceList = []
+            this.initDataSource() //初始化数据源列表
+            this.initModelList() //初始化模型列表
+            this.initParamsList() //初始化参数列表
+            this.isInitFlag = true
         },
         dealFootbarHeight(val) {
             if (val) {
-                this.myEditorUi.footerHeight = 226;
+                this.myEditorUi.footerHeight = 226
             } else {
-                this.myEditorUi.footerHeight = 26;
+                this.myEditorUi.footerHeight = 26
             }
             if (this.$store.state.main.type === 1) {
-                VueEvent.$emit("refreshDialogTitle");
+                VueEvent.$emit("refreshDialogTitle")
             }
-            this.myEditorUi.refresh();
+            this.myEditorUi.refresh()
         },
         // 初始化数据源数据
         initDataSource() {
@@ -418,24 +418,28 @@ export default {
                 };
                 this.requestUtil.post(this.urls.getModelList.url, objData).then(res => {
                     if (res.returnObj) {
-                        this.modelList = res.returnObj;
-                        this.stateList.forEach((item, index) => {
-                            if (item.modelFormInfo) {
-                                //如果状态绑定的有公式，就选中该项公式
-                                let modelIndex = this.modelList.findIndex(model => {
-                                    return item.modelFormInfo == model.sourceId;
-                                });
-                                if (modelIndex != -1) {
-                                    this.$set(this.modelVals, index, modelIndex);
-                                }
-                            }
-                        });
+                        this.modelList = res.returnObj
+                        this.dealStateListInit()
                     }
                 });
             } else {
-                this.modelList = [];
-                this.stateList = [];
+                this.modelList = []
+                this.stateList = []
             }
+        },
+        dealStateListInit() {
+            this.stateList = this.getCellModelInfo("statesInfo")
+            this.stateList.forEach((item, index) => {
+                if (item.modelFormInfo) {
+                    //如果状态绑定的有公式，就选中该项公式
+                    let modelIndex = this.modelList.findIndex(model => {
+                        return item.modelFormInfo == model.sourceId
+                    });
+                    if (modelIndex != -1) {
+                        this.$set(this.modelVals, index, modelIndex)
+                    }
+                }
+            })
         },
         initParamsList() {
             let tempObj = this.getCellModelInfo("bindData")
@@ -595,6 +599,7 @@ export default {
                 }
             }
             this.setCellModelInfo("statesInfo", tempStateList)
+            this.dealStateListInit()
         },
         footerContentHandle(show) {
             if (show) {
