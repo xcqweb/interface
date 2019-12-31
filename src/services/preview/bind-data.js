@@ -1,4 +1,4 @@
-import {geAjax, toDecimal2NoZero, timeFormate,dealDefaultParams} from './util'
+import {geAjax, toDecimal2NoZero, timeFormate,dealDefaultParams,svgShape} from './util'
 import {getCookie} from '../Utils'
 import echarts from 'echarts'
 
@@ -304,6 +304,15 @@ function changeEleState(el, stateInfo,fileSystem) {
         //去掉动画样式
         el.classList.remove('animate-blink')
     }
+    let svgShapes = svgShape()
+    if(svgShapes.includes(shapeName)) {
+        let path = $(el).find("path")
+        path.attr('fill',stateInfo.style.background)
+        path.attr('stroke',stateInfo.style.borderColor)
+        let text = $(el).find('.text-show')
+        text.css('color',stateInfo.style.color)
+        return
+    } 
     let imgInfo = stateInfo.imgInfo
     for (let key in stateInfo.style) {
         el.style[key] = stateInfo.style[key]

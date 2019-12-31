@@ -193,10 +193,20 @@ function effectEvent(action, mainProcess, applyData, fileSystem) {
  */
 function actionChange(action, fileSystem) {
     let cellCon = document.getElementById('palette_' + action.link)
+    let shapeName = $(cellCon).data('shapeName')
     let {stateInfo} = action
     if (stateInfo.animateCls) {
         cellCon.classList.add(stateInfo.animateCls)
     }
+    let svgShapes = svgShape()
+    if(svgShapes.includes(shapeName)) {
+        let path = $(cellCon).find("path")
+        path.attr('fill',stateInfo.style.background)
+        path.attr('stroke',stateInfo.style.borderColor)
+        let text = $(cellCon).find('.text-show')
+        text.css('color',stateInfo.style.color)
+        return
+    } 
     let imgInfo = stateInfo.imgInfo
     for (let key in stateInfo.style) {
         cellCon.style[key] = stateInfo.style[key]
@@ -207,7 +217,12 @@ function actionChange(action, fileSystem) {
         cellCon.style.backgroundSize = '100% 100%'
     }
 }
-
+//svg控件要改变样式的
+function svgShape() {
+    return [
+        'triangle','pentagram'
+    ]
+}
 /**
  * 隐藏事件
  */
@@ -616,5 +631,5 @@ function loadShapeXml() {
 }
 export {
     removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,dealPentagram,loadShapeXml,
-    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout,dealDefaultParams,insertSvg
+    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout,dealDefaultParams,insertSvg,svgShape
 }
