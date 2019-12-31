@@ -376,7 +376,7 @@ function dealCharts(mainProcess,cell) {
                 if (cell.shapeName == 'lineChart') {
                     let tempOptions = JSON.parse(JSON.stringify(options))
                     tempOptions.xAxis.data = []
-                    tempOptions.yAxis.name = `                       ${titleShow}`
+                    tempOptions.yAxis.name = `                                  ${titleShow}`//防止y轴名字展示不全
                     tempOptions.legend.data = []
                     let tempLegend = [], tempSeries = []
                     let markLine = tempOptions.series[0].markLine

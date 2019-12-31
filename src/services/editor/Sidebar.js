@@ -1025,6 +1025,9 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
         {
             return this.editorUi.editor.graph.graphHandler.guidesEnabled;
         });
+    } else if (cells[0] != null && cells[0].edge){//edge 直线拖拽到画布
+        var ds = this.createDragSource(elt, this.createDropHandler(cells, false, allowCellsInserted,
+            bounds), this.createDragPreview(width, height), cells, bounds);
     }
     if (!mxClient.IS_IOS)
     {
