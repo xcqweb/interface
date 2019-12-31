@@ -15,7 +15,7 @@
             </Tabs>
           </div>
           <div
-            v-if="tabsNum == 1 && deviceModelId && footerContent"
+            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag"
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
@@ -159,6 +159,7 @@
       :title="$t('footBar.addParam')"
       :device-model-id="deviceModelId"
       :device-id="deviceId"
+      :multiple="multiple"
       :selected-keys="selectedKeys"
       @callback="addParamDone"
     />
@@ -211,6 +212,7 @@ export default {
     data() {
         return {
             visible: false,
+            multiple:true,
             value1: "1",
             dataSourceName: [
                 "dataSources",
@@ -280,25 +282,25 @@ export default {
     },
     computed: {
         shapeName() {
-            let shape = null;
-            let shapeInfo = this.$store.state.main.widgetInfo.shapeInfo;
+            let shape = null
+            let shapeInfo = this.$store.state.main.widgetInfo.shapeInfo
             if (shapeInfo) {
-                shape = shapeInfo.shape;
+                shape = shapeInfo.shape
             }
-            return shape;
+            return shape
         },
         footerModelUpdata() {
-            return this.$store.state.main.footerModelUpdata;
+            return this.$store.state.main.footerModelUpdata
         },
         cellsCount() {
-            return this.$store.state.main.widgetInfo.cellsCount;
+            return this.$store.state.main.widgetInfo.cellsCount
         },
         selectedKeys() {
             let res = [];
             this.paramOutterList.forEach(item => {
-                res.push(item.key);
+                res.push(item.key)
             });
-            return res;
+            return res
         }
     },
     watch: {
@@ -308,26 +310,31 @@ export default {
         footerModelUpdata(val) {
             if (val) {
                 this.isInitFlag = false;
-                this.initData();
-                this.$store.commit("footerModelUpdata", false);
+                this.initData()
+                this.$store.commit("footerModelUpdata", false)
+            }
+        },
+        shapeName(val) {
+            if(val == 'progress') {
+                this.multiple = false
             }
         }
     },
     mounted() {
         if (this.footerContent) {
-            this.initData();
+            this.initData()
         }
-        VueEvent.$off("rightBarTabSwitch");
-        VueEvent.$off("isShowFootBar");
-        VueEvent.$off("emitDataSourceFooter");
+        VueEvent.$off("rightBarTabSwitch")
+        VueEvent.$off("isShowFootBar")
+        VueEvent.$off("emitDataSourceFooter")
         VueEvent.$on("isShowFootBar", ({show, isUp}) => {
             this.isInitFlag = false;
             this.footerContentHandle(show);
             if (show) {
-                this.initData();
+                this.initData()
             }
             if (isUp) {
-                this.ifShowArrow = isUp;
+                this.ifShowArrow = isUp
             }
         });
         VueEvent.$on("rightBarTabSwitch", () => {
@@ -448,9 +455,9 @@ export default {
             this.visible = true
         },
         addParamDone(data) {
-            let isFirstCheck = false;
+            let isFirstCheck = false
             if (this.paramOutterList && !this.paramOutterList.length) {
-                isFirstCheck = true;
+                isFirstCheck = true
             }
             let allKeys = []
             this.paramOutterList.forEach(item => {
@@ -458,7 +465,7 @@ export default {
             })
             data.forEach(item => {
                 if (!allKeys.includes(item.key)) {
-                    this.paramOutterList.push({
+                    let tempObj = {
                         paramName: item.paramName,
                         paramId: item.paramId,
                         paramType: item.type,
@@ -468,9 +475,14 @@ export default {
                         transportSourceId: item.transportSourceId,
                         deviceParamId: item.deviceParamId,
                         type: false
-                    })
+                    }
+                    if(this.multiple) {
+                        this.paramOutterList.push(tempObj)
+                    }else{
+                        this.paramOutterList = [tempObj]
+                    }
                 }
-            });
+            })
             if (isFirstCheck) {
                 this.paramOutterList[0].type = true
             }
