@@ -428,7 +428,7 @@ export default {
             }
         },
         dealStateListInit() {
-            this.stateList = this.getCellModelInfo("statesInfo")
+            this.stateList = this.getCellModelInfo("statesInfo") || []
             this.stateList.forEach((item, index) => {
                 if (item.modelFormInfo) {
                     //如果状态绑定的有公式，就选中该项公式

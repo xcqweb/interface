@@ -177,17 +177,18 @@ export default{
             let objData = {}
             objData.deviceTypeChild = {
                 id: this.model.deviceTypeId,
-                name: this.typeData[this.typeData.findIndex(item=>{return item.deviceTypeId == this.model.deviceTypeId})].deviceTypeName
+                name:this.typeData.find(item=>{return item.deviceTypeId == this.model.deviceTypeId}).deviceTypeName
             }
             objData.deviceModel = {
                 id: this.model.deviceModelId,
-                name: this.modelData[this.modelData.findIndex(item=>{return item.deviceModelId == this.model.deviceModelId})].deviceModelName
+                name:this.modelData.find(item=>{return item.deviceModelId == this.model.deviceModelId}).deviceModelName
             }
             if(this.shapeName === 'lineChart') {
                 objData.deviceNameChild = []
                 if(this.bindData && this.bindData.dataSource.deviceModel) {
                     if(this.model.deviceModelId != this.bindData.dataSource.deviceModel.id) {
                         Message.warning(`${this.$t('rightBar.notAllowBindMyltiplyDeviceModel')}`)
+                        this.checkModelArr = []
                         return
                     }
                     let deviceNameChildTemp = this.bindData.deviceNameChild
@@ -197,13 +198,14 @@ export default{
                 }
                 let tempArr = []
                 this.checkModelArr.forEach((item) => {
-                    tempArr.push({id:item,name:this.deviceData[this.deviceData.findIndex(d=>{return d.deviceId == item})].deviceName})
+                    console.log(this.deviceData,item)
+                    tempArr.push({id:item,name:this.deviceData.find(d=>{return d.deviceId == item}).deviceName})
                 })
                 objData.deviceNameChild = objData.deviceNameChild.concat(tempArr)
             }else{
                 objData.deviceNameChild = {}
                 this.checkModelArr.forEach((item) => {
-                    objData.deviceNameChild = {id:item,name:this.deviceData[this.deviceData.findIndex(d=>{return d.deviceId == item})].deviceName}
+                    objData.deviceNameChild = {id:item,name:this.deviceData.find(d=>{return d.deviceId == item}).deviceName}
                 })
             }
             if (objData) {
