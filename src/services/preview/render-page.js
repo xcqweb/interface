@@ -107,7 +107,6 @@ class PreviewPage {
                     let statesInfo = JSON.parse(item.getAttribute('statesInfo'))
                     // 节点参数信息
                     let getNodeInfo = new GetNodeInfo(node)
-                    console.log(getNodeInfo)
                     // 节点类型
                     let shapeName = getNodeInfo.getStyles('shape')
                     let x, y, width, height,arcSize,fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, rotation, direction, flipH, flipV, startArrow, endArrow, strokeWidth, fontWeight,edgeProps
@@ -124,7 +123,7 @@ class PreviewPage {
                     fontSize = getNodeInfo.getStyles('fontSize') || '12'
                     fontWeight = getNodeInfo.getStyles('fontStyle') || 0
                     strokeStyle = getNodeInfo.getStyles('dashed')
-                    strokeWidth = getNodeInfo.getStyles('strokeWidth') || 1
+                    strokeWidth = getNodeInfo.getStyles('strokeWidth') || 0
                     strokeColor = (shapeName.includes('image') ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none'
                     arcSize = getNodeInfo.getStyles('arcSize') || 0
                     // 图片地址
@@ -132,7 +131,7 @@ class PreviewPage {
                     x = parseFloat(node.childNodes[0].getAttribute('x')) || 0
                     y = parseFloat(node.childNodes[0].getAttribute('y')) || 0
                     width = parseFloat(node.childNodes[0].getAttribute('width'))
-                    hide = item.getAttribute('hide');
+                    hide = item.getAttribute('hide')
 
                     height = parseFloat(node.childNodes[0].getAttribute('height'))
                     if(shapeName == 'beeline') {

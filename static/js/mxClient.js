@@ -15722,20 +15722,18 @@ mxPopupMenu.prototype.hideMenu = function()
     let selectCell = this.graph.getSelectionCell()
     let shapeName = ''
     if (selectCell) {
-        shapeName = this.graph.view.getState(selectCell).style.shape;
-    }
-    if (shapeName === 'image') { // 图片 不走hideMenu 要不然不能上传
-    } else {
-        if (this.div != null)
-        {
-            if (this.div.parentNode != null)
-            {
-                this.div.parentNode.removeChild(this.div);
-            }
-            this.hideSubmenu(this);
-            this.containsItems = false;
-            this.fireEvent(new mxEventObject(mxEvent.HIDE));
+        let style = this.graph.view.getState(selectCell).style
+        if(style) {
+            shapeName = style.shape;
         }
+    }
+    if (shapeName !== 'image' && this.div != null) { // 图片 不走hideMenu 要不然不能上传
+        if (this.div.parentNode != null) {
+            this.div.parentNode.removeChild(this.div)
+        }
+        this.hideSubmenu(this);
+        this.containsItems = false;
+        this.fireEvent(new mxEventObject(mxEvent.HIDE));
     }
 };
 

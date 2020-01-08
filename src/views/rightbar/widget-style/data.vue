@@ -12,6 +12,7 @@
         <Select
           v-model="model.deviceTypeId"
           style="height:24px"
+          @on-change="selectChange"
         >
           <Option
             v-for="(item) in typeData"
@@ -31,6 +32,7 @@
         <Select
           v-model="model.deviceModelId"
           style="height:24px"
+          @on-change="selectChange"
         >
           <Option 
             v-for="(item) in modelData"
@@ -142,6 +144,9 @@ export default{
         this.init()
     },
     methods: {
+        selectChange() {
+            this.checkModelArr = []
+        },
         init() {
             this.getStudioDeviceData()
             this.bindData =  this.getCellModelInfo('bindData')
@@ -162,7 +167,7 @@ export default{
         },
         bindDeviceNameHandle() {
             this.bindData = this.getCellModelInfo('bindData')
-            if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个
+            if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1 && this.bindData) { // 绑定单个
                 Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
                 // 清空勾选
                 this.checkModelArr = []
@@ -210,6 +215,7 @@ export default{
             }
             if (objData) {
                 VueEvent.$emit('emitDataSourceFooter', objData)
+                Message.success(`${this.$t('rightBar.bindSuccess')}`)
             }
         },
         getCellModelInfo(key) {

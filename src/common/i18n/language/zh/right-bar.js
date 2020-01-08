@@ -39,5 +39,6 @@ export default {
     chooseBgImage: "选择背景图案",
     notAllowBindMyltiplyDeviceModel:'不允许绑定多个设备型号',
     atLeastChooseOneParam:"请选择一个显示参数",
+    bindSuccess:'绑定成功',
 };
 

@@ -13,6 +13,6 @@ export default {
     previewTitle: 'Preview (Ctrl+Shift+P)',
     lock:'Lock (Ctrl+L)',
     unlock:'UnLock (Ctrl+Shift+L)',
-
+    bindSuccess:'Bind Success',
 }
 

@@ -5,14 +5,14 @@ export let data1 = {
         data: ['图例'],
         x:'center',
         y:'bottom',
-        padding:[40,0,0,0],
+        padding:[32,0,0,0],
         orient: 'horizontal',
         textStyle:{
             
         }
     },
     grid:{
-        top:60,
+        top:75,
         bottom:50,
         left:50,
         right:50,

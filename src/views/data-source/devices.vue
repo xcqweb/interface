@@ -10,14 +10,13 @@
     <div class="search-area">
       <div class="params-item">
         <label>{{ $t('dataSource.deviceType') }}</label>
-        <Cascader
+        <MyCascader
           v-model="deviceParams"
           style="width: 180px;"
           :data="deviceTypeOptions"
           :load-data="getDeviceModel"
           :not-found-text="$t('noData')"
           filterable
-          transfer
           change-on-select
           @on-change="search"
         />
@@ -88,13 +87,13 @@
 </template>
 
 <script>
-import {Modal, Button, Cascader, Table, Page, Input, Message} from 'iview'
-
+import {Modal, Button, Table, Page, Input, Message} from 'iview'
+import MyCascader from '../../components/g-cascader/cascader'
 export default {
     components: {
         Modal,
         Button,
-        Cascader,
+        MyCascader,
         Input,
         Table,
         Page,

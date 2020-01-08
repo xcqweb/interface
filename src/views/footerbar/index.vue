@@ -160,7 +160,6 @@
       :device-model-id="deviceModelId"
       :device-id="deviceId"
       :multiple="multiple"
-      :selected-keys="selectedKeys"
       @callback="addParamDone"
     />
   </div>
@@ -295,21 +294,14 @@ export default {
         cellsCount() {
             return this.$store.state.main.widgetInfo.cellsCount
         },
-        selectedKeys() {
-            let res = [];
-            this.paramOutterList.forEach(item => {
-                res.push(item.key)
-            });
-            return res
-        }
     },
     watch: {
         ifShowArrow(val) {
-            this.dealFootbarHeight(val);
+            this.dealFootbarHeight(val)
         },
         footerModelUpdata(val) {
             if (val) {
-                this.isInitFlag = false;
+                this.isInitFlag = false
                 this.initData()
                 this.$store.commit("footerModelUpdata", false)
             }
@@ -446,7 +438,7 @@ export default {
             if (tempObj && tempObj.params) {
                 this.paramOutterList = tempObj.params
             } else {
-                this.paramOutterList = [];
+                this.paramOutterList = []
             }
         },
         addParam() {

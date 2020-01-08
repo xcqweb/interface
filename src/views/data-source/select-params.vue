@@ -92,7 +92,7 @@ export default {
             selectedItems: [],
             params: [],
             listStyle: {
-                width: '422px',
+                width: '46%',
                 height: '390px',
                 backgroundColor: '#fff',
             },
@@ -207,9 +207,9 @@ export default {
         },
         rightRender(item) {
             if (item.type === 'device') {
-                return item.partName + ' / ' + item.label;
+                return item.partName + ' / ' + item.label + item.displayName ? `(${item.displayName})` : '';
             } else {
-                return item.label;
+                return item.label + item.displayName ? `(${item.displayName})` : '';
             }
         },
         leftFilterMethod(data, query) {
