@@ -29,6 +29,7 @@ axios.interceptors.request.use(
  
 //添加响应拦截器
 axios.interceptors.response.use((res) =>{
+    console.log(res)
     return Promise.resolve(res)
 }, (error) => {
     if (error.response) {
@@ -38,9 +39,8 @@ axios.interceptors.response.use((res) =>{
                 setCookie('token', res.token)
                 setCookie('refreshToken', res.refreshToken)
                 error.response.config.headers.Authorization = 'Bearer ' + res.token
-                axios.request(error.response.config)
+                return axios.request(error.response.config)
             })
-            return
         }
     }
     return Promise.reject(error)

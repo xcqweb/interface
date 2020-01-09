@@ -330,7 +330,7 @@ export default {
                 title: `${currentPage.title}_${this.$t('copyP')}`,
                 xml:currentPage.xml,
                 id:'',
-                style:{},
+                style:currentPage.style,
                 type,
             }
             this.dealNewPage(page)

@@ -357,7 +357,7 @@ function dealCharts(mainProcess,cell) {
         let params = cell.bindData.params
         selectCon.style.cssText = `display:flex;position:relative;width:${cell.width}px;height:24px;left:0;top:24px;justify-content:flex-end;z-index:10;`
         if(params.length > 1) {
-            selectCon.append(createSelect(params))
+            selectCon.appendChild(createSelect(params))
         }
         needAddEvent = true
         con.appendChild(selectCon)
@@ -393,7 +393,12 @@ function dealCharts(mainProcess,cell) {
                 if (cell.shapeName == 'lineChart') {
                     let tempOptions = JSON.parse(JSON.stringify(options))
                     tempOptions.xAxis.data = []
-                    tempOptions.yAxis.name = `                                  ${titleShow}`//防止y轴名字展示不全
+                    const base = 12
+                    let arr = new Array(titleShow.length * 2 - base).fill(' ')
+                    if(titleShow.length > base) { // 防止y轴名字展示不全
+                        titleShow = arr.join('') + titleShow
+                    }
+                    tempOptions.yAxis.name = titleShow
                     tempOptions.legend.data = []
                     let tempLegend = [], tempSeries = []
                     let markLine = tempOptions.series[0].markLine
