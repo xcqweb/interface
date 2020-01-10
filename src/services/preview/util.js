@@ -573,6 +573,9 @@ function timeFormate(time,isMilliSecond) {
 }
 function insertSvg(shapeXmls,key,cell) {
     let {width,height,fillColor,strokeColor,strokeWidth,strokeStyle} = cell
+    if(strokeWidth < 1) {
+        strokeWidth = 1
+    }
     let inner = shapeXmls[key].path
     inner.setAttribute('fill', fillColor)
     inner.setAttribute('stroke', strokeColor)
@@ -592,6 +595,9 @@ function insertSvg(shapeXmls,key,cell) {
 }
 function dealTriangle(cell) {
     let {width,height,fillColor,strokeColor,strokeWidth,value,fontColor,strokeStyle} = cell
+    if(strokeWidth < 1) {
+        strokeWidth = 1
+    }
     let con = document.createElement('div')
     let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     svg.setAttribute('width', width)
