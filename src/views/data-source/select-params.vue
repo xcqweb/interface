@@ -120,7 +120,7 @@ export default {
             if (!val) {
                 this.$emit('input', val);
                 this.selectedItems = [];
-                this.params = [];
+                this.params = this.items && this.items.length > 0 ? [this.items[0].value] : [];
             }
         },
         items(data) {
