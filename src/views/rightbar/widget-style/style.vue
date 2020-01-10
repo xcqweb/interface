@@ -833,8 +833,8 @@ export default {
         this.borderLineBoldText =  this.$store.state.main.widgetInfo.borderBold
         this.borderLineCls = this.$store.state.main.widgetInfo.borderLineCls
         if(this.shapeName == 'rectangle') {
-            graph.setCellStyle(mxConstants.STYLE_ROUNDED, 1, graph.getSelectionCell())
-            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ROUNDED],'values', [1], 'cells', graph.getSelectionCell()))
+            graph.setCellStyle(mxConstants.STYLE_ROUNDED, 1, [graph.getSelectionCell()])
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ROUNDED],'values', [1], 'cells', [graph.getSelectionCell()]))
         }else if(this.shapeName == 'beeline') {
             this.arrowCls = this.$store.state.main.widgetInfo.arrowCls
         }else if(this.shapeName == 'tableBox') {
