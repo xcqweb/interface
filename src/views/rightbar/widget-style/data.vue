@@ -167,7 +167,7 @@ export default{
         },
         bindDeviceNameHandle() {
             this.bindData = this.getCellModelInfo('bindData')
-            if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1 && this.bindData) { // 绑定单个
+            if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个
                 Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
                 // 清空勾选
                 this.checkModelArr = []

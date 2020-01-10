@@ -123,7 +123,7 @@ class PreviewPage {
                     fontSize = getNodeInfo.getStyles('fontSize') || '12'
                     fontWeight = getNodeInfo.getStyles('fontStyle') || 0
                     strokeStyle = getNodeInfo.getStyles('dashed')
-                    strokeWidth = getNodeInfo.getStyles('strokeWidth') || 0
+                    strokeWidth = getNodeInfo.getStyles('strokeWidth') || 1
                     strokeColor = (shapeName.includes('image') ? getNodeInfo.getStyles('imageBorder') : getNodeInfo.getStyles('strokeColor')) || 'none'
                     arcSize = getNodeInfo.getStyles('arcSize') || 0
                     // 图片地址
