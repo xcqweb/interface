@@ -120,15 +120,11 @@ export default {
             if (!val) {
                 this.$emit('input', val);
                 this.selectedItems = [];
-                this.params = this.items && this.items.length > 0 ? [this.items[0].value] : [];
+                this.setParams();
             }
         },
-        items(data) {
-            if (data && data.length > 0) {
-                this.params = [data[0].value];
-            } else {
-                this.params = [];
-            }
+        items() {
+            this.setParams();
         },
     },
     mounted() {
@@ -243,7 +239,10 @@ export default {
                     this.selectedItems.push(...this.selectedKeys);
                 }
             }
-        }
+        },
+        setParams() {
+            this.params = this.items && this.items.length > 0 ? [this.items[0].value] : [];
+        },
     },
 };
 </script>
