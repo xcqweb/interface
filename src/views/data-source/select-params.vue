@@ -92,7 +92,7 @@ export default {
             selectedItems: [],
             params: [],
             listStyle: {
-                width: '46%',
+                width: '45%',
                 height: '390px',
                 backgroundColor: '#fff',
             },
