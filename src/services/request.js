@@ -29,7 +29,6 @@ axios.interceptors.request.use(
  
 //添加响应拦截器
 axios.interceptors.response.use((res) =>{
-    console.log(res)
     return Promise.resolve(res)
 }, (error) => {
     if (error.response) {

@@ -833,8 +833,8 @@ export default {
         this.borderLineBoldText =  this.$store.state.main.widgetInfo.borderBold
         this.borderLineCls = this.$store.state.main.widgetInfo.borderLineCls
         if(this.shapeName == 'rectangle') {
-            graph.setCellStyles(mxConstants.STYLE_ROUNDED, 1, graph.getSelectionCells())
-            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ROUNDED],'values', [1], 'cells', graph.getSelectionCells()))
+            graph.setCellStyle(mxConstants.STYLE_ROUNDED, 1, graph.getSelectionCell())
+            this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ROUNDED],'values', [1], 'cells', graph.getSelectionCell()))
         }else if(this.shapeName == 'beeline') {
             this.arrowCls = this.$store.state.main.widgetInfo.arrowCls
         }else if(this.shapeName == 'tableBox') {
@@ -1094,7 +1094,8 @@ export default {
                 let ss = this.shapeName === 'tableBox' || this.shapeName === 'menulist' ? graph.getSelectionCells().concat(graph.getSelectionCell().children) : graph.getSelectionCells()
                 graph.setCellStyles('fontColor', color, ss);
                 this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fontColor'],'values', [color], 'cells', ss))
-            });
+                this.synceDefaultState('fontColor',color)
+            })
         },
         pickBgColor() {
             this.myEditorUi.pickColor(this.bgColor || 'none',color=>{
@@ -1106,7 +1107,8 @@ export default {
                 let graph = this.myEditorUi.editor.graph
                 graph.setCellStyles('fillColor', color, graph.getSelectionCells());
                 this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', ['fillColor'],'values', [color], 'cells', graph.getSelectionCells()))
-            });
+                this.synceDefaultState('bgColor',color)
+            })
         },
         pickBorderColor() {
             this.myEditorUi.pickColor(this.borderColor || 'none',color=>{
@@ -1122,7 +1124,8 @@ export default {
                 }
                 graph.setCellStyles(key, color, graph.getSelectionCells());
                 this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [key],'values', [color], 'cells', graph.getSelectionCells()))
-            });
+                this.synceDefaultState('borderColor',color)
+            })
         },
         hideBorderLine() {
             this.showBorderLine = false
@@ -1155,6 +1158,24 @@ export default {
         },
         hideArrowFun() {
             this.showArrowDialog = false
+        },
+        synceDefaultState(type,color) {
+            let bindStates = this.getWidgetProps("statesInfo")
+            if(!bindStates) {
+                return
+            }
+            switch(type) {
+                case 'fontColor':
+                    bindStates[0].style.color = color
+                    break;
+                case 'bgColor':
+                    bindStates[0].style.background = color
+                    break;
+                case 'borderColor':
+                    bindStates[0].style.borderColor = color
+                    break;
+            }
+            this.setModeInfoStates(bindStates)
         },
         changeArrowDialog(d,e) {
             this.arrowCls = d

@@ -637,7 +637,12 @@ class PreviewPage {
             let modelIdsParam = []
             let statesInfo = cell.statesInfo
             if (statesInfo && statesInfo.length) {
-                statesInfo.forEach((item)=>{
+                //同步默认状态
+                cell.statesInfo[0].style.color = cell.fontColor
+                cell.statesInfo[0].style.background = cell.fillColor
+                cell.statesInfo[0].style.borderColor = cell.strokeColor
+                
+                cell.statesInfo.forEach((item)=>{
                     if (item.modelFormInfo) {
                         modelIdsParam.push(item.modelFormInfo)
                     }

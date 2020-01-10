@@ -206,10 +206,14 @@ export default {
             }
         },
         rightRender(item) {
+            let displayName = ''
+            if(item.displayName) {
+                displayName = `(${item.displayName})`
+            }
             if (item.type === 'device') {
-                return item.partName + ' / ' + item.label + item.displayName ? `(${item.displayName})` : '';
+                return item.partName + ' / ' + item.label + displayName
             } else {
-                return item.label + item.displayName ? `(${item.displayName})` : '';
+                return item.label + displayName
             }
         },
         leftFilterMethod(data, query) {
