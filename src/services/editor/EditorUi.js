@@ -1289,10 +1289,16 @@ EditorUi.prototype.updatePasteActionStates = function ()
 EditorUi.prototype.initClipboard = function()
 {
     var ui = this;
-
+    let graph = ui.editor.graph
     var mxClipboardCut = mxClipboard.cut;
     mxClipboard.cut = function(graph)
     {
+        let cells = graph.getSelectionCells()
+        for(let i=0;i<cells.length;i++) {
+            if(cells[i].style.includes('tableCell')){
+                return
+            }
+        }
         if (graph.cellEditor.isContentEditing())
         {
             document.execCommand('cut', false, null);
@@ -1308,6 +1314,12 @@ EditorUi.prototype.initClipboard = function()
     var mxClipboardCopy = mxClipboard.copy;
     mxClipboard.copy = function(graph)
     {
+        let cells = graph.getSelectionCells()
+        for(let i=0;i<cells.length;i++) {
+            if(cells[i].style.includes('tableCell')){
+                return
+            }
+        }
         if (graph.cellEditor.isContentEditing())
         {
             document.execCommand('copy', false, null);

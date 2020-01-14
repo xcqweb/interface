@@ -46,11 +46,15 @@ export default {
                 const obj = {};
                 res.forEach(item => {
                     let tree;
+                    let displayName = ''
+                    if(item.displayName) {
+                        displayName = `(${item.displayName})`
+                    }
                     if (obj[item.partId]) {
                         tree = obj[item.partId];
                     } else {
                         tree = {
-                            title: item.partName,
+                            title: item.partName + displayName,
                             partId: item.partId,
                             expand: false,
                             children: [],
@@ -59,7 +63,7 @@ export default {
                         data.children.push(tree);
                     }
                     tree.children.push({
-                        title: item.paramName,
+                        title: item.paramName + displayName,
                         paramId: item.paramId,
                         expand: false,
                         children: [],
@@ -77,8 +81,12 @@ export default {
                     children: [],
                 };
                 res.forEach(item => {
+                    let displayName = ''
+                    if(item.displayName) {
+                        displayName = `(${item.displayName})`
+                    }
                     data.children.push({
-                        title: item.paramName,
+                        title: item.paramName + displayName,
                         paramId: item.paramId,
                         expand: false,
                         children: [],
