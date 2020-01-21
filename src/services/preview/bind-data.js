@@ -117,8 +117,8 @@ function setterRealData(res, fileSystem,mainProcess) {
                         options.series.forEach((ser)=>{
                             if (ser.deviceId == item.deviceId) {
                                 if(ser.data.length >= chartDataLen) {
-                                    ser.data.shift()
-                                    options.xAxis[0].data.shift()
+                                    ser.data.splice(0, ser.data.length - chartDataLen)
+                                    options.xAxis[0].data.splice(0,  options.xAxis[0].data.length - chartDataLen)
                                 }
                                 if(val || val == 0) {
                                     ser.data.push(val)
