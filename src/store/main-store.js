@@ -3,7 +3,8 @@ const state = {
     widgetInfo:{},//当前组件信息
     rand:0,//监听控件切换的刷新 随机数字
     modelEditing: false, // 模型是否处于编辑状态
-    footerModelUpdata: false // 是否刷新底部状态模型
+    footerModelUpdata: false, // 是否刷新底部状态模型
+    cancelTokenArr: [], // 取消请求token数组
 }
 
 const mutations = {
@@ -203,6 +204,15 @@ const mutations = {
     },
     footerModelUpdata(state, footerModelUpdata) {
         state.footerModelUpdata = footerModelUpdata
+    },
+    pushToken(state, payload) {
+        state.cancelTokenArr.push(payload.cancelToken)
+    },
+    clearToken(state) {
+        state.cancelTokenArr.forEach(item => {
+            item('取消请求')
+        })
+        state.cancelTokenArr = []
     }
 }
 

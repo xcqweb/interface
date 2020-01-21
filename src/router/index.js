@@ -1,6 +1,7 @@
     
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '../store/'
 const isDev = process.env.NODE_ENV === 'development'
 window.PREFIX_PATH = isDev ? '' : '/interface'
 
@@ -34,8 +35,12 @@ let routes = [
         }
     },
 ]
-
-export default new Router({
+const router = new Router({
     mode:'history',
     routes:routes,
 })
+router.beforeEach((to,from,next)=>{
+    store.commit('clearToken') // 取消请求
+    next()
+})
+export default router

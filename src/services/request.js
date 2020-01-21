@@ -1,6 +1,7 @@
 import axios from 'axios';
 import urls from '../constants/url';
 import {getCookie, setCookie} from './Utils'
+import store from '../store/index';
 axios.defaults.timeout = 60 * 1000 * 5; //响应超时时间          
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'; //配置请求头
 // axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded'; //配置请求头
@@ -10,11 +11,40 @@ if(isDev) {
 } else {
     axios.defaults.baseURL = urls.baseUrl.url   //配置接口地址
 } 
+// 是否正在刷新的标记
+let isRefreshing = false
+// 重试的请求队列，每一项将是一个待执行的函数形式
+let requests = []
 
 
+// 请求列表(防重复提交)
+const pending = {}
+const CancelToken = axios.CancelToken
+const removePending = (key, isRequest = false) => {
+    if (pending[key] && isRequest) {
+        pending[key]('取消重复请求')
+    }
+    delete pending[key]
+}
+const getRequestIdentify = (config, isReuest = false) => {
+    let url = config.url
+    if (isReuest) {
+        url = config.baseURL + config.url.substring(1, config.url.length)
+    }
+    return config.method === 'get' ? encodeURIComponent(url + JSON.stringify(config.params)) : encodeURIComponent(config.url + JSON.stringify(config.data) + config.method)
+}
 //请求拦截器
 axios.interceptors.request.use(
     config => {
+        // 拦截重复请求(即当前正在进行的相同请求)
+        const requestData = getRequestIdentify(config, true)
+        removePending(requestData, true)
+        config.cancelToken = new CancelToken((cancel)=> {//此处设置，便于在切换路由时候，请求还未完成，就取消请求
+            store.commit('pushToken', {
+                cancelToken: cancel,
+            });
+            pending[requestData] = cancel
+        });
         const token = "Bearer " + getCookie('token')
         if(token) {
             config.headers.Authorization = token
@@ -29,16 +59,35 @@ axios.interceptors.request.use(
  
 //添加响应拦截器
 axios.interceptors.response.use((res) =>{
+    // 把已经完成的请求从 pending 中移除
+    const requestData = getRequestIdentify(res.config)
+    removePending(requestData)
     return Promise.resolve(res)
 }, (error) => {
     if (error.response) {
         if (error.response.status == 418) {
-            let refreshToken = getCookie('refreshToken')
-            post('api/auth/refreshToken', {refreshToken}).then(res => {
-                setCookie('token', res.token)
-                setCookie('refreshToken', res.refreshToken)
-                error.response.config.headers.Authorization = 'Bearer ' + res.token
-                return axios.request(error.response.config)
+            if (!isRefreshing) {
+                isRefreshing = true
+                let refreshToken = getCookie('refreshToken')
+                return post('api/auth/refreshToken', {refreshToken}).then(res => {
+                    setCookie('token', res.token)
+                    setCookie('refreshToken', res.refreshToken)
+                    error.response.config.headers.Authorization = 'Bearer ' + res.token
+                    //其他保存的待请求的接口
+                    requests.forEach(cb => cb( res.token))
+                    return axios.request(error.response.config)
+                }).finally(()=>{
+                    requests = []
+                    isRefreshing = false
+                })
+            }
+            //其他的418请求
+            // 正在刷新token，将返回一个未执行resolve的promise
+            return new Promise(resolve => {
+                requests.push((token)=>{
+                    error.response.config.headers.Authorization = 'Bearer ' + token
+                    resolve(axios.request(error.response.config))
+                })
             })
         }
     }

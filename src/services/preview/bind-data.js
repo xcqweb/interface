@@ -118,14 +118,12 @@ function setterRealData(res, fileSystem,mainProcess) {
                             if (ser.deviceId == item.deviceId) {
                                 if(ser.data.length >= chartDataLen) {
                                     ser.data.shift()
+                                    options.xAxis[0].data.shift()
                                 }
                                 if(val || val == 0) {
                                     ser.data.push(val)
                                     let yMax = options.yAxis[0].max
                                     options.yAxis[0].max = Math.max(yMax, val)
-                                    if (options.xAxis[0].data.length >= chartDataLen) {
-                                        options.xAxis[0].data.shift()
-                                    }
                                     options.xAxis[0].data.push(timeFormate(item.timestamp, false))
                                 }
                             }
