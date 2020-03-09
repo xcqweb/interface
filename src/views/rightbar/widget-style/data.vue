@@ -250,7 +250,7 @@ export default{
       align-items: flex-end;
     }
     .data-sources-center{
-      height:calc(100% - 100px);
+      height:calc(100% - 208px);
       background: #ffffff;
       border:1px solid #d4d4d4;
       border-radius: 2px;
@@ -263,6 +263,7 @@ export default{
       .devicename-list-wrap{
         background: #fff;
         height:100%;
+        max-height:calc(100% - 24px);
         overflow-y: auto;
         overflow-x:hidden;
         .devicename-listUl{
