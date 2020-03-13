@@ -215,8 +215,15 @@ function actionChange(action, fileSystem) {
     }
     if(imgInfo) {
         imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
-        cellCon.style.background = `url(${imgInfo.url}) center center no-repeat`
-        cellCon.style.backgroundSize = '100% 100%'
+        setSvgImageHref(cellCon,imgInfo.url)
+    }
+}
+// 设置svg iamge 的href
+function setSvgImageHref(el,imgUrl) {
+    let svg = el.children[0]
+    if(svg && svg.children.length) {
+        let svgImage = svg.children[0]
+        svgImage.href.baseVal = imgUrl
     }
 }
 //svg控件要改变样式的
@@ -643,5 +650,5 @@ function loadShapeXml() {
 }
 export {
     removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,dealPentagram,loadShapeXml,
-    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout,dealDefaultParams,insertSvg,svgShape
+    dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout,dealDefaultParams,insertSvg,svgShape,setSvgImageHref
 }

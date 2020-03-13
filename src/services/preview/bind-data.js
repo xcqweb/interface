@@ -1,4 +1,4 @@
-import {geAjax, toDecimal2NoZero, timeFormate,dealDefaultParams,svgShape} from './util'
+import {geAjax, toDecimal2NoZero, timeFormate,dealDefaultParams,svgShape,setSvgImageHref} from './util'
 import {getCookie} from '../Utils'
 import echarts from 'echarts'
 let reconnectCount = 0 //websocket连接出错时候，重连的次数
@@ -318,13 +318,11 @@ function changeEleState(el, stateInfo,fileSystem) {
     }
     if (imgInfo) {
         imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
-        el.style.background = `url(${imgInfo.url}) center center no-repeat`
-        el.style.backgroundSize = '100% 100%'
+        setSvgImageHref(el,imgInfo.url)
         return
     } 
     if (shapeName.includes('image')) {
-        el.style.background = `url(${$(el).data("defaultImg")}) center center no-repeat`
-        el.style.backgroundSize = '100% 100%'
+        setSvgImageHref(el,$(el).data("defaultImg"))
     }
 }
 /**
@@ -338,7 +336,7 @@ function reconnect(pageId,applyData) {
     if(!applyData[pageId].timer) {
         applyData[pageId].timer = setInterval(function() {
             reconnectCount++
-            if(reconnectCount > reconnectMaxCount){
+            if(reconnectCount > reconnectMaxCount) {
                 clearInterval(applyData[pageId].timer)
                 return
             }
