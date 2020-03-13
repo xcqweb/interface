@@ -1,7 +1,8 @@
 import {geAjax, toDecimal2NoZero, timeFormate,dealDefaultParams,svgShape} from './util'
 import {getCookie} from '../Utils'
 import echarts from 'echarts'
-
+let reconnectCount = 0 //websocket连接出错时候，重连的次数
+const reconnectMaxCount = 5
 //获取websocket连接信息
 let websocketUrlReal = ''
 //获取最后一笔数据
@@ -336,6 +337,11 @@ function reconnect(pageId,applyData) {
     // 3s重连
     if(!applyData[pageId].timer) {
         applyData[pageId].timer = setInterval(function() {
+            reconnectCount++
+            if(reconnectCount > reconnectMaxCount){
+                clearInterval(applyData[pageId].timer)
+                return
+            }
             createWsReal(pageId,applyData)
             applyData[pageId].lockWs = false
         }, 3000)
