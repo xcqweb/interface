@@ -402,8 +402,8 @@ function dealCharts(mainProcess,cell) {
                     let tempOptions = JSON.parse(JSON.stringify(options))
                     tempOptions.xAxis.data = []
                     const base = 12
-                    let arr = new Array(titleShow.length * 2 - base).fill(' ')
                     if(titleShow.length > base) { // 防止y轴名字展示不全
+                        let arr = new Array(titleShow.length * 2 - base).fill(' ')
                         titleShow = arr.join('') + titleShow
                     }
                     tempOptions.yAxis.name = titleShow

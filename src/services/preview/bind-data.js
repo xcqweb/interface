@@ -123,6 +123,7 @@ function setterRealData(res, fileSystem,mainProcess) {
                                 }
                                 if(val || val == 0) {
                                     ser.data.push(val)
+                                    console.log(options.yAxis)
                                     let yMax = options.yAxis[0].max
                                     options.yAxis[0].max = Math.max(yMax, val)
                                     options.xAxis[0].data.push(timeFormate(item.timestamp, false))
