@@ -378,7 +378,9 @@ function dealCharts(mainProcess,cell) {
     let options = {}
     if (chartAttr) {
         options = JSON.parse(chartAttr)
-        options.yAxis.max = ""
+        if (cell.shapeName == 'lineChart') {
+            options.yAxis.max = ""
+        }
     }else{
         if(cell.shapeName == 'lineChart') {
             options = data1
