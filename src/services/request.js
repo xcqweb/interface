@@ -17,33 +17,14 @@ let isRefreshing = false
 let requests = []
 
 
-// 请求列表(防重复提交)
-const pending = {}
 const CancelToken = axios.CancelToken
-const removePending = (key, isRequest = false) => {
-    if (pending[key] && isRequest) {
-        pending[key]('取消重复请求')
-    }
-    delete pending[key]
-}
-const getRequestIdentify = (config, isReuest = false) => {
-    let url = config.url
-    if (isReuest) {
-        url = config.baseURL + config.url.substring(1, config.url.length)
-    }
-    return config.method === 'get' ? encodeURIComponent(url + JSON.stringify(config.params)) : encodeURIComponent(config.url + JSON.stringify(config.data) + config.method)
-}
 //请求拦截器
 axios.interceptors.request.use(
     config => {
-        // 拦截重复请求(即当前正在进行的相同请求)
-        const requestData = getRequestIdentify(config, true)
-        removePending(requestData, true)
         config.cancelToken = new CancelToken((cancel)=> {//此处设置，便于在切换路由时候，请求还未完成，就取消请求
             store.commit('pushToken', {
                 cancelToken: cancel,
             });
-            pending[requestData] = cancel
         });
         const token = "Bearer " + getCookie('token')
         if(token) {
@@ -59,9 +40,6 @@ axios.interceptors.request.use(
  
 //添加响应拦截器
 axios.interceptors.response.use((res) =>{
-    // 把已经完成的请求从 pending 中移除
-    const requestData = getRequestIdentify(res.config)
-    removePending(requestData)
     return Promise.resolve(res)
 }, (error) => {
     if (error.response) {

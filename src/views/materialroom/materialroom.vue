@@ -69,7 +69,7 @@
                           @blur="saveLayoutName(index)"
                         >
                         <span 
-                          v-if="index >= 2 && item.libraryType==1 && !item.isEdit" 
+                          v-if="index >= 2 && !item.isEdit" 
                           class="right-spots" 
                           @mousemove="menuPopupShow($event,index)"
                           @mouseenter="menuPopupShow($event,index)"
@@ -92,13 +92,13 @@
                   >
                     <div>
                       <span
-                        v-if="item.model"
+                        v-if="item.model!==null && item.model!==undefined"
                         :style="'background:url(' + (item.image) + ') no-repeat center center;background-size: contain;'"
                         @mouseenter="menuPopupHide"
                       />
                       <span
                         v-else 
-                        :style="'background:url(' + (DIR_+item.image) + ') no-repeat center center;background-size:36px;'"
+                        :style="'background:url(' + (DIR_+item.image) + ') center center / 36px no-repeat;'"
                       />
                       <label
                         v-if="item.model"
@@ -292,7 +292,7 @@ export default {
                 {image:'tableBox.svg', name :'table'},
                 {image:'image.svg', name :'image'},
                 {image:'linkTag.svg',name : 'Link'},
-                {image:'light.png', name :'light'},
+                {image:'light.png', name :'Light'},
                 {image:'progress.svg', name :'progressBar'},
                 {image:'pipeline1.svg', name :'pipeline1'},
                 {image:'pipeline2.svg',name :'pipeline2'},
@@ -368,7 +368,7 @@ export default {
             let keyword = this.keyWidget.trim()
             if(keyword) {
                 this.arrListTables = this.materialAll.filter(item=>{
-                    return this.$t(`${item.name}`).includes(keyword)
+                    return this.$t(`${item.name}`).match(new RegExp(`${keyword}`,'gi'))
                 })
             }else{
                 this.arrListTables = backMaterialLit
@@ -447,9 +447,10 @@ export default {
             this.requestUtil.put(this.urls.materialList.url,data).then(res=>{
                 if(res.libraryName) {
                     needRefreshLeft = true
-                    this.$set(this.assemblyArrayName[index],'name',res.libraryName)
                     Message.info(this.$t('modifySuccessfully'))
-                    this.$set(this.assemblyArrayName[index],'isEdit',false)//会触发blur事件
+                    this.$nextTick(()=>{
+                        this.$set(this.assemblyArrayName[index],'isEdit',false)//会触发blur事件
+                    })
                 }
             })
         },

@@ -539,11 +539,12 @@ function dealDefaultParams(deviceId,defaultParam,subParams) {
     return defaultParam
 }
  
-function dealLight() {
+function dealLight(cell) {
     let con = document.createElement('div')
-    con.style.background = `url('../../..${window.PREFIX_PATH}/static/stencils/basic/light.png') no-repeat`
-    con.style.backgroundPosition = "center center"
-    con.style.backgroundSize = "100% 100%"
+    con.innerHTML = `<svg width="${cell.width}px" height="${cell.height}px">
+    <image x="0" y="0" width="${cell.width}px" height="${cell.height}px" preserveAspectRatio="none"
+        xlink:href="../../..${window.PREFIX_PATH}/static/stencils/basic/light.png"/>
+    </svg>`
     return con
 }
 //保留2位小数，如：2，还会保留2 不会补0

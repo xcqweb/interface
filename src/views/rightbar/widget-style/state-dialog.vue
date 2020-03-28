@@ -258,6 +258,7 @@ export default{
             }else{
                 this.$emit("closeStateDialog",data)
             }
+            localImage = null
             editStateTemp = null//置空，防止下次编辑时候干扰列表信息
         },
         changeAnimate(status) {

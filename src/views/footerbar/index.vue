@@ -380,6 +380,7 @@ export default {
         // 初始化数据源数据
         initDataSource() {
             let startBindData = this.getCellModelInfo("bindData")
+            console.log(startBindData)
             if (startBindData && startBindData.dataSource) {
                 let deviceNameChild = startBindData.dataSource.deviceNameChild
                 this.deviceModelId = startBindData.dataSource.deviceModel.id

@@ -196,14 +196,13 @@ export default{
                         this.checkModelArr = []
                         return
                     }
-                    let deviceNameChildTemp = this.bindData.deviceNameChild
+                    let deviceNameChildTemp = this.bindData.dataSource.deviceNameChild
                     if(!Array.isArray(deviceNameChildTemp)) {
                         objData.deviceNameChild.push(deviceNameChildTemp)
                     }
                 }
                 let tempArr = []
                 this.checkModelArr.forEach((item) => {
-                    console.log(this.deviceData,item)
                     tempArr.push({id:item,name:this.deviceData.find(d=>{return d.deviceId == item}).deviceName})
                 })
                 objData.deviceNameChild = objData.deviceNameChild.concat(tempArr)
