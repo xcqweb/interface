@@ -376,6 +376,7 @@ function dealCharts(mainProcess,cell) {
     con.appendChild(chartCon)
     let chartAttr = cell.chartProps
     let options = {}
+    console.log(chartAttr);
     if (chartAttr) {
         options = JSON.parse(chartAttr)
         if (cell.shapeName == 'lineChart') {
