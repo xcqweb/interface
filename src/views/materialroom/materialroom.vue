@@ -478,6 +478,7 @@ export default {
                 return
             }
             if (!this.arrListTables[index].model) {
+                this.arrListTables[index].model = this.arrListTables[index].name;
                 this.$set(this.arrListTables[index],'isEdit',false)
                 return;
             }
