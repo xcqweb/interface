@@ -121,11 +121,13 @@ function setterRealData(res, fileSystem,mainProcess) {
                                     ser.data.splice(0, ser.data.length - chartDataLen)
                                     options.xAxis[0].data.splice(0,  options.xAxis[0].data.length - chartDataLen)
                                 }
-                                if(val || val == 0) {
-                                    ser.data.push(val)
-                                    let yMax = options.yAxis[0].max
+                                if (val || val == 0) {
+                                    // if (!isNaN(Number(val))) {
+                                    ser.data.push(val);
+                                    let yMax = options.yAxis[0].max;
                                     options.yAxis[0].max = Math.max(yMax, val)
                                     options.xAxis[0].data.push(timeFormate(item.timestamp, false))
+                                    // }
                                 }
                             }
                         })

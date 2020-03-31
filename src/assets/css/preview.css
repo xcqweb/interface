@@ -135,6 +135,7 @@
   text-align: center;
   line-height: 20px;
   opacity: .86;
+  z-index:100;
 }
 .gePreviewMenuIcon[data-check="0"] i{
   transition: transform .5s ease;

@@ -376,7 +376,6 @@ function dealCharts(mainProcess,cell) {
     con.appendChild(chartCon)
     let chartAttr = cell.chartProps
     let options = {}
-    console.log(chartAttr);
     if (chartAttr) {
         options = JSON.parse(chartAttr)
         if (cell.shapeName == 'lineChart') {
@@ -464,8 +463,10 @@ function dealCharts(mainProcess,cell) {
                                             let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
                                             xAxisData = []
                                             for (let key of keys) {
+                                                // if (!isNaN(Number(tempArr.resMap[key]))) {
                                                 xAxisData.push(timeFormate(key, false))
                                                 tempSeries[i].data.push(tempArr.resMap[key])
+                                                // }
                                             }
                                             if(tempOptions.yAxis.max) {
                                                 tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)

@@ -477,6 +477,10 @@ export default {
                 this.$set(this.arrListTables[index],'isEdit',false)
                 return
             }
+            if (!this.arrListTables[index].model) {
+                this.$set(this.arrListTables[index],'isEdit',false)
+                return;
+            }
             let data = {
                 materialId:this.arrListTables[index].materialId,
                 descript:this.arrListTables[index].model
