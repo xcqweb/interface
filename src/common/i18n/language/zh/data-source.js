@@ -34,6 +34,7 @@ export default {
     notEditCanNotAddCondition: '非编辑状态，不能添加条件',
     ruleCouldNotEmpty: '条件 {index} 所有的值不能为空',
     modelNameCanNotEmpty: '模型名称不能为空',
+    descriptLimit200: '描述不能超过200个字符! ',
     ruleIsRequired: '请先添加模型条件',
     ruleCanNotEmpty: '{label}的条件请填写完整',
     atLeaseSelectOneItem: '请至少选择一项',

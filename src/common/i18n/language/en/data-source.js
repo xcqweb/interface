@@ -33,6 +33,7 @@ export default {
     notEditCanNotAddCondition: 'Cannot add condition because it is not in editing status',
     ruleCouldNotEmpty: 'Condition {index} all values cannot be empty',
     modelNameCanNotEmpty: 'Model name cannot emtpy ',
+    descriptLimit200: 'Description cannot exceed 200 characters',
     ruleIsRequired: 'Please add model first',
     ruleCanNotEmpty: 'Please fill the condition of {label} ',
     atLeaseSelectOneItem: 'Please choose at least one',

@@ -10,6 +10,7 @@
       <input
         v-model="widgetName"
         style="padding:0 4px;"
+        :maxlength="50"
         @keyup.enter="changeName"
         @blur="changeName"
       >
@@ -832,6 +833,7 @@ export default {
         this.borderColor =  this.dealDefaultColor(this.$store.state.main.widgetInfo.borderColor)
         this.borderLineBoldText =  this.$store.state.main.widgetInfo.borderBold
         this.borderLineCls = this.$store.state.main.widgetInfo.borderLineCls
+        palettName = this.$store.state.main.widgetInfo.widgetName;
         if(this.shapeName == 'rectangle') {
             graph.setCellStyle(mxConstants.STYLE_ROUNDED, 1, [graph.getSelectionCell()])
             this.myEditorUi.fireEvent(new mxEventObject('styleChanged', 'keys', [mxConstants.STYLE_ROUNDED],'values', [1], 'cells', [graph.getSelectionCell()]))

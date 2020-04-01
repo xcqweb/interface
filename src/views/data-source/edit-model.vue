@@ -149,6 +149,10 @@ export default {
                     Message.error(this.$t('dataSource.modelNameCanNotEmpty'));
                     return;
                 }
+                if (this.model.descript.length > 200) {
+                    Message.error(this.$t('dataSource.descriptLimit200'));
+                    return;
+                }
                 this.loading = true;
                 this.model.formula = JSON.stringify(data);
                 this.model.studioId = this.studioId;
