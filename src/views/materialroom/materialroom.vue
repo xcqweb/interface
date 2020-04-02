@@ -101,7 +101,7 @@
                         :style="'background:url(' + (DIR_+item.image) + ') center center / 36px no-repeat;'"
                       />
                       <label
-                        v-if="item.model"
+                        v-if="item.model!==null && item.model!==undefined"
                         class="right-spots-assemly"
                         @click="renameWidget($event,index)"
                       />
@@ -439,7 +439,10 @@ export default {
                 this.$set(this.assemblyArrayName[index],'isEdit',false)
                 return
             }
-            
+            if(!this.assemblyArrayName[index].model.trim()) {
+                this.$set(this.assemblyArrayName[index],'isEdit',false)
+                return
+            }
             let data = {
                 materialLibraryId:this.assemblyArrayName[index].materialLibraryId,
                 libraryName:this.assemblyArrayName[index].model
@@ -448,6 +451,7 @@ export default {
                 if(res.libraryName) {
                     needRefreshLeft = true
                     Message.info(this.$t('modifySuccessfully'))
+                    this.$set(this.assemblyArrayName[index],'name',res.libraryName)
                     this.$nextTick(()=>{
                         this.$set(this.assemblyArrayName[index],'isEdit',false)//会触发blur事件
                     })
@@ -473,14 +477,9 @@ export default {
             this.popMenuStyle.top = `${evt.target.offsetTop + con.offsetTop - el.scrollTop + 44}px`
         },
         saveWidgetName(index) {
-            if(this.arrListTables[index].name === this.arrListTables[index].model) {
+            if(this.arrListTables[index].name === this.arrListTables[index].model || !this.arrListTables[index].model.trim()) {
                 this.$set(this.arrListTables[index],'isEdit',false)
                 return
-            }
-            if (!this.arrListTables[index].model) {
-                this.arrListTables[index].model = this.arrListTables[index].name;
-                this.$set(this.arrListTables[index],'isEdit',false)
-                return;
             }
             let data = {
                 materialId:this.arrListTables[index].materialId,
@@ -509,7 +508,7 @@ export default {
             this.popMenuStyle.top = `${evt.target.offsetTop + con.offsetTop - el.scrollTop + 44}px`
         },
         saveTemplateName(index) {
-            if(this.materials[index].name === this.materials[index].model) {
+            if(this.materials[index].name === this.materials[index].model || !this.materials[index].model.trim()) {
                 this.$set(this.materials[index],'isEdit',false)
                 return
             }
