@@ -22,7 +22,6 @@ const mutations = {
         let shapeInfo = stateWidget && stateWidget.style
         widgetInfo.shapeInfo = shapeInfo
         let cellInfo = graph.getModel().getValue(cell)
-        console.log(cellInfo)
         if (cellInfo && cellInfo.attributes && cellInfo.attributes['palettename']) {
             let widgetName = cellInfo.attributes['palettename'].nodeValue || '' //控件名称
             widgetInfo.widgetName = widgetName
