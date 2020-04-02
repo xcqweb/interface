@@ -579,9 +579,7 @@ class PreviewPage {
             cellHtml.style.border = `${cell.strokeColor == 'none' ? '' : `${cell.strokeWidth}px ${borderStyle} ${cell.strokeColor || defaultStyle.strokeColor}`}`;
         } 
         if(shapeName == 'beeline') {//直线的canvas绘制可能挡住其他控件
-            cellHtml.style.zIndex = 0
-        } else {
-            cellHtml.style.zIndex = 1
+            cellHtml.style.pointerEvents = 'none'
         }
         cellHtml.style.width = (cell.width + parseInt(cell.strokeWidth)) + 'px'
         cellHtml.style.height = (cell.height + parseInt(cell.strokeWidth)) + 'px'
