@@ -284,6 +284,14 @@ export default{
         },
         dealAlign(cls) {
             let graph = this.myEditorUi.editor.graph
+            let cells = graph.getSelectionCells()
+            let flag = true
+            for(let i = 0;i < cells.length;i++) {
+                if(cells[i].style.indexOf('shape=tableBox') != -1) {
+                    flag = false
+                    break
+                }
+            }
             switch(cls) {
                 case 'geSprite-left-align':
                     graph.alignCells(mxConstants.ALIGN_LEFT)
@@ -304,10 +312,10 @@ export default{
                     graph.alignCells(mxConstants.ALIGN_CENTER)
                     break;
                 case 'geSprite-vertical-align':
-                    graph.distributeCells(false)
+                    flag && graph.distributeCells(false)
                     break;
                 case 'geSprite-horizon-align':
-                    graph.distributeCells(true)
+                    flag && graph.distributeCells(true)
                     break;
             }
         },
