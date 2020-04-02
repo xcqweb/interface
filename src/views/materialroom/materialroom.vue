@@ -114,7 +114,7 @@
                         class="left-assembly-left"
                         :title="item.name"
                         @mouseenter="menuPopupHide"
-                        @dblclick="dblRenameWidget(index)"
+                        @dblclick="dblRenameWidget(item, index)"
                       >
                         {{ $t(item.name) }}
                       </span>
@@ -494,9 +494,11 @@ export default {
                 }
             })
         },
-        dblRenameWidget(index) {
-            this.popUpType = 2 //右侧组件
-            this.$set(this.arrListTables[index],'isEdit',true)
+        dblRenameWidget(data, index) {
+            if (data.model) {
+                this.popUpType = 2 //右侧组件
+                this.$set(this.arrListTables[index],'isEdit',true)
+            }
         },
         renameTemplate(evt,index) {
             this.templateIndex = index

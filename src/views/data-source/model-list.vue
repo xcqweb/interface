@@ -215,7 +215,6 @@ export default {
             }
         },
         handleRename(item, index) {
-            console.log('rename')
             if (!this.canGoOn()) {
                 return;
             }
