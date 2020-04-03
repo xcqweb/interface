@@ -618,7 +618,13 @@ function dealTriangle(cell) {
     let textCon = document.createElement('div')
     textCon.className = "text-show"
     textCon.style.cssText = `width:${width}px;height:${height}px;position:absolute;color:${fontColor};left:0;top:0;`
-    textCon.innerHTML = `${value}`
+    //  'triangle', 'pentagram',
+    const arrTextHandle = ['triangle']; // 文字处理 五角星
+    if (arrTextHandle.includes(cell.shapeName)) {
+        textCon.innerHTML = `<label style="line-height:${cell.fontSize}px;display:inline-block;">${cell.value}</label>`
+    } else {
+        textCon.innerHTML = `${value}`
+    }
     con.appendChild(textCon)
     return con
 }
@@ -630,7 +636,12 @@ function dealPentagram(mainProcess,cell) {
     let textCon = document.createElement('div')
     textCon.className = "text-show"
     textCon.style.cssText = `width:${width}px;height:${height}px;position:absolute;color:${fontColor};left:0;top:0;`
-    textCon.innerHTML = `${value}`
+    const arrTextHandle = ['pentagram']; // 文字处理 五角星
+    if (arrTextHandle.includes(cell.shapeName)) {
+        textCon.innerHTML = `<label style="line-height:${cell.fontSize}px;display:inline-block;">${cell.value}</label>`
+    } else {
+        textCon.innerHTML = `${value}`
+    }
     con.appendChild(textCon)
     return con
 }

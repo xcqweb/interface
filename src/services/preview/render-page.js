@@ -550,7 +550,13 @@ class PreviewPage {
             if(shapeName === 'ellipse') {
                 cellHtml.style.borderRadius = "50%"
             }
-            cellHtml.innerHTML = cell.value
+            //  'triangle', 'pentagram',
+            const arrTextHandle = ['rectangle', 'ellipse']; // 文字处理
+            if (arrTextHandle.includes(shapeName)) {
+                cellHtml.innerHTML = `<label style="line-height:${cell.fontSize}px;display:inline-block;">${cell.value}</label>`
+            } else {
+                cellHtml.innerHTML = cell.value
+            }
         }
         if (shapeName !== 'text') {
             if (cell.verticalAlign === 'top') {
