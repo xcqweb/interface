@@ -551,21 +551,31 @@ class PreviewPage {
                 cellHtml.style.borderRadius = "50%"
             }
             //  'triangle', 'pentagram',
-            const arrTextHandle = ['rectangle', 'ellipse']; // 文字处理
-            if (arrTextHandle.includes(shapeName)) {
-                cellHtml.innerHTML = `<label style="line-height:${cell.fontSize}px;display:inline-block;">${cell.value}</label>`
-            } else {
-                cellHtml.innerHTML = cell.value
-            }
+            // const arrTextHandle = ['rectangle', 'ellipse']; // 文字处理
+            // if (arrTextHandle.includes(shapeName)) {
+            //     cellHtml.innerHTML = `<label style="line-height:${cell.fontSize}px;display:inline-block;">${cell.value}</label>`
+            // } else {
+            cellHtml.innerHTML = cell.value
+            // }
         }
         if (shapeName !== 'text') {
             if (cell.verticalAlign === 'top') {
-                cellHtml.style.lineHeight = cell.fontSize + 'px'
+                // cellHtml.style.lineHeight = cell.fontSize + 'px'
+                cellHtml.style.alignItems = 'flex-start'
             } else if (cell.verticalAlign === 'bottom') {
-                cellHtml.style.lineHeight = (cell.height * 2 - cell.fontSize) + 'px'
+                // cellHtml.style.lineHeight = (cell.height * 2 - cell.fontSize) + 'px'
+                cellHtml.style.alignItems = 'flex-end'
             } else {
-                cellHtml.style.lineHeight = cell.height + 'px'
+                // cellHtml.style.lineHeight = cell.height + 'px'
+                cellHtml.style.alignItems = 'center'
             }
+        }
+        if (cell.align === 'left') {
+            cellHtml.style.justifyContent = 'flex-start'
+        } else if (cell.align === 'right') {
+            cellHtml.style.justifyContent = 'flex-end'
+        } else {
+            cellHtml.style.justifyContent = cell.align
         }
         cellHtml.style.textAlign = cell.align
         if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress','triangle','pentagram'].includes(shapeName)) {

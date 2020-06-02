@@ -11,9 +11,12 @@
 }
 .gePalette {
   position: absolute;
-  display: block;
+  display: flex;
   box-sizing: border-box;
   overflow: hidden;
+  line-height: 1.2;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 .gePalette .flipH {
   -moz-transform:scaleX(-1);
