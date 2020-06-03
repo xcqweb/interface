@@ -12,17 +12,17 @@ let language = getCookie('language')
 language = language || 'zh'
 
 export const i18n = new VueI18n({
-    locale: language,
-    messages: {
-        en: {
-            ...en,
-            ...viewEn,
-        },
-        zh: {
-            ...zh,
-            ...viewZh,
-        },
+  locale: language,
+  messages: {
+    en: {
+      ...en,
+      ...viewEn,
     },
-    silentTranslationWarn: true
+    zh: {
+      ...zh,
+      ...viewZh,
+    },
+  },
+  silentTranslationWarn: true
 })
 

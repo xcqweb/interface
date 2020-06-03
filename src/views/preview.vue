@@ -22,20 +22,20 @@
 <script> 
 import preview from '../services/preview/'
 export default {
-    data() {
-        return{
+  data() {
+    return{
 
-        }
-    },
-    mounted() {
-        this.$nextTick(()=>{
-            preview.mainProcess.init()
-            history.pushState(null, null, document.URL)
-            window.addEventListener('popstate', ()=> {
-                history.pushState(null, null, document.URL)
-            })
-        })
-    },
+    }
+  },
+  mounted() {
+    this.$nextTick(()=>{
+      preview.mainProcess.init()
+      history.pushState(null, null, document.URL)
+      window.addEventListener('popstate', ()=> {
+        history.pushState(null, null, document.URL)
+      })
+    })
+  },
 };
 </script>
 

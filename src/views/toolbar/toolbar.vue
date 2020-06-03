@@ -205,136 +205,136 @@ import AlignDialog from './align-dialog'
 import MaterialRoom from '../materialroom/materialroom'
 import VueEvent from '../../services/VueEvent.js'
 export default{
-    components:{
-        ScaleView,AlignDialog,MaterialRoom
+  components:{
+    ScaleView,AlignDialog,MaterialRoom
+  },
+  data() {
+    return {
+      scaleText:"100%",
+      isShowScale:false,
+      showAlignDialog:false,
+      alignCls:'geSprite-left-align',
+      ifshowmarerial: false
+    }
+  },
+  computed: {
+    lock() {
+      return this.$store.state.main.widgetInfo.lock
     },
-    data() {
-        return {
-            scaleText:"100%",
-            isShowScale:false,
-            showAlignDialog:false,
-            alignCls:'geSprite-left-align',
-            ifshowmarerial: false
+  },
+  created() {
+  },
+  mounted() {
+  },
+  methods: {
+    changeTab(index) {
+      this.tab = index
+    },
+    zoom(type) {
+      if(this.$store.state.main.type == 1) {
+        return
+      }
+      let myEditor = this.myEditorUi.editor
+      let graph = myEditor.graph
+      if(type === 'in') {
+        graph.zoomIn();
+      }else{
+        graph.zoomOut(); 
+      }
+    },
+    init() {
+      this.$nextTick(() => {
+        let keys = ['undo', 'redo', 'toFront', 'toBack', 'group', 'ungroup', 'previewapply','lock','unlock']
+        keys.forEach(key=>{
+          let action = this.myEditorUi.actions.get(key)
+          let elt = this.$refs[key]
+          this.myEditorUi.toolbar.initElement(elt)
+          this.myEditorUi.toolbar.addClickHandler(elt, action.funct)
+          elt.setEnabled(action.enabled)
+          action.addListener('stateChanged', function() {
+            elt.setEnabled(action.enabled)
+          })
+        })
+      })
+    },
+    fullscreen() {
+      mxUtils.fullScreen()
+    },
+    updateZoom() {
+      this.scaleText = Math.round(this.myEditorUi.editor.graph.view.scale * 100) + '%'
+    },
+    changeScale(scale) {
+      if(this.$store.state.main.type == 1) {
+        return
+      }
+      this.myEditorUi.editor.graph.zoomTo(scale)
+      this.isShowScale = false
+    },
+    addAction(key) {
+      mxEventSource.call(this.myEditorUi.editor.graph)
+      let action = this.myEditorUi.actions.get(key)
+      mxEventSource.call(this.myEditorUi.editor.graph)
+      action.funct()
+      mxEventSource.call(this.myEditorUi.editor.graph)
+    },
+    changeAlign(d) {
+      this.alignCls = d.cls
+      this.dealAlign(d.cls)
+      this.showAlignDialog = false
+    },
+    dealAlign(cls) {
+      let graph = this.myEditorUi.editor.graph
+      let cells = graph.getSelectionCells()
+      let flag = true
+      for(let i = 0;i < cells.length;i++) {
+        if(cells[i].style.indexOf('shape=tableBox') != -1) {
+          flag = false
+          break
         }
+      }
+      switch(cls) {
+        case 'geSprite-left-align':
+          graph.alignCells(mxConstants.ALIGN_LEFT)
+          break;
+        case 'geSprite-right-align':
+          graph.alignCells(mxConstants.ALIGN_RIGHT)
+          break;
+        case 'geSprite-top-align':
+          graph.alignCells(mxConstants.ALIGN_TOP)
+          break;
+        case 'geSprite-bottom-align':
+          graph.alignCells(mxConstants.ALIGN_BOTTOM)
+          break;
+        case 'geSprite-vertical-center':
+          graph.alignCells(mxConstants.ALIGN_MIDDLE)
+          break;
+        case 'geSprite-horizon-center':
+          graph.alignCells(mxConstants.ALIGN_CENTER)
+          break;
+        case 'geSprite-vertical-align':
+          flag && graph.distributeCells(false)
+          break;
+        case 'geSprite-horizon-align':
+          flag && graph.distributeCells(true)
+          break;
+      }
     },
-    computed: {
-        lock() {
-            return this.$store.state.main.widgetInfo.lock
-        },
+    materialLab() {
+      this.ifshowmarerial = true
+      this.$nextTick(() => {
+        this.$refs.materialroom.init()
+      })
     },
-    created() {
+    triggerCancel(data) {
+      this.ifshowmarerial = false
+      if(data === true) {
+        VueEvent.$emit('select-nodetype')
+      }
     },
-    mounted() {
+    save() {
+      this.myEditorUi.saveFile(true)
     },
-    methods: {
-        changeTab(index) {
-            this.tab = index
-        },
-        zoom(type) {
-            if(this.$store.state.main.type == 1) {
-                return
-            }
-            let myEditor = this.myEditorUi.editor
-            let graph = myEditor.graph
-            if(type === 'in') {
-                graph.zoomIn();
-            }else{
-                graph.zoomOut(); 
-            }
-        },
-        init() {
-            this.$nextTick(() => {
-                let keys = ['undo', 'redo', 'toFront', 'toBack', 'group', 'ungroup', 'previewapply','lock','unlock']
-                keys.forEach(key=>{
-                    let action = this.myEditorUi.actions.get(key)
-                    let elt = this.$refs[key]
-                    this.myEditorUi.toolbar.initElement(elt)
-                    this.myEditorUi.toolbar.addClickHandler(elt, action.funct)
-                    elt.setEnabled(action.enabled)
-                    action.addListener('stateChanged', function() {
-                        elt.setEnabled(action.enabled)
-                    })
-                })
-            })
-        },
-        fullscreen() {
-            mxUtils.fullScreen()
-        },
-        updateZoom() {
-            this.scaleText = Math.round(this.myEditorUi.editor.graph.view.scale * 100) + '%'
-        },
-        changeScale(scale) {
-            if(this.$store.state.main.type == 1) {
-                return
-            }
-            this.myEditorUi.editor.graph.zoomTo(scale)
-            this.isShowScale = false
-        },
-        addAction(key) {
-            mxEventSource.call(this.myEditorUi.editor.graph)
-            let action = this.myEditorUi.actions.get(key)
-            mxEventSource.call(this.myEditorUi.editor.graph)
-            action.funct()
-            mxEventSource.call(this.myEditorUi.editor.graph)
-        },
-        changeAlign(d) {
-            this.alignCls = d.cls
-            this.dealAlign(d.cls)
-            this.showAlignDialog = false
-        },
-        dealAlign(cls) {
-            let graph = this.myEditorUi.editor.graph
-            let cells = graph.getSelectionCells()
-            let flag = true
-            for(let i = 0;i < cells.length;i++) {
-                if(cells[i].style.indexOf('shape=tableBox') != -1) {
-                    flag = false
-                    break
-                }
-            }
-            switch(cls) {
-                case 'geSprite-left-align':
-                    graph.alignCells(mxConstants.ALIGN_LEFT)
-                    break;
-                case 'geSprite-right-align':
-                    graph.alignCells(mxConstants.ALIGN_RIGHT)
-                    break;
-                case 'geSprite-top-align':
-                    graph.alignCells(mxConstants.ALIGN_TOP)
-                    break;
-                case 'geSprite-bottom-align':
-                    graph.alignCells(mxConstants.ALIGN_BOTTOM)
-                    break;
-                case 'geSprite-vertical-center':
-                    graph.alignCells(mxConstants.ALIGN_MIDDLE)
-                    break;
-                case 'geSprite-horizon-center':
-                    graph.alignCells(mxConstants.ALIGN_CENTER)
-                    break;
-                case 'geSprite-vertical-align':
-                    flag && graph.distributeCells(false)
-                    break;
-                case 'geSprite-horizon-align':
-                    flag && graph.distributeCells(true)
-                    break;
-            }
-        },
-        materialLab() {
-            this.ifshowmarerial = true
-            this.$nextTick(() => {
-                this.$refs.materialroom.init()
-            })
-        },
-        triggerCancel(data) {
-            this.ifshowmarerial = false
-            if(data === true) {
-                VueEvent.$emit('select-nodetype')
-            }
-        },
-        save() {
-            this.myEditorUi.saveFile(true)
-        },
-    },      
+  },      
 }
 </script>
 

@@ -24,7 +24,7 @@ let options={
       "camelcase": ["error", {"properties": "never"}],
       "flowtype/define-flow-type": 1,
       "flowtype/use-flow-type": 1,
-      "indent": ["error", 4, {"SwitchCase": 1}],
+      "indent": ["error", 2, {"SwitchCase": 1}],
       "object-curly-spacing": ["error", "never"],
       "space-before-function-paren": ["error", "never"],
       "space-before-blocks": ["error", "always"],

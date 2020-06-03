@@ -33,31 +33,31 @@
 
 <script>
 export default{
-    data() {
-        return {
-            scaleSizes:[0.25, 0.5,0.8, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4],
-            classTtype:[],
-        }
+  data() {
+    return {
+      scaleSizes:[0.25, 0.5,0.8, 1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4],
+      classTtype:[],
+    }
+  },
+  created() {
+    this.classTtype = new Array(this.scaleSizes.length).fill(1)
+  },
+  mounted() {
+    const component = this.$mount();
+    document.querySelector('body').appendChild(component.$el)
+  },
+  methods: {
+    changeActive(type,index) {
+      this.classTtype = new Array(this.scaleSizes.length).fill(1)
+      this.$set(this.classTtype,index,type)
     },
-    created() {
-        this.classTtype = new Array(this.scaleSizes.length).fill(1)
+    changeScale(d) {
+      this.$emit("changeScale",d)
     },
-    mounted() {
-        const component = this.$mount();
-        document.querySelector('body').appendChild(component.$el)
-    },
-    methods: {
-        changeActive(type,index) {
-            this.classTtype = new Array(this.scaleSizes.length).fill(1)
-            this.$set(this.classTtype,index,type)
-        },
-        changeScale(d) {
-            this.$emit("changeScale",d)
-        },
-        hideScale() {
-            this.$emit("hideScale")
-        }
-    },      
+    hideScale() {
+      this.$emit("hideScale")
+    }
+  },      
 }
 </script>
 

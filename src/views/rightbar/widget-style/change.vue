@@ -61,146 +61,146 @@ import {mxUtils} from '../../../services/mxGlobal'
 let cells,graph
 let currentStateItem,currentWidgetItem
 export default{
-    props:['currentPageWidgets','bindActions'],
-    data() {
-        return {
-            isWidgetClick:false,
-            isEdit:false,
-            states:[]
+  props:['currentPageWidgets','bindActions'],
+  data() {
+    return {
+      isWidgetClick:false,
+      isEdit:false,
+      states:[]
+    }
+  },
+  mounted() {
+    graph = this.myEditorUi.editor.graph
+    cells = graph.getModel().cells
+  },
+  methods: {
+    addInit() {
+      this.isWidgetClick = false
+      this.currentPageWidgets.forEach(d=>{
+        d.selected = false
+      })
+      currentWidgetItem = null
+      currentStateItem = null
+    },
+    checkCurrent(currentEditItem) { //当前控件和状态选中
+      this.isWidgetClick = true
+      this.isEdit = true //编辑模式
+      this.currentPageWidgets.forEach(d=>{
+        if(d.id == currentEditItem.id) {
+          d.selected = true
+          currentWidgetItem = d
+        }else{
+          d.selected = false
         }
+      })
+      this.states = this.getWidgetStatesById(currentWidgetItem.id)
+      this.states.forEach((d)=>{
+        if(d.id == currentEditItem.stateId) {
+          d.check = true
+          currentStateItem = d
+        }else{
+          d.check = false
+        }
+      })
     },
-    mounted() {
-        graph = this.myEditorUi.editor.graph
-        cells = graph.getModel().cells
+    hide() {
+      this.$emit("submitMutual")
     },
-    methods: {
-        addInit() {
-            this.isWidgetClick = false
-            this.currentPageWidgets.forEach(d=>{
-                d.selected = false
-            })
-            currentWidgetItem = null
-            currentStateItem = null
-        },
-        checkCurrent(currentEditItem) { //当前控件和状态选中
-            this.isWidgetClick = true
-            this.isEdit = true //编辑模式
-            this.currentPageWidgets.forEach(d=>{
-                if(d.id == currentEditItem.id) {
-                    d.selected = true
-                    currentWidgetItem = d
-                }else{
-                    d.selected = false
-                }
-            })
-            this.states = this.getWidgetStatesById(currentWidgetItem.id)
-            this.states.forEach((d)=>{
-                if(d.id == currentEditItem.stateId) {
-                    d.check = true
-                    currentStateItem = d
-                }else{
-                    d.check = false
-                }
-            })
-        },
-        hide() {
-            this.$emit("submitMutual")
-        },
-        submit() {
-            let sameFlag = false
-            if(!currentWidgetItem) {
-                tipDialog(this.myEditorUi,`${this.$t('rightBar.chooseChangeStateOfWidget')}`)
-                return
-            }
-            if(!currentStateItem) {
-                tipDialog(this.myEditorUi,`${this.$t('rightBar.chooseStateToBind')}`)
-                return
-            }
-            for(let i = 0;i < this.bindActions.length;i++) {
-                let stateId = ""
-                let stateInfo = this.bindActions[i].stateInfo
-                if(stateInfo) {
-                    stateId = stateInfo.id
-                }
-                if(currentWidgetItem.id == this.bindActions[i].link && currentStateItem.id == stateId) {
-                    sameFlag = true
-                    break
-                }
-            }
-            if(sameFlag) {
-                tipDialog(this.myEditorUi,`该控件已经绑定了${currentStateItem.name}状态`)
-                return
-            } 
-            this.$emit("submitMutual",{mutualType:3,id:currentWidgetItem.id,innerType:"palette",stateInfo:currentStateItem,isEdit:this.isEdit})
-        },
-        checkWidget(item) {
-            currentWidgetItem = item
-            this.isWidgetClick = true
-            this.currentPageWidgets.forEach(d=>{
-                d.selected = false
-            })
-            item.selected = true 
-            this.states = this.getWidgetStatesById(item.id)
-            if(!currentStateItem) {
-                this.states.forEach(item=>{
-                    item.check = false
-                })
-            }
-        },
-        getWidgetStatesById(id) {
-            let states = []
-            let cell = cells[id]
-            let modelInfo = graph.getModel().getValue(cell)
-            if (!mxUtils.isNode(modelInfo)) {
-                var doc = mxUtils.createXmlDocument();
-                var obj = doc.createElement('object');
-                obj.setAttribute('label', modelInfo || '');
-                modelInfo = obj;
-            }
-            let statesAttr = modelInfo.getAttribute('statesInfo')
-            if(statesAttr) {
-                states = JSON.parse(statesAttr)
-            }
-            if(!states.length) {
-                states = [{
-                    "id":'state_0',
-                    "name":`${this.$t('defaultText')}`,
-                    "desc":`${this.$t('defaultText')}`,
-                    'animateCls':'',
-                    "style":{
-                        background:this.$store.state.main.widgetInfo.bgColor,
-                        borderColor:this.$store.state.main.widgetInfo.borderColor,
-                        color:this.$store.state.main.widgetInfo.color
-                    }, 
-                    'check':false
-                }]
-            }
-            return states
-        },
-        checkState(item) {
-            currentStateItem = item
-            this.states.forEach((d)=>{
-                if(d.id == item.id) {
-                    d.check = true
-                }else{
-                    d.check = false
-                }
-            })
-            this.saveWidgetModeState()
-        },
-        saveWidgetModeState() {//将状态设定信息保存在对应的控件的model中
-            let cell = cells[currentWidgetItem.id]
-            let modelInfo = graph.getModel().getValue(cell)
-            if (!mxUtils.isNode(modelInfo)) {
-                var doc = mxUtils.createXmlDocument();
-                var obj = doc.createElement('object');
-                obj.setAttribute('label', modelInfo || '');
-                modelInfo = obj;
-            }
-            modelInfo.setAttribute('statesInfo', JSON.stringify(this.states))
-            graph.getModel().setValue(cell, modelInfo)
-        },
-    },      
+    submit() {
+      let sameFlag = false
+      if(!currentWidgetItem) {
+        tipDialog(this.myEditorUi,`${this.$t('rightBar.chooseChangeStateOfWidget')}`)
+        return
+      }
+      if(!currentStateItem) {
+        tipDialog(this.myEditorUi,`${this.$t('rightBar.chooseStateToBind')}`)
+        return
+      }
+      for(let i = 0;i < this.bindActions.length;i++) {
+        let stateId = ""
+        let stateInfo = this.bindActions[i].stateInfo
+        if(stateInfo) {
+          stateId = stateInfo.id
+        }
+        if(currentWidgetItem.id == this.bindActions[i].link && currentStateItem.id == stateId) {
+          sameFlag = true
+          break
+        }
+      }
+      if(sameFlag) {
+        tipDialog(this.myEditorUi,`该控件已经绑定了${currentStateItem.name}状态`)
+        return
+      } 
+      this.$emit("submitMutual",{mutualType:3,id:currentWidgetItem.id,innerType:"palette",stateInfo:currentStateItem,isEdit:this.isEdit})
+    },
+    checkWidget(item) {
+      currentWidgetItem = item
+      this.isWidgetClick = true
+      this.currentPageWidgets.forEach(d=>{
+        d.selected = false
+      })
+      item.selected = true 
+      this.states = this.getWidgetStatesById(item.id)
+      if(!currentStateItem) {
+        this.states.forEach(item=>{
+          item.check = false
+        })
+      }
+    },
+    getWidgetStatesById(id) {
+      let states = []
+      let cell = cells[id]
+      let modelInfo = graph.getModel().getValue(cell)
+      if (!mxUtils.isNode(modelInfo)) {
+        var doc = mxUtils.createXmlDocument();
+        var obj = doc.createElement('object');
+        obj.setAttribute('label', modelInfo || '');
+        modelInfo = obj;
+      }
+      let statesAttr = modelInfo.getAttribute('statesInfo')
+      if(statesAttr) {
+        states = JSON.parse(statesAttr)
+      }
+      if(!states.length) {
+        states = [{
+          "id":'state_0',
+          "name":`${this.$t('defaultText')}`,
+          "desc":`${this.$t('defaultText')}`,
+          'animateCls':'',
+          "style":{
+            background:this.$store.state.main.widgetInfo.bgColor,
+            borderColor:this.$store.state.main.widgetInfo.borderColor,
+            color:this.$store.state.main.widgetInfo.color
+          }, 
+          'check':false
+        }]
+      }
+      return states
+    },
+    checkState(item) {
+      currentStateItem = item
+      this.states.forEach((d)=>{
+        if(d.id == item.id) {
+          d.check = true
+        }else{
+          d.check = false
+        }
+      })
+      this.saveWidgetModeState()
+    },
+    saveWidgetModeState() {//将状态设定信息保存在对应的控件的model中
+      let cell = cells[currentWidgetItem.id]
+      let modelInfo = graph.getModel().getValue(cell)
+      if (!mxUtils.isNode(modelInfo)) {
+        var doc = mxUtils.createXmlDocument();
+        var obj = doc.createElement('object');
+        obj.setAttribute('label', modelInfo || '');
+        modelInfo = obj;
+      }
+      modelInfo.setAttribute('statesInfo', JSON.stringify(this.states))
+      graph.getModel().setValue(cell, modelInfo)
+    },
+  },      
 }
 </script>
 

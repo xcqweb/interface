@@ -23,79 +23,79 @@ import columnCommon from './js/column-common'
 import paramsCommon from './js/params-common'
 
 export default {
-    components: {
-        Tree,
-        DataColumn,
-        NoData,
+  components: {
+    Tree,
+    DataColumn,
+    NoData,
+  },
+  mixins: [columnCommon, paramsCommon],
+  watch: {
+    deviceModelId() {
+      this.getData();
     },
-    mixins: [columnCommon, paramsCommon],
-    watch: {
-        deviceModelId() {
-            this.getData();
-        },
+  },
+  methods: {
+    getDeviceParamsCallback(res) {
+      let data = null;
+      if (res && res.length > 0) {
+        data = {
+          title: this.$t('dataSource.deviceParameter'),
+          expand: true,
+          children: [],
+        };
+        const obj = {};
+        res.forEach(item => {
+          let tree;
+          let displayName = ''
+          if(item.displayName) {
+            displayName = `(${item.displayName})`
+          }
+          if (obj[item.partId]) {
+            tree = obj[item.partId];
+          } else {
+            tree = {
+              title: item.partName + displayName,
+              partId: item.partId,
+              expand: false,
+              children: [],
+            };
+            obj[item.partId] = tree;
+            data.children.push(tree);
+          }
+          tree.children.push({
+            title: item.paramName + displayName,
+            paramId: item.paramId,
+            expand: false,
+            children: [],
+          });
+        });
+      }
+      this.deviceParams = data;
     },
-    methods: {
-        getDeviceParamsCallback(res) {
-            let data = null;
-            if (res && res.length > 0) {
-                data = {
-                    title: this.$t('dataSource.deviceParameter'),
-                    expand: true,
-                    children: [],
-                };
-                const obj = {};
-                res.forEach(item => {
-                    let tree;
-                    let displayName = ''
-                    if(item.displayName) {
-                        displayName = `(${item.displayName})`
-                    }
-                    if (obj[item.partId]) {
-                        tree = obj[item.partId];
-                    } else {
-                        tree = {
-                            title: item.partName + displayName,
-                            partId: item.partId,
-                            expand: false,
-                            children: [],
-                        };
-                        obj[item.partId] = tree;
-                        data.children.push(tree);
-                    }
-                    tree.children.push({
-                        title: item.paramName + displayName,
-                        paramId: item.paramId,
-                        expand: false,
-                        children: [],
-                    });
-                });
-            }
-            this.deviceParams = data;
-        },
-        getVirtualParamsCallback(res) {
-            let data = null;
-            if (res && res.length > 0) {
-                data = {
-                    title: this.$t('dataSource.virtualParamter'),
-                    expand: true,
-                    children: [],
-                };
-                res.forEach(item => {
-                    let displayName = ''
-                    if(item.displayName) {
-                        displayName = `(${item.displayName})`
-                    }
-                    data.children.push({
-                        title: item.paramName + displayName,
-                        paramId: item.paramId,
-                        expand: false,
-                        children: [],
-                    });
-                });
-            }
-            this.virtualParams = data;
-        },
+    getVirtualParamsCallback(res) {
+      let data = null;
+      if (res && res.length > 0) {
+        data = {
+          title: this.$t('dataSource.virtualParamter'),
+          expand: true,
+          children: [],
+        };
+        res.forEach(item => {
+          let displayName = ''
+          if(item.displayName) {
+            displayName = `(${item.displayName})`
+          }
+          data.children.push({
+            title: item.paramName + displayName,
+            paramId: item.paramId,
+            expand: false,
+            children: [],
+          });
+        });
+      }
+      this.virtualParams = data;
     },
+  },
 };
 </script>
 

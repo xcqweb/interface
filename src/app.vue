@@ -16,36 +16,36 @@
 
 <script>  
 export default {
-    data() {
-        return{
-            langCss:''
+  data() {
+    return{
+      langCss:''
+    }
+  },
+  beforeCreate() {
+    let {search} = window.location
+    if(search.includes("preview=1")) {
+      let split1 = search.split("&")
+      let split2 = split1[1].split("=")
+      this.$router.push({
+        path: window.PREFIX_PATH + "/interface_preview",
+        query: {
+          id: split2[1]
         }
-    },
-    beforeCreate() {
-        let {search} = window.location
-        if(search.includes("preview=1")) {
-            let split1 = search.split("&")
-            let split2 = split1[1].split("=")
-            this.$router.push({
-                path: window.PREFIX_PATH + "/interface_preview",
-                query: {
-                    id: split2[1]
-                }
-            })
-        }
-    },
-    mounted() {
-        if(this.$i18n.locale == 'zh') {
-            this.langCss = ''
-            document.title = "组态工具"
-        }else{
-            this.langCss = this.$i18n.locale
-            document.title = "Getech Interface Tool"
-        }
-        if(this.langCss) {
-            document.body.classList.add(this.langCss)
-        }
-    },
+      })
+    }
+  },
+  mounted() {
+    if(this.$i18n.locale == 'zh') {
+      this.langCss = ''
+      document.title = "组态工具"
+    }else{
+      this.langCss = this.$i18n.locale
+      document.title = "Getech Interface Tool"
+    }
+    if(this.langCss) {
+      document.body.classList.add(this.langCss)
+    }
+  },
 };
 </script>
 

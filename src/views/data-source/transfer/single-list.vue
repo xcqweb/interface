@@ -68,105 +68,105 @@ import Search from './search';
 import {CheckboxGroup, Checkbox} from 'iview';
 
 export default {
-    components: {
-        Search,
-        CheckboxGroup,
-        Checkbox ,
-    },
-    props: {
-        prefixCls: String,
-        data: Array,
-        renderFormat: Function,
-        checkedKeys: Array,
-        listStyle: Object,
-        title: [String, Number],
-        filterable: Boolean,
-        filterPlaceholder: String,
-        filterMethod: Function,
-        notFoundText: String,
-        validKeysCount: Number,
-        multiple: Boolean,
-    },
-    data() {
-        return {
-            showItems: [],
-            query: '',
-            showFooter: true,
+  components: {
+    Search,
+    CheckboxGroup,
+    Checkbox ,
+  },
+  props: {
+    prefixCls: String,
+    data: Array,
+    renderFormat: Function,
+    checkedKeys: Array,
+    listStyle: Object,
+    title: [String, Number],
+    filterable: Boolean,
+    filterPlaceholder: String,
+    filterMethod: Function,
+    notFoundText: String,
+    validKeysCount: Number,
+    multiple: Boolean,
+  },
+  data() {
+    return {
+      showItems: [],
+      query: '',
+      showFooter: true,
             
-        };
-    },
-    computed: {
-        classes() {
-            return [
-                `${this.prefixCls}`,
-                {
-                    [`${this.prefixCls}-with-footer`]: this.showFooter
-                }
-            ];
-        },
-        bodyClasses() {
-            return [
-                `${this.prefixCls}-body`,
-                {
-                    [`${this.prefixCls}-body-with-search`]: this.filterable,
-                    [`${this.prefixCls}-body-with-footer`]: this.showFooter
-                }
-            ];
-        },
-        count() {
-            const validKeysCount = this.validKeysCount;
-            return (validKeysCount > 0 ? `${validKeysCount}/` : '') + `${this.filterData.length}`;
-        },
-        filterData() {
-            return this.showItems.filter(item => this.filterMethod(item, this.query));
-        },
-        style() {
-            const style = Object.assign({}, this.listStyle || {}, {width: '100%'});
-            return style;
-        },
-    },
-    watch: {
-        data() {
-            this.updateFilteredData();
-        },
-    },
-    created() {
-        this.updateFilteredData();
-    },
-    mounted() {
-        this.showFooter = this.$slots.default !== undefined;
-    },
-    methods: {
-        itemClasses(item) {
-            return [
-                `${this.prefixCls}-content-item`,
-                {
-                    [`${this.prefixCls}-content-item-disabled`]: item.disabled
-                }
-            ];
-        },
-        showLabel(item) {
-            return this.renderFormat(item);
-        },
-        select(item) {
-            if (item.disabled) {
-                return;
-            }
-            const includes = this.checkedKeys.includes(item.key);
-            this.$emit('on-checked-keys-change', includes ? [] : [item.key]);
-        },
-        updateFilteredData() {
-            this.showItems = this.data;
-        },
-        handleQueryClear() {
-            this.query = '';
-        },
-        handleQueryChange(val) {
-            this.query = val;
-        },
-        handleCheckboxChange(data) {
-            this.$emit('on-checked-keys-change', data.splice(data.length - 1, 1));
+    };
+  },
+  computed: {
+    classes() {
+      return [
+        `${this.prefixCls}`,
+        {
+          [`${this.prefixCls}-with-footer`]: this.showFooter
         }
+      ];
     },
+    bodyClasses() {
+      return [
+        `${this.prefixCls}-body`,
+        {
+          [`${this.prefixCls}-body-with-search`]: this.filterable,
+          [`${this.prefixCls}-body-with-footer`]: this.showFooter
+        }
+      ];
+    },
+    count() {
+      const validKeysCount = this.validKeysCount;
+      return (validKeysCount > 0 ? `${validKeysCount}/` : '') + `${this.filterData.length}`;
+    },
+    filterData() {
+      return this.showItems.filter(item => this.filterMethod(item, this.query));
+    },
+    style() {
+      const style = Object.assign({}, this.listStyle || {}, {width: '100%'});
+      return style;
+    },
+  },
+  watch: {
+    data() {
+      this.updateFilteredData();
+    },
+  },
+  created() {
+    this.updateFilteredData();
+  },
+  mounted() {
+    this.showFooter = this.$slots.default !== undefined;
+  },
+  methods: {
+    itemClasses(item) {
+      return [
+        `${this.prefixCls}-content-item`,
+        {
+          [`${this.prefixCls}-content-item-disabled`]: item.disabled
+        }
+      ];
+    },
+    showLabel(item) {
+      return this.renderFormat(item);
+    },
+    select(item) {
+      if (item.disabled) {
+        return;
+      }
+      const includes = this.checkedKeys.includes(item.key);
+      this.$emit('on-checked-keys-change', includes ? [] : [item.key]);
+    },
+    updateFilteredData() {
+      this.showItems = this.data;
+    },
+    handleQueryClear() {
+      this.query = '';
+    },
+    handleQueryChange(val) {
+      this.query = val;
+    },
+    handleCheckboxChange(data) {
+      this.$emit('on-checked-keys-change', data.splice(data.length - 1, 1));
+    }
+  },
 };
 </script>

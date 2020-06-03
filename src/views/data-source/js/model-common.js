@@ -1,30 +1,30 @@
 export default {
-    props: {
-        value: {
-            type: Boolean,
-            default: false,
-        },
-        deviceModelId: {
-            type: String,
-        },
+  props: {
+    value: {
+      type: Boolean,
+      default: false,
     },
-    data() {
-        return {
-            showForm: false,
-            studioId: ''
-        };
+    deviceModelId: {
+      type: String,
     },
-    watch: {
-        value(val) {
-            this.showForm = val;
-            this.$store.commit('modelEditing', val);
-        },
-        showForm(val) {
-            this.$emit('input', val);
-        },
+  },
+  data() {
+    return {
+      showForm: false,
+      studioId: ''
+    };
+  },
+  watch: {
+    value(val) {
+      this.showForm = val;
+      this.$store.commit('modelEditing', val);
     },
-    created() {
-        this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-        this.showForm = this.value;
+    showForm(val) {
+      this.$emit('input', val);
     },
+  },
+  created() {
+    this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+    this.showForm = this.value;
+  },
 }

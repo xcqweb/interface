@@ -47,33 +47,33 @@ import EditModel from './edit-model'
 import DatasourceStore from './js/datasource-store'
 
 export default {
-    components: {
-        DeviceList,
-        ModelList,
-        EditModel,
+  components: {
+    DeviceList,
+    ModelList,
+    EditModel,
+  },
+  mixins: [DatasourceStore],
+  data() {
+    return {
+      editModelView: '',
+      editModel: null,
+      showForm: false,
+    };
+  },
+  methods: {
+    handleTypeClick(item) {
+      this.model.deviceTypeId = item.deviceTypeId;
     },
-    mixins: [DatasourceStore],
-    data() {
-        return {
-            editModelView: '',
-            editModel: null,
-            showForm: false,
-        };
+    handleModelClick(item) {
+      this.model.deviceModelId = item.deviceModelId;
     },
-    methods: {
-        handleTypeClick(item) {
-            this.model.deviceTypeId = item.deviceTypeId;
-        },
-        handleModelClick(item) {
-            this.model.deviceModelId = item.deviceModelId;
-        },
-        handleEditModel(model = null) {
-            this.editModel = model;
-            if (model) {
-                this.editModelView = 'edit-model';
-            }
-        },
+    handleEditModel(model = null) {
+      this.editModel = model;
+      if (model) {
+        this.editModelView = 'edit-model';
+      }
     },
+  },
 };
 </script>
 

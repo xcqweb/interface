@@ -6,8 +6,8 @@ import datasource from './datasource'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-    modules:{
-        main, //未加 namespaced: true, 表示全局的actions/mutations
-        datasource,
-    }
+  modules:{
+    main, //未加 namespaced: true, 表示全局的actions/mutations
+    datasource,
+  }
 })

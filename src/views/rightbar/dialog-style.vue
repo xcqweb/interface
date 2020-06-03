@@ -144,161 +144,161 @@ import VueEvent from '../../services/VueEvent'
 let alignArr = ['left','center','right']
 let valignArr = [],dialogStyle
 export default {
-    data() {
-        return {
-            isMobileApp: false,
-            dialogDesc:"",
-            showFont:false,
-            dialogHeight: 400,
-            dialogWidth: 600,
-            fontText:12,
-            bgColor:'#fff',
-            fontColor:'#333333',
-            alignIndex1:2,
-            alignIndex2:2,
-            canvasOffsetTop:0,
-            canvasOffsetLeft:0,
-            fontList:[ 12,  13, 14, 15,  16, 17, 18, 19, 20],
-        }
-    },
-    created() {
-    },
-    mounted() {
-        window.onresize = ()=>{
-            this.centerCanvas()
-        }
-        this.initPage()
-        VueEvent.$off("refreshDialogTitle")
-        VueEvent.$on('refreshDialogTitle',()=>{
-            this.centerCanvas()
-        })
-    },
-    beforeDestory() {
-        // console.log("beforeDestory--不执性--why--")
-    },
-    destroyed() {
-        let dialogTitleEle = document.querySelector('.dialog-title-m')
-        dialogTitleEle.parentNode.removeChild(dialogTitleEle)
-    },
-    methods: {
-        initPage() {
-            mxClient.IS_ADD_IMG = false
-            let graph = this.myEditorUi.editor.graph
-            let editor = this.myEditorUi.editor
-            dialogStyle = editor.pages[editor.currentPage].style
-            this.isMobileApp = editor.getAppType() === 1
-            this.dialogWidth = graph.pageFormat.width || 600
-            this.dialogHeight = graph.pageFormat.height || 400
-            this.fontText = parseInt(dialogStyle.fontSize || 12)
-            this.fontColor = dialogStyle.color
-            this.bgColor = dialogStyle.bgColor
-            this.alignIndex1 = alignArr.indexOf(dialogStyle.textAlign) + 1 || 2
-            this.alignIndex2 = valignArr.indexOf(parseInt(dialogStyle.lineHeight)) + 1 || 2
-            setTimeout(() => {
-                this.changeScaleInput()
-                let graph = this.myEditorUi.editor.graph
-                let con = graph.container
-                let dialogTitleEle = document.querySelector('.dialog-title-m')
-                dialogTitleEle.innerHTML = editor.pages[editor.currentPage].title
-                dialogTitleEle.parentNode.removeChild(dialogTitleEle)
-                con.appendChild(dialogTitleEle)
-                this.dialogDesc = editor.pages[editor.currentPage].desc
-            },50)
-        },
-        descChange() {
-            let editor = this.myEditorUi.editor
-            editor.pages[editor.currentPage].desc = this.dialogDesc
-        },
-        changeFont(d,e) {
-            this.fontText = d
-            this.showFont = false
-            let dialogStyleTemp = {
-                fontSize:`${this.fontText}px`,
-            }
-            this.commitStyleFun(dialogStyleTemp)
-            e.stopPropagation()
-        },
-        commitStyleFun(param) {
-            dialogStyle = Object.assign({},dialogStyle,param)
-            let editor = this.myEditorUi.editor
-            let el = document.querySelector(".dialog-title-m")
-            if(!el) {
-                return
-            }
-            let keys = Object.keys(dialogStyle)
-            if(el.style) {
-                el.style.cssText = " "//清空之前的标题style
-            }
-            for(let i = 0;i < keys.length;i++) {//更改title dom节点位置后，vue的:style失效，采用原生的方式
-                el.style[keys[i]] = dialogStyle[keys[i]]
-            }
-            editor.pages[editor.currentPage].style = dialogStyle
-        },
-        centerCanvas() {//居中画布
-            let timer = setTimeout(()=>{
-                window.clearTimeout(timer)
-                let graph = this.myEditorUi.editor.graph
-                let con = graph.container
-                let canvasView = con.children[0]//画布
-                let conWidth = con.clientWidth
-                let conHeight = con.clientHeight
-                let {clientWidth,clientHeight} = con.children[1] //svg
-                con.scrollLeft = (clientWidth - conWidth) / 2
-                con.scrollTop = (clientHeight - conHeight - 36) / 2
-                this.canvasOffsetTop = canvasView.offsetTop
-                this.canvasOffsetLeft = canvasView.offsetLeft
-                let dialogStyleTemp = {
-                    top:`${this.canvasOffsetTop - 36}px`,
-                    left:`${this.canvasOffsetLeft}px`,
-                    width:`${this.dialogWidth}px`,
-                }
-                this.commitStyleFun(dialogStyleTemp)
-            })
-        },
-        changeAlignIndex(type,index) {
-            valignArr = [this.fontText + 5,36,36 * 2 - this.fontText - 10]
-            if(type == 1) {
-                this.alignIndex1 = index
-            }else{
-                this.alignIndex2 = index
-            }
-            let dialogStyleTemp = {
-                textAlign:`${alignArr[this.alignIndex1 - 1]}`,
-                lineHeight:`${valignArr[this.alignIndex2 - 1]}px`,
-            }
-            this.commitStyleFun(dialogStyleTemp)
-        },
-        changeScaleInput() {
-            this.myEditorUi.setPageFormat({
-                height: this.dialogHeight,
-                width: this.dialogWidth,
-                x: 0,
-                y: 0
-            }, true)
-            this.centerCanvas()
-        },
-        hideFont() {
-            this.showFont = false
-        },
-        pickColor() {
-            this.myEditorUi.pickColor(this.bgColor || 'none',color=>{
-                this.bgColor = color
-                let dialogStyleTemp = {
-                    background:`${this.bgColor}`,
-                }
-                this.commitStyleFun(dialogStyleTemp)
-            });
-        },
-        pickFontColor() {
-            this.myEditorUi.pickColor(this.fontColor || 'none',color=>{
-                this.fontColor = color
-                let dialogStyleTemp = {
-                    color:`${this.fontColor}`,
-                }
-                this.commitStyleFun(dialogStyleTemp)
-            });
-        }
+  data() {
+    return {
+      isMobileApp: false,
+      dialogDesc:"",
+      showFont:false,
+      dialogHeight: 400,
+      dialogWidth: 600,
+      fontText:12,
+      bgColor:'#fff',
+      fontColor:'#333333',
+      alignIndex1:2,
+      alignIndex2:2,
+      canvasOffsetTop:0,
+      canvasOffsetLeft:0,
+      fontList:[ 12,  13, 14, 15,  16, 17, 18, 19, 20],
     }
+  },
+  created() {
+  },
+  mounted() {
+    window.onresize = ()=>{
+      this.centerCanvas()
+    }
+    this.initPage()
+    VueEvent.$off("refreshDialogTitle")
+    VueEvent.$on('refreshDialogTitle',()=>{
+      this.centerCanvas()
+    })
+  },
+  beforeDestory() {
+    // console.log("beforeDestory--不执性--why--")
+  },
+  destroyed() {
+    let dialogTitleEle = document.querySelector('.dialog-title-m')
+    dialogTitleEle.parentNode.removeChild(dialogTitleEle)
+  },
+  methods: {
+    initPage() {
+      mxClient.IS_ADD_IMG = false
+      let graph = this.myEditorUi.editor.graph
+      let editor = this.myEditorUi.editor
+      dialogStyle = editor.pages[editor.currentPage].style
+      this.isMobileApp = editor.getAppType() === 1
+      this.dialogWidth = graph.pageFormat.width || 600
+      this.dialogHeight = graph.pageFormat.height || 400
+      this.fontText = parseInt(dialogStyle.fontSize || 12)
+      this.fontColor = dialogStyle.color
+      this.bgColor = dialogStyle.bgColor
+      this.alignIndex1 = alignArr.indexOf(dialogStyle.textAlign) + 1 || 2
+      this.alignIndex2 = valignArr.indexOf(parseInt(dialogStyle.lineHeight)) + 1 || 2
+      setTimeout(() => {
+        this.changeScaleInput()
+        let graph = this.myEditorUi.editor.graph
+        let con = graph.container
+        let dialogTitleEle = document.querySelector('.dialog-title-m')
+        dialogTitleEle.innerHTML = editor.pages[editor.currentPage].title
+        dialogTitleEle.parentNode.removeChild(dialogTitleEle)
+        con.appendChild(dialogTitleEle)
+        this.dialogDesc = editor.pages[editor.currentPage].desc
+      },50)
+    },
+    descChange() {
+      let editor = this.myEditorUi.editor
+      editor.pages[editor.currentPage].desc = this.dialogDesc
+    },
+    changeFont(d,e) {
+      this.fontText = d
+      this.showFont = false
+      let dialogStyleTemp = {
+        fontSize:`${this.fontText}px`,
+      }
+      this.commitStyleFun(dialogStyleTemp)
+      e.stopPropagation()
+    },
+    commitStyleFun(param) {
+      dialogStyle = Object.assign({},dialogStyle,param)
+      let editor = this.myEditorUi.editor
+      let el = document.querySelector(".dialog-title-m")
+      if(!el) {
+        return
+      }
+      let keys = Object.keys(dialogStyle)
+      if(el.style) {
+        el.style.cssText = " "//清空之前的标题style
+      }
+      for(let i = 0;i < keys.length;i++) {//更改title dom节点位置后，vue的:style失效，采用原生的方式
+        el.style[keys[i]] = dialogStyle[keys[i]]
+      }
+      editor.pages[editor.currentPage].style = dialogStyle
+    },
+    centerCanvas() {//居中画布
+      let timer = setTimeout(()=>{
+        window.clearTimeout(timer)
+        let graph = this.myEditorUi.editor.graph
+        let con = graph.container
+        let canvasView = con.children[0]//画布
+        let conWidth = con.clientWidth
+        let conHeight = con.clientHeight
+        let {clientWidth,clientHeight} = con.children[1] //svg
+        con.scrollLeft = (clientWidth - conWidth) / 2
+        con.scrollTop = (clientHeight - conHeight - 36) / 2
+        this.canvasOffsetTop = canvasView.offsetTop
+        this.canvasOffsetLeft = canvasView.offsetLeft
+        let dialogStyleTemp = {
+          top:`${this.canvasOffsetTop - 36}px`,
+          left:`${this.canvasOffsetLeft}px`,
+          width:`${this.dialogWidth}px`,
+        }
+        this.commitStyleFun(dialogStyleTemp)
+      })
+    },
+    changeAlignIndex(type,index) {
+      valignArr = [this.fontText + 5,36,36 * 2 - this.fontText - 10]
+      if(type == 1) {
+        this.alignIndex1 = index
+      }else{
+        this.alignIndex2 = index
+      }
+      let dialogStyleTemp = {
+        textAlign:`${alignArr[this.alignIndex1 - 1]}`,
+        lineHeight:`${valignArr[this.alignIndex2 - 1]}px`,
+      }
+      this.commitStyleFun(dialogStyleTemp)
+    },
+    changeScaleInput() {
+      this.myEditorUi.setPageFormat({
+        height: this.dialogHeight,
+        width: this.dialogWidth,
+        x: 0,
+        y: 0
+      }, true)
+      this.centerCanvas()
+    },
+    hideFont() {
+      this.showFont = false
+    },
+    pickColor() {
+      this.myEditorUi.pickColor(this.bgColor || 'none',color=>{
+        this.bgColor = color
+        let dialogStyleTemp = {
+          background:`${this.bgColor}`,
+        }
+        this.commitStyleFun(dialogStyleTemp)
+      });
+    },
+    pickFontColor() {
+      this.myEditorUi.pickColor(this.fontColor || 'none',color=>{
+        this.fontColor = color
+        let dialogStyleTemp = {
+          color:`${this.fontColor}`,
+        }
+        this.commitStyleFun(dialogStyleTemp)
+      });
+    }
+  }
 };
 </script>
 

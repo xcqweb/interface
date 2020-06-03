@@ -37,54 +37,54 @@
 <script>
 import {tipDialog} from '../../../services/Utils'
 export default{
-    props:['pages','bindActions','currentEditItem'],
-    data() {
-        return {
-            currentItem:null,
-        }
-    },
-    mounted() {
+  props:['pages','bindActions','currentEditItem'],
+  data() {
+    return {
+      currentItem:null,
+    }
+  },
+  mounted() {
         
+  },
+  methods: {
+    back() {
+      this.$emit("submitMutual")
     },
-    methods: {
-        back() {
-            this.$emit("submitMutual")
-        },
-        submit() {
-            let flag = false,flag2 = false
-            for(let i = 0;i < this.pages.length;i++) {
-                if(this.pages[i].selected) {
-                    flag = true
-                    break
-                }
-            }
-            if(!flag) {
-                tipDialog(this.myEditorUi,`${this.$t('rightBar.choosePageToLink')}`)
-                return
-            } 
-            if(!this.currentItem) {
-                this.currentItem = this.currentEditItem  //编辑传过来的
-            }
-            for(let i = 0;i < this.bindActions.length;i++) {
-                if(this.currentItem.id == this.bindActions[i].link) {
-                    flag2 = true
-                    break
-                }
-            }
-            if(flag2) {
-                tipDialog(this.myEditorUi,`${this.$t("pageHasBindLinkEvents")}`)
-                return
-            } 
-            this.$emit("submitMutual",{mutualType:1,id:this.currentItem.id,innerType:'page',isEdit:!!this.currentEditItem})
-        },
-        checkPage(item) {
-            this.currentItem = item
-            this.pages.forEach(d=>{
-                d.selected = false
-            })
-            item.selected = true
+    submit() {
+      let flag = false,flag2 = false
+      for(let i = 0;i < this.pages.length;i++) {
+        if(this.pages[i].selected) {
+          flag = true
+          break
         }
-    },      
+      }
+      if(!flag) {
+        tipDialog(this.myEditorUi,`${this.$t('rightBar.choosePageToLink')}`)
+        return
+      } 
+      if(!this.currentItem) {
+        this.currentItem = this.currentEditItem  //编辑传过来的
+      }
+      for(let i = 0;i < this.bindActions.length;i++) {
+        if(this.currentItem.id == this.bindActions[i].link) {
+          flag2 = true
+          break
+        }
+      }
+      if(flag2) {
+        tipDialog(this.myEditorUi,`${this.$t("pageHasBindLinkEvents")}`)
+        return
+      } 
+      this.$emit("submitMutual",{mutualType:1,id:this.currentItem.id,innerType:'page',isEdit:!!this.currentEditItem})
+    },
+    checkPage(item) {
+      this.currentItem = item
+      this.pages.forEach(d=>{
+        d.selected = false
+      })
+      item.selected = true
+    }
+  },      
 }
 </script>
 

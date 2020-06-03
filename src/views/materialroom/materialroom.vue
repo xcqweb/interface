@@ -256,398 +256,398 @@ import {getCookie,setCookie,sureDialog} from '../../services/Utils'
 let backMaterialLit = [],needRefreshLeft = false
 const ROOT_LEN = 1 // 新增组件时计算长度使用
 export default {
-    components: {
-        Tabs,
-        TabPane,
-        Modal,
-        Upload,
-        Button,
-    },
-    data() {
-        return {
-            picAction:`${window.location.origin}/api/iot-cds/sources/material`,
-            materialAlertName: 'materialLibrary',
-            showmarerial: true,
-            madeltext: ['cancel',this.$t('materialRoom.uploadWidget')],
-            assemblyArrayName: [
-                {
-                    name: 'generalShape',
-                    materialLibraryId: '1'
-                },
-                {
-                    name: 'chartShape',
-                    materialLibraryId: '2'
-                }
-            ],
-            materialArrayName: ['pageTemplate', 'popupTemplate'],
-            uploadData:{},
-            DIR_: `${window.PREFIX_PATH}/static/stencils/basic/`,
-            baseAssembly: [
-                {image:'text.svg', name :'text'},
-                {image:'rectangle.svg',name :'rectangle'},
-                {image:'ellipse.svg',name : 'circle'},
-                {image:'line.svg', name :'beeline'},
-                {image:'button.png', name :'button'},
-                {image:'menulist.png',name :'menu'},
-                {image:'tableBox.svg', name :'table'},
-                {image:'image.svg', name :'image'},
-                {image:'linkTag.svg',name : 'Link'},
-                {image:'light.png', name :'Light'},
-                {image:'progress.svg', name :'progressBar'},
-                {image:'pipeline1.svg', name :'pipeline1'},
-                {image:'pipeline2.svg',name :'pipeline2'},
-                {image:'pipeline3.svg',name :'pipeline3'},
-                {image:'triangle.png',name :'triangle'},
-                {image:'pentagram.png',name :'pentagram'},
-            ],
-            tablesAssembly: [
-                {image:'lineChart.svg',name :'trend'},
-                {image:'gaugeChart.svg',name :'dashboard'}
-            ],
-            arrListTables: [],
-            arrListTableIndex:-1,
-            isActive: 0,
-            isActive2: -1,
-            tabNumber: 0,
-            materials: [],
-            nodata: 'noData',
-            headers:{
-                'Authorization': `Bearer ${getCookie('token')}`
-            },
-            isShowPopMenu:false,
-            popUpType:1,
-            popMenuStyle:{left:'126px',top:0},
-            hoverIndex:-1,
-            keyWidget:"",
-            templateIndex:0,
-            materialAll:[],
+  components: {
+    Tabs,
+    TabPane,
+    Modal,
+    Upload,
+    Button,
+  },
+  data() {
+    return {
+      picAction:`${window.location.origin}/api/iot-cds/sources/material`,
+      materialAlertName: 'materialLibrary',
+      showmarerial: true,
+      madeltext: ['cancel',this.$t('materialRoom.uploadWidget')],
+      assemblyArrayName: [
+        {
+          name: 'generalShape',
+          materialLibraryId: '1'
+        },
+        {
+          name: 'chartShape',
+          materialLibraryId: '2'
         }
-    },
-    created() {
-    },
-    mounted() {
-        this.arrListTables = this.baseAssembly
-        backMaterialLit = JSON.parse(JSON.stringify(this.arrListTables))
-        this.uploadurl = this.urls.materialList.url
-        this.getAllMaterail()
-    },
-    methods: {
-        getAllMaterail() {
-            let res = []
-            this.requestUtil.get(this.urls.materialRightList.url).then(data=>{
-                if(data) {
-                    data.forEach(item=>{
-                        res.push({
-                            name: item.descript,
-                            image: item.picUrl,
-                            isEdit:false,
-                            model:item.descript,
-                            materialId: item.materialId
-                        })
-                    })
-                    this.materialAll = [...this.baseAssembly,...this.tablesAssembly,...res]
-                }
-            })
-        },
-        init() {
-            this.requestUtil.get(this.urls.materialList.url).then((res) => {
-                let data = res.records || []
-                data.forEach((item) => {
-                    let obj = {
-                        name: item.libraryName,
-                        materialLibraryId: item.materialLibraryId,
-                        isEdit:false,
-                        libraryType:item.libraryType,
-                        model:item.libraryName,
-                    }
-                    this.assemblyArrayName.push(obj)
-                })
-            })
-        },
-        searchWidget() {
-            let keyword = this.keyWidget.trim()
-            if(keyword) {
-                this.arrListTables = this.materialAll.filter(item=>{
-                    return this.$t(`${item.name}`).match(new RegExp(`${keyword}`,'gi'))
-                })
-            }else{
-                this.arrListTables = backMaterialLit
-            }
-        },
-        menuPopupShow(evt,index) {
-            this.popUpType = 1 //组件库
-            this.hoverIndex = index
-            this.isShowPopMenu = true
-            let el = document.querySelector(".left-max-height")
-            this.popMenuStyle.top = `${evt.target.offsetTop + 35 - el.scrollTop}px`
-            this.popMenuStyle.left = '126px'
-        },
-        menuPopupHide() {
-            this.isShowPopMenu = false
-        },
-        menuMouseoutDeal(evt) {
-            let target = evt.toElement || evt.relatedTarget
-            if(target.className != 'materialModelMenu' && !target.className.includes('pop-menu')) {
-                this.menuPopupHide()
-            }
-        },
-        popReanme() {
-            if(this.popUpType == 1) {
-                this.$set(this.assemblyArrayName[this.hoverIndex],'isEdit',true)
-            }else if(this.popUpType == 2) {
-                this.$set(this.arrListTables[this.arrListTableIndex],'isEdit',true)
-            }else if(this.popUpType == 3) {
-                this.$set(this.materials[this.templateIndex],'isEdit',true)
-            }
-            this.menuPopupHide()
-        },
-        popDel() {
-            if(this.popUpType == 1) {
-                let materialLibraryId = this.assemblyArrayName[this.hoverIndex].materialLibraryId
-                sureDialog(this.myEditorUi,`${this.$t('sureDel')}${this.$t('widgetLib')}-${this.assemblyArrayName[this.hoverIndex].model}`,()=>{
-                    this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then(res=>{
-                        if(res.code == 0) {
-                            this.assemblyArrayName.splice(this.hoverIndex,1)
-                            Message.info(this.$t('deleteSuccessfully'))
-                        }
-                    })
-                })
-            }else if(this.popUpType == 2 ) {
-                let materialId = this.arrListTables[this.arrListTableIndex].materialId
-                sureDialog(this.myEditorUi,`${this.$t('sureDel')}${this.$t('widget')}-${this.arrListTables[this.arrListTableIndex].model}`,()=>{
-                    this.requestUtil.delete(this.urls.materialRightList.url + `/${materialId}`).then(res=>{
-                        if(res.code == 0) {
-                            this.arrListTables.splice(this.arrListTableIndex,1)
-                            Message.info(this.$t('deleteSuccessfully'))
-                        }
-                    })
-                })
-            }else if(this.popUpType == 3 ) {
-                let pageTemplateId = this.materials[this.templateIndex].pageTemplateId
-                sureDialog(this.myEditorUi,`${this.$t('sureDel')}${this.$t('template')}-${this.materials[this.templateIndex].model}`,()=>{
-                    this.requestUtil.delete(this.urls.addTemplate.url + `/${pageTemplateId}`).then(res=>{
-                        if(res.code == 0) {
-                            this.materials.splice(this.templateIndex,1)
-                            Message.info(this.$t('deleteSuccessfully'))
-                        }
-                    })
-                })
-            }
-        },
-        saveLayoutName(index) {
-            if(this.assemblyArrayName[index].name === this.assemblyArrayName[index].model) {
-                this.$set(this.assemblyArrayName[index],'isEdit',false)
-                return
-            }
-            if(!this.assemblyArrayName[index].model.trim()) {
-                this.$set(this.assemblyArrayName[index],'isEdit',false)
-                return
-            }
-            let data = {
-                materialLibraryId:this.assemblyArrayName[index].materialLibraryId,
-                libraryName:this.assemblyArrayName[index].model
-            }
-            this.requestUtil.put(this.urls.materialList.url,data).then(res=>{
-                if(res.libraryName) {
-                    needRefreshLeft = true
-                    Message.info(this.$t('modifySuccessfully'))
-                    this.$set(this.assemblyArrayName[index],'name',res.libraryName)
-                    this.$nextTick(()=>{
-                        this.$set(this.assemblyArrayName[index],'isEdit',false)//会触发blur事件
-                    })
-                }
-            })
-        },
-        dblRename(index) {
-            if(index > 2) {
-                this.$set(this.assemblyArrayName[index],'isEdit',true)
-            }
-        },
-        cancel() {
-            this.$emit('triggerCancel',needRefreshLeft)
-            needRefreshLeft = false//重置
-        },
-        renameWidget(evt,index) {
-            this.arrListTableIndex = index
-            this.popUpType = 2 //右侧组件
-            this.isShowPopMenu = true
-            let el = document.querySelector(".assembly-right.materialtabs-right")
-            let con = evt.target.parentElement
-            this.popMenuStyle.left = `${evt.target.offsetLeft + con.offsetLeft + 30}px`
-            this.popMenuStyle.top = `${evt.target.offsetTop + con.offsetTop - el.scrollTop + 44}px`
-        },
-        saveWidgetName(index) {
-            if(this.arrListTables[index].name === this.arrListTables[index].model || !this.arrListTables[index].model.trim()) {
-                this.$set(this.arrListTables[index],'isEdit',false)
-                return
-            }
-            let data = {
-                materialId:this.arrListTables[index].materialId,
-                descript:this.arrListTables[index].model
-            }
-            this.requestUtil.put(this.urls.materialRightList.url,data).then(res=>{
-                if(res.descript) {
-                    this.$set(this.arrListTables[index],'name',res.descript)
-                    Message.info(this.$t('modifySuccessfully'))
-                    needRefreshLeft = true
-                    this.$set(this.arrListTables[index],'isEdit',false)//会触发blur事件
-                }
-            })
-        },
-        dblRenameWidget(data, index) {
-            if (data.model) {
-                this.popUpType = 2 //右侧组件
-                this.$set(this.arrListTables[index],'isEdit',true)
-            }
-        },
-        renameTemplate(evt,index) {
-            this.templateIndex = index
-            this.popUpType = 3 //右侧模板
-            this.isShowPopMenu = true
-            let el = document.querySelector(".material-right.materialtabs-right")
-            let con = evt.target.parentElement
-            this.popMenuStyle.left = `${evt.target.offsetLeft + con.offsetLeft + 30}px`
-            this.popMenuStyle.top = `${evt.target.offsetTop + con.offsetTop - el.scrollTop + 44}px`
-        },
-        saveTemplateName(index) {
-            if(this.materials[index].name === this.materials[index].model || !this.materials[index].model.trim()) {
-                this.$set(this.materials[index],'isEdit',false)
-                return
-            }
-            let data = {
-                pageTemplateId:this.materials[index].pageTemplateId,
-                name:this.materials[index].model
-            }
-            this.requestUtil.put(this.urls.addTemplate.url,data).then(res=>{
-                if(res.name) {
-                    this.$set(this.materials[index],'name',res.name)
-                    Message.info(this.$t('modifySuccessfully'))
-                    needRefreshLeft = true
-                    this.$set(this.materials[index],'isEdit',false)//会触发blur事件
-                }
-            })
-        },
-        dblRenameTemplate(index) {
-            this.popUpType = 3 //右侧模板
-            this.$set(this.materials[index],'isEdit',true)
-        },
-        selectAssemblyList(index, materialLibraryId) {
-            if(index == this.isActive) {
-                return
-            }
-            this.isActive = index
-            if (index >= 2) {
-                this.arrListTables = []
-                this.uploadData = {
-                    materialLibraryId: materialLibraryId
-                }
-                this.requestUtil.get(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
-                    let data = res.materialList
-                    data.forEach((item) => {
-                        let obj = {
-                            name: item.descript,
-                            image: item.picUrl,
-                            isEdit:false,
-                            model:item.descript,
-                            materialId: item.materialId
-                        }
-                        this.arrListTables.push(obj)
-                    })
-                })
-            }else{
-                if(index === 0) {
-                    this.arrListTables = this.baseAssembly
-                }else{
-                    this.arrListTables = this.tablesAssembly
-                }
-            }
-            backMaterialLit = JSON.parse(JSON.stringify(this.arrListTables))
-        },
-        selectMaterialList(index) {
-            if(index == this.isActive2) {
-                return
-            }
-            this.isActive2 = index
-            let data = {type:'normal'}
-            if(index == 1) {
-                data.type = 'dialog'
-            }
-            this.materials = []
-            this.requestUtil.get(this.urls.addTemplate.url,data).then((res) => {
-                let data = res.records || []
-                data.forEach((item) => {
-                    let obj = {
-                        picUrl: item.picUrl,
-                        pageTemplateId: item.pageTemplateId,
-                        name: item.name,
-                        isEdit:false,
-                        model:item.name,
-                        type:item.type,
-                    }
-                    this.materials.push(obj)
-                })
-            })
-        },
-        tabsSwitch(type) {
-            this.tabNumber = type
-            if(this.tabNumber === 1) { // 默认是页面模板
-                this.selectMaterialList(0)
-            }
-        },
-        addassemblyFn() {
-            // 新增
-            let num = this.assemblyArrayName.length - ROOT_LEN
-            let name = `新建组件库${num}`
-            let data = {
-                libraryName: name,
-                descript:'',
-                libraryType: 1
-            }
-            this.requestUtil.post(this.urls.materialList.url, data).then((res) => {
-                needRefreshLeft = true
-                this.assemblyArrayName.push({name: name,materialLibraryId: res.materialLibraryId,isEdit:true,model:name})
-                this.selectAssemblyList(num + ROOT_LEN,res.materialLibraryId)
-            })
-        },
-        uploadSucc(res) {
-            needRefreshLeft = true
-            let addpicObj = {
-                image:res.picUrl,
-                name: res.descript,
-                isEdit:false,
-                model:res.descript,
-                materialId: res.materialId
-            }
-            this.arrListTables.push(addpicObj)
-            Message.info(this.$t('uploadSuccessfully'))
-        },
-        uploadErr(res,file,fileList) {
-            if(res.status == 418) {
-                let refreshToken = getCookie('refreshToken')
-                this.requestUtil.post('api/auth/refreshToken', {refreshToken}).then(res => {
-                    setCookie('token', res.token)
-                    setCookie('refreshToken', res.refreshToken)
-                    let formData = new FormData()
-                    formData.append('file', fileList)
-                    formData.append('materialLibraryId', this.uploadData.materialLibraryId)
-                    this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, (data)=>{
-                        this.uploadSucc(data)
-                    })
-                })
-                return
-            }
-        },
-        handleFormatError() {
-            setTimeout ( () => {
-                Message.warning(this.$t('materialRoom.imageFormatRequirement'))
-            }, 1000);
-        },
-        handleMaxSize() {
-            setTimeout ( () => {
-                Message.warning(this.$t('materialRoom.imageSizeRequirement'))
-            }, 1000);
-        },
+      ],
+      materialArrayName: ['pageTemplate', 'popupTemplate'],
+      uploadData:{},
+      DIR_: `${window.PREFIX_PATH}/static/stencils/basic/`,
+      baseAssembly: [
+        {image:'text.svg', name :'text'},
+        {image:'rectangle.svg',name :'rectangle'},
+        {image:'ellipse.svg',name : 'circle'},
+        {image:'line.svg', name :'beeline'},
+        {image:'button.png', name :'button'},
+        {image:'menulist.png',name :'menu'},
+        {image:'tableBox.svg', name :'table'},
+        {image:'image.svg', name :'image'},
+        {image:'linkTag.svg',name : 'Link'},
+        {image:'light.png', name :'Light'},
+        {image:'progress.svg', name :'progressBar'},
+        {image:'pipeline1.svg', name :'pipeline1'},
+        {image:'pipeline2.svg',name :'pipeline2'},
+        {image:'pipeline3.svg',name :'pipeline3'},
+        {image:'triangle.png',name :'triangle'},
+        {image:'pentagram.png',name :'pentagram'},
+      ],
+      tablesAssembly: [
+        {image:'lineChart.svg',name :'trend'},
+        {image:'gaugeChart.svg',name :'dashboard'}
+      ],
+      arrListTables: [],
+      arrListTableIndex:-1,
+      isActive: 0,
+      isActive2: -1,
+      tabNumber: 0,
+      materials: [],
+      nodata: 'noData',
+      headers:{
+        'Authorization': `Bearer ${getCookie('token')}`
+      },
+      isShowPopMenu:false,
+      popUpType:1,
+      popMenuStyle:{left:'126px',top:0},
+      hoverIndex:-1,
+      keyWidget:"",
+      templateIndex:0,
+      materialAll:[],
     }
+  },
+  created() {
+  },
+  mounted() {
+    this.arrListTables = this.baseAssembly
+    backMaterialLit = JSON.parse(JSON.stringify(this.arrListTables))
+    this.uploadurl = this.urls.materialList.url
+    this.getAllMaterail()
+  },
+  methods: {
+    getAllMaterail() {
+      let res = []
+      this.requestUtil.get(this.urls.materialRightList.url).then(data=>{
+        if(data) {
+          data.forEach(item=>{
+            res.push({
+              name: item.descript,
+              image: item.picUrl,
+              isEdit:false,
+              model:item.descript,
+              materialId: item.materialId
+            })
+          })
+          this.materialAll = [...this.baseAssembly,...this.tablesAssembly,...res]
+        }
+      })
+    },
+    init() {
+      this.requestUtil.get(this.urls.materialList.url).then((res) => {
+        let data = res.records || []
+        data.forEach((item) => {
+          let obj = {
+            name: item.libraryName,
+            materialLibraryId: item.materialLibraryId,
+            isEdit:false,
+            libraryType:item.libraryType,
+            model:item.libraryName,
+          }
+          this.assemblyArrayName.push(obj)
+        })
+      })
+    },
+    searchWidget() {
+      let keyword = this.keyWidget.trim()
+      if(keyword) {
+        this.arrListTables = this.materialAll.filter(item=>{
+          return this.$t(`${item.name}`).match(new RegExp(`${keyword}`,'gi'))
+        })
+      }else{
+        this.arrListTables = backMaterialLit
+      }
+    },
+    menuPopupShow(evt,index) {
+      this.popUpType = 1 //组件库
+      this.hoverIndex = index
+      this.isShowPopMenu = true
+      let el = document.querySelector(".left-max-height")
+      this.popMenuStyle.top = `${evt.target.offsetTop + 35 - el.scrollTop}px`
+      this.popMenuStyle.left = '126px'
+    },
+    menuPopupHide() {
+      this.isShowPopMenu = false
+    },
+    menuMouseoutDeal(evt) {
+      let target = evt.toElement || evt.relatedTarget
+      if(target.className != 'materialModelMenu' && !target.className.includes('pop-menu')) {
+        this.menuPopupHide()
+      }
+    },
+    popReanme() {
+      if(this.popUpType == 1) {
+        this.$set(this.assemblyArrayName[this.hoverIndex],'isEdit',true)
+      }else if(this.popUpType == 2) {
+        this.$set(this.arrListTables[this.arrListTableIndex],'isEdit',true)
+      }else if(this.popUpType == 3) {
+        this.$set(this.materials[this.templateIndex],'isEdit',true)
+      }
+      this.menuPopupHide()
+    },
+    popDel() {
+      if(this.popUpType == 1) {
+        let materialLibraryId = this.assemblyArrayName[this.hoverIndex].materialLibraryId
+        sureDialog(this.myEditorUi,`${this.$t('sureDel')}${this.$t('widgetLib')}-${this.assemblyArrayName[this.hoverIndex].model}`,()=>{
+          this.requestUtil.delete(this.urls.materialList.url + `/${materialLibraryId}`).then(res=>{
+            if(res.code == 0) {
+              this.assemblyArrayName.splice(this.hoverIndex,1)
+              Message.info(this.$t('deleteSuccessfully'))
+            }
+          })
+        })
+      }else if(this.popUpType == 2 ) {
+        let materialId = this.arrListTables[this.arrListTableIndex].materialId
+        sureDialog(this.myEditorUi,`${this.$t('sureDel')}${this.$t('widget')}-${this.arrListTables[this.arrListTableIndex].model}`,()=>{
+          this.requestUtil.delete(this.urls.materialRightList.url + `/${materialId}`).then(res=>{
+            if(res.code == 0) {
+              this.arrListTables.splice(this.arrListTableIndex,1)
+              Message.info(this.$t('deleteSuccessfully'))
+            }
+          })
+        })
+      }else if(this.popUpType == 3 ) {
+        let pageTemplateId = this.materials[this.templateIndex].pageTemplateId
+        sureDialog(this.myEditorUi,`${this.$t('sureDel')}${this.$t('template')}-${this.materials[this.templateIndex].model}`,()=>{
+          this.requestUtil.delete(this.urls.addTemplate.url + `/${pageTemplateId}`).then(res=>{
+            if(res.code == 0) {
+              this.materials.splice(this.templateIndex,1)
+              Message.info(this.$t('deleteSuccessfully'))
+            }
+          })
+        })
+      }
+    },
+    saveLayoutName(index) {
+      if(this.assemblyArrayName[index].name === this.assemblyArrayName[index].model) {
+        this.$set(this.assemblyArrayName[index],'isEdit',false)
+        return
+      }
+      if(!this.assemblyArrayName[index].model.trim()) {
+        this.$set(this.assemblyArrayName[index],'isEdit',false)
+        return
+      }
+      let data = {
+        materialLibraryId:this.assemblyArrayName[index].materialLibraryId,
+        libraryName:this.assemblyArrayName[index].model
+      }
+      this.requestUtil.put(this.urls.materialList.url,data).then(res=>{
+        if(res.libraryName) {
+          needRefreshLeft = true
+          Message.info(this.$t('modifySuccessfully'))
+          this.$set(this.assemblyArrayName[index],'name',res.libraryName)
+          this.$nextTick(()=>{
+            this.$set(this.assemblyArrayName[index],'isEdit',false)//会触发blur事件
+          })
+        }
+      })
+    },
+    dblRename(index) {
+      if(index > 2) {
+        this.$set(this.assemblyArrayName[index],'isEdit',true)
+      }
+    },
+    cancel() {
+      this.$emit('triggerCancel',needRefreshLeft)
+      needRefreshLeft = false//重置
+    },
+    renameWidget(evt,index) {
+      this.arrListTableIndex = index
+      this.popUpType = 2 //右侧组件
+      this.isShowPopMenu = true
+      let el = document.querySelector(".assembly-right.materialtabs-right")
+      let con = evt.target.parentElement
+      this.popMenuStyle.left = `${evt.target.offsetLeft + con.offsetLeft + 30}px`
+      this.popMenuStyle.top = `${evt.target.offsetTop + con.offsetTop - el.scrollTop + 44}px`
+    },
+    saveWidgetName(index) {
+      if(this.arrListTables[index].name === this.arrListTables[index].model || !this.arrListTables[index].model.trim()) {
+        this.$set(this.arrListTables[index],'isEdit',false)
+        return
+      }
+      let data = {
+        materialId:this.arrListTables[index].materialId,
+        descript:this.arrListTables[index].model
+      }
+      this.requestUtil.put(this.urls.materialRightList.url,data).then(res=>{
+        if(res.descript) {
+          this.$set(this.arrListTables[index],'name',res.descript)
+          Message.info(this.$t('modifySuccessfully'))
+          needRefreshLeft = true
+          this.$set(this.arrListTables[index],'isEdit',false)//会触发blur事件
+        }
+      })
+    },
+    dblRenameWidget(data, index) {
+      if (data.model) {
+        this.popUpType = 2 //右侧组件
+        this.$set(this.arrListTables[index],'isEdit',true)
+      }
+    },
+    renameTemplate(evt,index) {
+      this.templateIndex = index
+      this.popUpType = 3 //右侧模板
+      this.isShowPopMenu = true
+      let el = document.querySelector(".material-right.materialtabs-right")
+      let con = evt.target.parentElement
+      this.popMenuStyle.left = `${evt.target.offsetLeft + con.offsetLeft + 30}px`
+      this.popMenuStyle.top = `${evt.target.offsetTop + con.offsetTop - el.scrollTop + 44}px`
+    },
+    saveTemplateName(index) {
+      if(this.materials[index].name === this.materials[index].model || !this.materials[index].model.trim()) {
+        this.$set(this.materials[index],'isEdit',false)
+        return
+      }
+      let data = {
+        pageTemplateId:this.materials[index].pageTemplateId,
+        name:this.materials[index].model
+      }
+      this.requestUtil.put(this.urls.addTemplate.url,data).then(res=>{
+        if(res.name) {
+          this.$set(this.materials[index],'name',res.name)
+          Message.info(this.$t('modifySuccessfully'))
+          needRefreshLeft = true
+          this.$set(this.materials[index],'isEdit',false)//会触发blur事件
+        }
+      })
+    },
+    dblRenameTemplate(index) {
+      this.popUpType = 3 //右侧模板
+      this.$set(this.materials[index],'isEdit',true)
+    },
+    selectAssemblyList(index, materialLibraryId) {
+      if(index == this.isActive) {
+        return
+      }
+      this.isActive = index
+      if (index >= 2) {
+        this.arrListTables = []
+        this.uploadData = {
+          materialLibraryId: materialLibraryId
+        }
+        this.requestUtil.get(this.urls.materialList.url + `/${materialLibraryId}`).then((res) => {
+          let data = res.materialList
+          data.forEach((item) => {
+            let obj = {
+              name: item.descript,
+              image: item.picUrl,
+              isEdit:false,
+              model:item.descript,
+              materialId: item.materialId
+            }
+            this.arrListTables.push(obj)
+          })
+        })
+      }else{
+        if(index === 0) {
+          this.arrListTables = this.baseAssembly
+        }else{
+          this.arrListTables = this.tablesAssembly
+        }
+      }
+      backMaterialLit = JSON.parse(JSON.stringify(this.arrListTables))
+    },
+    selectMaterialList(index) {
+      if(index == this.isActive2) {
+        return
+      }
+      this.isActive2 = index
+      let data = {type:'normal'}
+      if(index == 1) {
+        data.type = 'dialog'
+      }
+      this.materials = []
+      this.requestUtil.get(this.urls.addTemplate.url,data).then((res) => {
+        let data = res.records || []
+        data.forEach((item) => {
+          let obj = {
+            picUrl: item.picUrl,
+            pageTemplateId: item.pageTemplateId,
+            name: item.name,
+            isEdit:false,
+            model:item.name,
+            type:item.type,
+          }
+          this.materials.push(obj)
+        })
+      })
+    },
+    tabsSwitch(type) {
+      this.tabNumber = type
+      if(this.tabNumber === 1) { // 默认是页面模板
+        this.selectMaterialList(0)
+      }
+    },
+    addassemblyFn() {
+      // 新增
+      let num = this.assemblyArrayName.length - ROOT_LEN
+      let name = `新建组件库${num}`
+      let data = {
+        libraryName: name,
+        descript:'',
+        libraryType: 1
+      }
+      this.requestUtil.post(this.urls.materialList.url, data).then((res) => {
+        needRefreshLeft = true
+        this.assemblyArrayName.push({name: name,materialLibraryId: res.materialLibraryId,isEdit:true,model:name})
+        this.selectAssemblyList(num + ROOT_LEN,res.materialLibraryId)
+      })
+    },
+    uploadSucc(res) {
+      needRefreshLeft = true
+      let addpicObj = {
+        image:res.picUrl,
+        name: res.descript,
+        isEdit:false,
+        model:res.descript,
+        materialId: res.materialId
+      }
+      this.arrListTables.push(addpicObj)
+      Message.info(this.$t('uploadSuccessfully'))
+    },
+    uploadErr(res,file,fileList) {
+      if(res.status == 418) {
+        let refreshToken = getCookie('refreshToken')
+        this.requestUtil.post('api/auth/refreshToken', {refreshToken}).then(res => {
+          setCookie('token', res.token)
+          setCookie('refreshToken', res.refreshToken)
+          let formData = new FormData()
+          formData.append('file', fileList)
+          formData.append('materialLibraryId', this.uploadData.materialLibraryId)
+          this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, (data)=>{
+            this.uploadSucc(data)
+          })
+        })
+        return
+      }
+    },
+    handleFormatError() {
+      setTimeout ( () => {
+        Message.warning(this.$t('materialRoom.imageFormatRequirement'))
+      }, 1000);
+    },
+    handleMaxSize() {
+      setTimeout ( () => {
+        Message.warning(this.$t('materialRoom.imageSizeRequirement'))
+      }, 1000);
+    },
+  }
 }
 </script>
 <style lang="less">

@@ -36,46 +36,46 @@
 import {Modal, Button} from 'iview'
 
 export default {
-    components: {
-        Modal,
-        Button,
+  components: {
+    Modal,
+    Button,
+  },
+  props: {
+    value: {
+      type: Boolean,
+      default: false,
     },
-    props: {
-        value: {
-            type: Boolean,
-            default: false,
-        },
-        content: {
-            type: String,
-        },
+    content: {
+      type: String,
     },
-    data() {
-        return {
-            visible: false,
-            loading: false,
-        };
+  },
+  data() {
+    return {
+      visible: false,
+      loading: false,
+    };
+  },
+  watch: {
+    value(val) {
+      this.visible = val;
     },
-    watch: {
-        value(val) {
-            this.visible = val;
-        },
-        visible(val) {
-            if (!val) {
-                this.$emit('input', val);
-            }
-        },
+    visible(val) {
+      if (!val) {
+        this.$emit('input', val);
+      }
     },
-    mounted() {
-        this.visible = this.value;
+  },
+  mounted() {
+    this.visible = this.value;
+  },
+  methods: {
+    submit() {
+      this.cancel();
+      this.$emit('callback');
     },
-    methods: {
-        submit() {
-            this.cancel();
-            this.$emit('callback');
-        },
-        cancel() {
-            this.visible = false;
-        },
+    cancel() {
+      this.visible = false;
     },
+  },
 };
 </script>

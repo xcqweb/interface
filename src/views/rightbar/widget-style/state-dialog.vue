@@ -153,144 +153,144 @@ import {tipDialog} from '../../../services/Utils'
 let style = {'background':'#ffffff','borderColor':'#000000','color':'#000000'},inputs
 let tabArr = ['background','borderColor','color'],editStateTemp,localImage
 export default{
-    props:['editState'],
-    data() {
-        return {
-            stateName:"",
-            stateDesc:"",
-            typeTab:1,
-            animateCls:'',
-            animateCheck:false,
-            shapeName:'',
-            picList:['image','userimage'],
-            bgPic:require('../../../assets/images/rightsidebar/bg_ic_widget.png'),
-            isShowBgText:true,
-            bgPicStyle:{height:'auto'}
+  props:['editState'],
+  data() {
+    return {
+      stateName:"",
+      stateDesc:"",
+      typeTab:1,
+      animateCls:'',
+      animateCheck:false,
+      shapeName:'',
+      picList:['image','userimage'],
+      bgPic:require('../../../assets/images/rightsidebar/bg_ic_widget.png'),
+      isShowBgText:true,
+      bgPicStyle:{height:'auto'}
+    }
+  },
+  mounted() {
+    style = {'background':'#ffffff','borderColor':'#000000','color':'#000000'}
+    const component = this.$mount()
+    document.querySelector('body').appendChild(component.$el)
+    this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
+    if (this.picList.includes(this.shapeName)) {
+      style.borderColor = "none"
+      this.typeTab = 4
+    }
+    if(this.editState) {
+      editStateTemp = JSON.parse(JSON.stringify(this.editState))//深拷贝 
+      this.stateName = editStateTemp.name
+      this.animateCls = editStateTemp.animateCls
+      this.animateCheck = this.animateCls != ''
+      this.stateDesc = editStateTemp.desc
+      if(this.stateDesc == `${this.$t("noDescribe")}`) {
+        this.stateDesc = ''
+      }
+      style = editStateTemp.style
+      if(editStateTemp.imgInfo) {
+        this.setBg(editStateTemp.imgInfo.url)
+      }
+    }else{
+      let graph = this.myEditorUi.editor.graph
+      let states = this.$parent.getStates(graph)
+      let index = states.length
+      this.stateName = `${this.$t("state")}${index}`
+    }
+    this.$nextTick(()=>{
+      let dlg = new ColorDialog(this.myEditorUi,style.background, null,null,false)
+      let el = document.querySelector(".state-color-con")
+      if(el) {
+        el.appendChild(dlg.container)
+        inputs = $(".state-color-con").find("input")
+        let defaultColorEls =  $(".state-color-con").find('center')
+        let changeStyleDeal = (value)=>{
+          style[tabArr[this.typeTab - 1]] = value
+          $(inputs[1]).val(value)
+          $(inputs[0]).css('background',value)
         }
-    },
-    mounted() {
-        style = {'background':'#ffffff','borderColor':'#000000','color':'#000000'}
-        const component = this.$mount()
-        document.querySelector('body').appendChild(component.$el)
-        this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
-        if (this.picList.includes(this.shapeName)) {
-            style.borderColor = "none"
-            this.typeTab = 4
-        }
-        if(this.editState) {
-            editStateTemp = JSON.parse(JSON.stringify(this.editState))//深拷贝 
-            this.stateName = editStateTemp.name
-            this.animateCls = editStateTemp.animateCls
-            this.animateCheck = this.animateCls != ''
-            this.stateDesc = editStateTemp.desc
-            if(this.stateDesc == `${this.$t("noDescribe")}`) {
-                this.stateDesc = ''
-            }
-            style = editStateTemp.style
-            if(editStateTemp.imgInfo) {
-                this.setBg(editStateTemp.imgInfo.url)
-            }
-        }else{
-            let graph = this.myEditorUi.editor.graph
-            let states = this.$parent.getStates(graph)
-            let index = states.length
-            this.stateName = `${this.$t("state")}${index}`
-        }
-        this.$nextTick(()=>{
-            let dlg = new ColorDialog(this.myEditorUi,style.background, null,null,false)
-            let el = document.querySelector(".state-color-con")
-            if(el) {
-                el.appendChild(dlg.container)
-                inputs = $(".state-color-con").find("input")
-                let defaultColorEls =  $(".state-color-con").find('center')
-                let changeStyleDeal = (value)=>{
-                    style[tabArr[this.typeTab - 1]] = value
-                    $(inputs[1]).val(value)
-                    $(inputs[0]).css('background',value)
-                }
-                defaultColorEls.on("click","li",(event)=>{
-                    let target = $(event.target)
-                    changeStyleDeal(target.css('background-color'))
-                })
-                $(inputs[1]).change((e)=>{
-                    changeStyleDeal(e.target.value)
-                })
-            }
+        defaultColorEls.on("click","li",(event)=>{
+          let target = $(event.target)
+          changeStyleDeal(target.css('background-color'))
         })
-    },  
-    methods: {
-        changeTab(index) {
-            this.typeTab = index
-            if(index != 4) {
-                let value = style[tabArr[this.typeTab - 1]]
-                $(inputs[1]).val(value)
-                $(inputs[0]).css('background',value)
-            }
-        },
-        hideState() {
-            this.$emit("closeStateDialog")
-        },
-        submitState() {
-            let data = {
-                name:this.stateName,
-                desc:this.stateDesc,
-                style:Object.assign({},style),
-                animateCls:this.animateCls,
-            }
-            if(editStateTemp) {
-                data.id = editStateTemp.id
-                if(editStateTemp.modelFormInfo) {
-                    data.modelFormInfo = editStateTemp.modelFormInfo
-                }
-            }
-            if(localImage) {
-                let formData = new FormData()
-                formData.append('file', localImage)
-                formData.append('materialLibraryId',"");
-                this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, (res)=> {
-                    data.imgInfo = {
-                        url:`getechFileSystem/${res.picPath}`,
-                        width:res.picWidth,
-                        height:res.picHeight
-                    }
-                    this.$emit("closeStateDialog",data)
-                })
-            }else{
-                this.$emit("closeStateDialog",data)
-            }
-            localImage = null
-            editStateTemp = null//置空，防止下次编辑时候干扰列表信息
-        },
-        changeAnimate(status) {
-            if(status) {
-                this.animateCls = 'animate-blink'
-            }else{
-                this.animateCls = ''
-            }
-        },
-        setPic() {
-            this.$refs.chooseImg.click()
-        },
-        fileChange(e) {
-            if(e.target.files && e.target.files.length) {
-                if (e.target.files[0].size >= 2 * 1024 * 1024) {
-                    tipDialog(this.myEditorUi,`${this.$t('rightBar.bgPicNotOver2M')}`)
-                    return false
-                }
-                // 预览图片
-                let reader = new FileReader()
-                localImage = e.target.files[0]
-                reader.readAsDataURL(localImage)
-                reader.onload = evt => this.setBg(evt.target.result)
-            }
-        },
-        setBg(url) {
-            url = url.replace(/getechFileSystem\//, window.fileSystem)
-            this.bgPic = url
-            this.bgPicStyle = {height:'98px'}
-            this.isShowBgText = false
-        },
-    },      
+        $(inputs[1]).change((e)=>{
+          changeStyleDeal(e.target.value)
+        })
+      }
+    })
+  },  
+  methods: {
+    changeTab(index) {
+      this.typeTab = index
+      if(index != 4) {
+        let value = style[tabArr[this.typeTab - 1]]
+        $(inputs[1]).val(value)
+        $(inputs[0]).css('background',value)
+      }
+    },
+    hideState() {
+      this.$emit("closeStateDialog")
+    },
+    submitState() {
+      let data = {
+        name:this.stateName,
+        desc:this.stateDesc,
+        style:Object.assign({},style),
+        animateCls:this.animateCls,
+      }
+      if(editStateTemp) {
+        data.id = editStateTemp.id
+        if(editStateTemp.modelFormInfo) {
+          data.modelFormInfo = editStateTemp.modelFormInfo
+        }
+      }
+      if(localImage) {
+        let formData = new FormData()
+        formData.append('file', localImage)
+        formData.append('materialLibraryId',"");
+        this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, (res)=> {
+          data.imgInfo = {
+            url:`getechFileSystem/${res.picPath}`,
+            width:res.picWidth,
+            height:res.picHeight
+          }
+          this.$emit("closeStateDialog",data)
+        })
+      }else{
+        this.$emit("closeStateDialog",data)
+      }
+      localImage = null
+      editStateTemp = null//置空，防止下次编辑时候干扰列表信息
+    },
+    changeAnimate(status) {
+      if(status) {
+        this.animateCls = 'animate-blink'
+      }else{
+        this.animateCls = ''
+      }
+    },
+    setPic() {
+      this.$refs.chooseImg.click()
+    },
+    fileChange(e) {
+      if(e.target.files && e.target.files.length) {
+        if (e.target.files[0].size >= 2 * 1024 * 1024) {
+          tipDialog(this.myEditorUi,`${this.$t('rightBar.bgPicNotOver2M')}`)
+          return false
+        }
+        // 预览图片
+        let reader = new FileReader()
+        localImage = e.target.files[0]
+        reader.readAsDataURL(localImage)
+        reader.onload = evt => this.setBg(evt.target.result)
+      }
+    },
+    setBg(url) {
+      url = url.replace(/getechFileSystem\//, window.fileSystem)
+      this.bgPic = url
+      this.bgPicStyle = {height:'98px'}
+      this.isShowBgText = false
+    },
+  },      
 }
 </script>
 

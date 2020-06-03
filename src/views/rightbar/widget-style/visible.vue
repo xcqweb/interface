@@ -79,84 +79,84 @@
 <script>
 import {tipDialog} from '../../../services/Utils'
 export default{
-    props:['dialogs','currentPageWidgets','currentEditItem','bindActions','typeTab'],
-    data() {
-        return {
+  props:['dialogs','currentPageWidgets','currentEditItem','bindActions','typeTab'],
+  data() {
+    return {
             
-        }
-    },
-    mounted() {
+    }
+  },
+  mounted() {
     
+  },
+  methods: {
+    changeTab(index) {
+      this.$emit("modifyTypeTab",index)
+      if(index === 1) {
+        this.currentPageWidgets.forEach(d=>{
+          d.selected = false
+        })
+      }else{
+        this.dialogs.forEach(d=>{
+          d.selected = false
+        })
+      }
     },
-    methods: {
-        changeTab(index) {
-            this.$emit("modifyTypeTab",index)
-            if(index === 1) {
-                this.currentPageWidgets.forEach(d=>{
-                    d.selected = false
-                })
-            }else{
-                this.dialogs.forEach(d=>{
-                    d.selected = false
-                })
-            }
-        },
-        hide() {
-            this.$emit("submitMutual")
-        },
-        submit(typeTab) {
-            let currentItem,innerType,flag = false,flag2 = false,tempList,tipText
-            if(typeTab == 1) {
-                currentItem = this.currentDialogItem
-                innerType = 'page'
-                tempList = this.dialogs
-                tipText = `${this.$t("popup")}`
-            }else{
-                currentItem = this.currentWidgetItem
-                innerType = 'palette'
-                tempList = this.currentPageWidgets
-                tipText = `${this.$t("control")}`
-            }
-            for(let i = 0;i < tempList.length;i++) {
-                if(tempList[i].selected) {
-                    flag = true
-                    break
-                }
-            }
-            if(!flag) {
-                tipDialog(this.myEditorUi,`${this.$t("rightBar.chooseToSet")} ${tipText}`)
-                return
-            } 
-            if(!currentItem) {
-                currentItem = this.currentEditItem  //编辑传过来的
-            }
-            for(let i = 0;i < this.bindActions.length;i++) {
-                if(currentItem.id == this.bindActions[i].link && this.bindActions[i].mutualType == 2) {
-                    flag2 = true
-                    break
-                }
-            }
-            if(flag2) {
-                tipDialog(this.myEditorUi,`${this.$t("thisText")} ${tipText} ${this.$t("rightBar.hasBindVisibleOrHideEvent")}`)
-                return
-            } 
-            this.$emit("submitMutual",{mutualType:2,id:currentItem.id,hide:currentItem.hide,innerType:innerType,isEdit:!!this.currentEditItem})
-        },
-        checkDialog(item) {
-            this.currentDialogItem = item
-            this.dialogs.forEach(d=>{
-                d.selected = false
-            })
-            item.selected = true
-        },
-        checkWidget(item) {
-            this.currentWidgetItem = item
-            this.currentPageWidgets.forEach(d=>{
-                d.selected = false
-            })
-            item.selected = true
+    hide() {
+      this.$emit("submitMutual")
+    },
+    submit(typeTab) {
+      let currentItem,innerType,flag = false,flag2 = false,tempList,tipText
+      if(typeTab == 1) {
+        currentItem = this.currentDialogItem
+        innerType = 'page'
+        tempList = this.dialogs
+        tipText = `${this.$t("popup")}`
+      }else{
+        currentItem = this.currentWidgetItem
+        innerType = 'palette'
+        tempList = this.currentPageWidgets
+        tipText = `${this.$t("control")}`
+      }
+      for(let i = 0;i < tempList.length;i++) {
+        if(tempList[i].selected) {
+          flag = true
+          break
         }
-    },      
+      }
+      if(!flag) {
+        tipDialog(this.myEditorUi,`${this.$t("rightBar.chooseToSet")} ${tipText}`)
+        return
+      } 
+      if(!currentItem) {
+        currentItem = this.currentEditItem  //编辑传过来的
+      }
+      for(let i = 0;i < this.bindActions.length;i++) {
+        if(currentItem.id == this.bindActions[i].link && this.bindActions[i].mutualType == 2) {
+          flag2 = true
+          break
+        }
+      }
+      if(flag2) {
+        tipDialog(this.myEditorUi,`${this.$t("thisText")} ${tipText} ${this.$t("rightBar.hasBindVisibleOrHideEvent")}`)
+        return
+      } 
+      this.$emit("submitMutual",{mutualType:2,id:currentItem.id,hide:currentItem.hide,innerType:innerType,isEdit:!!this.currentEditItem})
+    },
+    checkDialog(item) {
+      this.currentDialogItem = item
+      this.dialogs.forEach(d=>{
+        d.selected = false
+      })
+      item.selected = true
+    },
+    checkWidget(item) {
+      this.currentWidgetItem = item
+      this.currentPageWidgets.forEach(d=>{
+        d.selected = false
+      })
+      item.selected = true
+    }
+  },      
 }
 </script>
 

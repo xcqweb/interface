@@ -53,71 +53,71 @@ import {CheckboxGroup, Checkbox, Button} from 'iview'
 import deviceCommon from './js/device-common'
 
 export default {
-    components: {
-        CheckboxGroup,
-        Checkbox,
-        Button,
+  components: {
+    CheckboxGroup,
+    Checkbox,
+    Button,
+  },
+  mixins: [deviceCommon],
+  props: {
+    // checkbox true-value
+    trueProp: {
+      type: String,
     },
-    mixins: [deviceCommon],
-    props: {
-        // checkbox true-value
-        trueProp: {
-            type: String,
-        },
-    },
+  },
+  data() {
+    return {
+      selected: [],
+      indeterminate: false,
+      checkAll: false,
+    };
+  },
+  watch: {
     data() {
-        return {
-            selected: [],
-            indeterminate: false,
-            checkAll: false,
-        };
+      this.reset();
     },
-    watch: {
-        data() {
-            this.reset();
-        },
+  },
+  methods: {
+    handleCheckboxGroupChange(data) {
+      const len = data.length;
+      if (len === this.data.length) {
+        this.indeterminate = false;
+        this.checkAll = true;
+      } else if (len > 0) {
+        this.indeterminate = true;
+        this.checkAll = false;
+      } else {
+        this.indeterminate = false;
+        this.checkAll = false;
+      }
     },
-    methods: {
-        handleCheckboxGroupChange(data) {
-            const len = data.length;
-            if (len === this.data.length) {
-                this.indeterminate = false;
-                this.checkAll = true;
-            } else if (len > 0) {
-                this.indeterminate = true;
-                this.checkAll = false;
-            } else {
-                this.indeterminate = false;
-                this.checkAll = false;
-            }
-        },
-        handleCheckAll() {
-            if (this.indeterminate) {
-                this.checkAll = false;
-            } else {
-                this.checkAll = !this.checkAll;
-            }
-            this.indeterminate = false;
+    handleCheckAll() {
+      if (this.indeterminate) {
+        this.checkAll = false;
+      } else {
+        this.checkAll = !this.checkAll;
+      }
+      this.indeterminate = false;
 
-            if (this.checkAll) {
-                const selected = [];
-                this.data.forEach(item => {
-                    selected.push(this.getValue(item, this.trueProp));
-                });
-                this.selected = selected;
-            } else {
-                this.selected = [];
-            }
-        },
-        handleRemove() {
-            this.$emit('remove', this.selected);
-        },
-        reset() {
-            this.selected = [];
-            this.indeterminate = false,
-            this.checkAll = false;
-        },
+      if (this.checkAll) {
+        const selected = [];
+        this.data.forEach(item => {
+          selected.push(this.getValue(item, this.trueProp));
+        });
+        this.selected = selected;
+      } else {
+        this.selected = [];
+      }
     },
+    handleRemove() {
+      this.$emit('remove', this.selected);
+    },
+    reset() {
+      this.selected = [];
+      this.indeterminate = false,
+      this.checkAll = false;
+    },
+  },
 };
 </script>
 

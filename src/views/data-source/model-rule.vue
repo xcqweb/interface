@@ -119,159 +119,159 @@ import {Select, Option, Input, Button, Message} from 'iview'
 import {conditionLogical, logicalSignList} from '@/constants/model-form-logic'
 
 export default {
-    components: {
-        Select,
-        Option,
-        Input,
-        Button,
+  components: {
+    Select,
+    Option,
+    Input,
+    Button,
+  },
+  props: {
+    ruleData: {
+      type: Array,
     },
-    props: {
-        ruleData: {
-            type: Array,
-        },
-        showForm: {
-            type: Boolean,
-        },
-        data: {
-            type: String,
-        },
-        resetData: {
-            type: Boolean,
-            default: false,
-        },
+    showForm: {
+      type: Boolean,
+    },
+    data: {
+      type: String,
+    },
+    resetData: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      conditionOptions: conditionLogical,
+      logicalOptions: logicalSignList,
+      model: {
+        conditionLogic: '1',
+        data: []
+      }
+    };
+  },
+  computed: {
+    showLogic() {
+      return this.model.data.length > 1;
+    },
+  },
+  watch: {
+    ruleData() {
+      this.updateModelData();
     },
     data() {
-        return {
-            conditionOptions: conditionLogical,
-            logicalOptions: logicalSignList,
-            model: {
-                conditionLogic: '1',
-                data: []
-            }
-        };
+      this.setModel();
     },
-    computed: {
-        showLogic() {
-            return this.model.data.length > 1;
-        },
+    resetData() {
+      this.setModel();
     },
-    watch: {
-        ruleData() {
-            this.updateModelData();
-        },
-        data() {
-            this.setModel();
-        },
-        resetData() {
-            this.setModel();
-        },
+  },
+  created() {
+    this.setLogicalOptionsObj();
+    this.setModel();
+  },
+  methods: {
+    assign(obj, data) {
+      return Object.assign(obj, {
+        partName: '',
+        paramName: '',
+        logical: '',
+        minValue: '',
+        maxValue: '',
+        fixedValue: '',
+      }, data);
     },
-    created() {
-        this.setLogicalOptionsObj();
-        this.setModel();
+    removeRule(key, index) {
+      this.model.data.splice(index, 1);
+      this.$emit('remove-param', key);
     },
-    methods: {
-        assign(obj, data) {
-            return Object.assign(obj, {
-                partName: '',
-                paramName: '',
-                logical: '',
-                minValue: '',
-                maxValue: '',
-                fixedValue: '',
-            }, data);
-        },
-        removeRule(key, index) {
-            this.model.data.splice(index, 1);
-            this.$emit('remove-param', key);
-        },
-        checkRule() {
-            if (this.model.data.length === 0) {
-                Message.error(this.$t('dataSource.ruleIsRequired'));
-                return;
-            }
-            const data = this.model.data;
-            const len = data.length;
-            let i;
-            for (i = 0; i < len; i++) {
-                const item = data[i];
-                if (!item.logical) {
-                    this.ruleIsEmpty(item.paramName);
-                    return;
-                }
+    checkRule() {
+      if (this.model.data.length === 0) {
+        Message.error(this.$t('dataSource.ruleIsRequired'));
+        return;
+      }
+      const data = this.model.data;
+      const len = data.length;
+      let i;
+      for (i = 0; i < len; i++) {
+        const item = data[i];
+        if (!item.logical) {
+          this.ruleIsEmpty(item.paramName);
+          return;
+        }
 
-                if (item.logical === '1' || item.logical === '2') {
-                    if (!item.minValue || !item.maxValue) {
-                        this.ruleIsEmpty(item.paramName);
-                        return;
-                    }
-                } else if (!item.fixedValue) {
-                    this.ruleIsEmpty(item.paramName);
-                    return;
-                }
-            }
+        if (item.logical === '1' || item.logical === '2') {
+          if (!item.minValue || !item.maxValue) {
+            this.ruleIsEmpty(item.paramName);
+            return;
+          }
+        } else if (!item.fixedValue) {
+          this.ruleIsEmpty(item.paramName);
+          return;
+        }
+      }
 
-            return this.model;
-        },
-        ruleIsEmpty(label) {
-            Message.error(this.$t('dataSource.ruleCanNotEmpty', {label}));
-        },
-        setLogicalOptionsObj() {
-            const data = {};
-            this.logicalOptions.forEach(item => {
-                data[item.value] = item.label;
-            });
-            this.$logicalOptionsObj = data;
-        },
-        getLogicalText(value) {
-            if (this.$logicalOptionsObj && this.$logicalOptionsObj.hasOwnProperty(value)) {
-                return this.$t(this.$logicalOptionsObj[value]);
-            }
-            return value;
-        },
-        getLogicalValue(item) {
-            if (this.isBetween(item.logical)) {
-                return [item.minValue, item.maxValue].join(',');
-            } else {
-                return item.fixedValue;
-            }
-        },
-        isBetween(logical) {
-            return logical === '1' || logical === '2';
-        },
-        updateModelData() {
-            if (this.ruleData) {
-                const newData = [];
-                this.ruleData.forEach(param => {
-                    const data = this.model.data.filter(item => item.key === param.key);
-                    if (data && data.length > 0) {
-                        newData.push(data[0]);
-                    } else {
-                        newData.push(this.assign({}, param));
-                    }
-                });
-                this.model.data = newData;
-            }
-        },
-        setModel() {
-            const data = this.data ? JSON.parse(this.data) : null;
-            if (data) {
-                this.model.conditionLogic = data.conditionLogic;
-                this.model.data = data.data;
-            } else {
-                this.model.conditionLogic = '1';
-                this.model.data = [];
-            }
-            this.emitRuleKeys();
-        },
-        emitRuleKeys() {
-            const keys = [];
-            this.model.data.forEach(item => {
-                keys.push(item.key);
-            });
-            this.$emit('on-rule-keys', keys);
-        },
+      return this.model;
     },
+    ruleIsEmpty(label) {
+      Message.error(this.$t('dataSource.ruleCanNotEmpty', {label}));
+    },
+    setLogicalOptionsObj() {
+      const data = {};
+      this.logicalOptions.forEach(item => {
+        data[item.value] = item.label;
+      });
+      this.$logicalOptionsObj = data;
+    },
+    getLogicalText(value) {
+      if (this.$logicalOptionsObj && this.$logicalOptionsObj.hasOwnProperty(value)) {
+        return this.$t(this.$logicalOptionsObj[value]);
+      }
+      return value;
+    },
+    getLogicalValue(item) {
+      if (this.isBetween(item.logical)) {
+        return [item.minValue, item.maxValue].join(',');
+      } else {
+        return item.fixedValue;
+      }
+    },
+    isBetween(logical) {
+      return logical === '1' || logical === '2';
+    },
+    updateModelData() {
+      if (this.ruleData) {
+        const newData = [];
+        this.ruleData.forEach(param => {
+          const data = this.model.data.filter(item => item.key === param.key);
+          if (data && data.length > 0) {
+            newData.push(data[0]);
+          } else {
+            newData.push(this.assign({}, param));
+          }
+        });
+        this.model.data = newData;
+      }
+    },
+    setModel() {
+      const data = this.data ? JSON.parse(this.data) : null;
+      if (data) {
+        this.model.conditionLogic = data.conditionLogic;
+        this.model.data = data.data;
+      } else {
+        this.model.conditionLogic = '1';
+        this.model.data = [];
+      }
+      this.emitRuleKeys();
+    },
+    emitRuleKeys() {
+      const keys = [];
+      this.model.data.forEach(item => {
+        keys.push(item.key);
+      });
+      this.$emit('on-rule-keys', keys);
+    },
+  },
 }
 </script>
 

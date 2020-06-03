@@ -24,23 +24,23 @@
 import {Button, Icon} from 'iview'
 
 export default {
-    components: {
-        Button,
-        Icon,
+  components: {
+    Button,
+    Icon,
+  },
+  props: {
+    prefixCls: String,
+    operations: Array,
+    leftActive: Boolean,
+    rightActive: Boolean,
+  },
+  methods: {
+    moveToLeft() {
+      this.$parent.moveTo('left');
     },
-    props: {
-        prefixCls: String,
-        operations: Array,
-        leftActive: Boolean,
-        rightActive: Boolean,
+    moveToRight() {
+      this.$parent.moveTo('right');
     },
-    methods: {
-        moveToLeft() {
-            this.$parent.moveTo('left');
-        },
-        moveToRight() {
-            this.$parent.moveTo('right');
-        },
-    },
+  },
 };
 </script>

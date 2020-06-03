@@ -86,127 +86,127 @@ import columnCommon from './js/column-common'
 import modelCommon from './js/model-common'
 
 export default {
-    components: {
-        Input,
-        Button,
-        DataColumn,
-        ModelRule,
-        SelectParams,
-        // SelectParams: (resolve) => {
-        //     return require(['./select-params'], resolve);
-        // },
+  components: {
+    Input,
+    Button,
+    DataColumn,
+    ModelRule,
+    SelectParams,
+    // SelectParams: (resolve) => {
+    //     return require(['./select-params'], resolve);
+    // },
+  },
+  mixins: [columnCommon, modelCommon],
+  props: {
+    data: {
+      type: Object,
     },
-    mixins: [columnCommon, modelCommon],
-    props: {
-        data: {
-            type: Object,
-        },
-    },
+  },
+  data() {
+    return {
+      // 添加条件弹窗相关属性
+      visible: false,
+      ruleView: '',
+      // 提交按钮状态
+      loading: false,
+      model: {
+        sourceId: '',
+        studioId: '',
+        deviceTypeId: '',
+        deviceModelId: '',
+        formula: '',
+        viewContent: '',
+        descript: '',
+        modelName: '',
+      },
+      ruleKeys: [],
+      ruleData: [],
+      studioId: '',
+      resetModelRuleData: false,
+    };
+  },
+  watch: {
     data() {
-        return {
-            // 添加条件弹窗相关属性
-            visible: false,
-            ruleView: '',
-            // 提交按钮状态
-            loading: false,
-            model: {
-                sourceId: '',
-                studioId: '',
-                deviceTypeId: '',
-                deviceModelId: '',
-                formula: '',
-                viewContent: '',
-                descript: '',
-                modelName: '',
-            },
-            ruleKeys: [],
-            ruleData: [],
-            studioId: '',
-            resetModelRuleData: false,
-        };
+      this.setModel();
     },
-    watch: {
-        data() {
-            this.setModel();
-        },
-    },
-    created() {
+  },
+  created() {
+    this.setModel();
+  },
+  methods: {
+    cancel() {
+      if (this.data.sourceId) {
         this.setModel();
+        this.resetModelRuleData = !this.resetModelRuleData;
+      }
+      this.showForm = false;
     },
-    methods: {
-        cancel() {
-            if (this.data.sourceId) {
-                this.setModel();
-                this.resetModelRuleData = !this.resetModelRuleData;
-            }
-            this.showForm = false;
-        },
-        submit() {
-            const data = this.$refs.rule.checkRule();
-            if (data) {
-                this.model.modelName = this.data.modelName || this.data.editName;
-                if (!this.model.modelName) {
-                    Message.error(this.$t('dataSource.modelNameCanNotEmpty'));
-                    return;
-                }
-                if (this.model.descript.length > 200) {
-                    Message.error(this.$t('dataSource.descriptLimit200'));
-                    return;
-                }
-                this.loading = true;
-                this.model.formula = JSON.stringify(data);
-                this.model.studioId = this.studioId;
-                let func, successMsg;
-                if (!this.model.sourceId) {
-                    func = 'post';
-                    successMsg = 'dataSource.addModelSuccessfully';
-                } else {
-                    func = 'put';
-                    successMsg = 'dataSource.editModelSuccessfully';
-                }
-                this.requestUtil[func](this.urls.addModelList.url, this.model).then(res => {
-                    Message.success(this.$t(successMsg));
-                    this.showForm = false;
-                    this.model.sourceId = res.sourceId;
-                    this.loading = false;
-                }).catch(() => {
-                    this.loading = false;
-                });
-            }
-        },
-        showRuleModal() {
-            this.ruleView = 'select-params';
-            this.visible = true;
-        },
-        callback(items, keys) {
-            const ruleData = [];
-            items.forEach(item => {
-                ruleData.push({
-                    key: item.key,
-                    partName: item.partName,
-                    paramName: item.paramName,
-                });
-            });
-            this.ruleData = ruleData;
-            this.ruleKeys = keys;
-        },
-        setRuleKeys(keys) {
-            this.ruleKeys = keys || [];
-        },
-        handleRemoveParamsKey(key) {
-            const index = this.ruleKeys.indexOf(key);
-            if (index > -1) {
-                this.ruleKeys.splice(index, 1);
-            }
-        },
-        setModel() {
-            const data = this.data || {};
-            let key;
-            for (key in this.model) {
-                this.model[key] = data[key] || '';
-            }
-        },
+    submit() {
+      const data = this.$refs.rule.checkRule();
+      if (data) {
+        this.model.modelName = this.data.modelName || this.data.editName;
+        if (!this.model.modelName) {
+          Message.error(this.$t('dataSource.modelNameCanNotEmpty'));
+          return;
+        }
+        if (this.model.descript.length > 200) {
+          Message.error(this.$t('dataSource.descriptLimit200'));
+          return;
+        }
+        this.loading = true;
+        this.model.formula = JSON.stringify(data);
+        this.model.studioId = this.studioId;
+        let func, successMsg;
+        if (!this.model.sourceId) {
+          func = 'post';
+          successMsg = 'dataSource.addModelSuccessfully';
+        } else {
+          func = 'put';
+          successMsg = 'dataSource.editModelSuccessfully';
+        }
+        this.requestUtil[func](this.urls.addModelList.url, this.model).then(res => {
+          Message.success(this.$t(successMsg));
+          this.showForm = false;
+          this.model.sourceId = res.sourceId;
+          this.loading = false;
+        }).catch(() => {
+          this.loading = false;
+        });
+      }
     },
+    showRuleModal() {
+      this.ruleView = 'select-params';
+      this.visible = true;
+    },
+    callback(items, keys) {
+      const ruleData = [];
+      items.forEach(item => {
+        ruleData.push({
+          key: item.key,
+          partName: item.partName,
+          paramName: item.paramName,
+        });
+      });
+      this.ruleData = ruleData;
+      this.ruleKeys = keys;
+    },
+    setRuleKeys(keys) {
+      this.ruleKeys = keys || [];
+    },
+    handleRemoveParamsKey(key) {
+      const index = this.ruleKeys.indexOf(key);
+      if (index > -1) {
+        this.ruleKeys.splice(index, 1);
+      }
+    },
+    setModel() {
+      const data = this.data || {};
+      let key;
+      for (key in this.model) {
+        this.model[key] = data[key] || '';
+      }
+    },
+  },
 };
 </script>
 

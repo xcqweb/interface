@@ -33,40 +33,40 @@
 
 <script>
 export default{
-    data() {
-        return {
-            alignList:[
-                {cls:'geSprite-left-align',text:this.$t('alignLeft')},
-                {cls:'geSprite-right-align',text:this.$t('alignRight')},
-                {cls:'geSprite-top-align',text:this.$t('alignTop')},
-                {cls:'geSprite-bottom-align',text:this.$t('alignBottom')},
-                {cls:'geSprite-vertical-center',text:this.$t('alignVerticalCenter')},
-                {cls:'geSprite-horizon-center',text:this.$t('alignHorizonCenter')},
-                {cls:'geSprite-vertical-align',text:this.$t('alignVerticalSpace')},
-                {cls:'geSprite-horizon-align',text:this.$t('alignHorizonSpace')},
-            ],
-            classTtype:[],
-        }
+  data() {
+    return {
+      alignList:[
+        {cls:'geSprite-left-align',text:this.$t('alignLeft')},
+        {cls:'geSprite-right-align',text:this.$t('alignRight')},
+        {cls:'geSprite-top-align',text:this.$t('alignTop')},
+        {cls:'geSprite-bottom-align',text:this.$t('alignBottom')},
+        {cls:'geSprite-vertical-center',text:this.$t('alignVerticalCenter')},
+        {cls:'geSprite-horizon-center',text:this.$t('alignHorizonCenter')},
+        {cls:'geSprite-vertical-align',text:this.$t('alignVerticalSpace')},
+        {cls:'geSprite-horizon-align',text:this.$t('alignHorizonSpace')},
+      ],
+      classTtype:[],
+    }
+  },
+  created() {
+    this.classTtype = new Array(this.alignList.length).fill(1)
+  },
+  mounted() {
+    const component = this.$mount();
+    document.querySelector('body').appendChild(component.$el)
+  },
+  methods: {
+    changeActive(type,index) {
+      this.classTtype = new Array(this.alignList.length).fill(1)
+      this.$set(this.classTtype,index,type)
     },
-    created() {
-        this.classTtype = new Array(this.alignList.length).fill(1)
+    changeAlign(d) {
+      this.$emit("changeAlign",d)
     },
-    mounted() {
-        const component = this.$mount();
-        document.querySelector('body').appendChild(component.$el)
-    },
-    methods: {
-        changeActive(type,index) {
-            this.classTtype = new Array(this.alignList.length).fill(1)
-            this.$set(this.classTtype,index,type)
-        },
-        changeAlign(d) {
-            this.$emit("changeAlign",d)
-        },
-        hideDialog() {
-            this.$emit("hideDialog")
-        }
-    },      
+    hideDialog() {
+      this.$emit("hideDialog")
+    }
+  },      
 }
 </script>
 

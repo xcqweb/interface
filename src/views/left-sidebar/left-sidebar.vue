@@ -166,289 +166,289 @@ const addPageTypeName = ['leftBar.addPage','leftBar.addPopup']
 import VueEvent from '../../services/VueEvent.js'
 let pageTypeArr = ['normal','dialog']
 export default {
-    components: {
-        Tabs,
-        TabPane,
-        Modal,
-    },
-    data() {
-        return {
-            modelshow: false,
-            alertTitleName:'',
-            typeTab:1,
-            templateIndex:0,
-            pageIndex:0,
-            dialogIndex:0,
-            templates:[],
-            pages:[],
-            dialogs:[],
-            isShowPopMenu:false,
-            popMenuStyle:{left:'202px',top:'70px'},
-            hoverIndex:[-1,-1],
-        }
-    },
-    mounted() {
-        VueEvent.$off('select-nodetype')
-        VueEvent.$on('select-nodetype', function() {
-            this.myEditorUi.sidebar.init('nowload')
-        })
-    },
-    methods: {
-        init() {
-            // 读取自定义的xml控件文件后，再初始化
-            this.myEditorUi.sidebar.init('',()=>{
-                this.getPages()
-                this.checkPage(0,true)
-            })
-        },
-        getPages() {
-            let pagesRank = this.myEditorUi.editor.pagesRank
-            this.getpagesDeal(this.pages, pagesRank.normal)
-            this.getpagesDeal(this.dialogs, pagesRank.dialog)
-        },
-        getpagesDeal(resList,targetList) {
-            resList.splice(0)
-            let allPages = this.myEditorUi.editor.pages
-            for (let key of targetList) {
-                let temp = allPages[key]
-                if(temp) {
-                    temp.isEdit = false
-                    temp.bkTitle = temp.title
-                    resList.push(temp)
-                }
-            }
-        },
-        changeCurrentPage(list,index,flag) {
-            if(!flag ) {//不需要设置当前页面信息
-                this.myEditorUi.editor.setXml()
-            }
-            let id = list[index].id
-            let xml = list[index].xml
-            if(!xml) {
-                xml = this.myEditorUi.editor.defaultXml[this.typeTab - 1]
-            }
-            this.myEditorUi.editor.currentPage = id
-            let doc = mxUtils.parseXml(xml)
-            this.myEditorUi.editor.setGraphXml(doc.documentElement)
-            VueEvent.$emit('refreshCurrentPage',  this.typeTab)
-        },
-        checkPage(index,flag) {
-            this.pageIndex = index
-            this.changeCurrentPage(this.pages,index,flag)
-        },
-        checkDialog(index,flag) {
-            this.dialogIndex = index
-            this.changeCurrentPage(this.dialogs,index,flag)
-        },
-        tabsSwitch(type) {
-            // 1 页面 2 弹窗
-            if(type + 1 == this.typeTab) {
-                return
-            }
-            this.typeTab = type + 1
-            if(this.typeTab == 1) {
-                this.checkPage(this.pageIndex)
-            }else{
-                this.checkDialog(this.dialogIndex)
-            }
-        },
-        addPageType(type) {
-            this.myEditorUi.editor.setXml()//保存当页面信息
-            this.modelshow = true
-            this.alertTitleName = this.$t(addPageTypeName[type - 1])
-            let params = {'type': pageTypeArr[type - 1]}
-            this.templates = [{'name': 'leftBar.emptyPage',picUrl: '',content: '',pageTemplateId: ''}]
-            this.requestUtil.get(this.urls.addTemplate.url, params).then((res) => {
-                let data = res.records || []
-                data.forEach(item => {
-                    let obj = {
-                        name: item.name,
-                        picUrl: item.picUrl,
-                        pageTemplateId: item.pageTemplateId,
-                        content:item.content
-                    } 
-                    this.templates.push(obj)
-                })
-            })
-        },
-        eventClickList(index) {
-            if(index == this.templateIndex) {
-                return
-            }
-            this.templateIndex = index
-        },
-        getPageIdMax() {
-            let idMax = 1
-            for (let id in this.myEditorUi.editor.pages) {//所有页面中的id的最大值
-                const idTemp = parseInt(id.match(/^pageid_([0-9]+)/)[1])
-                if(idMax < idTemp) {
-                    idMax = idTemp
-                }
-            }
-            idMax = 'pageid_' + (idMax + 1)
-            return idMax
-        },
-        templateToPage() {
-            let maxLen = this.typeTab == 1 ? this.pages.length : this.dialogs.length
-            let titleText = `${this.typeTab == 1 ? this.$t('page') : this.$t('popup')}${maxLen + 1}`
-            let page
-            let xml
-            if (this.templateIndex == 0) {
-                xml = this.myEditorUi.editor.defaultXml[this.typeTab - 1]
-            } else { // 弹窗和页面模版
-                let content = this.templates[this.templateIndex].content
-                xml = JSON.parse(content).xml
-            }
-            page = {
-                id:"",
-                title: titleText,
-                xml,
-                style:{},
-                type: this.typeTab == 2 ? 'dialog' : 'normal'
-            }
-            this.dealNewPage(page)
-        },
-        dealNewPage(page) {
-            page.id = this.getPageIdMax()
-            this.myEditorUi.editor.pages[page.id] = page
-            this.myEditorUi.editor.pagesRank[page.type].push(page.id)
-            this.getPages()
-            if(this.typeTab == 1) {
-                this.checkPage(this.pages.length - 1)
-            }else{
-                this.checkDialog(this.dialogs.length - 1)
-            }
-        },
-        menuPopupHide() {
-            this.isShowPopMenu = false
-        },
-        copyPage() {
-            this.myEditorUi.editor.setXml()
-            let currentPage = this.getCurrPageOrDialog()
-            let type =  pageTypeArr[this.typeTab - 1]
-            let page = {
-                title: `${currentPage.title}_${this.$t('copyP')}`,
-                xml:currentPage.xml,
-                id:'',
-                style:currentPage.style,
-                type,
-            }
-            this.dealNewPage(page)
-            this.menuPopupHide()
-        },
-        getCurrPageOrDialog() {
-            let targetLists = this.typeTab == 1 ? this.pages : this.dialogs
-            return targetLists[this.hoverIndex[this.typeTab - 1]]
-        },
-        addTemplateFun() {
-            this.myEditorUi.editor.setXml()
-            const svgImage =  this.myEditorUi.sidebar.getSvgImage()
-            const svgImagePic = svgImage.outerHTML
-            if (svgImagePic) {
-                let currentPage = this.getCurrPageOrDialog()
-                let params = {
-                    content: JSON.stringify(currentPage),
-                    pic: svgImagePic,
-                    type: pageTypeArr[this.typeTab - 1]
-                }
-                this.requestUtil.post(this.urls.addTemplate.url, params).then((res) => {
-                    if (res.picUrl) {
-                        tipDialog(this.myEditorUi, `${this.$t('addSuccess')}`)
-                    }
-                })
-            }
-        },
-        setHome() {
-            let tmepType = pageTypeArr[this.typeTab - 1]
-            let tempIndex = this.hoverIndex[this.typeTab - 1]
-            let tempVal = this.myEditorUi.editor.pagesRank[tmepType][tempIndex]
-            this.myEditorUi.editor.pagesRank[tmepType].splice(tempIndex, 1)
-            this.myEditorUi.editor.pagesRank[tmepType].unshift(tempVal)
-            
-            let tempPage = this.pages[tempIndex]//更新视图页面
-            this.pages.splice(tempIndex,1)
-            this.pages.unshift(tempPage)
-            this.menuPopupHide()
-        },
-        dealIsEdit(evt,index,flag) {
-            if(!index && index !== 0) {
-                index = this.hoverIndex[this.typeTab - 1]
-            }
-            if(this.typeTab == 1) {
-                this.$set(this.pages[index],"isEdit",flag)
-            }else{
-                this.$set(this.dialogs[index],"isEdit",flag)
-            }
-        },
-        popReanme(evt,index) {
-            this.dealIsEdit(evt,index,true)
-            this.menuPopupHide()
-        },
-        saveName(evt,index,title) {
-            this.dealIsEdit(evt,index,false)
-            if(!title || !title.trim()) {
-                if(this.typeTab == 1) {
-                    this.$set(this.pages[index],'title',this.pages[index].bkTitle)
-                    tipDialog(this.myEditorUi, this.$t("pageNameCanNotEmpty"))
-                }else{
-                    this.$set(this.dialogs[index],'title',this.dialogs[index].bkTitle)
-                    tipDialog(this.myEditorUi, this.$t("popupNameCanNotEmpty"))
-                }
-                return
-            }
-            if(this.typeTab == 2) {
-                $(".dialog-title-m").html(title)
-                VueEvent.$emit('refreshAction')
-            }
-        },
-        delCurrentDal(index,list) {
-            let resIndex = -1
-            let tempIndex = this.hoverIndex[this.typeTab - 1]
-            if(index == tempIndex) {//处理删除当前选中项后，设置当前页的问题
-                if(index == list.length - 1) {
-                    resIndex = 0
-                }else{
-                    resIndex = index
-                }
-            }
-            list.splice(tempIndex,1)
-            if(resIndex != -1) {
-                this.myEditorUi.editor.currentPage = list[resIndex].id
-                if(this.typeTab == 1) {
-                    this.checkPage(resIndex,true)
-                }else{
-                    this.checkDialog(resIndex,true)
-                }
-            }
-        },
-        popDel() {
-            sureDialog(this.myEditorUi, `${this.$t('sureDel')} ?`, () => {
-                let type = pageTypeArr[this.typeTab - 1]
-                let currentPage = this.getCurrPageOrDialog()
-                let targetIndex = this.myEditorUi.editor.pagesRank[type].indexOf(currentPage.id)
-                this.myEditorUi.editor.pagesRank[type].splice(targetIndex,1)
-                delete this.myEditorUi.editor.pages[currentPage.id]
-                if(this.typeTab == 1) {
-                    this.delCurrentDal(this.pageIndex,this.pages)
-                }else{
-                    this.delCurrentDal(this.dialogIndex,this.dialogs)
-                }
-            })
-        },
-        menuPopupShow(evt,index) {
-            this.hoverIndex[this.typeTab - 1] = index
-            this.isShowPopMenu = true
-            let el = document.querySelector(".normalPages ")
-            this.popMenuStyle.top = `${evt.target.offsetTop - el.scrollTop}px`
-            this.popMenuStyle.left = `${evt.target.offsetLeft + 20}px`
-        },
-        menuMouseoutDeal(evt) {
-            let target = evt.toElement || evt.relatedTarget
-            if(target.className != 'materialModelMenu' && !target.className.includes('pop-menu')) {
-                this.menuPopupHide()
-            }
-        },
+  components: {
+    Tabs,
+    TabPane,
+    Modal,
+  },
+  data() {
+    return {
+      modelshow: false,
+      alertTitleName:'',
+      typeTab:1,
+      templateIndex:0,
+      pageIndex:0,
+      dialogIndex:0,
+      templates:[],
+      pages:[],
+      dialogs:[],
+      isShowPopMenu:false,
+      popMenuStyle:{left:'202px',top:'70px'},
+      hoverIndex:[-1,-1],
     }
+  },
+  mounted() {
+    VueEvent.$off('select-nodetype')
+    VueEvent.$on('select-nodetype', function() {
+      this.myEditorUi.sidebar.init('nowload')
+    })
+  },
+  methods: {
+    init() {
+      // 读取自定义的xml控件文件后，再初始化
+      this.myEditorUi.sidebar.init('',()=>{
+        this.getPages()
+        this.checkPage(0,true)
+      })
+    },
+    getPages() {
+      let pagesRank = this.myEditorUi.editor.pagesRank
+      this.getpagesDeal(this.pages, pagesRank.normal)
+      this.getpagesDeal(this.dialogs, pagesRank.dialog)
+    },
+    getpagesDeal(resList,targetList) {
+      resList.splice(0)
+      let allPages = this.myEditorUi.editor.pages
+      for (let key of targetList) {
+        let temp = allPages[key]
+        if(temp) {
+          temp.isEdit = false
+          temp.bkTitle = temp.title
+          resList.push(temp)
+        }
+      }
+    },
+    changeCurrentPage(list,index,flag) {
+      if(!flag ) {//不需要设置当前页面信息
+        this.myEditorUi.editor.setXml()
+      }
+      let id = list[index].id
+      let xml = list[index].xml
+      if(!xml) {
+        xml = this.myEditorUi.editor.defaultXml[this.typeTab - 1]
+      }
+      this.myEditorUi.editor.currentPage = id
+      let doc = mxUtils.parseXml(xml)
+      this.myEditorUi.editor.setGraphXml(doc.documentElement)
+      VueEvent.$emit('refreshCurrentPage',  this.typeTab)
+    },
+    checkPage(index,flag) {
+      this.pageIndex = index
+      this.changeCurrentPage(this.pages,index,flag)
+    },
+    checkDialog(index,flag) {
+      this.dialogIndex = index
+      this.changeCurrentPage(this.dialogs,index,flag)
+    },
+    tabsSwitch(type) {
+      // 1 页面 2 弹窗
+      if(type + 1 == this.typeTab) {
+        return
+      }
+      this.typeTab = type + 1
+      if(this.typeTab == 1) {
+        this.checkPage(this.pageIndex)
+      }else{
+        this.checkDialog(this.dialogIndex)
+      }
+    },
+    addPageType(type) {
+      this.myEditorUi.editor.setXml()//保存当页面信息
+      this.modelshow = true
+      this.alertTitleName = this.$t(addPageTypeName[type - 1])
+      let params = {'type': pageTypeArr[type - 1]}
+      this.templates = [{'name': 'leftBar.emptyPage',picUrl: '',content: '',pageTemplateId: ''}]
+      this.requestUtil.get(this.urls.addTemplate.url, params).then((res) => {
+        let data = res.records || []
+        data.forEach(item => {
+          let obj = {
+            name: item.name,
+            picUrl: item.picUrl,
+            pageTemplateId: item.pageTemplateId,
+            content:item.content
+          } 
+          this.templates.push(obj)
+        })
+      })
+    },
+    eventClickList(index) {
+      if(index == this.templateIndex) {
+        return
+      }
+      this.templateIndex = index
+    },
+    getPageIdMax() {
+      let idMax = 1
+      for (let id in this.myEditorUi.editor.pages) {//所有页面中的id的最大值
+        const idTemp = parseInt(id.match(/^pageid_([0-9]+)/)[1])
+        if(idMax < idTemp) {
+          idMax = idTemp
+        }
+      }
+      idMax = 'pageid_' + (idMax + 1)
+      return idMax
+    },
+    templateToPage() {
+      let maxLen = this.typeTab == 1 ? this.pages.length : this.dialogs.length
+      let titleText = `${this.typeTab == 1 ? this.$t('page') : this.$t('popup')}${maxLen + 1}`
+      let page
+      let xml
+      if (this.templateIndex == 0) {
+        xml = this.myEditorUi.editor.defaultXml[this.typeTab - 1]
+      } else { // 弹窗和页面模版
+        let content = this.templates[this.templateIndex].content
+        xml = JSON.parse(content).xml
+      }
+      page = {
+        id:"",
+        title: titleText,
+        xml,
+        style:{},
+        type: this.typeTab == 2 ? 'dialog' : 'normal'
+      }
+      this.dealNewPage(page)
+    },
+    dealNewPage(page) {
+      page.id = this.getPageIdMax()
+      this.myEditorUi.editor.pages[page.id] = page
+      this.myEditorUi.editor.pagesRank[page.type].push(page.id)
+      this.getPages()
+      if(this.typeTab == 1) {
+        this.checkPage(this.pages.length - 1)
+      }else{
+        this.checkDialog(this.dialogs.length - 1)
+      }
+    },
+    menuPopupHide() {
+      this.isShowPopMenu = false
+    },
+    copyPage() {
+      this.myEditorUi.editor.setXml()
+      let currentPage = this.getCurrPageOrDialog()
+      let type =  pageTypeArr[this.typeTab - 1]
+      let page = {
+        title: `${currentPage.title}_${this.$t('copyP')}`,
+        xml:currentPage.xml,
+        id:'',
+        style:currentPage.style,
+        type,
+      }
+      this.dealNewPage(page)
+      this.menuPopupHide()
+    },
+    getCurrPageOrDialog() {
+      let targetLists = this.typeTab == 1 ? this.pages : this.dialogs
+      return targetLists[this.hoverIndex[this.typeTab - 1]]
+    },
+    addTemplateFun() {
+      this.myEditorUi.editor.setXml()
+      const svgImage =  this.myEditorUi.sidebar.getSvgImage()
+      const svgImagePic = svgImage.outerHTML
+      if (svgImagePic) {
+        let currentPage = this.getCurrPageOrDialog()
+        let params = {
+          content: JSON.stringify(currentPage),
+          pic: svgImagePic,
+          type: pageTypeArr[this.typeTab - 1]
+        }
+        this.requestUtil.post(this.urls.addTemplate.url, params).then((res) => {
+          if (res.picUrl) {
+            tipDialog(this.myEditorUi, `${this.$t('addSuccess')}`)
+          }
+        })
+      }
+    },
+    setHome() {
+      let tmepType = pageTypeArr[this.typeTab - 1]
+      let tempIndex = this.hoverIndex[this.typeTab - 1]
+      let tempVal = this.myEditorUi.editor.pagesRank[tmepType][tempIndex]
+      this.myEditorUi.editor.pagesRank[tmepType].splice(tempIndex, 1)
+      this.myEditorUi.editor.pagesRank[tmepType].unshift(tempVal)
+            
+      let tempPage = this.pages[tempIndex]//更新视图页面
+      this.pages.splice(tempIndex,1)
+      this.pages.unshift(tempPage)
+      this.menuPopupHide()
+    },
+    dealIsEdit(evt,index,flag) {
+      if(!index && index !== 0) {
+        index = this.hoverIndex[this.typeTab - 1]
+      }
+      if(this.typeTab == 1) {
+        this.$set(this.pages[index],"isEdit",flag)
+      }else{
+        this.$set(this.dialogs[index],"isEdit",flag)
+      }
+    },
+    popReanme(evt,index) {
+      this.dealIsEdit(evt,index,true)
+      this.menuPopupHide()
+    },
+    saveName(evt,index,title) {
+      this.dealIsEdit(evt,index,false)
+      if(!title || !title.trim()) {
+        if(this.typeTab == 1) {
+          this.$set(this.pages[index],'title',this.pages[index].bkTitle)
+          tipDialog(this.myEditorUi, this.$t("pageNameCanNotEmpty"))
+        }else{
+          this.$set(this.dialogs[index],'title',this.dialogs[index].bkTitle)
+          tipDialog(this.myEditorUi, this.$t("popupNameCanNotEmpty"))
+        }
+        return
+      }
+      if(this.typeTab == 2) {
+        $(".dialog-title-m").html(title)
+        VueEvent.$emit('refreshAction')
+      }
+    },
+    delCurrentDal(index,list) {
+      let resIndex = -1
+      let tempIndex = this.hoverIndex[this.typeTab - 1]
+      if(index == tempIndex) {//处理删除当前选中项后，设置当前页的问题
+        if(index == list.length - 1) {
+          resIndex = 0
+        }else{
+          resIndex = index
+        }
+      }
+      list.splice(tempIndex,1)
+      if(resIndex != -1) {
+        this.myEditorUi.editor.currentPage = list[resIndex].id
+        if(this.typeTab == 1) {
+          this.checkPage(resIndex,true)
+        }else{
+          this.checkDialog(resIndex,true)
+        }
+      }
+    },
+    popDel() {
+      sureDialog(this.myEditorUi, `${this.$t('sureDel')} ?`, () => {
+        let type = pageTypeArr[this.typeTab - 1]
+        let currentPage = this.getCurrPageOrDialog()
+        let targetIndex = this.myEditorUi.editor.pagesRank[type].indexOf(currentPage.id)
+        this.myEditorUi.editor.pagesRank[type].splice(targetIndex,1)
+        delete this.myEditorUi.editor.pages[currentPage.id]
+        if(this.typeTab == 1) {
+          this.delCurrentDal(this.pageIndex,this.pages)
+        }else{
+          this.delCurrentDal(this.dialogIndex,this.dialogs)
+        }
+      })
+    },
+    menuPopupShow(evt,index) {
+      this.hoverIndex[this.typeTab - 1] = index
+      this.isShowPopMenu = true
+      let el = document.querySelector(".normalPages ")
+      this.popMenuStyle.top = `${evt.target.offsetTop - el.scrollTop}px`
+      this.popMenuStyle.left = `${evt.target.offsetLeft + 20}px`
+    },
+    menuMouseoutDeal(evt) {
+      let target = evt.toElement || evt.relatedTarget
+      if(target.className != 'materialModelMenu' && !target.className.includes('pop-menu')) {
+        this.menuPopupHide()
+      }
+    },
+  }
 }
 </script>
 <style lang="less" scoped>

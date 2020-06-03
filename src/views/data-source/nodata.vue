@@ -11,24 +11,24 @@
 
 <script>
 export default{
-    props: {
-        text: {
-            type: String,
-            default: 'noData'
-        },
-        marginTop: {
-            type: Number,
-        },
+  props: {
+    text: {
+      type: String,
+      default: 'noData'
     },
-    computed: {
-        style() {
-            if (this.marginTop !== undefined) {
-                const marginTop = this.marginTop - 46 + 'px';
-                return {marginTop};
-            }
-            return '';
-        },
+    marginTop: {
+      type: Number,
     },
+  },
+  computed: {
+    style() {
+      if (this.marginTop !== undefined) {
+        const marginTop = this.marginTop - 46 + 'px';
+        return {marginTop};
+      }
+      return '';
+    },
+  },
 }
 </script>
 

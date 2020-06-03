@@ -34,7 +34,7 @@
 import columnCommon from './js/column-common';
 
 export default {
-    mixins: [columnCommon],
+  mixins: [columnCommon],
 };
 </script>
 

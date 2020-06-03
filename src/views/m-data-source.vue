@@ -60,44 +60,44 @@ import Datamodel from './data-source/datamodel'
 import editingModel from './data-source/js/editing-model'
 
 export default{
-    components:{
-        Devices,
-        Datasource,
-        // Datamodel: resolve => require(['./data-source/datamodel'], resolve),
-        Datamodel,
+  components:{
+    Devices,
+    Datasource,
+    // Datamodel: resolve => require(['./data-source/datamodel'], resolve),
+    Datamodel,
+  },
+  mixins: [editingModel],
+  data() {
+    return {
+      // 0: 数据源 1: 数据模型
+      dataType: 0,
+      deviceDataChange: false,
+      devicesVisible: false,
+      modelComponent: ''
+    }
+  },
+  methods: {
+    importDataHander() {
+      this.devicesVisible = true
     },
-    mixins: [editingModel],
-    data() {
-        return {
-            // 0: 数据源 1: 数据模型
-            dataType: 0,
-            deviceDataChange: false,
-            devicesVisible: false,
-            modelComponent: ''
+    triggerCancel() {
+      this.devicesVisible = false
+    },
+    handleTabClick(index) {
+      if (this.dataType === index) {
+        return;
+      }
+      if (this.canGoOn()) {
+        this.dataType = index;
+        if (index === 1) {
+          this.modelComponent = 'datamodel';
         }
+      }
     },
-    methods: {
-        importDataHander() {
-            this.devicesVisible = true
-        },
-        triggerCancel() {
-            this.devicesVisible = false
-        },
-        handleTabClick(index) {
-            if (this.dataType === index) {
-                return;
-            }
-            if (this.canGoOn()) {
-                this.dataType = index;
-                if (index === 1) {
-                    this.modelComponent = 'datamodel';
-                }
-            }
-        },
-        devicesCallback() {
-            this.deviceDataChange = !this.deviceDataChange;
-        },
+    devicesCallback() {
+      this.deviceDataChange = !this.deviceDataChange;
     },
+  },
 }
 </script>
 

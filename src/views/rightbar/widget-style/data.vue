@@ -113,127 +113,127 @@ import {Button,Checkbox,Message,Select,Option, CheckboxGroup,Input} from 'iview'
 const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart','triangle','pentagram']
 //lineChart 多设备 多参数 gaugeChart 单设备 多参数
 export default{
-    components: {
-        Button,
-        Checkbox,
-        Select,
-        Option,
-        NoData,
-        CheckboxGroup,
-        Input
+  components: {
+    Button,
+    Checkbox,
+    Select,
+    Option,
+    NoData,
+    CheckboxGroup,
+    Input
+  },
+  mixins: [DatasourceStore],
+  data() {
+    return {
+      dName:"",
+      checkModelArr:[],
+      bindData:null,
+    }
+  },
+  computed: {
+    shapeName() {
+      return this.$store.state.main.widgetInfo.shapeInfo.shape
     },
-    mixins: [DatasourceStore],
-    data() {
-        return {
-            dName:"",
-            checkModelArr:[],
-            bindData:null,
+  },
+  watch: {
+    'model.deviceTypeId'() {
+      this.dName = '';
+    },
+  },
+  mounted() {
+    this.init()
+  },
+  methods: {
+    selectChange() {
+      this.checkModelArr = []
+    },
+    init() {
+      this.getStudioDeviceData()
+      this.bindData =  this.getCellModelInfo('bindData')
+      if(this.bindData && this.bindData.dataSource) {
+        this.model.deviceModelId = this.bindData.dataSource.deviceTypeChild.id
+        let bindDeviceNames = this.bindData.dataSource.deviceNameChild
+        if(Array.isArray(bindDeviceNames)) {
+          bindDeviceNames.forEach(item=>{
+            this.checkModelArr.push(item.id)
+          })
+        }else{
+          this.checkModelArr.splice(0)
+          if(bindDeviceNames.id) {
+            this.checkModelArr.push(bindDeviceNames.id)
+          }
         }
+      }
     },
-    computed: {
-        shapeName() {
-            return this.$store.state.main.widgetInfo.shapeInfo.shape
-        },
-    },
-    watch: {
-        'model.deviceTypeId'() {
-            this.dName = '';
-        },
-    },
-    mounted() {
-        this.init()
-    },
-    methods: {
-        selectChange() {
+    bindDeviceNameHandle() {
+      this.bindData = this.getCellModelInfo('bindData')
+      if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个
+        Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
+        // 清空勾选
+        this.checkModelArr = []
+        return
+      }  
+      if (singleDeviceName.includes(this.shapeName) && this.bindData && this.bindData.dataSource) {                    
+        Message.warning(`${this.$t('rightBar.hasBindDevice')}`)
+        this.checkModelArr = []
+        return
+      }
+      //组装数据 绑定
+      let objData = {}
+      objData.deviceTypeChild = {
+        id: this.model.deviceTypeId,
+        name:this.typeData.find(item=>{return item.deviceTypeId == this.model.deviceTypeId}).deviceTypeName
+      }
+      objData.deviceModel = {
+        id: this.model.deviceModelId,
+        name:this.modelData.find(item=>{return item.deviceModelId == this.model.deviceModelId}).deviceModelName
+      }
+      if(this.shapeName === 'lineChart') {
+        objData.deviceNameChild = []
+        if(this.bindData && this.bindData.dataSource.deviceModel) {
+          if(this.model.deviceModelId != this.bindData.dataSource.deviceModel.id) {
+            Message.warning(`${this.$t('rightBar.notAllowBindMyltiplyDeviceModel')}`)
             this.checkModelArr = []
-        },
-        init() {
-            this.getStudioDeviceData()
-            this.bindData =  this.getCellModelInfo('bindData')
-            if(this.bindData && this.bindData.dataSource) {
-                this.model.deviceModelId = this.bindData.dataSource.deviceTypeChild.id
-                let bindDeviceNames = this.bindData.dataSource.deviceNameChild
-                if(Array.isArray(bindDeviceNames)) {
-                    bindDeviceNames.forEach(item=>{
-                        this.checkModelArr.push(item.id)
-                    })
-                }else{
-                    this.checkModelArr.splice(0)
-                    if(bindDeviceNames.id) {
-                        this.checkModelArr.push(bindDeviceNames.id)
-                    }
-                }
-            }
-        },
-        bindDeviceNameHandle() {
-            this.bindData = this.getCellModelInfo('bindData')
-            if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个
-                Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
-                // 清空勾选
-                this.checkModelArr = []
-                return
-            }  
-            if (singleDeviceName.includes(this.shapeName) && this.bindData && this.bindData.dataSource) {                    
-                Message.warning(`${this.$t('rightBar.hasBindDevice')}`)
-                this.checkModelArr = []
-                return
-            }
-            //组装数据 绑定
-            let objData = {}
-            objData.deviceTypeChild = {
-                id: this.model.deviceTypeId,
-                name:this.typeData.find(item=>{return item.deviceTypeId == this.model.deviceTypeId}).deviceTypeName
-            }
-            objData.deviceModel = {
-                id: this.model.deviceModelId,
-                name:this.modelData.find(item=>{return item.deviceModelId == this.model.deviceModelId}).deviceModelName
-            }
-            if(this.shapeName === 'lineChart') {
-                objData.deviceNameChild = []
-                if(this.bindData && this.bindData.dataSource.deviceModel) {
-                    if(this.model.deviceModelId != this.bindData.dataSource.deviceModel.id) {
-                        Message.warning(`${this.$t('rightBar.notAllowBindMyltiplyDeviceModel')}`)
-                        this.checkModelArr = []
-                        return
-                    }
-                    let deviceNameChildTemp = this.bindData.dataSource.deviceNameChild
-                    if(!Array.isArray(deviceNameChildTemp)) {
-                        objData.deviceNameChild.push(deviceNameChildTemp)
-                    }
-                }
-                let tempArr = []
-                this.checkModelArr.forEach((item) => {
-                    tempArr.push({id:item,name:this.deviceData.find(d=>{return d.deviceId == item}).deviceName})
-                })
-                objData.deviceNameChild = objData.deviceNameChild.concat(tempArr)
-            }else{
-                objData.deviceNameChild = {}
-                this.checkModelArr.forEach((item) => {
-                    objData.deviceNameChild = {id:item,name:this.deviceData.find(d=>{return d.deviceId == item}).deviceName}
-                })
-            }
-            if (objData) {
-                VueEvent.$emit('emitDataSourceFooter', objData)
-                Message.success(`${this.$t('rightBar.bindSuccess')}`)
-            }
-        },
-        getCellModelInfo(key) {
-            let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
-            let modelInfo = graph.getModel().getValue(cell)
-            let bindData = null
-            if(modelInfo) {
-                let bindAttr = modelInfo.getAttribute(key)
-                if(bindAttr) {
-                    bindData = JSON.parse(bindAttr)
-                }
-            }
-            return bindData
-        },
-        checkAllGroupChange(data) {
-            this.checkModelArr = data
+            return
+          }
+          let deviceNameChildTemp = this.bindData.dataSource.deviceNameChild
+          if(!Array.isArray(deviceNameChildTemp)) {
+            objData.deviceNameChild.push(deviceNameChildTemp)
+          }
         }
-    },      
+        let tempArr = []
+        this.checkModelArr.forEach((item) => {
+          tempArr.push({id:item,name:this.deviceData.find(d=>{return d.deviceId == item}).deviceName})
+        })
+        objData.deviceNameChild = objData.deviceNameChild.concat(tempArr)
+      }else{
+        objData.deviceNameChild = {}
+        this.checkModelArr.forEach((item) => {
+          objData.deviceNameChild = {id:item,name:this.deviceData.find(d=>{return d.deviceId == item}).deviceName}
+        })
+      }
+      if (objData) {
+        VueEvent.$emit('emitDataSourceFooter', objData)
+        Message.success(`${this.$t('rightBar.bindSuccess')}`)
+      }
+    },
+    getCellModelInfo(key) {
+      let graph = this.myEditorUi.editor.graph
+      let cell = graph.getSelectionCell()
+      let modelInfo = graph.getModel().getValue(cell)
+      let bindData = null
+      if(modelInfo) {
+        let bindAttr = modelInfo.getAttribute(key)
+        if(bindAttr) {
+          bindData = JSON.parse(bindAttr)
+        }
+      }
+      return bindData
+    },
+    checkAllGroupChange(data) {
+      this.checkModelArr = data
+    }
+  },      
 }
 </script>
 

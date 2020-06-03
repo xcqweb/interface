@@ -13,40 +13,40 @@
 import {Input} from 'iview'
 
 export default {
-    components: {
-        Input,
+  components: {
+    Input,
+  },
+  props: {
+    prefixCls: String,
+    placeholder: String,
+    query: String,
+  },
+  data() {
+    return {
+      currentQuery: this.query
+    };
+  },
+  computed: {
+    icon() {
+      return this.query === '' ? 'ios-search' : 'ios-close-circle';
     },
-    props: {
-        prefixCls: String,
-        placeholder: String,
-        query: String,
+  },
+  watch: {
+    query(val) {
+      this.currentQuery = val;
     },
-    data() {
-        return {
-            currentQuery: this.query
-        };
+    currentQuery(val) {
+      this.$emit('on-query-change', val);
     },
-    computed: {
-        icon() {
-            return this.query === '' ? 'ios-search' : 'ios-close-circle';
-        },
+  },
+  methods: {
+    handleClick() {
+      if (this.currentQuery === '') {
+        return;
+      }
+      this.currentQuery = '';
+      this.$emit('on-query-clear');
     },
-    watch: {
-        query(val) {
-            this.currentQuery = val;
-        },
-        currentQuery(val) {
-            this.$emit('on-query-change', val);
-        },
-    },
-    methods: {
-        handleClick() {
-            if (this.currentQuery === '') {
-                return;
-            }
-            this.currentQuery = '';
-            this.$emit('on-query-clear');
-        },
-    },
+  },
 };
 </script>

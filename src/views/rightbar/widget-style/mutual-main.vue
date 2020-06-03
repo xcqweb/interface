@@ -105,307 +105,307 @@ import VueEvent from '../../../services/VueEvent.js'
 // 不显示节点的名称
 let forbiddenShape = ['menuCell', 'tableCell', 'label']
 export default{
-    components:{LinkTo,Visible,Change},
-    data() {
-        return {
-            isEdit:false,
-            typeTab:1,
-            mutualTypes:[this.$t('link'),this.$t('rightBar.visibleOrHide'),this.$t('rightBar.change')],
-            events:[],
-            pages:[],//页面
-            bindActions:[],
-            currentEditItem:null,//Link组件当前页面名称列表选中项
-            currentPageWidgets:[],//当前页面控件
-            dialogs:[],//弹窗
-            visibleTypeTab:1,//显隐的 弹窗 or 组件
-        }
-    },
-    mounted() {
-        this.init()
-        VueEvent.$off('refreshAction')
-        VueEvent.$on('refreshAction',()=>{
-            this.init()
+  components:{LinkTo,Visible,Change},
+  data() {
+    return {
+      isEdit:false,
+      typeTab:1,
+      mutualTypes:[this.$t('link'),this.$t('rightBar.visibleOrHide'),this.$t('rightBar.change')],
+      events:[],
+      pages:[],//页面
+      bindActions:[],
+      currentEditItem:null,//Link组件当前页面名称列表选中项
+      currentPageWidgets:[],//当前页面控件
+      dialogs:[],//弹窗
+      visibleTypeTab:1,//显隐的 弹窗 or 组件
+    }
+  },
+  mounted() {
+    this.init()
+    VueEvent.$off('refreshAction')
+    VueEvent.$on('refreshAction',()=>{
+      this.init()
+    })
+  },
+  methods: {
+    init() {
+      this.pages = []
+      this.dialogs = []
+      let pagesAll = this.myEditorUi.editor.pages
+      this.myEditorUi.editor.pagesRank['normal'].forEach(id=>{
+        this.pages.push({
+          id:id,
+          title:pagesAll[id].title,
+          selected:false,
         })
+      })
+      this.myEditorUi.editor.pagesRank['dialog'].forEach(id=>{
+        this.dialogs.push({
+          id:id,
+          title:pagesAll[id].title,
+          selected:false,
+          hide:true,
+        })
+      })
+      let graph = this.myEditorUi.editor.graph
+      let cells = graph.getModel().cells
+      this.currentPageWidgets = []
+      for (let key in cells) {
+        if (cells[key].id != '0' && cells[key].id != '1') {
+          let state = graph.view.getState(cells[key])
+          let info = state.style.shape
+          if (forbiddenShape.indexOf(info) != -1) {
+            continue
+          }
+          let title = this.getCellInfo(graph,'palettename', cells[key])
+          let hide = this.getCellInfo(graph,'hide', cells[key])
+          if(!hide) {
+            hide = false
+          }else{
+            hide = true
+          }
+          let titleType = `${title}` 
+          this.currentPageWidgets.push({
+            id:cells[key].id,
+            title:title,
+            titleType:titleType,
+            hide:hide,
+            selected:false,
+          })
+        }
+      }
+      this.initActions()
     },
-    methods: {
-        init() {
-            this.pages = []
-            this.dialogs = []
-            let pagesAll = this.myEditorUi.editor.pages
-            this.myEditorUi.editor.pagesRank['normal'].forEach(id=>{
-                this.pages.push({
-                    id:id,
-                    title:pagesAll[id].title,
-                    selected:false,
-                })
-            })
-            this.myEditorUi.editor.pagesRank['dialog'].forEach(id=>{
-                this.dialogs.push({
-                    id:id,
-                    title:pagesAll[id].title,
-                    selected:false,
-                    hide:true,
-                })
-            })
-            let graph = this.myEditorUi.editor.graph
-            let cells = graph.getModel().cells
-            this.currentPageWidgets = []
-            for (let key in cells) {
-                if (cells[key].id != '0' && cells[key].id != '1') {
-                    let state = graph.view.getState(cells[key])
-                    let info = state.style.shape
-                    if (forbiddenShape.indexOf(info) != -1) {
-                        continue
-                    }
-                    let title = this.getCellInfo(graph,'palettename', cells[key])
-                    let hide = this.getCellInfo(graph,'hide', cells[key])
-                    if(!hide) {
-                        hide = false
-                    }else{
-                        hide = true
-                    }
-                    let titleType = `${title}` 
-                    this.currentPageWidgets.push({
-                        id:cells[key].id,
-                        title:title,
-                        titleType:titleType,
-                        hide:hide,
-                        selected:false,
-                    })
-                }
-            }
-            this.initActions()
-        },
-        getCellInfo(graph,key, cell) {
-            let cellInfo = graph.getModel().getValue(cell)
-            return cellInfo && cellInfo.attributes && cellInfo.attributes[key] && cellInfo.attributes[key].nodeValue
-        },
-        modifyTypeTab(index) {
-            this.visibleTypeTab = index
-        },
-        addEvents() {
-            this.pages.forEach(item=>{
-                if(item.selected) {
-                    item.selected = false
-                }
-            })
-            let graph = this.myEditorUi.editor.graph
-            this.bindActions = this.getActions(graph)
-            this.isEdit = true
-            if(this.typeTab == 3) {
-                this.$refs.change.addInit()
-            }
-        },
-        changeTab(index,changeEditFlag) {
-            this.typeTab = index
-            if(index == 3 && !changeEditFlag) {
-                this.$refs.change.addInit()
-            }
-        },
-        editEventDone(data) {
-            this.isEdit = false
-            if(!data) {
-                return
-            }
-            let action = {
-                "type":"in",
-                "link":"",
-                "mutualType":1,//交互类型
-                "innerType":"page",
-                "mouseEvent":"click",
-                "effectAction":"open"
-            }
-            action.mutualType = data.mutualType
-            action.innerType = data.innerType
-            action.link = data.id
-            if(data.mutualType == 2) {
-                let hide = 'hide'
-                if(data.hide) {
-                    hide = 'show'
-                }
-                action.effectAction = hide
-            }else if(data.mutualType == 3) {
-                action.effectAction = 'change'
-                action.stateInfo = data.stateInfo
-            }
-            this.setActionInfos(action,data.isEdit)
-        },
-        initActions() {
-            let graph = this.myEditorUi.editor.graph
-            let actions = this.getActions(graph)
-            if(actions.length) {
-                this.setEvents(actions)
-            }
-        },
-        setEvents(actionsInfo) {
-            this.events.splice(0)
-            let oldLen = actionsInfo.length
-            for(let i = 0;i < oldLen;i++) {
-                let item = actionsInfo[i]
-                let title = this.findTitle(item)
-                if(title) {
-                    let tempObj = {
-                        type:item.mutualType,
-                        title:title,
-                        innerType:item.innerType,
-                        id:item.link//控件或者页面或者弹窗ID
-                    }
-                    if(item.stateInfo) {
-                        tempObj.stateName = item.stateInfo.name
-                        tempObj.stateId = item.stateInfo.id
-                    }
-                    this.events.push(tempObj)
-                } else {//表示绑定交互的页面或弹窗或控件已被删除
-                    actionsInfo.splice(i,1)
-                }
-            }
-            //判断是否有移除action，如果有，要设置到节点model中去
-            if(actionsInfo.length != oldLen) {
-                this.setModeInfoActions(actionsInfo)
-            }
-        },
-        findTitle(item) {
-            let tempList = this.pages
-            if(item.mutualType > 1) {
-                if(item.innerType == 'palette') {
-                    tempList = this.currentPageWidgets
-                }else{
-                    tempList = this.dialogs
-                }
-            }
-            let res = tempList.find(d=>{
-                return d.id == item.link
-            })
-            let title = ""
-            if(res) {
-                title = res.title
-            }
-            return title
-        },
-        getActions(graph) {
-            let actions = []
-            let cell = graph.getSelectionCell()
-            let modelInfo = graph.getModel().getValue(cell)
-            if (!mxUtils.isNode(modelInfo)) {
-                var doc = mxUtils.createXmlDocument();
-                var obj = doc.createElement('object');
-                obj.setAttribute('label', modelInfo || '');
-                modelInfo = obj;
-            }
-            let actionsAttr = modelInfo.getAttribute('actionsInfo')
-            if(actionsAttr) {
-                actions = JSON.parse(actionsAttr)
-            }
-            return actions
-        },
-        setActionInfos(action,isEdit) {
-            let graph = this.myEditorUi.editor.graph
-            let actions = this.getActions(graph)
-            let sameFlag = false
-            for(let i = 0;i < actions.length;i++) {//同一个控件只能绑定弹窗或者页面的一个交互事件
-                if(actions[i].innerType == 'page' && action.mutualType == actions[i].mutualType) {
-                    actions[i] = action
-                    sameFlag = true
-                    break
-                }
-            }
-            if(isEdit) {
-                let res = actions.findIndex(item=>{
-                    return item.mutualType == action.mutualType
-                })
-                if(res != -1) {
-                    actions[res] = action
-                }
-            }
-            if(!sameFlag && !isEdit) {
-                actions.push(action)
-            }
-            this.setEvents(actions)//重置event列表
-            this.setModeInfoActions(actions)
-            return actions
-        },
-        setModeInfoActions(actions) {
-            let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
-            let modelInfo = graph.getModel().getValue(cell)
-            if (!mxUtils.isNode(modelInfo)) {
-                var doc = mxUtils.createXmlDocument();
-                var obj = doc.createElement('object');
-                obj.setAttribute('label', modelInfo || '');
-                modelInfo = obj;
-            }
-            modelInfo.setAttribute('actionsInfo', JSON.stringify(actions))
-            graph.getModel().setValue(cell, modelInfo)
-        },
-        removeEvent(event,index,evet) {
-            evet.stopPropagation()
-            sureDialog(this.myEditorUi,`${this.$t("rightBar.sureToDelActions")}${index + 1}`,()=>{
-                this.events.splice(index,1)
-                let {id,stateInfo} = event
-                this.removeActions(id,stateInfo)//控件或者页面id
-            },)
-        },
-        removeActions(id,stateInfo) {
-            let graph = this.myEditorUi.editor.graph
-            let actions = this.getActions(graph)
-            for(let i = 0;i < actions.length;i++) {
-                if(actions[i].link === id) {
-                    actions.splice(i,1)
-                    break;
-                }
-            }
-            if(stateInfo) { //删除交互为状态切换时候，将绑定的状态置为false
-                let graph = this.myEditorUi.editor.graph
-                let states = this.getStates(graph)
-                for(let i = 0;i < states.length;i++) {
-                    if(states[i].id === stateInfo.stateId) {
-                        states[i].check = false
-                        break;
-                    }
-                }
-                this.setModeInfoStates(states)//存入当前节点信息中
-            }
-            this.setModeInfoActions(actions)
-        },
-        setModeInfoStates(states) {
-            let graph = this.myEditorUi.editor.graph
-            let cell = graph.getSelectionCell()
-            let modelInfo = graph.getModel().getValue(cell)
-            modelInfo.setAttribute('statesInfo', JSON.stringify(states))
-            graph.getModel().setValue(cell, modelInfo)
-        },
-        editEvent(e) {
-            let tempList = this.pages
-            if(e.type == 1) {
-                tempList = this.pages
-            }else  if(e.type == 2) {
-                if(e.innerType == 'palette') {
-                    tempList = this.currentPageWidgets
-                    this.visibleTypeTab = 2
-                }else{
-                    tempList = this.dialogs
-                    this.visibleTypeTab = 1
-                }
-            }else if(e.type == 3) {
-                this.$refs.change.checkCurrent(e)
-            }
-            this.isEdit = true
-            tempList.forEach(item=>{
-                if(item.id === e.id) {
-                    this.currentEditItem = item
-                    item.selected = true
-                }else{
-                    item.selected = false
-                }
-            })
-            if(e.type == 3) {
-                this.changeTab(e.type,true)
-            }else {
-                this.changeTab(e.type)
-            }
+    getCellInfo(graph,key, cell) {
+      let cellInfo = graph.getModel().getValue(cell)
+      return cellInfo && cellInfo.attributes && cellInfo.attributes[key] && cellInfo.attributes[key].nodeValue
+    },
+    modifyTypeTab(index) {
+      this.visibleTypeTab = index
+    },
+    addEvents() {
+      this.pages.forEach(item=>{
+        if(item.selected) {
+          item.selected = false
+        }
+      })
+      let graph = this.myEditorUi.editor.graph
+      this.bindActions = this.getActions(graph)
+      this.isEdit = true
+      if(this.typeTab == 3) {
+        this.$refs.change.addInit()
+      }
+    },
+    changeTab(index,changeEditFlag) {
+      this.typeTab = index
+      if(index == 3 && !changeEditFlag) {
+        this.$refs.change.addInit()
+      }
+    },
+    editEventDone(data) {
+      this.isEdit = false
+      if(!data) {
+        return
+      }
+      let action = {
+        "type":"in",
+        "link":"",
+        "mutualType":1,//交互类型
+        "innerType":"page",
+        "mouseEvent":"click",
+        "effectAction":"open"
+      }
+      action.mutualType = data.mutualType
+      action.innerType = data.innerType
+      action.link = data.id
+      if(data.mutualType == 2) {
+        let hide = 'hide'
+        if(data.hide) {
+          hide = 'show'
+        }
+        action.effectAction = hide
+      }else if(data.mutualType == 3) {
+        action.effectAction = 'change'
+        action.stateInfo = data.stateInfo
+      }
+      this.setActionInfos(action,data.isEdit)
+    },
+    initActions() {
+      let graph = this.myEditorUi.editor.graph
+      let actions = this.getActions(graph)
+      if(actions.length) {
+        this.setEvents(actions)
+      }
+    },
+    setEvents(actionsInfo) {
+      this.events.splice(0)
+      let oldLen = actionsInfo.length
+      for(let i = 0;i < oldLen;i++) {
+        let item = actionsInfo[i]
+        let title = this.findTitle(item)
+        if(title) {
+          let tempObj = {
+            type:item.mutualType,
+            title:title,
+            innerType:item.innerType,
+            id:item.link//控件或者页面或者弹窗ID
+          }
+          if(item.stateInfo) {
+            tempObj.stateName = item.stateInfo.name
+            tempObj.stateId = item.stateInfo.id
+          }
+          this.events.push(tempObj)
+        } else {//表示绑定交互的页面或弹窗或控件已被删除
+          actionsInfo.splice(i,1)
+        }
+      }
+      //判断是否有移除action，如果有，要设置到节点model中去
+      if(actionsInfo.length != oldLen) {
+        this.setModeInfoActions(actionsInfo)
+      }
+    },
+    findTitle(item) {
+      let tempList = this.pages
+      if(item.mutualType > 1) {
+        if(item.innerType == 'palette') {
+          tempList = this.currentPageWidgets
+        }else{
+          tempList = this.dialogs
+        }
+      }
+      let res = tempList.find(d=>{
+        return d.id == item.link
+      })
+      let title = ""
+      if(res) {
+        title = res.title
+      }
+      return title
+    },
+    getActions(graph) {
+      let actions = []
+      let cell = graph.getSelectionCell()
+      let modelInfo = graph.getModel().getValue(cell)
+      if (!mxUtils.isNode(modelInfo)) {
+        var doc = mxUtils.createXmlDocument();
+        var obj = doc.createElement('object');
+        obj.setAttribute('label', modelInfo || '');
+        modelInfo = obj;
+      }
+      let actionsAttr = modelInfo.getAttribute('actionsInfo')
+      if(actionsAttr) {
+        actions = JSON.parse(actionsAttr)
+      }
+      return actions
+    },
+    setActionInfos(action,isEdit) {
+      let graph = this.myEditorUi.editor.graph
+      let actions = this.getActions(graph)
+      let sameFlag = false
+      for(let i = 0;i < actions.length;i++) {//同一个控件只能绑定弹窗或者页面的一个交互事件
+        if(actions[i].innerType == 'page' && action.mutualType == actions[i].mutualType) {
+          actions[i] = action
+          sameFlag = true
+          break
+        }
+      }
+      if(isEdit) {
+        let res = actions.findIndex(item=>{
+          return item.mutualType == action.mutualType
+        })
+        if(res != -1) {
+          actions[res] = action
+        }
+      }
+      if(!sameFlag && !isEdit) {
+        actions.push(action)
+      }
+      this.setEvents(actions)//重置event列表
+      this.setModeInfoActions(actions)
+      return actions
+    },
+    setModeInfoActions(actions) {
+      let graph = this.myEditorUi.editor.graph
+      let cell = graph.getSelectionCell()
+      let modelInfo = graph.getModel().getValue(cell)
+      if (!mxUtils.isNode(modelInfo)) {
+        var doc = mxUtils.createXmlDocument();
+        var obj = doc.createElement('object');
+        obj.setAttribute('label', modelInfo || '');
+        modelInfo = obj;
+      }
+      modelInfo.setAttribute('actionsInfo', JSON.stringify(actions))
+      graph.getModel().setValue(cell, modelInfo)
+    },
+    removeEvent(event,index,evet) {
+      evet.stopPropagation()
+      sureDialog(this.myEditorUi,`${this.$t("rightBar.sureToDelActions")}${index + 1}`,()=>{
+        this.events.splice(index,1)
+        let {id,stateInfo} = event
+        this.removeActions(id,stateInfo)//控件或者页面id
+      },)
+    },
+    removeActions(id,stateInfo) {
+      let graph = this.myEditorUi.editor.graph
+      let actions = this.getActions(graph)
+      for(let i = 0;i < actions.length;i++) {
+        if(actions[i].link === id) {
+          actions.splice(i,1)
+          break;
+        }
+      }
+      if(stateInfo) { //删除交互为状态切换时候，将绑定的状态置为false
+        let graph = this.myEditorUi.editor.graph
+        let states = this.getStates(graph)
+        for(let i = 0;i < states.length;i++) {
+          if(states[i].id === stateInfo.stateId) {
+            states[i].check = false
+            break;
+          }
+        }
+        this.setModeInfoStates(states)//存入当前节点信息中
+      }
+      this.setModeInfoActions(actions)
+    },
+    setModeInfoStates(states) {
+      let graph = this.myEditorUi.editor.graph
+      let cell = graph.getSelectionCell()
+      let modelInfo = graph.getModel().getValue(cell)
+      modelInfo.setAttribute('statesInfo', JSON.stringify(states))
+      graph.getModel().setValue(cell, modelInfo)
+    },
+    editEvent(e) {
+      let tempList = this.pages
+      if(e.type == 1) {
+        tempList = this.pages
+      }else  if(e.type == 2) {
+        if(e.innerType == 'palette') {
+          tempList = this.currentPageWidgets
+          this.visibleTypeTab = 2
+        }else{
+          tempList = this.dialogs
+          this.visibleTypeTab = 1
+        }
+      }else if(e.type == 3) {
+        this.$refs.change.checkCurrent(e)
+      }
+      this.isEdit = true
+      tempList.forEach(item=>{
+        if(item.id === e.id) {
+          this.currentEditItem = item
+          item.selected = true
+        }else{
+          item.selected = false
+        }
+      })
+      if(e.type == 3) {
+        this.changeTab(e.type,true)
+      }else {
+        this.changeTab(e.type)
+      }
             
-        },
-    },      
+    },
+  },      
 }
 </script>
 

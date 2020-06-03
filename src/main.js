@@ -30,8 +30,8 @@ Vue.prototype.router = router;
 Vue.prototype.urls = urls;
 Vue.prototype.requestUtil = requestUtil;
 new Vue({
-    i18n,
-    router,
-    store,
-    render: h => h(App),
+  i18n,
+  router,
+  store,
+  render: h => h(App),
 }).$mount('#app')

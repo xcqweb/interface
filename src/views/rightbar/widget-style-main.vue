@@ -57,74 +57,74 @@ import State from './widget-style/state'
 import Data from './widget-style/data'
 import VueEvent from '../../services/VueEvent.js'
 export default{
-    components:{Style,MutualMain,State,Data},
-    data() {
-        return {
-            tab:1,
-            refresh:0,//切换控件刷新子组件
-            stateList:['rectangle','image','userimage','tableCell','light','ellipse','triangle','pentagram'],
-            actionList:['menuCell','rectangle','image','userimage','button','ellipse','text','tableCell','triangle','pentagram'],
-            dataList:['image','userimage','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart','triangle','pentagram'],
-            isShowDataTab:true,
-        }
+  components:{Style,MutualMain,State,Data},
+  data() {
+    return {
+      tab:1,
+      refresh:0,//切换控件刷新子组件
+      stateList:['rectangle','image','userimage','tableCell','light','ellipse','triangle','pentagram'],
+      actionList:['menuCell','rectangle','image','userimage','button','ellipse','text','tableCell','triangle','pentagram'],
+      dataList:['image','userimage','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart','triangle','pentagram'],
+      isShowDataTab:true,
+    }
+  },
+  computed: {
+    shapeName() {
+      return this.$store.state.main.widgetInfo.shapeInfo.shape
     },
-    computed: {
-        shapeName() {
-            return this.$store.state.main.widgetInfo.shapeInfo.shape
-        },
-        rand() {
-            return this.$store.state.main.rand
-        },
-        cellsCount() {
-            return this.$store.state.main.widgetInfo.cellsCount
-        },
+    rand() {
+      return this.$store.state.main.rand
     },
-    watch: {
-        rand() {
-            this.refresh = this.rand
-        },
-        shapeName(val) {
-            if(!this.stateList.includes(val) && this.tab == 2 || !this.actionList.includes(val) && this.tab == 3 || !this.dataList.includes(val) && this.tab == 4) {
-                this.tab = 1
-            }
-        },
+    cellsCount() {
+      return this.$store.state.main.widgetInfo.cellsCount
     },
-    created() {
-        let graph = this.myEditorUi.editor.graph
-        let cells = graph.getSelectionCells()
-        if(cells.length > 1) {
-            this.isShowDataTab = false
-        }
-        /*  for(let i = 0;i < cells.length;i++) { //批量绑定数据源的
+  },
+  watch: {
+    rand() {
+      this.refresh = this.rand
+    },
+    shapeName(val) {
+      if(!this.stateList.includes(val) && this.tab == 2 || !this.actionList.includes(val) && this.tab == 3 || !this.dataList.includes(val) && this.tab == 4) {
+        this.tab = 1
+      }
+    },
+  },
+  created() {
+    let graph = this.myEditorUi.editor.graph
+    let cells = graph.getSelectionCells()
+    if(cells.length > 1) {
+      this.isShowDataTab = false
+    }
+    /*  for(let i = 0;i < cells.length;i++) { //批量绑定数据源的
             if(i < cells.length - 1 && this.getCellShapeName(cells[i]) != this.getCellShapeName(cells[i + 1])) {
                 this.isShowDataTab = false
                 break
             }
         } */
+  },
+  mounted() {
+    VueEvent.$off('rightBarTabSwitch')
+    VueEvent.$on('rightBarTabSwitch',()=>{
+      this.changeTab(1)
+    })
+  },
+  methods: {
+    changeTab(index) {
+      this.tab = index
+      if (this.tab === 4) {
+        VueEvent.$emit('isShowFootBar',{show:true,isUp:true})
+      }
     },
-    mounted() {
-        VueEvent.$off('rightBarTabSwitch')
-        VueEvent.$on('rightBarTabSwitch',()=>{
-            this.changeTab(1)
-        })
+    getCellShapeName(cell) {
+      let graph = this.myEditorUi.editor.graph
+      let shapeName = ''
+      let cellState = graph.view.getState(cell)
+      if(cellState) {
+        shapeName =  cellState.style.shape
+      }
+      return shapeName
     },
-    methods: {
-        changeTab(index) {
-            this.tab = index
-            if (this.tab === 4) {
-                VueEvent.$emit('isShowFootBar',{show:true,isUp:true})
-            }
-        },
-        getCellShapeName(cell) {
-            let graph = this.myEditorUi.editor.graph
-            let shapeName = ''
-            let cellState = graph.view.getState(cell)
-            if(cellState) {
-                shapeName =  cellState.style.shape
-            }
-            return shapeName
-        },
-    },      
+  },      
 }
 </script>
 

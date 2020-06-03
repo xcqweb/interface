@@ -31,35 +31,35 @@ import MDataS from './m-data-source'
 import editingModel from './data-source/js/editing-model'
 import VueEvent from '../services/VueEvent.js'
 export default {
-    components:{
-        MPage,MDataS
-    },
-    mixins: [editingModel],
-    data() {
-        return{
-            tab:1,
-            isPage:true,
-            bindDatas: [],
-            tabShow: true
-        }
-    },
-    methods: {
-        changeTab(index) {
-            if (!this.canGoOn() && index === 1) {
-                return false
-            }
-            this.tab = index
-            this.isPage = this.tab == 1
-            if (index === 2 && this.tabShow) {
-                this.$nextTick(() => {
-                    VueEvent.$emit('rightBarTabSwitch')
-                    this.tabShow = false
-                })
-            } else if (index === 1) {
-                this.tabShow = true
-            }
-        },
+  components:{
+    MPage,MDataS
+  },
+  mixins: [editingModel],
+  data() {
+    return{
+      tab:1,
+      isPage:true,
+      bindDatas: [],
+      tabShow: true
     }
+  },
+  methods: {
+    changeTab(index) {
+      if (!this.canGoOn() && index === 1) {
+        return false
+      }
+      this.tab = index
+      this.isPage = this.tab == 1
+      if (index === 2 && this.tabShow) {
+        this.$nextTick(() => {
+          VueEvent.$emit('rightBarTabSwitch')
+          this.tabShow = false
+        })
+      } else if (index === 1) {
+        this.tabShow = true
+      }
+    },
+  }
 };
 </script>
 

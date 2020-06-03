@@ -7,12 +7,12 @@ import toolbar from './toolbar'
 import materialRoom from './material-room'
 
 export default {
-    ...common,
-    rightBar,
-    leftBar,
-    footBar,
-    dataSource,
-    toolbar,
-    materialRoom
+  ...common,
+  rightBar,
+  leftBar,
+  footBar,
+  dataSource,
+  toolbar,
+  materialRoom
 };
 

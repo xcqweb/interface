@@ -87,152 +87,152 @@ import {mxClient,Dialog} from '../../services/mxGlobal'
 import {tipDialog, sureDialog} from '../../services/Utils'
 let localImage
 export default {
-    data() {
-        return {
-            pageDesc:"",
-            solidHeight: 768,
-            solidWidth: 1366,
-            bgColor:'#fff',
-            bgPic:require('../../assets/images/rightsidebar/bg_ic_widget.png'),
-            isShowBgText:true,
-            bgPicStyle:{height:'54px'},
-            deleteShowFlag: false
-        }
-    },
-    created() {
-    },
-    mounted() {
-        this.init()
-    },
-    methods: {
-        init() {
-            let editor = this.myEditorUi.editor
-            let graph = editor.graph
-            this.bgColor = graph.background
-            let pageStyle = editor.pages[editor.currentPage].style
-            if(pageStyle) {
-                let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
-                if(bgUrl && bgUrl !== 'none') {
-                    this.changeBg(bgUrl)
-                    graph.backgroundUrl = this.bgPic
-                }else{
-                    graph.backgroundUrl = null
-                    mxClient.IS_ADD_IMG = false
-                }
-            }else {
-                mxClient.IS_ADD_IMG = false
-            }
-            let {width,height} = graph.pageFormat
-            this.solidWidth = width
-            this.solidHeight = height
-            this.myEditorUi.setPageFormat({height:height,width:width,x:0,Y:0},true)
-        },
-        centerCanvas() {//居中画布
-            let graph = this.myEditorUi.editor.graph
-            this.$nextTick(()=>{
-                graph.center(true,true,0.5,0.5)
-            })
-        },
-        changeScaleInput() {
-            this.myEditorUi.setPageFormat(
-                {
-                    height: this.solidHeight,
-                    width: this.solidWidth,
-                    x: 0,
-                    y: 0
-                },
-                true
-            )
-            this.centerCanvas()
-        },
-        setBackgroundImg() {
-            this.$refs.chooseImg.click()
-        },
-        deleteBgImgHandle() {
-            sureDialog(this.myEditorUi,`${this.$t('rightBar.sureDelBgPic')}`,()=>{
-                let editor = this.myEditorUi.editor
-                let graph = editor.graph
-                editor.pages[editor.currentPage].style.backgroundUrl = ''
-                graph.backgroundUrl = null
-                this.bgPic = require('../../assets/images/rightsidebar/bg_ic_widget.png');
-                mxClient.IS_ADD_IMG = false
-                this.isShowBgText = true
-                this.bgPicStyle = {height:'54px'}
-                this.deleteShowFlag = false
-                this.myEditorUi.editor.graph.view.validateBackground()
-            },)
-        },
-        changeBg(url) {
-            url = url.replace(/getechFileSystem\//, window.fileSystem)
-            mxClient.IS_ADD_IMG = true
-            mxClient.IS_ADD_IMG_SRC = url
-            this.bgPic = url
-            // 添加删除按钮
-            if (this.bgPic) {
-                this.deleteShowFlag = true
-                this.isShowBgText = false
-                this.bgPicStyle = {height:'98px',width: '100%'}
-            }            
-            this.myEditorUi.editor.graph.view.validateBackground()
-        },
-        setBg(url) {
-            this.changeBg(url)
-            let editor = this.myEditorUi.editor
-            //上传背景图片
-
-            let formData = new FormData()
-            formData.append('file', localImage)
-            formData.append('materialLibraryId',"");
-            this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, function(res) {
-                let pageStyle = editor.pages[editor.currentPage].style
-                if(!pageStyle) {
-                    editor.pages[editor.currentPage].style = { }
-                }
-                editor.pages[editor.currentPage].style.backgroundUrl = `getechFileSystem/${res.picPath}`
-                editor.graph.backgroundUrl = window.fileSystem + res.picPath
-            })
-        },
-        fileChange(e) {
-            if(e.target.files && e.target.files.length) {
-                let file = e.target.files[0]
-                if (file.size >= 5 * 1024 * 1024) {
-                    tipDialog(this.myEditorUi,`${this.$t('rightBar.bgPicNotOver5M')}`)
-                    return
-                }
-                let  fileTypes = ['jpg','png','jpeg','gif','bmp','svg']
-                let typeFlag = false
-                for(let i = 0;i < fileTypes.length;i++) {
-                    if(file.type.includes(fileTypes[i])) {
-                        typeFlag = true
-                        break
-                    }
-                }
-                if(!typeFlag) {
-                    tipDialog(this.myEditorUi,`${this.$t('rightBar.pleaseChoosePic')}`)
-                    return
-                }
-                
-                // 预览图片
-                let reader = new FileReader()
-                localImage = e.target.files[0]
-                reader.readAsDataURL(localImage)
-                reader.onload = evt => this.setBg(evt.target.result)
-            }
-        },
-        pickColor() {
-            this.myEditorUi.pickColor(this.bgColor || 'none',color=>{
-                this.updateBackgroundColor(color)
-            });
-        },
-        updateBackgroundColor(color)  {
-            if(color == 'none') {
-                this.bgColor = `url(${Dialog.prototype.noColorImage})`
-            }else{
-                this.bgColor = color
-            }
-            this.myEditorUi.setBackgroundColor(this.bgColor)
-        },
+  data() {
+    return {
+      pageDesc:"",
+      solidHeight: 768,
+      solidWidth: 1366,
+      bgColor:'#fff',
+      bgPic:require('../../assets/images/rightsidebar/bg_ic_widget.png'),
+      isShowBgText:true,
+      bgPicStyle:{height:'54px'},
+      deleteShowFlag: false
     }
+  },
+  created() {
+  },
+  mounted() {
+    this.init()
+  },
+  methods: {
+    init() {
+      let editor = this.myEditorUi.editor
+      let graph = editor.graph
+      this.bgColor = graph.background
+      let pageStyle = editor.pages[editor.currentPage].style
+      if(pageStyle) {
+        let bgUrl = editor.pages[editor.currentPage].style.backgroundUrl
+        if(bgUrl && bgUrl !== 'none') {
+          this.changeBg(bgUrl)
+          graph.backgroundUrl = this.bgPic
+        }else{
+          graph.backgroundUrl = null
+          mxClient.IS_ADD_IMG = false
+        }
+      }else {
+        mxClient.IS_ADD_IMG = false
+      }
+      let {width,height} = graph.pageFormat
+      this.solidWidth = width
+      this.solidHeight = height
+      this.myEditorUi.setPageFormat({height:height,width:width,x:0,Y:0},true)
+    },
+    centerCanvas() {//居中画布
+      let graph = this.myEditorUi.editor.graph
+      this.$nextTick(()=>{
+        graph.center(true,true,0.5,0.5)
+      })
+    },
+    changeScaleInput() {
+      this.myEditorUi.setPageFormat(
+        {
+          height: this.solidHeight,
+          width: this.solidWidth,
+          x: 0,
+          y: 0
+        },
+        true
+      )
+      this.centerCanvas()
+    },
+    setBackgroundImg() {
+      this.$refs.chooseImg.click()
+    },
+    deleteBgImgHandle() {
+      sureDialog(this.myEditorUi,`${this.$t('rightBar.sureDelBgPic')}`,()=>{
+        let editor = this.myEditorUi.editor
+        let graph = editor.graph
+        editor.pages[editor.currentPage].style.backgroundUrl = ''
+        graph.backgroundUrl = null
+        this.bgPic = require('../../assets/images/rightsidebar/bg_ic_widget.png');
+        mxClient.IS_ADD_IMG = false
+        this.isShowBgText = true
+        this.bgPicStyle = {height:'54px'}
+        this.deleteShowFlag = false
+        this.myEditorUi.editor.graph.view.validateBackground()
+      },)
+    },
+    changeBg(url) {
+      url = url.replace(/getechFileSystem\//, window.fileSystem)
+      mxClient.IS_ADD_IMG = true
+      mxClient.IS_ADD_IMG_SRC = url
+      this.bgPic = url
+      // 添加删除按钮
+      if (this.bgPic) {
+        this.deleteShowFlag = true
+        this.isShowBgText = false
+        this.bgPicStyle = {height:'98px',width: '100%'}
+      }            
+      this.myEditorUi.editor.graph.view.validateBackground()
+    },
+    setBg(url) {
+      this.changeBg(url)
+      let editor = this.myEditorUi.editor
+      //上传背景图片
+
+      let formData = new FormData()
+      formData.append('file', localImage)
+      formData.append('materialLibraryId',"");
+      this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, function(res) {
+        let pageStyle = editor.pages[editor.currentPage].style
+        if(!pageStyle) {
+          editor.pages[editor.currentPage].style = { }
+        }
+        editor.pages[editor.currentPage].style.backgroundUrl = `getechFileSystem/${res.picPath}`
+        editor.graph.backgroundUrl = window.fileSystem + res.picPath
+      })
+    },
+    fileChange(e) {
+      if(e.target.files && e.target.files.length) {
+        let file = e.target.files[0]
+        if (file.size >= 5 * 1024 * 1024) {
+          tipDialog(this.myEditorUi,`${this.$t('rightBar.bgPicNotOver5M')}`)
+          return
+        }
+        let  fileTypes = ['jpg','png','jpeg','gif','bmp','svg']
+        let typeFlag = false
+        for(let i = 0;i < fileTypes.length;i++) {
+          if(file.type.includes(fileTypes[i])) {
+            typeFlag = true
+            break
+          }
+        }
+        if(!typeFlag) {
+          tipDialog(this.myEditorUi,`${this.$t('rightBar.pleaseChoosePic')}`)
+          return
+        }
+                
+        // 预览图片
+        let reader = new FileReader()
+        localImage = e.target.files[0]
+        reader.readAsDataURL(localImage)
+        reader.onload = evt => this.setBg(evt.target.result)
+      }
+    },
+    pickColor() {
+      this.myEditorUi.pickColor(this.bgColor || 'none',color=>{
+        this.updateBackgroundColor(color)
+      });
+    },
+    updateBackgroundColor(color)  {
+      if(color == 'none') {
+        this.bgColor = `url(${Dialog.prototype.noColorImage})`
+      }else{
+        this.bgColor = color
+      }
+      this.myEditorUi.setBackgroundColor(this.bgColor)
+    },
+  }
 };
 </script>
 

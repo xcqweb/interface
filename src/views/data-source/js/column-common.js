@@ -1,10 +1,10 @@
 export default {
-    props: {
-        title: {
-            type: String,
-        },
-        width: {
-            type: Number,
-        },
+  props: {
+    title: {
+      type: String,
     },
+    width: {
+      type: Number,
+    },
+  },
 };
