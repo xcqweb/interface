@@ -536,6 +536,7 @@ class PreviewPage {
       cellHtml = dealPipeline(cell)
     } else if (shapeName.includes('Chart')) {
       cellHtml =  dealCharts(this.mainProcess,cell)
+      cellHtml.style.display = 'block'
     } else if (shapeName == 'light') {
       cellHtml = dealLight(cell)
     } else if(shapeName == 'triangle') {

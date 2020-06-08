@@ -6,12 +6,9 @@
  * Constructs a new graph editor
  */
 import {
-    FilenameDialog, OpenDialog, ColorDialog
+    FilenameDialog, ColorDialog
 } from './Dialogs'
-import {
-    OpenFile
-} from './Editor'
-import {ChangePageSetup} from './Init'
+ 
 import {Format} from './Format'
 import urls from '../../constants/url'
 import { setCookie, tipDialog} from '../Utils'
@@ -975,7 +972,6 @@ window.EditorUi = function(editor, container, lightbox)
    	// Resets UI, updates action and menu states
    	this.editor.resetGraph();
    	this.init();
-   	this.open();
 };
 
 // Extends mxEventSource
@@ -2188,56 +2184,6 @@ EditorUi.prototype.onBeforeUnload = function()
         
     }
 };
-
-/**
- * Opens the current diagram via the window.opener if one exists.
- */
-EditorUi.prototype.open = function()
-{
-    // Cross-domain window access is not allowed in FF, so if we
-    // were opened from another domain then this will fail.
-    try
-    {
-        if (window.opener != null && window.opener.openFile != null)
-        {
-            window.opener.openFile.setConsumer(mxUtils.bind(this, function(xml, filename)
-            {
-                try
-                {
-                    var doc = mxUtils.parseXml(xml);
-                    this.editor.setGraphXml(doc.documentElement);
-                    this.editor.setModified(false);
-                    this.editor.undoManager.clear();
-
-                    if (filename != null)
-                    {
-                        this.editor.setFilename(filename);
-                        this.updateDocumentTitle();
-                    }
-
-                    return;
-                }
-                catch (e)
-                {
-                    mxUtils.alert(mxResources.get('invalidOrMissingFile') + ': ' + e.message);
-                }
-            }));
-        }
-    }
-    catch(e)
-    {
-        // ignore
-    }
-
-    // Fires as the last step if no file was loaded
-    this.editor.graph.view.validate();
-
-    // Required only in special cases where an initial file is opened
-    // and the minimumGraphSize changes and CSS must be updated.
-    this.editor.graph.sizeDidChange();
-    this.editor.fireEvent(new mxEventObject('resetGraphView'));
-};
-
 /**
  * Sets the current menu and element.
  */
@@ -2556,30 +2502,6 @@ EditorUi.prototype.setPageVisible = function(value)
     // 会二次触发pageView事件
     // this.fireEvent(new mxEventObject('pageViewChanged'));
 };
-
-
-
-// Registers codec for ChangePageSetup
-(function()
-{
-    var codec = new mxObjectCodec(new ChangePageSetup(),  ['ui', 'previousColor', 'previousImage', 'previousFormat']);
-
-    codec.afterDecode = function(dec, node, obj)
-    {
-        obj.previousColor = obj.color;
-        obj.previousImage = obj.image;
-        obj.previousFormat = obj.format;
-
-        if (obj.foldingEnabled != null)
-        {
-        		obj.foldingEnabled = !obj.foldingEnabled;
-        }
-
-        return obj;
-    };
-
-    mxCodecRegistry.register(codec);
-})();
 
 /**
  * Loads the stylesheet for this graph.
@@ -3262,26 +3184,6 @@ EditorUi.prototype.pickColor = function(color, apply)
     this.showDialog(dlg.container, 203, 242, true, false);
     dlg.init();
 };
-
-/**
- * Adds the label menu items to the given menu and parent.
- */
-EditorUi.prototype.openFile = function()
-{
-    // Closes dialog after open
-    window.openFile = new OpenFile(mxUtils.bind(this, function(cancel)
-    {
-        this.hideDialog(cancel);
-    }));
-
-    // Removes openFile if dialog is closed
-    this.showDialog(new OpenDialog(this).container, (Editor.useLocalStorage) ? 640 : 320,
-        (Editor.useLocalStorage) ? 480 : 80, true, false, function()
-        {
-            window.openFile = null;
-        }, null, '打开', null);
-};
-
 /**
  * Extracs the graph model from the given HTML data from a data transfer event.
  */
@@ -3621,40 +3523,6 @@ EditorUi.prototype.showLinkDialog = function(value, btnLabel, fn)
 /**
  * Hides the current menu.
  */
-EditorUi.prototype.showBackgroundImageDialog = function(apply)
-{
-    apply = (apply != null) ? apply : mxUtils.bind(this, function(image)
-    {
-        var change = new ChangePageSetup(this, null, image);
-        change.ignoreColor = true;
-
-        this.editor.graph.model.execute(change);
-    });
-
-    var newValue = mxUtils.prompt(mxResources.get('backgroundImage'), '');
-
-    if (newValue != null && newValue.length > 0)
-    {
-        var img = new Image();
-
-        img.onload = function()
-        {
-            apply(new mxImage(newValue, img.width, img.height));
-        };
-        img.onerror = function()
-        {
-            apply(null);
-            mxUtils.alert(mxResources.get('fileNotFound'));
-        };
-
-        img.src = newValue;
-    }
-    else
-    {
-        apply(null);
-    }
-};
-
 /**
  * Loads the stylesheet for this graph.
  */
@@ -4174,3 +4042,4 @@ EditorUi.prototype.destroy = function()
         }
     }
 };
+
