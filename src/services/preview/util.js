@@ -604,7 +604,7 @@ function insertSvg(shapeXmls,key,cell) {
   return svg
 }
 function dealTriangle(cell) {
-  let {width,height,fillColor,strokeColor,strokeWidth,value,fontColor,strokeStyle} = cell
+  let {width,height,fillColor,strokeColor,strokeWidth,strokeStyle} = cell
   let con = document.createElement('div')
   let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   svg.setAttribute('width', width)
@@ -615,23 +615,38 @@ function dealTriangle(cell) {
   }
   svg.innerHTML = `<path d="M ${strokeWidth} ${strokeWidth} L ${width - strokeWidth} ${height / 2 - strokeWidth} L ${strokeWidth} ${height - strokeWidth} Z" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${strokeWidth}" stroke-dasharray="${dashArr}">`
   con.appendChild(svg)
-  let textCon = document.createElement('div')
-  textCon.className = "text-show"
-  textCon.style.cssText = `width:${width}px;height:${height}px;position:absolute;color:${fontColor};left:0;top:0;`
-  textCon.innerHTML = `<label style="line-height:${cell.fontSize}px;display:inline-block;">${value}</label>`
-  con.appendChild(textCon)
+  con.appendChild(dealAlignText(cell))
   return con
 }
+function dealAlignText(cell) {
+  let {width,height,fontColor,value,verticalAlign,align} = cell
+  let textCon = document.createElement('div')
+  textCon.className = "text-show"
+  let alignItems = 'flex-start'
+  let justifyContent = 'flex-start'
+  if (align === 'left') {
+    justifyContent = 'flex-start'
+  } else if (align === 'right') {
+    justifyContent = 'flex-end'
+  } else {
+    justifyContent = 'center'
+  }
+  if (verticalAlign === 'top') {
+    alignItems = 'flex-start'
+  } else if (verticalAlign === 'bottom') {
+    alignItems = 'flex-end'
+  } else {
+    alignItems = 'center'
+  }
+  textCon.style.cssText = `display:flex;width:${width}px;height:${height}px;position:absolute;color:${fontColor};left:0;top:0;align-items:${alignItems};justify-content:${justifyContent};`
+  textCon.innerHTML = `${value}`
+  return textCon
+}
 function dealPentagram(mainProcess,cell) {
-  let {width,height,value,fontColor} = cell
   let con = document.createElement('div')
   let content = insertSvg(mainProcess.shapeXmls,'pentagram',cell)
   con.appendChild(content)
-  let textCon = document.createElement('div')
-  textCon.className = "text-show"
-  textCon.style.cssText = `width:${width}px;height:${height}px;position:absolute;color:${fontColor};left:0;top:0;`
-  textCon.innerHTML = `<label style="line-height:${cell.fontSize}px;display:inline-block;">${value}</label>`
-  con.appendChild(textCon)
+  con.appendChild(dealAlignText(cell))
   return con
 }
 /**

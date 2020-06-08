@@ -505,8 +505,6 @@ class PreviewPage {
       } else if (cell.verticalAlign === 'middle') {
         child.style.top = '50%'
         translateY = '-50%'
-      } else {
-        translateY = '8px'
       }
       child.style.transform = `translate(${translateX}, ${translateY})`
       child.style.lineHeight = '1'
@@ -538,6 +536,7 @@ class PreviewPage {
       cellHtml = dealPipeline(cell)
     } else if (shapeName.includes('Chart')) {
       cellHtml =  dealCharts(this.mainProcess,cell)
+      cellHtml.style.display = 'block'
     } else if (shapeName == 'light') {
       cellHtml = dealLight(cell)
     } else if(shapeName == 'triangle') {
@@ -558,26 +557,22 @@ class PreviewPage {
       cellHtml.innerHTML = cell.value
       // }
     }
-    if (shapeName !== 'text') {
+    if (shapeName !== 'text') { // 文字的居中处理 在上面使用translate处理过了
       if (cell.verticalAlign === 'top') {
-        // cellHtml.style.lineHeight = cell.fontSize + 'px'
         cellHtml.style.alignItems = 'flex-start'
       } else if (cell.verticalAlign === 'bottom') {
-        // cellHtml.style.lineHeight = (cell.height * 2 - cell.fontSize) + 'px'
         cellHtml.style.alignItems = 'flex-end'
       } else {
-        // cellHtml.style.lineHeight = cell.height + 'px'
         cellHtml.style.alignItems = 'center'
       }
+      if (cell.align === 'left') {
+        cellHtml.style.justifyContent = 'flex-start'
+      } else if (cell.align === 'right') {
+        cellHtml.style.justifyContent = 'flex-end'
+      } else {
+        cellHtml.style.justifyContent = 'center'
+      }
     }
-    if (cell.align === 'left') {
-      cellHtml.style.justifyContent = 'flex-start'
-    } else if (cell.align === 'right') {
-      cellHtml.style.justifyContent = 'flex-end'
-    } else {
-      cellHtml.style.justifyContent = cell.align
-    }
-    cellHtml.style.textAlign = cell.align
     if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress','triangle','pentagram'].includes(shapeName)) {
       cellHtml.style.backgroundColor = 'transparent'
     }else{
@@ -711,3 +706,4 @@ class PreviewPage {
 }
 
 export default PreviewPage
+

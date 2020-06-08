@@ -714,7 +714,7 @@ export default {
                               }
                               .ivu-tabs-content{
                                   flex:1;
-                                  height:100%;
+                                  height:calc(100% - 38px);
                                   .ivu-tabs-tabpane{
                                       height:100%;
                                       .commom-wrapper{
