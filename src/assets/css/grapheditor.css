@@ -860,6 +860,15 @@ div.mxWindow .geButton {
 .en .data-tab::after {
 	content: "Data";
 }
+.model-tab::after {
+	content: "模型";
+	position: relative;
+	font-size: 12px;
+	top: 24px;
+}
+.en .model-tab::after {
+	content: "Model";
+}
 .geSprite-left-align {
 	background-image: url(../images/menu/align_left_ic.png);
 	background-repeat: no-repeat;

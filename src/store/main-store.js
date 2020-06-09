@@ -5,6 +5,7 @@ const state = {
   modelEditing: false, // 模型是否处于编辑状态
   footerModelUpdata: false, // 是否刷新底部状态模型
   cancelTokenArr: [], // 取消请求token数组
+  isTemplateApply: true,//是否是模板组态
 }
 
 const mutations = {
@@ -213,6 +214,9 @@ const mutations = {
       item('取消请求')
     })
     state.cancelTokenArr = []
+  },
+  setIsTemplateApply(state, data) {
+    state.isTemplateApply = data
   }
 }
 
