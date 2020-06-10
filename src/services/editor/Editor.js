@@ -1086,10 +1086,8 @@ Editor.prototype.createUndoManager = function()
     {
         this.undoListener.apply(this, arguments);
     });
-	
     graph.getModel().addListener(mxEvent.UNDO, listener);
     graph.getView().addListener(mxEvent.UNDO, listener);
-
     // Keeps the selection in sync with the history
     var undoHandler = function(sender, evt)
     {
@@ -1130,68 +1128,7 @@ Editor.prototype.destroy = function()
         this.graph = null;
     }
 };
-
-/**
- * Class for asynchronously opening a new window and loading a file at the same
- * time. This acts as a bridge between the open dialog and the new editor.
- */
-let OpenFile = function(done)
-{
-    this.producer = null;
-    this.consumer = null;
-    this.done = done;
-    this.args = null;
-};
-
-/**
- * Registers the editor from the new window.
- */
-OpenFile.prototype.setConsumer = function(value)
-{
-    this.consumer = value;
-    this.execute();
-};
-
-/**
- * Sets the data from the loaded file.
- */
-OpenFile.prototype.setData = function()
-{
-    this.args = arguments;
-    this.execute();
-};
-
-/**
- * Displays an error message.
- */
-OpenFile.prototype.error = function(msg)
-{
-    this.cancel(true);
-    mxUtils.alert(msg);
-};
-
-/**
- * Consumes the data.
- */
-OpenFile.prototype.execute = function()
-{
-    if (this.consumer != null && this.args != null)
-    {
-        this.cancel(false);
-        this.consumer.apply(this, this.args);
-    }
-};
-
-/**
- * Cancels the operation.
- */
-OpenFile.prototype.cancel = function(cancel)
-{
-    if (this.done != null)
-    {
-        this.done((cancel != null) ? cancel : true);
-    }
-};
+ 
 
 /**
  * Basic dialogs that are available in the viewer (print dialog).
@@ -1887,17 +1824,6 @@ var PageSetupDialog = function(editorUi)
         }
     }
 	
-    mxEvent.addListener(changeImageLink, 'click', function(evt)
-    {
-        editorUi.showBackgroundImageDialog(function(image)
-        {
-            newBackgroundImage = image;
-            updateBackgroundImage();
-        });
-		
-        mxEvent.consume(evt);
-    });
-	
     updateBackgroundImage();
 
     td.appendChild(changeImageLink);
@@ -2167,7 +2093,6 @@ PageSetupDialog.addPageFormatPanel = function(div, namePostfix, pageFormat, page
 
     div.appendChild(paperSizeSelect);
 
-    // div.appendChild(formatDiv); // 630以后再做
     div.appendChild(customDiv);
 	
     var currentPageFormat = pageFormat;
@@ -2802,6 +2727,4 @@ PageSetupDialog.getFormats = function()
     };
 
 })();
-export {
-    OpenFile
-}
+ 

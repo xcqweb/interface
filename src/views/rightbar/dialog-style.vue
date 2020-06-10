@@ -129,7 +129,7 @@
     <div
       class="item-container"
       style="position:relative;"
-      :style="{backgroundColor:bgColor}"
+      :style="{background:bgColor}"
       @click="pickColor"
     />
     <div
@@ -138,7 +138,7 @@
   </div>
 </template>
 <script>
-import {mxClient} from '../../services/mxGlobal'
+import {mxClient,Dialog} from '../../services/mxGlobal'
 import VueEvent from '../../services/VueEvent'
 
 let alignArr = ['left','center','right']
@@ -152,8 +152,8 @@ export default {
       dialogHeight: 400,
       dialogWidth: 600,
       fontText:12,
-      bgColor:'#fff',
-      fontColor:'#333333',
+      bgColor:'#E2E1E2',
+      fontColor:'#252525',
       alignIndex1:2,
       alignIndex2:2,
       canvasOffsetTop:0,
@@ -190,8 +190,8 @@ export default {
       this.dialogWidth = graph.pageFormat.width || 600
       this.dialogHeight = graph.pageFormat.height || 400
       this.fontText = parseInt(dialogStyle.fontSize || 12)
-      this.fontColor = dialogStyle.color
-      this.bgColor = dialogStyle.bgColor
+      this.fontColor = dialogStyle.color || '#252525'
+      this.bgColor = dialogStyle.background || '#E2E1E2'
       this.alignIndex1 = alignArr.indexOf(dialogStyle.textAlign) + 1 || 2
       this.alignIndex2 = valignArr.indexOf(parseInt(dialogStyle.lineHeight)) + 1 || 2
       setTimeout(() => {
@@ -283,6 +283,9 @@ export default {
     pickColor() {
       this.myEditorUi.pickColor(this.bgColor || 'none',color=>{
         this.bgColor = color
+        if(this.bgColor == 'none') {
+          this.bgColor = `url(${Dialog.prototype.noColorImage})`
+        }
         let dialogStyleTemp = {
           background:`${this.bgColor}`,
         }
