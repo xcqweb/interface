@@ -69,7 +69,6 @@
     </ul>
     <no-data
       v-else
-      :margin-top="-36"
     />
     <!-- 移除确认弹窗 -->
     <component

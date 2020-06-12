@@ -8,6 +8,10 @@ export default {
       modelObj: {},
       deviceObj: {},
       studioId: '',
+      applyObj: {
+        forecastId: '', // 预测
+        appId: '', // 统计
+      },
     };
   },
   computed: {
@@ -19,7 +23,7 @@ export default {
       } else {
         this.model.deviceTypeId = '';
       }
-            
+
       return typeData;
     },
     modelData() {
@@ -38,6 +42,26 @@ export default {
       this.deviceObj = this.$store.state.datasource.deviceObj || {};
       return key && this.deviceObj[key] ? this.deviceObj[key] : [];
     },
+    predData() {
+      const predData = this.$store.state.datasource.predData;
+      if (predData.length > 0) {
+        const type = predData[0];
+        this.applyObj.forecastId = type.forecastId;
+      } else {
+        this.applyObj.forecastId = '';
+      }
+      return predData;
+    },
+    statiData() {
+      const statiData = this.$store.state.datasource.statiData;
+      if (statiData.length > 0) {
+        const type = statiData[0];
+        this.applyObj.appId = type.appId;
+      } else {
+        this.applyObj.appId = '';
+      }
+      return statiData;
+    }
   },
   created() {
     this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');

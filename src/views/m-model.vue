@@ -5,15 +5,6 @@
     <!-- toolbar/导入数据源 -->
     <div class="datasource-toolbar">
       <!--导入数据源-->
-      <a
-        v-show="dataType === 0"
-        class="import-datasource-btn"
-        href="javascript:;"
-        @click="devicesVisible = true"
-      >
-        <i />
-        {{ $t('importDataSource') }}
-      </a>
     </div>
     <!--- menu/数据源、数据模型 -->
     <ul class="datasource-menu">
@@ -38,22 +29,21 @@
     </ul>
     <!--主体内容-->
     <div class="datasource-body flex-full-item">
-      <!-- 数据源 -->
-      <datasource
+      <!-- 设备模型 -> 设备 -->
+      <Datamodel
         v-show="dataType === 0"
         :reload-data="deviceDataChange"
       />
-      <!-- 预测应用 统计应用 -->
+      <!-- 数据模型 -->
       <component
         :is="modelComponent"
         v-show="dataType !== 0"
       />
     </div>
     <!-- 导入数据源弹窗 -->
-    <importDataSource
+    <devices
       ref="devices"
       v-model="devicesVisible"
-      :visible-import="devicesVisible"
       multiple
       @callback="devicesCallback"
     />
@@ -62,11 +52,10 @@
 
 <script>
 import Devices from './data-source/devices'
-import importDataSource from './data-source/importdataSource'
 import Datasource from './data-source/datasource'
 import Datamodel from './data-source/datamodel'
-import PredictionApp from './data-source/predictonApp'
-import StatisticApp from './data-source/statisticApp'
+import PredictionModel from './data-source/predictionModel'
+import StatisticModel from './data-source/statisticModel'
 import editingModel from './data-source/js/editing-model'
 
 export default{
@@ -75,9 +64,8 @@ export default{
     Datasource,
     // Datamodel: resolve => require(['./data-source/datamodel'], resolve),
     Datamodel,
-    PredictionApp,
-    StatisticApp,
-    importDataSource,
+    PredictionModel,
+    StatisticModel,
   },
   mixins: [editingModel],
   data() {
@@ -103,7 +91,9 @@ export default{
       if (this.canGoOn()) {
         this.dataType = index;
         if (index === 1) {
-          this.modelComponent = 'datamodel';
+          this.modelComponent = 'PredictionModel';
+        } else if (index === 2) {
+          this.modelComponent = 'StatisticModel';
         }
       }
     },
