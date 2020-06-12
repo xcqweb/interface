@@ -10,7 +10,11 @@
               @on-click="switchTabHandle"
             >
               <TabPane :label="$t(dataSourceName[0])" />
-              <TabPane :label="$t(dataSourceName[1])" />
+              <TabPane
+                v-if="!$store.state.main.isTemplateApply"
+                :label="$t(dataSourceName[0])"
+              />
+
               <TabPane :label="$t(dataSourceName[2])" />
             </Tabs>
           </div>
@@ -37,7 +41,7 @@
         <div v-if="footerContent">
           <!--数据源-->
           <div
-            v-show="tabsNum === 0"
+            v-show="tabsNum === 0 && !$store.state.main.isTemplateApply"
             class="footer-common dataSourceList"
           >
             <template>
