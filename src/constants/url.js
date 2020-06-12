@@ -26,7 +26,7 @@ export default {
 
   // 20200601
   newDeviceTypeList: {url: `hm/device/deviceType/child`, 'desc': '查询位置节点的子节点_设备分类'},
-  newDeviceTemplateLIST: {url: `hm/device/deviceModel/page`, 'desc': '根据类型获取模版列表'},
+  newDeviceTemplateLIST: {url: `api/device/deviceModel/page`, 'desc': '根据类型获取模版列表'},
   newAppDataList: {url: `${prefix}/iot-cds/cds/findConfigApp`, 'desc': '导入数据源获取应用数据源(组态工具V2.0)'},
   newImportDsApi: {url: `${prefix}/iot-cds/cds/configDevice`, 'desc': '导入数据源确认接口'},
   newImportDeviceList: {url: `${prefix}/iot-cds/cds/dataSource/selectDataImport`, 'desc': '设备模版下的设备'},

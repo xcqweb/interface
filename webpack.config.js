@@ -142,11 +142,11 @@ module.exports = {
     proxy: {
       "/api": {
         //target: "http://10.74.20.25",
-        target: 'http://kong.ele-iot-sit.10.74.20.12.nip.io/', //tcl sit
-        // target: 'http://kong.ele-pro.10.126.72.71.nip.io/', // tcl uat
-        changeOrigin: true
+        // target: 'http://kong.ele-iot-sit.10.74.20.12.nip.io', //tcl sit
+        target: 'http://kong.csot-iot-sit.10.74.20.12.nip.io/',
+        changeOrigin: true,
         // "pathRewrite": {"^/api": "/api"}
-        // "pathRewrite": {"^/api": ""}
+        // pathRewrite: {"^/api": ""}
       },
       "/xj": {
         target: "http://10.8.4.152:8003/iot-device",

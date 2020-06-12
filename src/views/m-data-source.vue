@@ -9,7 +9,7 @@
         v-show="dataType === 0"
         class="import-datasource-btn"
         href="javascript:;"
-        @click="devicesVisible = true"
+        @click="importDataHander"
       >
         <i />
         {{ $t('importDataSource') }}
@@ -53,7 +53,6 @@
     <importDataSource
       ref="devices"
       v-model="devicesVisible"
-      :visible-import="devicesVisible"
       multiple
       @callback="devicesCallback"
     />
@@ -68,7 +67,7 @@ import Datamodel from './data-source/datamodel'
 import PredictionApp from './data-source/predictonApp'
 import StatisticApp from './data-source/statisticApp'
 import editingModel from './data-source/js/editing-model'
-
+import VueEvent from '../services/VueEvent.js'
 export default{
   components:{
     Devices,
@@ -92,6 +91,7 @@ export default{
   methods: {
     importDataHander() {
       this.devicesVisible = true
+      VueEvent.$emit('getImportData')
     },
     triggerCancel() {
       this.devicesVisible = false

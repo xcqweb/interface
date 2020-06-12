@@ -33,8 +33,9 @@
       <importDevice
         v-show="dataType === 0"
         ref="importDevice"
+        :visible="visible"
         :data="deviceData"
-        :visible-import="visibleImport"
+        @chooseDeviceData="chooseDeviceData"
       />
       <!-- 导入预测应用 -->
       <Transfer
@@ -80,7 +81,7 @@
 <script>
 import {Modal, Button, Message, Transfer} from 'iview'
 import importDevice from './importDevice'
-const MODEL_WIDTH = [900, 512, 512]
+const MODEL_WIDTH = [950, 512, 512]
 export default {
   components: {
     Modal,
@@ -99,10 +100,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    visibleImport: {
-      type: Boolean,
-      default: false,
-    }
   },
   data() {
     return {
@@ -123,7 +120,7 @@ export default {
       loading: false,
 
       dataType: 0,
-      modelWidth: 900,
+      modelWidth: 950,
       listStyle: {
         width: '200px',
         height: '378px',
@@ -134,6 +131,7 @@ export default {
       staAppDataList: [],
       targetStaAppList:[],
       studioId: '',
+      selectDeviceList: []
     };
   },
   watch: {
@@ -142,12 +140,8 @@ export default {
     },
     visible(val) {
       if (!val) {
+        console.log(val)
         this.$emit('input', val);
-        // this.reset(false);
-        // this.selectedItems = [];
-        // this.tableData = [];
-        // this.total = 0;
-        // this.pageParams.current = 1;
       }
     },
   },
@@ -190,7 +184,6 @@ export default {
     },
     targetPreAppChange(data) {
       this.targetPreAppList = data
-      console.log(this.targetPreAppList);
     },
     targetStaAppChange(data) {
       this.targetStaAppList = data
@@ -198,19 +191,6 @@ export default {
     handleTabClick(index) {
       this.dataType = index;
       this.modelWidth = MODEL_WIDTH[index];
-    },
-    getDevices() {
-      const query = `?size=${this.pageParams.size}&current=${this.pageParams.current}`;
-      this.requestUtil.post('api/iot-cds/cds/dataSource/selectDataImport' + query, this.params).then(res => {
-        if (res.records && res.records.length > 0) {
-          res.records.forEach((item, index) => {
-            item.index = index;
-          });
-        }
-        this.tableData = res.records || [];
-        this.total = res.total || 0;
-        this.selectedItems = [];
-      });
     },
     getDeviceTypes() {
       const params = {}
@@ -290,10 +270,14 @@ export default {
         callback();
       });
     },
+    chooseDeviceData(data) {
+      this.selectDeviceList = data
+    },
     cancel() {
       this.visible = false;
     },
     submit() {
+
       // if (!this.selectedItems.length) {
       //     Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
       //     return;
@@ -334,7 +318,14 @@ export default {
         }
       })
       const appDataSources = [...targetPreAppList, ...targetStaAppList];
-      const studioDevs = [];
+      const studioDevs = !this.selectDeviceList.length ? [] : this.selectDeviceList.map(item => {
+        return {
+          deviceId: item.id,
+          deviceModelId: item.deviceModelId,
+          deviceTypeId: item.deviceTypeId,
+          studioId: this.studioId,
+        }
+      });
       const params = {
         appDataSources,
         studioDevs,

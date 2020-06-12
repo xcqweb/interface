@@ -9,6 +9,7 @@
         :data="deviceTypeData"
         prop="deviceTypeName"
         @click="handleTypeClick"
+        @chooseData="chooseData"
       />
     </div>
     <!-- 设备型号 -->
@@ -18,7 +19,7 @@
       :width="200"
       :data="deviceModelData"
       prop="deviceModelName"
-      @click="handleTypeClick"
+      @click="handleModelClick"
     />
     <!-- 参数穿梭框 -->
     <page-transfer
@@ -44,7 +45,7 @@
 import DeviceList from './device-list'
 import PageTransfer from '@/components/page-transfer/index.vue'
 import DatasourceStore from './js/datasource-store'
-
+import VueEvent from "../../services/VueEvent.js";
 
 export default {
   components: {
@@ -52,6 +53,7 @@ export default {
     PageTransfer,
   },
   mixins: [DatasourceStore],
+  props: ['visible'],
   data() {
     return {
       pageIndex: 1,
@@ -61,11 +63,10 @@ export default {
       showForm: false,
       apiMethods: `${this.urls.newImportDeviceList.url}`,
       elseParams: {},
-      visible: false,
       deviceTypesBk: [],
       chooseDeviceList: [],
       treeData: [],
-      curNodeData: null,
+      curNodeData: {},
       deviceModelData: [],
       deviceTypeData: [],
       studioId: '',
@@ -73,26 +74,35 @@ export default {
   },
   async created() {
     this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-    await this.getDeviceTypes(); // 电子
-    this.getDeviceTemplateData(); // 获取型号
+    // await this.getDeviceTypes(); // 电子
+    // this.getDeviceTemplateData(); // 获取型号
+  },
+  mounted() {
+    let that = this
+    VueEvent.$off("getImportData")
+    VueEvent.$on("getImportData", async() => {
+      that.studioId = that.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+      that.deviceTypesBk = [];
+      await this.getDeviceTypes(); // 电子
+      that.getDeviceTemplateData(); // 获取型号
+    });
   },
   methods: {
     getDeviceTypes() {
       this.requestUtil.get('api/device/deviceType/select').then(data => {
-        console.log(data)
-        this.deviceTypeData = data.map((item) => {
-          return {
-            deviceTypeId: item.deviceTypeId,
-            deviceTypeName: item.deviceTypeName,
-          }
-        })
+        if (data.length > 0) {
+          this.deviceTypeData = data.map((item) => {
+            return {
+              deviceTypeId: item.deviceTypeId,
+              deviceTypeName: item.deviceTypeName,
+            }
+          });
+          this.curNodeData.deviceTypeId = this.deviceTypeData[0].deviceTypeId;
+        }
       });
     },
     getDeviceTemplateData() {
       let deviceTypeId = this.curNodeData ? this.curNodeData.deviceTypeId : ''
-      if ( this.curNodeData && this.curNodeData.level === 1 ) {
-        deviceTypeId = ''
-      }
       this.model.deviceTypeId = deviceTypeId;
       const params = {
         deviceTypeId,
@@ -109,15 +119,18 @@ export default {
         })
         if (this.deviceModelData.length) {
           this.getDeviceList(this.deviceModelData[0]);
+        } else {
+          this.getDeviceList({deviceModelId: ''});
         }
-                
       })
     },
     getDeviceList(data) {
       let deviceTypeId = this.curNodeData ? this.curNodeData.deviceTypeId : ''
-      this.$set(this.elseParams, 'deviceModelId', data.deviceModelId)
-      this.$set(this.elseParams, 'deviceTypeId', deviceTypeId)
-      this.$set(this.elseParams, 'studioId', this.studioId)
+      this.elseParams = {
+        deviceModelId: data.deviceModelId,
+        deviceTypeId,
+        studioId: this.studioId,
+      }
     },
     loadData(item, callback) {
       this.requestUtil.get(this.urls.newDeviceTypeList.url, {parentId: item.deviceTypeId}).then( re => {
@@ -182,14 +195,23 @@ export default {
       return {
         id:item.deviceId,
         name:item.deviceName,
+        deviceTypeId: item.deviceTypeId,
+        deviceModelId: item.deviceModelId,
+
       }
     },
     chooseData(data) {
-      this.chooseDeviceList = JSON.parse(JSON.stringify(data));
+      this.chooseDeviceList = JSON.parse(JSON.stringify(data))
+      this.$emit('chooseDeviceData', this.chooseDeviceList)
     },
     handleTypeClick(item) {
+      this.model.deviceTypeId = item.deviceTypeId
+      this.curNodeData.deviceTypeId = item.deviceTypeId
+      this.getDeviceTemplateData()
+    },
+    handleModelClick(item) {
       this.model.deviceModelId = item.deviceModelId;
-      this.$set(this.elseParams, 'deviceModelId', item.deviceModelId);
+      this.elseParams.deviceModelId = item.deviceModelId;
     },
     handleEditModel(model = null) {
       this.editModel = model;
@@ -222,6 +244,7 @@ export default {
   }
 }
 .deviceModel-data {
+    height: 100%;
     .data-column-body {
         .device-data-list {
             li {
