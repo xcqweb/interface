@@ -45,4 +45,5 @@ export default {
   confirmToRemoveDevice: '确认要移除选中的设备吗？',
   removeDeviceSuccessfully: '设备移除成功！',
   enterParameterName: '请输入参数名称',
+  applyList: '应用列表', // 2020520
 };

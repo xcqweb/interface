@@ -6,7 +6,7 @@
         :class="{'selected':tab==1}"
         @click="changeTab(1)"
       >
-        <img :src="[require(`../assets/images/menu//page${tab}_ic.png`)]">
+        <img :src="[require(`../assets/images/menu/page${tab}_ic.png`)]">
       </div>
       <div
         class="item data-tab"
@@ -16,11 +16,23 @@
       >
         <img :src="[require(`../assets/images/menu/datasource${3-tab}_ic.png`)]">
       </div>
+      <div
+        class="item model-tab"
+        :class="{'selected':tab==3}"
+        style="border-left:0;"
+        @click="changeTab(3)"
+      >
+        <img :src="[require(`../assets/images/menu/model${4-tab}_ic.png`)]">
+      </div>
     </div>
-    <MPage v-show="isPage" />
+    <MPage v-show="tabIndex === 1" />
     <MDataS 
-      v-if="!isPage" 
+      v-if="tabIndex === 2" 
       ref="dataSourceTab" 
+    />
+    <MModel
+      v-if="tabIndex === 3"
+      ref="modelTab"
     />
   </div>
 </template>
@@ -28,19 +40,20 @@
 <script>
 import MPage from './m-page'
 import MDataS from './m-data-source'
+import MModel from './m-model'
 import editingModel from './data-source/js/editing-model'
 import VueEvent from '../services/VueEvent.js'
 export default {
   components:{
-    MPage,MDataS
+    MPage,MDataS,MModel
   },
   mixins: [editingModel],
   data() {
     return{
       tab:1,
-      isPage:true,
       bindDatas: [],
-      tabShow: true
+      tabShow: true,
+      tabIndex: 1,
     }
   },
   methods: {
@@ -49,7 +62,7 @@ export default {
         return false
       }
       this.tab = index
-      this.isPage = this.tab == 1
+      this.tabIndex = index
       if (index === 2 && this.tabShow) {
         this.$nextTick(() => {
           VueEvent.$emit('rightBarTabSwitch')
@@ -57,6 +70,8 @@ export default {
         })
       } else if (index === 1) {
         this.tabShow = true
+      } else {
+        this.tabShow = false
       }
     },
   }

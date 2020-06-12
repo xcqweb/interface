@@ -141,5 +141,8 @@ export default {
   pageNameCanNotEmpty:'Page name can not empty',
   popupNameCanNotEmpty:'Popup name can not empty',
   triangle:'Triangle',
-  pentagram:'Pentagram',
+  pentagram: 'Pentagram',
+  device: 'device', // 2020/5/19
+  predictionApply: 'predictionApply',
+  statisticApply: 'statisticApply',
 }
