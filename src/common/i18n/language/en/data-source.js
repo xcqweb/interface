@@ -44,4 +44,5 @@ export default {
   confirmToRemoveDevice: 'Sure to remove the choosed devices',
   removeDeviceSuccessfully: 'Device removed succcessfully',
   enterParameterName: 'Please input param name',
+  applyList: 'application List', // 2020520
 };

@@ -18,7 +18,6 @@
         <img :src="[tab==2 ? require(`../assets/images/menu/datasource1_ic.png`) : require(`../assets/images/menu/datasource2_ic.png`)]">
       </div>
       <div
-        v-if="$store.state.main.isTemplateApply"
         class="item model-tab"
         :class="{'selected':tab==3}"
         style="border-left:0;"
@@ -115,3 +114,4 @@ export default {
 <style lang="less">
  
 </style>
+
