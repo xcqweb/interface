@@ -2,11 +2,13 @@
   <div class="device-data-wrap flex-row">
     <!-- 设备分类 -> 设备类型 -->
     <div class="device-clase-wrap">
-      <Tree 
-        ref="tree" 
-        :data="treeData" 
-        :render="renderContent" 
-        :load-data="loadData"
+      <device-list
+        class="deviceModel-data"
+        :title="$t('dataSource.deviceType')"
+        :width="200"
+        :data="deviceTypeData"
+        prop="deviceTypeName"
+        @click="handleTypeClick"
       />
     </div>
     <!-- 设备型号 -->
@@ -39,7 +41,6 @@
 </template>
 
 <script>
-import {Tree} from 'iview';
 import DeviceList from './device-list'
 import PageTransfer from '@/components/page-transfer/index.vue'
 import DatasourceStore from './js/datasource-store'
@@ -49,7 +50,6 @@ export default {
   components: {
     DeviceList,
     PageTransfer,
-    Tree,
   },
   mixins: [DatasourceStore],
   data() {
@@ -67,53 +67,26 @@ export default {
       treeData: [],
       curNodeData: null,
       deviceModelData: [],
+      deviceTypeData: [],
       studioId: '',
     };
   },
   async created() {
     this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-    await this.getDeviceTypes();
+    await this.getDeviceTypes(); // 电子
     this.getDeviceTemplateData(); // 获取型号
   },
   methods: {
     getDeviceTypes() {
-      const params = {}
-      params.parentId = ''
-      this.requestUtil.get(this.urls.newDeviceTypeList.url, {parentId: ''}).then(res => {
-        const curData = res || [];
-        if ( curData.length > 0 ) {
-          curData.forEach( el =>{
-            el.title = el.deviceTypeName;
-            if ( el.hasChild === true ) {
-              el.children = [];
-              el.loading = false;
-              el.expand = true;
-            } else {
-              el.expand = true;
-            }
-            curData[0].selected = true;
-          });
-          this.curNodeData = curData[0];
-          this.treeData = curData;
-          if ( curData[0].hasChild && curData[0].deviceTypeId && curData[0].level === 1 ) {
-            this.requestUtil.get(this.urls.newDeviceTypeList.url, {parentId: curData[0].deviceTypeId}).then( re => {
-              const curRedData = re || [];
-              curRedData.forEach( el => {
-                el.title = el.deviceTypeName;
-                if ( el.hasChild === true ) {
-                  el.children = [];
-                  el.loading = false;
-                  el.expand = false;
-                } else {
-                  el.expand = true;
-                }
-              });
-              this.$set(this.treeData[0], 'children', curRedData);
-              console.log(this.treeData[0])
-            });
+      this.requestUtil.get('api/device/deviceType/select').then(data => {
+        console.log(data)
+        this.deviceTypeData = data.map((item) => {
+          return {
+            deviceTypeId: item.deviceTypeId,
+            deviceTypeName: item.deviceTypeName,
           }
-        }
-      }).catch(() => {});
+        })
+      });
     },
     getDeviceTemplateData() {
       let deviceTypeId = this.curNodeData ? this.curNodeData.deviceTypeId : ''
