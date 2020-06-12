@@ -9,17 +9,19 @@
               :animated="false"
               @on-click="switchTabHandle"
             >
-              <TabPane :label="$t(dataSourceName[0])" />
-              <TabPane
-                v-if="!$store.state.main.isTemplateApply"
+              <TabPane 
+                v-if="!$store.state.main.isTemplateApply" 
                 :label="$t(dataSourceName[0])"
+              />
+              <TabPane
+                :label="$t(dataSourceName[1])"
               />
 
               <TabPane :label="$t(dataSourceName[2])" />
             </Tabs>
           </div>
           <div
-            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag"
+            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag || tabsNum ==0 && $store.state.main.isTemplateApply && footerContent && ifShowDataFlag"
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
@@ -385,20 +387,23 @@ export default {
     initDataSource() {
       let startBindData = this.getCellModelInfo("bindData")
       if (startBindData && startBindData.dataSource) {
+        console.log(startBindData)
         let deviceNameChild = startBindData.dataSource.deviceNameChild
         this.deviceModelId = startBindData.dataSource.deviceModel.id
         this.dataSourceList = []
-        if (!Array.isArray(deviceNameChild)) {
+        if (deviceNameChild && !Array.isArray(deviceNameChild)) {
           deviceNameChild = [deviceNameChild]
         }
-        deviceNameChild.forEach(item => {
-          let obj = {}
-          obj.typeName = startBindData.dataSource.deviceTypeChild.name
-          obj.deviceName = item.name
-          obj.deviceId = item.id
-          obj.modelName = startBindData.dataSource.deviceModel.name
-          this.dataSourceList.push(obj)
-        })
+        if(deviceNameChild) {
+          deviceNameChild.forEach(item => {
+            let obj = {}
+            obj.typeName = startBindData.dataSource.deviceTypeChild.name
+            obj.deviceName = item.name
+            obj.deviceId = item.id
+            obj.modelName = startBindData.dataSource.deviceModel.name
+            this.dataSourceList.push(obj)
+          })
+        }
       } else {
         this.deviceModelId = null
         this.dataSourceList = []
@@ -447,11 +452,18 @@ export default {
     },
     addParam() {
       let startBindData = this.getCellModelInfo("bindData")
-      let deviceNameChild = startBindData.dataSource.deviceNameChild
-      if (!Array.isArray(deviceNameChild)) {
-        deviceNameChild = [deviceNameChild]
+      if(this.$store.state.main.isTemplateApply) {
+        this.deviceModelId = sessionStorage.getItem('modelId')
+        let temp = {dataSource:{}}
+        temp.dataSource.deviceModel = {id:this.deviceModelId,name:'-'}
+        this.setCellModelInfo("bindData",temp)
+      } else {
+        let deviceNameChild = startBindData.dataSource.deviceNameChild
+        if (!Array.isArray(deviceNameChild)) {
+          deviceNameChild = [deviceNameChild]
+        }
+        this.deviceId = deviceNameChild[0].id          
       }
-      this.deviceId = deviceNameChild[0].id            
       this.visible = true
     },
     addParamDone(data) {

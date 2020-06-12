@@ -1,4 +1,4 @@
-import {geAjax,loadShapeXml} from './util'
+import {geAjax,loadShapeXml,getQueryVariable} from './util'
 import {getCookie} from '../Utils'
 import PreviewPage from './render-page'
 import horwheel from "horwheel";
@@ -29,12 +29,8 @@ class Main {
   // 初始化
   async init() {
     let gePreview = document.getElementById('gePreview')
-    let idArr = /id=(.+?)$/.exec(location.search)
-    let id = ''
-    if (idArr) {
-      // 查看应用
-      id = idArr[1]
-    }
+    let id = getQueryVariable('id')
+    let deviceId = getQueryVariable('deviceId')
     if (!id) {
       return
     }
@@ -47,6 +43,9 @@ class Main {
     this.shapeXmls = await loadShapeXml()
     let token = getCookie('token')
     let refreshToken = getCookie('refreshToken')
+    if(deviceId) { //组态模板
+      this.applyInfo.deviceId = deviceId
+    }
     if ((!token || !refreshToken) && this.applyInfo.status === 0) { //未登录且应用未发布的情况下
       let notPublishImg = '../../../static/images/apply_not_publish.png'
       gePreview.style.height = "80vh"

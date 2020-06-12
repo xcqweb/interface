@@ -128,7 +128,7 @@ export default {
     },
   },
   mounted() {
-    this.currentModelId = this.deviceModelId;
+    this.currentModelId = this.deviceModelId || sessionStorage.getItem('modelId');
     this.setVisible();
   },
   methods: {

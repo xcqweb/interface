@@ -4,7 +4,7 @@
     :width="width"
   >
     <div
-      v-show="deviceModelId"
+      v-show="deviceModelId || $store.state.main.isTemplateApply"
       slot="header"
       class="addmodel-btn"
     >
@@ -134,14 +134,14 @@ export default {
           this.editItem = null;
         }
       }
-      if (!this.deviceModelId) {
+      const params = {
+        studioId: this.studioId,
+        deviceModelId: this.deviceModelId || sessionStorage.getItem('modelId'),
+      };
+      if (!params.deviceModelId) {
         this.data = [];
         return;
       }
-      const params = {
-        studioId: this.studioId,
-        deviceModelId: this.deviceModelId,
-      };
       this.requestUtil.post(this.urls.getModelList.url, params).then(res => {
         if (res && res.returnObj.length > 0) {
           res.returnObj.forEach((item, index) => {

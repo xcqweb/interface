@@ -20,7 +20,6 @@
     <!--- menu/数据源、数据模型 -->
     <ul class="datasource-menu">
       <li
-        v-show="!$store.state.main.isTemplateApply"
         :class="{'active': dataType === 0}"
         @click="handleTabClick(0)"
       >
@@ -43,7 +42,7 @@
     <div class="datasource-body flex-full-item">
       <!-- 数据源 -->
       <datasource
-        v-show="dataType === 0 && !$store.state.main.isTemplateApply"
+        v-show="dataType === 0"
         :reload-data="deviceDataChange"
       />
       <!-- 预测应用 统计应用 -->
@@ -54,6 +53,7 @@
     </div>
     <!-- 导入数据源弹窗 -->
     <importDataSource
+      v-if="!$store.state.main.isTemplateApply"
       ref="devices"
       v-model="devicesVisible"
       :visible-import="devicesVisible"
@@ -90,11 +90,6 @@ export default{
       deviceDataChange: false,
       devicesVisible: false,
       modelComponent: ''
-    }
-  },
-  created() {
-    if(this.$store.state.main.isTemplateApply) {
-      this.dataType = 1
     }
   },
   methods: {

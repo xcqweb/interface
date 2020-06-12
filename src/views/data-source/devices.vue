@@ -172,7 +172,7 @@ export default {
     this.visible = this.value;
   },
   created() {
-    this.params.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+    this.params.studioId = window.sessionStorage.getItem('applyId');
     this.getDeviceTypes();
   },
   methods: {

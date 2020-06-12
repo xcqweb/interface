@@ -20,6 +20,7 @@ class PreviewPage {
     } = data
     let parseContent = JSON.parse(content)
     this.content = parseContent.pages
+    this.deviceId = data.deviceId
     this.pagesRank = parseContent.rank
     this.wsParams = []
     this.cachCells = []

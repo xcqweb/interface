@@ -71,7 +71,7 @@ export default {
     };
   },
   async created() {
-    this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+    this.studioId = window.sessionStorage.getItem('applyId');
     await this.getDeviceTypes();
     this.getDeviceTemplateData(); // 获取型号
   },

@@ -2,6 +2,7 @@
   <div class="device-data-wrap flex-row">
     <!-- 设备类型 -->
     <device-list
+      v-if="!$store.state.main.isTemplateApply"
       class="device-data"
       :title="$t('dataSource.applyList')"
       :width="200"

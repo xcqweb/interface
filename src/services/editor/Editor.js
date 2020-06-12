@@ -433,7 +433,7 @@ Editor.prototype.InitEditor = function(editorUi) {
        return null
     }
     let pApplyId = getQueryVariable('id')
-    let modelId = getQueryVariable('modeId')
+    let modelId = getQueryVariable('modelId')
     if (pApplyId || applyId) {
         let id
         if(pApplyId){

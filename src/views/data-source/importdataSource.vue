@@ -155,7 +155,7 @@ export default {
     this.visible = this.value;
   },
   created() {
-    this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+    this.studioId = window.sessionStorage.getItem('applyId');
     this.getApplyDataList(1);
     this.getApplyDataList(2);
   },

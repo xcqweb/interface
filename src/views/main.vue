@@ -26,10 +26,12 @@
         <img :src="[tab==3 ? require(`../assets/images/menu/model1_ic.png`) : require(`../assets/images/menu/model2_ic.png`)]">
       </div>
     </div>
-    <MPage v-show="isPage" />
+    <MPage v-show="tab==1" />
     <MDataS 
-      v-if="!isPage" 
-      ref="dataSourceTab" 
+      v-show="tab==2"
+    />
+    <MModel 
+      v-show="tab==3"
     />
   </div>
 </template>
@@ -37,17 +39,17 @@
 <script>
 import MPage from './m-page'
 import MDataS from './m-data-source'
+import MModel from './m-model'
 import editingModel from './data-source/js/editing-model'
 import VueEvent from '../services/VueEvent.js'
 export default {
   components:{
-    MPage,MDataS
+    MPage,MDataS,MModel
   },
   mixins: [editingModel],
   data() {
     return{
       tab:1,
-      isPage:true,
       bindDatas: [],
       tabShow: true
     }
@@ -58,7 +60,6 @@ export default {
         return false
       }
       this.tab = index
-      this.isPage = this.tab == 1
       if (index === 2 && this.tabShow) {
         this.$nextTick(() => {
           VueEvent.$emit('rightBarTabSwitch')

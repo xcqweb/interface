@@ -92,9 +92,6 @@ export default {
     DataColumn,
     ModelRule,
     SelectParams,
-    // SelectParams: (resolve) => {
-    //     return require(['./select-params'], resolve);
-    // },
   },
   mixins: [columnCommon, modelCommon],
   props: {
@@ -164,6 +161,7 @@ export default {
           func = 'put';
           successMsg = 'dataSource.editModelSuccessfully';
         }
+
         this.requestUtil[func](this.urls.addModelList.url, this.model).then(res => {
           Message.success(this.$t(successMsg));
           this.showForm = false;
@@ -204,6 +202,9 @@ export default {
       let key;
       for (key in this.model) {
         this.model[key] = data[key] || '';
+      }
+      if(this.$store.state.main.isTemplateApply) {
+        this.model.deviceModelId = sessionStorage.getItem('modelId')
       }
     },
   },
