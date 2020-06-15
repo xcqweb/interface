@@ -130,6 +130,7 @@ export default {
   mounted() {
     this.currentModelId = this.deviceModelId || sessionStorage.getItem('modelId');
     this.setVisible();
+    console.log(this.visible)
   },
   methods: {
     getDeviceParamsCallback(res) {
@@ -230,11 +231,11 @@ export default {
     setVisible() {
       this.visible = this.value;
       if (this.visible) {
-        if (this.currentModelId !== this.deviceModelId || this.currentDeviceId !== this.deviceId) {
-          this.currentModelId = this.deviceModelId;
-          this.currentDeviceId = this.deviceId;
-          this.getData();
-        }
+        // if (this.currentModelId !== this.deviceModelId || this.currentDeviceId !== this.deviceId) {
+        this.currentModelId = this.deviceModelId;
+        this.currentDeviceId = this.deviceId;
+        this.getData();
+        // }
         if (this.selectedKeys && this.selectedKeys.length > 0) {
           this.selectedItems.push(...this.selectedKeys);
         }

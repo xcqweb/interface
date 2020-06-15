@@ -11,7 +11,7 @@
         v-show="dataType === 0 && !$store.state.main.isTemplateApply"
         class="import-datasource-btn"
         href="javascript:;"
-        @click="devicesVisible = true"
+        @click="importDataHander"
       >
         <i />
         {{ $t('importDataSource') }}
@@ -31,24 +31,24 @@
       >
         {{ $t('predictionApply') }}
       </li>
-      <li
+      <!-- <li
         :class="{'active': dataType === 2}"
         @click="handleTabClick(2)"
       >
         {{ $t('statisticApply') }}
-      </li>
+      </li> -->
     </ul>
     <!--主体内容-->
     <div class="datasource-body flex-full-item">
       <!-- 数据源 -->
       <datasource
-        v-show="dataType === 0"
+        v-if="dataType === 0"
         :reload-data="deviceDataChange"
       />
       <!-- 预测应用 统计应用 -->
       <component
         :is="modelComponent"
-        v-show="dataType !== 0"
+        v-if="dataType !== 0"
       />
     </div>
     <!-- 导入数据源弹窗 -->
@@ -71,7 +71,7 @@ import Datamodel from './data-source/datamodel'
 import PredictionApp from './data-source/predictonApp'
 import StatisticApp from './data-source/statisticApp'
 import editingModel from './data-source/js/editing-model'
-
+import VueEvent from '../services/VueEvent.js'
 export default{
   components:{
     Devices,
@@ -89,12 +89,16 @@ export default{
       dataType: 0,
       deviceDataChange: false,
       devicesVisible: false,
-      modelComponent: ''
+      modelComponent: 'Datasource'
     }
+  },
+  mounted() {
+    console.log(this.tab)
   },
   methods: {
     importDataHander() {
       this.devicesVisible = true
+      VueEvent.$emit('getImportData')
     },
     triggerCancel() {
       this.devicesVisible = false
@@ -106,7 +110,9 @@ export default{
       if (this.canGoOn()) {
         this.dataType = index;
         if (index === 1) {
-          this.modelComponent = 'datamodel';
+          this.modelComponent = 'PredictionApp';
+        } else if(index === 2) {
+          this.modelComponent = 'StatisticApp';
         }
       }
     },

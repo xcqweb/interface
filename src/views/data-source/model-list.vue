@@ -137,8 +137,8 @@ export default {
       const params = {
         studioId: this.studioId,
         deviceModelId: this.deviceModelId || sessionStorage.getItem('modelId'),
-      };
-      if (!params.deviceModelId) {
+      }
+      if (!params.deviceModelId || params.deviceModelId === 'null') {
         this.data = [];
         return;
       }

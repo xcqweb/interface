@@ -78,10 +78,13 @@ export default {
   watch: {
     reloadData() {
       this.getStudioDeviceData();
+      this.getPredictionData();
     },
   },
   mounted() {
     this.getStudioDeviceData();
+    this.getPredictionData();
+    console.log(this.model);
   },
   methods: {
     handleTypeClick(item) {
@@ -134,7 +137,9 @@ export default {
       };
       this.requestUtil.post(this.urls.deleteDeviceList.url, params).then(() => {
         Message.success(this.$t('dataSource.removeDeviceSuccessfully'));
+        console.log(56)
         this.getStudioDeviceData();
+        this.getPredictionData();
       });
     },
   },

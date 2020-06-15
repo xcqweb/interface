@@ -28,10 +28,10 @@
     </div>
     <MPage v-show="tab==1" />
     <MDataS 
-      v-show="tab==2"
+      v-if="tab==2"
     />
     <MModel 
-      v-show="tab==3"
+      v-if="tab==3"
     />
   </div>
 </template>
@@ -56,7 +56,7 @@ export default {
   },
   methods: {
     changeTab(index) {
-      if (!this.canGoOn() && index === 1) {
+      if (!this.canGoOn() && (index === 1 || index === 2)) {
         return false
       }
       this.tab = index

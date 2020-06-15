@@ -43,7 +43,7 @@ import {Tree} from 'iview';
 import DeviceList from './device-list'
 import PageTransfer from '@/components/page-transfer/index.vue'
 import DatasourceStore from './js/datasource-store'
-
+import VueEvent from "../../services/VueEvent.js";
 
 export default {
   components: {
@@ -72,9 +72,20 @@ export default {
   },
   async created() {
     this.studioId = window.sessionStorage.getItem('applyId');
-    await this.getDeviceTypes();
-    this.getDeviceTemplateData(); // 获取型号
+    // await this.getDeviceTypes();
+    // this.getDeviceTemplateData(); // 获取型号
   },
+  mounted() {
+    let that = this
+    VueEvent.$off("getImportData")
+    VueEvent.$on("getImportData", async() => {
+      that.studioId = that.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+      that.deviceTypesBk = [];
+      await this.getDeviceTypes(); // 电子
+      that.getDeviceTemplateData(); // 获取型号
+    });
+  },
+
   methods: {
     getDeviceTypes() {
       const params = {}
@@ -209,10 +220,13 @@ export default {
       return {
         id:item.deviceId,
         name:item.deviceName,
+        deviceTypeId: item.deviceTypeId,
+        deviceModelId: item.deviceModelId,
       }
     },
     chooseData(data) {
       this.chooseDeviceList = JSON.parse(JSON.stringify(data));
+      this.$emit('chooseDeviceData', this.chooseDeviceList)
     },
     handleTypeClick(item) {
       this.model.deviceModelId = item.deviceModelId;

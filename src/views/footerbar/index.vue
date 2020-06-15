@@ -417,6 +417,10 @@ export default {
           studioId: sessionStorage.getItem("applyId"),
           deviceModelId: this.deviceModelId
         };
+        if (!objData.deviceModelId) {
+          return;
+        }
+        console.log('entry')
         this.requestUtil.post(this.urls.getModelList.url, objData).then(res => {
           if (res.returnObj) {
             this.modelList = res.returnObj

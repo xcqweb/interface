@@ -24,6 +24,7 @@ export default {
       if (this.virtualParams) {
         items.push(this.virtualParams);
       }
+      console.log(items)
       return items;
     },
   },
@@ -34,7 +35,7 @@ export default {
       const params = {
         deviceModelId: this.deviceModelId || sessionStorage.getItem('modelId'),
       };
-      if (!params.deviceModelId) {
+      if (!params.deviceModelId || params.deviceModelId === 'null') {
         return;
       }
       if(this.deviceId) {

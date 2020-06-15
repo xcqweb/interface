@@ -35,6 +35,7 @@
         ref="importDevice"
         :data="deviceData"
         :visible-import="visibleImport"
+        @chooseDeviceData="chooseDeviceData"
       />
       <!-- 导入预测应用 -->
       <Transfer
@@ -134,6 +135,7 @@ export default {
       staAppDataList: [],
       targetStaAppList:[],
       studioId: '',
+      selectDeviceList: []
     };
   },
   watch: {
@@ -156,8 +158,8 @@ export default {
   },
   created() {
     this.studioId = window.sessionStorage.getItem('applyId');
-    this.getApplyDataList(1);
-    this.getApplyDataList(2);
+    // this.getApplyDataList(1); // 华星去掉
+    // this.getApplyDataList(2);
   },
   methods: {
     /*
@@ -290,57 +292,30 @@ export default {
         callback();
       });
     },
+    chooseDeviceData(data) {
+      console.log(data)
+      this.selectDeviceList = data
+    },
     cancel() {
       this.visible = false;
     },
     submit() {
-      // if (!this.selectedItems.length) {
-      //     Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
-      //     return;
-      // }
-      // this.loading = true;
+      if (!this.selectDeviceList.length) {
+        Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
+        return;
+      }
+      this.loading = true;
       // const list = [];
       // const studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-      // this.selectedItems.forEach(item => {
-      //     list.push({
-      //         studioId,
-      //         deviceId: item.deviceId,
-      //         deviceModelId: item.deviceModelId,
-      //         deviceTypeId: item.deviceTypeId,
-      //     });
-      // });
-      // this.requestUtil.post('api/iot-cds/cds/configDevice', {list}).then(() => {
-      //     this.loading = false;
-      //     this.visible = false;
-      //     Message.success(this.$t('dataSource.importSuccessfully'));
-      //     this.$emit('callback');
-      // }).catch(() => {
-      //     this.loading = false;
-      // });
-      // this.studioId
-      // const allAppIds = [...this.targetPreAppList, ...this.targetStaAppList];
-      const targetPreAppList = this.targetPreAppList.map((item) => {
+      const list = !this.selectDeviceList.length ? [] : this.selectDeviceList.map(item => {
         return {
+          deviceId: item.id,
+          deviceModelId: item.deviceModelId,
+          deviceTypeId: item.deviceTypeId,
           studioId: this.studioId,
-          appId: item,
-          type: 1,
         }
-      })
-      const targetStaAppList = this.targetStaAppList.map((item) => {
-        return {
-          studioId: this.studioId,
-          appId: item,
-          type: 2,
-        }
-      })
-      const appDataSources = [...targetPreAppList, ...targetStaAppList];
-      const studioDevs = [];
-      const params = {
-        appDataSources,
-        studioDevs,
-      }
-      console.log(params);
-      this.requestUtil.post(this.urls.newImportDsApi.url, params).then(() => {
+      });
+      this.requestUtil.post('api/iot-cds/cds/configDevice', {list}).then(() => {
         this.loading = false;
         this.visible = false;
         Message.success(this.$t('dataSource.importSuccessfully'));
@@ -348,6 +323,43 @@ export default {
       }).catch(() => {
         this.loading = false;
       });
+      // const allAppIds = [...this.targetPreAppList, ...this.targetStaAppList];
+      // const targetPreAppList = this.targetPreAppList.map((item) => {
+      //   return {
+      //     studioId: this.studioId,
+      //     appId: item,
+      //     type: 1,
+      //   }
+      // })
+      // const targetStaAppList = this.targetStaAppList.map((item) => {
+      //   return {
+      //     studioId: this.studioId,
+      //     appId: item,
+      //     type: 2,
+      //   }
+      // })
+      // const appDataSources = [...targetPreAppList, ...targetStaAppList];
+      // const studioDevs = !this.selectDeviceList.length ? [] : this.selectDeviceList.map(item => {
+      //   return {
+      //     deviceId: item.id,
+      //     deviceModelId: item.deviceModelId,
+      //     deviceTypeId: item.deviceTypeId,
+      //     studioId: this.studioId,
+      //   }
+      // });
+      // const params = {
+      //   appDataSources,
+      //   studioDevs,
+      // }
+      // console.log(params);
+      // this.requestUtil.post(this.urls.newImportDsApi.url, params).then(() => {
+      //   this.loading = false;
+      //   this.visible = false;
+      //   Message.success(this.$t('dataSource.importSuccessfully'));
+      //   this.$emit('callback');
+      // }).catch(() => {
+      //   this.loading = false;
+      // });
 
     },
   },

@@ -21,12 +21,12 @@
       >
         {{ $t('predictionApply') }}
       </li>
-      <li
+      <!-- <li
         :class="{'active': dataType === 2}"
         @click="handleTabClick(2)"
       >
         {{ $t('statisticApply') }}
-      </li>
+      </li> -->
     </ul>
     <!--主体内容-->
     <div class="datasource-body flex-full-item">
@@ -38,7 +38,7 @@
       <!-- 数据模型 -->
       <component
         :is="modelComponent"
-        v-show="dataType !== 0"
+        v-if="dataType !== 0"
       />
     </div>
     <!-- 设备列表 -->

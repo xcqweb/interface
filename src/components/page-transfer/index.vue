@@ -48,12 +48,14 @@
           type="default"
           size="small"
           style="margin-bottom:12px"
+          @click="add"
         >
           <Icon type="ios-arrow-forward" />
         </Button>
         <Button 
           type="default"
           size="small"
+          @click="del"
         >
           <Icon type="ios-arrow-back" />
         </Button>
@@ -165,19 +167,24 @@ export default {
   watch:{
     elseParams: {
       handler(val) {
-        console.log(val);
         if (val[this.paramsStr]) {
-          this.loadData();
+          this.loadData()
         } else {
-          this.allData = [];
+          this.allData = []
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
+    visible: {
+      handler(val) {
+        if (val) {
+          this.init()
         }
       },
       deep: true,
       immediate: true,
     }
-  },
-  created() {
-    console.log(this.elseParams);
   },
   methods: {
     init() {
@@ -194,7 +201,6 @@ export default {
       params[this.keyword] = keyword;
       params = Object.assign(params,this.elseParams);
       this.requestUtil.post(this.apiMethods, params).then(res => {
-        console.log(res);
         this.allData = [];
         res.records.forEach(item=>{
           const temp = this.dealData(item)
@@ -206,6 +212,7 @@ export default {
         this.leftCheckModal = this.selectDatas.concat(this.checkDataBk).map(item=>{
           return item.id;
         });
+        console.log(this.selectDatas)
         for(const key of this.selectDatas.concat(this.checkDataBk)) {
           for(const item of this.allData) {
             if(key.id === item.id) {
@@ -237,7 +244,6 @@ export default {
       }else{
         this.leftCheckModal = [];
       }
-      // console.log(this.leftCheckModal, this.selectDatas, '----', this.checkDataBk);
     },
     rightCheckChange(val) {
       if (val) {
@@ -289,6 +295,7 @@ export default {
       this.chechAll();
       this.checkDataBk = this.repeatArrayObject(this.checkData.concat(this.checkDataBk));
       this.rightCheckModal.length < this.checkData.length ? (this.checkRight = false) : (this.checkRight = true);
+      this.$emit('chooseData',this.checkDataBk);
     },
     del() {
       this.checkDataBk = this.checkDataBk.filter( (item) => {
@@ -313,6 +320,7 @@ export default {
       this.rightCheckModal = [];
       this.chechAll();
       this.checkRight = false;
+      this.$emit('chooseData',this.checkDataBk);
     },
     show() {
       this.showModal = true;

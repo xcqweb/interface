@@ -23,7 +23,6 @@ export default {
       } else {
         this.model.deviceTypeId = '';
       }
-
       return typeData;
     },
     modelData() {
@@ -75,6 +74,26 @@ export default {
         studioId: this.studioId,
       };
       this.$store.dispatch('loadStudioDevices', params);
+    },
+    getPredictionData() { // 预测应用
+      if (!this.studioId) {
+        return;
+      }
+      const params = {
+        studioId: this.studioId,
+        type: 1,
+      };
+      this.$store.dispatch('loadStudioPredictionApp', params);
+    },
+    getStatisticData() { // 统计应用
+      if (!this.studioId) {
+        return;
+      }
+      const params = {
+        studioId: this.studioId,
+        type: 2,
+      };
+      this.$store.dispatch('loadStudioStatisticApp', params);
     }
   },
 };

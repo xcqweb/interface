@@ -116,6 +116,7 @@ export default {
         descript: '',
         modelName: '',
       },
+      editModelId: '',
       ruleKeys: [],
       ruleData: [],
       studioId: '',
@@ -206,6 +207,7 @@ export default {
       if(this.$store.state.main.isTemplateApply) {
         this.model.deviceModelId = sessionStorage.getItem('modelId')
       }
+      this.editModelId = this.model.deviceModelId
     },
   },
 };

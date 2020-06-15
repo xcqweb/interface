@@ -70,39 +70,44 @@ const actions = {
     })
   },
   loadStudioPredictionApp({commit}, params) {
-    console.log(params)
-    requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
-      const predData = [];
-      const data = res.returnObj;
-      if (data) {
-        data.forEach(item => {
-          predData.push({
-            appId: item.appId,
-            appName: item.appName,
-          });
-        });
-      }
-      console.log(predData);
-      commit('setPredData', predData);
-    });
+    const predData = [];
+    console.log(params);
+    commit('setPredData', predData);
+    // console.log(params)
+    // requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
+    //   const predData = [];
+    //   const data = res.returnObj;
+    //   if (data) {
+    //     data.forEach(item => {
+    //       predData.push({
+    //         appId: item.appId,
+    //         appName: item.appName,
+    //       });
+    //     });
+    //   }
+    //   console.log(predData);
+    //   commit('setPredData', predData);
+    // });
 
   },
   loadStudioStatisticApp({commit}, params) {
     console.log(params)
-    requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
-      // const commit('setStatiData', statiData);
-      const statiData = [];
-      const data = res.returnObj;
-      if (data) {
-        data.forEach(item => {
-          statiData.push({
-            appId: item.appId,
-            appName: item.appName,
-          });
-        });
-      }
-      commit('setStatiData', statiData);
-    });
+    const statiData = [];
+    commit('setPredData', statiData);
+    // requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
+    //   // const commit('setStatiData', statiData);
+    //   const statiData = [];
+    //   const data = res.returnObj;
+    //   if (data) {
+    //     data.forEach(item => {
+    //       statiData.push({
+    //         appId: item.appId,
+    //         appName: item.appName,
+    //       });
+    //     });
+    //   }
+    //   commit('setStatiData', statiData);
+    // });
   },
 
 };
