@@ -243,7 +243,7 @@ class PreviewPage {
       let modelIdsParam = new Map()
       let allModels = new Map()
       this.cachCells.forEach(item=>{
-        let deviceId = item.bindData.dataSource.deviceNameChild.id
+        let deviceId = this.deviceId || item.bindData.dataSource.deviceNameChild.id
         let statesInfo = item.statesInfo
         let tempArr = []
         statesInfo.forEach((d) => {
@@ -272,7 +272,7 @@ class PreviewPage {
             })
             this.cachCells.forEach(item=>{
               let cellStateInfoHasModel = []
-              let deviceId = item.bindData.dataSource.deviceNameChild.id
+              let deviceId = this.deviceId || item.bindData.dataSource.deviceNameChild.id
               let statesInfo = item.statesInfo
               if (statesInfo && statesInfo.length) {
                 cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
@@ -635,7 +635,7 @@ class PreviewPage {
     $(cellHtml).data('hide',cell.hide)
     $(cellHtml).data("shapeName",shapeName)
     bindEvent(cellHtml, cell, this.mainProcess, applyData,fileSystem)
-    if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild) {
+    if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild || this.deviceId) {
       let paramShow = []
       let device = cell.bindData.dataSource.deviceNameChild
       if (cell.bindData.params && cell.bindData.params.length > 0) {
@@ -670,12 +670,14 @@ class PreviewPage {
     return cellHtml
   }
   initWsParams(cellHtml, device, paramShow,shapeName,subParams) {
+    let deviceId
     if(shapeName === 'lineChart') {
       this.dealLineChartWsParams(cellHtml,device,subParams)
     } else{
-      cellHtml.classList.add(`device_${device.id}`)
+      deviceId = this.deviceId || device.id
+      cellHtml.classList.add(`device_${deviceId}`)
     }
-    if(device.id) {
+    if(deviceId) {
       let dealParamShow = []
       paramShow.forEach(item=>{
         if (item.deviceParamId) {
@@ -685,7 +687,7 @@ class PreviewPage {
       if(dealParamShow.length) {
         let resArr = Array.from(new Set(dealParamShow)) 
         this.wsParams.push({
-          deviceId: device.id,
+          deviceId: deviceId,
           params: resArr
         })
       }

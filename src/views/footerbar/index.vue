@@ -67,7 +67,7 @@
           </div>
           <!--数据显示-->
           <div
-            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length"
+            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length || tabsNum == 0 && $store.state.main.isTemplateApply && ifShowDataFlag"
             class="footer-common dataDisplayList"
           >
             <Table
@@ -112,7 +112,7 @@
           </div>
           <!--状态模型-->
           <div
-            v-show="tabsNum === 2"
+            v-show="tabsNum === 2 || tabsNum==1 && $store.state.main.isTemplateApply"
             class="footer-common stateList"
           >
             <div
