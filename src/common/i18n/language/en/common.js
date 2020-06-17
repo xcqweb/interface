@@ -145,4 +145,5 @@ export default {
   device: 'device', // 2020/5/19
   predictionApply: 'predictionApply',
   statisticApply: 'statisticApply',
+  searchApplyName: 'Search apply name',
 }

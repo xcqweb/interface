@@ -38,7 +38,7 @@ export default {
   ruleIsRequired: '请先添加模型条件',
   ruleCanNotEmpty: '{label}的条件请填写完整',
   atLeaseSelectOneItem: '请至少选择一项',
-  atLeaseSelectOneDevice: '请至少选择一个设备！',
+  atLeaseSelectOneDevice: '请至少选择一个设备或者应用！',
   importSuccessfully: '导入数据源成功',
   confirmToRemoveDeviceType: '确认要移除选中的设备类型下的所有设备吗？',
   confirmToRemoveDeviceModel: '确认要移除选中的设备型号下的所有设备吗？',

@@ -12,11 +12,15 @@
       @remove="handleTypeRemove"
     />
     <!-- 参数列表 -->
-    <device-params
+    <device-list
       class="device-data"
       :title="$t('dataSource.parameters')"
       :width="300"
-      :device-model-id="model.deviceModelId"
+      :data="preParamData"
+      prop="appName"
+      true-prop="appId"
+      @click="handleTypeClick2"
+      @remove="handleTypeRemove"
     />
     <!-- 移除确认弹窗 -->
     <component
@@ -53,6 +57,7 @@ export default {
   data() {
     return {
       paramData: [],
+      preParamData: [],
     };
   },
   watch: {
@@ -61,14 +66,25 @@ export default {
     },
   },
   mounted() {
+    console.log(this.applyObj.forecastId)
     this.getPredictionData();
+    this.getApplyParamsData();
   },
   methods: {
     handleTypeClick(item) {
+      this.model.deviceTypeId = item.deviceTypeId;
+    },
+    handleTypeClick2(item) {
       this.applyObj.forecastId = item.forecastId;
     },
-    handleModelClick(item) {
-      this.model.deviceModelId = item.deviceModelId;
+    getApplyParamsData() {
+      const params = {
+        appId: this.applyObj.forecastId,
+        type: 1,
+      }
+      this.requestUtil.post(this.urls.newApplyParams.url, params).then(res => {
+        console.log(res)
+      })
     },
     handleTypeRemove(items) {
       const ids = [];

@@ -1,13 +1,13 @@
 <template>
   <div class="device-data-wrap flex-row">
-    <!-- 设备类型 -->
+    <!-- 应用列表 -->
     <device-list
-      v-if="!$store.state.main.isTemplateApply"
       class="device-data"
       :title="$t('dataSource.applyList')"
       :width="200"
       :data="predData"
-      prop="deviceTypeName"
+      prop="appName"
+      true-prop="appId"
       @click="handleTypeClick"
     />
     <!-- 模型列表 -->
@@ -16,7 +16,7 @@
       class="device-data"
       :title="$t('dataSource.models')"
       :width="200"
-      :device-model-id="model.deviceModelId"
+      :device-model-id="applyObj.forecastId"
       @on-edit="handleEditModel"
     />
     <!-- 编辑模型 -->
@@ -54,10 +54,7 @@ export default {
   },
   methods: {
     handleTypeClick(item) {
-      this.model.deviceTypeId = item.deviceTypeId;
-    },
-    handleModelClick(item) {
-      this.model.deviceModelId = item.deviceModelId;
+      this.applyObj.forecastId = item.forecastId;
     },
     handleEditModel(model = null) {
       this.editModel = model;

@@ -79,6 +79,7 @@ export default {
     let that = this
     VueEvent.$off("getImportData")
     VueEvent.$on("getImportData", async() => {
+      console.log(123);
       that.studioId = that.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
       that.deviceTypesBk = [];
       await this.getDeviceTypes(); // 电子

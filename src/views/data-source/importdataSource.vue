@@ -81,7 +81,8 @@
 <script>
 import {Modal, Button, Message, Transfer} from 'iview'
 import importDevice from './importDevice'
-const MODEL_WIDTH = [900, 512, 512]
+const MODEL_WIDTH = [950, 512, 512]; // 512
+// import VueEvent from "../../services/VueEvent.js";
 export default {
   components: {
     Modal,
@@ -145,27 +146,19 @@ export default {
     visible(val) {
       if (!val) {
         this.$emit('input', val);
-        // this.reset(false);
-        // this.selectedItems = [];
-        // this.tableData = [];
-        // this.total = 0;
-        // this.pageParams.current = 1;
       }
     },
   },
-  mounted() {
-    this.visible = this.value;
-  },
   created() {
-    this.studioId = window.sessionStorage.getItem('applyId');
-    // this.getApplyDataList(1); // 华星去掉
-    // this.getApplyDataList(2);
+    this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+    this.getApplyDataList(1);
+    this.getApplyDataList(2); // 华星去掉
   },
   methods: {
     /*
-        * type: 1 预测应用
-        * type: 2 统计应用
-        */
+    * type: 1 预测应用
+    * type: 2 统计应用
+    */
     getApplyDataList(type) {
       const params = {
         studioId: this.studioId,
@@ -300,46 +293,14 @@ export default {
       this.visible = false;
     },
     submit() {
-      if (!this.selectDeviceList.length) {
-        Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
-        return;
-      }
-      this.loading = true;
+      // if (!this.selectDeviceList.length) {
+      //   Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
+      //   return;
+      // }
+      // this.loading = true;
       // const list = [];
       // const studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-      const list = !this.selectDeviceList.length ? [] : this.selectDeviceList.map(item => {
-        return {
-          deviceId: item.id,
-          deviceModelId: item.deviceModelId,
-          deviceTypeId: item.deviceTypeId,
-          studioId: this.studioId,
-        }
-      });
-      this.requestUtil.post('api/iot-cds/cds/configDevice', {list}).then(() => {
-        this.loading = false;
-        this.visible = false;
-        Message.success(this.$t('dataSource.importSuccessfully'));
-        this.$emit('callback');
-      }).catch(() => {
-        this.loading = false;
-      });
-      // const allAppIds = [...this.targetPreAppList, ...this.targetStaAppList];
-      // const targetPreAppList = this.targetPreAppList.map((item) => {
-      //   return {
-      //     studioId: this.studioId,
-      //     appId: item,
-      //     type: 1,
-      //   }
-      // })
-      // const targetStaAppList = this.targetStaAppList.map((item) => {
-      //   return {
-      //     studioId: this.studioId,
-      //     appId: item,
-      //     type: 2,
-      //   }
-      // })
-      // const appDataSources = [...targetPreAppList, ...targetStaAppList];
-      // const studioDevs = !this.selectDeviceList.length ? [] : this.selectDeviceList.map(item => {
+      // const list = !this.selectDeviceList.length ? [] : this.selectDeviceList.map(item => {
       //   return {
       //     deviceId: item.id,
       //     deviceModelId: item.deviceModelId,
@@ -347,12 +308,7 @@ export default {
       //     studioId: this.studioId,
       //   }
       // });
-      // const params = {
-      //   appDataSources,
-      //   studioDevs,
-      // }
-      // console.log(params);
-      // this.requestUtil.post(this.urls.newImportDsApi.url, params).then(() => {
+      // this.requestUtil.post('api/iot-cds/cds/configDevice', {list}).then(() => {
       //   this.loading = false;
       //   this.visible = false;
       //   Message.success(this.$t('dataSource.importSuccessfully'));
@@ -360,6 +316,47 @@ export default {
       // }).catch(() => {
       //   this.loading = false;
       // });
+      // const allAppIds = [...this.targetPreAppList, ...this.targetStaAppList];
+      if (!this.selectDeviceList.length && !this.targetPreAppList.length) {
+        Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
+        return;
+      }
+      const targetPreAppList = this.targetPreAppList.map((item) => {
+        return {
+          studioId: this.studioId,
+          appId: item,
+          type: 1,
+        }
+      })
+      const targetStaAppList = this.targetStaAppList.map((item) => {
+        return {
+          studioId: this.studioId,
+          appId: item,
+          type: 2,
+        }
+      })
+      const appDataSources = [...targetPreAppList, ...targetStaAppList];
+      const studioDevs = !this.selectDeviceList.length ? [] : this.selectDeviceList.map(item => {
+        return {
+          deviceId: item.id,
+          deviceModelId: item.deviceModelId,
+          deviceTypeId: item.deviceTypeId,
+          studioId: this.studioId,
+        }
+      });
+      const params = {
+        appDataSources,
+        studioDevs,
+      }
+      console.log(params);
+      this.requestUtil.post(this.urls.newImportDsApi.url, params).then(() => {
+        this.loading = false;
+        this.visible = false;
+        Message.success(this.$t('dataSource.importSuccessfully'));
+        this.$emit('callback');
+      }).catch(() => {
+        this.loading = false;
+      });
 
     },
   },

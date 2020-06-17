@@ -25,6 +25,7 @@
       :title="$t('dataSource.models')"
       :width="200"
       :device-model-id="model.deviceModelId"
+      :device-type-id="model.deviceTypeId"
       @on-edit="handleEditModel"
     />
     <!-- 编辑模型 -->

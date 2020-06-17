@@ -146,4 +146,5 @@ export default {
   device: '设备', // 2020/5/19
   predictionApply: '预测应用',
   statisticApply: '统计应用',
+  searchApplyName: '请输入应用名',
 }

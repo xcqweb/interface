@@ -4,7 +4,7 @@
     :width="width"
   >
     <div
-      v-show="deviceModelId || $store.state.main.isTemplateApply"
+      v-show="(deviceModelId) || $store.state.main.isTemplateApply"
       slot="header"
       class="addmodel-btn"
     >
@@ -100,6 +100,7 @@ export default {
     DataColumn,
   },
   mixins: [columnCommon, modelCommon, removeCommon, editingModel],
+  props: ['deviceTypeId'],
   data() {
     return {
       activeIndex: -1,
@@ -137,6 +138,7 @@ export default {
       const params = {
         studioId: this.studioId,
         deviceModelId: this.deviceModelId || sessionStorage.getItem('modelId'),
+        deviceTypeId: this.deviceTypeId
       }
       if (!params.deviceModelId || params.deviceModelId === 'null') {
         this.data = [];

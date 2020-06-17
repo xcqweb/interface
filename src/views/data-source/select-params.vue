@@ -130,7 +130,6 @@ export default {
   mounted() {
     this.currentModelId = this.deviceModelId || sessionStorage.getItem('modelId');
     this.setVisible();
-    console.log(this.visible)
   },
   methods: {
     getDeviceParamsCallback(res) {

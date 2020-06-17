@@ -31,5 +31,6 @@ export default {
   newImportDsApi: {url: `${prefix}/iot-cds/cds/configDevice`, 'desc': '导入数据源确认接口'},
   newImportDeviceList: {url: `${prefix}/iot-cds/cds/dataSource/selectDataImport`, 'desc': '设备模版下的设备'},
   newImportApp: {url: `${prefix}/iot-cds/cds/findImportApp`, 'desc': '获取已导入的数据源应用'},
+  newApplyParams: {url: `${prefix}/iot-cds/cds/findConfigAppParam`, 'desc': '数据源获取应用下参数'},
 
 }
