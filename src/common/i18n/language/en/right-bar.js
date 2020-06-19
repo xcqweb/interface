@@ -21,6 +21,7 @@ export default {
   multiplyBindDevice:
     "This control does not allow multiple device names to be bound",
   hasBindDevice: "This control has been bound to the device name",
+  onlyOneTypeDatas: 'Only one data source type can be bound',
   chooseDeviceType: "Please select device type",
   choosePage: "Select Page",
   choosePageToLink: "Please select the page to jump to",
@@ -41,6 +42,8 @@ export default {
   corner: "Corner",
   chooseBgImage: "Choose backgound",
   notAllowBindMyltiplyDeviceModel: "Multiply device models can't allow to bind",
-  atLeastChooseOneParam:"Please choose on param",
+  atLeastChooseOneParam: "Please choose on param",
+  pleaseInputOpenLink: 'Please input link address',
+  pageHasBindOpenLinkEvents: 'control has a link',
 };
 

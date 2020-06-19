@@ -34,6 +34,9 @@ export default{
       isEdit: false,
     }
   },
+  created() {
+    console.log(this.currentPageWidgets)
+  },
   methods: {
     initData() {
       this.openlinkUrl = ''
@@ -52,7 +55,7 @@ export default{
         tipDialog(this.myEditorUi,`${this.$t("rightBar.pageHasBindOpenLinkEvents")}`)
         return
       }
-      this.$emit("submitMutual",{mutualType:4,id:this.openlinkUrl, innerType:'openLink',isEdit:!!this.currentEditItem})
+      this.$emit("submitMutual",{mutualType:4,id:this.openlinkUrl, innerType:'openLink',isEdit:this.isEdit})
     },
     hide() {
       this.$emit("submitMutual")

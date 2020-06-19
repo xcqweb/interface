@@ -383,7 +383,8 @@ export default {
     initDataSource() {
       let startBindData = this.getCellModelInfo("bindData")
       if (startBindData && startBindData.dataSource) {
-        let type = startBindData.dataSource.type || this.fromText
+        let type = startBindData.dataSource.type || 0
+        this.fromText = type
         this.initTableTitle(type)
         this.dataSourceList = []
         let deviceNameChild = startBindData.dataSource.deviceNameChild
@@ -657,7 +658,7 @@ export default {
       let startBindData = this.getCellModelInfo("bindData")
       sureDialog(
         this.myEditorUi,
-        `${this.$t("footBar.sureDelDataSources")}-${data.deviceName}?`,
+        `${this.$t("footBar.sureDelDataSources")}-${data.deviceName ? data.deviceName : data.appName}?`,
         () => {
           if(this.dataSourceList.length === 1) {
             startBindData = null

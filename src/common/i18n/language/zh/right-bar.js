@@ -20,6 +20,7 @@ export default {
   bindText: "绑定",
   multiplyBindDevice: "此控件不允许绑定多个设备",
   hasBindDevice: "此控件已经绑定设备名称",
+  onlyOneTypeDatas: '只能绑定一种数据源类型',
   chooseDeviceType: "请选择设备类型",
   choosePage: "选择页面",
   choosePageToLink: "请选择要跳转的页面",
@@ -27,7 +28,7 @@ export default {
   eventTypes: "事件类型",
   visibleOrHide: "显/隐",
   change: "切换",
-  link: '链接',
+  link: '打开',
   sureToDelActions: "确定要删除交互事件",
   addState: "添加状态",
   attachBlink: " 触发时闪烁",
@@ -41,6 +42,8 @@ export default {
   chooseBgImage: "选择背景图案",
   notAllowBindMyltiplyDeviceModel:'不允许绑定多个设备型号',
   atLeastChooseOneParam:"请选择一个显示参数",
-  bindSuccess:'绑定成功',
+  bindSuccess: '绑定成功',
+  pleaseInputOpenLink: '请输入链接地址',
+  pageHasBindOpenLinkEvents: '该控件已经绑定链接',
 };
 

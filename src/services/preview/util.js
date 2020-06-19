@@ -130,24 +130,10 @@ function actionShow(action, mainProcess) {
  * 打开事件
  */
 function actionOpen(action, mainProcess) {
+  console.log(action)
   if (action.type === 'out') {
-    if (action.mutualType === 4) {
-      const url = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
-      console.log(url);
-      var temp = document.createElement("form");
-      temp.action = url;
-      temp.method = "get";
-      temp.style.display = "none";
-      temp.target = '_blank';
-      document.body.appendChild(temp);
-      temp.submit();
-      temp.remove();
-    } else {
-      // 打开外部链接
-      window.location.href = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
-    }
     // 打开外部链接
-    // window.location.href = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
+    window.location.href = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
   } else if (action.innerType === 'page') {
     // 打开页面
     const pageType = mainProcess.getPageType(action.link)
@@ -156,6 +142,16 @@ function actionOpen(action, mainProcess) {
     } else if (pageType === 'dialog') {
       mainProcess.renderPageFun(action.link)
     }
+  } else if (action.mutualType === 4) { // 打开外部链接
+    const url = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
+    var temp = document.createElement("form");
+    temp.action = url;
+    temp.method = "get";
+    temp.style.display = "none";
+    temp.target = '_blank';
+    document.body.appendChild(temp);
+    temp.submit();
+    temp.remove();
   }
 }
 /**

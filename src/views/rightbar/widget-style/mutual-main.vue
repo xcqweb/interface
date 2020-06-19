@@ -126,7 +126,7 @@ export default{
     return {
       isEdit:false,
       typeTab:1,
-      mutualTypes:[this.$t('link'),this.$t('rightBar.visibleOrHide'),this.$t('rightBar.change')],
+      mutualTypes:[this.$t('link'),this.$t('rightBar.visibleOrHide'),this.$t('rightBar.change'), '链接'],
       events:[],
       pages:[],//页面
       bindActions:[],
@@ -210,6 +210,8 @@ export default{
       this.isEdit = true
       if(this.typeTab == 3) {
         this.$refs.change.addInit()
+      } else if (this.typeTab == 4) {
+        this.$refs.init.initData()
       }
     },
     changeTab(index,changeEditFlag) {
@@ -219,7 +221,6 @@ export default{
       }
     },
     editEventDone(data) {
-      console.log(data)
       this.isEdit = false
       if(!data) {
         return
@@ -250,12 +251,12 @@ export default{
     initActions() {
       let graph = this.myEditorUi.editor.graph
       let actions = this.getActions(graph)
-      console.log(actions)
       if(actions.length) {
         this.setEvents(actions)
       }
     },
     setEvents(actionsInfo) {
+      // const actionsInfoNew = JSON.parse(JSON.stringify(actionsInfo))
       this.events.splice(0)
       let oldLen = actionsInfo.length
       for(let i = 0;i < oldLen;i++) {
@@ -283,28 +284,31 @@ export default{
       }
     },
     findTitle(item) {
-      let tempList = this.pages
-      if(item.mutualType > 1) {
-        if(item.innerType == 'palette') {
-          tempList = this.currentPageWidgets
-        }else{
-          tempList = this.dialogs
+      if (item.mutualType === 4) { // 链接
+        return '链接'
+      } else {
+        let tempList = this.pages
+        if(item.mutualType > 1) {
+          if(item.innerType == 'palette') {
+            tempList = this.currentPageWidgets
+          }else {
+            tempList = this.dialogs
+          }
         }
+        let res = tempList.find(d=>{
+          return d.id == item.link
+        })
+        let title = ""
+        if(res) {
+          title = res.title
+        }
+        return title
       }
-      let res = tempList.find(d=>{
-        return d.id == item.link
-      })
-      let title = ""
-      if(res) {
-        title = res.title
-      }
-      return title
     },
     getActions(graph) {
       let actions = []
       let cell = graph.getSelectionCell()
       let modelInfo = graph.getModel().getValue(cell)
-      console.log(modelInfo)
       if (!mxUtils.isNode(modelInfo)) {
         var doc = mxUtils.createXmlDocument();
         var obj = doc.createElement('object');
@@ -312,7 +316,6 @@ export default{
         modelInfo = obj;
       }
       let actionsAttr = modelInfo.getAttribute('actionsInfo')
-      console.log(actionsAttr)
       if(actionsAttr) {
         actions = JSON.parse(actionsAttr)
       }
@@ -320,9 +323,7 @@ export default{
     },
     setActionInfos(action,isEdit) {
       let graph = this.myEditorUi.editor.graph
-      console.log(graph)
       let actions = this.getActions(graph)
-      console.log(actions)
       let sameFlag = false
       for(let i = 0;i < actions.length;i++) {//同一个控件只能绑定弹窗或者页面的一个交互事件
         if(actions[i].innerType == 'page' && action.mutualType == actions[i].mutualType) {
@@ -398,34 +399,38 @@ export default{
     },
     editEvent(e) {
       let tempList = this.pages
-      if(e.type == 1) {
-        tempList = this.pages
-      }else  if(e.type == 2) {
-        if(e.innerType == 'palette') {
-          tempList = this.currentPageWidgets
-          this.visibleTypeTab = 2
-        }else{
-          tempList = this.dialogs
-          this.visibleTypeTab = 1
+      if (e.type !== 4) {
+        if(e.type == 1) {
+          tempList = this.pages
+        }else if(e.type == 2) {
+          if(e.innerType == 'palette') {
+            tempList = this.currentPageWidgets
+            this.visibleTypeTab = 2
+          }else{
+            tempList = this.dialogs
+            this.visibleTypeTab = 1
+          }
+        }else if(e.type == 3) {
+          this.$refs.change.checkCurrent(e)
         }
-      }else if(e.type == 3) {
-        this.$refs.change.checkCurrent(e)
+        this.isEdit = true
+        tempList.forEach(item=>{
+          if(item.id === e.id) {
+            this.currentEditItem = item
+            item.selected = true
+          }else{
+            item.selected = false
+          }
+        })
+      } else { // 链接 不用处理
+        this.isEdit = true
+        this.$refs.link.inputCurrent(e)
       }
-      this.isEdit = true
-      tempList.forEach(item=>{
-        if(item.id === e.id) {
-          this.currentEditItem = item
-          item.selected = true
-        }else{
-          item.selected = false
-        }
-      })
       if(e.type == 3) {
         this.changeTab(e.type,true)
       }else {
         this.changeTab(e.type)
       }
-            
     },
   },      
 }

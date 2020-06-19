@@ -17,7 +17,6 @@ export default {
   computed: {
     typeData() {
       const typeData = this.$store.state.datasource.typeData;
-      console.log(typeData)
       if (typeData.length > 0) {
         const type = typeData[0];
         this.model.deviceTypeId = type.deviceTypeId;

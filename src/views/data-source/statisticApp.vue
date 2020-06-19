@@ -19,7 +19,6 @@
       :data="statiParamData"
       prop="paramName"
       true-prop="paramId"
-      @remove="handleTypeRemove"
     />
     <!-- 移除确认弹窗 -->
     <component
@@ -94,34 +93,10 @@ export default {
     handleTypeRemove(items) {
       const ids = [];
       items.forEach(type => {
-        if (this.modelObj[type]) {
-          const modelData = this.modelObj[type];
-          modelData.forEach(model => {
-            if (this.deviceObj[model.deviceModelId]) {
-              const deviceData = this.deviceObj[model.deviceModelId];
-              deviceData.forEach(device => {
-                ids.push(device.id);
-              })
-            }
-          });
-        }
+        ids.push(type);
       });
       this.removeData = ids;
-      this.removeContent = this.$t('dataSource.confirmToRemoveDeviceType');
-      this.showRemoveModal();
-    },
-    handleModelRemove(items) {
-      const ids = [];
-      items.forEach(model => {
-        if (this.deviceObj[model]) {
-          const deviceData = this.deviceObj[model];
-          deviceData.forEach(device => {
-            ids.push(device.id);
-          })
-        }
-      });
-      this.removeData = ids;
-      this.removeContent = this.$t('dataSource.confirmToRemoveDeviceModel');
+      this.removeContent = this.$t('dataSource.confirmToRemoveApply');
       this.showRemoveModal();
     },
     handleDeviceRemove(items) {
@@ -134,7 +109,7 @@ export default {
         ids: this.removeData,
       };
       this.requestUtil.post(this.urls.deleteDeviceList.url, params).then(() => {
-        Message.success(this.$t('dataSource.removeDeviceSuccessfully'));
+        Message.success(this.$t('dataSource.removeApplySuccessfully'));
         this.getStatisticData();
       });
     },
