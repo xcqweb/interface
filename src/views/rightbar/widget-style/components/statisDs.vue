@@ -29,15 +29,15 @@
             <Checkbox
               v-for="(item) in statiData"
               v-show="!dName || item.appName.toUpperCase().includes(dName.toUpperCase())"
-              :key="item.statiDataId"
-              :label="item.statiDataId"
+              :key="item.appId"
+              :label="item.appId"
               size="small"
             >
               <span 
-                :title="item.statiDataName" 
+                :title="item.appName" 
                 style="display:inline-block;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;"
               >
-                {{ item.statiDataName }}
+                {{ item.appName }}
               </span>
             </Checkbox>
           </CheckboxGroup>
@@ -140,23 +140,13 @@ export default{
         return
       }
       //组装数据 绑定
-      let objData = {}
-      objData.deviceTypeChild = {
-        id: this.model.deviceTypeId,
-        name:this.typeData.find(item=>{return item.deviceTypeId == this.model.deviceTypeId}).deviceTypeName
-      }
-      objData.deviceModel = {
-        id: this.model.deviceModelId,
-        name:this.modelData.find(item=>{return item.deviceModelId == this.model.deviceModelId}).deviceModelName
+      let objData = {
+        type: 2,
       }
       if(this.shapeName === 'lineChart') {
         objData.deviceNameChild = []
-        if(this.bindData && this.bindData.dataSource.deviceModel) {
-          if(this.model.deviceModelId != this.bindData.dataSource.deviceModel.id) {
-            Message.warning(`${this.$t('rightBar.notAllowBindMyltiplyDeviceModel')}`)
-            this.checkModelArr = []
-            return
-          }
+        if(this.bindData && this.bindData.dataSource.deviceNameChild) {
+          // 处理多个参数
           let deviceNameChildTemp = this.bindData.dataSource.deviceNameChild
           if(!Array.isArray(deviceNameChildTemp)) {
             objData.deviceNameChild.push(deviceNameChildTemp)
@@ -164,13 +154,13 @@ export default{
         }
         let tempArr = []
         this.checkModelArr.forEach((item) => {
-          tempArr.push({id:item,name:this.deviceData.find(d=>{return d.deviceId == item}).deviceName})
+          tempArr.push({id:item,name:this.statiData.find(d=>{return d.appId == item}).appName})
         })
         objData.deviceNameChild = objData.deviceNameChild.concat(tempArr)
       }else{
         objData.deviceNameChild = {}
         this.checkModelArr.forEach((item) => {
-          objData.deviceNameChild = {id:item,name:this.deviceData.find(d=>{return d.deviceId == item}).deviceName}
+          objData.deviceNameChild = {id:item,name:this.statiData.find(d=>{return d.appId == item}).appName}
         })
       }
       if (objData) {

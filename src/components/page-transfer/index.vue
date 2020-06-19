@@ -34,9 +34,34 @@
                   :label="item.id" 
                   :disabled="item.disabled"
                 >
-                  <slot name="leftItem">
-                    &nbsp;&nbsp;{{ item.name }}
-                  </slot>
+                  <Tooltip 
+                    placement="bottom-start" 
+                    theme="light"
+                    max-width="240"
+                    class="tooltip-width-inner"
+                    content="adsad"
+                  >
+                    <div slot="content">
+                      <p 
+                        style="line-height: 22px;text-align:left;white-space:normal"
+                      >
+                        设备名称:{{ item.name }}
+                      </p>
+                      <p
+                        style="line-height: 22px;text-align:left;white-space:normal"
+                      >
+                        设备编号:{{ item.serialNumber }}
+                      </p>
+                      <p
+                        style="line-height: 22px;text-align:left;white-space:normal"
+                      >
+                        设备位置:{{ item.locationNamePath }}
+                      </p>
+                    </div>
+                    <slot name="leftItem">
+                      &nbsp;&nbsp;{{ item.name }}
+                    </slot>
+                  </Tooltip>
                 </Checkbox>
               </div>
             </CheckboxGroup>
@@ -106,7 +131,7 @@
   </div>
 </template>
 <script>
-import {Button, CheckboxGroup, Checkbox, Input, Icon} from 'iview'
+import {Button, CheckboxGroup, Checkbox, Input, Icon, Tooltip} from 'iview'
 export default {
   components: {
     Button,
@@ -114,6 +139,7 @@ export default {
     Checkbox,
     Input,
     Icon,
+    Tooltip
   },
   props:{
     title:String,
@@ -369,6 +395,14 @@ export default {
         }
     }
     .add-modal{
+        /deep/.tooltip-width-inner{
+        background: #fff !important;
+        .ivu-tooltip-popper {
+          .ivu-tooltip-inner-with-width{
+            white-space: normal !important
+          }
+        }
+      }
         margin-left: 12px;
         /deep/.addFooter{
             .ivu-btn{

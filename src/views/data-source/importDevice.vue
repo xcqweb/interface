@@ -70,6 +70,8 @@ export default {
       deviceModelData: [],
       deviceTypeData: [],
       studioId: '',
+      preAppDataList: [],
+      staAppDataList: [],
     };
   },
   async created() {
@@ -83,6 +85,8 @@ export default {
       that.studioId = that.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
       that.deviceTypesBk = [];
       await this.getDeviceTypes(); // 电子
+      that.getApplyDataList(1);
+      that.getApplyDataList(2); // 华星去掉
     });
   },
 
@@ -100,6 +104,37 @@ export default {
           this.getDeviceTemplateData();
         }
       });
+    },
+    /*
+    * type: 1 预测应用
+    * type: 2 统计应用
+    */
+    getApplyDataList(type) {
+      const params = {
+        studioId: this.studioId,
+        type,
+      }
+      this.requestUtil.post(this.urls.newAppDataList.url, params).then((res) => {
+        const data = res.returnObj || []
+        if (type === 1) {
+          this.preAppDataList = data.map((item) => {
+            return {
+              key: item.appId,
+              label: item.appName,
+            }
+          })
+          this.$emit('getApplyDataFun', this.preAppDataList)
+        } else if (type === 2) {
+          this.staAppDataList = data.map((item) => {
+            return {
+              key: item.appId,
+              label: item.appName,
+            }
+          })
+          this.$emit('getStaticDataFun', this.staAppDataList)
+        }
+        
+      })
     },
     getDeviceTemplateData() {
       let deviceTypeId = this.curNodeData ? this.curNodeData.deviceTypeId : ''
@@ -196,7 +231,8 @@ export default {
         name:item.deviceName,
         deviceTypeId: item.deviceTypeId,
         deviceModelId: item.deviceModelId,
-
+        serialNumber: item.serialNumber,
+        locationNamePath: item.locationNamePath,
       }
     },
     chooseData(data) {

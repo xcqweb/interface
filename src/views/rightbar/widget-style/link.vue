@@ -53,9 +53,6 @@ export default{
         return
       }
       this.$emit("submitMutual",{mutualType:4,id:this.openlinkUrl, innerType:'openLink',isEdit:!!this.currentEditItem})
-
-
-
     },
     hide() {
       this.$emit("submitMutual")

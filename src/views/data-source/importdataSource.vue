@@ -36,6 +36,8 @@
         :visible="visible"
         :data="deviceData"
         @chooseDeviceData="chooseDeviceData"
+        @getStaticDataFun="staAppDataListFun"
+        @getApplyDataFun="getApplyDataFun"
       />
       <!-- 导入预测应用 -->
       <Transfer
@@ -140,17 +142,22 @@ export default {
     },
     visible(val) {
       if (!val) {
-        console.log(val)
         this.$emit('input', val);
       }
     },
   },
   created() {
     this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-    this.getApplyDataList(1);
-    this.getApplyDataList(2); // 华星去掉
+    // this.getApplyDataList(1);
+    // this.getApplyDataList(2);
   },
   methods: {
+    getApplyDataFun(data) {
+      this.preAppDataList = data
+    },
+    staAppDataListFun(data) {
+      this.staAppDataList = data
+    },
     /*
     * type: 1 预测应用
     * type: 2 统计应用
@@ -160,7 +167,7 @@ export default {
         studioId: this.studioId,
         type,
       }
-      this.requestUtil.post(this.urls.newAppDataList.url, params).then((res) => {
+      this.requestUtil.post(this.urls.newImportApp.url, params).then((res) => {
         const data = res.returnObj || []
         if (type === 1) {
           this.preAppDataList = data.map((item) => {

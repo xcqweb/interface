@@ -155,12 +155,7 @@ export default{
       }
       if(this.shapeName === 'lineChart') {
         objData.deviceNameChild = []
-        if(this.bindData && this.bindData.dataSource.deviceModel) {
-          // if(this.model.deviceModelId != this.bindData.dataSource.deviceModel.id) {
-          //   Message.warning(`${this.$t('rightBar.notAllowBindMyltiplyDeviceModel')}`)
-          //   this.checkModelArr = []
-          //   return
-          // }
+        if(this.bindData && this.bindData.dataSource.deviceNameChild) {
           // 处理多个参数
           let deviceNameChildTemp = this.bindData.dataSource.deviceNameChild
           if(!Array.isArray(deviceNameChildTemp)) {
@@ -178,7 +173,6 @@ export default{
           objData.deviceNameChild = {id:item,name:this.predData.find(d=>{return d.appId == item}).appName}
         })
       }
-      console.log(objData)
       if (objData) {
         VueEvent.$emit('emitDataSourceFooter', objData)
         Message.success(`${this.$t('rightBar.bindSuccess')}`)
