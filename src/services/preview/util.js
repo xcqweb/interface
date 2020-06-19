@@ -131,8 +131,23 @@ function actionShow(action, mainProcess) {
  */
 function actionOpen(action, mainProcess) {
   if (action.type === 'out') {
+    if (action.mutualType === 4) {
+      const url = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
+      console.log(url);
+      var temp = document.createElement("form");
+      temp.action = url;
+      temp.method = "get";
+      temp.style.display = "none";
+      temp.target = '_blank';
+      document.body.appendChild(temp);
+      temp.submit();
+      temp.remove();
+    } else {
+      // 打开外部链接
+      window.location.href = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
+    }
     // 打开外部链接
-    window.location.href = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
+    // window.location.href = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
   } else if (action.innerType === 'page') {
     // 打开页面
     const pageType = mainProcess.getPageType(action.link)
@@ -668,7 +683,18 @@ function loadShapeXml() {
     })    
   })
 }
+function getQueryVariable(variable) {
+  var query = window.location.search.substring(1)
+  var vars = query.split("&")
+  for (var i = 0;i < vars.length;i++) {
+    var pair = vars[i].split("=")
+    if(pair[0] == variable) {
+      return pair[1]
+    }
+  }
+  return null
+}
 export {
   removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,dealPentagram,loadShapeXml,
-  dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout,dealDefaultParams,insertSvg,svgShape,setSvgImageHref
+  dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout,dealDefaultParams,insertSvg,svgShape,setSvgImageHref,getQueryVariable
 }

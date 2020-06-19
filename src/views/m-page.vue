@@ -69,6 +69,7 @@ export default {
         // 编辑
         if (res[1]) {
           const editData = res[1]
+          this.$store.commit('setIsTemplateApply',editData.type == 1)
           // pc默认1366*768，mobile默认360*640
           if (!editData.lengthWidth) {
             myEditorUi.isOldApply = true

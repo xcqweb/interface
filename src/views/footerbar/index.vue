@@ -9,13 +9,19 @@
               :animated="false"
               @on-click="switchTabHandle"
             >
-              <TabPane :label="$t(dataSourceName[0])" />
-              <TabPane :label="$t(dataSourceName[1])" />
+              <TabPane 
+                v-if="!$store.state.main.isTemplateApply" 
+                :label="$t(dataSourceName[0])"
+              />
+              <TabPane
+                :label="$t(dataSourceName[1])"
+              />
+
               <TabPane :label="$t(dataSourceName[2])" />
             </Tabs>
           </div>
           <div
-            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag"
+            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag || tabsNum ==0 && $store.state.main.isTemplateApply && footerContent && ifShowDataFlag"
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
@@ -37,7 +43,7 @@
         <div v-if="footerContent">
           <!--数据源-->
           <div
-            v-show="tabsNum === 0"
+            v-show="tabsNum === 0 && dataSourceList.length && !$store.state.main.isTemplateApply"
             class="footer-common dataSourceList"
           >
             <template>
@@ -61,7 +67,7 @@
           </div>
           <!--数据显示-->
           <div
-            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length"
+            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length || tabsNum == 0 && $store.state.main.isTemplateApply && ifShowDataFlag"
             class="footer-common dataDisplayList"
           >
             <Table
@@ -106,7 +112,7 @@
           </div>
           <!--状态模型-->
           <div
-            v-show="tabsNum === 2"
+            v-show="tabsNum === 2 || tabsNum==1 && $store.state.main.isTemplateApply"
             class="footer-common stateList"
           >
             <div
@@ -160,6 +166,8 @@
       :device-model-id="deviceModelId"
       :device-id="deviceId"
       :multiple="multiple"
+      :from-text="fromText"
+      :app-id="deviceModelId"
       @callback="addParamDone"
     />
   </div>
@@ -172,6 +180,7 @@ import NoData from "../data-source/nodata";
 import VueEvent from "../../services/VueEvent.js";
 
 import {sureDialog} from "../../services/Utils";
+import {tableDeviceData, tableApplyData, tableDeviceParamData, tableApplyParamData} from './config'
 const allShapes = [
   "image",
   "userimage",
@@ -224,26 +233,7 @@ export default {
       deviceModelId: null,
       deviceId: null,
       nodata: "noData",
-      tablTitles: [
-        {
-          title: this.$t("deviceName"),
-          key: "deviceName"
-        },
-        {
-          title: this.$t("deviceType"),
-          key: "typeName"
-        },
-        {
-          title: this.$t("deviceModal"),
-          key: "modelName"
-        },
-        {
-          title: this.$t("operation"),
-          width: "160",
-          slot: "actions",
-          key: "actions"
-        }
-      ],
+      tablTitles: [],
       dataSourceList: [],
       heightlen: "190",
       paramOutterList: [],
@@ -276,7 +266,8 @@ export default {
           width: "160",
           slot: "actions"
         }
-      ]
+      ],
+      fromText: 0,
     };
   },
   computed: {
@@ -338,7 +329,9 @@ export default {
     });
     // 绑定数据源
     VueEvent.$on("emitDataSourceFooter", value => {
-      this.setCellModelInfo("bindData", {dataSource: value})
+      this.setCellModelInfo("bindData", {dataSource: value});
+      this.fromText = value.type
+      this.initTableTitle(value.type)
       if (this.shapeName === "lineChart") {
         this.dealDeviceParamIds()
       }
@@ -377,24 +370,47 @@ export default {
       }
       this.myEditorUi.refresh()
     },
+    initTableTitle(type = 0) {
+      if (type === 1 || type === 2) {
+        this.tablTitles = tableApplyData;
+        this.tabParamTitles = tableApplyParamData;
+      } else {
+        this.tablTitles = tableDeviceData
+        this.tabParamTitles = tableDeviceParamData;
+      }
+    },
     // 初始化数据源数据
     initDataSource() {
       let startBindData = this.getCellModelInfo("bindData")
       if (startBindData && startBindData.dataSource) {
-        let deviceNameChild = startBindData.dataSource.deviceNameChild
-        this.deviceModelId = startBindData.dataSource.deviceModel.id
+        let type = startBindData.dataSource.type || this.fromText
+        this.initTableTitle(type)
         this.dataSourceList = []
-        if (!Array.isArray(deviceNameChild)) {
+        let deviceNameChild = startBindData.dataSource.deviceNameChild
+        if (deviceNameChild && !Array.isArray(deviceNameChild)) {
           deviceNameChild = [deviceNameChild]
         }
-        deviceNameChild.forEach(item => {
-          let obj = {}
-          obj.typeName = startBindData.dataSource.deviceTypeChild.name
-          obj.deviceName = item.name
-          obj.deviceId = item.id
-          obj.modelName = startBindData.dataSource.deviceModel.name
-          this.dataSourceList.push(obj)
-        })
+        if (type === 1 ||  type === 2) { // 预测应用和统计应用
+          this.deviceModelId = startBindData.dataSource.deviceNameChild.id // 用来请求参数的 appId
+          deviceNameChild.forEach(item => {
+            let obj = {}
+            obj.appName = item.name
+            obj.appId = item.id
+            this.dataSourceList.push(obj)
+          })
+        } else { // 设备数据源
+          this.deviceModelId = startBindData.dataSource.deviceModel.id
+          if(deviceNameChild) {
+            deviceNameChild.forEach(item => {
+              let obj = {}
+              obj.typeName = startBindData.dataSource.deviceTypeChild.name
+              obj.deviceName = item.name
+              obj.deviceId = item.id
+              obj.modelName = startBindData.dataSource.deviceModel.name
+              this.dataSourceList.push(obj)
+            })
+          }
+        }
       } else {
         this.deviceModelId = null
         this.dataSourceList = []
@@ -408,6 +424,9 @@ export default {
           studioId: sessionStorage.getItem("applyId"),
           deviceModelId: this.deviceModelId
         };
+        if (!objData.deviceModelId) {
+          return;
+        }
         this.requestUtil.post(this.urls.getModelList.url, objData).then(res => {
           if (res.returnObj) {
             this.modelList = res.returnObj
@@ -443,11 +462,18 @@ export default {
     },
     addParam() {
       let startBindData = this.getCellModelInfo("bindData")
-      let deviceNameChild = startBindData.dataSource.deviceNameChild
-      if (!Array.isArray(deviceNameChild)) {
-        deviceNameChild = [deviceNameChild]
+      if(this.$store.state.main.isTemplateApply) {
+        this.deviceModelId = sessionStorage.getItem('modelId')
+        let temp = {dataSource:{}}
+        temp.dataSource.deviceModel = {id:this.deviceModelId,name:'-'}
+        this.setCellModelInfo("bindData",temp)
+      } else {
+        let deviceNameChild = startBindData.dataSource.deviceNameChild
+        if (!Array.isArray(deviceNameChild)) {
+          deviceNameChild = [deviceNameChild]
+        }
+        this.deviceId = deviceNameChild[0].id          
       }
-      this.deviceId = deviceNameChild[0].id            
       this.visible = true
     },
     addParamDone(data) {
@@ -461,17 +487,28 @@ export default {
       })
       data.forEach(item => {
         if (!allKeys.includes(item.key)) {
-          let tempObj = {
-            paramName: item.paramName,
-            paramId: item.paramId,
-            paramType: item.type,
-            partName: item.partName,
-            key: item.key,
-            partId:item.partId,
-            transportSourceId: item.transportSourceId,
-            deviceParamId: item.deviceParamId,
-            type: false
+          let tempObj = null
+          if (this.fromText === 1 || this.fromText === 2) { // 预测应用和统计应用
+            tempObj = {
+              paramName: item.paramName,
+              paramId: item.paramId,
+              key: item.key,
+              type: false
+            }
+          } else {
+            tempObj = {
+              paramName: item.paramName,
+              paramId: item.paramId,
+              paramType: item.type,
+              partName: item.partName,
+              key: item.key,
+              partId:item.partId,
+              transportSourceId: item.transportSourceId,
+              deviceParamId: item.deviceParamId,
+              type: false
+            }
           }
+
           if(this.multiple) {
             this.paramOutterList.push(tempObj)
           }else{

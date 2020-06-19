@@ -25,7 +25,7 @@
         {{ $t('action') }}
       </div>
       <div
-        v-if="dataList.includes(shapeName) && isShowDataTab"
+        v-if="dataList.includes(shapeName) && isShowDataTab && !$store.state.main.isTemplateApply"
         class="tab"
         :class="{'selected':tab==4}"
         @click="changeTab(4)"

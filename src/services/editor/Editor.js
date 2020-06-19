@@ -421,19 +421,32 @@ Editor.prototype.InitEditor = function(editorUi) {
     // 编辑数据
     let editPromise = null
     let applyId = sessionStorage.getItem("applyId")
-    let idArr= /id=(.+?)$/.exec(location.search)
-    if (idArr || applyId) {
+    function getQueryVariable(variable) {
+       var query = window.location.search.substring(1)
+       var vars = query.split("&")
+       for (var i=0;i<vars.length;i++) {
+          var pair = vars[i].split("=")
+          if(pair[0] == variable){
+            return pair[1]
+          }
+       }
+       return null
+    }
+    let pApplyId = getQueryVariable('id')
+    let modelId = getQueryVariable('modelId')
+    if (pApplyId || applyId) {
         let id
-        if(idArr && idArr.length){
-            id= idArr[1]
-            sessionStorage.setItem("applyId", id)
+        if(pApplyId){
+          id = pApplyId
         }else{
-            id = applyId
+          id = applyId
         }
+        sessionStorage.setItem("applyId", id)
+        sessionStorage.setItem('modelId',modelId)
         editPromise = new Promise((resolve) => {
-            this.ajax(editorUi, 'api/iot-cds/cds/configurationDesignStudio/' + id, 'GET', null, function(res) {
-                resolve(res)
-            }, null)
+          this.ajax(editorUi, 'api/iot-cds/cds/configurationDesignStudio/' + id, 'GET', null, function(res) {
+              resolve(res)
+          }, null)
         })
     }
 	

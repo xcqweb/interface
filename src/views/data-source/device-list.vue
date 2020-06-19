@@ -12,6 +12,7 @@
         v-for="(item, index) in data"
         :key="index"
         :class="{active: showActive && activeIndex === index}"
+        style="cursor: pointer"
         @click="handleClick(item, index)"
       >
         {{ getValue(item, prop) }}

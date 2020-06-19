@@ -1,6 +1,6 @@
 <template>
   <div class="device-data-wrap">
-    <!-- 设备类型 -->
+    <!-- 应用类型 -->
     <device-data
       class="device-data"
       :title="$t('dataSource.applyList')"
@@ -12,11 +12,14 @@
       @remove="handleTypeRemove"
     />
     <!-- 参数列表 -->
-    <device-params
+    <device-list
       class="device-data"
       :title="$t('dataSource.parameters')"
       :width="300"
-      :device-model-id="model.deviceModelId"
+      :data="preParamData"
+      prop="paramName"
+      true-prop="paramId"
+      @remove="handleTypeRemove"
     />
     <!-- 移除确认弹窗 -->
     <component
@@ -53,22 +56,40 @@ export default {
   data() {
     return {
       paramData: [],
+      preParamData: [],
     };
   },
   watch: {
     reloadData() {
       this.getPredictionData();
     },
+    predData(val) {
+      if (val.length) {
+        this.applyObj.forecastId = val[0].appId
+        this.getApplyParamsData()
+      }
+    },
   },
-  mounted() {
-    this.getPredictionData();
+  async mounted() {
+    await this.getPredictionData();
   },
   methods: {
     handleTypeClick(item) {
-      this.applyObj.forecastId = item.forecastId;
+      this.applyObj.forecastId = item.appId;
+      this.getApplyParamsData();
     },
-    handleModelClick(item) {
-      this.model.deviceModelId = item.deviceModelId;
+    getApplyParamsData() {
+      if (!this.predData.length) {return}
+      const params = {
+        appId: this.applyObj.forecastId,
+        type: 1,
+      }
+      if (!params.appId) {
+        return
+      }
+      this.requestUtil.post(this.urls.newApplyParams.url, params).then(res => {
+        this.preParamData = res.returnObj || []
+      })
     },
     handleTypeRemove(items) {
       const ids = [];

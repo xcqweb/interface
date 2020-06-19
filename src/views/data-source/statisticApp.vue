@@ -1,7 +1,7 @@
 <template>
   <div class="device-data-wrap">
     <!-- 应用列表 -->
-    <device-list
+    <device-data
       class="device-data"
       :title="$t('dataSource.applyList')"
       :width="200"
@@ -12,11 +12,14 @@
       @remove="handleTypeRemove"
     />
     <!-- 参数列表 -->
-    <device-params
+    <device-list
       class="device-data"
       :title="$t('dataSource.parameters')"
       :width="300"
-      :device-model-id="model.deviceModelId"
+      :data="statiParamData"
+      prop="paramName"
+      true-prop="paramId"
+      @remove="handleTypeRemove"
     />
     <!-- 移除确认弹窗 -->
     <component
@@ -53,19 +56,40 @@ export default {
   data() {
     return {
       paramData: [],
+      statiParamData: [],
     };
   },
   watch: {
     reloadData() {
       this.getStatisticData();
     },
+    statiData(val) {
+      if (val.length) {
+        this.applyObj.appId = val[0].appId
+        this.getApplyParamsData()
+      }
+    },
   },
-  mounted() {
-    this.getStatisticData();
+  async mounted() {
+    await this.getStatisticData();
   },
   methods: {
     handleTypeClick(item) {
       this.applyObj.appId = item.appId;
+      this.getApplyParamsData()
+    },
+    getApplyParamsData() {
+      if (!this.statiData.length) {return}
+      const params = {
+        appId: this.applyObj.appId || this.statiData[0].appId,
+        type: 2,
+      }
+      if (!params.appId) {
+        return
+      }
+      this.requestUtil.post(this.urls.newApplyParams.url, params).then(res => {
+        this.statiParamData = res.returnObj || []
+      })
     },
     handleTypeRemove(items) {
       const ids = [];

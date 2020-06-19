@@ -6,15 +6,16 @@
         :class="{'selected':tab==1}"
         @click="changeTab(1)"
       >
-        <img :src="[require(`../assets/images/menu/page${tab}_ic.png`)]">
+        <img :src="[tab==1 ? require(`../assets/images/menu/page1_ic.png`) : require(`../assets/images/menu/page2_ic.png`)]">
       </div>
       <div
+        v-if="!$store.state.main.isTemplateApply"
         class="item data-tab"
         :class="{'selected':tab==2}"
         style="border-left:0;"
         @click="changeTab(2)"
       >
-        <img :src="[require(`../assets/images/menu/datasource${3-tab}_ic.png`)]">
+        <img :src="[tab==2 ? require(`../assets/images/menu/datasource1_ic.png`) : require(`../assets/images/menu/datasource2_ic.png`)]">
       </div>
       <div
         class="item model-tab"
@@ -22,17 +23,15 @@
         style="border-left:0;"
         @click="changeTab(3)"
       >
-        <img :src="[require(`../assets/images/menu/model${4-tab}_ic.png`)]">
+        <img :src="[tab==3 ? require(`../assets/images/menu/model1_ic.png`) : require(`../assets/images/menu/model2_ic.png`)]">
       </div>
     </div>
-    <MPage v-show="tabIndex === 1" />
+    <MPage v-show="tab==1" />
     <MDataS 
-      v-if="tabIndex === 2" 
-      ref="dataSourceTab" 
+      v-if="tab==2"
     />
-    <MModel
-      v-if="tabIndex === 3"
-      ref="modelTab"
+    <MModel 
+      v-if="tab==3"
     />
   </div>
 </template>
@@ -52,17 +51,15 @@ export default {
     return{
       tab:1,
       bindDatas: [],
-      tabShow: true,
-      tabIndex: 1,
+      tabShow: true
     }
   },
   methods: {
     changeTab(index) {
-      if (!this.canGoOn() && index === 1) {
+      if (!this.canGoOn() && (index === 1 || index === 2)) {
         return false
       }
       this.tab = index
-      this.tabIndex = index
       if (index === 2 && this.tabShow) {
         this.$nextTick(() => {
           VueEvent.$emit('rightBarTabSwitch')
@@ -70,8 +67,6 @@ export default {
         })
       } else if (index === 1) {
         this.tabShow = true
-      } else {
-        this.tabShow = false
       }
     },
   }
@@ -120,3 +115,4 @@ export default {
 <style lang="less">
  
 </style>
+

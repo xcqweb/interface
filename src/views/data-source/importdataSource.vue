@@ -145,19 +145,16 @@ export default {
       }
     },
   },
-  mounted() {
-    this.visible = this.value;
-  },
   created() {
     this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
     this.getApplyDataList(1);
-    this.getApplyDataList(2);
+    this.getApplyDataList(2); // 华星去掉
   },
   methods: {
     /*
-        * type: 1 预测应用
-        * type: 2 统计应用
-        */
+    * type: 1 预测应用
+    * type: 2 统计应用
+    */
     getApplyDataList(type) {
       const params = {
         studioId: this.studioId,
@@ -285,24 +282,27 @@ export default {
       // this.loading = true;
       // const list = [];
       // const studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-      // this.selectedItems.forEach(item => {
-      //     list.push({
-      //         studioId,
-      //         deviceId: item.deviceId,
-      //         deviceModelId: item.deviceModelId,
-      //         deviceTypeId: item.deviceTypeId,
-      //     });
+      // const list = !this.selectDeviceList.length ? [] : this.selectDeviceList.map(item => {
+      //   return {
+      //     deviceId: item.id,
+      //     deviceModelId: item.deviceModelId,
+      //     deviceTypeId: item.deviceTypeId,
+      //     studioId: this.studioId,
+      //   }
       // });
       // this.requestUtil.post('api/iot-cds/cds/configDevice', {list}).then(() => {
-      //     this.loading = false;
-      //     this.visible = false;
-      //     Message.success(this.$t('dataSource.importSuccessfully'));
-      //     this.$emit('callback');
+      //   this.loading = false;
+      //   this.visible = false;
+      //   Message.success(this.$t('dataSource.importSuccessfully'));
+      //   this.$emit('callback');
       // }).catch(() => {
-      //     this.loading = false;
+      //   this.loading = false;
       // });
-      // this.studioId
       // const allAppIds = [...this.targetPreAppList, ...this.targetStaAppList];
+      if (!this.selectDeviceList.length && !this.targetPreAppList.length && !this.targetStaAppList.length) {
+        Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
+        return;
+      }
       const targetPreAppList = this.targetPreAppList.map((item) => {
         return {
           studioId: this.studioId,
@@ -330,7 +330,6 @@ export default {
         appDataSources,
         studioDevs,
       }
-      console.log(params);
       this.requestUtil.post(this.urls.newImportDsApi.url, params).then(() => {
         this.loading = false;
         this.visible = false;

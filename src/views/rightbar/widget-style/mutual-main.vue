@@ -60,11 +60,19 @@
         </div>
         <div
           class="type-tab"
-          style="border-top-right-radius:2px;border-bottom-right-radius:2px;"
           :class="{'selected':typeTab==3}"
           @click="changeTab(3)"
         >
           {{ $t("rightBar.change") }}
+        </div>
+        <!-- 链接 -->
+        <div
+          class="type-tab"
+          style="border-top-right-radius:2px;border-bottom-right-radius:2px;"
+          :class="{'selected':typeTab==4}"
+          @click="changeTab(4)"
+        >
+          {{ $t("rightBar.link") }}
         </div>
       </div>
       <LinkTo
@@ -91,6 +99,13 @@
         :current-page-widgets="currentPageWidgets"
         @submitMutual="editEventDone"
       />
+      <openLink
+        v-show="typeTab===4"
+        ref="link"
+        :bind-actions="bindActions"
+        :current-edit-item="currentEditItem"
+        @submitMutual="editEventDone"
+      />
     </div>
   </div>
 </template>
@@ -99,13 +114,14 @@
 import LinkTo from './linkto'
 import Visible from './visible'
 import Change from './change'
+import openLink from './link'
 import {sureDialog} from '../../../services/Utils'
 import {mxUtils} from '../../../services/mxGlobal'
 import VueEvent from '../../../services/VueEvent.js'
 // 不显示节点的名称
 let forbiddenShape = ['menuCell', 'tableCell', 'label']
 export default{
-  components:{LinkTo,Visible,Change},
+  components:{LinkTo,Visible,Change, openLink},
   data() {
     return {
       isEdit:false,
@@ -203,6 +219,7 @@ export default{
       }
     },
     editEventDone(data) {
+      console.log(data)
       this.isEdit = false
       if(!data) {
         return
@@ -233,6 +250,7 @@ export default{
     initActions() {
       let graph = this.myEditorUi.editor.graph
       let actions = this.getActions(graph)
+      console.log(actions)
       if(actions.length) {
         this.setEvents(actions)
       }
@@ -286,6 +304,7 @@ export default{
       let actions = []
       let cell = graph.getSelectionCell()
       let modelInfo = graph.getModel().getValue(cell)
+      console.log(modelInfo)
       if (!mxUtils.isNode(modelInfo)) {
         var doc = mxUtils.createXmlDocument();
         var obj = doc.createElement('object');
@@ -293,6 +312,7 @@ export default{
         modelInfo = obj;
       }
       let actionsAttr = modelInfo.getAttribute('actionsInfo')
+      console.log(actionsAttr)
       if(actionsAttr) {
         actions = JSON.parse(actionsAttr)
       }
@@ -300,7 +320,9 @@ export default{
     },
     setActionInfos(action,isEdit) {
       let graph = this.myEditorUi.editor.graph
+      console.log(graph)
       let actions = this.getActions(graph)
+      console.log(actions)
       let sameFlag = false
       for(let i = 0;i < actions.length;i++) {//同一个控件只能绑定弹窗或者页面的一个交互事件
         if(actions[i].innerType == 'page' && action.mutualType == actions[i].mutualType) {

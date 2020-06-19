@@ -139,6 +139,9 @@ export default {
       type: Boolean,
       default: false,
     },
+    fromText: {
+      type: Number
+    },
   },
   data() {
     return {

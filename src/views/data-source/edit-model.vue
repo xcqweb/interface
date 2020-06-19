@@ -71,6 +71,8 @@
       v-model="visible"
       :title="$t('dataSource.addRule')"
       :device-model-id="deviceModelId"
+      :app-id="appId"
+      :from-text="fromText"
       :selected-keys="ruleKeys"
       @callback="callback"
     />
@@ -92,15 +94,18 @@ export default {
     DataColumn,
     ModelRule,
     SelectParams,
-    // SelectParams: (resolve) => {
-    //     return require(['./select-params'], resolve);
-    // },
   },
   mixins: [columnCommon, modelCommon],
   props: {
     data: {
       type: Object,
     },
+    fromText: {
+      type: Number,
+    },
+    appId: {
+      type: String,
+    }
   },
   data() {
     return {
@@ -119,6 +124,7 @@ export default {
         descript: '',
         modelName: '',
       },
+      editModelId: '',
       ruleKeys: [],
       ruleData: [],
       studioId: '',
@@ -156,6 +162,11 @@ export default {
         this.loading = true;
         this.model.formula = JSON.stringify(data);
         this.model.studioId = this.studioId;
+        if (this.fromText !== 0) {
+          this.model.appId = this.appId;
+          delete this.model.deviceTypeId;
+          delete this.model.deviceModelId;
+        }
         let func, successMsg;
         if (!this.model.sourceId) {
           func = 'post';
@@ -175,6 +186,7 @@ export default {
       }
     },
     showRuleModal() {
+      console.log(this.fromText)
       this.ruleView = 'select-params';
       this.visible = true;
     },
@@ -205,6 +217,10 @@ export default {
       for (key in this.model) {
         this.model[key] = data[key] || '';
       }
+      if(this.$store.state.main.isTemplateApply) {
+        this.model.deviceModelId = sessionStorage.getItem('modelId')
+      }
+      this.editModelId = this.model.deviceModelId
     },
   },
 };

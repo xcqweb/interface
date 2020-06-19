@@ -70,9 +70,8 @@ const actions = {
     })
   },
   loadStudioPredictionApp({commit}, params) {
-    console.log(params)
     requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
-      const predData = [];
+      let predData = [];
       const data = res.returnObj;
       if (data) {
         data.forEach(item => {
@@ -82,13 +81,14 @@ const actions = {
           });
         });
       }
-      console.log(predData);
       commit('setPredData', predData);
     });
 
   },
   loadStudioStatisticApp({commit}, params) {
     console.log(params)
+    const statiData = [];
+    commit('setPredData', statiData);
     requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
       // const commit('setStatiData', statiData);
       const statiData = [];

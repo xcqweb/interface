@@ -3,10 +3,12 @@
     class="datasource-wrap flex-column"
   >
     <!-- toolbar/导入数据源 -->
-    <div class="datasource-toolbar">
+    <div
+      class="datasource-toolbar"
+    >
       <!--导入数据源-->
       <a
-        v-show="dataType === 0"
+        v-show="dataType === 0 && !$store.state.main.isTemplateApply"
         class="import-datasource-btn"
         href="javascript:;"
         @click="importDataHander"
@@ -40,17 +42,19 @@
     <div class="datasource-body flex-full-item">
       <!-- 数据源 -->
       <datasource
-        v-show="dataType === 0"
+        v-if="dataType === 0"
         :reload-data="deviceDataChange"
       />
       <!-- 预测应用 统计应用 -->
       <component
         :is="modelComponent"
-        v-show="dataType !== 0"
+        v-if="dataType !== 0"
+        :reload-data="deviceDataChange"
       />
     </div>
     <!-- 导入数据源弹窗 -->
     <importDataSource
+      v-if="!$store.state.main.isTemplateApply"
       ref="devices"
       v-model="devicesVisible"
       multiple
@@ -85,8 +89,11 @@ export default{
       dataType: 0,
       deviceDataChange: false,
       devicesVisible: false,
-      modelComponent: ''
+      modelComponent: 'Datasource'
     }
+  },
+  mounted() {
+    console.log(this.tab)
   },
   methods: {
     importDataHander() {
@@ -103,7 +110,9 @@ export default{
       if (this.canGoOn()) {
         this.dataType = index;
         if (index === 1) {
-          this.modelComponent = 'datamodel';
+          this.modelComponent = 'PredictionApp';
+        } else if(index === 2) {
+          this.modelComponent = 'StatisticApp';
         }
       }
     },

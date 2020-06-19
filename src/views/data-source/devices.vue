@@ -172,7 +172,7 @@ export default {
     this.visible = this.value;
   },
   created() {
-    this.params.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+    this.params.studioId = window.sessionStorage.getItem('applyId');
     this.getDeviceTypes();
   },
   methods: {
@@ -248,7 +248,7 @@ export default {
     },
     handlePageChange(pageIndex) {
       this.pageParams.current = pageIndex;
-      this.getDevices();
+      // this.getDevices();
     },
     handlePageSizeChange(pageSize) {
       this.pageParams.size = pageSize;

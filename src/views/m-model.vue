@@ -9,6 +9,7 @@
     <!--- menu/数据源、数据模型 -->
     <ul class="datasource-menu">
       <li
+        v-if="!$store.state.main.isTemplateApply"
         :class="{'active': dataType === 0}"
         @click="handleTabClick(0)"
       >
@@ -37,10 +38,10 @@
       <!-- 数据模型 -->
       <component
         :is="modelComponent"
-        v-show="dataType !== 0"
+        v-if="dataType !== 0"
       />
     </div>
-    <!-- 导入数据源弹窗 -->
+    <!-- 设备列表 -->
     <devices
       ref="devices"
       v-model="devicesVisible"
@@ -62,7 +63,6 @@ export default{
   components:{
     Devices,
     Datasource,
-    // Datamodel: resolve => require(['./data-source/datamodel'], resolve),
     Datamodel,
     PredictionModel,
     StatisticModel,
@@ -74,7 +74,14 @@ export default{
       dataType: 0,
       deviceDataChange: false,
       devicesVisible: false,
-      modelComponent: ''
+      modelComponent: 'PredictionModel'
+    }
+  },
+  watch: {
+    '$store.state.main.isTemplateApply': function(val) {
+      if(val) {
+        this.dataType = 1
+      }
     }
   },
   methods: {

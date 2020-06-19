@@ -74,8 +74,7 @@ export default {
   },
   async created() {
     this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-    // await this.getDeviceTypes(); // 电子
-    // this.getDeviceTemplateData(); // 获取型号
+    console.log(this.model)
   },
   mounted() {
     let that = this
@@ -84,9 +83,9 @@ export default {
       that.studioId = that.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
       that.deviceTypesBk = [];
       await this.getDeviceTypes(); // 电子
-      that.getDeviceTemplateData(); // 获取型号
     });
   },
+
   methods: {
     getDeviceTypes() {
       this.requestUtil.get('api/device/deviceType/select').then(data => {
@@ -98,20 +97,20 @@ export default {
             }
           });
           this.curNodeData.deviceTypeId = this.deviceTypeData[0].deviceTypeId;
+          this.getDeviceTemplateData();
         }
       });
     },
     getDeviceTemplateData() {
       let deviceTypeId = this.curNodeData ? this.curNodeData.deviceTypeId : ''
+      console.log(deviceTypeId)
       this.model.deviceTypeId = deviceTypeId;
       const params = {
         deviceTypeId,
         deviceModelName: '',
-        size: this.pageSize,
-        current: this.pageIndex,
       }
-      this.requestUtil.get(this.urls.newDeviceTemplateLIST.url, params).then(res => {
-        this.deviceModelData = res.records.map((item) => {
+      this.requestUtil.get(this.urls.newDeviceModelList.url, params).then(res => {
+        this.deviceModelData = res.map((item) => {
           return {
             deviceModelId: item.deviceModelId,
             deviceModelName: item.deviceModelName,

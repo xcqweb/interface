@@ -24,7 +24,7 @@ export default {
     },
   },
   created() {
-    this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+    this.studioId = window.sessionStorage.getItem('applyId');
     this.showForm = this.value;
   },
 }

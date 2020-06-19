@@ -7,7 +7,10 @@
     :mask-closable="false"
   >
     <!-- 搜索条件栏 -->
-    <div class="search-area">
+    <div
+      v-show="fromText === 0"
+      class="search-area"
+    >
       <div class="params-item">
         <label>{{ $t('dataSource.parameterType') }}</label>
         <Cascader
@@ -83,6 +86,12 @@ export default {
     selectedKeys: {
       type: Array,
     },
+    fromText: {
+      type: Number,
+    },
+    appId: {
+      type: String,
+    }
   },
   data() {
     return {
@@ -98,16 +107,23 @@ export default {
       },
       deviceParamsData: null,
       virtualParamsData: null,
+      applyParamsData: null,
     };
   },
   computed: {
     transferData() {
       const data = [];
-      if (this.deviceParamsData && this.deviceParamsData.length > 0) {
-        data.push(...this.deviceParamsData);
-      }
-      if (this.virtualParamsData && this.virtualParamsData.length > 0) {
-        data.push(...this.virtualParamsData);
+      if (this.fromText === 0) {
+        if (this.deviceParamsData && this.deviceParamsData.length > 0) {
+          data.push(...this.deviceParamsData);
+        }
+        if (this.virtualParamsData && this.virtualParamsData.length > 0) {
+          data.push(...this.virtualParamsData);
+        }
+      } else {
+        if (this.applyParamsData && this.applyParamsData.length > 0) {
+          data.push(...this.applyParamsData);
+        }
       }
       return data;
     },
@@ -128,7 +144,7 @@ export default {
     },
   },
   mounted() {
-    this.currentModelId = this.deviceModelId;
+    this.currentModelId = this.deviceModelId || sessionStorage.getItem('modelId');
     this.setVisible();
   },
   methods: {
@@ -177,6 +193,18 @@ export default {
       this.virtualParams = data;
       this.virtualParamsData = res;
     },
+    getApplyParamsCallback(res) {
+      let data = res.returnObj || []
+      const newData = data.map((item) => {
+        return {
+          type: 'virtual',
+          key: item.paramId,
+          label: item.paramName,
+          paramName: item.paramName,
+        }
+      });
+      this.applyParamsData = newData
+    },
     cancel() {
       this.visible = false;
     },
@@ -221,7 +249,7 @@ export default {
         }
       } else if (this.params[0] === 'virtual') {
         include = include && data.type === 'virtual';
-      }
+      } 
       return include;
     },
     handleTransferChange(newTargetKeys) {
@@ -230,10 +258,12 @@ export default {
     setVisible() {
       this.visible = this.value;
       if (this.visible) {
-        if (this.currentModelId !== this.deviceModelId || this.currentDeviceId !== this.deviceId) {
-          this.currentModelId = this.deviceModelId;
-          this.currentDeviceId = this.deviceId;
+        this.currentModelId = this.deviceModelId;
+        this.currentDeviceId = this.deviceId;
+        if (this.fromText === 0) {
           this.getData();
+        } else {
+          this.getApplyData(this.fromText);
         }
         if (this.selectedKeys && this.selectedKeys.length > 0) {
           this.selectedItems.push(...this.selectedKeys);

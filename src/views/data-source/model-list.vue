@@ -4,7 +4,7 @@
     :width="width"
   >
     <div
-      v-show="deviceModelId"
+      v-show="(deviceModelId) || $store.state.main.isTemplateApply"
       slot="header"
       class="addmodel-btn"
     >
@@ -100,6 +100,7 @@ export default {
     DataColumn,
   },
   mixins: [columnCommon, modelCommon, removeCommon, editingModel],
+  props: ['deviceTypeId', 'fromText'],
   data() {
     return {
       activeIndex: -1,
@@ -134,14 +135,24 @@ export default {
           this.editItem = null;
         }
       }
-      if (!this.deviceModelId) {
+      let params = {
+        studioId: this.studioId,
+      }
+      if (this.fromText === 0) {
+        params.deviceModelId = this.deviceModelId || sessionStorage.getItem('modelId')
+      } else if (this.fromText === 1) {
+        params.appId = this.deviceModelId
+      } else if (this.fromText === 2) {
+        params.appId = this.deviceModelId
+      }
+      if ((!params.deviceModelId && this.fromText === 0) || params.deviceModelId === 'null') {
         this.data = [];
         return;
       }
-      const params = {
-        studioId: this.studioId,
-        deviceModelId: this.deviceModelId,
-      };
+      if (this.fromText !== 0 && !params.appId) {
+        this.data = [];
+        return;
+      }
       this.requestUtil.post(this.urls.getModelList.url, params).then(res => {
         if (res && res.returnObj.length > 0) {
           res.returnObj.forEach((item, index) => {

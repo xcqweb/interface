@@ -17,13 +17,13 @@ export default {
   computed: {
     typeData() {
       const typeData = this.$store.state.datasource.typeData;
+      console.log(typeData)
       if (typeData.length > 0) {
         const type = typeData[0];
         this.model.deviceTypeId = type.deviceTypeId;
       } else {
         this.model.deviceTypeId = '';
       }
-
       return typeData;
     },
     modelData() {
@@ -46,7 +46,7 @@ export default {
       const predData = this.$store.state.datasource.predData;
       if (predData.length > 0) {
         const type = predData[0];
-        this.applyObj.forecastId = type.forecastId;
+        this.applyObj.forecastId = type.appId;
       } else {
         this.applyObj.forecastId = '';
       }
@@ -64,7 +64,7 @@ export default {
     }
   },
   created() {
-    this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+    this.studioId = window.sessionStorage.getItem('applyId')
   },
   methods: {
     getStudioDeviceData() {
@@ -75,6 +75,26 @@ export default {
         studioId: this.studioId,
       };
       this.$store.dispatch('loadStudioDevices', params);
+    },
+    getPredictionData() { // 预测应用
+      if (!this.studioId) {
+        return;
+      }
+      const params = {
+        studioId: this.studioId,
+        type: 1,
+      };
+      this.$store.dispatch('loadStudioPredictionApp', params);
+    },
+    getStatisticData() { // 统计应用
+      if (!this.studioId) {
+        return;
+      }
+      const params = {
+        studioId: this.studioId,
+        type: 2,
+      };
+      this.$store.dispatch('loadStudioStatisticApp', params);
     }
   },
 };
