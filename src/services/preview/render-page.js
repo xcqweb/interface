@@ -710,7 +710,11 @@ class PreviewPage {
     if(shapeName === 'lineChart') {
       this.dealLineChartWsParams(cellHtml,device,subParams)
     } else{
-      deviceId = this.deviceId || device.id
+      if(bindType == 1) {
+        deviceId = device.mfaKey + '#' + device.id
+      } else {
+        deviceId = this.deviceId || device.id
+      }
       cellHtml.classList.add(`device_${deviceId}`)
     }
     if(deviceId) {
