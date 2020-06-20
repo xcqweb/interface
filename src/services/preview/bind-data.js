@@ -9,6 +9,7 @@ let websocketUrlReal = ''
 async function getLastData(deviceParams, fileSystem,mainProcess) {
   let resParams = []
   let maps = dealdeviceParams(deviceParams)
+  console.log(maps)
   for (let key of maps.keys()) {
     let item = maps.get(key)
     let keyArr = key.split('-')
@@ -52,8 +53,8 @@ function dealdeviceParams(deviceParams) {
       deviceId: item.deviceId,
       paramIds: item.params
     }
-    if (maps.has(item.deviceId)) {
-      let tempObj = maps.get(item.deviceId)
+    if (maps.has(item.deviceId + '-' + item.bindType)) {
+      let tempObj = maps.get(item.deviceId + '-' + item.bindType)
       tempObj.paramIds = Array.from(new Set(tempObj.paramIds.concat(obj.paramIds)))
       maps.set(item.deviceId + '-' + item.bindType, tempObj)
     } else {
