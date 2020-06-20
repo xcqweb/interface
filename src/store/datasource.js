@@ -81,6 +81,7 @@ const actions = {
             appId: item.appId,
             appName: item.appName,
             id: item.id,
+            mfaKey: item.mfaKey,
           });
         });
       }
