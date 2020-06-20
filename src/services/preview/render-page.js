@@ -240,6 +240,7 @@ class PreviewPage {
   }
   subscribeData() {
     if (this.cachCells.length) {
+      console.log('cachCells:',this.cachCells)
       let modelIdsParam = new Map()
       let allModels = new Map()
       this.cachCells.forEach(item=>{
@@ -273,6 +274,12 @@ class PreviewPage {
             this.cachCells.forEach(item=>{
               let cellStateInfoHasModel = []
               let deviceId = this.deviceId || item.bindData.dataSource.deviceNameChild.id
+              for(let i = 0;i < params.length;i++) {
+                if(params[i].deviceId === deviceId) {
+                  params[i].bindType = item.bindData.dataSource.type || 0 //添加bindType（0=设备1=预测应用2=统计应用)
+                  break
+                }
+              }
               let statesInfo = item.statesInfo
               if (statesInfo && statesInfo.length) {
                 cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
@@ -303,28 +310,57 @@ class PreviewPage {
     }
   }
   deviceParamGenerateFun(params) {
-    requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
+    const dealFun = (targetArr)=>{
+      console.log('targe',targetArr)
       let resParam = [],maps = new Map()
-      res.forEach(item=>{
+      targetArr.forEach(item=>{
         let tempArr = []
         if (maps.has(item.deviceId)) {
           tempArr =  maps.get(item.deviceId)
-          tempArr.push(item.deviceParamId)
+          if(item.bindType) { // 统计或预测应用
+            tempArr.push(item.bindType == 1 ? item.paramName : item.paramId)
+          } else {
+            tempArr.push(item.deviceParamId)
+          }
           maps.set(item.deviceId,Array.from(new Set(tempArr)))
         }else{
-          maps.set(item.deviceId, [item.deviceParamId])
+          if(item.bindType) { // 统计或预测应用
+            maps.set(item.deviceId + '-' + item.bindType, item.bindType == 1 ? [item.paramName] : [item.paramId])
+          } else {
+            maps.set(item.deviceId + '-' + (item.bindType || 0), [item.deviceParamId])
+          }
         }
       })
       for (let key of maps.keys()) {
+        let keyArr = key.split('-')
         resParam.push({
-          deviceId:key,
+          deviceId:keyArr[0],
+          bindType:keyArr[1],
           params:maps.get(key)
         })
       }
+      return resParam
+    }
+    let applyArr = params.filter(item=>item.bindType) //预测&统计应用
+    let deviceArr = params.filter(item=>!item.bindType) // 设备
+    if(deviceArr && deviceArr.length) {
+      requestUtil.post(urls.deviceParamGenerate.url,deviceArr).then((res)=>{
+        let resParam = dealFun(res)
+        if(applyArr && applyArr.length) {
+          let resParamApply = dealFun(applyArr)
+          resParam = resParam.concat(resParamApply)
+        }
+        this.subscribeDataDeal(resParam)
+      },()=>{
+        if(applyArr && applyArr.length) {
+          let resParam = dealFun(applyArr)
+          this.subscribeDataDeal(resParam || [])
+        }
+      })
+    } else if(applyArr && applyArr.length) {
+      let resParam = dealFun(applyArr)
       this.subscribeDataDeal(resParam)
-    },()=>{
-      this.subscribeDataDeal()
-    })
+    }
   }
   dealModelFormulaFun(modelIdsParam,modelId,formula) {
     let formulaAttr = JSON.parse(formula)
@@ -352,7 +388,8 @@ class PreviewPage {
           paramType: keyArr[0] == 'device' ? 0 : 1,
           deviceId: deviceId,
           partId: partId,
-          paramId: keyArr[keyArr.length - 1]
+          paramId: keyArr[keyArr.length - 1],
+          paramName: item.paramName
         })
       }
     })
@@ -362,6 +399,7 @@ class PreviewPage {
     if(res && res.length) {
       this.wsParams = this.wsParams.concat(res)
     }
+    console.log('wsParams:',this.wsParams)
     applyData[this.currentPageId] = {
       wsReal: '',
       data: {},
@@ -634,6 +672,7 @@ class PreviewPage {
     $(cellHtml).data('hide',cell.hide)
     $(cellHtml).data("shapeName",shapeName)
     bindEvent(cellHtml, cell, this.mainProcess, applyData,fileSystem)
+    console.log(cell)
     if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild || this.deviceId) {
       let paramShow = []
       let device = cell.bindData.dataSource.deviceNameChild
@@ -646,7 +685,7 @@ class PreviewPage {
         cellHtml.classList.add('param-show-node')
         $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
         $(cellHtml).data("paramShow", paramShow)
-        this.initWsParams(cellHtml, device, paramShow,shapeName,cell.bindData.subParams)
+        this.initWsParams(cellHtml, device, paramShow,shapeName,cell.bindData.subParams,cell.bindData.dataSource.type || 0)
       }
       let modelIdsParam = []
       let statesInfo = cell.statesInfo
@@ -668,7 +707,8 @@ class PreviewPage {
     }
     return cellHtml
   }
-  initWsParams(cellHtml, device, paramShow,shapeName,subParams) {
+  // type 0:设备，1:预测应用，2:统计应用
+  initWsParams(cellHtml, device, paramShow,shapeName,subParams,bindType) {
     let deviceId
     if(shapeName === 'lineChart') {
       this.dealLineChartWsParams(cellHtml,device,subParams)
@@ -679,7 +719,9 @@ class PreviewPage {
     if(deviceId) {
       let dealParamShow = []
       paramShow.forEach(item=>{
-        if (item.deviceParamId) {
+        if(bindType && item.paramName) { //1统计应用、2预测应用
+          dealParamShow.push(bindType == 1 ? item.paramName : item.paramId)
+        }else if(item.deviceParamId) {
           dealParamShow.push(item.deviceParamId)
         }
       })
@@ -687,6 +729,7 @@ class PreviewPage {
         let resArr = Array.from(new Set(dealParamShow)) 
         this.wsParams.push({
           deviceId: deviceId,
+          bindType:bindType,
           params: resArr
         })
       }
@@ -700,7 +743,7 @@ class PreviewPage {
     device.forEach(item=>{
       cellHtml.classList.add(`device_${item.id}`)
     })
-    if(subParams) {
+    if(subParams && subParams.length) {
       this.wsParams = this.wsParams.concat(subParams)
       $(cellHtml).data('subParams',subParams)
     }

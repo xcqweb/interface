@@ -26,9 +26,9 @@ function dealdeviceParams(deviceParams) {
     if (maps.has(item.deviceId)) {
       let tempObj = maps.get(item.deviceId)
       tempObj.paramIds = Array.from(new Set(tempObj.paramIds.concat(obj.paramIds)))
-      maps.set(item.deviceId, tempObj)
+      maps.set(item.deviceId + '-' + item.bindType, tempObj)
     } else {
-      maps.set(item.deviceId, obj)
+      maps.set(item.deviceId + '-' + item.bindType, obj)
     }
   })
   return maps
@@ -40,21 +40,28 @@ function dealdeviceParams(deviceParams) {
  * @param {*} modeId 绑定数据时候 viewTool/model/serach 返回的 模型id
  */
 async function getSubscribeInfos(deviceParams) {
+  const subscribeTypeArr = ['realtime_datahub','forecast_datahub','statistics_datahub']
   let params = {
     subscribeInfos: [],
     networkProtocol: 'websocket',
   };
   let maps = dealdeviceParams(deviceParams)
-  for (let item of maps.values()) {
-    item.subscribeType = 'realtime_datahub'
+  for (let key of maps.keys()) {
+    let item = maps.get(key)
+    let keyArr = key.split('-')
+    let bindType = +keyArr[1]
+    item.subscribeType = subscribeTypeArr[bindType]
     item.pushRate = 500
     item.sourceId = item.deviceId
+    if(bindType) {
+      item.subscribekeyId = keyArr[0]
+    }
     params.subscribeInfos.push(item)
   }
-  let data = await geAjax('api/pubsub/subscribe', 'POST', JSON.stringify(params))
-  data = JSON.parse(data)
-  websocketUrlReal = data.data
-  return data
+  let res = await geAjax('api/pubsub/subscribe', 'POST', JSON.stringify(params))
+  res = JSON.parse(res)
+  websocketUrlReal = res.data
+  return res
 }
 function setterRealData(res, fileSystem,mainProcess) {
   let maps = new Map()
