@@ -279,13 +279,13 @@ function dealLogic(logic,data) {
   }else{
     tempParamVal = dealDataVal(paramId, data)
   }
-  let fixed = +logic.fixedValue
+  let fixed = logic.fixedValue
   let min = +logic.minValue
   let max = +logic.maxValue
   if (!tempParamVal && tempParamVal !== 0) {
     return false
   }
-  let paramVal = +tempParamVal
+  let paramVal = tempParamVal
   switch (operate) {
     case 1: // 介于
       res = paramVal > min && paramVal < max
