@@ -144,14 +144,8 @@ function actionOpen(action, mainProcess) {
     }
   } else if (action.mutualType === 4) { // 打开外部链接
     const url = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
-    var temp = document.createElement("form");
-    temp.action = url;
-    temp.method = "get";
-    temp.style.display = "none";
-    temp.target = '_blank';
-    document.body.appendChild(temp);
-    temp.submit();
-    temp.remove();
+    window.open(url, '_blank');
+    // 处理一下 携带的参数
   }
 }
 /**
