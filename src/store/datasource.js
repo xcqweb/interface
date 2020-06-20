@@ -80,6 +80,7 @@ const actions = {
           predData.push({
             appId: item.appId,
             appName: item.appName,
+            id: item.id,
           });
         });
       }
@@ -99,6 +100,7 @@ const actions = {
           statiData.push({
             appId: item.appId,
             appName: item.appName,
+            id: item.id,
           });
         });
       }

@@ -69,7 +69,7 @@ import NoData from '../../../data-source/nodata'
 import DatasourceStore from '../../../data-source/js/datasource-store'
 import {Button,Checkbox,Message,CheckboxGroup,Input} from 'iview'
 
-const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart','triangle','pentagram']
+const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart','triangle','pentagram', 'lineChart']
 //lineChart 多设备 多参数 gaugeChart 单设备 多参数
 export default{
   components: {
