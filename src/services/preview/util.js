@@ -130,7 +130,6 @@ function actionShow(action, mainProcess) {
  * 打开事件
  */
 function actionOpen(action, mainProcess) {
-  console.log(action)
   if (action.type === 'out') {
     // 打开外部链接
     window.location.href = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
