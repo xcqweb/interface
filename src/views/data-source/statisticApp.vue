@@ -93,7 +93,11 @@ export default {
     handleTypeRemove(items) {
       const ids = [];
       items.forEach(type => {
-        ids.push(type);
+        this.statiData.forEach((val) => {
+          if (type === val.appId) {
+            ids.push(val.id);
+          }
+        })
       });
       this.removeData = ids;
       this.removeContent = this.$t('dataSource.confirmToRemoveApply');
