@@ -9,14 +9,12 @@ let websocketUrlReal = ''
 async function getLastData(deviceParams, fileSystem,mainProcess) {
   let resParams = []
   let maps = dealdeviceParams(deviceParams)
-  console.log(maps)
   for (let key of maps.keys()) {
     let item = maps.get(key)
     let keyArr = key.split('-')
     let bindType = keyArr[1]
     resParams.push({bindType:bindType,item:item})
   }
-  console.log(resParams)
   let deviceP = resParams.filter(item=>item.bindType == 0) // 设备
   let staticsP = resParams.filter(item=>item.bindType == 2) //统计应用 
   // const foreastP = resParams.map(item=>item.bindType == 1) // 预测应用 这期不做最后一笔数据
@@ -119,7 +117,6 @@ function setterRealData(res, fileSystem,mainProcess) {
         $ele.data("paramShowDefault",dealDefaultParams(item.deviceId,paramShowDefault,$ele.data('subParams')))
         paramShowDefault = $ele.data("paramShowDefault")
       }
-      console.log(item)
       if (paramShowDefault) {
         val = item[paramShowDefault.deviceParamId || paramShowDefault.paramId]
       }
