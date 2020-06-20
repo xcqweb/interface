@@ -51,12 +51,13 @@ function dealdeviceParams(deviceParams) {
       deviceId: item.deviceId,
       paramIds: item.params
     }
-    if (maps.has(item.deviceId + '-' + item.bindType)) {
-      let tempObj = maps.get(item.deviceId + '-' + item.bindType)
+    let bindType = item.bindType || 0
+    if (maps.has(item.deviceId + '-' + bindType)) {
+      let tempObj = maps.get(item.deviceId + '-' + bindType)
       tempObj.paramIds = Array.from(new Set(tempObj.paramIds.concat(obj.paramIds)))
-      maps.set(item.deviceId + '-' + item.bindType, tempObj)
+      maps.set(item.deviceId + '-' + bindType, tempObj)
     } else {
-      maps.set(item.deviceId + '-' + item.bindType, obj)
+      maps.set(item.deviceId + '-' + bindType, obj)
     }
   })
   return maps
@@ -398,7 +399,15 @@ function initialWs(ws, pageId, applyData, fileSystem,mainProcess) {
     if (dataArr[0] === 'rspCode' || dataArr[1] === 'rspMsg') {
       return
     }
-    setterRealData(JSON.parse(res.data), fileSystem,mainProcess)
+    let parseData = JSON.parse(res.data)
+    if(parseData && parseData.length) {
+      parseData.forEach(item=>{
+        if(item.appId) {
+          item.deviceId = item.appId
+        }
+      })
+    }
+    setterRealData(parseData, fileSystem,mainProcess)
   }
   // 接收异常
   ws.onerror = function() {

@@ -463,35 +463,37 @@ function dealCharts(mainProcess,cell) {
                   for(let i = 0;i < res.length;i++) {
                     let tempArr = res[i]
                     let device = devices[i]
-                    tempLegend.push(device.name)
-                    tempOptions.legend.data = tempLegend
-                    tempSeries.push({
-                      type: 'line',
-                      name: device.name,
-                      markLine: markLine,
-                      data: [],
-                      deviceId: device.id, //设备id，额外添加的，匹配数据时候用
-                    })
-                    if(JSON.stringify(res[i]) === '{}') {
-                      continue
-                    }
-                    if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
-                      let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
-                      xAxisData = []
-                      for (let key of keys) {
-                        xAxisData.push(timeFormate(key, false))
-                        tempSeries[i].data.push(tempArr.resMap[key])
+                    if(device) {
+                      tempLegend.push(device.name)
+                      tempOptions.legend.data = tempLegend
+                      tempSeries.push({
+                        type: 'line',
+                        name: device.name,
+                        markLine: markLine,
+                        data: [],
+                        deviceId: device.id, //设备id，额外添加的，匹配数据时候用
+                      })
+                      if(JSON.stringify(res[i]) === '{}') {
+                        continue
                       }
-                      if(tempOptions.yAxis.max) {
-                        tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)
-                      }else{
-                        tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
+                      if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
+                        let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
+                        xAxisData = []
+                        for (let key of keys) {
+                          xAxisData.push(timeFormate(key, false))
+                          tempSeries[i].data.push(tempArr.resMap[key])
+                        }
+                        if(tempOptions.yAxis.max) {
+                          tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)
+                        }else{
+                          tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
+                        }
+                        tempOptions.series = tempSeries
                       }
-                      tempOptions.series = tempSeries
                     }
+                    tempOptions.xAxis.data = xAxisData
+                    myEchart.setOption(tempOptions)
                   }
-                  tempOptions.xAxis.data = xAxisData
-                  myEchart.setOption(tempOptions)
                 }
               },()=>{
                 myEchart.setOption(options)
