@@ -408,6 +408,10 @@ function dealCharts(mainProcess,cell) {
         let paramId = temp.paramId
         let paramType = temp.paramType
         let devices = cell.bindData.dataSource.deviceNameChild
+        let bindType = cell.bindData.dataSource.type || 0
+        if(bindType) {//预测应用 或统计应用 先不做历史数据
+          return
+        }
         if(!Array.isArray(devices)) {
           devices = [devices]
         }
@@ -452,7 +456,8 @@ function dealCharts(mainProcess,cell) {
                   period:checkItem.duration,
                 })
               })
-              requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
+              let url = `${urls.pentSdbData.url}`
+              requestUtil.post(url, pentSdbParams).then(res => {
                 if (res && res.length) {
                   let xAxisData = []
                   for(let i = 0;i < res.length;i++) {
@@ -474,10 +479,8 @@ function dealCharts(mainProcess,cell) {
                       let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
                       xAxisData = []
                       for (let key of keys) {
-                        // if (!isNaN(Number(tempArr.resMap[key]))) {
                         xAxisData.push(timeFormate(key, false))
                         tempSeries[i].data.push(tempArr.resMap[key])
-                        // }
                       }
                       if(tempOptions.yAxis.max) {
                         tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)

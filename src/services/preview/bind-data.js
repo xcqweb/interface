@@ -7,13 +7,42 @@ const reconnectMaxCount = 5
 let websocketUrlReal = ''
 //获取最后一笔数据
 async function getLastData(deviceParams, fileSystem,mainProcess) {
-  let paramIds = []
+  let resParams = []
   let maps = dealdeviceParams(deviceParams)
-  for (let item of maps.values()) {
-    paramIds.push(item)
+  for (let key of maps.keys()) {
+    let item = maps.get(key)
+    let keyArr = key.split('-')
+    let bindType = keyArr[1]
+    resParams.push({bindType:bindType,item:item})
   }
-  const res = await geAjax('api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(paramIds))
-  setterRealData(res,fileSystem,mainProcess)
+  console.log(resParams)
+  let deviceP = resParams.filter(item=>item.bindType == 0) // 设备
+  let staticsP = resParams.filter(item=>item.bindType == 2) //统计应用 
+  // const foreastP = resParams.map(item=>item.bindType == 1) // 预测应用 这期不做最后一笔数据
+  deviceP = deviceP.map(d=>d.item)
+  staticsP = staticsP.map(d=>d.item)
+  let res = []
+  if(deviceP.length) {
+    res = await geAjax('api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(deviceP))
+  }
+  if(staticsP.length) {
+    staticsP = staticsP.map((item)=>{
+      return {
+        'params': item.paramIds,
+        'appId': item.deviceId
+      }
+    })
+    let result = await geAjax('api/v2/persist/tsdb/statistics/last', 'POST', JSON.stringify(staticsP))
+    if(result && result.length) {
+      result.forEach(item=>{
+        item.deviceId = item.appId
+      })
+      res = res.concat(result)
+    }
+  }
+  if(res.length) {
+    setterRealData(res,fileSystem,mainProcess)
+  }
 }
 
 function dealdeviceParams(deviceParams) {
@@ -129,12 +158,10 @@ function setterRealData(res, fileSystem,mainProcess) {
                   options.xAxis[0].data.splice(0,  options.xAxis[0].data.length - chartDataLen)
                 }
                 if (val || val == 0) {
-                  // if (!isNaN(Number(val))) {
                   ser.data.push(val);
                   let yMax = options.yAxis[0].max;
                   options.yAxis[0].max = Math.max(yMax, val)
                   options.xAxis[0].data.push(timeFormate(item.timestamp, false))
-                  // }
                 }
               }
             })
