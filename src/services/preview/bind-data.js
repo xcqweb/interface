@@ -119,8 +119,9 @@ function setterRealData(res, fileSystem,mainProcess) {
         $ele.data("paramShowDefault",dealDefaultParams(item.deviceId,paramShowDefault,$ele.data('subParams')))
         paramShowDefault = $ele.data("paramShowDefault")
       }
+      console.log(item)
       if (paramShowDefault) {
-        val = item[paramShowDefault.deviceParamId]
+        val = item[paramShowDefault.deviceParamId || paramShowDefault.paramId]
       }
       if(shapeName == 'progress') {//进度条
         if(!val) {
@@ -209,7 +210,7 @@ function setterRealData(res, fileSystem,mainProcess) {
             }
           }
           paramShow.forEach(d => {
-            let dpIdVal = item[d.deviceParamId]
+            let dpIdVal = item[d.deviceParamId || d.paramId]
             if (dpIdVal || dpIdVal == 0) {
               paramData.data[d.paramName] = dpIdVal
               paramData.time = timeFormate(item.timestamp, false)
