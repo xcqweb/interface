@@ -240,7 +240,6 @@ class PreviewPage {
   }
   subscribeData() {
     if (this.cachCells.length) {
-      console.log('cachCells:',this.cachCells)
       let modelIdsParam = new Map()
       let allModels = new Map()
       this.cachCells.forEach(item=>{
@@ -311,12 +310,11 @@ class PreviewPage {
   }
   deviceParamGenerateFun(params) {
     const dealFun = (targetArr)=>{
-      console.log('targe',targetArr)
       let resParam = [],maps = new Map()
       targetArr.forEach(item=>{
         let tempArr = []
-        if (maps.has(item.deviceId)) {
-          tempArr =  maps.get(item.deviceId)
+        if (maps.has(item.deviceId + '-' + item.bindType)) {
+          tempArr =  maps.get(item.deviceId + '-' + item.bindType)
           if(item.bindType) { // 统计或预测应用
             tempArr.push(item.bindType == 1 ? item.paramName : item.paramId)
           } else {
@@ -399,7 +397,6 @@ class PreviewPage {
     if(res && res.length) {
       this.wsParams = this.wsParams.concat(res)
     }
-    console.log('wsParams:',this.wsParams)
     applyData[this.currentPageId] = {
       wsReal: '',
       data: {},

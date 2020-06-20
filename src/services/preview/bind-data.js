@@ -15,7 +15,6 @@ async function getLastData(deviceParams, fileSystem,mainProcess) {
     let bindType = keyArr[1]
     resParams.push({bindType:bindType,item:item})
   }
-  console.log(resParams)
   let deviceP = resParams.filter(item=>item.bindType == 0) // 设备
   let staticsP = resParams.filter(item=>item.bindType == 2) //统计应用 
   // const foreastP = resParams.map(item=>item.bindType == 1) // 预测应用 这期不做最后一笔数据
@@ -52,8 +51,8 @@ function dealdeviceParams(deviceParams) {
       deviceId: item.deviceId,
       paramIds: item.params
     }
-    if (maps.has(item.deviceId)) {
-      let tempObj = maps.get(item.deviceId)
+    if (maps.has(item.deviceId + '-' + item.bindType)) {
+      let tempObj = maps.get(item.deviceId + '-' + item.bindType)
       tempObj.paramIds = Array.from(new Set(tempObj.paramIds.concat(obj.paramIds)))
       maps.set(item.deviceId + '-' + item.bindType, tempObj)
     } else {
@@ -119,7 +118,7 @@ function setterRealData(res, fileSystem,mainProcess) {
         paramShowDefault = $ele.data("paramShowDefault")
       }
       if (paramShowDefault) {
-        val = item[paramShowDefault.deviceParamId]
+        val = item[paramShowDefault.deviceParamId || paramShowDefault.paramId]
       }
       if(shapeName == 'progress') {//进度条
         if(!val) {
@@ -208,7 +207,7 @@ function setterRealData(res, fileSystem,mainProcess) {
             }
           }
           paramShow.forEach(d => {
-            let dpIdVal = item[d.deviceParamId]
+            let dpIdVal = item[d.deviceParamId || d.paramId]
             if (dpIdVal || dpIdVal == 0) {
               paramData.data[d.paramName] = dpIdVal
               paramData.time = timeFormate(item.timestamp, false)
@@ -280,13 +279,13 @@ function dealLogic(logic,data) {
   }else{
     tempParamVal = dealDataVal(paramId, data)
   }
-  let fixed = +logic.fixedValue
+  let fixed = logic.fixedValue
   let min = +logic.minValue
   let max = +logic.maxValue
   if (!tempParamVal && tempParamVal !== 0) {
     return false
   }
-  let paramVal = +tempParamVal
+  let paramVal = tempParamVal
   switch (operate) {
     case 1: // 介于
       res = paramVal > min && paramVal < max
