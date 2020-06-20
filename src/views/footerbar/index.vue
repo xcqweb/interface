@@ -382,6 +382,7 @@ export default {
     // 初始化数据源数据
     initDataSource() {
       let startBindData = this.getCellModelInfo("bindData")
+      console.log(startBindData)
       if (startBindData && startBindData.dataSource) {
         let type = startBindData.dataSource.type || 0
         this.fromText = type
@@ -420,14 +421,19 @@ export default {
     initModelList() {
       //模型列表
       this.modelVals.splice(0);
-      if (this.deviceModelId) {
-        let objData = {
+      let objData = null
+      if(this.fromText) {//统计应用 或者预测应用
+        objData = {
+          studioId: sessionStorage.getItem("applyId"),
+          appId: this.deviceModelId
+        }
+      } else if (this.deviceModelId) {
+        objData = {
           studioId: sessionStorage.getItem("applyId"),
           deviceModelId: this.deviceModelId
-        };
-        if (!objData.deviceModelId) {
-          return;
         }
+      }
+      if (objData) {
         this.requestUtil.post(this.urls.getModelList.url, objData).then(res => {
           if (res.returnObj) {
             this.modelList = res.returnObj
@@ -478,6 +484,7 @@ export default {
       this.visible = true
     },
     addParamDone(data) {
+      console.log(data)
       let isFirstCheck = false
       if (this.paramOutterList && !this.paramOutterList.length) {
         isFirstCheck = true
@@ -492,8 +499,8 @@ export default {
           if (this.fromText === 1 || this.fromText === 2) { // 预测应用和统计应用
             tempObj = {
               paramName: item.paramName,
-              paramId: item.paramId,
-              key: item.key,
+              paramId: item.key || item.paramId,
+              key: item.key || item.paramId,
               type: false
             }
           } else {
@@ -525,6 +532,7 @@ export default {
       }
       let tempObj = this.getCellModelInfo("bindData")
       tempObj.params = this.paramOutterList
+      console.log('tempObj',tempObj)
       this.setCellModelInfo("bindData", tempObj)
     },
     dealDeviceParamIds() {
@@ -730,9 +738,9 @@ export default {
       }
       modelInfo.setAttribute(key, JSON.stringify(data));
       graph.getModel().setValue(cell, modelInfo);
-      if (key == "statesInfo") {
-        VueEvent.$emit("refreshStates");
-      }
+      // if (key == "statesInfo") { 
+      //   VueEvent.$emit("refreshStates");
+      // }
     }
   }
 };

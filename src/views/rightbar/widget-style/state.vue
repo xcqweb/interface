@@ -73,7 +73,7 @@
 import StateDialog from './state-dialog'
 import {sureDialog} from '../../../services/Utils'
 import {mxUtils,Dialog} from '../../../services/mxGlobal'
-import VueEvent from '../../../services/VueEvent'
+// import VueEvent from '../../../services/VueEvent'
 //import {syncWidget} from '../../../services/sync-widgets'
 export default{
   components:{StateDialog},
@@ -102,10 +102,10 @@ export default{
     }
   },
   mounted() {
-    VueEvent.$off('refreshStates')
-    VueEvent.$on('refreshStates',()=>{
-      this.initStates()
-    })
+    // VueEvent.$off('refreshStates')
+    // VueEvent.$on('refreshStates',()=>{
+    //   this.initStates()
+    // })
     this.initStates()
   },
   methods: {
