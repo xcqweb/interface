@@ -394,7 +394,6 @@ export default {
         }
         if (type === 1 ||  type === 2) { // 预测应用和统计应用
           this.deviceModelId = startBindData.dataSource.deviceNameChild[0].id // 用来请求参数的 appId
-          console.log(this.deviceModelId)
           deviceNameChild.forEach(item => {
             let obj = {}
             obj.appName = item.name

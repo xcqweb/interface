@@ -450,12 +450,9 @@ export default {
                 align-items: center;
                 flex-direction: column;
             }
-            /deep/.ivu-input-icon{
-                right:30px;
-            }
             .right{
                 .data-wrap{
-                    height:calc(378px - 96px) !important;
+                    height:calc(378px - 75px) !important;
                 }
             }
             .left, .right{
@@ -469,7 +466,7 @@ export default {
                 padding-top: 34px;
                 .data-wrap{
                     overflow: auto;
-                    height:calc(378px - 136px);
+                    height:calc(378px - 75px);
                     .data-item {
                         margin: 5px 0;
                         img {
