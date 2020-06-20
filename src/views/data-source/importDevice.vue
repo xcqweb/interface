@@ -33,7 +33,7 @@
       keyword="deviceName"
       params-str="deviceModelId"
       page-size-params="size"
-      current-page-params="index"
+      current-page-params="current"
       :visible.sync="visible"
       :select-datas="deviceTypesBk"
       @chooseData="chooseData"
@@ -61,7 +61,7 @@ export default {
       editModelView: '',
       editModel: null,
       showForm: false,
-      apiMethods: `${this.urls.newImportDeviceList.url}`,
+      apiMethods: `${this.urls.newImportDeviceList.url}?current=1&size=10000`,
       elseParams: {},
       deviceTypesBk: [],
       chooseDeviceList: [],

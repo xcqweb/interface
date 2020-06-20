@@ -128,7 +128,6 @@ export default{
     },
     bindDeviceNameHandle() {
       this.bindData = this.getCellModelInfo('bindData')
-      console.log(this.shapeName)
       // 注意要兼容就应用 没有type
       if (this.bindData && this.bindData.dataSource && (this.bindData.dataSource.type === 0 || this.bindData.dataSource.type === 2 || !this.bindData.dataSource.type)) {
         Message.warning(`${this.$t('rightBar.onlyOneTypeDatas')}`)
@@ -177,7 +176,11 @@ export default{
       }else{
         objData.deviceNameChild = {}
         this.checkModelArr.forEach((item) => {
-          objData.deviceNameChild = {id:item,name:this.predData.find(d=>{return d.appId == item}).appName}
+          objData.deviceNameChild = {
+            id:item,
+            name:this.predData.find(d=>{return d.appId == item}).appName,
+            mfaKey: this.predData.find(d=>{return d.appId == item}).mfaKey,
+          }
         })
       }
       if (objData) {

@@ -393,7 +393,7 @@ export default {
           deviceNameChild = [deviceNameChild]
         }
         if (type === 1 ||  type === 2) { // 预测应用和统计应用
-          this.deviceModelId = startBindData.dataSource.deviceNameChild.id // 用来请求参数的 appId
+          this.deviceModelId = Array.isArray(startBindData.dataSource.deviceNameChild) ? startBindData.dataSource.deviceNameChild[0].id : startBindData.dataSource.deviceNameChild.id // 用来请求参数的 appId
           deviceNameChild.forEach(item => {
             let obj = {}
             obj.appName = item.name
@@ -484,7 +484,6 @@ export default {
       this.visible = true
     },
     addParamDone(data) {
-      console.log(data)
       let isFirstCheck = false
       if (this.paramOutterList && !this.paramOutterList.length) {
         isFirstCheck = true
