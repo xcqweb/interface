@@ -666,7 +666,7 @@ export default {
       let startBindData = this.getCellModelInfo("bindData")
       sureDialog(
         this.myEditorUi,
-        `${this.$t("footBar.sureDelDataSources")}-${data.deviceName}?`,
+        `${this.$t("footBar.sureDelDataSources")}-${data.deviceName ? data.deviceName : data.appName}?`,
         () => {
           if(this.dataSourceList.length === 1) {
             startBindData = null

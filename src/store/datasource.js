@@ -61,6 +61,8 @@ const actions = {
             id: item.id,
             deviceId: item.deviceId,
             deviceName: item.deviceName,
+            serialNumber: item.serialNumber,
+            locationNamePath: item.locationNamePath
           });
         });
       }
@@ -86,7 +88,6 @@ const actions = {
 
   },
   loadStudioStatisticApp({commit}, params) {
-    console.log(params)
     const statiData = [];
     commit('setPredData', statiData);
     requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {

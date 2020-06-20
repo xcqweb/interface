@@ -128,12 +128,18 @@ export default{
     },
     bindDeviceNameHandle() {
       this.bindData = this.getCellModelInfo('bindData')
+      // 注意要兼容就应用 没有type
+      if (this.bindData && this.bindData.dataSource && (this.bindData.dataSource.type === 0 || this.bindData.dataSource.type === 1 || !this.bindData.dataSource.type)) {
+        Message.warning(`${this.$t('rightBar.onlyOneTypeDatas')}`)
+        this.checkModelArr = []
+        return
+      }
       if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个
         Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
         // 清空勾选
         this.checkModelArr = []
         return
-      }  
+      }
       if (singleDeviceName.includes(this.shapeName) && this.bindData && this.bindData.dataSource) {                    
         Message.warning(`${this.$t('rightBar.hasBindDevice')}`)
         this.checkModelArr = []

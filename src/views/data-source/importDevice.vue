@@ -76,7 +76,7 @@ export default {
   },
   async created() {
     this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-    console.log(this.model)
+    // console.log(this.model)
   },
   mounted() {
     let that = this

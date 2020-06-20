@@ -83,7 +83,6 @@
 <script>
 import {Modal, Button, Message, Transfer} from 'iview'
 import importDevice from './importDevice'
-const MODEL_WIDTH = [950, 512, 512]
 export default {
   components: {
     Modal,
@@ -124,7 +123,7 @@ export default {
       dataType: 0,
       modelWidth: 950,
       listStyle: {
-        width: '200px',
+        width: '421px',
         height: '378px',
         backgroundColor: '#fff',
       },
@@ -148,8 +147,6 @@ export default {
   },
   created() {
     this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-    // this.getApplyDataList(1);
-    // this.getApplyDataList(2);
   },
   methods: {
     getApplyDataFun(data) {
@@ -194,7 +191,6 @@ export default {
     },
     handleTabClick(index) {
       this.dataType = index;
-      this.modelWidth = MODEL_WIDTH[index];
     },
     getDeviceTypes() {
       const params = {}

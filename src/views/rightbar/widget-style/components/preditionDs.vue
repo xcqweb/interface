@@ -128,6 +128,13 @@ export default{
     },
     bindDeviceNameHandle() {
       this.bindData = this.getCellModelInfo('bindData')
+      // 注意要兼容就应用 没有type
+      console.log(this.bindData)
+      if (this.bindData && this.bindData.dataSource && (this.bindData.dataSource.type === 0 || this.bindData.dataSource.type === 2 || this.bindData.dataSource.type)) {
+        Message.warning(`${this.$t('rightBar.onlyOneTypeDatas')}`)
+        this.checkModelArr = []
+        return
+      }
       if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个参数
         Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
         // 清空勾选
@@ -189,7 +196,6 @@ export default{
           bindData = JSON.parse(bindAttr)
         }
       }
-      console.log(bindData)
       return bindData
     },
     checkAllGroupChange(data) {

@@ -77,10 +77,11 @@
               size="small"
             >
               <Tooltip 
-                placement="bottom-start" 
+                placement="top-end" 
                 theme="light"
-                max-width="160"
                 class="tooltip-width-inner"
+                offset="-10"
+                transfer
               >
                 <div slot="content">
                   <p 
@@ -91,12 +92,12 @@
                   <p
                     style="line-height: 22px;text-align:left;white-space:normal"
                   >
-                    设备编号: 
+                    设备编号:{{ item.serialNumber }}
                   </p>
                   <p
                     style="line-height: 22px;text-align:left;white-space:normal"
                   >
-                    设备位置: a阿好烦看哈是废话身份卡和方法开发发生
+                    设备位置:{{ item.locationNamePath }}
                   </p>
                 </div>
                 <span
@@ -195,14 +196,19 @@ export default{
         }
       }
     },
-    bindDeviceNameHandle() {
+    bindDeviceNameHandle() { // 绑定设备
       this.bindData = this.getCellModelInfo('bindData')
-      if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个
+      if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 有些控件仅支持绑定单个
         Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
-        // 清空勾选
+        this.checkModelArr = [] // 清空勾选
+        return
+      }
+      // 注意要兼容就应用 没有type
+      if (this.bindData && this.bindData.dataSource && (this.bindData.dataSource.type === 1 || this.bindData.dataSource.type === 2)) {
+        Message.warning(`${this.$t('rightBar.onlyOneTypeDatas')}`)
         this.checkModelArr = []
         return
-      }  
+      }
       if (singleDeviceName.includes(this.shapeName) && this.bindData && this.bindData.dataSource) {                    
         Message.warning(`${this.$t('rightBar.hasBindDevice')}`)
         this.checkModelArr = []
@@ -260,7 +266,6 @@ export default{
           bindData = JSON.parse(bindAttr)
         }
       }
-      console.log(bindData)
       return bindData
     },
     checkAllGroupChange(data) {

@@ -8,7 +8,7 @@
     >
       <!--导入数据源-->
       <a
-        v-show="dataType === 0 && !$store.state.main.isTemplateApply"
+        v-show="!$store.state.main.isTemplateApply"
         class="import-datasource-btn"
         href="javascript:;"
         @click="importDataHander"
@@ -91,9 +91,6 @@ export default{
       devicesVisible: false,
       modelComponent: 'Datasource'
     }
-  },
-  mounted() {
-    console.log(this.tab)
   },
   methods: {
     importDataHander() {
