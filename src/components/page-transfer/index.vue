@@ -35,7 +35,7 @@
                   :disabled="item.disabled"
                 >
                   <Tooltip 
-                    placement="left" 
+                    placement="right" 
                     theme="light"
                     class="tooltip-width-inner"
                     transfer
@@ -116,7 +116,7 @@
                   :label="item.id"
                 >
                   <Tooltip 
-                    placement="left" 
+                    placement="right" 
                     theme="light"
                     class="tooltip-width-inner"
                     transfer
