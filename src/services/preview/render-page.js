@@ -273,9 +273,19 @@ class PreviewPage {
             this.cachCells.forEach(item=>{
               let cellStateInfoHasModel = []
               let deviceId = this.deviceId || item.bindData.dataSource.deviceNameChild.id
+              let bindType = item.bindData.dataSource.type || 0 //添加bindType（0=设备1=预测应用2=统计应用)
+              if(bindType == 1) {
+                deviceId = item.mfaKey + '#' + item.id
+              } else {
+                deviceId = this.deviceId || item.id
+              }
+              let cls = deviceId
+              if(bindType == 1) {
+                cls = item.mfaKey
+              }
               for(let i = 0;i < params.length;i++) {
                 if(params[i].deviceId === deviceId) {
-                  params[i].bindType = item.bindData.dataSource.type || 0 //添加bindType（0=设备1=预测应用2=统计应用)
+                  params[i].bindType =  bindType
                   break
                 }
               }
@@ -290,7 +300,7 @@ class PreviewPage {
                 })
               }
               const className = item.shapeName.includes('progress') || item.shapeName.includes('Chart') ? '' : 'param-show-node'
-              $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId}`)
+              $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${cls}`)
             })
             if(params.length) {
               this.deviceParamGenerateFun(params)
@@ -320,7 +330,7 @@ class PreviewPage {
           } else {
             tempArr.push(item.deviceParamId)
           }
-          maps.set(item.deviceId,Array.from(new Set(tempArr)))
+          maps.set(item.deviceId + '-' + (item.bindType || 0),Array.from(new Set(tempArr)))
         }else{
           if(item.bindType) { // 统计或预测应用
             maps.set(item.deviceId + '-' + item.bindType, item.bindType == 1 ? [item.paramName] : [item.paramId])
@@ -682,7 +692,9 @@ class PreviewPage {
         cellHtml.classList.add('param-show-node')
         $(cellHtml).data("paramShowDefault", paramShow[defaultParamIndex])
         $(cellHtml).data("paramShow", paramShow)
-        this.initWsParams(cellHtml, device, paramShow,shapeName,cell.bindData.subParams,cell.bindData.dataSource.type || 0)
+        let bindType = cell.bindData.dataSource.type || 0
+        $(cellHtml).data('bindType',bindType)
+        this.initWsParams(cellHtml, device, paramShow,shapeName,cell.bindData.subParams,bindType)
       }
       let modelIdsParam = []
       let statesInfo = cell.statesInfo
@@ -710,12 +722,15 @@ class PreviewPage {
     if(shapeName === 'lineChart') {
       this.dealLineChartWsParams(cellHtml,device,subParams)
     } else{
+      let cls
       if(bindType == 1) {
         deviceId = device.mfaKey + '#' + device.id
+        cls = device.mfaKey
       } else {
         deviceId = this.deviceId || device.id
+        cls = deviceId
       }
-      cellHtml.classList.add(`device_${deviceId}`)
+      cellHtml.classList.add(`device_${cls}`)
     }
     if(deviceId) {
       let dealParamShow = []

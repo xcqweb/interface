@@ -66,7 +66,6 @@ function dealdeviceParams(deviceParams) {
 /**
  * 
  * @param {*} isReal 是否是实时数据
- * @param {*} modeId 绑定数据时候 viewTool/model/serach 返回的 模型id
  */
 async function getSubscribeInfos(deviceParams) {
   const subscribeTypeArr = ['realtime_datahub','forecast_datahub','statistics_datahub']
@@ -107,11 +106,19 @@ function setterRealData(res, fileSystem,mainProcess) {
     targetArr.push(val)
   }
   targetArr.forEach((item)=>{
-    let els = document.querySelectorAll(`.device_${item.deviceId}`) //多设备情况下，会多次走这个地方
+    let cls = item.deviceId
+    if(item.modelId) { // 预测应用
+      let clsArr = item.modelId.split("#")
+      if(clsArr && clsArr.length) {
+        cls = clsArr[0]
+      }
+    }
+    let els = document.querySelectorAll(`.device_${cls}`) //多设备情况下，会多次走这个地方
     for(let i = 0;i < els.length;i++) {
       const $ele = $(els[i])
       let shapeName = $ele.data("shapeName")
       let paramShow = $ele.data("paramShow")
+      let bindType = $ele.data("bindType")
       let val = null
       let paramShowDefault = $ele.data("paramShowDefault")
       if(shapeName == 'lineChart' && paramShowDefault) {
@@ -119,7 +126,13 @@ function setterRealData(res, fileSystem,mainProcess) {
         paramShowDefault = $ele.data("paramShowDefault")
       }
       if (paramShowDefault) {
-        val = item[paramShowDefault.deviceParamId || paramShowDefault.paramId]
+        if(bindType == 1) {
+          val = item[paramShowDefault.paramName]
+        } else if(bindType == 2) {
+          val = item[paramShowDefault.paramId]
+        } else {
+          val = item[paramShowDefault.deviceParamId]
+        }
       }
       if(shapeName == 'progress') {//进度条
         if(!val) {
@@ -208,12 +221,25 @@ function setterRealData(res, fileSystem,mainProcess) {
             }
           }
           paramShow.forEach(d => {
-            let dpIdVal = item[d.deviceParamId || d.paramId]
+            let dpIdVal
+            if(bindType == 1) {
+              dpIdVal = item[d.paramName]
+            } else if(bindType == 2) {
+              dpIdVal = item[d.paramId]
+            } else {
+              dpIdVal = item[d.deviceParamId]
+            }
             if (dpIdVal || dpIdVal == 0) {
-              paramData.data[d.paramName] = dpIdVal
+              if(bindType == 2) {//统计应用
+                paramData.data[d.paramId] = dpIdVal
+              }else{
+                paramData.data[d.paramName] = dpIdVal
+              }
               paramData.time = timeFormate(item.timestamp, false)
             }else{
-              if(!paramData.data[d.paramName]) {
+              if(!paramData.data[d.paramId] && bindType == 2) {
+                paramData.data[d.paramId] = null
+              } else if(!paramData.data[d.paramName]) {
                 paramData.data[d.paramName] = null
               }
             }
@@ -404,6 +430,9 @@ function initialWs(ws, pageId, applyData, fileSystem,mainProcess) {
       parseData.forEach(item=>{
         if(item.appId) {
           item.deviceId = item.appId
+        }
+        if(item.modelId) {
+          item.deviceId = item.modelId
         }
       })
     }
