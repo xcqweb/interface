@@ -62,6 +62,9 @@ export default {
       }
     },
   },
+  async mounted() {
+    await this.getStatisticData();
+  },
   methods: {
     handleTypeClick(item) {
       this.applyObj.appId = item.appId;

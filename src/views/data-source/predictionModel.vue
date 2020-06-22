@@ -57,11 +57,13 @@ export default {
   },
   watch: {
     predData(val) {
-      console.log(val)
       if (val.length) {
         this.applyObj.forecastId = val[0].appId
       }
     },
+  },
+  async mounted() {
+    await this.getPredictionData();
   },
   methods: {
     handleTypeClick(item) {

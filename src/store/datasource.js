@@ -93,7 +93,6 @@ const actions = {
     const statiData = [];
     commit('setPredData', statiData);
     requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
-      // const commit('setStatiData', statiData);
       const statiData = [];
       const data = res.returnObj;
       if (data) {
