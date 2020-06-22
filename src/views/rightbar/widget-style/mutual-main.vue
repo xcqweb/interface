@@ -286,24 +286,23 @@ export default{
     findTitle(item) {
       if (item.mutualType === 4) { // 链接
         return '链接'
-      } else {
-        let tempList = this.pages
-        if(item.mutualType > 1) {
-          if(item.innerType == 'palette') {
-            tempList = this.currentPageWidgets
-          }else {
-            tempList = this.dialogs
-          }
+      }  
+      let tempList = this.pages
+      if(item.mutualType > 1) {
+        if(item.innerType == 'palette') {
+          tempList = this.currentPageWidgets
+        }else {
+          tempList = this.dialogs
         }
-        let res = tempList.find(d=>{
-          return d.id == item.link
-        })
-        let title = ""
-        if(res) {
-          title = res.title
-        }
-        return title
       }
+      let res = tempList.find(d=>{
+        return d.id == item.link
+      })
+      let title = ""
+      if(res) {
+        title = res.title
+      }
+      return title
     },
     getActions(graph) {
       let actions = []
