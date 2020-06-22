@@ -230,18 +230,10 @@ function setterRealData(res, fileSystem,mainProcess) {
               dpIdVal = item[d.deviceParamId]
             }
             if (dpIdVal || dpIdVal == 0) {
-              if(bindType == 2) {//统计应用
-                paramData.data[d.paramId] = dpIdVal
-              }else{
-                paramData.data[d.paramName] = dpIdVal
-              }
+              paramData.data[d.paramName] = dpIdVal
               paramData.time = timeFormate(item.timestamp, false)
-            }else{
-              if(!paramData.data[d.paramId] && bindType == 2) {
-                paramData.data[d.paramId] = null
-              } else if(!paramData.data[d.paramName]) {
-                paramData.data[d.paramName] = null
-              }
+            }else if(!paramData.data[d.paramName]) {
+              paramData.data[d.paramName] = null
             }
           })
           $ele.data('paramData', paramData)
