@@ -274,13 +274,9 @@ class PreviewPage {
               let cellStateInfoHasModel = []
               let deviceId = this.deviceId || item.bindData.dataSource.deviceNameChild.id
               let bindType = item.bindData.dataSource.type || 0 //添加bindType（0=设备1=预测应用2=统计应用)
-              if(bindType == 1) {
-                deviceId = item.mfaKey + '#' + item.id
-              } else {
-                deviceId = this.deviceId || item.id
-              }
               let cls = deviceId
               if(bindType == 1) {
+                deviceId = item.mfaKey + '#' + item.id
                 cls = item.mfaKey
               }
               for(let i = 0;i < params.length;i++) {
