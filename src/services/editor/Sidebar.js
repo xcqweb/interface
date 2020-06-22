@@ -784,7 +784,9 @@ Sidebar.prototype.addGeneralPalette = function()
         this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
         // 三角形
         this.createVertexTemplateEntry('shape=triangle;triangle;whiteSpace=wrap;strokeColor=#000;html=1;', 60, 80, '', '三角形', null, null, '三角形'),
-    ];
+        // 控制开关
+        this.createVertexTemplateEntry('shape=buttonSwitch;labelPosition=center;verticalLabelPosition=middle;align=center;html=1;dx=10;fillColor=#E6E6E6;strokeColor=none;', 70, 40, '<div style="display: inline-block;text-align:inherit;text-decoration: inherit;">BUTTON</div>', '控制开关')
+      ];
     return fns
 };
 

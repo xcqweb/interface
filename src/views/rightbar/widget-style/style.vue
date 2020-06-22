@@ -284,7 +284,7 @@
           @click="pickBgColor"
         />
       </div>
-      <div>
+      <div v-if="shapeName!='buttonSwitch'">
         <p style="margin-top:10px;">
           {{ shapeName=='beeline' && edgeInfo!==2 ? $t('line') : $t('border') }}
         </p>
