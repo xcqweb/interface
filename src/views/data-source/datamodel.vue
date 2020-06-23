@@ -63,6 +63,9 @@ export default {
       showForm: false,
     };
   },
+  mounted() {
+    this.getStudioDeviceData();
+  },
   methods: {
     handleTypeClick(item) {
       this.model.deviceTypeId = item.deviceTypeId;
