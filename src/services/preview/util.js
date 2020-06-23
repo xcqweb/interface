@@ -362,7 +362,7 @@ function dealCharts(mainProcess,cell) {
   let needAddEvent = false
   if(cell.bindData && cell.bindData.params) {
     let params = cell.bindData.params
-    selectCon.style.cssText = `display:flex;position:relative;width:${cell.width}px;height:24px;left:0;top:24px;justify-content:flex-end;z-index:10;`
+    selectCon.style.cssText = `display:flex;position:absolute;width:${cell.width}px;height:24px;left:0;top:0;justify-content:flex-end;z-index:10;`
     if(params.length > 1) {
       selectCon.appendChild(createSelect(params))
     }
@@ -425,7 +425,7 @@ function dealCharts(mainProcess,cell) {
               let checkItem = res.durations.find((item) => {
                 return item.checked === true
               })
-              let chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
+              let chartDataLen = Math.ceil(checkItem && checkItem.duration / res.rateCycle)
               $(con).data("chartDataLen", chartDataLen)
               if (markLine && markLine.data && markLine.data.length) {
                 markLine.data.forEach(item => {
@@ -447,33 +447,35 @@ function dealCharts(mainProcess,cell) {
                   for(let i = 0;i < res.length;i++) {
                     let tempArr = res[i]
                     let device = devices[i]
-                    tempLegend.push(device.name)
-                    tempOptions.legend.data = tempLegend
-                    tempSeries.push({
-                      type: 'line',
-                      name: device.name,
-                      markLine: markLine,
-                      data: [],
-                      deviceId: device.id, //设备id，额外添加的，匹配数据时候用
-                    })
-                    if(JSON.stringify(res[i]) === '{}') {
-                      continue
-                    }
-                    if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
-                      let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
-                      xAxisData = []
-                      for (let key of keys) {
-                        // if (!isNaN(Number(tempArr.resMap[key]))) {
-                        xAxisData.push(timeFormate(key, false))
-                        tempSeries[i].data.push(tempArr.resMap[key])
-                        // }
+                    if(device) {
+                      tempLegend.push(device.name)
+                      tempOptions.legend.data = tempLegend
+                      tempSeries.push({
+                        type: 'line',
+                        name: device.name,
+                        markLine: markLine,
+                        data: [],
+                        deviceId: device.id, //设备id，额外添加的，匹配数据时候用
+                      })
+                      if(JSON.stringify(res[i]) === '{}') {
+                        continue
                       }
-                      if(tempOptions.yAxis.max) {
-                        tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)
-                      }else{
-                        tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
+                      if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
+                        let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
+                        xAxisData = []
+                        for (let key of keys) {
+                          // if (!isNaN(Number(tempArr.resMap[key]))) {
+                          xAxisData.push(timeFormate(key, false))
+                          tempSeries[i].data.push(tempArr.resMap[key])
+                          // }
+                        }
+                        if(tempOptions.yAxis.max) {
+                          tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)
+                        }else{
+                          tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
+                        }
+                        tempOptions.series = tempSeries
                       }
-                      tempOptions.series = tempSeries
                     }
                   }
                   tempOptions.xAxis.data = xAxisData
