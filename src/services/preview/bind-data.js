@@ -284,9 +284,6 @@ function dealStateFormula(formula, data) {
  * @param {*} data 实际数据的参数以及值
  */
 function dealLogic(logic,data) {
-  if(logic.paramName === '(VP)W_para') {
-    console.log(logic,data)
-  }
   let res = true
   let operate = +logic.logical
   if(!logic.key) {
@@ -302,7 +299,7 @@ function dealLogic(logic,data) {
     tempParamVal = dealDataVal(paramId, data)
   }
   let fixed 
-  if(isNaN(parseFloat(logic.fixedValue)) && parseFloat(logic.fixedValue) != 0) {
+  if(isNaN(parseFloat(logic.fixedValue)) || parseFloat(logic.fixedValue) != 0) {
     fixed = +logic.fixedValue
   }else{
     fixed = logic.fixedValue
@@ -313,6 +310,9 @@ function dealLogic(logic,data) {
     return false
   }
   let paramVal = tempParamVal
+  if(operate != 4 && operate != 3) {
+    paramVal = +tempParamVal
+  }
   switch (operate) {
     case 1: // 介于
       res = paramVal > min && paramVal < max
