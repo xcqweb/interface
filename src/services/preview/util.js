@@ -366,7 +366,7 @@ function dealCharts(mainProcess,cell) {
   let needAddEvent = false
   if(cell.bindData && cell.bindData.params) {
     let params = cell.bindData.params
-    selectCon.style.cssText = `display:flex;position:relative;width:${cell.width}px;height:24px;left:0;top:24px;justify-content:flex-end;z-index:10;`
+    selectCon.style.cssText = `display:flex;position:absolute;width:${cell.width}px;height:24px;left:0;top:0;justify-content:flex-end;z-index:10;`
     if(params.length > 1) {
       selectCon.appendChild(createSelect(params))
     }

@@ -142,7 +142,7 @@ module.exports = {
     proxy: {
       "/api": {
         //target: "http://10.74.20.25",
-        target: 'http://kong.ele-iot-sit.10.74.20.12.nip.io', //tcl sit
+        target: 'http://kong-ingress.ele-uat.10.74.152.23.xip.io/', //tcl sit
         // target: 'http://kong.csot-iot-sit.10.74.20.12.nip.io/',
         changeOrigin: true,
         // "pathRewrite": {"^/api": "/api"}
