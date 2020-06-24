@@ -589,6 +589,7 @@ function timeFormate(time,isMilliSecond) {
 function insertSvg(shapeXmls,key,cell) {
   let {width,height,fillColor,strokeColor,strokeWidth,strokeStyle} = cell
   let inner = shapeXmls[key].path
+  console.log(inner)
   inner.setAttribute('fill', fillColor)
   inner.setAttribute('stroke', strokeColor)
   inner.setAttribute('stroke-width', strokeWidth)
@@ -651,6 +652,13 @@ function dealPentagram(mainProcess,cell) {
   con.appendChild(dealAlignText(cell))
   return con
 }
+function dealButtonSwitch(mainProcess,cell) {
+  let con = document.createElement('div')
+  let content = insertSvg(mainProcess.shapeXmls,'buttonSwitch',cell)
+  con.appendChild(content)
+  con.appendChild(dealAlignText(cell))
+  return con
+}
 /**
  * 加载控件的xml配置文档
  */
@@ -671,6 +679,6 @@ function loadShapeXml() {
   })
 }
 export {
-  removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,dealPentagram,loadShapeXml,
+  removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,dealPentagram,loadShapeXml,dealButtonSwitch,
   dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout,dealDefaultParams,insertSvg,svgShape,setSvgImageHref
 }
