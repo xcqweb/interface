@@ -33,6 +33,7 @@ export default {
       this.virtualParams = null;
       const params = {
         deviceModelId: this.deviceModelId || sessionStorage.getItem('modelId'),
+        isHideMobile:1
       };
       if (!params.deviceModelId || params.deviceModelId === 'null') {
         return;
