@@ -39,7 +39,7 @@
 
 <script>
 import {Select,Option} from 'iview'
-import {mxUtils} from "../../services/mxGlobal"
+import {mxUtils} from "../../../services/mxGlobal"
 export default{
   components: {
     Select,

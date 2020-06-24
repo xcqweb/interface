@@ -603,7 +603,7 @@ function insertSvg(shapeXmls,key,cell) {
   svg.setAttribute('viewBox', shapeXmls[key].viewBox)
   svg.setAttribute('width', width)
   svg.setAttribute('height', height)
-  svg.setAttribute('preserveAspectRatio',"none meet")
+  svg.setAttribute('preserveAspectRatio',"none slice")
   let res = ''
   for(let item of inner) {
     res += item.outerHTML

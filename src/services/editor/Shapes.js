@@ -3720,7 +3720,7 @@
 mxUtils.extend(mxShapeBasicShadedButton, mxActor);
 
 mxShapeBasicShadedButton.prototype.customProperties = [
-	{name: 'dx', dispName: 'Button Height', type: 'float', min:0, defVal:12}
+	{name: 'dx', dispName: 'Button Height', type: 'float', min:0, defVal:10}
 ];
 
 mxShapeBasicShadedButton.prototype.cst = {SHADED_BUTTON : 'buttonSwitch'};
@@ -3730,16 +3730,20 @@ mxShapeBasicShadedButton.prototype.cst = {SHADED_BUTTON : 'buttonSwitch'};
 * 
 * Paints the vertex shape.
 */
+mxShapeBasicShadedButton.prototype.initWh={w:70,h:40}
 mxShapeBasicShadedButton.prototype.paintVertexShape = function(c, x, y, w, h)
 {
 	c.translate(x, y);
 	
 	c.setShadow(false);
-
-	var dx = Math.max(0, Math.min(w, parseFloat(mxUtils.getValue(this.style, 'dx', this.dx))));
-
-	dx = Math.min(w * 0.5, h * 0.5, dx);
-	
+  var dx,dy
+  if(w==this.initWh.w  && h==this.initWh.h) {
+    dx = parseFloat(mxUtils.getValue(this.style, 'dx', this.dx))
+    dy = dx
+  }
+  let defVal = this.customProperties[0]['defVal']
+  dx = defVal*w/this.initWh.w
+  dy = defVal*h/this.initWh.h
 	c.begin();
 	c.moveTo(0, 0);
 	c.lineTo(w, 0);
@@ -3753,8 +3757,8 @@ mxShapeBasicShadedButton.prototype.paintVertexShape = function(c, x, y, w, h)
 	c.begin();
 	c.moveTo(0, h);
 	c.lineTo(0, 0);
-	c.lineTo(dx, dx);
-	c.lineTo(dx, h - dx);
+	c.lineTo(dx, dy);
+	c.lineTo(dx, h - dy);
 	c.close();
 	c.fill();
 	
@@ -3762,8 +3766,8 @@ mxShapeBasicShadedButton.prototype.paintVertexShape = function(c, x, y, w, h)
 	c.begin();
 	c.moveTo(0, 0);
 	c.lineTo(w, 0);
-	c.lineTo(w - dx, dx);
-	c.lineTo(dx, dx);
+	c.lineTo(w - dx, dy);
+	c.lineTo(dx, dy);
 	c.close();
 	c.fill();
 	
@@ -3772,16 +3776,16 @@ mxShapeBasicShadedButton.prototype.paintVertexShape = function(c, x, y, w, h)
 	c.begin();
 	c.moveTo(w, 0);
 	c.lineTo(w, h);
-	c.lineTo(w - dx, h - dx);
-	c.lineTo(w - dx, dx);
+	c.lineTo(w - dx, h - dy);
+	c.lineTo(w - dx, dy);
 	c.close();
 	c.fill();
 	
 	c.setAlpha(0.5);
 	c.begin();
 	c.moveTo(0, h);
-	c.lineTo(dx, h - dx);
-	c.lineTo(w - dx, h - dx);
+	c.lineTo(dx, h - dy);
+	c.lineTo(w - dx, h - dy);
 	c.lineTo(w, h);
 	c.close();
 	c.fill();
@@ -3792,7 +3796,6 @@ mxShapeBasicShadedButton.prototype.paintVertexShape = function(c, x, y, w, h)
 mxCellRenderer.registerShape(mxShapeBasicShadedButton.prototype.cst.SHADED_BUTTON, mxShapeBasicShadedButton);
 
 mxShapeBasicShadedButton.prototype.constraints = null;
-
 Graph.handleFactory[mxShapeBasicShadedButton.prototype.cst.SHADED_BUTTON] = function(state)
 {
 	// var handles = [Graph.createHandle(state, ['dx'], function(bounds)
@@ -3805,7 +3808,8 @@ Graph.handleFactory[mxShapeBasicShadedButton.prototype.cst.SHADED_BUTTON] = func
 	// 	this.state.style['dx'] = Math.round(100 * Math.max(0, Math.min(bounds.height / 2, bounds.width / 2, pt.x - bounds.x))) / 100;
 	// })];
 			
-	// return handles;
+  // return handles;
+ 
 };
 
 
