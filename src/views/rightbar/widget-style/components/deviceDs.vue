@@ -277,10 +277,18 @@ export default{
 
 <style lang="less" scoped>
   /deep/.tooltip-width-inner{
-    background: #fff !important;
     .ivu-tooltip-popper {
       .ivu-tooltip-inner-with-width{
         white-space: normal !important
+      }
+    }
+    .ivu-tooltip-rel{
+      span{
+        width:100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        word-break: break-all;
       }
     }
   }

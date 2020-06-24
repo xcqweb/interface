@@ -35,7 +35,7 @@
             >
               <span 
                 :title="item.appName" 
-                style="display:inline-block;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;"
+                style="display:inline-block;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;width: calc(100% - 24px);"
               >
                 {{ item.appName }}
               </span>
