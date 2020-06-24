@@ -5,7 +5,7 @@ const state = {
   modelEditing: false, // 模型是否处于编辑状态
   footerModelUpdata: false, // 是否刷新底部状态模型
   cancelTokenArr: [], // 取消请求token数组
-  isTemplateApply: true,//是否是模板组态
+  isTemplateApply: false,//是否是模板组态
 }
 
 const mutations = {

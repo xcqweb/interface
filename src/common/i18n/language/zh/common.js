@@ -142,4 +142,8 @@ export default {
   popupNameCanNotEmpty:'弹窗名称不能为空',
   triangle:'三角形',
   pentagram:'五角星',
+  buttonSwitch:'控制开关',
+  controlS:'控制',
+  opPwd:'操作密码',
+  plsInputOpPwd:'请输入操作密码',
 }

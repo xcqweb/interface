@@ -299,6 +299,7 @@ export default {
         {image:'pipeline3.svg',name :'pipeline3'},
         {image:'triangle.png',name :'triangle'},
         {image:'pentagram.png',name :'pentagram'},
+        {image:'buttonSwitch.png',name:'buttonSwitch'}
       ],
       tablesAssembly: [
         {image:'lineChart.svg',name :'trend'},

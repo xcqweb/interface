@@ -25,10 +25,18 @@
         {{ $t('action') }}
       </div>
       <div
-        v-if="dataList.includes(shapeName) && isShowDataTab"
+        v-if="shapeName.includes('buttonSwitch') && cellsCount==1"
         class="tab"
         :class="{'selected':tab==4}"
         @click="changeTab(4)"
+      >
+        {{ $t('controlS') }}
+      </div>
+      <div
+        v-if="dataList.includes(shapeName) && isShowDataTab"
+        class="tab"
+        :class="{'selected':tab==5}"
+        @click="changeTab(5)"
       >
         {{ $t('data') }}
       </div>
@@ -39,14 +47,17 @@
     />
     <State
       v-if="tab==2 && stateList.includes(shapeName)"
-      ref="stateRef"
       :key="refresh+2"
     />
     <MutualMain
       v-if="tab==3 && actionList.includes(shapeName)"
       :key="refresh+3"
     />
-    <Data v-if="tab==4 && dataList.includes(shapeName)" />
+    <Control 
+      v-if="tab==4 && shapeName.includes('buttonSwitch')"
+      :key="refresh+4"
+    />
+    <Data v-if="tab==5 && dataList.includes(shapeName)" />
   </div>
 </template>
 
@@ -55,16 +66,17 @@ import Style from './widget-style/style'
 import MutualMain from './widget-style/mutual-main'
 import State from './widget-style/state'
 import Data from './widget-style/data'
+import Control from './widget-style/control'
 import VueEvent from '../../services/VueEvent.js'
 export default{
-  components:{Style,MutualMain,State,Data},
+  components:{Style,MutualMain,State,Data,Control},
   data() {
     return {
       tab:1,
       refresh:0,//切换控件刷新子组件
       stateList:['rectangle','image','userimage','tableCell','light','ellipse','triangle','pentagram'],
       actionList:['menuCell','rectangle','image','userimage','button','ellipse','text','tableCell','triangle','pentagram'],
-      dataList:['image','userimage','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart','triangle','pentagram'],
+      dataList:['image','userimage','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart','triangle','pentagram','buttonSwitch'],
       isShowDataTab:true,
     }
   },
@@ -84,7 +96,7 @@ export default{
       this.refresh = this.rand
     },
     shapeName(val) {
-      if(!this.stateList.includes(val) && this.tab == 2 || !this.actionList.includes(val) && this.tab == 3 || !this.dataList.includes(val) && this.tab == 4) {
+      if(!this.stateList.includes(val) && this.tab == 2 || !this.actionList.includes(val) && this.tab == 3 || !this.dataList.includes(val) && this.tab == 5 || !this.shapeName.includes('buttonSwitch') && this.tab == 4) {
         this.tab = 1
       }
     },
@@ -111,7 +123,7 @@ export default{
   methods: {
     changeTab(index) {
       this.tab = index
-      if (this.tab === 4) {
+      if (this.tab === 5) {
         VueEvent.$emit('isShowFootBar',{show:true,isUp:true})
       }
     },

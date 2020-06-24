@@ -7,7 +7,7 @@ let fileSystem //文件服务器host
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
-import {removeEle, destroyWs, insertImage,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout,throttleFun,dealTriangle,dealPentagram} from './util'
+import {removeEle, destroyWs, insertImage,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout,throttleFun,dealTriangle,dealSvgWidgets} from './util'
 import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -542,7 +542,9 @@ class PreviewPage {
     } else if(shapeName == 'triangle') {
       cellHtml = dealTriangle(cell)
     } else if(shapeName.includes('pentagram')) {
-      cellHtml = dealPentagram(this.mainProcess,cell)
+      cellHtml = dealSvgWidgets(this.mainProcess,cell,'pentagram')
+    } else if(shapeName.includes('buttonSwitch')) {
+      cellHtml = dealSvgWidgets(this.mainProcess,cell,'buttonSwitch')
     } else {
       // 其他
       cellHtml = document.createElement('p');

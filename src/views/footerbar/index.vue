@@ -13,8 +13,14 @@
                 v-if="!$store.state.main.isTemplateApply"
                 :label="$t(dataSourceName[0])"
               />
-              <TabPane :label="$t(dataSourceName[1])" />
-              <TabPane :label="$t(dataSourceName[2])" />
+              <TabPane
+                v-if="ifShowDataFlag"
+                :label="$t(dataSourceName[1])"
+              />
+              <TabPane
+                v-if="iShowStateModel"
+                :label="$t(dataSourceName[2])"
+              />
             </Tabs>
           </div>
           <div
@@ -109,11 +115,10 @@
           </div>
           <!--状态模型-->
           <div
-            v-show="tabsNum === 2"
+            v-show="tabsNum === 2 && stateList && stateList.length > 1 && cellsCount == 1"
             class="footer-common stateList"
           >
             <div
-              v-if="stateList && stateList.length > 1 && cellsCount == 1"
               class="footerTabs2Ul"
             >
               <template v-for="(item, index) in stateList">
@@ -186,7 +191,8 @@ const allShapes = [
   "lineChart",
   "gaugeChart",
   'triangle',
-  'pentagram'
+  'pentagram',
+  'buttonSwitch'
 ]; //可以绑定数据的控件
 const supportDataShow = [
   "rectangle",
@@ -214,8 +220,8 @@ export default {
   data() {
     return {
       visible: false,
+      iShowStateModel:true,
       multiple:true,
-      value1: "1",
       dataSourceName: [
         "dataSources",
         "footBar.dataDisplay",
@@ -312,6 +318,9 @@ export default {
     shapeName(val) {
       if(val == 'progress') {
         this.multiple = false
+      }
+      if(val == 'buttonSwitch') {
+        this.iShowStateModel = false
       }
     }
   },

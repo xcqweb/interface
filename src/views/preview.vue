@@ -23,19 +23,22 @@
 import preview from '../services/preview/'
 export default {
   data() {
-    return{
-
+    return {
+      flag:true,
     }
   },
   mounted() {
     this.$nextTick(()=>{
-      preview.mainProcess.init()
+      preview.mainProcess.init(this)
       history.pushState(null, null, document.URL)
       window.addEventListener('popstate', ()=> {
         history.pushState(null, null, document.URL)
       })
     })
   },
+  methods:{
+
+  }
 };
 </script>
 

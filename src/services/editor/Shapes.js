@@ -3793,20 +3793,20 @@ mxCellRenderer.registerShape(mxShapeBasicShadedButton.prototype.cst.SHADED_BUTTO
 
 mxShapeBasicShadedButton.prototype.constraints = null;
 
-// Graph.handleFactory[mxShapeBasicShadedButton.prototype.cst.SHADED_BUTTON] = function(state)
-// {
-// 	var handles = [Graph.createHandle(state, ['dx'], function(bounds)
-// 	{
-// 		var dx = Math.max(0, Math.min(bounds.width / 2, bounds.width / 2, parseFloat(mxUtils.getValue(this.state.style, 'dx', this.dx))));
+Graph.handleFactory[mxShapeBasicShadedButton.prototype.cst.SHADED_BUTTON] = function(state)
+{
+	// var handles = [Graph.createHandle(state, ['dx'], function(bounds)
+	// {
+	// 	var dx = Math.max(0, Math.min(bounds.width / 2, bounds.width / 2, parseFloat(mxUtils.getValue(this.state.style, 'dx', this.dx))));
 
-// 		return new mxPoint(bounds.x + dx, bounds.y + dx);
-// 	}, function(bounds, pt)
-// 	{
-// 		this.state.style['dx'] = Math.round(100 * Math.max(0, Math.min(bounds.height / 2, bounds.width / 2, pt.x - bounds.x))) / 100;
-// 	})];
+	// 	return new mxPoint(bounds.x + dx, bounds.y + dx);
+	// }, function(bounds, pt)
+	// {
+	// 	this.state.style['dx'] = Math.round(100 * Math.max(0, Math.min(bounds.height / 2, bounds.width / 2, pt.x - bounds.x))) / 100;
+	// })];
 			
-// 	return handles;
-// };
+	// return handles;
+};
 
 
     // Defines connection points for all shapes

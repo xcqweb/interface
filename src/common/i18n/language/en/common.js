@@ -142,4 +142,8 @@ export default {
   popupNameCanNotEmpty:'Popup name can not empty',
   triangle:'Triangle',
   pentagram:'Pentagram',
+  buttonSwitch:'Button switch',
+  controlS:'Control',
+  opPwd:'Operate password',
+  plsInputOpPwd:'Please input operate password',
 }
