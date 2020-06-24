@@ -107,6 +107,10 @@ export default {
           myEditorUi.editor.setApplyId(editData.studioId)
           myEditorUi.editor.setAppType(editData.appType)
           myEditorUi.editor.setDescribe(editData.descript)
+          let pageArr = myEditorUi.editor.pagesRank['normal']
+          if(pageArr && pageArr.length) {
+            myEditorUi.editor.setCurrentPage(pageArr[0])
+          }
           if(editData.theme) {
             myEditorUi.theme = JSON.parse(editData.theme)
           }else{
