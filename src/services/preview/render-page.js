@@ -590,13 +590,7 @@ class PreviewPage {
       if(shapeName === 'ellipse') {
         cellHtml.style.borderRadius = "50%"
       }
-      //  'triangle', 'pentagram',
-      // const arrTextHandle = ['rectangle', 'ellipse']; // 文字处理
-      // if (arrTextHandle.includes(shapeName)) {
-      //     cellHtml.innerHTML = `<label style="line-height:${cell.fontSize}px;display:inline-block;">${cell.value}</label>`
-      // } else {
       cellHtml.innerHTML = cell.value
-      // }
     }
     if (shapeName !== 'text') { // 文字的居中处理 在上面使用translate处理过了
       if (cell.verticalAlign === 'top') {
@@ -620,7 +614,11 @@ class PreviewPage {
       if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none') && shapeName != 'tableBox') {
         cellHtml.style.backgroundColor = 'transparent'
       } else {
-        cellHtml.style.backgroundColor = cell.fillColor
+        let tempBgColor = cell.fillColor
+        if(cell.fillColor == 'none') {
+          tempBgColor = 'transparent'
+        }
+        cellHtml.style.backgroundColor = tempBgColor
       }
     }
     if(shapeName != 'beeline' && shapeName != 'triangle' && !shapeName.includes('pentagram')) {
