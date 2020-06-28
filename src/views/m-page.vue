@@ -122,10 +122,10 @@ export default {
         }
         Vue.prototype.myEditorUi = myEditorUi
         this.init()
-        let timer = setTimeout(()=>{
+        let timerFirst = setTimeout(()=>{
           this.myEditorUi.editor.undoManager.clear() // 首次进入页面，setGraphXml 触发了 graphModel的undoManager,这里清空下
-          clearTimeout(timer)
-          timer = null
+          clearTimeout(timerFirst)
+          timerFirst = null
         },30)
         this.isInited = true
       })

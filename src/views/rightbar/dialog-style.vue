@@ -34,8 +34,6 @@
       </div>
       <div
         class="item-container"
-
-        
         style="margin-left:10px;"
       >
         <span style="color:#797979;margin:0 6px;">{{ $t('height') }}</span>
@@ -56,7 +54,7 @@
           <div
             v-clickOutSide="hideFont"
             class="item-container fontSet"
-            style="justify-content:space-between;position:relative;"
+            style="justify-content:space-between;position:relative;cursor:pointer;"
             @click="showFont=true"
           >
             {{ fontText }}
@@ -77,7 +75,7 @@
             </ul>
           </div>
           <div
-            style="width:50%" 
+            style="width:50%;cursor:pointer;" 
             class="setColor"
             :style="{backgroundColor:fontColor}"
             @click="pickFontColor"
@@ -87,16 +85,19 @@
           <div class="setLevel">
             <div
               class="left"
+              style="cursor:pointer;"
               :class="{'selected':alignIndex1==1}"
               @click="changeAlignIndex(1,1)"
             />
             <div
               class="center"
+              style="cursor:pointer;"
               :class="{'selected':alignIndex1==2}"
               @click="changeAlignIndex(1,2)"
             />
             <div
               class="right"
+              style="cursor:pointer;"
               :class="{'selected':alignIndex1==3}"
               @click="changeAlignIndex(1,3)"
             />
@@ -104,16 +105,19 @@
           <div class="setVertical">
             <div
               class="top" 
+              style="cursor:pointer;"
               :class="{'selected':alignIndex2==1}"
               @click="changeAlignIndex(2,1)"
             />
             <div
               class="mid"
+              style="cursor:pointer;"
               :class="{'selected':alignIndex2==2}"
               @click="changeAlignIndex(2,2)"
             />
             <div
               class="bottom" 
+              style="cursor:pointer;"
               :class="{'selected':alignIndex2==3}"
               @click="changeAlignIndex(2,3)"
             />
@@ -128,7 +132,7 @@
     </div>
     <div
       class="item-container"
-      style="position:relative;"
+      style="position:relative;cursor:pointer;"
       :style="{background:bgColor}"
       @click="pickColor"
     />

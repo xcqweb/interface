@@ -96,7 +96,7 @@ function tipDialog(editorUi,tips,title){
   },1500)
 }
 function sureContainer(editorUi,info,confirmText,cancelText,cb) {
-  let {mxUtils} = require('./mxGlobal')
+  let {mxUtils} = require('./mxGlobal') 
   let saveContent = editorUi.createDiv('geDialogInfo');
   let nameTitle = document.createElement('p')
   nameTitle.innerHTML = info;
@@ -117,12 +117,14 @@ function sureContainer(editorUi,info,confirmText,cancelText,cb) {
   cancelBtn.className = 'geBtn';
   btnContent.appendChild(cancelBtn);
   btnContent.appendChild(genericBtn);
-
+  btnContent.style.paddingRight="16px"
+  btnContent.style.paddingBottom="14px"
   saveContent.appendChild(btnContent)
   this.container = saveContent;
 }
 function sureDialog(editorUi, info, cb, confirmText, cancelText, title = '') {
   let resource = window.mxResources
+  title = title || resource.get('tips')
   if (!confirmText) {
     confirmText = resource.get('confirm')
   }

@@ -589,7 +589,6 @@ function timeFormate(time,isMilliSecond) {
 function insertSvg(shapeXmls,key,cell) {
   let {width,height,fillColor,strokeColor,strokeWidth,strokeStyle} = cell
   let inner = shapeXmls[key].path
-  console.log(inner)
   inner[0].setAttribute('fill', fillColor)
   inner[0].setAttribute('stroke', strokeColor)
   inner[0].setAttribute('stroke-width', strokeWidth)
