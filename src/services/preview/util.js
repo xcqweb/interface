@@ -253,21 +253,48 @@ function actionHide(action, applyData) {
  * @param {Array} ele DOM节点
  */
 function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
-  let {actionsInfo} = cellInfo
+  let {actionsInfo,commandInfo,shapeName} = cellInfo
+  let dealBubble = e=>{
+    e = e || window.event;
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    } else {
+      e.cancelBubble = true;
+    }
+  }
   if (actionsInfo) {
     ele.style.cursor = "pointer"
     for (let action of actionsInfo) {
       ele.addEventListener(action.mouseEvent, function(e) {
-        e = e || window.event;
-        if (e.stopPropagation) {
-          e.stopPropagation();
-        } else {
-          e.cancelBubble = true;
-        }
+        dealBubble(e)
         // 触发事件
         effectEvent(action, mainProcess, applyData,fileSystem)
       })
     }
+  }
+  if(shapeName == 'buttonSwitch' && commandInfo) {
+    ele.style.cursor = "pointer"
+    ele.addEventListener('click',function(e) {
+      dealBubble(e)
+      let {data,isPwd} = commandInfo
+      console.log(data)
+      mainProcess.previewContext.confirmVisible = true
+      // 调用下发指令接口，发出指令
+      let sendFun = ()=>{
+        
+      }
+      mainProcess.previewContext.confirmCb = ()=>{ 
+        if(isPwd == 1) { 
+          mainProcess.previewContext.inputPwdVisible = true
+          mainProcess.previewContext.sendCb = (pwd)=>{
+            console.log(pwd)
+            //todo 请求接口，验证控件的密码有效性,确认通过后调用sendFun，下发指令
+            sendFun()
+          }
+        }
+        sendFun()
+      }
+    })
   }
 }
 
@@ -666,7 +693,6 @@ function loadShapeXml() {
       let obj = {};
       const shapes = root.documentElement.getElementsByTagName('shape');
       for (let shape of shapes) {
-        console.dir(shape)
         obj[shape.getAttribute('name')] = {
           viewBox: shape.getAttribute('viewBox'),
           path: shape.children

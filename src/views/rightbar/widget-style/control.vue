@@ -7,11 +7,11 @@
       @on-change="selectChange"
     >
       <Option
-        v-for="(item,index) in controlList"
-        :key="index"
-        :value="item.id"
+        v-for="item in controlList"
+        :key="item.commandTemplateId"
+        :value="item.commandTemplateId"
       >
-        {{ item.name }}
+        {{ item.commandName }}
       </Option>
     </Select>
     <div class="item-line" />
@@ -47,24 +47,66 @@ export default{
   },
   data() {
     return {
-      control:'1',
-      controlList:[{name:'开机',id:'1'}],
+      control:'',
+      controlList:[],
       opPwd:false,
       pwd:'',
     }
+  },
+  created() {
+    this.requestUtil.get(this.urls.commandTemplate.url).then(res =>{
+      this.controlList = res
+      let target = this.getCellModelInfo('commandInfo')
+      if(target.data) {
+        this.control = target.data.commandTemplateId
+      }
+      if(target.isPwd == 1) {
+        this.opPwd = true
+      }
+    })
   },
   mounted() {
     
   },
   methods: {
     selectChange() {
-
+      let target = this.getCellModelInfo('commandInfo') || {}
+      target.data = this.controlList.find(item=>item.commandTemplateId == this.control)
+      this.setCellModelInfo('commandInfo',target)
     },
     choosePwd() {
-
+      if(!this.opPwd) {
+        this.pwd = ''
+      }
+      let target = this.getCellModelInfo('commandInfo') || {}
+      target.isPwd =  this.opPwd === true ? 1 : 0
+      this.setCellModelInfo('commandInfo',target)
     },
     changePwd() {
-
+      if(!this.opPwd) {
+        return
+      }
+    },
+    getCellModelInfo(key, cell) {
+      let graph = this.myEditorUi.editor.graph;
+      if (!cell) {
+        cell = graph.getSelectionCell();
+      }
+      let modelInfo = graph.getModel().getValue(cell);
+      let bindData = null;
+      if (!mxUtils.isNode(modelInfo)) {
+        let doc = mxUtils.createXmlDocument();
+        let obj = doc.createElement("object");
+        obj.setAttribute("label", modelInfo || "");
+        modelInfo = obj;
+      }
+      if (modelInfo) {
+        let bindAttr = modelInfo.getAttribute(key);
+        if (bindAttr) {
+          bindData = JSON.parse(bindAttr);
+        }
+      }
+      return bindData;
     },
     setCellModelInfo(key, data, cell) {
       let graph = this.myEditorUi.editor.graph
@@ -76,7 +118,7 @@ export default{
         let doc = mxUtils.createXmlDocument()
         let obj = doc.createElement("object")
         obj.setAttribute("label", modelInfo || "")
-        modelInfo = obj;
+        modelInfo = obj
       }
       modelInfo.setAttribute(key, JSON.stringify(data))
       graph.getModel().setValue(cell, modelInfo)

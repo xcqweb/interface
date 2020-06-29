@@ -14502,7 +14502,7 @@ mxUndoableEdit.prototype.redo = function()
  * <mxEditor.installUndoHandler>.
  * 
  * Each atomic change of the model is represented by an object (eg.
- * <mxRootChange>, <mxChildChange>, <mxTerminalChange> etc) which contains the
+ * <mxRootChange>, <mxChildChange>, <mxTermi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               nalChange> etc) which contains the
  * complete undo information. The <mxUndoManager> also listens to the
  * <mxGraphView> and stores it's changes to the current root as insignificant
  * undoable changes, so that drilling (step into, step up) is undone.

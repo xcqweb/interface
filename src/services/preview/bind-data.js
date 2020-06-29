@@ -1,5 +1,4 @@
 import {geAjax, toDecimal2NoZero, timeFormate,dealDefaultParams,svgShape,setSvgImageHref} from './util'
-import {getCookie} from '../Utils'
 import echarts from 'echarts'
 let reconnectCount = 0 //websocket连接出错时候，重连的次数
 const reconnectMaxCount = 5
@@ -384,8 +383,7 @@ function createWsReal(pageId, applyData, fileSystem,mainProcess) {
     if (deviceParams.length === 0 || !websocketUrlReal) {
       return
     }
-    const token = getCookie('token')
-    let ws = new WebSocket(res.data, token) // 提交时使用这个
+    let ws = new WebSocket(res.data) // 提交时使用这个
     initialWs(ws, pageId, applyData, fileSystem,mainProcess)
     if(applyData[pageId].wsReal) {
       applyData[pageId].wsReal.close()

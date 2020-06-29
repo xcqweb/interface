@@ -5,8 +5,8 @@
   <shape name="diamond" viewBox="0 0 25 25">
     <path d="M3819,1368l12-12,12,12-12,12Z" transform="translate(-3818.5 -1355.5)"/>
   </shape>
-  <shape name="pentagram" viewBox="0 0 38 38">
-    <path d="M29.679,36.440 L18.538,30.035 L7.429,36.500 L9.784,23.390 L0.498,14.288 L13.095,12.589 L18.465,0.499 L23.895,12.560 L36.499,14.189 L27.259,23.342 L29.679,36.440 Z"/>
+  <shape name="pentagram" viewBox="0 0 50 50">
+    <path d="M 0 20 L 17 18 L 25 0 L 34 18 L 50 20 L 38 31 L 41 50 L 25 42 L 9 50 L 12 31 Z"/>
   </shape>
   <shape name="buttonSwitch" viewBox="0 0 70 40">
     <path d="M 0 0 L 70 0 L 70 40 L 0 40 Z" fill="#e6e6e6" stroke="none" pointer-events="all"></path>

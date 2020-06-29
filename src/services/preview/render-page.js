@@ -109,6 +109,10 @@ class PreviewPage {
           let getNodeInfo = new GetNodeInfo(node)
           // 节点类型
           let shapeName = getNodeInfo.getStyles('shape')
+          let commandInfo = null
+          if(shapeName === 'buttonSwitch') {
+            commandInfo = JSON.parse(item.getAttribute('commandInfo'))
+          }
           let x, y, width, height,arcSize,fillColor, strokeColor, strokeStyle, fontColor, fontSize, styles, isGroup, image, hide, align, verticalAlign, rotation, direction, flipH, flipV, startArrow, endArrow, strokeWidth, fontWeight,edgeProps
           styles = node.getAttribute('style')
           isGroup = styles.indexOf('group') != -1
@@ -192,6 +196,9 @@ class PreviewPage {
             flipH,
             flipV,
             edgeProps
+          }
+          if(commandInfo) {
+            obj.commandInfo = commandInfo
           }
           if (shapeName == 'beeline') {
             startArrow = getNodeInfo.getStyles('startArrow')

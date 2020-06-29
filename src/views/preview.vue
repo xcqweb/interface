@@ -18,7 +18,7 @@
     <div id="formatLayer" />
     <!-- 提示modal -->
     <Modal
-      v-model="visible"
+      v-model="confirmVisible"
       class="custom-modal"
       :title="$t('tooltips')"
       :width="460"
@@ -33,7 +33,7 @@
         <Button
           size="small"
           style="width: 72px; height: 30px;"
-          @click="visible=false"
+          @click="confirmVisible=false"
         >
           {{ $t('cancel') }}
         </Button>
@@ -47,20 +47,56 @@
         </Button>
       </div>
     </Modal>
+    <!-- buttonSwitch 控件 指令下发，输入密码modal -->
+    <Modal
+      v-model="inputPwdVisible"
+      class="custom-modal"
+      :title="$t('tooltips')"
+      :width="460"
+      :mask-closable="false"
+    >
+      <label>操作密码：</label>
+      <Input
+        v-model="pwd"
+        placeholder="请输入操作密码"
+        type="password"
+        style="width:50%;"
+      />
+      <div slot="footer">
+        <Button
+          size="small"
+          style="width: 72px; height: 30px;"
+          @click="inputPwdVisible=false"
+        >
+          {{ $t('cancel') }}
+        </Button>
+        <Button
+          type="primary"
+          size="small"
+          style="width: 72px; height: 30px;"
+          @click="sendCommand"
+        >
+          {{ $t('confirm') }}
+        </Button>
+      </div>
+    </Modal>
   </div>
 </template>
 
 <script> 
 import preview from '../services/preview/'
-import {Modal, Button} from 'iview'
+import {Modal, Button, Input} from 'iview'
 export default {
   components: {
     Modal,
     Button,
+    Input,
   },
   data() {
     return {
-      visible:true,
+      confirmVisible:false,
+      inputPwdVisible:false,
+      pwd:'',
     }
   },
   mounted() {
@@ -78,7 +114,12 @@ export default {
   },
   methods:{
     confirm() {
-      this.visible = false
+      this.confirmVisible = false
+      this.confirmCb && this.confirmCb() // 预览时候 点击确认框的回调逻辑
+    },
+    sendCommand() {
+      this.inputPwdVisible = false
+      this.sendCb && this.sendCb(this.pwd)
     }
   }
 };
