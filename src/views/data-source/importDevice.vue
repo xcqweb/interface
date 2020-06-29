@@ -7,6 +7,7 @@
         :title="$t('dataSource.deviceType')"
         :width="200"
         :data="deviceTypeData"
+        :search-flag="searchFlag"
         prop="deviceTypeName"
         @click="handleTypeClick"
         @chooseData="chooseData"
@@ -18,15 +19,17 @@
       :title="$t('dataSource.deviceModel')"
       :width="200"
       :data="deviceModelData"
+      :search-flag="searchFlag"
       prop="deviceModelName"
       @click="handleModelClick"
     />
     <!-- 参数穿梭框 -->
     <page-transfer
       ref="chooseDevice"
+      class="device-import-wrap"
       left-title="全部"
       right-title="已选"
-      input-holder="请输入设备名称"
+      input-holder="请输入搜索内容"
       :api-methods="apiMethods"
       :deal-data="dealData"
       :else-params="elseParams"
@@ -72,6 +75,7 @@ export default {
       studioId: '',
       preAppDataList: [],
       staAppDataList: [],
+      searchFlag: true,
     };
   },
   async created() {

@@ -6,5 +6,9 @@ export default {
     width: {
       type: Number,
     },
+    searchFlag: {
+      type: Boolean,
+      default: false,
+    }
   },
 };

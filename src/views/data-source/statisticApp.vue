@@ -66,6 +66,8 @@ export default {
       if (val.length) {
         this.applyObj.appId = val[0].appId
         this.getApplyParamsData()
+      } else {
+        this.statiParamData = []
       }
     },
   },
@@ -112,7 +114,7 @@ export default {
       const params = {
         ids: this.removeData,
       };
-      this.requestUtil.post(this.urls.deleteDeviceList.url, params).then(() => {
+      this.requestUtil.post(this.urls.newDeleteApply.url, params).then(() => {
         Message.success(this.$t('dataSource.removeApplySuccessfully'));
         this.getStatisticData();
       });

@@ -223,7 +223,7 @@ export default{
     text-align: center;
     transition: all .3s;
     cursor: pointer;
-    
+    user-select: none;
     &.active {
       color: #fff;
       background-color: #3D91F7;

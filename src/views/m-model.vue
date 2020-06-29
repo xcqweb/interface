@@ -205,7 +205,7 @@ export default{
   height: 32px;
   background: rgba(242,242,242,1);
   border-bottom: 1px solid #ccc;
-
+  user-select: none;
   > li {
     float: left;
     width: 102px;
