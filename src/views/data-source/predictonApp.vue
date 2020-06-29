@@ -66,6 +66,8 @@ export default {
       if (val.length) {
         this.applyObj.forecastId = val[0].appId
         this.getApplyParamsData()
+      } else {
+        this.preParamData = []
       }
     },
   },

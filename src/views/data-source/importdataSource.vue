@@ -360,6 +360,7 @@ export default {
     height: 32px;
     background: none;
     border: none;
+    user-select: none;
     > li {
         float: left;
         width: 66px;

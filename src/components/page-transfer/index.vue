@@ -17,6 +17,7 @@
             v-model="leftKeyword"
             :placeholder="inputHolder"
             :clearable="true"
+            size="small"
             @on-clear="inputSearch('all')" 
             @on-change="inputSearch('all')"
           />
@@ -100,6 +101,7 @@
             v-model="rightKeyword" 
             :placeholder="inputHolder"
             :clearable="true" 
+            size="small"
             @on-change="inputSearch('right')"
           />
           <div class="data-wrap scrollbarStyle">
