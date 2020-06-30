@@ -4,7 +4,9 @@
     <Select
       v-model="control"
       style="height:24px"
+      clearable
       @on-change="selectChange"
+      @on-clear="clearFun"
     >
       <Option
         v-for="item in controlList"
@@ -73,6 +75,10 @@ export default{
       let target = this.getCellModelInfo('commandInfo') || {}
       target.data = this.controlList.find(item=>item.commandTemplateId == this.control)
       this.setCellModelInfo('commandInfo',target)
+    },
+    clearFun() {
+      this.opPwd = false
+      this.setCellModelInfo('commandInfo',null)
     },
     choosePwd() {
       if(!this.opPwd) {

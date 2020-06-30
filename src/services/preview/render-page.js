@@ -427,8 +427,13 @@ class PreviewPage {
         const data = paramData.data
         let html = '<ul style="height:100%;display:flex;flex-direction:column;justify-content:center;">'
         html += `<li>${paramData.time}</li>`
+        let tempVal
         for (let key in data) {
-          html += `<li>${key}=${data[key] ? data[key] : 'NaN'}</li>`
+          tempVal = data[key]
+          if(tempVal === null || tempVal === undefined) {
+            tempVal = 'NaN'
+          }
+          html += `<li>${key}=${tempVal}</li>`
         }
         html += '</ul>'
         $formatLayer.html(html).show()
