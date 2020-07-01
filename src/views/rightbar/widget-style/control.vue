@@ -59,13 +59,13 @@ export default{
   created() {
     let bindData = this.getCellModelInfo('bindData')
     if(!bindData || !bindData.dataSource) {
-      tipDialog('请先绑定设备')
+      tipDialog(this.myEditorUi,'请先绑定设备')
       return
     }
     let deviceModelId = bindData.dataSource.deviceTypeChild.id
     this.requestUtil.get(`${this.urls.commandTemplate.url}${deviceModelId}`).then(res =>{
       this.controlList = res
-      let target = this.getCellModelInfo('commandInfo')
+      let target = this.getCellModelInfo('commandInfo') || {}
       if(target.data) {
         this.control = target.data.commandTemplateId
       }
