@@ -85,7 +85,7 @@
 
 <script> 
 import preview from '../services/preview/'
-import {Modal, Button, Input} from 'iview'
+import {Modal, Button, Input, Message} from 'iview'
 export default {
   components: {
     Modal,
@@ -120,6 +120,9 @@ export default {
     sendCommand() {
       this.inputPwdVisible = false
       this.sendCb && this.sendCb(this.pwd)
+    },
+    warning(msg) {
+      Message.warning(msg)
     }
   }
 };

@@ -253,7 +253,11 @@ function actionHide(action, applyData) {
  * @param {Array} ele DOM节点
  */
 function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
-  let {actionsInfo,commandInfo,shapeName} = cellInfo
+  let {actionsInfo,commandInfo,shapeName,bindData} = cellInfo
+  let deviceId
+  if(bindData && bindData.dataSource && bindData.dataSource.deviceNameChild) {
+    deviceId = bindData.dataSource.deviceNameChild.id
+  }
   let dealBubble = e=>{
     e = e || window.event;
     if (e.stopPropagation) {
@@ -276,12 +280,22 @@ function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
     ele.style.cursor = "pointer"
     ele.addEventListener('click',function(e) {
       dealBubble(e)
+      if(!deviceId) {
+        mainProcess.previewContext.warning('还未绑定设备，不能进行指令下发！')
+        return
+      }
       let {data,isPwd} = commandInfo
       console.log(data)
       mainProcess.previewContext.confirmVisible = true
       // 调用下发指令接口，发出指令
       let sendFun = ()=>{
-        
+        let commandParams = {
+          commandTemplateId:data.commandTemplateId,
+          deviceId,
+        }
+        requestUtil.post(urls.commandSend.url,commandParams).then(res=>{
+          console.log(res)
+        })
       }
       mainProcess.previewContext.confirmCb = ()=>{ 
         if(isPwd == 1) { 
