@@ -122,17 +122,21 @@ export default {
         const data = res.returnObj || []
         if (type === 1) {
           this.preAppDataList = data.map((item) => {
-            return {
-              key: item.appId,
-              label: item.appName,
+            if (item) {
+              return {
+                key: item.appId,
+                label: item.appName,
+              }
             }
           })
           this.$emit('getApplyDataFun', this.preAppDataList)
         } else if (type === 2) {
           this.staAppDataList = data.map((item) => {
-            return {
-              key: item.appId,
-              label: item.appName,
+            if (item) {
+              return {
+                key: item.appId,
+                label: item.appName,
+              }
             }
           })
           this.$emit('getStaticDataFun', this.staAppDataList)
