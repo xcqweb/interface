@@ -130,10 +130,7 @@ function actionShow(action, mainProcess) {
  * 打开事件
  */
 function actionOpen(action, mainProcess) {
-  if (action.type === 'out') {
-    // 打开外部链接
-    window.location.href = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
-  } else if (action.innerType === 'page') {
+  if (action.innerType === 'page') {
     // 打开页面
     const pageType = mainProcess.getPageType(action.link)
     if (pageType === 'normal' && mainProcess.pageId !== action.link) {
@@ -143,8 +140,7 @@ function actionOpen(action, mainProcess) {
     }
   } else if (action.mutualType === 4) { // 打开外部链接
     const url = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
-    window.open(url, '_blank');
-    // 处理一下 携带的参数
+    window.location.href = url
   }
 }
 /**
