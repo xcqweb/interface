@@ -275,6 +275,8 @@ export default {
     },
     cancel() {
       this.visible = false;
+      this.targetPreAppList = [];
+      this.targetStaAppList = [];
     },
     submit() {
 
@@ -336,6 +338,8 @@ export default {
       this.requestUtil.post(this.urls.newImportDsApi.url, params).then(() => {
         this.loading = false;
         this.visible = false;
+        this.targetPreAppList = [];
+        this.targetStaAppList = [];
         Message.success(this.$t('dataSource.importSuccessfully'));
         this.$emit('callback');
       }).catch(() => {
