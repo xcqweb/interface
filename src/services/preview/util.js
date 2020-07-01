@@ -246,7 +246,14 @@ function actionHide(action, applyData) {
     destroyWs(applyData,action.link);
   }
 }
-
+// 获取uuiid
+function guid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0,
+      v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 /**
  * 绑定事件 （2019.8.30 版本后，mouseEvent只有click事件了，为了兼容以前的生产版本上的应用，暂时留着其他的事件）
  * @param {object} ele DOM节点
@@ -254,10 +261,7 @@ function actionHide(action, applyData) {
  */
 function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
   let {actionsInfo,commandInfo,shapeName,bindData} = cellInfo
-  let deviceId
-  if(bindData && bindData.dataSource && bindData.dataSource.deviceNameChild) {
-    deviceId = bindData.dataSource.deviceNameChild.id
-  }
+  let deviceId = bindData.dataSource.deviceNameChild.id
   let dealBubble = e=>{
     e = e || window.event;
     if (e.stopPropagation) {
@@ -280,10 +284,6 @@ function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
     ele.style.cursor = "pointer"
     ele.addEventListener('click',function(e) {
       dealBubble(e)
-      if(!deviceId) {
-        mainProcess.previewContext.warning('还未绑定设备，不能进行指令下发！')
-        return
-      }
       let {data,isPwd} = commandInfo
       console.log(data)
       mainProcess.previewContext.confirmVisible = true
@@ -292,6 +292,10 @@ function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
         let commandParams = {
           commandTemplateId:data.commandTemplateId,
           deviceId,
+          sourceOrg:'IoT',
+          sendSource:'configurationDesignStudio',
+          timestamp:new Date().getTime(),
+          serialnumber:guid(),
         }
         requestUtil.post(urls.commandSend.url,commandParams).then(res=>{
           console.log(res)

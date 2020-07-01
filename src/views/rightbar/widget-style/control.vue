@@ -42,6 +42,7 @@
 <script>
 import {Select,Option} from 'iview'
 import {mxUtils} from "../../../services/mxGlobal"
+import {tipDialog} from '../../../services/Utils'
 export default{
   components: {
     Select,
@@ -56,7 +57,13 @@ export default{
     }
   },
   created() {
-    this.requestUtil.get(this.urls.commandTemplate.url).then(res =>{
+    let bindData = this.getCellModelInfo('bindData')
+    if(!bindData || !bindData.dataSource) {
+      tipDialog('请先绑定设备')
+      return
+    }
+    let deviceModelId = bindData.dataSource.deviceTypeChild.id
+    this.requestUtil.get(`${this.urls.commandTemplate.url}${deviceModelId}`).then(res =>{
       this.controlList = res
       let target = this.getCellModelInfo('commandInfo')
       if(target.data) {
