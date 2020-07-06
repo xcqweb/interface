@@ -48,6 +48,20 @@
       @keyup.enter="changePwd"
       @blur="changePwd"
     >
+    <div style="display:flex;justify-content:space-between;margin-top:10px;">
+      <button
+        class="mutual-btn"
+        @click="back()"
+      >
+        {{ $t('cancel') }}
+      </button>
+      <button
+        class="mutual-btn selected"
+        @click="submit()"
+      >
+        {{ $t('submit') }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -89,6 +103,12 @@ export default{
     
   },
   methods: {
+    back() {
+      this.$emit("submitMutual")
+    },
+    submit() {
+      this.$emit("submitMutual")
+    },
     selectChange() {
       const params = {
         deviceId:this.bindData.dataSource.deviceNameChild.id,
