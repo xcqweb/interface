@@ -622,7 +622,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                         this.addMenuItems(menu, ['copy', 'cut', 'paste', '-', 'toFront', 'toBack', '-', 'group', 'ungroup', '-'], null, evt);
                     } 
                     menu.addSeparator();
-                    let arr = ['rectangle', 'ellipse', 'button', 'menulist', 'image', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag', 'text', 'light', 'progress', 'pipeline1', 'pipeline2', 'pipeline3', 'userimage', 'gaugeChart', 'lineChart','triangle','pentagram']
+                    let arr = ['rectangle', 'ellipse', 'button', 'menulist', 'image', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag', 'text', 'light', 'progress', 'pipeline1', 'pipeline2', 'pipeline3', 'userimage', 'gaugeChart', 'lineChart','triangle','pentagram','buttonSwitch']
                     if (arr.includes(shapeName)) {
                         this.addMenuItems(menu, ['resetHide', '-', 'delete'], null, evt);
                     }

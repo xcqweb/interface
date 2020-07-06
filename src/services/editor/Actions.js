@@ -132,7 +132,7 @@ Actions.prototype.init = function()
             })
             window.open(page.href,'_blank')
         })
-        ui.showDialog(dlg.container, 410, 160, true, false, null, null, mxResources.get('preview'))
+        ui.showDialog(dlg.container, 410, 150, true, false, null, null, mxResources.get('preview'))
     }, true, null, Editor.ctrlKey + '+Shift+P');
    
      // 文件操作

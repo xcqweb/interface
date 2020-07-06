@@ -616,7 +616,7 @@ Sidebar.prototype.addWidgetNameShow = function() {
         shapeScrollTopHeight = parseInt($(".geSidebarContainer-bottom").scrollTop())
     })
     // 鼠标滑过 悬浮控件名字
-    let controlName = ['text', 'beeline', 'rectangle', 'ellipse', 'menulist', 'button', 'tableBox', 'image', 'light', 'pipeline1', 'progress', 'pipeline2', 'pipeline3', 'linkTag', 'lineChart', 'gaugeChart','triangle','pentagram']
+    let controlName = ['text', 'beeline', 'rectangle', 'ellipse', 'menulist', 'button', 'tableBox', 'image', 'light', 'pipeline1', 'progress', 'pipeline2', 'pipeline3', 'linkTag', 'lineChart', 'gaugeChart','triangle','pentagram','buttonSwitch']
     let controlNameText = {
         'text': mxResources.get('text'),
         'beeline': mxResources.get('beeline'),
@@ -636,6 +636,7 @@ Sidebar.prototype.addWidgetNameShow = function() {
         'gaugeChart': mxResources.get('gaugeChart'),
         'triangle':mxResources.get('triangle'),
         'pentagram':mxResources.get('pentagram'),
+        'buttonSwitch':mxResources.get('buttonSwitch'),
     }
     $('.geSidebarContainer-bottom').on('mouseenter', '.geSidebar>a', function (evt) {
         evt.preventDefault()
@@ -784,7 +785,9 @@ Sidebar.prototype.addGeneralPalette = function()
         this.createVertexTemplateEntry('shape=linkTag;html=1;strokeColor=none;fillColor=none;verticalAlign=middle;align=center', 70, 40, '<a style="width:100%;height:100%;color: #3D91F7;display: table-cell;vertical-align: bottom;text-decoration: underline" class="linkTag">Link</a>', 'Link'),
         // 三角形
         this.createVertexTemplateEntry('shape=triangle;triangle;whiteSpace=wrap;strokeColor=#000;html=1;', 60, 80, '', '三角形', null, null, '三角形'),
-    ];
+        // 控制开关
+        // this.createVertexTemplateEntry('shape=buttonSwitch;labelPosition=center;verticalLabelPosition=middle;align=center;html=1;dx=10;fillColor=#E6E6E6;strokeColor=none;', 70, 40, '<div style="display: inline-block;text-align:inherit;text-decoration: inherit;">switch</div>', '控制开关')
+      ];
     return fns
 };
 

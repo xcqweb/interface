@@ -3702,7 +3702,116 @@
 	 	}
 	 	
 	 	return graphCreateEdgeHandler.apply(this, arguments);
-	 };
+   };
+   
+   function mxShapeBasicShadedButton(bounds, fill, stroke, strokewidth)
+{
+	mxShape.call(this);
+	this.bounds = bounds;
+	this.fill = fill;
+	this.stroke = stroke;
+	this.strokewidth = (strokewidth != null) ? strokewidth : 1;
+	this.dx = 0.5;
+};
+
+/**
+* Extends mxShape.
+*/
+mxUtils.extend(mxShapeBasicShadedButton, mxActor);
+
+mxShapeBasicShadedButton.prototype.customProperties = [
+	{name: 'dx', dispName: 'Button Height', type: 'float', min:0, defVal:10}
+];
+
+mxShapeBasicShadedButton.prototype.cst = {SHADED_BUTTON : 'buttonSwitch'};
+
+/**
+* Function: paintVertexShape
+* 
+* Paints the vertex shape.
+*/
+mxShapeBasicShadedButton.prototype.initWh={w:70,h:40}
+mxShapeBasicShadedButton.prototype.paintVertexShape = function(c, x, y, w, h)
+{
+	c.translate(x, y);
+	
+	c.setShadow(false);
+  var dx,dy
+  if(w==this.initWh.w  && h==this.initWh.h) {
+    dx = parseFloat(mxUtils.getValue(this.style, 'dx', this.dx))
+    dy = dx
+  }
+  let defVal = this.customProperties[0]['defVal']
+  dx = defVal*w/this.initWh.w
+  dy = defVal*h/this.initWh.h
+	c.begin();
+	c.moveTo(0, 0);
+	c.lineTo(w, 0);
+	c.lineTo(w, h);
+	c.lineTo(0, h);
+	c.close();
+	c.fill();
+	
+	c.setFillColor('#ffffff');
+	c.setAlpha(0.25);
+	c.begin();
+	c.moveTo(0, h);
+	c.lineTo(0, 0);
+	c.lineTo(dx, dy);
+	c.lineTo(dx, h - dy);
+	c.close();
+	c.fill();
+	
+	c.setAlpha(0.5);
+	c.begin();
+	c.moveTo(0, 0);
+	c.lineTo(w, 0);
+	c.lineTo(w - dx, dy);
+	c.lineTo(dx, dy);
+	c.close();
+	c.fill();
+	
+	c.setFillColor('#000000');
+	c.setAlpha(0.25);
+	c.begin();
+	c.moveTo(w, 0);
+	c.lineTo(w, h);
+	c.lineTo(w - dx, h - dy);
+	c.lineTo(w - dx, dy);
+	c.close();
+	c.fill();
+	
+	c.setAlpha(0.5);
+	c.begin();
+	c.moveTo(0, h);
+	c.lineTo(dx, h - dy);
+	c.lineTo(w - dx, h - dy);
+	c.lineTo(w, h);
+	c.close();
+	c.fill();
+	
+	
+};
+
+mxCellRenderer.registerShape(mxShapeBasicShadedButton.prototype.cst.SHADED_BUTTON, mxShapeBasicShadedButton);
+
+mxShapeBasicShadedButton.prototype.constraints = null;
+Graph.handleFactory[mxShapeBasicShadedButton.prototype.cst.SHADED_BUTTON] = function(state)
+{
+	// var handles = [Graph.createHandle(state, ['dx'], function(bounds)
+	// {
+	// 	var dx = Math.max(0, Math.min(bounds.width / 2, bounds.width / 2, parseFloat(mxUtils.getValue(this.state.style, 'dx', this.dx))));
+
+	// 	return new mxPoint(bounds.x + dx, bounds.y + dx);
+	// }, function(bounds, pt)
+	// {
+	// 	this.state.style['dx'] = Math.round(100 * Math.max(0, Math.min(bounds.height / 2, bounds.width / 2, pt.x - bounds.x))) / 100;
+	// })];
+			
+  // return handles;
+ 
+};
+
 
     // Defines connection points for all shapes
     IsoRectangleShape.prototype.constraints = [];

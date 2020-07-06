@@ -633,6 +633,10 @@ Editor.prototype.palettesInfo = {
     triangle:{
         name:'三角形',
         num:0,
+    },
+    buttonSwitch:{
+        name:'控制开关',
+        num:0,
     }
 }
 /**

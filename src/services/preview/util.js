@@ -246,7 +246,14 @@ function actionHide(action, applyData) {
     destroyWs(applyData,action.link);
   }
 }
-
+// 获取uuiid
+function guid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0,
+      v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 /**
  * 绑定事件 （2019.8.30 版本后，mouseEvent只有click事件了，为了兼容以前的生产版本上的应用，暂时留着其他的事件）
  * @param {object} ele DOM节点
@@ -362,7 +369,7 @@ function dealCharts(mainProcess,cell) {
   let needAddEvent = false
   if(cell.bindData && cell.bindData.params) {
     let params = cell.bindData.params
-    selectCon.style.cssText = `display:flex;position:relative;width:${cell.width}px;height:24px;left:0;top:24px;justify-content:flex-end;z-index:10;`
+    selectCon.style.cssText = `display:flex;position:absolute;width:${cell.width}px;height:24px;left:0;top:0;justify-content:flex-end;z-index:10;`
     if(params.length > 1) {
       selectCon.appendChild(createSelect(params))
     }
@@ -425,7 +432,7 @@ function dealCharts(mainProcess,cell) {
               let checkItem = res.durations.find((item) => {
                 return item.checked === true
               })
-              let chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
+              let chartDataLen = Math.ceil(checkItem && checkItem.duration / res.rateCycle)
               $(con).data("chartDataLen", chartDataLen)
               if (markLine && markLine.data && markLine.data.length) {
                 markLine.data.forEach(item => {
@@ -447,33 +454,35 @@ function dealCharts(mainProcess,cell) {
                   for(let i = 0;i < res.length;i++) {
                     let tempArr = res[i]
                     let device = devices[i]
-                    tempLegend.push(device.name)
-                    tempOptions.legend.data = tempLegend
-                    tempSeries.push({
-                      type: 'line',
-                      name: device.name,
-                      markLine: markLine,
-                      data: [],
-                      deviceId: device.id, //设备id，额外添加的，匹配数据时候用
-                    })
-                    if(JSON.stringify(res[i]) === '{}') {
-                      continue
-                    }
-                    if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
-                      let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
-                      xAxisData = []
-                      for (let key of keys) {
-                        // if (!isNaN(Number(tempArr.resMap[key]))) {
-                        xAxisData.push(timeFormate(key, false))
-                        tempSeries[i].data.push(tempArr.resMap[key])
-                        // }
+                    if(device) {
+                      tempLegend.push(device.name)
+                      tempOptions.legend.data = tempLegend
+                      tempSeries.push({
+                        type: 'line',
+                        name: device.name,
+                        markLine: markLine,
+                        data: [],
+                        deviceId: device.id, //设备id，额外添加的，匹配数据时候用
+                      })
+                      if(JSON.stringify(res[i]) === '{}') {
+                        continue
                       }
-                      if(tempOptions.yAxis.max) {
-                        tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)
-                      }else{
-                        tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
+                      if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
+                        let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
+                        xAxisData = []
+                        for (let key of keys) {
+                          // if (!isNaN(Number(tempArr.resMap[key]))) {
+                          xAxisData.push(timeFormate(key, false))
+                          tempSeries[i].data.push(tempArr.resMap[key])
+                          // }
+                        }
+                        if(tempOptions.yAxis.max) {
+                          tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)
+                        }else{
+                          tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
+                        }
+                        tempOptions.series = tempSeries
                       }
-                      tempOptions.series = tempSeries
                     }
                   }
                   tempOptions.xAxis.data = xAxisData
@@ -587,20 +596,25 @@ function timeFormate(time,isMilliSecond) {
 function insertSvg(shapeXmls,key,cell) {
   let {width,height,fillColor,strokeColor,strokeWidth,strokeStyle} = cell
   let inner = shapeXmls[key].path
-  inner.setAttribute('fill', fillColor)
-  inner.setAttribute('stroke', strokeColor)
-  inner.setAttribute('stroke-width', strokeWidth)
-  inner.setAttribute('vector-effect','non-scaling-stroke')
+  inner[0].setAttribute('fill', fillColor)
+  inner[0].setAttribute('stroke', strokeColor)
+  inner[0].setAttribute('stroke-width', strokeWidth)
+  inner[0].setAttribute('vector-effect','non-scaling-stroke')
   let dashArr = '0 0'
   if(strokeStyle) {
     dashArr = `${strokeWidth * 3} ${strokeWidth * 3}`
   }
-  inner.setAttribute('stroke-dasharray',dashArr)
+  inner[0].setAttribute('stroke-dasharray',dashArr)
   let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   svg.setAttribute('viewBox', shapeXmls[key].viewBox)
   svg.setAttribute('width', width)
   svg.setAttribute('height', height)
-  svg.innerHTML = inner.outerHTML
+  svg.setAttribute('preserveAspectRatio',"none slice")
+  let res = ''
+  for(let item of inner) {
+    res += item.outerHTML
+  }
+  svg.innerHTML = res
   return svg
 }
 function dealTriangle(cell) {
@@ -642,9 +656,9 @@ function dealAlignText(cell) {
   textCon.innerHTML = `${value}`
   return textCon
 }
-function dealPentagram(mainProcess,cell) {
+function dealSvgWidgets(mainProcess,cell,shapeName) {
   let con = document.createElement('div')
-  let content = insertSvg(mainProcess.shapeXmls,'pentagram',cell)
+  let content = insertSvg(mainProcess.shapeXmls,shapeName,cell)
   con.appendChild(content)
   con.appendChild(dealAlignText(cell))
   return con
@@ -661,7 +675,7 @@ function loadShapeXml() {
       for (let shape of shapes) {
         obj[shape.getAttribute('name')] = {
           viewBox: shape.getAttribute('viewBox'),
-          path: shape.childNodes[1]
+          path: shape.children
         };
       }
       resolve(obj)
@@ -680,6 +694,6 @@ function getQueryVariable(variable) {
   return null
 }
 export {
-  removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,dealPentagram,loadShapeXml,
+  removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,dealSvgWidgets,loadShapeXml,
   dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout,dealDefaultParams,insertSvg,svgShape,setSvgImageHref,getQueryVariable
 }

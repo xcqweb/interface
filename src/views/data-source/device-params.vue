@@ -34,9 +34,6 @@ export default {
       this.getData();
     },
   },
-  mounted() {
-    this.getData();
-  },
   methods: {
     getDeviceParamsCallback(res) {
       let data = null;

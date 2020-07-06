@@ -143,6 +143,11 @@ export default {
   popupNameCanNotEmpty: '弹窗名称不能为空',
   triangle: '三角形',
   pentagram: '五角星',
+  buttonSwitch:'控制开关',
+  controlS:'控制',
+  opPwd:'操作密码',
+  plsInputOpPwd:'请输入操作密码',
+  opConfirm:'操作确认',
   device: '设备', // 2020/5/19
   predictionApply: '预测应用',
   statisticApply: '统计应用',

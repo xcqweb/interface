@@ -122,12 +122,10 @@ function setterRealData(res, fileSystem,mainProcess) {
                   options.xAxis[0].data.splice(0,  options.xAxis[0].data.length - chartDataLen)
                 }
                 if (val || val == 0) {
-                  // if (!isNaN(Number(val))) {
-                  ser.data.push(val);
+                  ser.data.push(val)
                   let yMax = options.yAxis[0].max;
                   options.yAxis[0].max = Math.max(yMax, val)
                   options.xAxis[0].data.push(timeFormate(item.timestamp, false))
-                  // }
                 }
               }
             })
@@ -384,8 +382,7 @@ function createWsReal(pageId, applyData, fileSystem,mainProcess) {
     if (deviceParams.length === 0 || !websocketUrlReal) {
       return
     }
-    const token = getCookie('token')
-    let ws = new WebSocket(res.data, token) // 提交时使用这个
+    let ws = new WebSocket(res.data) // 提交时使用这个
     initialWs(ws, pageId, applyData, fileSystem,mainProcess)
     if(applyData[pageId].wsReal) {
       applyData[pageId].wsReal.close()

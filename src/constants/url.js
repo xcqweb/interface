@@ -23,7 +23,9 @@ export default {
   normalParam: {url: 'api/device/deviceModel/param/normal/select', 'desc': '获取设备参数'},
   fictitiousParam: {url: 'api/device/deviceModel/param/fictitious/select', 'desc': '获取虚拟参数'},
   deviceParamGenerate: {url: 'api/device/index/deviceParams', 'desc': '生成拼接的设备参数接口'},
-
+  commandTemplate: {url: '/api/device/deviceModel/command/', 'desc': '根据设备模板id查询指令模板'},
+  commandSend: {url: '/api/command/center/send', 'desc': '下发指令'},
+  commandTplVariable: {url: '/api/device/deviceModel/command/getVariable', 'desc': '根据指令模板id查询对应的属性变量'},
   // 20200601
   newDeviceTypeList: {url: `api/device/deviceType/child`, 'desc': '查询位置节点的子节点_设备分类'},
   newDeviceTemplateLIST: {url: `api/device/deviceModel/page`, 'desc': '根据类型获取模版列表'},

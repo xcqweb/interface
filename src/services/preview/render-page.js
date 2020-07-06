@@ -7,7 +7,7 @@ let fileSystem //文件服务器host
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
-import {removeEle, destroyWs, insertImage,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout,throttleFun,dealTriangle,dealPentagram} from './util'
+import {removeEle, destroyWs, insertImage,insertEdge, bindEvent,dealProgress,dealPipeline, dealCharts,dealLight,hideFrameLayout,throttleFun,dealTriangle,dealSvgWidgets} from './util'
 import {createWsReal,getLastData} from './bind-data'
 import GetNodeInfo from './node-info'
 import {mxUtils} from './../../services/mxGlobal'
@@ -421,8 +421,13 @@ class PreviewPage {
         const data = paramData.data
         let html = '<ul style="height:100%;display:flex;flex-direction:column;justify-content:center;">'
         html += `<li>${paramData.time}</li>`
+        let tempVal
         for (let key in data) {
-          html += `<li>${key}=${data[key] ? data[key] : 'NaN'}</li>`
+          tempVal = data[key]
+          if(tempVal === null || tempVal === undefined) {
+            tempVal = 'NaN'
+          }
+          html += `<li>${key}=${tempVal}</li>`
         }
         html += '</ul>'
         $formatLayer.html(html).show()
@@ -543,20 +548,16 @@ class PreviewPage {
     } else if(shapeName == 'triangle') {
       cellHtml = dealTriangle(cell)
     } else if(shapeName.includes('pentagram')) {
-      cellHtml = dealPentagram(this.mainProcess,cell)
+      cellHtml = dealSvgWidgets(this.mainProcess,cell,'pentagram')
+    } else if(shapeName.includes('buttonSwitch')) {
+      cellHtml = dealSvgWidgets(this.mainProcess,cell,'buttonSwitch')
     } else {
       // 其他
       cellHtml = document.createElement('p');
       if(shapeName === 'ellipse') {
         cellHtml.style.borderRadius = "50%"
       }
-      //  'triangle', 'pentagram',
-      // const arrTextHandle = ['rectangle', 'ellipse']; // 文字处理
-      // if (arrTextHandle.includes(shapeName)) {
-      //     cellHtml.innerHTML = `<label style="line-height:${cell.fontSize}px;display:inline-block;">${cell.value}</label>`
-      // } else {
       cellHtml.innerHTML = cell.value
-      // }
     }
     if (shapeName !== 'text') { // 文字的居中处理 在上面使用translate处理过了
       if (cell.verticalAlign === 'top') {
@@ -574,16 +575,20 @@ class PreviewPage {
         cellHtml.style.justifyContent = 'center'
       }
     }
-    if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress','triangle','pentagram'].includes(shapeName)) {
+    if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress','triangle','pentagram','buttonSwitch'].includes(shapeName)) {
       cellHtml.style.backgroundColor = 'transparent'
     }else{
       if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none') && shapeName != 'tableBox') {
         cellHtml.style.backgroundColor = 'transparent'
       } else {
-        cellHtml.style.backgroundColor = cell.fillColor
+        let tempBgColor = cell.fillColor
+        if(cell.fillColor == 'none') {
+          tempBgColor = 'transparent'
+        }
+        cellHtml.style.backgroundColor = tempBgColor
       }
     }
-    if(shapeName != 'beeline' && shapeName != 'triangle' && !shapeName.includes('pentagram')) {
+    if(!['buttonSwitch','beeline','triangle','pentagram'].includes(shapeName)) {
       let borderStyle = 'solid'
       if(cell.strokeStyle) {
         borderStyle = 'dashed'

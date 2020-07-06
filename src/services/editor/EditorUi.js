@@ -3133,7 +3133,6 @@ EditorUi.prototype.addSplitHandler = function(elt, horizontal, dx, onChange)
 EditorUi.prototype.showDialog = function(elt, w, h, modal, closable, onClose, noScroll, title)
 {
     this.editor.graph.tooltipHandler.hideTooltip();
-
     if (this.dialogs == null)
     {
         this.dialogs = [];

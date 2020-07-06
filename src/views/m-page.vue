@@ -107,6 +107,10 @@ export default {
           myEditorUi.editor.setApplyId(editData.studioId)
           myEditorUi.editor.setAppType(editData.appType)
           myEditorUi.editor.setDescribe(editData.descript)
+          let pageArr = myEditorUi.editor.pagesRank['normal']
+          if(pageArr && pageArr.length) {
+            myEditorUi.editor.setCurrentPage(pageArr[0])
+          }
           if(editData.theme) {
             myEditorUi.theme = JSON.parse(editData.theme)
           }else{
@@ -119,10 +123,10 @@ export default {
         }
         Vue.prototype.myEditorUi = myEditorUi
         this.init()
-        let timer = setTimeout(()=>{
+        let timerFirst = setTimeout(()=>{
           this.myEditorUi.editor.undoManager.clear() // 首次进入页面，setGraphXml 触发了 graphModel的undoManager,这里清空下
-          clearTimeout(timer)
-          timer = null
+          clearTimeout(timerFirst)
+          timerFirst = null
         },30)
         this.isInited = true
       })

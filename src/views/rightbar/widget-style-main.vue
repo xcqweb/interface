@@ -39,7 +39,6 @@
     />
     <State
       v-if="tab==2 && stateList.includes(shapeName)"
-      ref="stateRef"
       :key="refresh+2"
     />
     <MutualMain

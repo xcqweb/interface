@@ -24,7 +24,6 @@ export default {
       if (this.virtualParams) {
         items.push(this.virtualParams);
       }
-      console.log(items)
       return items;
     },
   },

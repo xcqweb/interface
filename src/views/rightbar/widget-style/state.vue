@@ -20,6 +20,7 @@
           {{ state.name }}
           <img
             v-if="shapeName!=='light'"
+            style="cursor:pointer;"
             src="../../../assets/images/rightsidebar/dele_ic.png"
             @click="removeState(state,index,$event)"
           >
