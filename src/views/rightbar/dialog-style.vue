@@ -34,6 +34,8 @@
       </div>
       <div
         class="item-container"
+
+        
         style="margin-left:10px;"
       >
         <span style="color:#797979;margin:0 6px;">{{ $t('height') }}</span>

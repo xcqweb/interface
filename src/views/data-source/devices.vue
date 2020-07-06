@@ -172,7 +172,7 @@ export default {
     this.visible = this.value;
   },
   created() {
-    this.params.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+    this.params.studioId = window.sessionStorage.getItem('applyId');
     this.getDeviceTypes();
   },
   methods: {
@@ -292,22 +292,17 @@ export default {
         return;
       }
       this.loading = true;
-      // const list = [];
-      let studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-      let studioDevs = this.selectedItems.map(item => {
-        return {
+      const list = [];
+      const studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+      this.selectedItems.forEach(item => {
+        list.push({
           studioId,
           deviceId: item.deviceId,
           deviceModelId: item.deviceModelId,
           deviceTypeId: item.deviceTypeId,
-        }
+        });
       });
-      const params = {
-        appDataSources: [],
-        studioDevs,
-      }
-
-      this.requestUtil.post('api/iot-cds/cds/configDevice', params).then(() => {
+      this.requestUtil.post('api/iot-cds/cds/configDevice', {list}).then(() => {
         this.loading = false;
         this.visible = false;
         Message.success(this.$t('dataSource.importSuccessfully'));

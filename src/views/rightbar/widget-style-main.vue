@@ -25,7 +25,7 @@
         {{ $t('action') }}
       </div>
       <div
-        v-if="dataList.includes(shapeName) && isShowDataTab"
+        v-if="dataList.includes(shapeName) && isShowDataTab && !$store.state.main.isTemplateApply"
         class="tab"
         :class="{'selected':tab==4}"
         @click="changeTab(4)"
@@ -110,7 +110,7 @@ export default{
   methods: {
     changeTab(index) {
       this.tab = index
-      if (this.tab === 5) {
+      if (this.tab === 4) {
         VueEvent.$emit('isShowFootBar',{show:true,isUp:true})
       }
     },

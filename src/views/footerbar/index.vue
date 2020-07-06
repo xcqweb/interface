@@ -9,21 +9,19 @@
               :animated="false"
               @on-click="switchTabHandle"
             >
-              <TabPane
-                v-if="!$store.state.main.isTemplateApply"
+              <TabPane 
+                v-if="!$store.state.main.isTemplateApply" 
                 :label="$t(dataSourceName[0])"
               />
               <TabPane
-                v-if="ifShowDataFlag"
                 :label="$t(dataSourceName[1])"
               />
-              <TabPane
-                :label="$t(dataSourceName[2])"
-              />
+
+              <TabPane :label="$t(dataSourceName[2])" />
             </Tabs>
           </div>
           <div
-            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag"
+            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag || tabsNum ==0 && $store.state.main.isTemplateApply && footerContent && ifShowDataFlag"
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
@@ -69,7 +67,7 @@
           </div>
           <!--数据显示-->
           <div
-            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length"
+            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length || tabsNum == 0 && $store.state.main.isTemplateApply && ifShowDataFlag"
             class="footer-common dataDisplayList"
           >
             <Table
@@ -114,10 +112,11 @@
           </div>
           <!--状态模型-->
           <div
-            v-show="tabsNum === 2 && stateList && stateList.length > 1 && cellsCount == 1"
+            v-show="tabsNum === 2 || tabsNum==1 && $store.state.main.isTemplateApply"
             class="footer-common stateList"
           >
             <div
+              v-if="stateList && stateList.length > 1 && cellsCount == 1"
               class="footerTabs2Ul"
             >
               <template v-for="(item, index) in stateList">
@@ -190,7 +189,7 @@ const allShapes = [
   "lineChart",
   "gaugeChart",
   'triangle',
-  'pentagram',
+  'pentagram'
 ]; //可以绑定数据的控件
 const supportDataShow = [
   "rectangle",
@@ -219,6 +218,7 @@ export default {
     return {
       visible: false,
       multiple:true,
+      value1: "1",
       dataSourceName: [
         "dataSources",
         "footBar.dataDisplay",
@@ -387,20 +387,23 @@ export default {
     initDataSource() {
       let startBindData = this.getCellModelInfo("bindData")
       if (startBindData && startBindData.dataSource) {
+        console.log(startBindData)
         let deviceNameChild = startBindData.dataSource.deviceNameChild
         this.deviceModelId = startBindData.dataSource.deviceModel.id
         this.dataSourceList = []
-        if (!Array.isArray(deviceNameChild)) {
+        if (deviceNameChild && !Array.isArray(deviceNameChild)) {
           deviceNameChild = [deviceNameChild]
         }
-        deviceNameChild.forEach(item => {
-          let obj = {}
-          obj.typeName = startBindData.dataSource.deviceTypeChild.name
-          obj.deviceName = item.name
-          obj.deviceId = item.id
-          obj.modelName = startBindData.dataSource.deviceModel.name
-          this.dataSourceList.push(obj)
-        })
+        if(deviceNameChild) {
+          deviceNameChild.forEach(item => {
+            let obj = {}
+            obj.typeName = startBindData.dataSource.deviceTypeChild.name
+            obj.deviceName = item.name
+            obj.deviceId = item.id
+            obj.modelName = startBindData.dataSource.deviceModel.name
+            this.dataSourceList.push(obj)
+          })
+        }
       } else {
         this.deviceModelId = null
         this.dataSourceList = []
@@ -414,6 +417,10 @@ export default {
           studioId: sessionStorage.getItem("applyId"),
           deviceModelId: this.deviceModelId
         };
+        if (!objData.deviceModelId) {
+          return;
+        }
+        console.log('entry')
         this.requestUtil.post(this.urls.getModelList.url, objData).then(res => {
           if (res.returnObj) {
             this.modelList = res.returnObj
@@ -449,11 +456,18 @@ export default {
     },
     addParam() {
       let startBindData = this.getCellModelInfo("bindData")
-      let deviceNameChild = startBindData.dataSource.deviceNameChild
-      if (!Array.isArray(deviceNameChild)) {
-        deviceNameChild = [deviceNameChild]
+      if(this.$store.state.main.isTemplateApply) {
+        this.deviceModelId = sessionStorage.getItem('modelId')
+        let temp = {dataSource:{}}
+        temp.dataSource.deviceModel = {id:this.deviceModelId,name:'-'}
+        this.setCellModelInfo("bindData",temp)
+      } else {
+        let deviceNameChild = startBindData.dataSource.deviceNameChild
+        if (!Array.isArray(deviceNameChild)) {
+          deviceNameChild = [deviceNameChild]
+        }
+        this.deviceId = deviceNameChild[0].id          
       }
-      this.deviceId = deviceNameChild[0].id            
       this.visible = true
     },
     addParamDone(data) {

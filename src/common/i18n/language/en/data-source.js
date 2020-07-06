@@ -37,11 +37,12 @@ export default {
   ruleIsRequired: 'Please add model first',
   ruleCanNotEmpty: 'Please fill the condition of {label} ',
   atLeaseSelectOneItem: 'Please choose at least one',
-  atLeaseSelectOneDevice: 'Please choose at least one device',
+  atLeaseSelectOneDevice: 'Please choose at least one device or apply',
   importSuccessfully: 'Import datasource successfully',
   confirmToRemoveDeviceType: 'Sure to remove all devices of the choosed device type',
   confirmToRemoveDeviceModel: 'Sure to remvoe all devices of the choosed device model',
   confirmToRemoveDevice: 'Sure to remove the choosed devices',
   removeDeviceSuccessfully: 'Device removed succcessfully',
   enterParameterName: 'Please input param name',
+  applyList: 'application List', // 2020520
 };

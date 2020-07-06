@@ -1,22 +1,14 @@
 <template>
   <div class="device-data-wrap flex-row">
-    <!-- 设备类型 -->
+    <!-- 应用列表 -->
     <device-list
       class="device-data"
-      :title="$t('dataSource.deviceType')"
+      :title="$t('dataSource.applyList')"
       :width="200"
-      :data="typeData"
-      prop="deviceTypeName"
+      :data="predData"
+      prop="appName"
+      true-prop="appId"
       @click="handleTypeClick"
-    />
-    <!-- 设备型号 -->
-    <device-list
-      class="device-data"
-      :title="$t('dataSource.deviceModel')"
-      :width="200"
-      :data="modelData"
-      prop="deviceModelName"
-      @click="handleModelClick"
     />
     <!-- 模型列表 -->
     <model-list
@@ -24,8 +16,7 @@
       class="device-data"
       :title="$t('dataSource.models')"
       :width="200"
-      :device-model-id="model.deviceModelId"
-      :device-type-id="model.deviceTypeId"
+      :device-model-id="applyObj.forecastId"
       @on-edit="handleEditModel"
     />
     <!-- 编辑模型 -->
@@ -63,10 +54,7 @@ export default {
   },
   methods: {
     handleTypeClick(item) {
-      this.model.deviceTypeId = item.deviceTypeId;
-    },
-    handleModelClick(item) {
-      this.model.deviceModelId = item.deviceModelId;
+      this.applyObj.forecastId = item.forecastId;
     },
     handleEditModel(model = null) {
       this.editModel = model;

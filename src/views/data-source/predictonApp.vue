@@ -3,42 +3,24 @@
     <!-- 设备类型 -->
     <device-data
       class="device-data"
-      :title="$t('dataSource.deviceType')"
+      :title="$t('dataSource.applyList')"
       :width="200"
-      :data="typeData"
-      prop="deviceTypeName"
-      true-prop="deviceTypeId"
+      :data="predData"
+      prop="appName"
+      true-prop="appId"
       @click="handleTypeClick"
       @remove="handleTypeRemove"
     />
-    <!-- 设备型号 -->
-    <device-data
-      class="device-data"
-      :title="$t('dataSource.deviceModel')"
-      :width="200"
-      :data="modelData"
-      prop="deviceModelName"
-      true-prop="deviceModelId"
-      @click="handleModelClick"
-      @remove="handleModelRemove"
-    />
     <!-- 参数列表 -->
-    <device-params
+    <device-list
       class="device-data"
       :title="$t('dataSource.parameters')"
       :width="300"
-      :device-model-id="model.deviceModelId"
-    />
-    <!-- 设备列表 -->
-    <device-data
-      class="device-data"
-      :title="$t('dataSource.devices')"
-      :width="200"
-      :data="deviceData"
-      :show-active="false"
-      prop="deviceName"
-      true-prop="id"
-      @remove="handleDeviceRemove"
+      :data="preParamData"
+      prop="appName"
+      true-prop="appId"
+      @click="handleTypeClick2"
+      @remove="handleTypeRemove"
     />
     <!-- 移除确认弹窗 -->
     <component
@@ -54,6 +36,7 @@
 <script>
 import {Message} from 'iview'
 import DeviceData from './device-data'
+import DeviceList from './device-list'
 import DeviceParams from './device-params'
 import DatasourceStore from './js/datasource-store'
 import removeCommon from './js/remove-common'
@@ -62,6 +45,7 @@ export default {
   components: {
     DeviceData,
     DeviceParams,
+    DeviceList,
   },
   mixins: [DatasourceStore, removeCommon],
   props: {
@@ -73,24 +57,34 @@ export default {
   data() {
     return {
       paramData: [],
+      preParamData: [],
     };
   },
   watch: {
     reloadData() {
-      this.getStudioDeviceData();
       this.getPredictionData();
     },
   },
   mounted() {
-    this.getStudioDeviceData();
+    console.log(this.applyObj.forecastId)
     this.getPredictionData();
+    this.getApplyParamsData();
   },
   methods: {
     handleTypeClick(item) {
       this.model.deviceTypeId = item.deviceTypeId;
     },
-    handleModelClick(item) {
-      this.model.deviceModelId = item.deviceModelId;
+    handleTypeClick2(item) {
+      this.applyObj.forecastId = item.forecastId;
+    },
+    getApplyParamsData() {
+      const params = {
+        appId: this.applyObj.forecastId,
+        type: 1,
+      }
+      this.requestUtil.post(this.urls.newApplyParams.url, params).then(res => {
+        console.log(res)
+      })
     },
     handleTypeRemove(items) {
       const ids = [];
@@ -136,7 +130,6 @@ export default {
       };
       this.requestUtil.post(this.urls.deleteDeviceList.url, params).then(() => {
         Message.success(this.$t('dataSource.removeDeviceSuccessfully'));
-        this.getStudioDeviceData();
         this.getPredictionData();
       });
     },

@@ -857,6 +857,12 @@ div.mxWindow .geButton {
 	font-size: 12px;
 	top: 24px;
 }
+.model-tab::after {
+	content: "模型";
+	position: relative;
+	font-size: 12px;
+	top: 24px;
+}
 .en .data-tab::after {
 	content: "Data";
 }

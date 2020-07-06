@@ -198,8 +198,9 @@ export default{
           }
         }
       }
-      this.setStates(states)//重置state列表
-      this.setModeInfoStates(states)
+      const cloneStates = JSON.parse(JSON.stringify(states)) // 修复setStates改变imgInfo.url 真实路径问题
+      this.setStates(cloneStates)//重置state列表
+      this.setModeInfoStates(states) 
       return states
     },
     setModeInfoStates(states) {

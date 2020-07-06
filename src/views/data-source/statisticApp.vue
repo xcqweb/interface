@@ -1,26 +1,15 @@
 <template>
   <div class="device-data-wrap">
-    <!-- 设备类型 -->
-    <device-data
+    <!-- 应用列表 -->
+    <device-list
       class="device-data"
-      :title="$t('dataSource.deviceType')"
+      :title="$t('dataSource.applyList')"
       :width="200"
-      :data="typeData"
-      prop="deviceTypeName"
-      true-prop="deviceTypeId"
+      :data="statiData"
+      prop="appName"
+      true-prop="appId"
       @click="handleTypeClick"
       @remove="handleTypeRemove"
-    />
-    <!-- 设备型号 -->
-    <device-data
-      class="device-data"
-      :title="$t('dataSource.deviceModel')"
-      :width="200"
-      :data="modelData"
-      prop="deviceModelName"
-      true-prop="deviceModelId"
-      @click="handleModelClick"
-      @remove="handleModelRemove"
     />
     <!-- 参数列表 -->
     <device-params
@@ -28,17 +17,6 @@
       :title="$t('dataSource.parameters')"
       :width="300"
       :device-model-id="model.deviceModelId"
-    />
-    <!-- 设备列表 -->
-    <device-data
-      class="device-data"
-      :title="$t('dataSource.devices')"
-      :width="200"
-      :data="deviceData"
-      :show-active="false"
-      prop="deviceName"
-      true-prop="id"
-      @remove="handleDeviceRemove"
     />
     <!-- 移除确认弹窗 -->
     <component
@@ -53,6 +31,7 @@
 
 <script>
 import {Message} from 'iview'
+import DeviceList from './device-list'
 import DeviceData from './device-data'
 import DeviceParams from './device-params'
 import DatasourceStore from './js/datasource-store'
@@ -62,6 +41,7 @@ export default {
   components: {
     DeviceData,
     DeviceParams,
+    DeviceList,
   },
   mixins: [DatasourceStore, removeCommon],
   props: {
@@ -77,20 +57,15 @@ export default {
   },
   watch: {
     reloadData() {
-      this.getStudioDeviceData();
-      this.getPredictionData();
+      this.getStatisticData();
     },
   },
   mounted() {
-    this.getStudioDeviceData();
-    this.getPredictionData();
+    this.getStatisticData();
   },
   methods: {
     handleTypeClick(item) {
-      this.model.deviceTypeId = item.deviceTypeId;
-    },
-    handleModelClick(item) {
-      this.model.deviceModelId = item.deviceModelId;
+      this.applyObj.appId = item.appId;
     },
     handleTypeRemove(items) {
       const ids = [];
@@ -136,8 +111,7 @@ export default {
       };
       this.requestUtil.post(this.urls.deleteDeviceList.url, params).then(() => {
         Message.success(this.$t('dataSource.removeDeviceSuccessfully'));
-        this.getStudioDeviceData();
-        this.getPredictionData();
+        this.getStatisticData();
       });
     },
   },

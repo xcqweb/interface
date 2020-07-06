@@ -4,7 +4,7 @@
     :width="width"
   >
     <div
-      v-show="deviceModelId"
+      v-show="(deviceModelId) || $store.state.main.isTemplateApply"
       slot="header"
       class="addmodel-btn"
     >
@@ -69,7 +69,6 @@
     </ul>
     <no-data
       v-else
-      :margin-top="-36"
     />
     <!-- 移除确认弹窗 -->
     <component
@@ -101,6 +100,7 @@ export default {
     DataColumn,
   },
   mixins: [columnCommon, modelCommon, removeCommon, editingModel],
+  props: ['deviceTypeId'],
   data() {
     return {
       activeIndex: -1,
@@ -135,14 +135,15 @@ export default {
           this.editItem = null;
         }
       }
-      if (!this.deviceModelId) {
+      const params = {
+        studioId: this.studioId,
+        deviceModelId: this.deviceModelId || sessionStorage.getItem('modelId'),
+        deviceTypeId: this.deviceTypeId
+      }
+      if (!params.deviceModelId || params.deviceModelId === 'null') {
         this.data = [];
         return;
       }
-      const params = {
-        studioId: this.studioId,
-        deviceModelId: this.deviceModelId,
-      };
       this.requestUtil.post(this.urls.getModelList.url, params).then(res => {
         if (res && res.returnObj.length > 0) {
           res.returnObj.forEach((item, index) => {

@@ -2,21 +2,13 @@
   <div class="device-data-wrap flex-row">
     <!-- 设备类型 -->
     <device-list
+      v-if="!$store.state.main.isTemplateApply"
       class="device-data"
-      :title="$t('dataSource.deviceType')"
+      :title="$t('dataSource.applyList')"
       :width="200"
-      :data="typeData"
-      prop="deviceTypeName"
+      :data="statiData"
+      prop="appName"
       @click="handleTypeClick"
-    />
-    <!-- 设备型号 -->
-    <device-list
-      class="device-data"
-      :title="$t('dataSource.deviceModel')"
-      :width="200"
-      :data="modelData"
-      prop="deviceModelName"
-      @click="handleModelClick"
     />
     <!-- 模型列表 -->
     <model-list
@@ -25,7 +17,6 @@
       :title="$t('dataSource.models')"
       :width="200"
       :device-model-id="model.deviceModelId"
-      :device-type-id="model.deviceTypeId"
       @on-edit="handleEditModel"
     />
     <!-- 编辑模型 -->

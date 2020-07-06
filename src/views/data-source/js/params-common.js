@@ -27,19 +27,16 @@ export default {
       return items;
     },
   },
-  created() {
-    this.getData();
-  },
   methods: {
     getData() {
       this.deviceParams = null;
       this.virtualParams = null;
-      if (!this.deviceModelId) {
+      const params = {
+        deviceModelId: this.deviceModelId || sessionStorage.getItem('modelId'),
+      };
+      if (!params.deviceModelId || params.deviceModelId === 'null') {
         return;
       }
-      const params = {
-        deviceModelId: this.deviceModelId,
-      };
       if(this.deviceId) {
         params.deviceId = this.deviceId
       }

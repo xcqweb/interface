@@ -10,6 +10,10 @@ const state = {
   modelObj: {},
   // 设备对象数据，Object
   deviceObj: {},
+  // 预测应用， Array
+  predData: [],
+  // 统计应用， Array
+  statiData: [],
 };
 
 const mutations = {
@@ -22,6 +26,12 @@ const mutations = {
   setDeviceObj(state, data) {
     state.deviceObj = data;
   },
+  setPredData(state, data) {
+    state.predData = data
+  },
+  setStatiData(state, data) {
+    state.statiData = data
+  }
 };
 
 const actions = {
@@ -59,6 +69,51 @@ const actions = {
       commit('setDeviceObj', deviceObj);
     })
   },
+  loadStudioPredictionApp({commit}, params) {
+    // const predData = [];
+    // console.log(params);
+    // commit('setPredData', predData);
+    requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
+      let predData = [];
+      const data = res.returnObj;
+      if (data) {
+        data.forEach(item => {
+          predData.push({
+            appId: item.appId,
+            appName: item.appName || '青哥',
+          });
+        });
+      }
+      // predData = [
+      //   {
+      //     appId: '1',
+      //     appName: '青哥'
+      //   },
+      // ]
+      commit('setPredData', predData);
+    });
+
+  },
+  loadStudioStatisticApp({commit}, params) {
+    console.log(params)
+    const statiData = [];
+    commit('setPredData', statiData);
+    requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
+      // const commit('setStatiData', statiData);
+      const statiData = [];
+      const data = res.returnObj;
+      if (data) {
+        data.forEach(item => {
+          statiData.push({
+            appId: item.appId,
+            appName: item.appName,
+          });
+        });
+      }
+      commit('setStatiData', statiData);
+    });
+  },
+
 };
 
 export default {
