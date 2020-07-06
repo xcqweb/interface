@@ -143,6 +143,7 @@ module.exports = {
       "/api": {
         //target: "http://10.74.20.25",
         target: "http://kong.csot-iot-sit.10.74.20.12.nip.io/",
+        // target: 'http://kong.iot-show.10.74.20.118.nip.io/',
         changeOrigin: true
         // "pathRewrite": {"^/api": "/api"}
         // "pathRewrite": {"^/api": ""}

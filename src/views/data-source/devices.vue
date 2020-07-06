@@ -292,17 +292,22 @@ export default {
         return;
       }
       this.loading = true;
-      const list = [];
-      const studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-      this.selectedItems.forEach(item => {
-        list.push({
+      // const list = [];
+      let studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+      let studioDevs = this.selectedItems.map(item => {
+        return {
           studioId,
           deviceId: item.deviceId,
           deviceModelId: item.deviceModelId,
           deviceTypeId: item.deviceTypeId,
-        });
+        }
       });
-      this.requestUtil.post('api/iot-cds/cds/configDevice', {list}).then(() => {
+      const params = {
+        appDataSources: [],
+        studioDevs,
+      }
+
+      this.requestUtil.post('api/iot-cds/cds/configDevice', params).then(() => {
         this.loading = false;
         this.visible = false;
         Message.success(this.$t('dataSource.importSuccessfully'));

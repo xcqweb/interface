@@ -16,14 +16,14 @@
       >
         <img :src="[tab==2 ? require(`../assets/images/menu/datasource1_ic.png`) : require(`../assets/images/menu/datasource2_ic.png`)]">
       </div>
-      <div
+      <!-- <div
         class="item model-tab"
         :class="{'selected':tab==3}"
         style="border-left:0;"
         @click="changeTab(3)"
       >
         <img :src="[tab==3 ? require(`../assets/images/menu/model1_ic.png`) : require(`../assets/images/menu/model2_ic.png`)]">
-      </div>
+      </div> -->
     </div>
     <MPage v-show="isPage" />
     <MDataS 
@@ -40,7 +40,8 @@ import editingModel from './data-source/js/editing-model'
 import VueEvent from '../services/VueEvent.js'
 export default {
   components:{
-    MPage,MDataS
+    MPage,
+    MDataS,
   },
   mixins: [editingModel],
   data() {
