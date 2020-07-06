@@ -47,7 +47,7 @@
         </Button>
       </div>
     </Modal>
-    <!-- buttonSwitch 控件 指令下发，输入密码modal -->
+    <!-- 指令下发，输入密码modal -->
     <Modal
       v-model="inputPwdVisible"
       class="custom-modal"

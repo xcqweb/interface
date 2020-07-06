@@ -18,7 +18,6 @@
                 :label="$t(dataSourceName[1])"
               />
               <TabPane
-                v-if="iShowStateModel"
                 :label="$t(dataSourceName[2])"
               />
             </Tabs>
@@ -192,7 +191,6 @@ const allShapes = [
   "gaugeChart",
   'triangle',
   'pentagram',
-  'buttonSwitch'
 ]; //可以绑定数据的控件
 const supportDataShow = [
   "rectangle",
@@ -220,7 +218,6 @@ export default {
   data() {
     return {
       visible: false,
-      iShowStateModel:true,
       multiple:true,
       dataSourceName: [
         "dataSources",
@@ -318,9 +315,6 @@ export default {
     shapeName(val) {
       if(val == 'progress') {
         this.multiple = false
-      }
-      if(val == 'buttonSwitch') {
-        this.iShowStateModel = false
       }
     }
   },

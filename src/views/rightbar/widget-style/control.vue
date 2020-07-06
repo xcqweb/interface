@@ -17,8 +17,20 @@
       </Option>
     </Select>
     <div class="item-line" />
+    <!-- 操作确认 -->
     <div
       style="display:flex;justify-content:space-between;align-items:center;"
+    >
+      {{ $t('opConfirm') }}
+      <i-switch
+        v-model="opConfirm"
+        size="small"
+        @on-change="chooseConfirm"
+      />
+    </div>
+    <!-- 操作密码 -->
+    <div
+      style="display:flex;justify-content:space-between;align-items:center;display:none;"
     >
       {{ $t('opPwd') }}
       <i-switch
@@ -42,7 +54,6 @@
 <script>
 import {Select,Option} from 'iview'
 import {mxUtils} from "../../../services/mxGlobal"
-import {tipDialog} from '../../../services/Utils'
 export default{
   components: {
     Select,
@@ -54,16 +65,16 @@ export default{
       controlList:[],
       opPwd:false,
       pwd:'',
+      opConfirm:false,
     }
   },
   created() {
-    let bindData = this.getCellModelInfo('bindData')
-    if(!bindData || !bindData.dataSource) {
-      tipDialog(this.myEditorUi,'请先绑定设备')
+    this.bindData = this.getCellModelInfo('bindData')
+    if(!this.bindData || !this.bindData.dataSource) {
       return
     }
-    let deviceModelId = bindData.dataSource.deviceTypeChild.id
-    this.requestUtil.get(`${this.urls.commandTemplate.url}${deviceModelId}`).then(res =>{
+    this.deviceModelId = this.bindData.dataSource.deviceTypeChild.id
+    this.requestUtil.get(`${this.urls.commandTemplate.url}${this.deviceModelId}`).then(res =>{
       this.controlList = res
       let target = this.getCellModelInfo('commandInfo') || {}
       if(target.data) {
@@ -79,13 +90,26 @@ export default{
   },
   methods: {
     selectChange() {
-      let target = this.getCellModelInfo('commandInfo') || {}
-      target.data = this.controlList.find(item=>item.commandTemplateId == this.control)
-      this.setCellModelInfo('commandInfo',target)
+      const params = {
+        deviceId:this.bindData.dataSource.deviceNameChild.id,
+        commandTemplateId:this.control,
+        deviceModelId:this.deviceModelId
+      }
+      this.requestUtil.get(this.urls.commandTplVariable.url,params).then(res=>{
+        console.log(res)
+        let target = this.getCellModelInfo('commandInfo') || {}
+        target.data = res
+        this.setCellModelInfo('commandInfo',target)
+      })
     },
     clearFun() {
       this.opPwd = false
       this.setCellModelInfo('commandInfo',null)
+    },
+    chooseConfirm() {
+      let target = this.getCellModelInfo('commandInfo') || {}
+      target.isTip =  this.opConfirm === true ? 1 : 0
+      this.setCellModelInfo('commandInfo',target)
     },
     choosePwd() {
       if(!this.opPwd) {

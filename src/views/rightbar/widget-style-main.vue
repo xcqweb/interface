@@ -25,18 +25,10 @@
         {{ $t('action') }}
       </div>
       <div
-        v-if="shapeName.includes('buttonSwitch') && cellsCount==1"
+        v-if="dataList.includes(shapeName) && isShowDataTab"
         class="tab"
         :class="{'selected':tab==4}"
         @click="changeTab(4)"
-      >
-        {{ $t('controlS') }}
-      </div>
-      <div
-        v-if="dataList.includes(shapeName) && isShowDataTab"
-        class="tab"
-        :class="{'selected':tab==5}"
-        @click="changeTab(5)"
       >
         {{ $t('data') }}
       </div>
@@ -53,11 +45,7 @@
       v-if="tab==3 && actionList.includes(shapeName)"
       :key="refresh+3"
     />
-    <Control 
-      v-if="tab==4 && shapeName.includes('buttonSwitch')"
-      :key="refresh+4"
-    />
-    <Data v-if="tab==5 && dataList.includes(shapeName)" />
+    <Data v-if="tab==4 && dataList.includes(shapeName)" />
   </div>
 </template>
 
@@ -66,17 +54,16 @@ import Style from './widget-style/style'
 import MutualMain from './widget-style/mutual-main'
 import State from './widget-style/state'
 import Data from './widget-style/data'
-import Control from './widget-style/control'
 import VueEvent from '../../services/VueEvent.js'
 export default{
-  components:{Style,MutualMain,State,Data,Control},
+  components:{Style,MutualMain,State,Data},
   data() {
     return {
       tab:1,
       refresh:0,//切换控件刷新子组件
       stateList:['rectangle','image','userimage','tableCell','light','ellipse','triangle','pentagram'],
       actionList:['menuCell','rectangle','image','userimage','button','ellipse','text','tableCell','triangle','pentagram'],
-      dataList:['image','userimage','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart','triangle','pentagram','buttonSwitch'],
+      dataList:['image','userimage','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart','triangle','pentagram'],
       isShowDataTab:true,
     }
   },
@@ -96,7 +83,7 @@ export default{
       this.refresh = this.rand
     },
     shapeName(val) {
-      if(!this.stateList.includes(val) && this.tab == 2 || !this.actionList.includes(val) && this.tab == 3 || !this.dataList.includes(val) && this.tab == 5 || !this.shapeName.includes('buttonSwitch') && this.tab == 4) {
+      if(!this.stateList.includes(val) && this.tab == 2 || !this.actionList.includes(val) && this.tab == 3 || !this.dataList.includes(val) && this.tab == 4) {
         this.tab = 1
       }
     },
