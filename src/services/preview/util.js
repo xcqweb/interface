@@ -260,7 +260,7 @@ function guid() {
  * @param {Array} ele DOM节点
  */
 function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
-  let {actionsInfo,commandInfo,shapeName,bindData} = cellInfo
+  let {actionsInfo,commandInfo,bindData} = cellInfo
   let deviceId = bindData.dataSource.deviceNameChild.id
   let dealBubble = e=>{
     e = e || window.event;
@@ -280,11 +280,11 @@ function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
       })
     }
   }
-  if(shapeName == 'buttonSwitch' && commandInfo) {
+  if(commandInfo) {
     ele.style.cursor = "pointer"
     ele.addEventListener('click',function(e) {
       dealBubble(e)
-      let {data,isPwd} = commandInfo
+      let {data,isTip} = commandInfo
       console.log(data)
       mainProcess.previewContext.confirmVisible = true
       // 调用下发指令接口，发出指令
@@ -301,16 +301,16 @@ function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
           console.log(res)
         })
       }
-      mainProcess.previewContext.confirmCb = ()=>{ 
-        if(isPwd == 1) { 
-          mainProcess.previewContext.inputPwdVisible = true
-          mainProcess.previewContext.sendCb = (pwd)=>{
-            console.log(pwd)
-            //todo 请求接口，验证控件的密码有效性,确认通过后调用sendFun，下发指令
-            sendFun()
-          }
+      if(isTip) {
+        mainProcess.previewContext.confirmCb = ()=>{ 
+          // if(isPwd == 1) { 
+          //   mainProcess.previewContext.inputPwdVisible = true
+          //   mainProcess.previewContext.sendCb = (pwd)=>{
+          //     sendFun()
+          //   }
+          // }
+          sendFun()
         }
-        sendFun()
       }
     })
   }

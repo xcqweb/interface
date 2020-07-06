@@ -146,4 +146,5 @@ export default {
   controlS:'Control',
   opPwd:'Operate password',
   plsInputOpPwd:'Please input operate password',
+  opConfirm:'Operate confirm',
 }

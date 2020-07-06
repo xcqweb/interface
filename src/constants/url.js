@@ -25,5 +25,6 @@ export default {
   deviceParamGenerate: {url: 'api/device/index/deviceParams', 'desc': '生成拼接的设备参数接口'},
   commandTemplate: {url: '/api/device/deviceModel/command/', 'desc': '根据设备模板id查询指令模板'},
   commandSend: {url: '/api/command/center/send', 'desc': '下发指令'},
- 
+  commandTplVariable: {url: '/api/device/deviceModel/command/getVariable', 'desc': '根据指令模板id查询对应的属性变量'},
+
 }

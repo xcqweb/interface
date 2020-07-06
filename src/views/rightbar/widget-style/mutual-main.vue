@@ -66,6 +66,14 @@
         >
           {{ $t("rightBar.change") }}
         </div>
+        <div
+          class="type-tab"
+          style="border-top-right-radius:2px;border-bottom-right-radius:2px;"
+          :class="{'selected':typeTab==4}"
+          @click="changeTab(4)"
+        >
+          {{ $t("controlS") }}
+        </div>
       </div>
       <LinkTo
         v-if="typeTab===1"
@@ -91,6 +99,9 @@
         :current-page-widgets="currentPageWidgets"
         @submitMutual="editEventDone"
       />
+      <Control
+        v-show="typeTab===4"
+      />
     </div>
   </div>
 </template>
@@ -99,13 +110,14 @@
 import LinkTo from './linkto'
 import Visible from './visible'
 import Change from './change'
+import Control from './control'
 import {sureDialog} from '../../../services/Utils'
 import {mxUtils} from '../../../services/mxGlobal'
 import VueEvent from '../../../services/VueEvent.js'
 // 不显示节点的名称
 let forbiddenShape = ['menuCell', 'tableCell', 'label']
 export default{
-  components:{LinkTo,Visible,Change},
+  components:{LinkTo,Visible,Change,Control},
   data() {
     return {
       isEdit:false,
