@@ -69,8 +69,8 @@
         <div
           class="type-tab"
           style="border-top-right-radius:2px;border-bottom-right-radius:2px;"
-          :class="{'selected':typeTab==4}"
-          @click="changeTab(4)"
+          :class="{'selected':typeTab==5}"
+          @click="changeTab(5)"
         >
           {{ $t("controlS") }}
         </div>
@@ -100,7 +100,11 @@
         @submitMutual="editEventDone"
       />
       <Control
-        v-show="typeTab===4"
+        v-show="typeTab===5"
+        ref="control"
+        :current-edit-item="currentEditItem"
+        @submitMutual="editEventDone"
+        @clearComand="clearComand"
       />
     </div>
   </div>
@@ -122,7 +126,7 @@ export default{
     return {
       isEdit:false,
       typeTab:1,
-      mutualTypes:[this.$t('link'),this.$t('rightBar.visibleOrHide'),this.$t('rightBar.change')],
+      mutualTypes:[this.$t('link'),this.$t('rightBar.visibleOrHide'),this.$t('rightBar.change'),this.$t('rightBar.link'),this.$t('controlS')],
       events:[],
       pages:[],//页面
       bindActions:[],
@@ -176,11 +180,9 @@ export default{
           }else{
             hide = true
           }
-          let titleType = `${title}` 
           this.currentPageWidgets.push({
             id:cells[key].id,
             title:title,
-            titleType:titleType,
             hide:hide,
             selected:false,
           })
@@ -210,7 +212,7 @@ export default{
     },
     changeTab(index,changeEditFlag) {
       this.typeTab = index
-      if(index == 3 && !changeEditFlag) {
+      if(index == 3 && !changeEditFlag) { // 显/隐
         this.$refs.change.addInit()
       }
     },
@@ -220,7 +222,6 @@ export default{
         return
       }
       let action = {
-        "type":"in",
         "link":"",
         "mutualType":1,//交互类型
         "innerType":"page",
@@ -239,6 +240,9 @@ export default{
       }else if(data.mutualType == 3) {
         action.effectAction = 'change'
         action.stateInfo = data.stateInfo
+      }else if(data.mutualType == 5) {
+        action.data = data.commandData
+        action.effectAction = data.effectAction
       }
       this.setActionInfos(action,data.isEdit)
     },
@@ -261,6 +265,9 @@ export default{
             title:title,
             innerType:item.innerType,
             id:item.link//控件或者页面或者弹窗ID
+          }
+          if(item.mutualType == 5) {// 指令
+            tempObj.title = ''
           }
           if(item.stateInfo) {
             tempObj.stateName = item.stateInfo.name
@@ -349,6 +356,9 @@ export default{
       modelInfo.setAttribute('actionsInfo', JSON.stringify(actions))
       graph.getModel().setValue(cell, modelInfo)
     },
+    clearComand() {
+
+    },
     removeEvent(event,index,evet) {
       evet.stopPropagation()
       sureDialog(this.myEditorUi,`${this.$t("rightBar.sureToDelActions")}${index + 1}`,()=>{
@@ -390,13 +400,16 @@ export default{
       let tempList = this.pages
       if(e.type == 1) {
         tempList = this.pages
-      }else  if(e.type == 2) {
+      }else  if(e.type == 2 || e.type == 5) {
         if(e.innerType == 'palette') {
           tempList = this.currentPageWidgets
           this.visibleTypeTab = 2
         }else{
           tempList = this.dialogs
           this.visibleTypeTab = 1
+        }
+        if(e.type == 5) {
+          this.$refs.control.initDefaultData(e)
         }
       }else if(e.type == 3) {
         this.$refs.change.checkCurrent(e)
