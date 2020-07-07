@@ -20,8 +20,9 @@
               <TabPane :label="$t(dataSourceName[2])" />
             </Tabs>
           </div>
+          <!-- && $store.state.main.isTemplateApply -->
           <div
-            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag || tabsNum ==0 && $store.state.main.isTemplateApply && footerContent && ifShowDataFlag"
+            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag || tabsNum ==0 && footerContent && ifShowDataFlag"
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
@@ -111,8 +112,9 @@
             </Table>
           </div>
           <!--状态模型-->
+          <!-- && $store.state.main.isTemplateApply -->
           <div
-            v-show="tabsNum === 2 || tabsNum==1 && $store.state.main.isTemplateApply"
+            v-show="tabsNum === 2 || tabsNum==1"
             class="footer-common stateList"
           >
             <div
