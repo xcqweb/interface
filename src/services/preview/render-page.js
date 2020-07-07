@@ -18,6 +18,7 @@ class PreviewPage {
     let {
       content,
     } = data
+    console.log(data)
     let parseContent = JSON.parse(content)
     this.content = parseContent.pages
     this.deviceId = data.deviceId
@@ -649,8 +650,8 @@ class PreviewPage {
     bindEvent(cellHtml, cell, this.mainProcess, applyData,fileSystem)
     if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild || this.deviceId) {
       let paramShow = []
-      let device = cell.bindData.dataSource.deviceNameChild
-      if (cell.bindData.params && cell.bindData.params.length > 0) {
+      let device = cell.bindData ? (cell.bindData.dataSource.deviceNameChild ? cell.bindData.dataSource.deviceNameChild : '') : ''
+      if (cell.bindData && cell.bindData.params && cell.bindData.params.length > 0) {
         let defaultParamIndex = 0
         paramShow = cell.bindData.params
         defaultParamIndex = cell.bindData.params.findIndex(item => {
