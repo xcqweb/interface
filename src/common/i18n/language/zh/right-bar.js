@@ -25,6 +25,7 @@ export default {
   pageHasBindLinkEvents: "该页面已经绑定了跳转事件",
   eventTypes: "事件类型",
   visibleOrHide: "显/隐",
+  link: '链接',
   change: "切换",
   sureToDelActions: "确定要删除交互事件",
   addState: "添加状态",
@@ -40,5 +41,6 @@ export default {
   notAllowBindMyltiplyDeviceModel:'不允许绑定多个设备型号',
   atLeastChooseOneParam:"请选择一个显示参数",
   bindSuccess:'绑定成功',
+  hasBindCommand:'此控件已经绑定了指令',
 };
 

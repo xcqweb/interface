@@ -387,7 +387,6 @@ export default {
     initDataSource() {
       let startBindData = this.getCellModelInfo("bindData")
       if (startBindData && startBindData.dataSource) {
-        console.log(startBindData)
         let deviceNameChild = startBindData.dataSource.deviceNameChild
         this.deviceModelId = startBindData.dataSource.deviceModel.id
         this.dataSourceList = []
@@ -420,7 +419,6 @@ export default {
         if (!objData.deviceModelId) {
           return;
         }
-        console.log('entry')
         this.requestUtil.post(this.urls.getModelList.url, objData).then(res => {
           if (res.returnObj) {
             this.modelList = res.returnObj

@@ -123,6 +123,9 @@ export default {
     },
     warning(msg) {
       Message.warning(msg)
+    },
+    success(msg) {
+      Message.success(msg)
     }
   }
 };
