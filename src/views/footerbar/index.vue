@@ -67,8 +67,9 @@
             </template>
           </div>
           <!--数据显示-->
+          <!-- tabsNum === 1 && ifShowDataFlag && dataSourceList.length || tabsNum == 0 && $store.state.main.isTemplateApply && ifShowDataFlag -->
           <div
-            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length || tabsNum == 0 && $store.state.main.isTemplateApply && ifShowDataFlag"
+            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length || (tabsNum == 0 && $store.state.main.isTemplateApply && ifShowDataFlag)"
             class="footer-common dataDisplayList"
           >
             <Table
@@ -114,7 +115,7 @@
           <!--状态模型-->
           <!-- && $store.state.main.isTemplateApply -->
           <div
-            v-show="tabsNum === 2 || tabsNum==1"
+            v-show="tabsNum === 2 || (tabsNum == 1 && $store.state.main.isTemplateApply)"
             class="footer-common stateList"
           >
             <div
@@ -156,7 +157,7 @@
             !footerContent ||
               (tabsNum === 2 && cellsCount != 1) ||
               (tabsNum === 2 && cellsCount == 1 && stateList.length <= 1) ||
-              (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))
+              (tabsNum === 1 && $store.state.main.isTemplateApply)
           "
           :text="$t(nodata)"
         />
@@ -406,8 +407,13 @@ export default {
           })
         }
       } else {
-        this.deviceModelId = null
-        this.dataSourceList = []
+        // 当为设备模版过来的时候 deviceModelId
+        if (this.$store.state.main.isTemplateApply) {
+          this.deviceModelId = this.$route.query.modelId;
+        } else {
+          this.deviceModelId = null
+          this.dataSourceList = []
+        }
       }
     },
     initModelList() {
