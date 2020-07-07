@@ -9,6 +9,7 @@
         <img :src="[tab==1 ? require(`../assets/images/menu/page1_ic.png`) : require(`../assets/images/menu/page2_ic.png`)]">
       </div>
       <div
+        v-if="!$store.state.main.isTemplateApply"
         class="item data-tab"
         :class="{'selected':tab==2}"
         style="border-left:0;"
@@ -16,19 +17,23 @@
       >
         <img :src="[tab==2 ? require(`../assets/images/menu/datasource1_ic.png`) : require(`../assets/images/menu/datasource2_ic.png`)]">
       </div>
-      <!-- <div
+      <div
+        v-if="$store.state.main.isTemplateApply"
         class="item model-tab"
         :class="{'selected':tab==3}"
         style="border-left:0;"
         @click="changeTab(3)"
       >
         <img :src="[tab==3 ? require(`../assets/images/menu/model1_ic.png`) : require(`../assets/images/menu/model2_ic.png`)]">
-      </div> -->
+      </div>
     </div>
     <MPage v-show="isPage" />
     <MDataS 
-      v-if="!isPage" 
+      v-if="tab==2" 
       ref="dataSourceTab" 
+    />
+    <MModel 
+      v-if="tab==3"
     />
   </div>
 </template>
@@ -36,12 +41,14 @@
 <script>
 import MPage from './m-page'
 import MDataS from './m-data-source'
+import MModel from './m-model'
 import editingModel from './data-source/js/editing-model'
 import VueEvent from '../services/VueEvent.js'
 export default {
   components:{
     MPage,
     MDataS,
+    MModel,
   },
   mixins: [editingModel],
   data() {
