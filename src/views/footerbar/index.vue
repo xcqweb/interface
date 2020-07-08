@@ -556,6 +556,7 @@ export default {
         if(resParam.length) {
           let tempObj = this.getCellModelInfo("bindData")
           tempObj.subParams = resParam
+          // console.log(tempObj)
           this.setCellModelInfo("bindData", tempObj)
         }
       })

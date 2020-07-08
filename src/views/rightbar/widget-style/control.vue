@@ -11,9 +11,9 @@
       <Option
         v-for="item in controlList"
         :key="item.functionId"
-        :value="item.commandTemplateId"
+        :value="item.functionId"
       >
-        {{ item.commandTemplateName }}({{ item.functionName }})
+        {{ item.functionName }}
       </Option>
     </Select>
     <div class="item-line" />
@@ -83,9 +83,9 @@ export default{
   created() {
     this.commandData = {}
     this.bindData = this.getCellModelInfo('bindData')
-    // if(!this.bindData || !this.bindData.dataSource) {
-    //   return
-    // }
+    if(!this.bindData || !this.bindData.dataSource) {
+      return
+    }
     this.deviceModelId = this.bindData.dataSource.deviceModel.id
     if (this.$store.state.main.isTemplateApply) {
       this.deviceModelId = this.$route.query.modelId
@@ -93,7 +93,8 @@ export default{
     this.requestUtil.get(`${this.urls.commandTemplate.url}${this.deviceModelId}`).then(res =>{
       if(res && res.length) {
         this.controlList = res
-        this.control = res[0].commandTemplateId
+        // this.control = res[0].commandTemplateId
+        this.control = res[0].functionId
         this.selectChange()
       }
     })
@@ -112,13 +113,15 @@ export default{
       const res = actions.find(item=>item.mutualType == 5)
       if(res) {
         this.hasBindCommand = true
-        this.isPwd == res.isPwd == 1 ? true : false
-        this.isTip == res.isTip == 1 ? true : false
-        this.pwd = res.pwd
-        if(res.detail) {
-          this.control = res.detail.commandTemplateId
+        this.isPwd = res.data.isPwd === 1 ? true : false
+        this.isTip = res.data.isTip === 1 ? true : false
+        this.opConfirm = this.isTip
+        this.pwd = res.data.pwd
+        if(res.data.detail) {
+          this.control = res.data.detail.functionId;
         }
       }
+      
     },
     submit() {
       if(this.hasBindCommand && !this.currentEditItem) {
@@ -139,11 +142,14 @@ export default{
       })
     },
     selectChange() {
-      console.log('entry')
+      const obj = this.controlList.filter(item => {
+        return item.functionId === this.control
+      });
       const params = {
         deviceId:this.bindData.dataSource.deviceNameChild.id,
-        commandTemplateId:this.control,
-        deviceModelId:this.deviceModelId
+        deviceModelId:this.deviceModelId,
+        functionId: this.control,
+        commandTemplateId: obj[0].commandTemplateId,
       }
       this.requestUtil.get(this.urls.commandTplVariable.url,params).then(res=>{
         this.commandData.detail = res
