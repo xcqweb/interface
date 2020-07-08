@@ -10,10 +10,10 @@
     >
       <Option
         v-for="item in controlList"
-        :key="item.commandTemplateId"
+        :key="item.functionId"
         :value="item.commandTemplateId"
       >
-        {{ item.commandTemplateName }}
+        {{ item.commandTemplateName }}({{ item.functionName }})
       </Option>
     </Select>
     <div class="item-line" />
@@ -83,10 +83,13 @@ export default{
   created() {
     this.commandData = {}
     this.bindData = this.getCellModelInfo('bindData')
-    if(!this.bindData || !this.bindData.dataSource) {
-      return
-    }
+    // if(!this.bindData || !this.bindData.dataSource) {
+    //   return
+    // }
     this.deviceModelId = this.bindData.dataSource.deviceModel.id
+    if (this.$store.state.main.isTemplateApply) {
+      this.deviceModelId = this.$route.query.modelId
+    }
     this.requestUtil.get(`${this.urls.commandTemplate.url}${this.deviceModelId}`).then(res =>{
       if(res && res.length) {
         this.controlList = res
@@ -105,6 +108,7 @@ export default{
     },
     initDefaultData() {
       let actions = this.getCellModelInfo("actionsInfo")
+      if (!actions) {return}
       const res = actions.find(item=>item.mutualType == 5)
       if(res) {
         this.hasBindCommand = true
@@ -135,6 +139,7 @@ export default{
       })
     },
     selectChange() {
+      console.log('entry')
       const params = {
         deviceId:this.bindData.dataSource.deviceNameChild.id,
         commandTemplateId:this.control,
