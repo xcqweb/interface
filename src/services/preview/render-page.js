@@ -25,6 +25,7 @@ class PreviewPage {
     this.pagesRank = parseContent.rank
     this.wsParams = []
     this.cachCells = []
+    this.emptyDeviceParamIds = []
     this.currentPageId = ''
     this.mainProcess = mainProcess
     this.gePreview = gePreview
@@ -234,6 +235,7 @@ class PreviewPage {
   clearPage(pageType) {
     this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
     this.cachCells = []
+    this.emptyDeviceParamIds = []
     this.mainProcess.realData = []
     if (pageType == 'normal') {
       for (let key in applyData) {
@@ -322,6 +324,18 @@ class PreviewPage {
         }else{
           maps.set(item.deviceId, [item.deviceParamId])
         }
+        const eles = $(`.device_${item.deviceId}`)
+        eles.each((index, ele) => {
+          const $ele = $(ele)
+          const params = $ele.data('paramShow')
+          params.forEach(param => {
+            if (item.paramId === param.paramId && item.partId === param.partId) {
+              if (!param.deviceParamId) {
+                param.deviceParamId = item.deviceParamId
+              }
+            }
+          })
+        })
       })
       for (let key of maps.keys()) {
         resParam.push({
@@ -473,6 +487,9 @@ class PreviewPage {
       if (cell.children.length) {
         this.renderPages(cell.children, cellHtml)
       }
+    }
+    if (this.emptyDeviceParamIds.length > 0) {
+      this.deviceParamGenerateFun(this.emptyDeviceParamIds)
     }
   }
 
@@ -695,6 +712,13 @@ class PreviewPage {
       paramShow.forEach(item=>{
         if (item.deviceParamId) {
           dealParamShow.push(item.deviceParamId)
+        } else {
+          this.emptyDeviceParamIds.push({
+            paramType: item.paramType == 'device' ? 0 : 1,
+            deviceId,
+            partId: item.partId,
+            paramId: item.paramId
+          })
         }
       })
       if(dealParamShow.length) {
