@@ -328,13 +328,15 @@ class PreviewPage {
         eles.each((index, ele) => {
           const $ele = $(ele)
           const params = $ele.data('paramShow')
-          params.forEach(param => {
-            if (item.paramId === param.paramId && item.partId === param.partId) {
-              if (!param.deviceParamId) {
-                param.deviceParamId = item.deviceParamId
+          if (params && params.length > 0) {
+            params.forEach(param => {
+              if (item.paramId === param.paramId && item.partId === param.partId) {
+                if (!param.deviceParamId) {
+                  param.deviceParamId = item.deviceParamId
+                }
               }
-            }
-          })
+            })
+          }
         })
       })
       for (let key of maps.keys()) {
