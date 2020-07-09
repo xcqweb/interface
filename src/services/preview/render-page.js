@@ -686,7 +686,8 @@ class PreviewPage {
       if (statesInfo && statesInfo.length) {
         //同步默认状态
         cell.statesInfo[0].style.color = cell.fontColor
-        cell.statesInfo[0].style.background = cell.fillColor
+        cell.statesInfo[0].style.background = 'transparent'
+        // cell.statesInfo[0].style.background = cell.fillColor
         cell.statesInfo[0].style.borderColor = cell.strokeColor
                 
         cell.statesInfo.forEach((item)=>{
