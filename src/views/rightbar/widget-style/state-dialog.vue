@@ -175,6 +175,7 @@ export default{
     this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
     if (this.picList.includes(this.shapeName)) {
       style.borderColor = "none"
+      style.background = 'transparent'
       this.typeTab = 4
     }
     if(this.editState) {

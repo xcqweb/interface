@@ -20,7 +20,6 @@
               <TabPane :label="$t(dataSourceName[2])" />
             </Tabs>
           </div>
-          <!-- && $store.state.main.isTemplateApply -->
           <div
             v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag || tabsNum ==0 && footerContent && ifShowDataFlag"
             style="margin-right:20px;cursor:pointer;"
@@ -67,7 +66,6 @@
             </template>
           </div>
           <!--数据显示-->
-          <!-- tabsNum === 1 && ifShowDataFlag && dataSourceList.length || tabsNum == 0 && $store.state.main.isTemplateApply && ifShowDataFlag -->
           <div
             v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length || (tabsNum == 0 && $store.state.main.isTemplateApply && ifShowDataFlag)"
             class="footer-common dataDisplayList"
@@ -113,7 +111,6 @@
             </Table>
           </div>
           <!--状态模型-->
-          <!-- && $store.state.main.isTemplateApply -->
           <div
             v-show="tabsNum === 2 || (tabsNum == 1 && $store.state.main.isTemplateApply)"
             class="footer-common stateList"
@@ -508,8 +505,12 @@ export default {
       if (isFirstCheck) {
         this.paramOutterList[0].type = true
       }
-      if (this.shapeName === "lineChart") {
-        this.dealDeviceParamIds()
+      if (this.shapeName === "lineChart") { 
+        if(this.$store.state.main.isTemplateApply) { // 组态模板时候，趋势图只能绑定一个设备，是预览时候动态传入的
+          tempObj.subParams = this.paramOutterList
+        } else {// 趋势图可以绑定多个数据源，需要做特殊处理，获取deviceParamId，
+          this.dealDeviceParamIds()
+        }
       }
       let tempObj = this.getCellModelInfo("bindData")
       tempObj.params = this.paramOutterList
@@ -556,7 +557,6 @@ export default {
         if(resParam.length) {
           let tempObj = this.getCellModelInfo("bindData")
           tempObj.subParams = resParam
-          // console.log(tempObj)
           this.setCellModelInfo("bindData", tempObj)
         }
       })

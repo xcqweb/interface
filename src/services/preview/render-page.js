@@ -18,7 +18,6 @@ class PreviewPage {
     let {
       content,
     } = data
-    console.log(data)
     let parseContent = JSON.parse(content)
     this.content = parseContent.pages
     this.deviceId = data.deviceId
@@ -220,6 +219,8 @@ class PreviewPage {
           } else if (shapeName == 'menuCell') {
             let menuCellProps = item.getAttribute('menuCellProps')
             obj.menuCellProps = menuCellProps
+          }else if(shapeName.includes('image')) { // 图片的默认填充色为透明
+            obj.fillColor = "transparent"
           }
           // 组合节点
           obj.children = getNode(id)
@@ -234,8 +235,8 @@ class PreviewPage {
   // 清空页面内容
   clearPage(pageType) {
     this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
-    this.cachCells = []
-    this.emptyDeviceParamIds = []
+    this.cachCells = [] //绑定了状态、模型的控件，拿到模型里面的参数的deviceParamId去订阅数据
+    this.emptyDeviceParamIds = [] // 组态模板没有deviceParamId的情况
     this.mainProcess.realData = []
     if (pageType == 'normal') {
       for (let key in applyData) {
@@ -297,17 +298,27 @@ class PreviewPage {
               $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId}`)
             })
             if(params.length) {
+              if(this.emptyDeviceParamIds.length) { //连接上组态模板的情况(没有deviceParamId)，也需要去处理
+                params = params.concat(this.emptyDeviceParamIds)
+              }
               this.deviceParamGenerateFun(params)
             }else{
-              this.subscribeDataDeal()
+              this.subscribeDataDeal2()
             }
           }
         },()=>{
-          this.subscribeDataDeal()
+          this.subscribeDataDeal2()
         })
       }else{
-        this.subscribeDataDeal()
+        this.subscribeDataDeal2()
       }
+    }else{
+      this.subscribeDataDeal2()
+    }
+  }
+  subscribeDataDeal2() {
+    if(this.emptyDeviceParamIds.length) { 
+      this.deviceParamGenerateFun(this.emptyDeviceParamIds)
     }else{
       this.subscribeDataDeal()
     }
@@ -324,20 +335,21 @@ class PreviewPage {
         }else{
           maps.set(item.deviceId, [item.deviceParamId])
         }
+        // 处理组态模板 没有deviceParamId的情况
         const eles = $(`.device_${item.deviceId}`)
         eles.each((index, ele) => {
-          const $ele = $(ele)
-          const params = $ele.data('paramShow')
-          if (params && params.length > 0) {
-            params.forEach(param => {
-              if (item.paramId === param.paramId && item.partId === param.partId) {
-                if (!param.deviceParamId) {
-                  param.deviceParamId = item.deviceParamId
+          const paramShow = $(ele).data('paramShow')
+          if (paramShow && paramShow.length > 0) {
+            paramShow.forEach(p => {
+              if (item.paramId === p.paramId && item.partId == p.partId) {
+                if (!p.deviceParamId) {
+                  p.deviceParamId = item.deviceParamId
                 }
               }
             })
           }
         })
+
       })
       for (let key of maps.keys()) {
         resParam.push({
@@ -382,7 +394,7 @@ class PreviewPage {
     })
     return res
   }
-  subscribeDataDeal(res) {
+  subscribeDataDeal(res) { 
     if(res && res.length) {
       this.wsParams = this.wsParams.concat(res)
     }
@@ -489,9 +501,6 @@ class PreviewPage {
       if (cell.children.length) {
         this.renderPages(cell.children, cellHtml)
       }
-    }
-    if (this.emptyDeviceParamIds.length > 0) {
-      this.deviceParamGenerateFun(this.emptyDeviceParamIds)
     }
   }
 
@@ -686,8 +695,7 @@ class PreviewPage {
       if (statesInfo && statesInfo.length) {
         //同步默认状态
         cell.statesInfo[0].style.color = cell.fontColor
-        cell.statesInfo[0].style.background = 'transparent'
-        // cell.statesInfo[0].style.background = cell.fillColor
+        cell.statesInfo[0].style.background = cell.fillColor
         cell.statesInfo[0].style.borderColor = cell.strokeColor
                 
         cell.statesInfo.forEach((item)=>{

@@ -314,9 +314,6 @@ function changeEleState(el, stateInfo,fileSystem) {
   let imgInfo = stateInfo.imgInfo
   for (let key in stateInfo.style) {
     el.style[key] = stateInfo.style[key]
-    if ( key === 'background' ) {
-      el.style[key] = 'transparent'
-    }
   }
   if (imgInfo) {
     imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
