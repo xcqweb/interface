@@ -73,9 +73,6 @@ function setterRealData(res, fileSystem,mainProcess) {
     let els = document.querySelectorAll(`.device_${item.deviceId}`) //多设备情况下，会多次走这个地方
     for(let i = 0;i < els.length;i++) {
       const $ele = $(els[i])
-      if($ele.attr("id") == 'palette_153') {
-        debugger
-      }
       let shapeName = $ele.data("shapeName")
       let paramShow = $ele.data("paramShow")
       let val = null
