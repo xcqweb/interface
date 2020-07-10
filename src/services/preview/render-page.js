@@ -712,7 +712,7 @@ class PreviewPage {
   }
   initWsParams(cellHtml, device, paramShow,shapeName,subParams) {
     let deviceId
-    if(shapeName === 'lineChart') {
+    if(shapeName === 'lineChart' && !this.deviceId) { // 不是设备模板的情况
       this.dealLineChartWsParams(cellHtml,device,subParams)
     } else{
       deviceId = this.deviceId || device.id
