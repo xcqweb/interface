@@ -336,20 +336,21 @@ class PreviewPage {
           maps.set(item.deviceId, [item.deviceParamId])
         }
         // 处理组态模板 没有deviceParamId的情况
-        const eles = $(`.device_${item.deviceId}`)
-        eles.each((index, ele) => {
-          const paramShow = $(ele).data('paramShow')
-          if (paramShow && paramShow.length > 0) {
-            paramShow.forEach(p => {
-              if (item.paramId === p.paramId && item.partId == p.partId) {
-                if (!p.deviceParamId) {
-                  p.deviceParamId = item.deviceParamId
+        if(this.deviceId) {
+          const eles = $(`.device_${this.deviceId}`)
+          eles.each((index,ele) => {
+            const paramShow = $(ele).data('paramShow')
+            if (paramShow && paramShow.length > 0) {
+              paramShow.forEach(p => {
+                if (item.paramId === p.paramId && item.partId == p.partId) {
+                  if (!p.deviceParamId) {
+                    p.deviceParamId = item.deviceParamId
+                  }
                 }
-              }
-            })
-          }
-        })
-
+              })
+            }
+          })
+        }
       })
       for (let key of maps.keys()) {
         resParam.push({
