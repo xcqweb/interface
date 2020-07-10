@@ -73,6 +73,9 @@ function setterRealData(res, fileSystem,mainProcess) {
     let els = document.querySelectorAll(`.device_${item.deviceId}`) //多设备情况下，会多次走这个地方
     for(let i = 0;i < els.length;i++) {
       const $ele = $(els[i])
+      if($ele.attr("id") == 'palette_153') {
+        debugger
+      }
       let shapeName = $ele.data("shapeName")
       let paramShow = $ele.data("paramShow")
       let val = null
@@ -153,10 +156,11 @@ function setterRealData(res, fileSystem,mainProcess) {
         }
         let stateModels = $ele.data("stateModels")
         if(stateModels) {
-          let stateIndex = 0 //默认状态 未找到要切换的状态，显示默认
+          let stateIndex = $ele.data("stateIndex") || 0//默认状态 未找到要切换的状态，显示默认
           for (let j = 1; j < stateModels.length;j++) {
             if (dealStateFormula(stateModels[j].modelFormInfo.formula, item)) {
               stateIndex = j
+              $ele.data("stateIndex",stateIndex)
               break
             }
           }
@@ -311,11 +315,12 @@ function changeEleState(el, stateInfo,fileSystem) {
     text.css('color',stateInfo.style.color)
     return
   } 
-  let imgInfo = stateInfo.imgInfo
   for (let key in stateInfo.style) {
     el.style[key] = stateInfo.style[key]
   }
+  let imgInfo = stateInfo.imgInfo
   if (imgInfo) {
+    el.style.background = "transparent"
     imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
     setSvgImageHref(el,imgInfo.url)
     return
