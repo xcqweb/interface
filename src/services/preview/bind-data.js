@@ -153,11 +153,12 @@ function setterRealData(res, fileSystem,mainProcess) {
           }
         }
         let stateModels = $ele.data("stateModels")
-        if(stateModels) {
-          let stateIndex = 0 //默认状态 未找到要切换的状态，显示默认
+         if(stateModels) {
+          let stateIndex = $ele.data("stateIndex") || 0//默认状态 未找到要切换的状态，显示默认 或显示上一次的结果状态
           for (let j = 1; j < stateModels.length;j++) {
             if (dealStateFormula(stateModels[j].modelFormInfo.formula, item)) {
               stateIndex = j
+              $ele.data("stateIndex",stateIndex)
               break
             }
           }
