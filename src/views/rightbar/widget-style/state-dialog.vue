@@ -239,7 +239,7 @@ export default{
         animateCls:this.animateCls,
       }
       if(editStateTemp) {
-        data = {...editStateTemp}
+        data = Object.assign(editStateTemp,data)
       }
       if(localImage) {
         let formData = new FormData()
