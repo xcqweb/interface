@@ -18,6 +18,7 @@
         <img :src="[tab==2 ? require(`../assets/images/menu/datasource1_ic.png`) : require(`../assets/images/menu/datasource2_ic.png`)]">
       </div>
       <div
+        v-if="$store.state.main.isTemplateApply"
         class="item model-tab"
         :class="{'selected':tab==3}"
         style="border-left:0;"
@@ -26,9 +27,10 @@
         <img :src="[tab==3 ? require(`../assets/images/menu/model1_ic.png`) : require(`../assets/images/menu/model2_ic.png`)]">
       </div>
     </div>
-    <MPage v-show="tab==1" />
+    <MPage v-show="isPage" />
     <MDataS 
-      v-if="tab==2"
+      v-if="tab==2" 
+      ref="dataSourceTab" 
     />
     <MModel 
       v-if="tab==3"
@@ -44,22 +46,26 @@ import editingModel from './data-source/js/editing-model'
 import VueEvent from '../services/VueEvent.js'
 export default {
   components:{
-    MPage,MDataS,MModel
+    MPage,
+    MDataS,
+    MModel,
   },
   mixins: [editingModel],
   data() {
     return{
       tab:1,
+      isPage:true,
       bindDatas: [],
       tabShow: true
     }
   },
   methods: {
     changeTab(index) {
-      if (!this.canGoOn() && (index === 1 || index === 2)) {
+      if (!this.canGoOn() && index === 1) {
         return false
       }
       this.tab = index
+      this.isPage = this.tab == 1
       if (index === 2 && this.tabShow) {
         this.$nextTick(() => {
           VueEvent.$emit('rightBarTabSwitch')
@@ -115,4 +121,3 @@ export default {
 <style lang="less">
  
 </style>
-

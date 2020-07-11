@@ -238,7 +238,6 @@ export default{
       })
     },
     editStateFun(state) {
-      //需要重新从model获取state，防止该状态绑定模型后，直接点编辑，未拿到模型信息
       if(this.shapeName !== 'light') {
         this.editState = state
         this.isAdd = true

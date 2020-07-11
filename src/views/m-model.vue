@@ -16,6 +16,7 @@
         {{ $t('device') }}
       </li>
       <li
+        v-if="!$store.state.main.isTemplateApply"
         :class="{'active': dataType === 1}"
         @click="handleTabClick(1)"
       >

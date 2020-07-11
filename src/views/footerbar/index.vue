@@ -21,7 +21,7 @@
             </Tabs>
           </div>
           <div
-            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag || tabsNum ==0 && $store.state.main.isTemplateApply && footerContent && ifShowDataFlag"
+            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag || tabsNum ==0 && footerContent && ifShowDataFlag"
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
@@ -67,7 +67,7 @@
           </div>
           <!--数据显示-->
           <div
-            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length || tabsNum == 0 && $store.state.main.isTemplateApply && ifShowDataFlag"
+            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length || (tabsNum == 0 && $store.state.main.isTemplateApply && ifShowDataFlag)"
             class="footer-common dataDisplayList"
           >
             <Table
@@ -112,7 +112,7 @@
           </div>
           <!--状态模型-->
           <div
-            v-show="tabsNum === 2 || tabsNum==1 && $store.state.main.isTemplateApply"
+            v-show="tabsNum === 2 || (tabsNum == 1 && $store.state.main.isTemplateApply)"
             class="footer-common stateList"
           >
             <div
@@ -154,7 +154,7 @@
             !footerContent ||
               (tabsNum === 2 && cellsCount != 1) ||
               (tabsNum === 2 && cellsCount == 1 && stateList.length <= 1) ||
-              (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))
+              (tabsNum === 1 && $store.state.main.isTemplateApply)
           "
           :text="$t(nodata)"
         />
@@ -387,7 +387,6 @@ export default {
     initDataSource() {
       let startBindData = this.getCellModelInfo("bindData")
       if (startBindData && startBindData.dataSource) {
-        console.log(startBindData)
         let deviceNameChild = startBindData.dataSource.deviceNameChild
         this.deviceModelId = startBindData.dataSource.deviceModel.id
         this.dataSourceList = []
@@ -405,8 +404,13 @@ export default {
           })
         }
       } else {
-        this.deviceModelId = null
-        this.dataSourceList = []
+        // 当为设备模版过来的时候 deviceModelId
+        if (this.$store.state.main.isTemplateApply) {
+          this.deviceModelId = this.$route.query.modelId;
+        } else {
+          this.deviceModelId = null
+          this.dataSourceList = []
+        }
       }
     },
     initModelList() {
@@ -420,7 +424,6 @@ export default {
         if (!objData.deviceModelId) {
           return;
         }
-        console.log('entry')
         this.requestUtil.post(this.urls.getModelList.url, objData).then(res => {
           if (res.returnObj) {
             this.modelList = res.returnObj
@@ -502,8 +505,12 @@ export default {
       if (isFirstCheck) {
         this.paramOutterList[0].type = true
       }
-      if (this.shapeName === "lineChart") {
-        this.dealDeviceParamIds()
+      if (this.shapeName === "lineChart") { 
+        if(this.$store.state.main.isTemplateApply) { // 组态模板时候，趋势图只能绑定一个设备，是预览时候动态传入的
+          tempObj.subParams = this.paramOutterList
+        } else {// 趋势图可以绑定多个数据源，需要做特殊处理，获取deviceParamId，
+          this.dealDeviceParamIds()
+        }
       }
       let tempObj = this.getCellModelInfo("bindData")
       tempObj.params = this.paramOutterList

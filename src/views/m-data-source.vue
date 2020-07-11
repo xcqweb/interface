@@ -3,15 +3,13 @@
     class="datasource-wrap flex-column"
   >
     <!-- toolbar/导入数据源 -->
-    <div
-      class="datasource-toolbar"
-    >
+    <div class="datasource-toolbar">
       <!--导入数据源-->
       <a
-        v-show="dataType === 0 && !$store.state.main.isTemplateApply"
+        v-show="dataType === 0"
         class="import-datasource-btn"
         href="javascript:;"
-        @click="importDataHander"
+        @click="devicesVisible = true"
       >
         <i />
         {{ $t('importDataSource') }}
@@ -23,40 +21,32 @@
         :class="{'active': dataType === 0}"
         @click="handleTabClick(0)"
       >
-        {{ $t('device') }}
+        {{ $t('dataSources') }}
       </li>
       <li
         :class="{'active': dataType === 1}"
         @click="handleTabClick(1)"
       >
-        {{ $t('predictionApply') }}
+        {{ $t('dataModel') }}
       </li>
-      <!-- <li
-        :class="{'active': dataType === 2}"
-        @click="handleTabClick(2)"
-      >
-        {{ $t('statisticApply') }}
-      </li> -->
     </ul>
     <!--主体内容-->
     <div class="datasource-body flex-full-item">
       <!-- 数据源 -->
       <datasource
-        v-if="dataType === 0"
+        v-show="dataType === 0"
         :reload-data="deviceDataChange"
       />
-      <!-- 预测应用 统计应用 -->
+      <!-- 数据模型 -->
       <component
         :is="modelComponent"
-        v-if="dataType !== 0"
+        v-show="dataType === 1"
       />
     </div>
     <!-- 导入数据源弹窗 -->
-    <importDataSource
-      v-if="!$store.state.main.isTemplateApply"
+    <devices
       ref="devices"
       v-model="devicesVisible"
-      :visible-import="devicesVisible"
       multiple
       @callback="devicesCallback"
     />
@@ -65,22 +55,16 @@
 
 <script>
 import Devices from './data-source/devices'
-import importDataSource from './data-source/importdataSource'
 import Datasource from './data-source/datasource'
 import Datamodel from './data-source/datamodel'
-import PredictionApp from './data-source/predictonApp'
-import StatisticApp from './data-source/statisticApp'
 import editingModel from './data-source/js/editing-model'
-import VueEvent from '../services/VueEvent.js'
+
 export default{
   components:{
     Devices,
     Datasource,
     // Datamodel: resolve => require(['./data-source/datamodel'], resolve),
     Datamodel,
-    PredictionApp,
-    StatisticApp,
-    importDataSource,
   },
   mixins: [editingModel],
   data() {
@@ -89,16 +73,12 @@ export default{
       dataType: 0,
       deviceDataChange: false,
       devicesVisible: false,
-      modelComponent: 'Datasource'
+      modelComponent: ''
     }
-  },
-  mounted() {
-    console.log(this.tab)
   },
   methods: {
     importDataHander() {
       this.devicesVisible = true
-      VueEvent.$emit('getImportData')
     },
     triggerCancel() {
       this.devicesVisible = false
@@ -110,9 +90,7 @@ export default{
       if (this.canGoOn()) {
         this.dataType = index;
         if (index === 1) {
-          this.modelComponent = 'PredictionApp';
-        } else if(index === 2) {
-          this.modelComponent = 'StatisticApp';
+          this.modelComponent = 'datamodel';
         }
       }
     },
@@ -124,45 +102,6 @@ export default{
 </script>
 
 <style lang="less">
-/* 重置iview弹窗样式 */
-.custom-modal {
-  .ivu-modal-header {
-    padding: 0;
-  }
-  .ivu-modal-header-inner {
-    display: block;
-    height: 36px;
-    line-height: 36px;
-    color: #252525;
-    font-size: 12px;
-    font-weight: 400;
-    text-align: center;
-    background: linear-gradient(0deg,#d8d8d8,#e4e3e4);
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-  }
-  .ivu-modal-close {
-    position: absolute;
-    top: 10px !important;
-    width: 16px;
-    height: 16px;
-    background-image: url('../assets/images/default/closeDialog.png');
-    background-size: cover;
-  }
-  .ivu-modal-content {
-    background-color: #f5f5f5;
-  }
-  .ivu-modal {
-    top: 0 !important;
-    height: 100%;
-    overflow: hidden;
-  }
-  .ivu-modal-content {
-    top: 50%;
-    transform: translateY(-50%);
-  }
-}
-
 .ivu-checkbox-focus {
 	box-shadow: none;
 }

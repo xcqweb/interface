@@ -130,10 +130,7 @@ function actionShow(action, mainProcess) {
  * 打开事件
  */
 function actionOpen(action, mainProcess) {
-  if (action.type === 'out') {
-    // 打开外部链接
-    window.location.href = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
-  } else if (action.innerType === 'page') {
+  if (action.innerType === 'page') {
     // 打开页面
     const pageType = mainProcess.getPageType(action.link)
     if (pageType === 'normal' && mainProcess.pageId !== action.link) {
@@ -147,7 +144,7 @@ function actionOpen(action, mainProcess) {
  * 关闭事件
  */
 function actionClose(action, applyData) {
-  if (action.innerType === 'page' && action.type === 'in' && document.getElementById(action.link)) {
+  if (action.innerType === 'page' && document.getElementById(action.link)) {
     removeEle(document.getElementById(action.link));
     removeEle(document.getElementById('bg_' + action.link));
     //有浮窗在的隐藏浮窗
@@ -184,8 +181,45 @@ function effectEvent(action, mainProcess, applyData, fileSystem) {
     case 'change'://控件切换状态
       actionChange(action, fileSystem)
       break;
+    case 'send':// 下发指令
+      actionSend(action,mainProcess)
+      break;
     default:
       break;
+  }
+}
+function actionSend(action,mainProcess) {
+  let {data} = action
+  // 调用下发指令接口，发出指令
+  let sendFun = ()=>{
+    let commandParams = {
+      commandTemplateId:data.detail.commandTemplateId,
+      deviceId:data.detail.deviceId,
+      sourceOrg:'IoT',
+      sendSource:'configurationDesignStudio',
+      timestamp:new Date().getTime(),
+      serialnumber:guid(),
+      command:data.detail.variables
+    }
+    requestUtil.post(urls.commandSend.url,commandParams).then(res=>{
+      if(res.code == 0) {
+        mainProcess.previewContext.success('指令下发成功')
+      }
+    })
+  }
+  if(data.isTip) {
+    mainProcess.previewContext.confirmVisible = true
+    mainProcess.previewContext.confirmCb = ()=>{ 
+      // if(isPwd == 1) { 
+      //   mainProcess.previewContext.inputPwdVisible = true
+      //   mainProcess.previewContext.sendCb = (pwd)=>{
+      //     sendFun()
+      //   }
+      // }
+      sendFun()
+    }
+  }else{
+    sendFun()
   }
 }
 /**
@@ -248,7 +282,7 @@ function actionHide(action, applyData) {
 }
 // 获取uuiid
 function guid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+  return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = Math.random() * 16 | 0,
       v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
@@ -261,16 +295,19 @@ function guid() {
  */
 function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
   let {actionsInfo} = cellInfo
+  let dealBubble = e=>{
+    e = e || window.event;
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    } else {
+      e.cancelBubble = true;
+    }
+  }
   if (actionsInfo) {
     ele.style.cursor = "pointer"
     for (let action of actionsInfo) {
       ele.addEventListener(action.mouseEvent, function(e) {
-        e = e || window.event;
-        if (e.stopPropagation) {
-          e.stopPropagation();
-        } else {
-          e.cancelBubble = true;
-        }
+        dealBubble(e)
         // 触发事件
         effectEvent(action, mainProcess, applyData,fileSystem)
       })

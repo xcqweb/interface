@@ -9,8 +9,8 @@ export default {
       deviceObj: {},
       studioId: '',
       applyObj: {
-        forecastId: '', // 棰勬祴
-        appId: '', // 缁熻
+        forecastId: '', // 预测
+        appId: '', // 统计
       },
     };
   },
@@ -77,7 +77,7 @@ export default {
       };
       this.$store.dispatch('loadStudioDevices', params);
     },
-    getPredictionData() { // 棰勬祴搴旂敤
+    getPredictionData() { // 预测应用
       if (!this.studioId) {
         return;
       }
@@ -87,7 +87,7 @@ export default {
       };
       this.$store.dispatch('loadStudioPredictionApp', params);
     },
-    getStatisticData() { // 缁熻搴旂敤
+    getStatisticData() { // 统计应用
       if (!this.studioId) {
         return;
       }

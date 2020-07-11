@@ -26,6 +26,7 @@ export default {
   pageHasBindLinkEvents: "The page is already bound with a jump event",
   eventTypes: "Event type",
   visibleOrHide: "Visible/Hide",
+  link: 'Link',
   change: "Change",
   sureToDelActions: "Make sure you want to delete interactive events",
   addState: "Add state",
@@ -40,5 +41,6 @@ export default {
   chooseBgImage: "Choose backgound",
   notAllowBindMyltiplyDeviceModel: "Multiply device models can't allow to bind",
   atLeastChooseOneParam:"Please choose on param",
+  hasBindCommand:'This widget has bind command',
 };
 

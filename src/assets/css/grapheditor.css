@@ -190,7 +190,7 @@ body ::-webkit-scrollbar-thumb:hover {
 .gePrimaryBtn, .mxWindow .gePrimaryBtn {
 	background-color: #3D91F7;
 	border: 1px solid #277AE0;
-	color: #fff;
+  color: #fff;
 }
 .gePrimaryBtn:disabled {
 	opacity: .5;
@@ -667,7 +667,7 @@ div.mxWindow .geButton {
 }
 .geDialog .geDialogInfo .btnContent .gePrimaryBtn {
 	background: #3D91F7;
-	color: #FFFFFF;
+  color: #FFFFFF;
 }
 .geDialog .geDialogInfo button:disabled{
 	background: #e8edee;
