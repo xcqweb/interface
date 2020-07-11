@@ -34,6 +34,11 @@ export default {
       this.getData();
     },
   },
+  mounted() {
+    if (this.deviceModelId) {
+      this.getData();
+    }
+  },
   methods: {
     getDeviceParamsCallback(res) {
       let data = null;

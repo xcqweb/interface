@@ -78,7 +78,6 @@ export default {
   watch: {
     reloadData() {
       this.getStudioDeviceData();
-      this.getPredictionData();
     },
   },
   mounted() {
