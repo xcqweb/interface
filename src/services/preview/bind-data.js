@@ -210,6 +210,10 @@ function setterRealData(res, fileSystem,mainProcess) {
               $ele.data("stateIndex",stateIndex)
               break
             }
+            if(j == stateModels.length - 1) {
+              // 未找到满足的状态，把之前的保存的上一次的结果也换原为默认值 0
+              $ele.data("stateIndex",0)
+            }
           }
           changeEleState(els[i], stateModels[stateIndex],fileSystem)
         }
