@@ -251,7 +251,7 @@ class PreviewPage {
   }
   subscribeData() {
     if (this.cachCells.length) {
-	  let allModels = new Map()
+      let allModels = new Map()
       let modelAllIds = []
       this.cachCells.forEach(item=>{
         let statesInfo = item.statesInfo
