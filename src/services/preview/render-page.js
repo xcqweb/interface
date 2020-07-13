@@ -269,7 +269,7 @@ class PreviewPage {
             res.returnObj.forEach(item=>{
               allModels.set(item.sourceId,item)
               if (item.formula) {
-                params = params.concat((this.dealModelFormulaFun(modelIdsParam,item.sourceId,item.formula)))
+                params = params.concat((this.dealModelFormulaFun(item.sourceId,item.formula)))
               }
             })
             this.cachCells.forEach(item=>{
