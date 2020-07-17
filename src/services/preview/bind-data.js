@@ -62,11 +62,6 @@ function dealdeviceParams(deviceParams) {
   })
   return maps
 }
-
-/**
- * 
- * @param {*} isReal 是否是实时数据
- */
 async function getSubscribeInfos(deviceParams) {
   const subscribeTypeArr = ['realtime_datahub','forecast_datahub','statistics_datahub']
   let params = {

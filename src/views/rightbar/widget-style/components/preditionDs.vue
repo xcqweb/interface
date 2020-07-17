@@ -146,16 +146,6 @@ export default{
         this.checkModelArr = []
         return
       }
-      /*
-      * 组装数据 绑定
-      * objData = {
-      *   deviceNameChild: {
-      *       id: appId,
-      *       name: appName
-      *   },
-      *   type: 1, // 预测应用
-      * }
-      */
       let objData = {
         type: 1,
       }
@@ -170,7 +160,11 @@ export default{
         }
         let tempArr = []
         this.checkModelArr.forEach((item) => {
-          tempArr.push({id:item,name:this.predData.find(d=>{return d.appId == item}).appName})
+          tempArr.push({
+            id:item,
+            name:this.predData.find(d=>{return d.appId == item}).appName,
+            mfaKey:this.predData.find(d=>{return d.appId == item}).mfaKey,
+          })
         })
         objData.deviceNameChild = objData.deviceNameChild.concat(tempArr)
       }else{

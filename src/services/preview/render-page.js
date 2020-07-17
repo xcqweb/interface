@@ -716,10 +716,13 @@ class PreviewPage {
   // type 0:设备，1:预测应用，2:统计应用
   initWsParams(cellHtml, device, paramShow,shapeName,subParams,bindType) {
     let deviceId
-    if(shapeName === 'lineChart') {
-      this.dealLineChartWsParams(cellHtml,device,subParams)
+    if(shapeName === 'lineChart' && !this.deviceId && !bindType) { // 组态模板 或者预测、统计只绑定了一个，不用做特殊处理，数据源（设备）时候趋势图绑定多个，要做特殊处理
+      this.dealLineChartWsParams(cellHtml,device,subParams,bindType)
     } else{
       let cls
+      if(Array.isArray(device)) {
+        device = device[0]
+      }
       if(bindType == 1) {
         deviceId = device.mfaKey + '#' + device.id
         cls = device.mfaKey
@@ -749,12 +752,18 @@ class PreviewPage {
     }
   }
     
-  dealLineChartWsParams(cellHtml,device,subParams) {
+  dealLineChartWsParams(cellHtml,device,subParams,bindType) {
     if(!Array.isArray(device)) {//兼容旧应用的趋势图
       device = [device]
     }
     device.forEach(item=>{
-      cellHtml.classList.add(`device_${item.id}`)
+      let cls
+      if(bindType == 1) {
+        cls = item.mfaKey
+      } else {
+        cls = item.id
+      }
+      cellHtml.classList.add(`device_${cls}`)
     })
     if(subParams && subParams.length) {
       this.wsParams = this.wsParams.concat(subParams)
