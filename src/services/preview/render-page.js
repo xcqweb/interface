@@ -211,6 +211,8 @@ class PreviewPage {
           } else if (shapeName == 'menuCell') {
             let menuCellProps = item.getAttribute('menuCellProps')
             obj.menuCellProps = menuCellProps
+          }else if(shapeName.includes('image')) { // 图片的默认填充色为透明
+            obj.fillColor = "transparent"
           }
           // 组合节点
           obj.children = getNode(id)
@@ -240,25 +242,16 @@ class PreviewPage {
   }
   subscribeData() {
     if (this.cachCells.length) {
-      let modelIdsParam = new Map()
       let allModels = new Map()
+      let modelAllIds = []
       this.cachCells.forEach(item=>{
-        let deviceId = this.deviceId || item.bindData.dataSource.deviceNameChild.id
         let statesInfo = item.statesInfo
-        let tempArr = []
         statesInfo.forEach((d) => {
           if (d.modelFormInfo) {
-            tempArr.push(d.modelFormInfo)
+            modelAllIds.push(d.modelFormInfo)
           }
         })
-        if(tempArr.length) {
-          modelIdsParam.set(tempArr.join("_"), deviceId)
-        }
       })
-      let modelAllIds = []
-      for (let key of modelIdsParam.keys()) {
-        modelAllIds = modelAllIds.concat(key.split("_"))
-      }
       modelAllIds = Array.from(new Set(modelAllIds))
       if(modelAllIds.length) {
         requestUtil.post(urls.getModelByIds.url, modelAllIds).then((res) => {
@@ -267,7 +260,7 @@ class PreviewPage {
             res.returnObj.forEach(item=>{
               allModels.set(item.sourceId,item)
               if (item.formula) {
-                params = params.concat((this.dealModelFormulaFun(modelIdsParam,item.sourceId,item.formula)))
+                params = params.concat((this.dealModelFormulaFun(item.sourceId,item.formula)))
               }
             })
             this.cachCells.forEach(item=>{
@@ -366,37 +359,42 @@ class PreviewPage {
       this.subscribeDataDeal(resParam)
     }
   }
-  dealModelFormulaFun(modelIdsParam,modelId,formula) {
+  dealModelFormulaFun(modelId,formula) {//拿到模型里面的绑定的参数去订阅
     let formulaAttr = JSON.parse(formula)
     let res = []
-    let deviceId
-    for (let key of modelIdsParam.keys()) {
-      let tempArr = key.split("_")
-      let resIndex = tempArr.findIndex((item)=>{
-        return item == modelId
-      })
-      if (resIndex != -1) {
-        deviceId = modelIdsParam.get(key)
-        break
-      }
-    }
-    formulaAttr.data.forEach(item=>{
-      let tempKey = item.key
-      if(tempKey) {
-        let keyArr = tempKey.split('/')
-        let partId = null
-        if(keyArr.length > 2) {
-          partId = keyArr[1]
+    for(let i = 0;i < this.cachCells.length;i++) {
+      let statesInfo = this.cachCells[i].statesInfo
+      let deviceId = null
+      for(let j = 0;j < statesInfo.length;j++) {
+        if (statesInfo[j].modelFormInfo === modelId) {
+          deviceId = this.deviceId || this.cachCells[i].bindData.dataSource.deviceNameChild.id
+          let bindType = this.cachCells[i].bindData.dataSource.type || 0 //添加bindType（0=设备1=预测应用2=统计应用)
+          if(bindType == 1) {
+            deviceId = this.cachCells[i].mfaKey
+          }
+          break
         }
-        res.push({
-          paramType: keyArr[0] == 'device' ? 0 : 1,
-          deviceId: deviceId,
-          partId: partId,
-          paramId: keyArr[keyArr.length - 1],
-          paramName: item.paramName
+      }
+      if(deviceId) {
+        formulaAttr.data.forEach(item=>{
+          let tempKey = item.key
+          if(tempKey) {
+            let keyArr = tempKey.split('/')
+            let partId = null
+            if(keyArr.length > 2) {
+              partId = keyArr[1]
+            }
+            res.push({
+              paramType: keyArr[0] == 'device' ? 0 : 1,
+              deviceId: deviceId,
+              partId: partId,
+              paramId: keyArr[keyArr.length - 1],
+              paramName: item.paramName
+            })
+          }
         })
       }
-    })
+    }
     return res
   }
   subscribeDataDeal(res) {
@@ -718,10 +716,13 @@ class PreviewPage {
   // type 0:设备，1:预测应用，2:统计应用
   initWsParams(cellHtml, device, paramShow,shapeName,subParams,bindType) {
     let deviceId
-    if(shapeName === 'lineChart') {
-      this.dealLineChartWsParams(cellHtml,device,subParams)
+    if(shapeName === 'lineChart' && !this.deviceId && !bindType) { // 组态模板 或者预测、统计只绑定了一个，不用做特殊处理，数据源（设备）时候趋势图绑定多个，要做特殊处理
+      this.dealLineChartWsParams(cellHtml,device,subParams,bindType)
     } else{
       let cls
+      if(Array.isArray(device)) {
+        device = device[0]
+      }
       if(bindType == 1) {
         deviceId = device.mfaKey + '#' + device.id
         cls = device.mfaKey
@@ -751,12 +752,18 @@ class PreviewPage {
     }
   }
     
-  dealLineChartWsParams(cellHtml,device,subParams) {
+  dealLineChartWsParams(cellHtml,device,subParams,bindType) {
     if(!Array.isArray(device)) {//兼容旧应用的趋势图
       device = [device]
     }
     device.forEach(item=>{
-      cellHtml.classList.add(`device_${item.id}`)
+      let cls
+      if(bindType == 1) {
+        cls = item.mfaKey
+      } else {
+        cls = item.id
+      }
+      cellHtml.classList.add(`device_${cls}`)
     })
     if(subParams && subParams.length) {
       this.wsParams = this.wsParams.concat(subParams)

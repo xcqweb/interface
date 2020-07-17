@@ -531,7 +531,6 @@ export default {
       }
       let tempObj = this.getCellModelInfo("bindData")
       tempObj.params = this.paramOutterList
-      console.log('tempObj',tempObj)
       this.setCellModelInfo("bindData", tempObj)
     },
     dealDeviceParamIds() {
@@ -574,7 +573,7 @@ export default {
         }
         if(resParam.length) {
           let tempObj = this.getCellModelInfo("bindData")
-          tempObj.subParams = resParam
+          tempObj.subParams = resParam // subParams 多设备，多参数情况下交叉获取deviceParamsId参数处理
           this.setCellModelInfo("bindData", tempObj)
         }
       })
