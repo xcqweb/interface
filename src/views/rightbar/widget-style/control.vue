@@ -93,7 +93,6 @@ export default{
     this.requestUtil.get(`${this.urls.commandTemplate.url}${this.deviceModelId}`).then(res =>{
       if(res && res.length) {
         this.controlList = res
-        // this.control = res[0].commandTemplateId
         this.control = res[0].functionId
         this.selectChange()
       }
@@ -109,7 +108,9 @@ export default{
     },
     initDefaultData() {
       let actions = this.getCellModelInfo("actionsInfo")
-      if (!actions) {return}
+      if (!actions) {
+        return
+      }
       const res = actions.find(item=>item.mutualType == 5)
       if(res) {
         this.hasBindCommand = true

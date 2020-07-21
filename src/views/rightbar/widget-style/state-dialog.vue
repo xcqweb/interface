@@ -175,6 +175,7 @@ export default{
     this.shapeName = this.$store.state.main.widgetInfo.shapeInfo.shape
     if (this.picList.includes(this.shapeName)) {
       style.borderColor = "none"
+      style.background = 'transparent'
       this.typeTab = 4
     }
     if(this.editState) {
@@ -238,10 +239,7 @@ export default{
         animateCls:this.animateCls,
       }
       if(editStateTemp) {
-        data.id = editStateTemp.id
-        if(editStateTemp.modelFormInfo) {
-          data.modelFormInfo = editStateTemp.modelFormInfo
-        }
+        data = Object.assign(editStateTemp,data)
       }
       if(localImage) {
         let formData = new FormData()

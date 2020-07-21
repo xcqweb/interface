@@ -22,7 +22,6 @@ class PreviewPage {
     let {
       content,
     } = data
-    console.log(data)
     let parseContent = JSON.parse(content)
     this.content = parseContent.pages
     this.deviceId = data.deviceId
@@ -224,6 +223,8 @@ class PreviewPage {
           } else if (shapeName == 'menuCell') {
             let menuCellProps = item.getAttribute('menuCellProps')
             obj.menuCellProps = menuCellProps
+          }else if(shapeName.includes('image')) { // 图片的默认填充色为透明
+            obj.fillColor = "transparent"
           }
           // 组合节点
           obj.children = getNode(id)
@@ -238,8 +239,8 @@ class PreviewPage {
   // 清空页面内容
   clearPage(pageType) {
     this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
-    this.cachCells = []
-    this.emptyDeviceParamIds = []
+    this.cachCells = [] //绑定了状态、模型的控件，拿到模型里面的参数的deviceParamId去订阅数据
+    this.emptyDeviceParamIds = [] // 组态模板没有deviceParamId的情况
     this.mainProcess.realData = []
     if (pageType == 'normal') {
       for (let key in applyData) {
@@ -254,25 +255,22 @@ class PreviewPage {
   }
   subscribeData() {
     if (this.cachCells.length) {
-      let modelIdsParam = new Map()
       let allModels = new Map()
+      let modelAllIds = []
       this.cachCells.forEach(item=>{
+<<<<<<< HEAD
         let deviceId = this.deviceId || item.bindData.dataSource.deviceNameChild.id
         let statesInfo = item.statesInfo || []
         let tempArr = []
+=======
+        let statesInfo = item.statesInfo
+>>>>>>> 305b124f5da4dcac6d71e2ad24dc26624e289481
         statesInfo.forEach((d) => {
           if (d.modelFormInfo) {
-            tempArr.push(d.modelFormInfo)
+            modelAllIds.push(d.modelFormInfo)
           }
         })
-        if(tempArr.length) {
-          modelIdsParam.set(tempArr.join("_"), deviceId)
-        }
       })
-      let modelAllIds = []
-      for (let key of modelIdsParam.keys()) {
-        modelAllIds = modelAllIds.concat(key.split("_"))
-      }
       modelAllIds = Array.from(new Set(modelAllIds))
       if(modelAllIds.length) {
         requestUtil.post(urls.getModelByIds.url, modelAllIds).then((res) => {
@@ -281,7 +279,7 @@ class PreviewPage {
             res.returnObj.forEach(item=>{
               allModels.set(item.sourceId,item)
               if (item.formula) {
-                params = params.concat((this.dealModelFormulaFun(modelIdsParam,item.sourceId,item.formula)))
+                params = params.concat((this.dealModelFormulaFun(item.sourceId,item.formula)))
               }
             })
             this.cachCells.forEach(item=>{
@@ -301,17 +299,27 @@ class PreviewPage {
               $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId}`)
             })
             if(params.length) {
+              if(this.emptyDeviceParamIds.length) { //连接上组态模板的情况(没有deviceParamId)，也需要去处理
+                params = params.concat(this.emptyDeviceParamIds)
+              }
               this.deviceParamGenerateFun(params)
             }else{
-              this.subscribeDataDeal()
+              this.subscribeDataDeal2()
             }
           }
         },()=>{
-          this.subscribeDataDeal()
+          this.subscribeDataDeal2()
         })
       }else{
-        this.subscribeDataDeal()
+        this.subscribeDataDeal2()
       }
+    }else{
+      this.subscribeDataDeal2()
+    }
+  }
+  subscribeDataDeal2() {
+    if(this.emptyDeviceParamIds.length) { 
+      this.deviceParamGenerateFun(this.emptyDeviceParamIds)
     }else{
       this.subscribeDataDeal()
     }
@@ -328,18 +336,22 @@ class PreviewPage {
         }else{
           maps.set(item.deviceId, [item.deviceParamId])
         }
-        const eles = $(`.device_${item.deviceId}`)
-        eles.each((index, ele) => {
-          const $ele = $(ele)
-          const params = $ele.data('paramShow')
-          params.forEach(param => {
-            if (item.paramId === param.paramId && item.partId === param.partId) {
-              if (!param.deviceParamId) {
-                param.deviceParamId = item.deviceParamId
-              }
+        // 处理组态模板 没有deviceParamId的情况
+        if(this.deviceId) {
+          const eles = $(`.device_${this.deviceId}`)
+          eles.each((index,ele) => {
+            const paramShow = $(ele).data('paramShow')
+            if (paramShow && paramShow.length > 0) {
+              paramShow.forEach(p => {
+                if (item.paramId === p.paramId && item.partId == p.partId) {
+                  if (!p.deviceParamId) {
+                    p.deviceParamId = item.deviceParamId
+                  }
+                }
+              })
             }
           })
-        })
+        }
       })
       for (let key of maps.keys()) {
         resParam.push({
@@ -352,39 +364,45 @@ class PreviewPage {
       this.subscribeDataDeal()
     })
   }
-  dealModelFormulaFun(modelIdsParam,modelId,formula) {
+  dealModelFormulaFun(modelId,formula) {//拿到模型里面的绑定的参数去订阅
     let formulaAttr = JSON.parse(formula)
     let res = []
-    let deviceId
-    for (let key of modelIdsParam.keys()) {
-      let tempArr = key.split("_")
-      let resIndex = tempArr.findIndex((item)=>{
-        return item == modelId
-      })
-      if (resIndex != -1) {
-        deviceId = modelIdsParam.get(key)
-        break
-      }
-    }
-    formulaAttr.data.forEach(item=>{
-      let tempKey = item.key
-      if(tempKey) {
-        let keyArr = tempKey.split('/')
-        let partId = null
-        if(keyArr.length > 2) {
-          partId = keyArr[1]
+    for(let i = 0;i < this.cachCells.length;i++) {
+      let statesInfo = this.cachCells[i].statesInfo
+      let deviceId = null
+      for(let j = 0;j < statesInfo.length;j++) {
+        if (statesInfo[j].modelFormInfo === modelId) {
+          deviceId = this.deviceId || this.cachCells[i].bindData.dataSource.deviceNameChild.id
+          let bindType = this.cachCells[i].bindData.dataSource.type || 0 //添加bindType（0=设备1=预测应用2=统计应用)
+          if(bindType == 1) {
+            deviceId = this.cachCells[i].mfaKey
+          }
+          break
         }
-        res.push({
-          paramType: keyArr[0] == 'device' ? 0 : 1,
-          deviceId: deviceId,
-          partId: partId,
-          paramId: keyArr[keyArr.length - 1]
+      }
+      if(deviceId) {
+        formulaAttr.data.forEach(item=>{
+          let tempKey = item.key
+          if(tempKey) {
+            let keyArr = tempKey.split('/')
+            let partId = null
+            if(keyArr.length > 2) {
+              partId = keyArr[1]
+            }
+            res.push({
+              paramType: keyArr[0] == 'device' ? 0 : 1,
+              deviceId: deviceId,
+              partId: partId,
+              paramId: keyArr[keyArr.length - 1],
+              paramName: item.paramName
+            })
+          }
         })
       }
-    })
+    }
     return res
   }
-  subscribeDataDeal(res) {
+  subscribeDataDeal(res) { 
     if(res && res.length) {
       this.wsParams = this.wsParams.concat(res)
     }
@@ -522,9 +540,6 @@ class PreviewPage {
       if (cell.children.length) {
         this.renderPages(cell.children, cellHtml)
       }
-    }
-    if (this.emptyDeviceParamIds.length > 0) {
-      this.deviceParamGenerateFun(this.emptyDeviceParamIds)
     }
   }
 
@@ -749,7 +764,7 @@ class PreviewPage {
   }
   initWsParams(cellHtml, device, paramShow,shapeName,subParams) {
     let deviceId
-    if(shapeName === 'lineChart') {
+    if(shapeName === 'lineChart' && !this.deviceId) { // 不是设备模板的情况
       this.dealLineChartWsParams(cellHtml,device,subParams)
     } else{
       deviceId = this.deviceId || device.id

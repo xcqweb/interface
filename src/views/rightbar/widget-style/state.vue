@@ -155,14 +155,20 @@ export default{
     },
     getStates(graph) {
       let cell = graph.getSelectionCell()
+      let tempBorderColor = this.$store.state.main.widgetInfo.borderColor
+      let tempBackground = this.$store.state.main.widgetInfo.bgColor
+      if(this.picList.includes(this.shapeName)) {
+        tempBorderColor = 'none'
+        tempBackground = 'transparent'
+      }
       let statesTemp = [{
         "id":'state_0',
         "name":this.$t("defaultText"),
         "desc":this.$t("defaultText"),
         'animateCls':'',
         "style":{
-          background:this.$store.state.main.widgetInfo.bgColor,
-          borderColor:this.$store.state.main.widgetInfo.borderColor,
+          background:tempBackground,
+          borderColor:tempBorderColor,
           color:this.$store.state.main.widgetInfo.color
         }, 
         'check':false
@@ -232,7 +238,6 @@ export default{
       })
     },
     editStateFun(state) {
-      //需要重新从model获取state，防止该状态绑定模型后，直接点编辑，未拿到模型信息
       if(this.shapeName !== 'light') {
         this.editState = state
         this.isAdd = true

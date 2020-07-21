@@ -153,11 +153,16 @@ function setterRealData(res, fileSystem,mainProcess) {
         }
         let stateModels = $ele.data("stateModels")
         if(stateModels) {
-          let stateIndex = 0 //默认状态 未找到要切换的状态，显示默认
+          let stateIndex = $ele.data("stateIndex") || 0//默认状态 未找到要切换的状态，显示默认 或显示上一次的结果状态
           for (let j = 1; j < stateModels.length;j++) {
             if (dealStateFormula(stateModels[j].modelFormInfo.formula, item)) {
               stateIndex = j
+              $ele.data("stateIndex",stateIndex)
               break
+            }
+            if(j == stateModels.length - 1) {
+              // 未找到满足的状态，把之前的保存的上一次的结果也换原为默认值 0
+              $ele.data("stateIndex",0)
             }
           }
           changeEleState(els[i], stateModels[stateIndex],fileSystem)
@@ -311,11 +316,12 @@ function changeEleState(el, stateInfo,fileSystem) {
     text.css('color',stateInfo.style.color)
     return
   } 
-  let imgInfo = stateInfo.imgInfo
   for (let key in stateInfo.style) {
     el.style[key] = stateInfo.style[key]
   }
+  let imgInfo = stateInfo.imgInfo
   if (imgInfo) {
+    el.style.background = "transparent"
     imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
     setSvgImageHref(el,imgInfo.url)
     return
