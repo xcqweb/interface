@@ -73,6 +73,7 @@ export default {
   pipeline1: 'Pipeline one',
   pipeline2: 'Pipeline two',
   pipeline3: 'Pipeline three',
+  status: 'status',
   trend: 'Line chart',
   dashboard: 'Gauge chart',
   defaultText:'Default',

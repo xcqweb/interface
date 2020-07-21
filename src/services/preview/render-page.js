@@ -4,6 +4,10 @@
 // websocket信息
 let applyData = {}
 let fileSystem //文件服务器host
+window.unReadNumberTm = null
+window.unReadCountTime = 2000 // 1秒钟轮询一次 
+let onlineColor = '#33CC66'
+let onworkColor = '#A4AFB4'
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
@@ -254,7 +258,7 @@ class PreviewPage {
       let allModels = new Map()
       this.cachCells.forEach(item=>{
         let deviceId = this.deviceId || item.bindData.dataSource.deviceNameChild.id
-        let statesInfo = item.statesInfo
+        let statesInfo = item.statesInfo || []
         let tempArr = []
         statesInfo.forEach((d) => {
           if (d.modelFormInfo) {
@@ -397,7 +401,7 @@ class PreviewPage {
     }
   }
   // 解析页面
-  parsePage(page,fileSystemParam) {
+  parsePage(page, fileSystemParam) {
     fileSystem = fileSystemParam
     this.currentPageId = page.id
     const xmlDoc = mxUtils.parseXml(page.xml).documentElement
@@ -432,7 +436,38 @@ class PreviewPage {
     }
     this.subscribeData()
     this.bindDeviceEleEvent()
+    this.getDataSource()
+    window.unReadNumberTm = setInterval(this.getDataSource.bind(this), window.unReadCountTime);
     return cells
+  }
+  /*
+  **默认页面上只有一个数据源状态控件
+  * status: 0 1 2 (在线 离线 未工作) -> 【0, 1 2 (在线 离线 离线)】
+  */
+  getDataSource() {
+    console.log(this.cachCells);
+    if (this.cachCells.length) {
+      // 刷选状态控件的cachCells
+      const statusArr = this.cachCells.find(item => {
+        return item.shapeName === 'status'
+      });
+      if (statusArr) {
+        const deviceId = this.cachCells[0].bindData.dataSource.deviceNameChild.id || '';
+        requestUtil.get(`${urls.getDataSource.url}/${deviceId}`).then((res) => {
+          const status = res.length > 0 ? res[0].status : '';
+          let els = document.querySelector(`.deviceStatus_${deviceId}`) //多设备情况下，会多次走这个地方
+          if ([1, 2].includes(status)) { // 离线
+            els.children[0].style.color = onworkColor;
+            els.children[0].children[0].style.backgroundColor = onworkColor;
+            els.style.borderColor = onworkColor;
+          } else if (status === 0) { // 在线
+            els.children[0].style.color = onlineColor;
+            els.children[0].children[0].style.backgroundColor = onlineColor;
+            els.style.borderColor = onlineColor;
+          }
+        });
+      }
+    }
   }
   // 设备绑定mouse事件
   bindDeviceEleEvent() {
@@ -600,7 +635,7 @@ class PreviewPage {
         cellHtml.style.justifyContent = 'center'
       }
     }
-    if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress','triangle','pentagram','buttonSwitch'].includes(shapeName)) {
+    if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress','triangle','pentagram','buttonSwitch', 'status'].includes(shapeName)) {
       cellHtml.style.backgroundColor = 'transparent'
     }else{
       if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none') && shapeName != 'tableBox') {
@@ -612,6 +647,9 @@ class PreviewPage {
         }
         cellHtml.style.backgroundColor = tempBgColor
       }
+    }
+    if (shapeName === 'status') {
+      cell.strokeColor = '#33CC66';
     }
     if(!['buttonSwitch','beeline','triangle','pentagram'].includes(shapeName)) {
       let borderStyle = 'solid'
@@ -630,6 +668,7 @@ class PreviewPage {
         cellHtml.style.border = "none"
       }
     }
+    
     cellHtml.className = 'gePalette'
     // 隐藏
     if (cell.hide == 'true') {
@@ -651,6 +690,7 @@ class PreviewPage {
     cellHtml.id = `palette_${cell.id}`
     //判断菜单是否选中，未选中显示默认样式
     let menuCellPropsStr = cell.menuCellProps
+    console.log(menuCellPropsStr)
     if(menuCellPropsStr) {
       let cellProp = JSON.parse(menuCellPropsStr)
       let check = cellProp.check
@@ -664,7 +704,15 @@ class PreviewPage {
     // 绑定事件
     $(cellHtml).data('hide',cell.hide)
     $(cellHtml).data("shapeName",shapeName)
-    bindEvent(cellHtml, cell, this.mainProcess, applyData,fileSystem)
+    bindEvent(cellHtml, cell, this.mainProcess, applyData, fileSystem)
+    // 单独处理 状态控件 绑定device_id
+    if (shapeName === 'status') {
+      let device = cell.bindData && cell.bindData.dataSource ? cell.bindData.dataSource.deviceNameChild : {id: ''};
+      cellHtml.classList.add(`deviceStatus_${device.id}`)
+      if (device.id) {
+        this.cachCells.push(cell)
+      }
+    }
     if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild || this.deviceId) {
       let paramShow = []
       let device = cell.bindData ? (cell.bindData.dataSource.deviceNameChild ? cell.bindData.dataSource.deviceNameChild : '') : ''

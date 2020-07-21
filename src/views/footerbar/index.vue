@@ -14,10 +14,14 @@
                 :label="$t(dataSourceName[0])"
               />
               <TabPane
+                v-if="shapeName !== 'status'"
                 :label="$t(dataSourceName[1])"
               />
 
-              <TabPane :label="$t(dataSourceName[2])" />
+              <TabPane
+                v-if="shapeName !== 'status'"
+                :label="$t(dataSourceName[2])" 
+              />
             </Tabs>
           </div>
           <!-- && $store.state.main.isTemplateApply -->
@@ -115,7 +119,7 @@
           <!--状态模型-->
           <!-- && $store.state.main.isTemplateApply -->
           <div
-            v-show="tabsNum === 2 || (tabsNum == 1 && $store.state.main.isTemplateApply)"
+            v-show="shapeName !== 'status' && tabsNum === 2 || (tabsNum == 1 && $store.state.main.isTemplateApply)"
             class="footer-common stateList"
           >
             <div
@@ -192,7 +196,8 @@ const allShapes = [
   "lineChart",
   "gaugeChart",
   'triangle',
-  'pentagram'
+  'pentagram',
+  'status',
 ]; //可以绑定数据的控件
 const supportDataShow = [
   "rectangle",
@@ -202,7 +207,7 @@ const supportDataShow = [
   "lineChart",
   "gaugeChart",
   'triangle',
-  'pentagram'
+  'pentagram',
 ]; // 支持显示参数
 export default {
   components: {

@@ -9,6 +9,7 @@
       {{ $t('rightBar.widgetName') }}
       <input
         v-model="widgetName"
+        :disabled="shapeName === 'status'"
         style="padding:0 4px;"
         :maxlength="50"
         @keyup.enter="changeName"
@@ -177,7 +178,7 @@
       />
     </div>
     <div
-      v-if="(!selectMenu && shapeName!='menuCell' || selectMenu && shapeName=='menuCell') && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && shapeName!='linkTag' && !shapeName.includes('Chart') && !shapeName.includes('image') && shapeName!='beeline' && edgeInfo!==2"
+      v-if="(!selectMenu && shapeName!='menuCell' || selectMenu && shapeName=='menuCell') && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && shapeName!='linkTag' && !shapeName.includes('Chart') && !shapeName.includes('image') && shapeName!='beeline' && edgeInfo!==2 && shapeName !== 'status'"
       class="titleSet"
     >
       <div class="item-title">
@@ -269,7 +270,7 @@
         </div>
       </div>
     </div>
-    <div v-if="(!selectMenu && shapeName!='menuCell' || selectMenu && shapeName=='menuCell') && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text' && shapeName!='menulist'">
+    <div v-if="(!selectMenu && shapeName!='menuCell' || selectMenu && shapeName=='menuCell') && shapeName!='light' && !shapeName.includes('pipeline') && shapeName!='progress' && !shapeName.includes('Chart') && shapeName!='linkTag' && shapeName!='text' && shapeName!='menulist' && shapeName !== 'status'">
       <div class="item-title">
         {{ $t('appearance') }}
       </div>
@@ -831,6 +832,7 @@ export default {
     this.alignIndex2 = valignArr.indexOf(this.$store.state.main.widgetInfo.valign) + 1
     this.bgColor =  this.dealDefaultColor(this.$store.state.main.widgetInfo.bgColor)
     this.borderColor =  this.dealDefaultColor(this.$store.state.main.widgetInfo.borderColor)
+    console.log(this.borderColor)
     this.borderLineBoldText =  this.$store.state.main.widgetInfo.borderBold
     this.borderLineCls = this.$store.state.main.widgetInfo.borderLineCls
     palettName = this.$store.state.main.widgetInfo.widgetName;

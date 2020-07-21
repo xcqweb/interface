@@ -6765,7 +6765,7 @@ if (typeof mxVertexHandler != 'undefined')
             var state = this.graph.view.getState(cell);
             let shapeName = state.style.shape
             // 图片不可输入
-            let notInputArr = ['userimage', 'gaugeChart', 'lineChart', 'pipeline1', 'pipeline2', 'pipeline3', 'image', 'progress','light']
+            let notInputArr = ['userimage', 'gaugeChart', 'lineChart', 'pipeline1', 'pipeline2', 'pipeline3', 'image', 'progress','light', 'status']
             if (state != null && notInputArr.includes(shapeName)) { //不可输入的 禁用
                 this.textarea.setAttribute('contenteditable', false)
             }
@@ -7950,7 +7950,7 @@ if (typeof mxVertexHandler != 'undefined')
              if (state.style && state.style.shape){
                 let shapeName = state.style.shape
                 // 表格和菜单禁止旋转 
-                if (shapeName === 'menulist' || shapeName === 'tableBox' || shapeName === 'label' || shapeName == 'cellBox' || shapeName == 'menuCell' || shapeName == 'tableCell') {
+                 if (shapeName === 'menulist' || shapeName === 'status' || shapeName === 'tableBox' || shapeName === 'label' || shapeName == 'cellBox' || shapeName == 'menuCell' || shapeName == 'tableCell') {
                     return false
                 }
              }
