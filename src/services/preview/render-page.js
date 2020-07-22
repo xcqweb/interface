@@ -331,7 +331,7 @@ class PreviewPage {
         const eles = $(`.device_${item.deviceId}`)
         eles.each((index, ele) => {
           const $ele = $(ele)
-          const params = $ele.data('paramShow')
+          const params = $ele.data('paramShow') || []
           params.forEach(param => {
             if (item.paramId === param.paramId && item.partId === param.partId) {
               if (!param.deviceParamId) {
@@ -436,6 +436,7 @@ class PreviewPage {
     }
     this.subscribeData()
     this.bindDeviceEleEvent()
+    clearInterval(window.unReadNumberTm)
     this.getDataSource()
     window.unReadNumberTm = setInterval(this.getDataSource.bind(this), window.unReadCountTime);
     return cells
@@ -445,6 +446,7 @@ class PreviewPage {
   * status: 0 1 2 (在线 离线 未工作) -> 【0, 1 2 (在线 离线 离线)】
   */
   getDataSource() {
+    console.log('entry')
     if (this.cachCells.length) {
       // 刷选状态控件的cachCells
       const statusArr = this.cachCells.find(item => {
@@ -691,7 +693,6 @@ class PreviewPage {
     cellHtml.id = `palette_${cell.id}`
     //判断菜单是否选中，未选中显示默认样式
     let menuCellPropsStr = cell.menuCellProps
-    console.log(menuCellPropsStr)
     if(menuCellPropsStr) {
       let cellProp = JSON.parse(menuCellPropsStr)
       let check = cellProp.check
