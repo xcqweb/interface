@@ -458,10 +458,12 @@ class PreviewPage {
           if ([1, 2].includes(status)) { // 离线
             els.children[0].style.color = onworkColor;
             els.children[0].children[0].style.backgroundColor = onworkColor;
+            els.children[0].children[1].innerHTML = '离线';
             els.style.borderColor = onworkColor;
           } else if (status === 0) { // 在线
             els.children[0].style.color = onlineColor;
             els.children[0].children[0].style.backgroundColor = onlineColor;
+            els.children[0].children[1].innerHTML = '在线';
             els.style.borderColor = onlineColor;
           }
         });
