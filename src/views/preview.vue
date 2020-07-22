@@ -100,6 +100,10 @@ export default {
     }
   },
   mounted() {
+    if (window.unReadNumberTm) {
+      clearInterval(window.unReadNumberTm)
+      window.unReadNumberTm = null
+    }
     this.$nextTick(()=>{
       preview.mainProcess.init(this)
       history.pushState(null, null, document.URL)
@@ -111,6 +115,9 @@ export default {
   },
   destroyed() {
     window.removeEventListener('popstate',this.stateListener )
+    // 清楚预览的定时器
+    clearInterval(window.unReadNumberTm)
+    window.unReadNumberTm = null
   },
   methods:{
     confirm() {
