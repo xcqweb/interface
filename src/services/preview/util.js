@@ -189,32 +189,43 @@ function effectEvent(action, mainProcess, applyData, fileSystem) {
   }
 }
 function actionSend(action,mainProcess) {
-  let {data} = action
+  let {data} = action,controlList = [],commandTemplateId
   // 调用下发指令接口，发出指令
   let sendFun = ()=>{
     // 先拿指令下的variables
-    const params = {
-      deviceId:data.detail.deviceId,
-      deviceModelId:data.detail.deviceModelId,
-      functionId: data.detail.functionId,
-      commandTemplateId: data.detail.commandTemplateId,
-    }
-    requestUtil.get(urls.commandTplVariable.url,params).then(res=>{
-      let variables = res.variables
-      let commandParams = {
-        commandTemplateId:data.detail.commandTemplateId,
-        deviceId:data.detail.deviceId,
-        sourceOrg:'IoT',
-        sendSource:'configurationDesignStudio',
-        timestamp:new Date().getTime(),
-        serialnumber:guid(),
-        command:variables
-      }
-      requestUtil.post(urls.commandSend.url,commandParams).then(result=>{
-        if(result.code == 0) {
-          mainProcess.previewContext.success('指令下发成功')
+    requestUtil.get(`${urls.commandTemplate.url}${data.detail.deviceModelId}`).then(res =>{
+      if(res && res.length) {
+        controlList = res
+        const obj = controlList.filter(item => {
+          return item.functionId === data.detail.functionId
+        })
+        if(obj && obj.length) {
+          commandTemplateId = obj[0].commandTemplateId
+          const params = {
+            deviceId:data.detail.deviceId,
+            deviceModelId:data.detail.deviceModelId,
+            functionId: data.detail.functionId,
+            commandTemplateId,
+          }
+          requestUtil.get(urls.commandTplVariable.url,params).then(res=>{
+            let variables = res.variables
+            let commandParams = {
+              commandTemplateId:commandTemplateId,
+              deviceId:data.detail.deviceId,
+              sourceOrg:'IoT',
+              sendSource:'configurationDesignStudio',
+              timestamp:new Date().getTime(),
+              serialnumber:guid(),
+              command:variables
+            }
+            requestUtil.post(urls.commandSend.url,commandParams).then(result=>{
+              if(result.code == 0) {
+                mainProcess.previewContext.success('指令下发成功')
+              }
+            })
+          })
         }
-      })
+      }
     })
   }
   if(data.isTip) {

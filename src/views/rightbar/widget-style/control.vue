@@ -129,6 +129,10 @@ export default{
         tipDialog(this.myEditorUi,this.$t('rightBar.hasBindCommand'))
         return
       }
+      if(!this.control) {
+        tipDialog(this.myEditorUi,'请选择控制指令')
+        return
+      }
       this.commandData.isTip =  this.opConfirm === true ? 1 : 0
       this.commandData.isPwd =  this.opPwd === true ? 1 : 0
       this.commandData.pwd = this.pwd
@@ -143,18 +147,11 @@ export default{
       })
     },
     selectChange() {
-      const obj = this.controlList.filter(item => {
-        return item.functionId === this.control
-      });
-      const params = {
+      this.commandData.detail = {
         deviceId:this.bindData.dataSource.deviceNameChild.id,
         deviceModelId:this.deviceModelId,
         functionId: this.control,
-        commandTemplateId: obj[0].commandTemplateId,
       }
-      this.requestUtil.get(this.urls.commandTplVariable.url,params).then(res=>{
-        this.commandData.detail = res
-      })
     },
     clearFun() {
       this.opPwd = false
