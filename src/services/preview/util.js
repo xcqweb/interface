@@ -192,19 +192,29 @@ function actionSend(action,mainProcess) {
   let {data} = action
   // 调用下发指令接口，发出指令
   let sendFun = ()=>{
-    let commandParams = {
-      commandTemplateId:data.detail.commandTemplateId,
+    // 先拿指令下的variables
+    const params = {
       deviceId:data.detail.deviceId,
-      sourceOrg:'IoT',
-      sendSource:'configurationDesignStudio',
-      timestamp:new Date().getTime(),
-      serialnumber:guid(),
-      command:data.detail.variables
+      deviceModelId:data.detail.deviceModelId,
+      functionId: data.detail.functionId,
+      commandTemplateId: data.detail.commandTemplateId,
     }
-    requestUtil.post(urls.commandSend.url,commandParams).then(res=>{
-      if(res.code == 0) {
-        mainProcess.previewContext.success('指令下发成功')
+    requestUtil.get(urls.commandTplVariable.url,params).then(res=>{
+      let variables = res.variables
+      let commandParams = {
+        commandTemplateId:data.detail.commandTemplateId,
+        deviceId:data.detail.deviceId,
+        sourceOrg:'IoT',
+        sendSource:'configurationDesignStudio',
+        timestamp:new Date().getTime(),
+        serialnumber:guid(),
+        command:variables
       }
+      requestUtil.post(urls.commandSend.url,commandParams).then(result=>{
+        if(result.code == 0) {
+          mainProcess.previewContext.success('指令下发成功')
+        }
+      })
     })
   }
   if(data.isTip) {
