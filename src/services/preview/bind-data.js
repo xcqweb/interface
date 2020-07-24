@@ -446,7 +446,6 @@ function initialWs(ws, pageId, applyData, fileSystem,mainProcess) {
     reconnect(pageId,applyData)
   }
 }
-
 //实时数据
 function createWsReal(pageId, applyData, fileSystem,mainProcess) {
   let deviceParams = applyData[pageId].wsParams
@@ -454,7 +453,7 @@ function createWsReal(pageId, applyData, fileSystem,mainProcess) {
     if (deviceParams.length === 0 || !websocketUrlReal) {
       return
     }
-    let ws = new WebSocket(res.data) // 提交时使用这个
+    let ws = new WebSocket(res.data) // 提交时使用这个    
     initialWs(ws, pageId, applyData, fileSystem,mainProcess)
     if(applyData[pageId].wsReal) {
       applyData[pageId].wsReal.close()
