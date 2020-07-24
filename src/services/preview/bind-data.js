@@ -449,9 +449,9 @@ function initialWs(ws, pageId, applyData, fileSystem,mainProcess) {
 }
 
 //获取ws请求主机协议
-function getWsHost() {
-  const host = location.host;
-  return 'ws://' + host.includes('localhost') || host.includes('127.0.0.1') ? 'ws://kong.ele-iot.10.74.158.69.nip.io' : host;
+function getWsHost() {
+  const host = location.host
+  return 'ws://' + host.includes('localhost') || host.includes('127.0.0.1') ? 'ws://kong.ele-iot.10.74.158.69.nip.io' : host
 }
 
 //实时数据
