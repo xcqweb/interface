@@ -1,5 +1,4 @@
 import {geAjax, toDecimal2NoZero, timeFormate,dealDefaultParams,svgShape,setSvgImageHref} from './util'
-import {getCookie} from '../Utils'
 import echarts from 'echarts'
 let reconnectCount = 0 //websocket连接出错时候，重连的次数
 const reconnectMaxCount = 5
@@ -158,7 +157,7 @@ function setterRealData(res, fileSystem,mainProcess) {
         let options = echartsInstance.getOption()
         if(options) {
           if(shapeName == 'lineChart') {
-            let chartDataLen = $ele.data("chartDataLen")
+            let chartDataLen = $ele.data("chartDataLen") || 600
             options.series.forEach((ser)=>{
               if (ser.deviceId == item.deviceId) {
                 if(ser.data.length >= chartDataLen) {
@@ -166,8 +165,8 @@ function setterRealData(res, fileSystem,mainProcess) {
                   options.xAxis[0].data.splice(0,  options.xAxis[0].data.length - chartDataLen)
                 }
                 if (val || val == 0) {
-                  ser.data.push(val);
-                  let yMax = options.yAxis[0].max;
+                  ser.data.push(val)
+                  let yMax = options.yAxis[0].max
                   options.yAxis[0].max = Math.max(yMax, val)
                   options.xAxis[0].data.push(timeFormate(item.timestamp, false))
                 }
@@ -455,8 +454,7 @@ function createWsReal(pageId, applyData, fileSystem,mainProcess) {
     if (deviceParams.length === 0 || !websocketUrlReal) {
       return
     }
-    const token = getCookie('token')
-    let ws = new WebSocket(res.data, token) // 提交时使用这个
+    let ws = new WebSocket(res.data) // 提交时使用这个
     initialWs(ws, pageId, applyData, fileSystem,mainProcess)
     if(applyData[pageId].wsReal) {
       applyData[pageId].wsReal.close()

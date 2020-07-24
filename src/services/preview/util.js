@@ -390,7 +390,7 @@ function dealCharts(mainProcess,cell) {
   }
   let fun = () => {
     let myEchart = echarts.init(chartCon)
-    if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params && cell.bindData.params.length) {
+    if (cell.bindData && cell.bindData.dataSource && cell.bindData.params && cell.bindData.params.length) {
       let temp = $(con).data("paramShowDefault")
       if(temp) {
         let titleShow = temp.paramName
@@ -398,9 +398,6 @@ function dealCharts(mainProcess,cell) {
         let paramType = temp.paramType
         let devices = cell.bindData.dataSource.deviceNameChild
         let bindType = cell.bindData.dataSource.type || 0
-        if(bindType) {//预测应用 或统计应用 先不做历史数据
-          return
-        }
         if(!Array.isArray(devices)) {
           devices = [devices]
         }
@@ -418,76 +415,102 @@ function dealCharts(mainProcess,cell) {
           let markLine = tempOptions.series[0].markLine
           let markLineMax = 0, markValArr = []
           let paramIds = []
+          let subParamsData = $(con).data('subParams')
           devices.forEach((device,index)=>{
-            let tempPId = dealDefaultParams(device.id,temp,$(con).data('subParams')).deviceParamId
+            let tempPId = dealDefaultParams(device.id,temp,subParamsData).deviceParamId
             if(tempPId) {
               paramIds[index] = tempPId
             }
           })
-          if(paramIds.length) {
-            requestUtil.get(`${urls.timeSelect.url}${paramId}`, {paramType: paramType == 'device' ? 0 : 1}).then(res => {
-              let checkItem = res.durations.find((item) => {
-                return item.checked === true
+          if(paramIds.length || bindType > 0) {
+            if(!bindType) {// 预测应用 或统计应用 先不做历史数据
+              requestUtil.get(`${urls.timeSelect.url}${paramId}`, {paramType: paramType == 'device' ? 0 : 1}).then(res => {
+                let checkItem = res.durations.find((item) => {
+                  return item.checked === true
+                })
+                let chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
+                $(con).data("chartDataLen", chartDataLen)
+                if (markLine && markLine.data && markLine.data.length) {
+                  markLine.data.forEach(item => {
+                    markValArr.push(item.yAxis)
+                  })
+                  markLineMax = Math.max(...markValArr)
+                }
+                let pentSdbParams = []
+                devices.forEach((item,index)=>{
+                  pentSdbParams.push({
+                    paramIds:[paramIds[index]],
+                    deviceId:item.id,
+                    period:checkItem.duration,
+                  })
+                })
+                let url = `${urls.pentSdbData.url}`
+                requestUtil.post(url, pentSdbParams).then(res => {
+                  if (res && res.length) {
+                    let xAxisData = []
+                    for(let i = 0;i < res.length;i++) {
+                      let tempArr = res[i]
+                      let device = devices[i]
+                      if(device) {
+                        tempLegend.push(device.name)
+                        tempOptions.legend.data = tempLegend
+                        tempSeries.push({
+                          type: 'line',
+                          name: device.name,
+                          markLine: markLine,
+                          data: [],
+                          deviceId: device.id, //设备id，额外添加的，匹配数据时候用
+                        })
+                        if(JSON.stringify(res[i]) === '{}') {
+                          continue
+                        }
+                        if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
+                          let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
+                          xAxisData = []
+                          for (let key of keys) {
+                            xAxisData.push(timeFormate(key, false))
+                            tempSeries[i].data.push(tempArr.resMap[key])
+                          }
+                          if(tempOptions.yAxis.max) {
+                            tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)
+                          }else{
+                            tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
+                          }
+                          tempOptions.series = tempSeries
+                        }
+                      }
+                      tempOptions.xAxis.data = xAxisData
+                      myEchart.setOption(tempOptions)
+                    }
+                  }
+                },()=>{
+                  myEchart.setOption(options)
+                })
               })
-              let chartDataLen = Math.ceil(checkItem.duration / res.rateCycle)
-              $(con).data("chartDataLen", chartDataLen)
+            }else{
+              $(con).data("chartDataLen", 0)
               if (markLine && markLine.data && markLine.data.length) {
                 markLine.data.forEach(item => {
                   markValArr.push(item.yAxis)
                 })
                 markLineMax = Math.max(...markValArr)
               }
-              let pentSdbParams = []
-              devices.forEach((item,index)=>{
-                pentSdbParams.push({
-                  paramIds:[paramIds[index]],
-                  deviceId:item.id,
-                  period:checkItem.duration,
+              devices.forEach((device)=>{
+                tempLegend.push(device.name)
+                tempSeries.push({
+                  type: 'line',
+                  name: device.name,
+                  markLine: markLine,
+                  data: [],
+                  deviceId: device.id, //设备id，额外添加的，匹配数据时候用
                 })
               })
-              let url = `${urls.pentSdbData.url}`
-              requestUtil.post(url, pentSdbParams).then(res => {
-                if (res && res.length) {
-                  let xAxisData = []
-                  for(let i = 0;i < res.length;i++) {
-                    let tempArr = res[i]
-                    let device = devices[i]
-                    if(device) {
-                      tempLegend.push(device.name)
-                      tempOptions.legend.data = tempLegend
-                      tempSeries.push({
-                        type: 'line',
-                        name: device.name,
-                        markLine: markLine,
-                        data: [],
-                        deviceId: device.id, //设备id，额外添加的，匹配数据时候用
-                      })
-                      if(JSON.stringify(res[i]) === '{}') {
-                        continue
-                      }
-                      if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
-                        let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
-                        xAxisData = []
-                        for (let key of keys) {
-                          xAxisData.push(timeFormate(key, false))
-                          tempSeries[i].data.push(tempArr.resMap[key])
-                        }
-                        if(tempOptions.yAxis.max) {
-                          tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)
-                        }else{
-                          tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
-                        }
-                        tempOptions.series = tempSeries
-                      }
-                    }
-                    tempOptions.xAxis.data = xAxisData
-                    myEchart.setOption(tempOptions)
-                  }
-                }
-              },()=>{
-                myEchart.setOption(options)
-              })
-            })
+              tempOptions.yAxis.max = markLineMax
+              tempOptions.legend.data = tempLegend
+              tempOptions.series = tempSeries
+              tempOptions.xAxis.data = []
+              myEchart.setOption(tempOptions)
+            }
           }else{
             myEchart.setOption(tempOptions)
           }
