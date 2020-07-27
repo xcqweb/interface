@@ -82,7 +82,8 @@ function setterRealData(res, fileSystem,mainProcess) {
         paramShowDefault = $ele.data("paramShowDefault")
       }
       if (paramShowDefault) {
-        val = item[paramShowDefault.deviceParamId]
+        //设备参数带上单位
+        val = item[paramShowDefault.deviceParamId] + paramShowDefault.dataUnit
       }
       if(shapeName == 'progress') {//进度条
         if(!val) {

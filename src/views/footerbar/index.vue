@@ -493,6 +493,7 @@ export default {
             partId:item.partId,
             transportSourceId: item.transportSourceId,
             deviceParamId: item.deviceParamId,
+            dataUnit: item.dataUnit, //设备参数单位
             type: false
           }
           if(this.multiple) {
