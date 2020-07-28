@@ -27,7 +27,8 @@ class PreviewPage {
     this.deviceId = data.deviceId
     this.pagesRank = parseContent.rank
     this.wsParams = []
-    this.cachCells = []
+    this.cachCells = [] //保存绑定有状态模型的控件，需要拿到里面的参数去订阅数据
+    this.statusCells = [] // “状态（status)” 控件的缓存
     this.emptyDeviceParamIds = []
     this.currentPageId = ''
     this.mainProcess = mainProcess
@@ -240,6 +241,7 @@ class PreviewPage {
   clearPage(pageType) {
     this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
     this.cachCells = []
+    this.statusCells = []
     this.emptyDeviceParamIds = []
     this.mainProcess.realData = []
     if (pageType == 'normal') {
@@ -279,18 +281,6 @@ class PreviewPage {
             this.cachCells.forEach(item=>{
               let cellStateInfoHasModel = []
               let deviceId = this.deviceId || item.bindData.dataSource.deviceNameChild.id
-              let bindType = item.bindData.dataSource.type || 0 //添加bindType（0=设备1=预测应用2=统计应用)
-              let cls = deviceId
-              if(bindType == 1) {
-                deviceId = item.mfaKey + '#' + item.id
-                cls = item.mfaKey
-              }
-              for(let i = 0;i < params.length;i++) {
-                if(params[i].deviceId === deviceId) {
-                  params[i].bindType =  bindType
-                  break
-                }
-              }
               let statesInfo = item.statesInfo
               if (statesInfo && statesInfo.length) {
                 cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
@@ -302,7 +292,7 @@ class PreviewPage {
                 })
               }
               const className = item.shapeName.includes('progress') || item.shapeName.includes('Chart') ? '' : 'param-show-node'
-              $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${cls}`)
+              $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId  }`)
             })
             if(params.length) {
               this.deviceParamGenerateFun(params)
@@ -321,56 +311,44 @@ class PreviewPage {
     }
   }
   deviceParamGenerateFun(params) {
-    const dealFun = (targetArr)=>{
+    requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
       let resParam = [],maps = new Map()
-      targetArr.forEach(item=>{
+      res.forEach(item=>{
         let tempArr = []
-        if (maps.has(item.deviceId + '-' + item.bindType)) {
-          tempArr =  maps.get(item.deviceId + '-' + item.bindType)
-          if(item.bindType) { // 统计或预测应用
-            tempArr.push(item.bindType == 1 ? item.paramName : item.paramId)
-          } else {
-            tempArr.push(item.deviceParamId)
-          }
-          maps.set(item.deviceId + '-' + (item.bindType || 0),Array.from(new Set(tempArr)))
+        if (maps.has(item.deviceId)) {
+          tempArr =  maps.get(item.deviceId)
+          tempArr.push(item.deviceParamId)
+          maps.set(item.deviceId,Array.from(new Set(tempArr)))
         }else{
-          if(item.bindType) { // 统计或预测应用
-            maps.set(item.deviceId + '-' + item.bindType, item.bindType == 1 ? [item.paramName] : [item.paramId])
-          } else {
-            maps.set(item.deviceId + '-' + (item.bindType || 0), [item.deviceParamId])
-          }
+          maps.set(item.deviceId, [item.deviceParamId])
+        }
+        // 处理组态模板 没有deviceParamId的情况
+        if(this.deviceId) {
+          const eles = $(`.device_${this.deviceId}`)
+          eles.each((index,ele) => {
+            const paramShow = $(ele).data('paramShow')
+            if (paramShow && paramShow.length > 0) {
+              paramShow.forEach(p => {
+                if (item.paramId === p.paramId && item.partId == p.partId) {
+                  if (!p.deviceParamId) {
+                    p.deviceParamId = item.deviceParamId
+                  }
+                }
+              })
+            }
+          })
         }
       })
       for (let key of maps.keys()) {
-        let keyArr = key.split('-')
         resParam.push({
-          deviceId:keyArr[0],
-          bindType:keyArr[1],
+          deviceId:key,
           params:maps.get(key)
         })
       }
-      return resParam
-    }
-    let applyArr = params.filter(item=>item.bindType) //预测&统计应用
-    let deviceArr = params.filter(item=>!item.bindType) // 设备
-    if(deviceArr && deviceArr.length) {
-      requestUtil.post(urls.deviceParamGenerate.url,deviceArr).then((res)=>{
-        let resParam = dealFun(res)
-        if(applyArr && applyArr.length) {
-          let resParamApply = dealFun(applyArr)
-          resParam = resParam.concat(resParamApply)
-        }
-        this.subscribeDataDeal(resParam)
-      },()=>{
-        if(applyArr && applyArr.length) {
-          let resParam = dealFun(applyArr)
-          this.subscribeDataDeal(resParam || [])
-        }
-      })
-    } else if(applyArr && applyArr.length) {
-      let resParam = dealFun(applyArr)
       this.subscribeDataDeal(resParam)
-    }
+    },()=>{
+      this.subscribeDataDeal()
+    })
   }
   dealModelFormulaFun(modelId,formula) {//拿到模型里面的绑定的参数去订阅
     let formulaAttr = JSON.parse(formula)
@@ -381,10 +359,6 @@ class PreviewPage {
       for(let j = 0;j < statesInfo.length;j++) {
         if (statesInfo[j].modelFormInfo === modelId) {
           deviceId = this.deviceId || this.cachCells[i].bindData.dataSource.deviceNameChild.id
-          let bindType = this.cachCells[i].bindData.dataSource.type || 0 //添加bindType（0=设备1=预测应用2=统计应用)
-          if(bindType == 1) {
-            deviceId = this.cachCells[i].mfaKey
-          }
           break
         }
       }
@@ -472,14 +446,12 @@ class PreviewPage {
   * status: 0 1 2 (在线 离线 未工作) -> 【0, 1 2 (在线 离线 离线)】
   */
   getDataSource() {
-    console.log('entry')
-    if (this.cachCells.length) {
-      // 刷选状态控件的cachCells
-      const statusArr = this.cachCells.find(item => {
+    if (this.statusCells.length) {
+      const statusArr = this.statusCells.find(item => {
         return item.shapeName === 'status'
       });
       if (statusArr) {
-        const deviceId = this.cachCells[0].bindData.dataSource.deviceNameChild.id || '';
+        const deviceId = this.statusCells[0].bindData.dataSource.deviceNameChild.id || '';
         requestUtil.get(`${urls.getDataSource.url}/${deviceId}`).then((res) => {
           const status = res.length > 0 ? res[0].status : '';
           let els = document.querySelector(`.deviceStatus_${deviceId}`) //多设备情况下，会多次走这个地方
@@ -735,7 +707,7 @@ class PreviewPage {
       let device = cell.bindData && cell.bindData.dataSource ? cell.bindData.dataSource.deviceNameChild : {id: ''};
       cellHtml.classList.add(`deviceStatus_${device.id}`)
       if (device.id) {
-        this.cachCells.push(cell)
+        this.statusCells.push(cell)
       }
     }
     if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild || this.deviceId) {

@@ -388,10 +388,10 @@ function initialWs(ws, pageId, applyData, fileSystem,mainProcess) {
   }
 }
 //获取ws请求主机协议
-function getWsHost() {
-  const host = location.host
-  return 'ws://' + (host.includes('localhost') || host.includes('127.0.0.1') ? 'kong.ele-iot.10.74.158.69.nip.io' : host)
-}
+// function getWsHost() {
+//   const host = location.host
+//   return 'ws://' + (host.includes('localhost') || host.includes('127.0.0.1') ? 'kong.ele-iot.10.74.158.69.nip.io' : host)
+// }
 //实时数据
 function createWsReal(pageId, applyData, fileSystem,mainProcess) {
   let deviceParams = applyData[pageId].wsParams
@@ -399,7 +399,7 @@ function createWsReal(pageId, applyData, fileSystem,mainProcess) {
     if (deviceParams.length === 0 || !websocketUrlReal) {
       return
     }
-    let ws = new WebSocket(getWsHost + res.data) // 提交时使用这个
+    let ws = new WebSocket(/* getWsHost + */ res.data) // 提交时使用这个
     initialWs(ws, pageId, applyData, fileSystem,mainProcess)
     if(applyData[pageId].wsReal) {
       applyData[pageId].wsReal.close()
