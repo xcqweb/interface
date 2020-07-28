@@ -34,7 +34,7 @@
       :list-style="listStyle"
       :left-render-format="leftRender"
       :right-render-format="rightRender"
-      :left-filter-method="leftFilterMethod"
+      :left-filter-method="fromText === 0 ? leftFilterMethod : leftFilterMethodApply"
       :multiple="multiple"
       style="margin-top: 10px;"
       filterable
@@ -105,9 +105,9 @@ export default {
         height: '390px',
         backgroundColor: '#fff',
       },
-      deviceParamsData: null,
-      virtualParamsData: null,
-      applyParamsData: null,
+      deviceParamsData: [],
+      virtualParamsData: [],
+      applyParamsData: [],
     };
   },
   computed: {
@@ -136,6 +136,7 @@ export default {
       if (!val) {
         this.$emit('input', val);
         this.selectedItems = [];
+        this.applyParamsData = [];
         this.setParams();
       }
     },
@@ -239,6 +240,10 @@ export default {
       } else {
         return item.label + displayName
       }
+    },
+    leftFilterMethodApply(data, query) {
+      const type = ('label' in data) ? 'label' : 'key';
+      return (data[type].toLowerCase()).indexOf(query.toLowerCase()) > -1;
     },
     leftFilterMethod(data, query) {
       let include = query ? (data.paramName.toLowerCase().includes(query.toLowerCase()) || (data.displayName && data.displayName.toLowerCase().includes(query.toLowerCase()))) : true;
