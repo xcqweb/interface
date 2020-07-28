@@ -18,7 +18,7 @@ export default {
   addModelList: {url: 'api/iot-cds/cds/model', 'desc': '新增修改模型'},
   getModelByIds: {url: 'api/iot-cds/cds/getModelByIds', 'desc': '根据id批量获取模型'},
   timeSelect: {url: 'api/device/device/time/select/', 'desc': '获取参数默认时长'},
-  ifMultipleEdit: {url: 'api/iot-cds/cds/configurationDesignStudio/judgeIsEdit/', 'des': '是否有多人编辑'},
+  ifMultipleEdit: {url: 'api/iot-cds/cds/configurationDesignStudio/judgeIsEdit/', 'des': '是否有多人编辑'}, 
   pentSdbData: {url: 'api/v2/persist/tsdb/data/keys', 'desc': '设备时候的趋势图的历史数据'},
   pentSdbStaticsData: {url: 'api/v2/persist/tsdb/statistics/keys', 'desc': '统计应用时候的趋势图的历史数据'},
   pentSdbForecastData: {url: 'api/v2/persist/tsdb/forecastdata/keys', 'desc': '预测应用时候的趋势图的历史数据'},
@@ -35,6 +35,6 @@ export default {
   newImportDeviceList: {url: `${prefix}/iot-cds/cds/dataSource/selectDataImport`, 'desc': '设备模版下的设备'},
   newImportApp: {url: `${prefix}/iot-cds/cds/findImportApp`, 'desc': '获取已导入的数据源应用'},
   newApplyParams: {url: `${prefix}/iot-cds/cds/findConfigAppParam`, 'desc': '数据源获取应用下参数'},
-  newDeleteApply: {url: `${prefix}/iot-cds/cds/delConfigApp`, 'desc': '数据源移除应用'},
-
+// 20200720
+  getDataSource: {url: `${prefix}/device/device/partSource`, 'desc': '获取数据源接口'}, newDeleteApply: {url: `${prefix}/iot-cds/cds/delConfigApp`, 'desc': '数据源移除应用'},
 }

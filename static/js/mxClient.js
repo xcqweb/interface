@@ -15356,7 +15356,7 @@ mxPopupMenu.prototype.addItem = function(title, image, funct, parent, iconCls, e
                 ifshowPaste = true
             }
         } else {
-            let arr = ['rectangle', 'button','ellipse', 'menulist', 'image','tableBox', 'beeline', 'linkTag','text','light','progress','pipeline1','pipeline2','pipeline3', 'userimage', 'lineChart', 'gaugeChart','triangle','pentagram','buttonSwitch'];
+            let arr = ['rectangle', 'button','ellipse', 'menulist', 'image','tableBox', 'beeline', 'linkTag','text','light','progress','pipeline1','pipeline2','pipeline3', 'userimage', 'lineChart', 'gaugeChart','triangle','pentagram','buttonSwitch', 'status'];
             // let menulistArr = ['menulist','tableBox']; // 菜单 和 表格整体
             let arr1 = ['粘贴','组合', '取消组合']
             if (arr.includes(shapeName) && arr1.includes(title)) {
@@ -56387,7 +56387,7 @@ mxGraph.prototype.startEditingAtCell = function(cell, evt)
             }
         }
         var shapeName = this.getCellStyle(cell).shape;
-        let notInputArr = ['userimage', 'gaugeChart', 'lineChart', 'pipeline1', 'pipeline2', 'pipeline3', 'image', 'progress','light', 'beeline'];
+        let notInputArr = ['userimage', 'gaugeChart', 'lineChart','status', 'pipeline1', 'pipeline2', 'pipeline3', 'image', 'progress','light', 'beeline', 'status'];
         if (cell != null && !notInputArr.includes(shapeName))
         {
             this.fireEvent(new mxEventObject(mxEvent.START_EDITING,
@@ -56668,7 +56668,7 @@ mxGraph.prototype.click = function(me)
 // 双击控件事件控制,编辑内容
 mxGraph.prototype.dblClick = function(evt, cell)
 {
-    let forbiddenList = ['userimage', 'gaugeChart', 'lineChart', 'pipeline1', 'pipeline2', 'pipeline3', 'image', 'progress', 'light']
+    let forbiddenList = ['userimage', 'gaugeChart', 'lineChart','status', 'pipeline1', 'pipeline2', 'pipeline3', 'image', 'progress', 'light']
     var mxe = new mxEventObject(mxEvent.DOUBLE_CLICK, 'event', evt, 'cell', cell);
     this.fireEvent(mxe);
     var shapeName = this.getCellStyle(cell).shape;

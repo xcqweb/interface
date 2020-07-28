@@ -64,7 +64,7 @@ export default{
       refresh:0,//切换控件刷新子组件
       stateList:['rectangle','image','userimage','tableCell','light','ellipse','triangle','pentagram'],
       actionList:['menuCell','rectangle','image','userimage','button','ellipse','text','tableCell','triangle','pentagram'],
-      dataList:['image','userimage','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart','triangle','pentagram'],
+      dataList:['image','userimage','rectangle','ellipse','tableCell','light','progress','lineChart','gaugeChart','triangle','pentagram', 'status'],
       isShowDataTab:true,
     }
   },

@@ -112,7 +112,7 @@ import NoData from '../../../data-source/nodata'
 import DatasourceStore from '../../../data-source/js/datasource-store'
 import {Button,Checkbox,Message,Select,Option, CheckboxGroup,Input} from 'iview'
 
-const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart','triangle','pentagram']
+const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart','triangle','pentagram', 'status']
 //lineChart 多设备 多参数 gaugeChart 单设备 多参数
 export default{
   components: {
@@ -234,7 +234,6 @@ export default{
           bindData = JSON.parse(bindAttr)
         }
       }
-      console.log(bindData)
       return bindData
     },
     checkAllGroupChange(data) {

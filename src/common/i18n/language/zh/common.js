@@ -73,6 +73,7 @@ export default {
   pipeline1: '管道1',
   pipeline2: '管道2',
   pipeline3: '管道3',
+  status: '状态',
   trend: '趋势图',
   dashboard: '仪表盘',
   defaultText: '默认',
