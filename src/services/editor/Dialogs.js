@@ -576,7 +576,7 @@ let PreviewDialog = function(editorUi,fun) {
     cancelBtn.className = 'geBtn';
     btnContent.appendChild(cancelBtn);
     btnContent.appendChild(genericBtn);
-	
+    btnContent.style.paddingRight="16px"
     saveContent.appendChild(btnContent)
     this.container = saveContent;
 }

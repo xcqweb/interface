@@ -185,8 +185,7 @@ export default {
         });
       }
     },
-    showRuleModal() {
-      console.log(this.fromText)
+    showRuleModal() { 
       this.ruleView = 'select-params';
       this.visible = true;
     },

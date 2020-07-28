@@ -23,11 +23,13 @@ class Main {
     this.menuStyle = null
     this.applyInfo = null
     this.shapeXmls = null
+    this.previewContext = null // preview vue 组件实例
     this.realData = [] //最后一笔数据或者实时推送过来的数据的备份
   }
 
   // 初始化
-  async init() {
+  async init(context) {
+    this.previewContext = context
     let gePreview = document.getElementById('gePreview')
     let id = getQueryVariable('id')
     let deviceId = getQueryVariable('deviceId')

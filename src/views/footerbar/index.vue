@@ -21,7 +21,7 @@
             </Tabs>
           </div>
           <div
-            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag || tabsNum ==0 && $store.state.main.isTemplateApply && footerContent && ifShowDataFlag"
+            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag || tabsNum ==0 && footerContent && ifShowDataFlag"
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
@@ -43,7 +43,7 @@
         <div v-if="footerContent">
           <!--数据源-->
           <div
-            v-show="tabsNum === 0 && dataSourceList.length && !$store.state.main.isTemplateApply"
+            v-show="tabsNum === 0 && !$store.state.main.isTemplateApply"
             class="footer-common dataSourceList"
           >
             <template>
@@ -67,7 +67,7 @@
           </div>
           <!--数据显示-->
           <div
-            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length || tabsNum == 0 && $store.state.main.isTemplateApply && ifShowDataFlag"
+            v-show="tabsNum === 1 && ifShowDataFlag && dataSourceList.length || (tabsNum == 0 && $store.state.main.isTemplateApply && ifShowDataFlag)"
             class="footer-common dataDisplayList"
           >
             <Table
@@ -112,7 +112,7 @@
           </div>
           <!--状态模型-->
           <div
-            v-show="tabsNum === 2 || tabsNum==1 && $store.state.main.isTemplateApply"
+            v-show="tabsNum === 2 || (tabsNum == 1 && $store.state.main.isTemplateApply)"
             class="footer-common stateList"
           >
             <div
@@ -154,7 +154,7 @@
             !footerContent ||
               (tabsNum === 2 && cellsCount != 1) ||
               (tabsNum === 2 && cellsCount == 1 && stateList.length <= 1) ||
-              (tabsNum === 1 && (!ifShowDataFlag || !dataSourceList.length))
+              (tabsNum === 1 && $store.state.main.isTemplateApply)
           "
           :text="$t(nodata)"
         />
@@ -737,9 +737,7 @@ export default {
       }
       modelInfo.setAttribute(key, JSON.stringify(data));
       graph.getModel().setValue(cell, modelInfo);
-      // if (key == "statesInfo") { 
-      //   VueEvent.$emit("refreshStates");
-      // }
+     
     }
   }
 };

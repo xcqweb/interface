@@ -54,7 +54,7 @@
             :class="{'selected':item.selected}"
             @click="checkWidget(item)"
           >
-            {{ item.titleType }}
+            {{ item.title }}
           </li>
         </ul>
       </div>

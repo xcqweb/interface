@@ -378,11 +378,12 @@ function changeEleState(el, stateInfo,fileSystem) {
     text.css('color',stateInfo.style.color)
     return
   } 
-  let imgInfo = stateInfo.imgInfo
   for (let key in stateInfo.style) {
     el.style[key] = stateInfo.style[key]
   }
+  let imgInfo = stateInfo.imgInfo
   if (imgInfo) {
+    el.style.background = "transparent"
     imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
     setSvgImageHref(el,imgInfo.url)
     return
@@ -463,7 +464,7 @@ function createWsReal(pageId, applyData, fileSystem,mainProcess) {
     if (deviceParams.length === 0 || !websocketUrlReal) {
       return
     }
-    let ws = new WebSocket(getWsHost() + res.data) // 提交时使用这个    
+    let ws = new WebSocket(getWsHost + res.data) // 提交时使用这个
     initialWs(ws, pageId, applyData, fileSystem,mainProcess)
     if(applyData[pageId].wsReal) {
       applyData[pageId].wsReal.close()

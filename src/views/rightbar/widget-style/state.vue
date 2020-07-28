@@ -20,6 +20,7 @@
           {{ state.name }}
           <img
             v-if="shapeName!=='light'"
+            style="cursor:pointer;"
             src="../../../assets/images/rightsidebar/dele_ic.png"
             @click="removeState(state,index,$event)"
           >
@@ -73,7 +74,7 @@
 import StateDialog from './state-dialog'
 import {sureDialog} from '../../../services/Utils'
 import {mxUtils,Dialog} from '../../../services/mxGlobal'
-// import VueEvent from '../../../services/VueEvent'
+ 
 //import {syncWidget} from '../../../services/sync-widgets'
 export default{
   components:{StateDialog},
@@ -102,10 +103,7 @@ export default{
     }
   },
   mounted() {
-    // VueEvent.$off('refreshStates')
-    // VueEvent.$on('refreshStates',()=>{
-    //   this.initStates()
-    // })
+    
     this.initStates()
   },
   methods: {
