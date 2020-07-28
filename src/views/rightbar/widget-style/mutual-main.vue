@@ -180,11 +180,9 @@ export default{
           }else{
             hide = true
           }
-          let titleType = `${title}` 
           this.currentPageWidgets.push({
             id:cells[key].id,
             title:title,
-            titleType:titleType,
             hide:hide,
             selected:false,
           })

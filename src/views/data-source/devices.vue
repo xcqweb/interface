@@ -247,8 +247,7 @@ export default {
       });
     },
     handlePageChange(pageIndex) {
-      this.pageParams.current = pageIndex;
-      // this.getDevices();
+      this.pageParams.current = pageIndex; 
     },
     handlePageSizeChange(pageSize) {
       this.pageParams.size = pageSize;

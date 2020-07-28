@@ -79,8 +79,7 @@ export default {
     };
   },
   async created() {
-    this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-    // console.log(this.model)
+    this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId'); 
   },
   mounted() {
     let that = this
@@ -145,8 +144,7 @@ export default {
       })
     },
     getDeviceTemplateData() {
-      let deviceTypeId = this.curNodeData ? this.curNodeData.deviceTypeId : ''
-      console.log(deviceTypeId)
+      let deviceTypeId = this.curNodeData ? this.curNodeData.deviceTypeId : '' 
       this.model.deviceTypeId = deviceTypeId;
       const params = {
         deviceTypeId,

@@ -615,20 +615,25 @@ function timeFormate(time,isMilliSecond) {
 function insertSvg(shapeXmls,key,cell) {
   let {width,height,fillColor,strokeColor,strokeWidth,strokeStyle} = cell
   let inner = shapeXmls[key].path
-  inner.setAttribute('fill', fillColor)
-  inner.setAttribute('stroke', strokeColor)
-  inner.setAttribute('stroke-width', strokeWidth)
-  inner.setAttribute('vector-effect','non-scaling-stroke')
+  inner[0].setAttribute('fill', fillColor)
+  inner[0].setAttribute('stroke', strokeColor)
+  inner[0].setAttribute('stroke-width', strokeWidth)
+  inner[0].setAttribute('vector-effect','non-scaling-stroke')
   let dashArr = '0 0'
   if(strokeStyle) {
     dashArr = `${strokeWidth * 3} ${strokeWidth * 3}`
   }
-  inner.setAttribute('stroke-dasharray',dashArr)
+  inner[0].setAttribute('stroke-dasharray',dashArr)
   let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   svg.setAttribute('viewBox', shapeXmls[key].viewBox)
   svg.setAttribute('width', width)
   svg.setAttribute('height', height)
-  svg.innerHTML = inner.outerHTML
+  svg.setAttribute('preserveAspectRatio',"none slice")
+  let res = ''
+  for(let item of inner) {
+    res += item.outerHTML
+  }
+  svg.innerHTML = res
   return svg
 }
 function dealTriangle(cell) {
@@ -670,9 +675,9 @@ function dealAlignText(cell) {
   textCon.innerHTML = `${value}`
   return textCon
 }
-function dealPentagram(mainProcess,cell) {
+function dealSvgWidgets(mainProcess,cell,shapeName) {
   let con = document.createElement('div')
-  let content = insertSvg(mainProcess.shapeXmls,'pentagram',cell)
+  let content = insertSvg(mainProcess.shapeXmls,shapeName,cell)
   con.appendChild(content)
   con.appendChild(dealAlignText(cell))
   return con
@@ -689,7 +694,7 @@ function loadShapeXml() {
       for (let shape of shapes) {
         obj[shape.getAttribute('name')] = {
           viewBox: shape.getAttribute('viewBox'),
-          path: shape.childNodes[1]
+          path: shape.children
         };
       }
       resolve(obj)
@@ -708,6 +713,6 @@ function getQueryVariable(variable) {
   return null
 }
 export {
-  removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,dealPentagram,loadShapeXml,
+  removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,dealSvgWidgets,loadShapeXml,
   dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout,dealDefaultParams,insertSvg,svgShape,setSvgImageHref,getQueryVariable
 }
