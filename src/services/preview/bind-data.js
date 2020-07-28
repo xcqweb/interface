@@ -122,7 +122,7 @@ function setterRealData(res, fileSystem,mainProcess) {
                 }
                 if (val || val == 0) {
                   ser.data.push(val)
-                  let yMax = options.yAxis[0].max;
+                  let yMax = options.yAxis[0].max
                   options.yAxis[0].max = Math.max(yMax, val)
                   options.xAxis[0].data.push(timeFormate(item.timestamp, false))
                 }
@@ -248,13 +248,21 @@ function dealLogic(logic,data) {
   }else{
     tempParamVal = dealDataVal(paramId, data)
   }
-  let fixed = +logic.fixedValue
+  let fixed 
+  if(isNaN(parseFloat(logic.fixedValue)) || parseFloat(logic.fixedValue) != 0) {
+    fixed = +logic.fixedValue
+  }else{
+    fixed = logic.fixedValue
+  }
   let min = +logic.minValue
   let max = +logic.maxValue
   if (!tempParamVal && tempParamVal !== 0) {
     return false
   }
-  let paramVal = +tempParamVal
+  let paramVal = tempParamVal
+  if(operate != 4 && operate != 3) {
+    paramVal = +tempParamVal
+  }
   switch (operate) {
     case 1: // 介于
       res = paramVal > min && paramVal < max
@@ -379,7 +387,11 @@ function initialWs(ws, pageId, applyData, fileSystem,mainProcess) {
     reconnect(pageId,applyData)
   }
 }
-
+//获取ws请求主机协议
+function getWsHost() {
+  const host = location.host
+  return 'ws://' + (host.includes('localhost') || host.includes('127.0.0.1') ? 'kong.ele-iot.10.74.158.69.nip.io' : host)
+}
 //实时数据
 function createWsReal(pageId, applyData, fileSystem,mainProcess) {
   let deviceParams = applyData[pageId].wsParams

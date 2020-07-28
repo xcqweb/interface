@@ -71,6 +71,8 @@
       v-model="visible"
       :title="$t('dataSource.addRule')"
       :device-model-id="deviceModelId"
+      :app-id="appId"
+      :from-text="fromText"
       :selected-keys="ruleKeys"
       @callback="callback"
     />
@@ -98,6 +100,12 @@ export default {
     data: {
       type: Object,
     },
+    fromText: {
+      type: Number,
+    },
+    appId: {
+      type: String,
+    }
   },
   data() {
     return {
@@ -154,6 +162,11 @@ export default {
         this.loading = true;
         this.model.formula = JSON.stringify(data);
         this.model.studioId = this.studioId;
+        if (this.fromText !== 0) {
+          this.model.appId = this.appId;
+          delete this.model.deviceTypeId;
+          delete this.model.deviceModelId;
+        }
         let func, successMsg;
         if (!this.model.sourceId) {
           func = 'post';
@@ -162,7 +175,6 @@ export default {
           func = 'put';
           successMsg = 'dataSource.editModelSuccessfully';
         }
-
         this.requestUtil[func](this.urls.addModelList.url, this.model).then(res => {
           Message.success(this.$t(successMsg));
           this.showForm = false;
@@ -173,7 +185,7 @@ export default {
         });
       }
     },
-    showRuleModal() {
+    showRuleModal() { 
       this.ruleView = 'select-params';
       this.visible = true;
     },

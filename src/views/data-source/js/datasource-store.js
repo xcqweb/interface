@@ -43,14 +43,12 @@ export default {
     },
     predData() {
       const predData = this.$store.state.datasource.predData;
-      console.log(predData)
       if (predData.length > 0) {
         const type = predData[0];
         this.applyObj.forecastId = type.appId;
       } else {
         this.applyObj.forecastId = '';
       }
-      console.log(this.applyObj);
       return predData;
     },
     statiData() {

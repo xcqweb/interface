@@ -218,6 +218,7 @@ const mutations = {
   setIsTemplateApply(state, data) {
     state.isTemplateApply = data
   }
+
 }
 
 const actions = {

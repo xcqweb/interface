@@ -33,6 +33,7 @@ export default {
       this.virtualParams = null;
       const params = {
         deviceModelId: this.deviceModelId || sessionStorage.getItem('modelId'),
+        isHideMobile:1
       };
       if (!params.deviceModelId || params.deviceModelId === 'null') {
         return;
@@ -42,6 +43,20 @@ export default {
       }
       this.getDeviceParams(params);
       this.getVirtualParams(params);
+    },
+    getApplyData(type) {
+      this.getApplyParams(type);
+    },
+    getApplyParams(type) {
+      const params = {
+        type,
+        appId: this.appId,
+      }
+      this.requestUtil.post(this.urls.newApplyParams.url, params).then(res => {
+        if (this.getApplyParamsCallback) {
+          this.getApplyParamsCallback(res);
+        }
+      });
     },
     getDeviceParams(params) {
       this.requestUtil.get(this.urls.normalParam.url, params).then(res => {

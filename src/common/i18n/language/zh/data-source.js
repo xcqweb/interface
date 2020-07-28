@@ -42,8 +42,10 @@ export default {
   importSuccessfully: '导入数据源成功',
   confirmToRemoveDeviceType: '确认要移除选中的设备类型下的所有设备吗？',
   confirmToRemoveDeviceModel: '确认要移除选中的设备型号下的所有设备吗？',
+  confirmToRemoveApply: '确定要移除选择的应用吗？',
   confirmToRemoveDevice: '确认要移除选中的设备吗？',
   removeDeviceSuccessfully: '设备移除成功！',
+  removeApplySuccessfully: '应用移除成功！',
   enterParameterName: '请输入参数名称',
   applyList: '应用列表', // 2020520
 };

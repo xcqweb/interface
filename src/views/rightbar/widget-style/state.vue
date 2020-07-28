@@ -74,7 +74,7 @@
 import StateDialog from './state-dialog'
 import {sureDialog} from '../../../services/Utils'
 import {mxUtils,Dialog} from '../../../services/mxGlobal'
-import VueEvent from '../../../services/VueEvent'
+ 
 //import {syncWidget} from '../../../services/sync-widgets'
 export default{
   components:{StateDialog},
@@ -103,10 +103,7 @@ export default{
     }
   },
   mounted() {
-    VueEvent.$off('refreshStates')
-    VueEvent.$on('refreshStates',()=>{
-      this.initStates()
-    })
+    
     this.initStates()
   },
   methods: {
@@ -238,6 +235,7 @@ export default{
       })
     },
     editStateFun(state) {
+      //需要重新从model获取state，防止该状态绑定模型后，直接点编辑，未拿到模型信息
       if(this.shapeName !== 'light') {
         this.editState = state
         this.isAdd = true

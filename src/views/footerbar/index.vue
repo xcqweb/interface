@@ -719,9 +719,7 @@ export default {
       }
       modelInfo.setAttribute(key, JSON.stringify(data));
       graph.getModel().setValue(cell, modelInfo);
-      if (key == "statesInfo") {
-        VueEvent.$emit("refreshStates");
-      }
+     
     }
   }
 };

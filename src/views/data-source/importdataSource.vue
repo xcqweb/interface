@@ -33,9 +33,11 @@
       <importDevice
         v-show="dataType === 0"
         ref="importDevice"
+        :visible="visible"
         :data="deviceData"
-        :visible-import="visibleImport"
         @chooseDeviceData="chooseDeviceData"
+        @getStaticDataFun="staAppDataListFun"
+        @getApplyDataFun="getApplyDataFun"
       />
       <!-- 导入预测应用 -->
       <Transfer
@@ -81,8 +83,6 @@
 <script>
 import {Modal, Button, Message, Transfer} from 'iview'
 import importDevice from './importDevice'
-const MODEL_WIDTH = [950, 512, 512]; // 512
-// import VueEvent from "../../services/VueEvent.js";
 export default {
   components: {
     Modal,
@@ -101,10 +101,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    visibleImport: {
-      type: Boolean,
-      default: false,
-    }
   },
   data() {
     return {
@@ -125,9 +121,9 @@ export default {
       loading: false,
 
       dataType: 0,
-      modelWidth: 900,
+      modelWidth: 950,
       listStyle: {
-        width: '200px',
+        width: '421px',
         height: '378px',
         backgroundColor: '#fff',
       },
@@ -151,10 +147,14 @@ export default {
   },
   created() {
     this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-    this.getApplyDataList(1);
-    this.getApplyDataList(2); // 华星去掉
   },
   methods: {
+    getApplyDataFun(data) {
+      this.preAppDataList = data
+    },
+    staAppDataListFun(data) {
+      this.staAppDataList = data
+    },
     /*
     * type: 1 预测应用
     * type: 2 统计应用
@@ -164,7 +164,7 @@ export default {
         studioId: this.studioId,
         type,
       }
-      this.requestUtil.post(this.urls.newAppDataList.url, params).then((res) => {
+      this.requestUtil.post(this.urls.newImportApp.url, params).then((res) => {
         const data = res.returnObj || []
         if (type === 1) {
           this.preAppDataList = data.map((item) => {
@@ -185,27 +185,12 @@ export default {
     },
     targetPreAppChange(data) {
       this.targetPreAppList = data
-      console.log(this.targetPreAppList);
     },
     targetStaAppChange(data) {
       this.targetStaAppList = data
     },
     handleTabClick(index) {
       this.dataType = index;
-      this.modelWidth = MODEL_WIDTH[index];
-    },
-    getDevices() {
-      const query = `?size=${this.pageParams.size}&current=${this.pageParams.current}`;
-      this.requestUtil.post('api/iot-cds/cds/dataSource/selectDataImport' + query, this.params).then(res => {
-        if (res.records && res.records.length > 0) {
-          res.records.forEach((item, index) => {
-            item.index = index;
-          });
-        }
-        this.tableData = res.records || [];
-        this.total = res.total || 0;
-        this.selectedItems = [];
-      });
     },
     getDeviceTypes() {
       const params = {}
@@ -286,16 +271,18 @@ export default {
       });
     },
     chooseDeviceData(data) {
-      console.log(data)
       this.selectDeviceList = data
     },
     cancel() {
       this.visible = false;
+      this.targetPreAppList = [];
+      this.targetStaAppList = [];
     },
     submit() {
-      // if (!this.selectDeviceList.length) {
-      //   Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
-      //   return;
+
+      // if (!this.selectedItems.length) {
+      //     Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
+      //     return;
       // }
       // this.loading = true;
       // const list = [];
@@ -317,7 +304,7 @@ export default {
       //   this.loading = false;
       // });
       // const allAppIds = [...this.targetPreAppList, ...this.targetStaAppList];
-      if (!this.selectDeviceList.length && !this.targetPreAppList.length) {
+      if (!this.selectDeviceList.length && !this.targetPreAppList.length && !this.targetStaAppList.length) {
         Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
         return;
       }
@@ -348,10 +335,11 @@ export default {
         appDataSources,
         studioDevs,
       }
-      console.log(params);
       this.requestUtil.post(this.urls.newImportDsApi.url, params).then(() => {
         this.loading = false;
         this.visible = false;
+        this.targetPreAppList = [];
+        this.targetStaAppList = [];
         Message.success(this.$t('dataSource.importSuccessfully'));
         this.$emit('callback');
       }).catch(() => {
@@ -376,6 +364,7 @@ export default {
     height: 32px;
     background: none;
     border: none;
+    user-select: none;
     > li {
         float: left;
         width: 66px;

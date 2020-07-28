@@ -222,6 +222,7 @@ export default{
         return
       }
       let action = {
+        "type":"in",
         "link":"",
         "mutualType":1,//交互类型
         "innerType":"page",
@@ -355,9 +356,6 @@ export default{
       }
       modelInfo.setAttribute('actionsInfo', JSON.stringify(actions))
       graph.getModel().setValue(cell, modelInfo)
-    },
-    clearComand() {
-
     },
     removeEvent(event,index,evet) {
       evet.stopPropagation()

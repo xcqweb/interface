@@ -23,7 +23,33 @@
           >
             {{ '' }}
           </checkbox>
-          <span>{{ getValue(item, prop) }}</span>
+          <Tooltip 
+            v-if="item.deviceId"
+            placement="right" 
+            theme="light"
+            class="tooltip-width-inner"
+            transfer
+          >
+            <div slot="content">
+              <p 
+                style="line-height: 22px;text-align:left;white-space:normal"
+              >
+                设备名称:{{ item.deviceName }}
+              </p>
+              <p
+                style="line-height: 22px;text-align:left;white-space:normal"
+              >
+                设备编号:{{ item.serialNumber }}
+              </p>
+              <p
+                style="line-height: 22px;text-align:left;white-space:normal"
+              >
+                设备位置: {{ item.locationNamePath }}
+              </p>
+            </div>
+            <span>{{ getValue(item, prop) }}</span>
+          </Tooltip>
+          <span v-if="!item.deviceId">{{ getValue(item, prop) }}</span>
         </li>
       </ul>
     </checkbox-group>
@@ -49,7 +75,7 @@
 </template>
 
 <script>
-import {CheckboxGroup, Checkbox, Button} from 'iview'
+import {CheckboxGroup, Checkbox, Button, Tooltip} from 'iview'
 import deviceCommon from './js/device-common'
 
 export default {
@@ -57,6 +83,7 @@ export default {
     CheckboxGroup,
     Checkbox,
     Button,
+    Tooltip,
   },
   mixins: [deviceCommon],
   props: {
@@ -126,6 +153,13 @@ export default {
   .ivu-checkbox-inner {
     width: 12px;
     height: 12px;
+  }
+}
+.tooltip-width-inner{
+  .ivu-tooltip-popper {
+    .ivu-tooltip-inner-with-width{
+      white-space: normal !important
+    }
   }
 }
 </style>

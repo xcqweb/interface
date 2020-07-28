@@ -16,7 +16,8 @@
       class="device-data"
       :title="$t('dataSource.models')"
       :width="200"
-      :device-model-id="model.deviceModelId"
+      :from-text="2"
+      :device-model-id="applyObj.appId"
       @on-edit="handleEditModel"
     />
     <!-- 编辑模型 -->
@@ -26,8 +27,10 @@
       ref="edit"
       v-model="showForm"
       :data="editModel"
+      :from-text="2"
       class="device-data flex-full-item"
       :device-model-id="model.deviceModelId"
+      :app-id="applyObj.appId"
     />
   </div>
 </template>
@@ -52,12 +55,19 @@ export default {
       showForm: false,
     };
   },
+  watch: {
+    statiData(val) {
+      if (val.length) {
+        this.applyObj.appId = val[0].appId
+      }
+    },
+  },
+  async mounted() {
+    await this.getStatisticData();
+  },
   methods: {
     handleTypeClick(item) {
-      this.model.deviceTypeId = item.deviceTypeId;
-    },
-    handleModelClick(item) {
-      this.model.deviceModelId = item.deviceModelId;
+      this.applyObj.appId = item.appId;
     },
     handleEditModel(model = null) {
       this.editModel = model;

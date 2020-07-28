@@ -247,8 +247,7 @@ export default {
       });
     },
     handlePageChange(pageIndex) {
-      this.pageParams.current = pageIndex;
-      this.getDevices();
+      this.pageParams.current = pageIndex; 
     },
     handlePageSizeChange(pageSize) {
       this.pageParams.size = pageSize;
@@ -292,21 +291,17 @@ export default {
         return;
       }
       this.loading = true;
-      // const list = [];
-      let studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-      const studioDevs = this.selectedItems.map(item => {
-        return{
+      const list = [];
+      const studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+      this.selectedItems.forEach(item => {
+        list.push({
           studioId,
           deviceId: item.deviceId,
           deviceModelId: item.deviceModelId,
           deviceTypeId: item.deviceTypeId,
-        }
-      })
-      const params = {
-        appDataSources: [],
-        studioDevs,
-      }
-      this.requestUtil.post('api/iot-cds/cds/configDevice', params).then(() => {
+        });
+      });
+      this.requestUtil.post('api/iot-cds/cds/configDevice', {list}).then(() => {
         this.loading = false;
         this.visible = false;
         Message.success(this.$t('dataSource.importSuccessfully'));

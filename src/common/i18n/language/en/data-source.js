@@ -41,8 +41,10 @@ export default {
   importSuccessfully: 'Import datasource successfully',
   confirmToRemoveDeviceType: 'Sure to remove all devices of the choosed device type',
   confirmToRemoveDeviceModel: 'Sure to remvoe all devices of the choosed device model',
+  confirmToRemoveApply: 'Are you sure you want to remove the selected app',
   confirmToRemoveDevice: 'Sure to remove the choosed devices',
   removeDeviceSuccessfully: 'Device removed succcessfully',
+  removeApplySuccessfully: 'apply removed succcessfully',
   enterParameterName: 'Please input param name',
   applyList: 'application List', // 2020520
 };
