@@ -22,7 +22,6 @@ class PreviewPage {
     let {
       content,
     } = data
-    console.log(data)
     let parseContent = JSON.parse(content)
     this.content = parseContent.pages
     this.deviceId = data.deviceId
@@ -224,6 +223,8 @@ class PreviewPage {
           } else if (shapeName == 'menuCell') {
             let menuCellProps = item.getAttribute('menuCellProps')
             obj.menuCellProps = menuCellProps
+          }else if(shapeName.includes('image')) { // 图片的默认填充色为透明
+            obj.fillColor = "transparent"
           }
           // 组合节点
           obj.children = getNode(id)
@@ -254,25 +255,16 @@ class PreviewPage {
   }
   subscribeData() {
     if (this.cachCells.length) {
-      let modelIdsParam = new Map()
       let allModels = new Map()
-      this.cachCells.forEach(item => {
-        let deviceId = this.deviceId || item.bindData.dataSource.deviceNameChild.id
-        let statesInfo = item.statesInfo || []
-        let tempArr = []
+      let modelAllIds = []
+      this.cachCells.forEach(item=>{
+        let statesInfo = item.statesInfo
         statesInfo.forEach((d) => {
           if (d.modelFormInfo) {
-            tempArr.push(d.modelFormInfo)
+            modelAllIds.push(d.modelFormInfo)
           }
         })
-        if(tempArr.length) {
-          modelIdsParam.set(tempArr.join("_"), deviceId)
-        }
       })
-      let modelAllIds = []
-      for (let key of modelIdsParam.keys()) {
-        modelAllIds = modelAllIds.concat(key.split("_"))
-      }
       modelAllIds = Array.from(new Set(modelAllIds))
       if(modelAllIds.length) {
         requestUtil.post(urls.getModelByIds.url, modelAllIds).then((res) => {
@@ -281,12 +273,24 @@ class PreviewPage {
             res.returnObj.forEach(item=>{
               allModels.set(item.sourceId,item)
               if (item.formula) {
-                params = params.concat((this.dealModelFormulaFun(modelIdsParam,item.sourceId,item.formula)))
+                params = params.concat((this.dealModelFormulaFun(item.sourceId,item.formula)))
               }
             })
             this.cachCells.forEach(item=>{
               let cellStateInfoHasModel = []
               let deviceId = this.deviceId || item.bindData.dataSource.deviceNameChild.id
+              let bindType = item.bindData.dataSource.type || 0 //添加bindType（0=设备1=预测应用2=统计应用)
+              let cls = deviceId
+              if(bindType == 1) {
+                deviceId = item.mfaKey + '#' + item.id
+                cls = item.mfaKey
+              }
+              for(let i = 0;i < params.length;i++) {
+                if(params[i].deviceId === deviceId) {
+                  params[i].bindType =  bindType
+                  break
+                }
+              }
               let statesInfo = item.statesInfo
               if (statesInfo && statesInfo.length) {
                 cellStateInfoHasModel.push(statesInfo[0])//添加默认状态的
@@ -298,7 +302,7 @@ class PreviewPage {
                 })
               }
               const className = item.shapeName.includes('progress') || item.shapeName.includes('Chart') ? '' : 'param-show-node'
-              $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId}`)
+              $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${cls}`)
             })
             if(params.length) {
               this.deviceParamGenerateFun(params)
@@ -317,71 +321,93 @@ class PreviewPage {
     }
   }
   deviceParamGenerateFun(params) {
-    requestUtil.post(urls.deviceParamGenerate.url,params).then((res)=>{
+    const dealFun = (targetArr)=>{
       let resParam = [],maps = new Map()
-      res.forEach(item=>{
+      targetArr.forEach(item=>{
         let tempArr = []
-        if (maps.has(item.deviceId)) {
-          tempArr =  maps.get(item.deviceId)
-          tempArr.push(item.deviceParamId)
-          maps.set(item.deviceId,Array.from(new Set(tempArr)))
+        if (maps.has(item.deviceId + '-' + item.bindType)) {
+          tempArr =  maps.get(item.deviceId + '-' + item.bindType)
+          if(item.bindType) { // 统计或预测应用
+            tempArr.push(item.bindType == 1 ? item.paramName : item.paramId)
+          } else {
+            tempArr.push(item.deviceParamId)
+          }
+          maps.set(item.deviceId + '-' + (item.bindType || 0),Array.from(new Set(tempArr)))
         }else{
-          maps.set(item.deviceId, [item.deviceParamId])
+          if(item.bindType) { // 统计或预测应用
+            maps.set(item.deviceId + '-' + item.bindType, item.bindType == 1 ? [item.paramName] : [item.paramId])
+          } else {
+            maps.set(item.deviceId + '-' + (item.bindType || 0), [item.deviceParamId])
+          }
         }
-        const eles = $(`.device_${item.deviceId}`)
-        eles.each((index, ele) => {
-          const $ele = $(ele)
-          const params = $ele.data('paramShow') || []
-          params.forEach(param => {
-            if (item.paramId === param.paramId && item.partId === param.partId) {
-              if (!param.deviceParamId) {
-                param.deviceParamId = item.deviceParamId
-              }
-            }
-          })
-        })
       })
       for (let key of maps.keys()) {
+        let keyArr = key.split('-')
         resParam.push({
-          deviceId:key,
+          deviceId:keyArr[0],
+          bindType:keyArr[1],
           params:maps.get(key)
         })
       }
+      return resParam
+    }
+    let applyArr = params.filter(item=>item.bindType) //预测&统计应用
+    let deviceArr = params.filter(item=>!item.bindType) // 设备
+    if(deviceArr && deviceArr.length) {
+      requestUtil.post(urls.deviceParamGenerate.url,deviceArr).then((res)=>{
+        let resParam = dealFun(res)
+        if(applyArr && applyArr.length) {
+          let resParamApply = dealFun(applyArr)
+          resParam = resParam.concat(resParamApply)
+        }
+        this.subscribeDataDeal(resParam)
+      },()=>{
+        if(applyArr && applyArr.length) {
+          let resParam = dealFun(applyArr)
+          this.subscribeDataDeal(resParam || [])
+        }
+      })
+    } else if(applyArr && applyArr.length) {
+      let resParam = dealFun(applyArr)
       this.subscribeDataDeal(resParam)
-    },()=>{
-      this.subscribeDataDeal()
-    })
+    }
   }
-  dealModelFormulaFun(modelIdsParam,modelId,formula) {
+  dealModelFormulaFun(modelId,formula) {//拿到模型里面的绑定的参数去订阅
     let formulaAttr = JSON.parse(formula)
     let res = []
-    let deviceId
-    for (let key of modelIdsParam.keys()) {
-      let tempArr = key.split("_")
-      let resIndex = tempArr.findIndex((item)=>{
-        return item == modelId
-      })
-      if (resIndex != -1) {
-        deviceId = modelIdsParam.get(key)
-        break
-      }
-    }
-    formulaAttr.data.forEach(item=>{
-      let tempKey = item.key
-      if(tempKey) {
-        let keyArr = tempKey.split('/')
-        let partId = null
-        if(keyArr.length > 2) {
-          partId = keyArr[1]
+    for(let i = 0;i < this.cachCells.length;i++) {
+      let statesInfo = this.cachCells[i].statesInfo
+      let deviceId = null
+      for(let j = 0;j < statesInfo.length;j++) {
+        if (statesInfo[j].modelFormInfo === modelId) {
+          deviceId = this.deviceId || this.cachCells[i].bindData.dataSource.deviceNameChild.id
+          let bindType = this.cachCells[i].bindData.dataSource.type || 0 //添加bindType（0=设备1=预测应用2=统计应用)
+          if(bindType == 1) {
+            deviceId = this.cachCells[i].mfaKey
+          }
+          break
         }
-        res.push({
-          paramType: keyArr[0] == 'device' ? 0 : 1,
-          deviceId: deviceId,
-          partId: partId,
-          paramId: keyArr[keyArr.length - 1]
+      }
+      if(deviceId) {
+        formulaAttr.data.forEach(item=>{
+          let tempKey = item.key
+          if(tempKey) {
+            let keyArr = tempKey.split('/')
+            let partId = null
+            if(keyArr.length > 2) {
+              partId = keyArr[1]
+            }
+            res.push({
+              paramType: keyArr[0] == 'device' ? 0 : 1,
+              deviceId: deviceId,
+              partId: partId,
+              paramId: keyArr[keyArr.length - 1],
+              paramName: item.paramName
+            })
+          }
         })
       }
-    })
+    }
     return res
   }
   subscribeDataDeal(res) {
@@ -650,9 +676,6 @@ class PreviewPage {
         }
         cellHtml.style.backgroundColor = tempBgColor
       }
-    }
-    if (shapeName === 'status') {
-      cell.strokeColor = '#33CC66';
     }
     if(!['buttonSwitch','beeline','triangle','pentagram'].includes(shapeName)) {
       let borderStyle = 'solid'
