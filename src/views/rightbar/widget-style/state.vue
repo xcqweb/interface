@@ -40,7 +40,7 @@
             <span>{{ $t("image") }}</span>
             <img
               :src="state.imgInfo.url"
-              style="height:32px;margin:4px 0 0 4px;"
+              style="height:32px;margin:4px 0 0 4px;max-width:108px"
             >
           </template>
           <template v-if="shapeName!='light'">

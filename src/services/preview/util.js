@@ -164,7 +164,7 @@ function hideFrameLayout() {
  * 触发事件
  * @param {object} action 
  */
-function effectEvent(action, mainProcess, applyData, fileSystem) {
+function effectEvent(action, mainProcess, applyData, fileSystem,bindData) {
   switch (action.effectAction) {
     case 'show':
       actionShow(action, mainProcess)
@@ -182,17 +182,21 @@ function effectEvent(action, mainProcess, applyData, fileSystem) {
       actionChange(action, fileSystem)
       break;
     case 'send':// 下发指令
-      actionSend(action,mainProcess)
+      actionSend(action,mainProcess,bindData)
       break;
     default:
       break;
   }
 }
-function actionSend(action,mainProcess) {
+function actionSend(action,mainProcess,bindData) {
   let {data} = action,controlList = [],commandTemplateId
   // 调用下发指令接口，发出指令
   let sendFun = ()=>{
     // 先拿指令下的variables
+    let deviceId = mainProcess.deviceId
+    if(bindData.dataSource && bindData.dataSource.deviceNameChild) { // 触发action的绑定的都是单设备，不需要判断deviceNameChild为数组的情况
+      deviceId = bindData.dataSource.deviceNameChild.id
+    }
     requestUtil.get(`${urls.commandTemplate.url}${data.detail.deviceModelId}`).then(res =>{
       if(res && res.length) {
         controlList = res
@@ -202,7 +206,7 @@ function actionSend(action,mainProcess) {
         if(obj && obj.length) {
           commandTemplateId = obj[0].commandTemplateId
           const params = {
-            deviceId:data.detail.deviceId,
+            deviceId,
             deviceModelId:data.detail.deviceModelId,
             functionId: data.detail.functionId,
             commandTemplateId,
@@ -211,7 +215,7 @@ function actionSend(action,mainProcess) {
             let variables = res.variables
             let commandParams = {
               commandTemplateId:commandTemplateId,
-              deviceId:data.detail.deviceId,
+              deviceId,
               sourceOrg:'IoT',
               sendSource:'configurationDesignStudio',
               timestamp:new Date().getTime(),
@@ -269,6 +273,7 @@ function actionChange(action, fileSystem) {
     cellCon.style[key] = stateInfo.style[key]
   }
   if(imgInfo) {
+    cellCon.style.background = "transparent"
     imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
     setSvgImageHref(cellCon,imgInfo.url)
   }
@@ -315,7 +320,7 @@ function guid() {
  * @param {Array} ele DOM节点
  */
 function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
-  let {actionsInfo} = cellInfo
+  let {actionsInfo,bindData} = cellInfo
   let dealBubble = e=>{
     e = e || window.event;
     if (e.stopPropagation) {
@@ -330,7 +335,7 @@ function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
       ele.addEventListener(action.mouseEvent, function(e) {
         dealBubble(e)
         // 触发事件
-        effectEvent(action, mainProcess, applyData,fileSystem)
+        effectEvent(action, mainProcess, applyData,fileSystem,bindData)
       })
     }
   }
@@ -455,7 +460,7 @@ function dealCharts(mainProcess,cell) {
   }
   let fun = () => {
     let myEchart = echarts.init(chartCon)
-    if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceTypeChild && cell.bindData.params && cell.bindData.params.length) {
+    if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild && cell.bindData.params && cell.bindData.params.length) {
       let temp = $(con).data("paramShowDefault")
       if(temp) {
         let titleShow = temp.paramName

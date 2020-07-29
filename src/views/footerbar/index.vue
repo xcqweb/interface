@@ -170,6 +170,8 @@
       :device-model-id="deviceModelId"
       :device-id="deviceId"
       :multiple="multiple"
+      :from-text="fromText"
+      :app-id="deviceModelId"
       @callback="addParamDone"
     />
   </div>
@@ -287,7 +289,8 @@ export default {
           width: "160",
           slot: "actions"
         }
-      ]
+      ],
+      fromText: 0,
     };
   },
   computed: {
@@ -349,7 +352,8 @@ export default {
     });
     // 绑定数据源
     VueEvent.$on("emitDataSourceFooter", value => {
-      this.setCellModelInfo("bindData", {dataSource: value})
+      this.setCellModelInfo("bindData", {dataSource: value});
+      this.fromText = value.type
       if (this.shapeName === "lineChart") {
         this.dealDeviceParamIds()
       }
@@ -394,6 +398,8 @@ export default {
       if (startBindData && startBindData.dataSource) {
         let deviceNameChild = startBindData.dataSource.deviceNameChild
         this.deviceModelId = startBindData.dataSource.deviceModel.id
+	      let type = startBindData.dataSource.type || 0
+        this.fromText = type
         this.dataSourceList = []
         if (deviceNameChild && !Array.isArray(deviceNameChild)) {
           deviceNameChild = [deviceNameChild]
@@ -411,7 +417,7 @@ export default {
       } else {
         // 当为设备模版过来的时候 deviceModelId
         if (this.$store.state.main.isTemplateApply) {
-          this.deviceModelId = this.$route.query.modelId;
+          this.deviceModelId = sessionStorage.getItem('modelId')
         } else {
           this.deviceModelId = null
           this.dataSourceList = []
@@ -561,7 +567,7 @@ export default {
         }
         if(resParam.length) {
           let tempObj = this.getCellModelInfo("bindData")
-          tempObj.subParams = resParam
+          tempObj.subParams = resParam // subParams 多设备，多参数情况下交叉获取deviceParamsId参数处理
           this.setCellModelInfo("bindData", tempObj)
         }
       })

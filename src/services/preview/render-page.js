@@ -5,7 +5,7 @@
 let applyData = {}
 let fileSystem //文件服务器host
 window.unReadNumberTm = null
-window.unReadCountTime = 2000 // 1秒钟轮询一次 
+window.unReadCountTime = 2000 // 2秒钟轮询一次 
 let onlineColor = '#33CC66'
 let onworkColor = '#A4AFB4'
 // 默认样式
@@ -447,27 +447,22 @@ class PreviewPage {
   */
   getDataSource() {
     if (this.statusCells.length) {
-      const statusArr = this.statusCells.find(item => {
-        return item.shapeName === 'status'
+      const deviceId = this.statusCells[0].bindData.dataSource.deviceNameChild.id || '';
+      requestUtil.get(`${urls.getDataSource.url}/${deviceId}`).then((res) => {
+        const status = res.length > 0 ? res[0].status : '';
+        let els = document.querySelector(`.deviceStatus_${deviceId}`)
+        if ([1, 2].includes(status)) { // 离线
+          els.children[0].style.color = onworkColor;
+          els.children[0].children[0].style.backgroundColor = onworkColor;
+          els.children[0].children[1].innerHTML = '离线';
+          els.style.borderColor = onworkColor;
+        } else if (status === 0) { // 在线
+          els.children[0].style.color = onlineColor;
+          els.children[0].children[0].style.backgroundColor = onlineColor;
+          els.children[0].children[1].innerHTML = '在线';
+          els.style.borderColor = onlineColor;
+        }
       });
-      if (statusArr) {
-        const deviceId = this.statusCells[0].bindData.dataSource.deviceNameChild.id || '';
-        requestUtil.get(`${urls.getDataSource.url}/${deviceId}`).then((res) => {
-          const status = res.length > 0 ? res[0].status : '';
-          let els = document.querySelector(`.deviceStatus_${deviceId}`) //多设备情况下，会多次走这个地方
-          if ([1, 2].includes(status)) { // 离线
-            els.children[0].style.color = onworkColor;
-            els.children[0].children[0].style.backgroundColor = onworkColor;
-            els.children[0].children[1].innerHTML = '离线';
-            els.style.borderColor = onworkColor;
-          } else if (status === 0) { // 在线
-            els.children[0].style.color = onlineColor;
-            els.children[0].children[0].style.backgroundColor = onlineColor;
-            els.children[0].children[1].innerHTML = '在线';
-            els.style.borderColor = onlineColor;
-          }
-        });
-      }
     }
   }
   // 设备绑定mouse事件

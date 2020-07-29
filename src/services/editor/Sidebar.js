@@ -639,7 +639,6 @@ Sidebar.prototype.addWidgetNameShow = function() {
         'buttonSwitch': mxResources.get('buttonSwitch'),
         'status': mxResources.get('status'),
     }
-    console.log(controlNameText)
     $('.geSidebarContainer-bottom').on('mouseenter', '.geSidebar>a', function (evt) {
         evt.preventDefault()
         evt.stopPropagation()

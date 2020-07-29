@@ -832,7 +832,6 @@ export default {
     this.alignIndex2 = valignArr.indexOf(this.$store.state.main.widgetInfo.valign) + 1
     this.bgColor =  this.dealDefaultColor(this.$store.state.main.widgetInfo.bgColor)
     this.borderColor =  this.dealDefaultColor(this.$store.state.main.widgetInfo.borderColor)
-    console.log(this.borderColor)
     this.borderLineBoldText =  this.$store.state.main.widgetInfo.borderBold
     this.borderLineCls = this.$store.state.main.widgetInfo.borderLineCls
     palettName = this.$store.state.main.widgetInfo.widgetName;

@@ -88,7 +88,7 @@ export default{
     }
     this.deviceModelId = this.bindData.dataSource.deviceModel.id
     if (this.$store.state.main.isTemplateApply) {
-      this.deviceModelId = this.$route.query.modelId
+      this.deviceModelId = sessionStorage.getItem('modelId')
     }
     this.requestUtil.get(`${this.urls.commandTemplate.url}${this.deviceModelId}`).then(res =>{
       if(res && res.length) {
@@ -148,7 +148,6 @@ export default{
     },
     selectChange() {
       this.commandData.detail = {
-        deviceId:this.bindData.dataSource.deviceNameChild.id,
         deviceModelId:this.deviceModelId,
         functionId: this.control,
       }
