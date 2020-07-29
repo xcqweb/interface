@@ -398,8 +398,7 @@ export default {
       if (startBindData && startBindData.dataSource) {
         let deviceNameChild = startBindData.dataSource.deviceNameChild
         this.deviceModelId = startBindData.dataSource.deviceModel.id
-	      let type = startBindData.dataSource.type || 0
-        this.fromText = type
+        this.fromText = startBindData.dataSource.type || 0
         this.dataSourceList = []
         if (deviceNameChild && !Array.isArray(deviceNameChild)) {
           deviceNameChild = [deviceNameChild]
