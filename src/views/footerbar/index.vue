@@ -515,6 +515,7 @@ export default {
       if (isFirstCheck) {
         this.paramOutterList[0].type = true
       }
+      let tempObj = this.getCellModelInfo("bindData")
       if (this.shapeName === "lineChart") { 
         if(this.$store.state.main.isTemplateApply) { // 组态模板时候，趋势图只能绑定一个设备，是预览时候动态传入的
           tempObj.subParams = this.paramOutterList
@@ -522,7 +523,6 @@ export default {
           this.dealDeviceParamIds()
         }
       }
-      let tempObj = this.getCellModelInfo("bindData")
       tempObj.params = this.paramOutterList
       this.setCellModelInfo("bindData", tempObj)
     },

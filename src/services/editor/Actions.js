@@ -127,7 +127,8 @@ Actions.prototype.init = function()
             let page = router.resolve({
                 path: window.PREFIX_PATH + "/interface_preview",
                 query: {
-                    id: sessionStorage.getItem('applyId')
+                  id: sessionStorage.getItem('applyId'),
+                  modelId: sessionStorage.getItem('modelId')
                 }
             })
             window.open(page.href,'_blank')

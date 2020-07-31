@@ -36,7 +36,7 @@ function dealdeviceParams(deviceParams) {
 /**
  * 
  * @param {*} isReal 是否是实时数据
- * @param {*} modeId 绑定数据时候 viewTool/model/serach 返回的 模型id
+ * @param {*} modelId 绑定数据时候 viewTool/model/serach 返回的 模型id
  */
 async function getSubscribeInfos(deviceParams) {
   let params = {
