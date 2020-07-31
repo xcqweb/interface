@@ -33,7 +33,7 @@
     <div class="datasource-body flex-full-item">
       <!-- 设备模型 -> 设备 -->
       <Datamodel
-        v-show="dataType === 0"
+        v-if="dataType === 0"
         :reload-data="deviceDataChange"
       />
       <!-- 数据模型 -->

@@ -140,6 +140,7 @@ export default{
         tipDialog(this.myEditorUi,`${this.$t("thisText")} ${tipText} ${this.$t("rightBar.hasBindVisibleOrHideEvent")}`)
         return
       } 
+      console.log(currentItem)
       this.$emit("submitMutual",{mutualType:2,id:currentItem.id,hide:currentItem.hide,innerType:innerType,isEdit:!!this.currentEditItem})
     },
     checkDialog(item) {

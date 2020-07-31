@@ -3380,29 +3380,36 @@ EditorUi.prototype.save = function(hideDialog=false)
                     data.picUrl = svgImg.outerHTML
                 }  
                 let id = editor.getApplyId() || sessionStorage.getItem('applyId')
-                if (id) {
-                    // 编辑保存
+                if (id) {// 编辑保存
                     data.studioId = id
-                    editor.ajax(ui, `${urls.ifMultipleEdit.url}${id}`, 'GET', '', (res) => {
-                        if (autoSaveFlagTerry === 0) {
-                            if (res.code === '3012') {
-                                autoSaveFlagTerry++
-                                tipDialog(ui, `当前应用 ${res.message ? res.message : '' } 正在编辑, 无法保存`);
-                            } else if (res.code === '0') {
-                                editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
-                                    this.saveSuccess(res, hideDialog);
-                                    setCookie('saveIotCds', 'put');
-                                    resolve(res);
-                                }, (res) => {
-                                    this.saveError(res.responseJSON, hideDialog);
-                                    reject(res);
-                                }, resource.get('loading'), hideDialog)
+                    const saveApplyFun = ()=> {
+                      editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
+                          this.saveSuccess(res, hideDialog);
+                          setCookie('saveIotCds', 'put');
+                          resolve(res);
+                      }, (res) => {
+                          this.saveError(res.responseJSON, hideDialog);
+                          reject(res);
+                      }, resource.get('loading'), hideDialog)
+                    }
+                    const isTemplateApply = sessionStorage.getItem('isTemplateApply')
+                    if(isTemplateApply == 1) {// 组态模板，不校验当前应用是否被其他人编辑
+                      saveApplyFun()
+                    } else {
+                        editor.ajax(ui, `${urls.ifMultipleEdit.url}${id}`, 'GET', '', (res) => {
+                            if (autoSaveFlagTerry === 0) {
+                                if (res.code === '3012') {
+                                    autoSaveFlagTerry++
+                                    tipDialog(ui, `当前应用 ${res.message ? res.message : '' } 正在编辑, 无法保存`);
+                                } else if (res.code === '0') {
+                                  saveApplyFun()
+                                }
                             }
-                        }
-                    }, (res) => {
-                        reject(res);
-                    }, true, true)
-                } else {
+                        }, (res) => {
+                            reject(res);
+                        }, true, true)
+                    }
+                } else { // 本地开发新建一个模拟的应用
                     data.studioName = "新建应用";
                     data.appType = 0;
                     data.lengthWidth = "1366*768";
