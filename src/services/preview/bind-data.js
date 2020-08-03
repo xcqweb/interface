@@ -181,7 +181,7 @@ function setterRealData(res, fileSystem,mainProcess) {
           }
           paramShow.forEach(d => {
             let dpIdVal = item[d.deviceParamId]
-            if (dpIdVal || dpIdVal == 0) {
+            if (dpIdVal || dpIdVal === 0) {
               paramData.data[d.paramName] = dpIdVal
               paramData.time = timeFormate(item.timestamp, false)
             }else{

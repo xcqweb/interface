@@ -25,7 +25,6 @@ class PreviewPage {
     let parseContent = JSON.parse(content)
     this.content = parseContent.pages
     this.deviceId = data.deviceId
-    this.deviceName = data.deviceName
     this.pagesRank = parseContent.rank
     this.wsParams = []
     this.cachCells = [] //保存绑定有状态模型的控件，需要拿到里面的参数去订阅数据
