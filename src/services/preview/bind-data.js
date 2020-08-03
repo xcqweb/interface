@@ -198,15 +198,19 @@ function setterRealData(res, fileSystem,mainProcess) {
         }
         let stateModels = $ele.data("stateModels")
         if(stateModels) {
-          let stateIndex = $ele.data("stateIndex") || 0//默认状态 未找到要切换的状态，显示默认 或显示上一次的结果状态
+          let stateIndex = $ele.data("stateIndex") || 0
+          /* 默认状态 未找到(2种情况 1：当次没推送这个参数过来 2：推送过来了，
+            但是推送的数据不在绑定的状态模型的各种情况的范围内)要切换的状态
+          */
           for (let j = 1; j < stateModels.length;j++) {
-            if (dealStateFormula(stateModels[j].modelFormInfo.formula, item)) {
+            let result = dealStateFormula(stateModels[j].modelFormInfo.formula, item)
+            if (result === true) {
               stateIndex = j
               $ele.data("stateIndex",stateIndex)
               break
             }
-            if(j == stateModels.length - 1) {
-              // 未找到满足的状态，把之前的保存的上一次的结果也换原为默认值 0
+            if(j == stateModels.length - 1 && result !== undefined) { // 当次推送的数据没有这个参数会返回undefined，这是情况1，不需要还原为默认值
+              // 只有情况2需要这个处理
               $ele.data("stateIndex",0)
             }
           }
@@ -233,7 +237,7 @@ function setterRealData(res, fileSystem,mainProcess) {
               dpIdVal = item[d.deviceParamId]
               paramData.data.units[d.paramName] = d.dataUnit
             }
-            if (dpIdVal || dpIdVal == 0) {
+            if (dpIdVal || dpIdVal === 0) {
               paramData.data[d.paramName] = dpIdVal
               paramData.time = timeFormate(item.timestamp, false)
             }else if(!paramData.data[d.paramName]) {
@@ -256,18 +260,18 @@ function setterRealData(res, fileSystem,mainProcess) {
  */
 function dealStateFormula(formula, data) {
   if(!formula) {
-    return false
+    return undefined
   }
   formula = JSON.parse(formula)
   let res1 = true,res2 = false
   let logics = formula.data
   if(!logics) {
-    return false
+    return undefined
   }
   if (!formula.conditionLogic || formula.conditionLogic == 1) { // 顶级条件是and，有一个为false，就返回false
     for(let i = 0;i < logics.length;i++) {
-      if (!dealLogic(logics[i],data)) {//子级条件有一个为false，整体为false
-        res1 = false
+      res1 = dealLogic(logics[i],data)
+      if (!res1) {//子级条件有一个为false 或者 undefined，整体为false或者undefined（表示当次推送的数据没有这个参数，没取到值)
         break 
       }
     }
@@ -275,7 +279,8 @@ function dealStateFormula(formula, data) {
   }  
   // 顶级条件or
   for (let i = 0; i < logics.length; i++) {
-    if (dealLogic(logics[i], data)) {//子级条件有一个为true，整体为true
+    res2 = dealLogic(logics[i], data)
+    if (res2) {//子级条件有一个为true，整体为true
       res2 = true
       break
     }
@@ -291,7 +296,7 @@ function dealLogic(logic,data) {
   let res = true
   let operate = +logic.logical
   if(!logic.key) {
-    return false
+    return undefined
   }
   let tempArr = logic.key.split("/")
   let deviceType = tempArr[0]
@@ -310,8 +315,8 @@ function dealLogic(logic,data) {
   }
   let min = +logic.minValue
   let max = +logic.maxValue
-  if (!tempParamVal && tempParamVal !== 0) {
-    return false
+  if (tempParamVal === undefined || tempParamVal === null) {
+    return undefined
   }
   let paramVal = tempParamVal
   if(operate != 4 && operate != 3) {
@@ -381,9 +386,11 @@ function changeEleState(el, stateInfo,fileSystem) {
   for (let key in stateInfo.style) {
     el.style[key] = stateInfo.style[key]
   }
-  let imgInfo = stateInfo.imgInfo
-  if (imgInfo) {
+  if(['image','userimage','light'].includes(shapeName)) {
     el.style.background = "transparent"
+  }
+  let imgInfo = stateInfo.imgInfo
+  if (imgInfo) { 
     imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
     setSvgImageHref(el,imgInfo.url)
     return

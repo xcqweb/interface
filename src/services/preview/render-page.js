@@ -211,7 +211,7 @@ class PreviewPage {
           } else if (shapeName == 'menuCell') {
             let menuCellProps = item.getAttribute('menuCellProps')
             obj.menuCellProps = menuCellProps
-          }else if(shapeName.includes('image')) { // 图片的默认填充色为透明
+          }else if(['image','userimage','light'].includes(shapeName)) { // 图片的默认填充色为透明
             obj.fillColor = "transparent"
           }
           // 组合节点
