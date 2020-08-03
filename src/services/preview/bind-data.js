@@ -232,7 +232,7 @@ function setterRealData(res, fileSystem,mainProcess) {
             } else {
               dpIdVal = item[d.deviceParamId]
             }
-            if (dpIdVal || dpIdVal == 0) {
+            if (dpIdVal || dpIdVal === 0) {
               paramData.data[d.paramName] = dpIdVal
               paramData.time = timeFormate(item.timestamp, false)
             }else if(!paramData.data[d.paramName]) {
