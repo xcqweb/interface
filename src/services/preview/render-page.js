@@ -464,6 +464,7 @@ class PreviewPage {
   getDataSource() {
     if (this.statusCells.length) {
       let deviceId = ''
+      let cell = this.statusCells[0]
       if(cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild) {
         deviceId = cell.bindData.dataSource.deviceNameChild.id
       }else {
