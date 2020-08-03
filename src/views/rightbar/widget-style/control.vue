@@ -86,9 +86,12 @@ export default{
     if( (!this.bindData || !this.bindData.dataSource) && !this.$store.state.main.isTemplateApply) {
       return
     }
-    this.deviceModelId = this.bindData.dataSource.deviceModel.id
-    if (this.$store.state.main.isTemplateApply) {
-      this.deviceModelId = sessionStorage.getItem('modelId')
+    if(this.bindData && this.bindData.dataSource) {
+      this.deviceModelId = this.bindData.dataSource.deviceModel.id
+    } else{
+      if (this.$store.state.main.isTemplateApply) {
+        this.deviceModelId = sessionStorage.getItem('modelId')
+      }
     }
     this.requestUtil.get(`${this.urls.commandTemplate.url}${this.deviceModelId}`).then(res =>{
       if(res && res.length) {
