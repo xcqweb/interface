@@ -463,7 +463,12 @@ class PreviewPage {
   */
   getDataSource() {
     if (this.statusCells.length) {
-      const deviceId = this.statusCells[0].bindData.dataSource.deviceNameChild.id || '';
+      let deviceId = ''
+      if(cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild) {
+        deviceId = cell.bindData.dataSource.deviceNameChild.id
+      }else {
+        deviceId = this.deviceId
+      }
       requestUtil.get(`${urls.getDataSource.url}/${deviceId}`).then((res) => {
         const status = res.length > 0 ? res[0].status : '';
         let els = document.querySelector(`.deviceStatus_${deviceId}`)
@@ -715,9 +720,14 @@ class PreviewPage {
     bindEvent(cellHtml, cell, this.mainProcess, applyData, fileSystem)
     // 单独处理 状态控件 绑定device_id
     if (shapeName === 'status') {
-      let device = cell.bindData && cell.bindData.dataSource ? cell.bindData.dataSource.deviceNameChild : {id: ''};
-      cellHtml.classList.add(`deviceStatus_${device.id}`)
-      if (device.id) {
+      let deviceId = ''
+      if(cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild) {
+        deviceId = cell.bindData.dataSource.deviceNameChild.id
+      }else {
+        deviceId = this.deviceId
+      }
+      cellHtml.classList.add(`deviceStatus_${deviceId}`)
+      if (deviceId) {
         this.statusCells.push(cell)
       }
     }
