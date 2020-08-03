@@ -29,7 +29,7 @@ class PreviewPage {
     this.pagesRank = parseContent.rank
     this.wsParams = []
     this.cachCells = [] //保存绑定有状态模型的控件，需要拿到里面的参数去订阅数据
-    this.statusCells = [] // “状态（status)” 控件的缓存
+    this.statusCells = [] // 组态模板的情况下，绑定的模型里面的参数，没有deviceParamId，需要去处理下下
     this.emptyDeviceParamIds = []
     this.currentPageId = ''
     this.mainProcess = mainProcess
@@ -255,8 +255,9 @@ class PreviewPage {
     this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
     this.cachCells = []
     this.statusCells = []
-    this.emptyDeviceParamIds = [] // 组态模板的情况下，绑定的模型里面的参数，没有deviceParamId，需要去处理下下
+    this.emptyDeviceParamIds = [] 
     this.mainProcess.realData = []
+    clearInterval(window.unReadNumberTm)
     if (pageType == 'normal') {
       for (let key in applyData) {
         destroyWs(applyData, key)
@@ -452,7 +453,6 @@ class PreviewPage {
     }
     this.subscribeData()
     this.bindDeviceEleEvent()
-    clearInterval(window.unReadNumberTm)
     this.getDataSource()
     window.unReadNumberTm = setInterval(this.getDataSource.bind(this), window.unReadCountTime);
     return cells

@@ -83,7 +83,7 @@ export default{
   created() {
     this.commandData = {}
     this.bindData = this.getCellModelInfo('bindData')
-    if(!this.bindData || !this.bindData.dataSource) {
+    if(!this.bindData || !this.bindData.dataSource || !this.$store.state.main.isTemplateApply) {
       return
     }
     this.deviceModelId = this.bindData.dataSource.deviceModel.id
