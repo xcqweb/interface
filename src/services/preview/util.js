@@ -426,7 +426,7 @@ function createSelect(params) {
   })
   return select
 }
-function dealCharts(mainProcess,cell) {
+function dealCharts(mainProcess,cell,context) {
   let con = document.createElement('div')
   let selectCon = document.createElement('div')
   let needAddEvent = false
@@ -460,15 +460,20 @@ function dealCharts(mainProcess,cell) {
   }
   let fun = () => {
     let myEchart = echarts.init(chartCon)
-    if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild && cell.bindData.params && cell.bindData.params.length) {
+    if (cell.bindData && cell.bindData.dataSource && cell.bindData.params && cell.bindData.params.length && (cell.bindData.dataSource.deviceNameChild || context.deviceId)) {
       let temp = $(con).data("paramShowDefault")
       if(temp) {
         let titleShow = temp.paramName
         let paramId = temp.paramId
         let paramType = temp.paramType
         let devices = cell.bindData.dataSource.deviceNameChild
-        if(!Array.isArray(devices)) {
+        if(!Array.isArray(devices) && devices) {
           devices = [devices]
+        } else if(!devices && context.deviceId) {//组态模板的情况
+          devices = [{
+            id:context.deviceId,
+            name:context.deviceName
+          }]
         }
         if (cell.shapeName == 'lineChart') {
           let tempOptions = JSON.parse(JSON.stringify(options))
@@ -484,80 +489,118 @@ function dealCharts(mainProcess,cell) {
           let markLine = tempOptions.series[0].markLine
           let markLineMax = 0, markValArr = []
           let paramIds = []
-          devices.forEach((device,index)=>{
-            let tempPId = dealDefaultParams(device.id,temp,$(con).data('subParams')).deviceParamId
-            if(tempPId) {
-              paramIds[index] = tempPId
-            }
-          })
-          if(paramIds.length) {
-            requestUtil.get(`${urls.timeSelect.url}${paramId}`, {paramType: paramType == 'device' ? 0 : 1}).then(res => {
-              let checkItem = res.durations.find((item) => {
-                return item.checked === true
-              })
-              let chartDataLen = Math.ceil(checkItem && checkItem.duration / res.rateCycle)
-              $(con).data("chartDataLen", chartDataLen)
-              if (markLine && markLine.data && markLine.data.length) {
-                markLine.data.forEach(item => {
-                  markValArr.push(item.yAxis)
+          const historyDataFun = ()=>{
+            if(paramIds.length) {
+              requestUtil.get(`${urls.timeSelect.url}${paramId}`, {paramType: paramType == 'device' ? 0 : 1}).then(res => {
+                let checkItem = res.durations.find((item) => {
+                  return item.checked === true
                 })
-                markLineMax = Math.max(...markValArr)
-              }
-              let pentSdbParams = []
-              devices.forEach((item,index)=>{
-                pentSdbParams.push({
-                  paramIds:[paramIds[index]],
-                  deviceId:item.id,
-                  period:checkItem.duration,
+                let chartDataLen = Math.ceil(checkItem && checkItem.duration / res.rateCycle)
+                $(con).data("chartDataLen", chartDataLen)
+                if (markLine && markLine.data && markLine.data.length) {
+                  markLine.data.forEach(item => {
+                    markValArr.push(item.yAxis)
+                  })
+                  markLineMax = Math.max(...markValArr)
+                }
+                let pentSdbParams = []
+                devices.forEach((item,index)=>{
+                  pentSdbParams.push({
+                    paramIds:[paramIds[index]],
+                    deviceId:item.id,
+                    period:checkItem.duration,
+                  })
                 })
-              })
-              requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
-                if (res && res.length) {
-                  let xAxisData = []
-                  for(let i = 0;i < res.length;i++) {
-                    let tempArr = res[i]
-                    let device = devices[i]
-                    if(device) {
-                      tempLegend.push(device.name)
-                      tempOptions.legend.data = tempLegend
-                      tempSeries.push({
-                        type: 'line',
-                        name: device.name,
-                        markLine: markLine,
-                        data: [],
-                        deviceId: device.id, //设备id，额外添加的，匹配数据时候用
-                      })
-                      if(JSON.stringify(res[i]) === '{}') {
-                        continue
-                      }
-                      if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
-                        let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
-                        xAxisData = []
-                        for (let key of keys) {
-                          // if (!isNaN(Number(tempArr.resMap[key]))) {
-                          xAxisData.push(timeFormate(key, false))
-                          tempSeries[i].data.push(tempArr.resMap[key])
-                          // }
+                requestUtil.post(`${urls.pentSdbData.url}`, pentSdbParams).then(res => {
+                  if (res && res.length) {
+                    let xAxisData = []
+                    for(let i = 0;i < res.length;i++) {
+                      let tempArr = res[i]
+                      let device = devices[i]
+                      if(device) {
+                        tempLegend.push(device.name)
+                        tempOptions.legend.data = tempLegend
+                        tempSeries.push({
+                          type: 'line',
+                          name: device.name,
+                          markLine: markLine,
+                          data: [],
+                          deviceId: device.id, //设备id，额外添加的，匹配数据时候用
+                        })
+                        if(JSON.stringify(res[i]) === '{}') {
+                          continue
                         }
-                        if(tempOptions.yAxis.max) {
-                          tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)
-                        }else{
-                          tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
+                        if(tempArr && tempArr.resMap && JSON.stringify(tempArr.resMap) !== '{}') {
+                          let keys = Object.keys(tempArr.resMap).sort((a,b)=>a - b)
+                          xAxisData = []
+                          for (let key of keys) {
+                            xAxisData.push(timeFormate(key, false))
+                            tempSeries[i].data.push(tempArr.resMap[key])
+                          }
+                          if(tempOptions.yAxis.max) {
+                            tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax,tempOptions.yAxis.max)
+                          }else{
+                            tempOptions.yAxis.max = Math.max(...tempSeries[i].data, markLineMax)
+                          }
+                          tempOptions.series = tempSeries
                         }
-                        tempOptions.series = tempSeries
                       }
                     }
+                    tempOptions.xAxis.data = xAxisData
+                    myEchart.setOption(tempOptions)
                   }
-                  tempOptions.xAxis.data = xAxisData
-                  myEchart.setOption(tempOptions)
-                }
-              },()=>{
-                myEchart.setOption(options)
+                },()=>{
+                  myEchart.setOption(options)
+                })
               })
-            })
-          }else{
-            myEchart.setOption(tempOptions)
+            }else{
+              myEchart.setOption(tempOptions)
+            }
           }
+          if(context.deviceId) {// 组态模板的情况
+            const paramShow = $(con).data('paramShow')
+            let emptyDeviceParamIds = paramShow.map((item)=>{
+              return {
+                paramType: item.paramType == 'device' ? 0 : 1,
+                deviceId: context.deviceId,
+                partId: item.partId,
+                paramId: item.paramId
+              }
+            })
+            requestUtil.post(urls.deviceParamGenerate.url,emptyDeviceParamIds).then((res)=>{
+              let resParam = [],maps = new Map()
+              res.forEach(item=>{
+                let tempArr = []
+                if (maps.has(item.deviceId)) {
+                  tempArr =  maps.get(item.deviceId)
+                  tempArr.push(item.deviceParamId)
+                  maps.set(item.deviceId,Array.from(new Set(tempArr)))
+                }else{
+                  maps.set(item.deviceId, [item.deviceParamId])
+                }
+              })
+              for (let key of maps.keys()) {
+                resParam.push({
+                  deviceId:key,
+                  params:maps.get(key)
+                })
+              }
+              let tempPId = dealDefaultParams(context.deviceId,temp,resParam).deviceParamId
+              if(tempPId) {
+                paramIds[0] = tempPId
+                historyDataFun()
+              }
+            })
+          } else{
+            devices.forEach((device,index)=>{
+              let tempPId = dealDefaultParams(device.id,temp,$(con).data('subParams')).deviceParamId
+              if(tempPId) {
+                paramIds[index] = tempPId
+              }
+            })
+            historyDataFun()
+          }
+         
         } else {//仪表盘
           let data = mainProcess.realData.find(item=>{
             return item.deviceId == devices[0].id

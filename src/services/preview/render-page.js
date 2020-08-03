@@ -25,6 +25,7 @@ class PreviewPage {
     let parseContent = JSON.parse(content)
     this.content = parseContent.pages
     this.deviceId = data.deviceId
+    this.deviceName = data.deviceName
     this.pagesRank = parseContent.rank
     this.wsParams = []
     this.cachCells = [] //保存绑定有状态模型的控件，需要拿到里面的参数去订阅数据
@@ -254,7 +255,7 @@ class PreviewPage {
     this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
     this.cachCells = []
     this.statusCells = []
-    this.emptyDeviceParamIds = []
+    this.emptyDeviceParamIds = [] // 组态模板的情况下，绑定的模型里面的参数，没有deviceParamId，需要去处理下下
     this.mainProcess.realData = []
     if (pageType == 'normal') {
       for (let key in applyData) {
@@ -347,6 +348,7 @@ class PreviewPage {
                   }
                 }
               })
+              $(ele).data('paramShow',paramShow)
             }
           })
         }
@@ -611,7 +613,7 @@ class PreviewPage {
     } else if (shapeName.includes('pipeline')) {
       cellHtml = dealPipeline(cell)
     } else if (shapeName.includes('Chart')) {
-      cellHtml =  dealCharts(this.mainProcess,cell)
+      cellHtml =  dealCharts(this.mainProcess,cell,this)
       cellHtml.style.display = 'block'
     } else if (shapeName == 'light') {
       cellHtml = dealLight(cell)
@@ -754,11 +756,10 @@ class PreviewPage {
     return cellHtml
   }
   initWsParams(cellHtml, device, paramShow,shapeName,subParams) {
-    let deviceId
-    if(shapeName === 'lineChart') {
+    let deviceId = this.deviceId || device.id
+    if(shapeName === 'lineChart' && !this.deviceId) {
       this.dealLineChartWsParams(cellHtml,device,subParams)
     } else{
-      deviceId = this.deviceId || device.id
       cellHtml.classList.add(`device_${deviceId}`)
     }
     if(deviceId) {

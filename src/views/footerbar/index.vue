@@ -517,9 +517,8 @@ export default {
       }
       let tempObj = this.getCellModelInfo("bindData")
       if (this.shapeName === "lineChart") { 
-        if(this.$store.state.main.isTemplateApply) { // 组态模板时候，趋势图只能绑定一个设备，是预览时候动态传入的
-          tempObj.subParams = this.paramOutterList
-        } else {// 趋势图可以绑定多个数据源，需要做特殊处理，获取deviceParamId，
+        if(!this.$store.state.main.isTemplateApply) { // 组态模板时候，趋势图只能绑定一个设备，是预览时候动态传入的
+          // 趋势图可以绑定多个数据源，需要做特殊处理(数据源和参数交叉组装，获取deviceParamId)
           this.dealDeviceParamIds()
         }
       }

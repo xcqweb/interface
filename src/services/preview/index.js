@@ -47,6 +47,7 @@ class Main {
     let refreshToken = getCookie('refreshToken')
     if(deviceId) { //组态模板
       this.applyInfo.deviceId = deviceId
+      this.applyInfo.deviceName = getQueryVariable('deviceName')
     }
     if ((!token || !refreshToken) && this.applyInfo.status === 0) { //未登录且应用未发布的情况下
       let notPublishImg = './static/images/apply_not_publish.png'
