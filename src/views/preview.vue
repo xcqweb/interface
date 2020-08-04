@@ -114,10 +114,7 @@ export default {
     })
   },
   destroyed() {
-    window.removeEventListener('popstate',this.stateListener )
-    // 清楚预览的定时器
-    clearInterval(window.unReadNumberTm)
-    window.unReadNumberTm = null
+    window.removeEventListener('popstate',this.stateListener )  
   },
   methods:{
     confirm() {
