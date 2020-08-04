@@ -9,8 +9,8 @@ export default {
       deviceObj: {},
       studioId: '',
       applyObj: {
-        forecastId: '', // Ô¤²â
-        appId: '', // Í³¼Æ
+        forecastId: '', // Ô¤ï¿½ï¿½
+        appId: '', // Í³ï¿½ï¿½
       },
     };
   },
@@ -75,7 +75,7 @@ export default {
       };
       this.$store.dispatch('loadStudioDevices', params);
     },
-    getPredictionData() { // Ô¤²âÓ¦ÓÃ
+    getPredictionData() { // Ô¤ï¿½ï¿½Ó¦ï¿½ï¿½
       if (!this.studioId) {
         return;
       }
@@ -85,7 +85,7 @@ export default {
       };
       this.$store.dispatch('loadStudioPredictionApp', params);
     },
-    getStatisticData() { // Í³¼ÆÓ¦ÓÃ
+    getStatisticData() { // Í³ï¿½ï¿½Ó¦ï¿½ï¿½
       if (!this.studioId) {
         return;
       }
