@@ -248,6 +248,7 @@ export default {
     },
     handlePageChange(pageIndex) {
       this.pageParams.current = pageIndex; 
+      this.getDevices();
     },
     handlePageSizeChange(pageSize) {
       this.pageParams.size = pageSize;
