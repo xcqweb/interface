@@ -25,7 +25,7 @@
           <CheckboxGroup
             v-model="checkModelArr"
             class="devicename-listUl"
- 			style="height:100%;overflow:hidden auto;"
+            style="height:100%;overflow:hidden auto;"
             @on-change="checkAllGroupChange"
           >
             <Checkbox
