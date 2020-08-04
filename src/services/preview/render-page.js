@@ -5,7 +5,7 @@
 let applyData = {}
 let fileSystem //文件服务器host
 window.unReadNumberTm = null
-window.unReadCountTime = 2000 // 2秒钟轮询一次 
+window.unReadCountTime = 10000 // 10秒钟轮询一次 
 let onlineColor = '#33CC66'
 let onworkColor = '#A4AFB4'
 // 默认样式

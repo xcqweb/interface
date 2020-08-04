@@ -193,8 +193,8 @@ function actionSend(action,mainProcess,bindData) {
   // 调用下发指令接口，发出指令
   let sendFun = ()=>{
     // 先拿指令下的variables
-    let deviceId = mainProcess.deviceId
-    if(bindData.dataSource && bindData.dataSource.deviceNameChild) { // 触发action的绑定的都是单设备，不需要判断deviceNameChild为数组的情况
+    let deviceId = mainProcess.applyInfo.deviceId
+    if(bindData && bindData.dataSource && bindData.dataSource.deviceNameChild) { // 触发action的绑定的都是单设备，不需要判断deviceNameChild为数组的情况
       deviceId = bindData.dataSource.deviceNameChild.id
     }
     requestUtil.get(`${urls.commandTemplate.url}${data.detail.deviceModelId}`).then(res =>{
