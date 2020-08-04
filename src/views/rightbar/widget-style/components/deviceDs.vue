@@ -63,10 +63,12 @@
       >
         <div
           v-if="deviceData.length"
+          style="height:100%;"
         >
           <CheckboxGroup
             v-model="checkModelArr"
             class="devicename-listUl"
+            style="height:100%;overflow:hidden auto;"
             @on-change="checkAllGroupChange"
           >
             <Checkbox
@@ -304,7 +306,7 @@ export default{
       align-items: flex-end;
     }
     .data-sources-center{
-      height:calc(100% - 208px);
+      height:calc(100% - 264px);
       background: #ffffff;
       border:1px solid #d4d4d4;
       border-radius: 2px;
@@ -316,10 +318,7 @@ export default{
       }
       .devicename-list-wrap{
         background: #fff;
-        height:100%;
-        max-height:calc(100% - 24px);
-        overflow-y: auto;
-        overflow-x:hidden;
+        height: calc(100% - 24px);
         .devicename-listUl{
           label{
             width:100%;
@@ -344,7 +343,6 @@ export default{
       }
     }
     .data-sources-bottom{
-      height:100px;
       padding-top:12px;
       button{
         height:24px;

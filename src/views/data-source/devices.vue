@@ -246,8 +246,8 @@ export default {
         callback();
       });
     },
-    handlePageChange(pageIndex) {
-      this.pageParams.current = pageIndex;
+    handlePageChange(pageIndex) { 
+      this.pageParams.current = pageIndex; 
       this.getDevices();
     },
     handlePageSizeChange(pageSize) {
