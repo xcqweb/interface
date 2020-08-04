@@ -395,7 +395,7 @@ function dealCharts(mainProcess,cell) {
       if(temp) {
         //单位
         let bindType = cell.bindData.dataSource.type || 0
-        let titleShow = temp.paramName + (bindType == 0 ? `(${temp.dataUnit})` : '')
+        let titleShow = temp.paramName + (bindType == 0 ? `(${temp.dataUnit || ''})` : '')
         let paramId = temp.paramId
         let paramType = temp.paramType
         let devices = cell.bindData.dataSource.deviceNameChild

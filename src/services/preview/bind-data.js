@@ -115,7 +115,7 @@ function setterRealData(res, fileSystem,mainProcess) {
       let bindType = $ele.data("bindType")
       let val = null
       let paramShowDefault = $ele.data("paramShowDefault")
-      let dataUnit = paramShowDefault.dataUnit;
+      let dataUnit = paramShowDefault.dataUnit || '';
       if(shapeName == 'lineChart' && paramShowDefault) {
         $ele.data("paramShowDefault",dealDefaultParams(item.deviceId,paramShowDefault,$ele.data('subParams')))
         paramShowDefault = $ele.data("paramShowDefault")
@@ -235,7 +235,7 @@ function setterRealData(res, fileSystem,mainProcess) {
               dpIdVal = item[d.paramId]
             } else {
               dpIdVal = item[d.deviceParamId]
-              paramData.data.units[d.paramName] = d.dataUnit
+              paramData.data.units[d.paramName] = d.dataUnit || ''
             }
             if (dpIdVal || dpIdVal === 0) {
               paramData.data[d.paramName] = dpIdVal
