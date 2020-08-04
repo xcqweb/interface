@@ -115,6 +115,7 @@ function setterRealData(res, fileSystem,mainProcess) {
       let bindType = $ele.data("bindType")
       let val = null
       let paramShowDefault = $ele.data("paramShowDefault")
+      let dataUnit = paramShowDefault.dataUnit;
       if(shapeName == 'lineChart' && paramShowDefault) {
         $ele.data("paramShowDefault",dealDefaultParams(item.deviceId,paramShowDefault,$ele.data('subParams')))
         paramShowDefault = $ele.data("paramShowDefault")
@@ -190,9 +191,9 @@ function setterRealData(res, fileSystem,mainProcess) {
       }else {
         if(val || val === 0) {
           if(shapeName == 'triangle' || shapeName.includes('pentagram')) {
-            $ele.find(".text-show").html(val)
+            $ele.find(".text-show").html(val + dataUnit)
           }else{
-            $ele.html(val)
+            $ele.html(val + dataUnit)
           }
         }
         let stateModels = $ele.data("stateModels")
@@ -222,6 +223,9 @@ function setterRealData(res, fileSystem,mainProcess) {
               time:"",
               data: {}
             }
+            if (bindType == 0) {
+              paramData.data.units = {};
+            }
           }
           paramShow.forEach(d => {
             let dpIdVal
@@ -231,8 +235,9 @@ function setterRealData(res, fileSystem,mainProcess) {
               dpIdVal = item[d.paramId]
             } else {
               dpIdVal = item[d.deviceParamId]
+              paramData.data.units[d.paramName] = d.dataUnit
             }
-            if (dpIdVal || dpIdVal == 0) {
+            if (dpIdVal || dpIdVal === 0) {
               paramData.data[d.paramName] = dpIdVal
               paramData.time = timeFormate(item.timestamp, false)
             }else if(!paramData.data[d.paramName]) {
@@ -466,7 +471,7 @@ function createWsReal(pageId, applyData, fileSystem,mainProcess) {
     if (deviceParams.length === 0 || !websocketUrlReal) {
       return
     }
-    let ws = new WebSocket(getWsHost + res.data) // 提交时使用这个
+    let ws = new WebSocket(getWsHost() + res.data) // 提交时使用这个
     initialWs(ws, pageId, applyData, fileSystem,mainProcess)
     if(applyData[pageId].wsReal) {
       applyData[pageId].wsReal.close()

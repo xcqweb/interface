@@ -393,11 +393,12 @@ function dealCharts(mainProcess,cell) {
     if (cell.bindData && cell.bindData.dataSource && cell.bindData.params && cell.bindData.params.length) {
       let temp = $(con).data("paramShowDefault")
       if(temp) {
-        let titleShow = temp.paramName
+        //单位
+        let bindType = cell.bindData.dataSource.type || 0
+        let titleShow = temp.paramName + (bindType == 0 ? `(${temp.dataUnit})` : '')
         let paramId = temp.paramId
         let paramType = temp.paramType
         let devices = cell.bindData.dataSource.deviceNameChild
-        let bindType = cell.bindData.dataSource.type || 0
         if(!Array.isArray(devices)) {
           devices = [devices]
         }

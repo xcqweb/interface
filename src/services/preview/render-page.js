@@ -453,6 +453,7 @@ class PreviewPage {
   }
   // 设备绑定mouse事件
   bindDeviceEleEvent() {
+    //鼠标浮窗
     const $formatLayer = $("#formatLayer")
     const $document = $(document)
     const formatLayerText = (paramData) => {
@@ -461,12 +462,17 @@ class PreviewPage {
         let html = '<ul style="height:100%;display:flex;flex-direction:column;justify-content:center;">'
         html += `<li>${paramData.time}</li>`
         let tempVal
+        const units = data.units
         for (let key in data) {
-          tempVal = data[key]
-          if(tempVal === null || tempVal === undefined) {
-            tempVal = 'NaN'
+          let unit = units[key]
+          if (key !== 'units') {
+            tempVal = data[key]
+            if(tempVal === null || tempVal === undefined) {
+              tempVal = 'NaN'
+              unit = ''
+            }
+            html += `<li>${key}=${tempVal}${unit}</li>`
           }
-          html += `<li>${key}=${tempVal}</li>`
         }
         html += '</ul>'
         $formatLayer.html(html).show()
@@ -484,6 +490,7 @@ class PreviewPage {
     $document.on('mouseenter', selector, function(event) {
       const $ele = $(this)
       const paramData = $ele.data('paramData')
+      console.dir($ele);
       formatLayerText(paramData)
       $ele.data('frameFlag', !!paramData)
       formatLayerShow(event)
