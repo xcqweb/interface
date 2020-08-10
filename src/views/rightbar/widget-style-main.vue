@@ -90,7 +90,7 @@ export default{
     },
   },
   created() {
-	/*  for(let i = 0;i < cells.length;i++) { //批量绑定数据源的
+    /*  for(let i = 0;i < cells.length;i++) { //批量绑定数据源的
 		if(i < cells.length - 1 && this.getCellShapeName(cells[i]) != this.getCellShapeName(cells[i + 1])) {
 			this.isShowDataTab = false
 			break
