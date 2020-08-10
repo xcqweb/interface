@@ -25,7 +25,7 @@
         {{ $t('action') }}
       </div>
       <div
-        v-if="dataList.includes(shapeName) && isShowDataTab && !$store.state.main.isTemplateApply"
+        v-if="dataList.includes(shapeName) && cellsCount==1 && !$store.state.main.isTemplateApply"
         class="tab"
         :class="{'selected':tab==4}"
         @click="changeTab(4)"
@@ -90,17 +90,12 @@ export default{
     },
   },
   created() {
-    let graph = this.myEditorUi.editor.graph
-    let cells = graph.getSelectionCells()
-    if(cells.length > 1) {
-      this.isShowDataTab = false
-    }
-    /*  for(let i = 0;i < cells.length;i++) { //批量绑定数据源的
-            if(i < cells.length - 1 && this.getCellShapeName(cells[i]) != this.getCellShapeName(cells[i + 1])) {
-                this.isShowDataTab = false
-                break
-            }
-        } */
+	/*  for(let i = 0;i < cells.length;i++) { //批量绑定数据源的
+		if(i < cells.length - 1 && this.getCellShapeName(cells[i]) != this.getCellShapeName(cells[i + 1])) {
+			this.isShowDataTab = false
+			break
+		}
+	} */
   },
   mounted() {
     VueEvent.$off('rightBarTabSwitch')

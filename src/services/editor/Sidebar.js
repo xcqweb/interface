@@ -769,7 +769,7 @@ Sidebar.prototype.addGeneralPalette = function()
             return that.createVertexTemplateFromCells([cell], cell.geometry.width, cell.geometry.height, '表格');
         }),
         // 图片
-        this.createVertexTemplateEntry('shape=image;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '<input type="file" style="opacity:0;" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/></label>', '图片'),
+        this.createVertexTemplateEntry('shape=image;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/image.png', this.defaultImageWidth, this.defaultImageHeight, '<input type="file" style="opacity:0;width:10px;height:10px;" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg"/></label>', '图片'),
         // 指示灯
         this.createVertexTemplateEntry('shape=light;aspect=fixed;html=1;labelBackgroundColor=#ffffff;image=' + window.PREFIX_PATH + '/static/stencils/basic/light.png', 72, 72, '', '指示灯'),
         // 进度条
