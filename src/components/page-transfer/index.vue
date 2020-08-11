@@ -59,7 +59,7 @@
                       </p>
                     </div>
                     <slot name="leftItem">
-                      &nbsp;&nbsp;{{ item.name }}
+                      {{ item.name }}
                     </slot>
                   </Tooltip>
                 </Checkbox>
@@ -143,7 +143,7 @@
                     <slot 
                       name="rightItem"
                     >
-                      &nbsp;&nbsp;{{ item.name }}
+                      {{ item.name }}
                     </slot>
                   </Tooltip>
                 </Checkbox>
@@ -421,6 +421,7 @@ export default {
     .add-modal{
         /deep/.tooltip-width-inner{
         background: #fff !important;
+        width: calc(100% - 24px);
         .ivu-tooltip-popper {
           .ivu-tooltip-inner-with-width{
             white-space: normal !important
@@ -469,6 +470,10 @@ export default {
                 .data-wrap{
                     overflow: auto;
                     height:calc(378px - 75px);
+                    /deep/.ivu-tooltip-rel{
+                      margin-left:6px;
+                      width:100%;
+                    }
                     .data-item {
                         margin: 5px 0;
                         img {
@@ -478,12 +483,11 @@ export default {
                             margin-right: 2px;
                         }
                         /deep/.ivu-checkbox-group-item {
-                            display: flex;
+                          display: flex;
+                          align-items:flex-start;
                         }
                         /deep/.ivu-checkbox-wrapper {
-                            margin-right: 0;
-                            display: flex;
-                            align-items: center;
+                          margin-right: 0;
                         }
                         .con-wrap {
                             width: 100%;
