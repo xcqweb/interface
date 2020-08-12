@@ -302,7 +302,11 @@ export default {
           deviceTypeId: item.deviceTypeId,
         });
       });
-      this.requestUtil.post('api/iot-cds/cds/configDevice', {list}).then(() => {
+      const params = {
+        appDataSources:[],
+        studioDevs:list
+      }
+      this.requestUtil.post('api/iot-cds/cds/configDevice', params).then(() => {
         this.loading = false;
         this.visible = false;
         Message.success(this.$t('dataSource.importSuccessfully'));
