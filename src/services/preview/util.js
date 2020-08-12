@@ -141,8 +141,7 @@ function actionOpen(action, mainProcess) {
   } else if (action.mutualType === 4) { // 打开外部链接
     const url = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
     // window.location.href = url
-    const win = window.open('', action.target ? action.target : '_blank')
-    win.location.href = url
+    window.open(url, action.target ? action.target : '_blank');
   }
 }
 /**
