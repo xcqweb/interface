@@ -306,7 +306,7 @@ export default{
       align-items: flex-end;
     }
     .data-sources-center{
-      height:calc(100% - 208px);
+      height:calc(100% - 264px);
       background: #ffffff;
       border:1px solid #d4d4d4;
       border-radius: 2px;

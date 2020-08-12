@@ -912,7 +912,7 @@ export default {
       }
       if (state.style.shape === 'image') {
         document.querySelector('#dlbChooseImage').click()
-        let $inputfile = `<input type="file" style="opacity: 0" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg">`
+        let $inputfile = `<input type="file" style="opacity:0;width:10px;height:10px;" id="dlbChooseImage" title="" accept=".jpg,.jpge,.gif,.png,.svg">`
         document.getElementById('dlbChooseImage').addEventListener('change', (evt) => {
           this.dblclickHandle(evt)
           $('#dlbChooseImage').replaceWith($inputfile)
