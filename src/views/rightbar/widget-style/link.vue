@@ -45,7 +45,7 @@ export default{
     return {
       openlinkUrl: '',
       isEdit: false,
-      isOpenNewWindow: '_self',
+      isOpenNewWindow: '_blank',
     }
   },
   created() {
