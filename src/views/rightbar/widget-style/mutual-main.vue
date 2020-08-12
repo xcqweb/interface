@@ -269,6 +269,9 @@ export default{
             innerType:item.innerType,
             id:item.link//控件或者页面或者弹窗ID
           }
+          if (item.mutualType === 4) {
+            tempObj.target = item.target;
+          }
           if(item.stateInfo) {
             tempObj.stateName = item.stateInfo.name
             tempObj.stateId = item.stateInfo.id
