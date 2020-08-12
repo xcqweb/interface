@@ -243,6 +243,8 @@ export default{
       }else if(data.mutualType == 3) {
         action.effectAction = 'change'
         action.stateInfo = data.stateInfo
+      }else if(data.mutualType == 4) {
+        action.target = data.target
       }
       this.setActionInfos(action,data.isEdit)
     },

@@ -140,7 +140,8 @@ function actionOpen(action, mainProcess) {
     }
   } else if (action.mutualType === 4) { // 打开外部链接
     const url = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
-    window.location.href = url
+    // window.location.href = url
+    window.open(url, action.target)
   }
 }
 /**
