@@ -59,7 +59,7 @@ export default{
     inputCurrent(data) {
       this.openlinkUrl = data.id;
       if (data.type === 4) {
-        this.isOpenNewWindow = data.target
+        this.isOpenNewWindow = data.target ? data.target : this.isOpenNewWindow;
       }
       this.isEdit = true
     },
