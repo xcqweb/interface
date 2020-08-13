@@ -185,6 +185,13 @@ function setterRealData(res, fileSystem,mainProcess) {
               val = 0
             }
             options.series[0].data[0].value = val
+            options.tooltip =  {
+              trigger: "item",
+              formatter: params => {
+                const {data: {value, name}} = params;
+                return `${name}: ${value}`
+              }
+            }
           }
           echartsInstance.setOption(options)
         }
