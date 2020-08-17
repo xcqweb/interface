@@ -83,7 +83,7 @@
                   v-else
                   v-model="row.fixedValue"
                   style="min-width: 60px; max-width: 130px;"
-                  type="number"
+                  :type="row.logical=='3' || row.logical=='4' ? 'text':'number'"
                   size="small"
                 />
               </template>
