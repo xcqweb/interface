@@ -152,7 +152,7 @@ function setterRealData(res, fileSystem,mainProcess) {
         }
         target.css("background", background)
         target.animate({"width":`${percentVal * 100}%`})
-        textEl.html(text + dataUnit)
+        textEl.html(type === 'percent' ? text : text + dataUnit)
       }else if(shapeName.includes('Chart')) {
         let echartsInstance = echarts.getInstanceByDom($ele.find('.chart-con')[0])
         let options = echartsInstance.getOption()
