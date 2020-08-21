@@ -115,7 +115,10 @@ function setterRealData(res, fileSystem,mainProcess) {
       let bindType = $ele.data("bindType")
       let val = null
       let paramShowDefault = $ele.data("paramShowDefault")
-      let dataUnit = paramShowDefault.dataUnit || '';
+      let dataUnit;
+      if(paramShowDefault) {
+        dataUnit = paramShowDefault.dataUnit || '';
+      }
       if(shapeName == 'lineChart' && paramShowDefault) {
         $ele.data("paramShowDefault",dealDefaultParams(item.deviceId,paramShowDefault,$ele.data('subParams')))
         paramShowDefault = $ele.data("paramShowDefault")
@@ -151,7 +154,7 @@ function setterRealData(res, fileSystem,mainProcess) {
           background = "linear-gradient(to right,#FFF7B3,#FFEF17)"
         }
         target.css("background", background)
-        target.animate({"width":`${percentVal * 100}%`})
+        target.css({transition: 'all 0.8s',"width":`${percentVal * 100}%`})
         textEl.html(type === 'percent' ? text : text + dataUnit)
       }else if(shapeName.includes('Chart')) {
         let echartsInstance = echarts.getInstanceByDom($ele.find('.chart-con')[0])
@@ -469,7 +472,8 @@ function initialWs(ws, pageId, applyData, fileSystem,mainProcess) {
 //获取ws请求主机协议
 function getWsHost() {
   const host = location.host
-  return 'ws://' + (host.includes('localhost') || host.includes('127.0.0.1') ? 'kong.ele-iot.10.74.158.69.nip.io' : host)
+  // return 'ws://' + (host.includes('localhost') || host.includes('127.0.0.1') ? 'kong.ele-iot.10.74.158.69.nip.io' : host)
+  return 'ws://' + (host.includes('localhost') || host.includes('127.0.0.1') ? 'kong.ele-uat.10.74.152.23.nip.io' : host)
 }
 //实时数据
 function createWsReal(pageId, applyData, fileSystem,mainProcess) {

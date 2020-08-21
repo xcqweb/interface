@@ -30,7 +30,20 @@ class PreviewPage {
   }
   // 生成弹窗
   createDialog(page) {
+    let geDialogCon = document.getElementById('geDialogs')
+    const dialogCount = $(geDialogCon).data('count')
     let {id,title,xml} = page
+    const closeFun = ()=> {
+      $(geDialogCon).data('count',0)
+      removeEle($(`#${id}`)[0])
+      removeEle($(`#bg_${id}`)[0])
+      // 关闭websocket
+      destroyWs(applyData, id)
+    }
+    if(dialogCount) {// 如果有弹窗了，再点击就隐藏
+      closeFun()
+      return null
+    }
     const xmlDoc = mxUtils.parseXml(xml).documentElement
     let contentBgColor = xmlDoc.getAttribute('background')
     let contentWidth = xmlDoc.getAttribute('pageWidth')
@@ -47,7 +60,7 @@ class PreviewPage {
     let bg = document.createElement('div')
     bg.className = 'bg';
     bg.id = 'bg_' + id;
-    document.getElementById('geDialogs').appendChild(bg)
+    geDialogCon.appendChild(bg)
     let dialog = document.createElement('div');
     dialog.className = 'geDialog';
     dialog.style.width = contentWidth + 'px';
@@ -63,18 +76,17 @@ class PreviewPage {
     dialog.appendChild(titleEl)
     // 点击关闭弹窗
     titleEl.addEventListener('click', () => {
-      removeEle(dialog)
-      removeEle(bg)
-      // 关闭websocket
-      destroyWs(applyData, id)
-    })
+      closeFun()
+    })  
     // 弹窗正文
     let content = document.createElement('div')
 
     content.className = 'geDialogContent'
     content.style.cssText = `width:${contentWidth}px;height:${contentHeight}px;background:${contentBgColor};`
     dialog.appendChild(content)
-    document.getElementById('geDialogs').appendChild(dialog)
+    // 只能有一个弹窗
+    geDialogCon.appendChild(dialog)
+    $(geDialogCon).data('count',1)
     return content
   }
   // 解析所有控件节点
@@ -444,8 +456,10 @@ class PreviewPage {
     } else { //点弹窗关闭时候清空的内容和关闭ws连接
       // 弹窗页面
       let layerContent = this.createDialog(page)
-      layerContent.innerHTML = ''
-      this.renderPages(cells, layerContent)
+      if (layerContent) {
+        layerContent.innerHTML = ''
+        this.renderPages(cells, layerContent)
+      }
     }
     this.subscribeData()
     this.bindDeviceEleEvent()
