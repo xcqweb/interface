@@ -450,11 +450,9 @@ function dealCharts(mainProcess,cell) {
                 requestUtil.post(url, pentSdbParams).then(res => {
                   if (res && res.length) {
                     let xAxisData = []
+                    res = res.filter( item => item.paramId )
                     for(let i = 0;i < res.length;i++) {
                       let tempArr = res[i]
-                      if(!tempArr || !tempArr.paramId) {
-                        continue;
-                      }
                       let device = devices[i]
                       if(device) {
                         tempLegend.push(device.name)
