@@ -527,6 +527,13 @@ function dealCharts(mainProcess,cell) {
           }
           options.series.data = [{value: val, name: titleShow}]
           options.series.name = titleShow
+          options.tooltip =  {
+            trigger: "item",
+            formatter: params => {
+              const {data: {value, name}} = params;
+              return `${name}: ${value}`
+            }
+          }
           myEchart.setOption(options)
         }
       }else{

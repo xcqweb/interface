@@ -142,8 +142,8 @@ module.exports = {
     proxy: {
       "/api": {
         // target: "http://kong.ele-uat.10.74.152.23.nip.io/", //uat
-        target: 'http://kong.ele-iot.10.74.158.69.nip.io/', //tcl sit
-        // target: 'http://kong.csot-iot-sit.10.74.20.12.nip.io/',
+        // target: 'http://kong.ele-iot.10.74.158.69.nip.io/', //tcl sit
+        target: 'http://kong.ele-pro.10.126.72.71.nip.io/',
         changeOrigin: true,
       },
       "/wz": {
