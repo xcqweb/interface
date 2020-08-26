@@ -431,7 +431,11 @@ class PreviewPage {
   parsePage(page,fileSystemParam) {
     fileSystem = fileSystemParam
     if(this.previousPageId) {
-      this.previousPageId = this.currentPageId
+      let geDialogCon = document.getElementById('geDialogs')
+      const dialogCount = $(geDialogCon).data('count')
+      if(!dialogCount) {
+        this.previousPageId = this.currentPageId
+      }
     } else {
       this.previousPageId = page.id
     }
