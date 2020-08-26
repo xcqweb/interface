@@ -25,6 +25,7 @@ class PreviewPage {
     this.wsParams = []
     this.cachCells = []
     this.currentPageId = ''
+	this.previousPageId = ''
     this.mainProcess = mainProcess
     this.gePreview = gePreview
   }
@@ -37,6 +38,7 @@ class PreviewPage {
       $(geDialogCon).data('count',0)
       removeEle($(`#${id}`)[0])
       removeEle($(`#bg_${id}`)[0])
+	  this.currentPageId = this.previousPageId
       // 关闭websocket
       destroyWs(applyData, id)
     }
@@ -301,7 +303,7 @@ class PreviewPage {
                 })
               }
               const className = item.shapeName.includes('progress') || item.shapeName.includes('Chart') ? '' : 'param-show-node'
-              $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${cls}`)
+              $(`#palette_${item.id}_${this.currentPageId}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${cls}`)
             })
             if(params.length) {
               this.deviceParamGenerateFun(params)
@@ -428,6 +430,11 @@ class PreviewPage {
   // 解析页面
   parsePage(page,fileSystemParam) {
     fileSystem = fileSystemParam
+	if(this.previousPageId) {
+      this.previousPageId = this.currentPageId
+    } else {
+      this.previousPageId = page.id
+    }
     this.currentPageId = page.id
     const xmlDoc = mxUtils.parseXml(page.xml).documentElement
     let pageStyle = page.style
