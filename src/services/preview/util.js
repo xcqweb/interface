@@ -119,8 +119,9 @@ function insertEdge(cell) {
  */
 function actionShow(action, mainProcess) {
   if (action.innerType === 'palette') {
-    let hide = $('#palette_' + action.link).data('hide')
-    document.getElementById('palette_' + action.link).style.display = hide === 'true' ? 'block' : 'none'
+    let el = document.getElementById(`palette_${action.link}_${mainProcess.previewPag.currentPageId}`)
+    let hide = $(el).data('hide')
+    el.style.display = hide === 'true' ? 'block' : 'none'
   } else {
     mainProcess.renderPageFun(action.link)
   }
@@ -133,7 +134,7 @@ function actionOpen(action, mainProcess) {
   if (action.innerType === 'page') {
     // 打开页面
     const pageType = mainProcess.getPageType(action.link)
-    if (pageType === 'normal' && mainProcess.pageId !== action.link) {
+    if (pageType === 'normal' && mainProcess.previewPage.currentPageId !== action.link) {
       mainProcess.changePage(action.link,true)
     } else if (pageType === 'dialog') {
       mainProcess.renderPageFun(action.link)
@@ -147,12 +148,13 @@ function actionOpen(action, mainProcess) {
 /**
  * 关闭事件
  */
-function actionClose(action, applyData) {
-  if (action.innerType === 'page' && action.type === 'in' && document.getElementById(action.link)) {
+function actionClose(action, applyData,mainProcess) {
+  if (action.innerType === 'page' && document.getElementById(action.link)) {
     removeEle(document.getElementById(action.link));
     removeEle(document.getElementById('bg_' + action.link));
     //有浮窗在的隐藏浮窗
     hideFrameLayout()
+    mainProcess.previewPage.currentPageId = mainProcess.previewPage.previousPageId
     destroyWs(applyData,action.link);
   }
 }
@@ -168,25 +170,25 @@ function hideFrameLayout() {
  * 触发事件
  * @param {object} action 
  */
-function effectEvent(action, mainProcess, applyData, fileSystem) {
+function effectEvent(action, mainProcess, applyData, fileSystem,bindData) {
   switch (action.effectAction) {
     case 'show':
       actionShow(action, mainProcess)
       break;
     case 'hide':
-      actionHide(action, applyData)
+      actionHide(action, applyData,mainProcess)
       break;
     case 'open':
       actionOpen(action, mainProcess)
       break;
     case 'close':
-      actionClose(action, applyData)
+      actionClose(action, applyData,mainProcess)
       break;
     case 'change'://控件切换状态
-      actionChange(action, fileSystem)
+      actionChange(action, fileSystem,mainProcess)
       break;
     default:
-      break;
+	  break;
   }
 }
 /**
@@ -194,8 +196,8 @@ function effectEvent(action, mainProcess, applyData, fileSystem) {
  * @param {*} action 
  * @param {*} cellInfo 
  */
-function actionChange(action, fileSystem) {
-  let cellCon = document.getElementById('palette_' + action.link)
+function actionChange(action, fileSystem,mainProcess) {
+  let cellCon = document.getElementById(`palette_${action.link}_${mainProcess.previewPag.currentPageId}`)
   let shapeName = $(cellCon).data('shapeName')
   let {stateInfo} = action
   if (stateInfo.animateCls) {
@@ -236,14 +238,17 @@ function svgShape() {
 /**
  * 隐藏事件
  */
-function actionHide(action, applyData) {
+function actionHide(action, applyData,mainProcess) {
   if (action.innerType === 'palette') {
-    let hide = $('#palette_' + action.link).data('hide')
-    document.getElementById('palette_' + action.link).style.display = hide === 'true' ? 'block' : 'none'
+    let el = document.getElementById(`palette_${action.link}_${mainProcess.previewPag.currentPageId}`)
+    let hide = $(el).data('hide')
+    el.style.display = hide === 'true' ? 'block' : 'none'
   } else if (document.getElementById(action.link)) {
     removeEle(document.getElementById(action.link));
     removeEle(document.getElementById('bg_' + action.link));
     // 断开websocket
+    hideFrameLayout()
+    mainProcess.previewPage.currentPageId = mainProcess.previewPage.previousPageId
     destroyWs(applyData,action.link);
   }
 }

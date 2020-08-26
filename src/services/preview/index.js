@@ -17,8 +17,6 @@ class Main {
   constructor() {
     // 应用的页面信息
     this.previewPage = null
-    // 当前页面
-    this.pageId = null
     this.fileSystem = null
     this.menuStyle = null
     this.applyInfo = null
@@ -77,7 +75,6 @@ class Main {
         return
       }
     }
-    this.pageId = pageId
     // 渲染页面
     this.renderPageFun(pageId)
     if(!isAction) {
