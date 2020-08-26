@@ -119,7 +119,7 @@ function insertEdge(cell) {
  */
 function actionShow(action, mainProcess) {
   if (action.innerType === 'palette') {
-    let el = document.getElementById(`palette_${action.link}_${mainProcess.previewPag.currentPageId}`)
+    let el = document.getElementById(`palette_${action.link}_${mainProcess.previewPage.currentPageId}`)
     let hide = $(el).data('hide')
     el.style.display = hide === 'true' ? 'block' : 'none'
   } else {
@@ -197,7 +197,7 @@ function effectEvent(action, mainProcess, applyData, fileSystem,bindData) {
  * @param {*} cellInfo 
  */
 function actionChange(action, fileSystem,mainProcess) {
-  let cellCon = document.getElementById(`palette_${action.link}_${mainProcess.previewPag.currentPageId}`)
+  let cellCon = document.getElementById(`palette_${action.link}_${mainProcess.previewPage.currentPageId}`)
   let shapeName = $(cellCon).data('shapeName')
   let {stateInfo} = action
   if (stateInfo.animateCls) {
@@ -240,7 +240,7 @@ function svgShape() {
  */
 function actionHide(action, applyData,mainProcess) {
   if (action.innerType === 'palette') {
-    let el = document.getElementById(`palette_${action.link}_${mainProcess.previewPag.currentPageId}`)
+    let el = document.getElementById(`palette_${action.link}_${mainProcess.previewPage.currentPageId}`)
     let hide = $(el).data('hide')
     el.style.display = hide === 'true' ? 'block' : 'none'
   } else if (document.getElementById(action.link)) {
