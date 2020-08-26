@@ -170,7 +170,7 @@ function hideFrameLayout() {
  * 触发事件
  * @param {object} action 
  */
-function effectEvent(action, mainProcess, applyData, fileSystem,bindData) {
+function effectEvent(action, mainProcess, applyData, fileSystem) {
   switch (action.effectAction) {
     case 'show':
       actionShow(action, mainProcess)
@@ -188,7 +188,7 @@ function effectEvent(action, mainProcess, applyData, fileSystem,bindData) {
       actionChange(action, fileSystem,mainProcess)
       break;
     default:
-	  break;
+      break;
   }
 }
 /**

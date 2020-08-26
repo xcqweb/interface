@@ -25,7 +25,7 @@ class PreviewPage {
     this.wsParams = []
     this.cachCells = []
     this.currentPageId = ''
-	this.previousPageId = ''
+    this.previousPageId = ''
     this.mainProcess = mainProcess
     this.gePreview = gePreview
   }
@@ -38,7 +38,7 @@ class PreviewPage {
       $(geDialogCon).data('count',0)
       removeEle($(`#${id}`)[0])
       removeEle($(`#bg_${id}`)[0])
-	  this.currentPageId = this.previousPageId
+      this.currentPageId = this.previousPageId
       // 关闭websocket
       destroyWs(applyData, id)
     }
@@ -430,7 +430,7 @@ class PreviewPage {
   // 解析页面
   parsePage(page,fileSystemParam) {
     fileSystem = fileSystemParam
-	if(this.previousPageId) {
+    if(this.previousPageId) {
       this.previousPageId = this.currentPageId
     } else {
       this.previousPageId = page.id
