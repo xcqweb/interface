@@ -187,11 +187,8 @@ function effectEvent(action, mainProcess, applyData, fileSystem,bindData) {
     case 'change'://控件切换状态
       actionChange(action, fileSystem,mainProcess)
       break;
-    case 'send':// 下发指令
-      actionSend(action,mainProcess,bindData)
-      break;
     default:
-      break;
+	  break;
   }
 }
 /**
