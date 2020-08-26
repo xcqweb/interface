@@ -690,7 +690,7 @@ class PreviewPage {
     // 定位
     cellHtml.style.left = cell.x + 'px'
     cellHtml.style.top = cell.y + 'px'
-    cellHtml.id = `palette_${cell.id}`
+    cellHtml.id = `palette_${cell.id}_${this.currentPageId}`
     //判断菜单是否选中，未选中显示默认样式
     let menuCellPropsStr = cell.menuCellProps
     if(menuCellPropsStr) {
