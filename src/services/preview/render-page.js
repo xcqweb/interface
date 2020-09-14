@@ -515,7 +515,6 @@ class PreviewPage {
     $document.on('mouseenter', selector, function(event) {
       const $ele = $(this)
       const paramData = $ele.data('paramData')
-      console.dir($ele);
       formatLayerText(paramData)
       $ele.data('frameFlag', !!paramData)
       formatLayerShow(event)
