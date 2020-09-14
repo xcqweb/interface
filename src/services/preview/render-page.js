@@ -25,12 +25,27 @@ class PreviewPage {
     this.wsParams = []
     this.cachCells = []
     this.currentPageId = ''
+    this.previousPageId = ''
     this.mainProcess = mainProcess
     this.gePreview = gePreview
   }
   // 生成弹窗
   createDialog(page) {
+    let geDialogCon = document.getElementById('geDialogs')
+    const dialogCount = $(geDialogCon).data('count')
     let {id,title,xml} = page
+    const closeFun = ()=> {
+      $(geDialogCon).data('count',0)
+      removeEle($(`#${id}`)[0])
+      removeEle($(`#bg_${id}`)[0])
+      this.currentPageId = this.previousPageId
+      // 关闭websocket
+      destroyWs(applyData, id)
+    }
+    if(dialogCount) {// 如果有弹窗了，再点击就隐藏
+      closeFun()
+      return null
+    }
     const xmlDoc = mxUtils.parseXml(xml).documentElement
     let contentBgColor = xmlDoc.getAttribute('background')
     let contentWidth = xmlDoc.getAttribute('pageWidth')
@@ -47,7 +62,7 @@ class PreviewPage {
     let bg = document.createElement('div')
     bg.className = 'bg';
     bg.id = 'bg_' + id;
-    document.getElementById('geDialogs').appendChild(bg)
+    geDialogCon.appendChild(bg)
     let dialog = document.createElement('div');
     dialog.className = 'geDialog';
     dialog.style.width = contentWidth + 'px';
@@ -63,18 +78,17 @@ class PreviewPage {
     dialog.appendChild(titleEl)
     // 点击关闭弹窗
     titleEl.addEventListener('click', () => {
-      removeEle(dialog)
-      removeEle(bg)
-      // 关闭websocket
-      destroyWs(applyData, id)
-    })
+      closeFun()
+    })  
     // 弹窗正文
     let content = document.createElement('div')
 
     content.className = 'geDialogContent'
     content.style.cssText = `width:${contentWidth}px;height:${contentHeight}px;background:${contentBgColor};`
     dialog.appendChild(content)
-    document.getElementById('geDialogs').appendChild(dialog)
+    // 只能有一个弹窗
+    geDialogCon.appendChild(dialog)
+    $(geDialogCon).data('count',1)
     return content
   }
   // 解析所有控件节点
@@ -289,7 +303,7 @@ class PreviewPage {
                 })
               }
               const className = item.shapeName.includes('progress') || item.shapeName.includes('Chart') ? '' : 'param-show-node'
-              $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${cls}`)
+              $(`#palette_${item.id}_${this.currentPageId}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${cls}`)
             })
             if(params.length) {
               this.deviceParamGenerateFun(params)
@@ -416,6 +430,15 @@ class PreviewPage {
   // 解析页面
   parsePage(page,fileSystemParam) {
     fileSystem = fileSystemParam
+    if(this.previousPageId) {
+      let geDialogCon = document.getElementById('geDialogs')
+      const dialogCount = $(geDialogCon).data('count')
+      if(!dialogCount) {
+        this.previousPageId = this.currentPageId
+      }
+    } else {
+      this.previousPageId = page.id
+    }
     this.currentPageId = page.id
     const xmlDoc = mxUtils.parseXml(page.xml).documentElement
     let pageStyle = page.style
@@ -444,8 +467,10 @@ class PreviewPage {
     } else { //点弹窗关闭时候清空的内容和关闭ws连接
       // 弹窗页面
       let layerContent = this.createDialog(page)
-      layerContent.innerHTML = ''
-      this.renderPages(cells, layerContent)
+      if (layerContent) {
+        layerContent.innerHTML = ''
+        this.renderPages(cells, layerContent)
+      }
     }
     this.subscribeData()
     this.bindDeviceEleEvent()
@@ -669,7 +694,7 @@ class PreviewPage {
     // 定位
     cellHtml.style.left = cell.x + 'px'
     cellHtml.style.top = cell.y + 'px'
-    cellHtml.id = `palette_${cell.id}`
+    cellHtml.id = `palette_${cell.id}_${this.currentPageId}`
     //判断菜单是否选中，未选中显示默认样式
     let menuCellPropsStr = cell.menuCellProps
     if(menuCellPropsStr) {
