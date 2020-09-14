@@ -311,20 +311,20 @@ class PreviewPage {
     const dealFun = (targetArr)=>{
       let resParam = [],maps = new Map()
       targetArr.forEach(item=>{
-        let tempArr = []
-        if (maps.has(item.deviceId + '-' + item.bindType)) {
-          tempArr =  maps.get(item.deviceId + '-' + item.bindType)
-          if(item.bindType) { // 统计或预测应用
-            tempArr.push(item.bindType == 1 ? item.paramName : item.paramId)
+        let tempArr = [],bindType = item.bindType || 0
+        if (maps.has(item.deviceId + '-' + bindType)) {
+          tempArr =  maps.get(item.deviceId + '-' + bindType)
+          if(bindType) { // 统计或预测应用
+            tempArr.push(bindType == 1 ? item.paramName : item.paramId)
           } else {
             tempArr.push(item.deviceParamId)
           }
-          maps.set(item.deviceId + '-' + (item.bindType || 0),Array.from(new Set(tempArr)))
+          maps.set(item.deviceId + '-' + bindType,Array.from(new Set(tempArr)))
         }else{
-          if(item.bindType) { // 统计或预测应用
-            maps.set(item.deviceId + '-' + item.bindType, item.bindType == 1 ? [item.paramName] : [item.paramId])
+          if(bindType) { // 统计或预测应用
+            maps.set(item.deviceId + '-' + bindType, bindType == 1 ? [item.paramName] : [item.paramId])
           } else {
-            maps.set(item.deviceId + '-' + (item.bindType || 0), [item.deviceParamId])
+            maps.set(item.deviceId + '-' + bindType, [item.deviceParamId])
           }
         }
       })

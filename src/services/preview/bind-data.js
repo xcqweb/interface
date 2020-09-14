@@ -115,12 +115,13 @@ function setterRealData(res, fileSystem,mainProcess) {
       let bindType = $ele.data("bindType")
       let val = null
       let paramShowDefault = $ele.data("paramShowDefault")
-      let dataUnit = paramShowDefault.dataUnit || '';
+      let dataUnit = ''
       if(shapeName == 'lineChart' && paramShowDefault) {
         $ele.data("paramShowDefault",dealDefaultParams(item.deviceId,paramShowDefault,$ele.data('subParams')))
         paramShowDefault = $ele.data("paramShowDefault")
       }
       if (paramShowDefault) {
+        dataUnit = paramShowDefault.dataUnit || ''
         if(bindType == 1) {
           val = item[paramShowDefault.paramName]
         } else if(bindType == 2) {
