@@ -616,7 +616,7 @@ Sidebar.prototype.addWidgetNameShow = function() {
         shapeScrollTopHeight = parseInt($(".geSidebarContainer-bottom").scrollTop())
     })
     // 鼠标滑过 悬浮控件名字
-    let controlName = ['text', 'beeline', 'rectangle', 'ellipse', 'menulist', 'button', 'tableBox', 'image', 'light', 'pipeline1', 'progress', 'pipeline2', 'pipeline3', 'linkTag', 'lineChart', 'gaugeChart','triangle','pentagram','buttonSwitch']
+    let controlName = ['text', 'beeline', 'rectangle', 'ellipse', 'menulist', 'button', 'tableBox', 'image', 'light', 'pipeline1', 'progress', 'pipeline2', 'pipeline3', 'linkTag', 'lineChart', 'gaugeChart','triangle','pentagram','buttonSwitch', 'status']
     let controlNameText = {
         'text': mxResources.get('text'),
         'beeline': mxResources.get('beeline'),
@@ -636,7 +636,8 @@ Sidebar.prototype.addWidgetNameShow = function() {
         'gaugeChart': mxResources.get('gaugeChart'),
         'triangle':mxResources.get('triangle'),
         'pentagram':mxResources.get('pentagram'),
-        'buttonSwitch':mxResources.get('buttonSwitch'),
+        'buttonSwitch': mxResources.get('buttonSwitch'),
+        'status': mxResources.get('status'),
     }
     $('.geSidebarContainer-bottom').on('mouseenter', '.geSidebar>a', function (evt) {
         evt.preventDefault()
@@ -787,6 +788,8 @@ Sidebar.prototype.addGeneralPalette = function()
         this.createVertexTemplateEntry('shape=triangle;triangle;whiteSpace=wrap;strokeColor=#000;html=1;', 60, 80, '', '三角形', null, null, '三角形'),
         // 控制开关
         // this.createVertexTemplateEntry('shape=buttonSwitch;labelPosition=center;verticalLabelPosition=middle;align=center;html=1;dx=10;fillColor=#E6E6E6;strokeColor=none;', 70, 40, '<div style="display: inline-block;text-align:inherit;text-decoration: inherit;">switch</div>', '控制开关')
+        // 数据源状态
+        this.createVertexTemplateEntry('shape=status;html=1;strokeColor=#33CC66;fillColor=none;verticalAlign=middle;align=center;', 70, 30, '<div style="display:inline-block;text-align:inherit;text-decoration: inherit;color: #33CC66"><i style="display: inline-block;width:10px;height:10px;border-radius: 10px;background:#33CC66; margin-right: 5px;vertical-align:middle"></i><span>在线</span></div>', '状态'),
       ];
     return fns
 };

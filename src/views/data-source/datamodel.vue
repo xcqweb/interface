@@ -25,6 +25,7 @@
       v-model="showForm"
       class="device-data"
       :title="$t('dataSource.models')"
+      :from-text="0"
       :width="200"
       :device-model-id="model.deviceModelId"
       :device-type-id="model.deviceTypeId"
@@ -37,6 +38,7 @@
       ref="edit"
       v-model="showForm"
       :data="editModel"
+      :from-text="0"
       class="device-data flex-full-item"
       :device-model-id="model.deviceModelId"
     />
@@ -62,6 +64,9 @@ export default {
       editModel: null,
       showForm: false,
     };
+  },
+  mounted() {
+    this.getStudioDeviceData();
   },
   methods: {
     handleTypeClick(item) {

@@ -15,6 +15,7 @@
       v-model="showForm"
       class="device-data"
       :title="$t('dataSource.models')"
+      :from-text="1"
       :width="200"
       :device-model-id="applyObj.forecastId"
       @on-edit="handleEditModel"
@@ -26,8 +27,10 @@
       ref="edit"
       v-model="showForm"
       :data="editModel"
+      :from-text="1"
       class="device-data flex-full-item"
       :device-model-id="model.deviceModelId"
+      :app-id="applyObj.forecastId"
     />
   </div>
 </template>
@@ -52,9 +55,19 @@ export default {
       showForm: false,
     };
   },
+  watch: {
+    predData(val) {
+      if (val.length) {
+        this.applyObj.forecastId = val[0].appId
+      }
+    },
+  },
+  async mounted() {
+    await this.getPredictionData();
+  },
   methods: {
     handleTypeClick(item) {
-      this.applyObj.forecastId = item.forecastId;
+      this.applyObj.forecastId = item.appId;
     },
     handleEditModel(model = null) {
       this.editModel = model;

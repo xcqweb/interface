@@ -216,12 +216,21 @@ export default{
         this.$refs.change.addInit()
       }
     },
+    clearComand() {
+      let graph = this.myEditorUi.editor.graph
+      const actions = this.getActions(graph)
+      const res = actions.find(item=>item.mutualType == 5)
+      if(res) {
+        this.removeActions(res.id,null) // 移除指令
+      }
+    },
     editEventDone(data) {
       this.isEdit = false
       if(!data) {
         return
       }
       let action = {
+        "type":"in",
         "link":"",
         "mutualType":1,//交互类型
         "innerType":"page",
@@ -356,9 +365,6 @@ export default{
       modelInfo.setAttribute('actionsInfo', JSON.stringify(actions))
       graph.getModel().setValue(cell, modelInfo)
     },
-    clearComand() {
-
-    },
     removeEvent(event,index,evet) {
       evet.stopPropagation()
       sureDialog(this.myEditorUi,`${this.$t("rightBar.sureToDelActions")}${index + 1}`,()=>{
@@ -376,7 +382,7 @@ export default{
           break;
         }
       }
-      if(stateInfo) { //删除交互为状态切换时候，将绑定的状态置为false
+      if(stateInfo) { //删除交互为状态('切换') 时候，将绑定的状态置为false
         let graph = this.myEditorUi.editor.graph
         let states = this.getStates(graph)
         for(let i = 0;i < states.length;i++) {

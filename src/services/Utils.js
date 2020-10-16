@@ -23,24 +23,22 @@ const getDomain = () => {
  * @param {string} cname cookie的key值
  */
 let getCookie=function(cname) {
-    const strcookie = document.cookie;//获取cookie字符串
-    const arrcookie = strcookie.split("; ");//分割
-    //遍历匹配
-    for ( let i = 0; i < arrcookie.length; i++) {
-        let arr = arrcookie[i].split("=");
-        if (arr[0] == cname){
-            return arr[1];
-        }
-    }
-    return "";
+    const name = cname + '=';
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {c = c.substring(1); }
+        if (c.indexOf(name) !== -1) {return c.substring(name.length, c.length); }
+    }
+    return '';
 }
 /**
  * 设置cookie信息
  */
-let setCookie=function(cname, value, expiredays = null, domain = window.location.hostname) {
+let setCookie=function(cname, value, expiredays = null) {
     const exdate = new Date();
     exdate.setDate(exdate.getDate() + expiredays);
-    document.cookie = cname + '=' + escape(value) + ((expiredays == null) ? '' : ';expires=' + exdate.toUTCString()) + ';domain=' + domain + ';path=/;';
+    document.cookie = cname + '=' + escape(value) + ((expiredays == null) ? '' : ';expires=' + exdate.toUTCString()) + ';domain=' + getDomain() + ';path=/;';
 }
 function throttle(func, wait, options) {
   /* options的默认值

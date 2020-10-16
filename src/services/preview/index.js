@@ -33,6 +33,7 @@ class Main {
     let gePreview = document.getElementById('gePreview')
     let id = getQueryVariable('id')
     let deviceId = getQueryVariable('deviceId')
+    let deviceName = getQueryVariable('deviceName')
     if (!id) {
       return
     }
@@ -47,6 +48,7 @@ class Main {
     let refreshToken = getCookie('refreshToken')
     if(deviceId) { //组态模板
       this.applyInfo.deviceId = deviceId
+      this.applyInfo.deviceName = deviceName
     }
     if ((!token || !refreshToken) && this.applyInfo.status === 0) { //未登录且应用未发布的情况下
       let notPublishImg = './static/images/apply_not_publish.png'

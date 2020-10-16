@@ -637,6 +637,10 @@ Editor.prototype.palettesInfo = {
     buttonSwitch:{
         name:'控制开关',
         num:0,
+    },
+    status: {
+        name: '状态',
+        num: 0,
     }
 }
 /**

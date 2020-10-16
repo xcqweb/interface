@@ -9,8 +9,8 @@ export default {
       deviceObj: {},
       studioId: '',
       applyObj: {
-        forecastId: '', // 预测
-        appId: '', // 统计
+        forecastId: '', // 棰勬祴
+        appId: '', // 缁熻
       },
     };
   },
@@ -43,14 +43,12 @@ export default {
     },
     predData() {
       const predData = this.$store.state.datasource.predData;
-      console.log(predData)
       if (predData.length > 0) {
         const type = predData[0];
         this.applyObj.forecastId = type.appId;
       } else {
         this.applyObj.forecastId = '';
       }
-      console.log(this.applyObj);
       return predData;
     },
     statiData() {
@@ -77,7 +75,7 @@ export default {
       };
       this.$store.dispatch('loadStudioDevices', params);
     },
-    getPredictionData() { // 预测应用
+    getPredictionData() { // 棰勬祴鏁版嵁
       if (!this.studioId) {
         return;
       }
@@ -87,7 +85,7 @@ export default {
       };
       this.$store.dispatch('loadStudioPredictionApp', params);
     },
-    getStatisticData() { // 统计应用
+    getStatisticData() { // 缁熻鏁版嵁
       if (!this.studioId) {
         return;
       }

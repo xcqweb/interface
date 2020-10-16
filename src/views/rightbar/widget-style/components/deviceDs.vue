@@ -63,10 +63,12 @@
       >
         <div
           v-if="deviceData.length"
+          style="height:100%;"
         >
           <CheckboxGroup
             v-model="checkModelArr"
             class="devicename-listUl"
+            style="height:100%;overflow:hidden auto;"
             @on-change="checkAllGroupChange"
           >
             <Checkbox
@@ -112,7 +114,7 @@ import NoData from '../../../data-source/nodata'
 import DatasourceStore from '../../../data-source/js/datasource-store'
 import {Button,Checkbox,Message,Select,Option, CheckboxGroup,Input} from 'iview'
 
-const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart','triangle','pentagram']
+const singleDeviceName = ['image','userimage','tableCell','rectangle','ellipse','light','progress','gaugeChart','triangle','pentagram', 'status']
 //lineChart 多设备 多参数 gaugeChart 单设备 多参数
 export default{
   components: {
@@ -234,7 +236,6 @@ export default{
           bindData = JSON.parse(bindAttr)
         }
       }
-      console.log(bindData)
       return bindData
     },
     checkAllGroupChange(data) {
@@ -268,10 +269,7 @@ export default{
       }
       .devicename-list-wrap{
         background: #fff;
-        height:100%;
-        max-height:calc(100% - 24px);
-        overflow-y: auto;
-        overflow-x:hidden;
+        height: calc(100% - 24px);
         .devicename-listUl{
           label{
             width:100%;
@@ -296,7 +294,6 @@ export default{
       }
     }
     .data-sources-bottom{
-      height:100px;
       padding-top:12px;
       button{
         height:24px;

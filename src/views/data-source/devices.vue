@@ -247,7 +247,7 @@ export default {
       });
     },
     handlePageChange(pageIndex) {
-      this.pageParams.current = pageIndex;
+      this.pageParams.current = pageIndex; 
       this.getDevices();
     },
     handlePageSizeChange(pageSize) {
@@ -292,19 +292,19 @@ export default {
         return;
       }
       this.loading = true;
-      // const list = [];
-      let studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-      const studioDevs = this.selectedItems.map(item => {
-        return{
+      const list = [];
+      const studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
+      this.selectedItems.forEach(item => {
+        list.push({
           studioId,
           deviceId: item.deviceId,
           deviceModelId: item.deviceModelId,
           deviceTypeId: item.deviceTypeId,
-        }
-      })
+        });
+      });
       const params = {
-        appDataSources: [],
-        studioDevs,
+        appDataSources:[],
+        studioDevs:list
       }
       this.requestUtil.post('api/iot-cds/cds/configDevice', params).then(() => {
         this.loading = false;

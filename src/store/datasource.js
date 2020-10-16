@@ -61,6 +61,8 @@ const actions = {
             id: item.id,
             deviceId: item.deviceId,
             deviceName: item.deviceName,
+            serialNumber: item.serialNumber,
+            locationNamePath: item.locationNamePath
           });
         });
       }
@@ -70,9 +72,6 @@ const actions = {
     })
   },
   loadStudioPredictionApp({commit}, params) {
-    // const predData = [];
-    // console.log(params);
-    // commit('setPredData', predData);
     requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
       let predData = [];
       const data = res.returnObj;
@@ -80,26 +79,20 @@ const actions = {
         data.forEach(item => {
           predData.push({
             appId: item.appId,
-            appName: item.appName || '青哥',
+            appName: item.appName,
+            id: item.id,
+            mfaKey: item.mfaKey,
           });
         });
       }
-      // predData = [
-      //   {
-      //     appId: '1',
-      //     appName: '青哥'
-      //   },
-      // ]
       commit('setPredData', predData);
     });
 
   },
   loadStudioStatisticApp({commit}, params) {
-    console.log(params)
     const statiData = [];
     commit('setPredData', statiData);
     requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
-      // const commit('setStatiData', statiData);
       const statiData = [];
       const data = res.returnObj;
       if (data) {
@@ -107,6 +100,7 @@ const actions = {
           statiData.push({
             appId: item.appId,
             appName: item.appName,
+            id: item.id,
           });
         });
       }

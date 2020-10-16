@@ -66,4 +66,5 @@ inputText=Input text
 collapseExpand=Collapse/Expand
 triangle=Triangle
 pentagram=Pentagram
+status=status
 buttonSwitch=Button switch

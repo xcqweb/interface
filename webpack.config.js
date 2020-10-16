@@ -142,8 +142,8 @@ module.exports = {
     proxy: {
       "/api": {
         //target: "http://10.74.20.25",
-        target: "http://kong.csot-iot-sit.10.74.20.12.nip.io/",
-        // target: 'http://kong.iot-show.10.74.20.118.nip.io/',
+        // target: "http://kong.ele-iot.10.74.158.69.nip.io/",
+        target: 'http://iiot.getech.cn:8090/',
         changeOrigin: true
         // "pathRewrite": {"^/api": "/api"}
         // "pathRewrite": {"^/api": ""}

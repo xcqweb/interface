@@ -66,5 +66,6 @@ inputText=输入文本
 collapseExpand=收起/展开
 triangle=三角形
 pentagram=五角星
+status=状态
 buttonSwitch=控制开关
 

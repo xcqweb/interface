@@ -4,6 +4,10 @@
 // websocket信息
 let applyData = {}
 let fileSystem //文件服务器host
+window.unReadNumberTm = null
+window.unReadCountTime = 10000 // 10秒钟轮询一次 
+let onlineColor = '#33CC66'
+let onworkColor = '#A4AFB4'
 // 默认样式
 const defaultStyle = {align:'center',verticalAlign:'middle',strokeColor:'#000000',fillColor:'#FFFFFF',fontSize:'12px',fontWeight:'normal'}
 
@@ -23,7 +27,8 @@ class PreviewPage {
     this.deviceId = data.deviceId
     this.pagesRank = parseContent.rank
     this.wsParams = []
-    this.cachCells = []
+    this.cachCells = [] //保存绑定有状态模型的控件，需要拿到里面的参数去订阅数据
+    this.statusCells = [] // 组态模板的情况下，绑定的模型里面的参数，没有deviceParamId，需要去处理下下
     this.emptyDeviceParamIds = []
     this.currentPageId = ''
     this.mainProcess = mainProcess
@@ -31,7 +36,20 @@ class PreviewPage {
   }
   // 生成弹窗
   createDialog(page) {
+    let geDialogCon = document.getElementById('geDialogs')
+    const dialogCount = $(geDialogCon).data('count')
     let {id,title,xml} = page
+    const closeFun = ()=> {
+      $(geDialogCon).data('count',0)
+      removeEle($(`#${id}`)[0])
+      removeEle($(`#bg_${id}`)[0])
+      // 关闭websocket
+      destroyWs(applyData, id)
+    }
+    if(dialogCount) {// 如果有弹窗了，再点击就隐藏
+      closeFun()
+      return null
+    }
     const xmlDoc = mxUtils.parseXml(xml).documentElement
     let contentBgColor = xmlDoc.getAttribute('background')
     let contentWidth = xmlDoc.getAttribute('pageWidth')
@@ -48,7 +66,7 @@ class PreviewPage {
     let bg = document.createElement('div')
     bg.className = 'bg';
     bg.id = 'bg_' + id;
-    document.getElementById('geDialogs').appendChild(bg)
+    geDialogCon.appendChild(bg)
     let dialog = document.createElement('div');
     dialog.className = 'geDialog';
     dialog.style.width = contentWidth + 'px';
@@ -64,18 +82,17 @@ class PreviewPage {
     dialog.appendChild(titleEl)
     // 点击关闭弹窗
     titleEl.addEventListener('click', () => {
-      removeEle(dialog)
-      removeEle(bg)
-      // 关闭websocket
-      destroyWs(applyData, id)
-    })
+      closeFun()
+    })  
     // 弹窗正文
     let content = document.createElement('div')
 
     content.className = 'geDialogContent'
     content.style.cssText = `width:${contentWidth}px;height:${contentHeight}px;background:${contentBgColor};`
     dialog.appendChild(content)
-    document.getElementById('geDialogs').appendChild(dialog)
+    // 只能有一个弹窗
+    geDialogCon.appendChild(dialog)
+    $(geDialogCon).data('count',1)
     return content
   }
   // 解析所有控件节点
@@ -219,7 +236,7 @@ class PreviewPage {
           } else if (shapeName == 'menuCell') {
             let menuCellProps = item.getAttribute('menuCellProps')
             obj.menuCellProps = menuCellProps
-          }else if(shapeName.includes('image')) { // 图片的默认填充色为透明
+          }else if(['image','userimage','light'].includes(shapeName)) { // 图片的默认填充色为透明
             obj.fillColor = "transparent"
           }
           // 组合节点
@@ -235,9 +252,11 @@ class PreviewPage {
   // 清空页面内容
   clearPage(pageType) {
     this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
-    this.cachCells = [] //绑定了状态、模型的控件，拿到模型里面的参数的deviceParamId去订阅数据
-    this.emptyDeviceParamIds = [] // 组态模板没有deviceParamId的情况
+    this.cachCells = []
+    this.statusCells = []
+    this.emptyDeviceParamIds = [] 
     this.mainProcess.realData = []
+    clearInterval(window.unReadNumberTm)
     if (pageType == 'normal') {
       for (let key in applyData) {
         destroyWs(applyData, key)
@@ -251,25 +270,16 @@ class PreviewPage {
   }
   subscribeData() {
     if (this.cachCells.length) {
-      let modelIdsParam = new Map()
       let allModels = new Map()
+      let modelAllIds = []
       this.cachCells.forEach(item=>{
-        let deviceId = this.deviceId || item.bindData.dataSource.deviceNameChild.id
         let statesInfo = item.statesInfo
-        let tempArr = []
         statesInfo.forEach((d) => {
           if (d.modelFormInfo) {
-            tempArr.push(d.modelFormInfo)
+            modelAllIds.push(d.modelFormInfo)
           }
         })
-        if(tempArr.length) {
-          modelIdsParam.set(tempArr.join("_"), deviceId)
-        }
       })
-      let modelAllIds = []
-      for (let key of modelIdsParam.keys()) {
-        modelAllIds = modelAllIds.concat(key.split("_"))
-      }
       modelAllIds = Array.from(new Set(modelAllIds))
       if(modelAllIds.length) {
         requestUtil.post(urls.getModelByIds.url, modelAllIds).then((res) => {
@@ -278,7 +288,7 @@ class PreviewPage {
             res.returnObj.forEach(item=>{
               allModels.set(item.sourceId,item)
               if (item.formula) {
-                params = params.concat((this.dealModelFormulaFun(modelIdsParam,item.sourceId,item.formula)))
+                params = params.concat((this.dealModelFormulaFun(item.sourceId,item.formula)))
               }
             })
             this.cachCells.forEach(item=>{
@@ -295,30 +305,20 @@ class PreviewPage {
                 })
               }
               const className = item.shapeName.includes('progress') || item.shapeName.includes('Chart') ? '' : 'param-show-node'
-              $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId}`)
+              $(`#palette_${item.id}`).data("stateModels", cellStateInfoHasModel).addClass(`${className} device_${deviceId  }`)
             })
             if(params.length) {
-              if(this.emptyDeviceParamIds.length) { //连接上组态模板的情况(没有deviceParamId)，也需要去处理
-                params = params.concat(this.emptyDeviceParamIds)
-              }
               this.deviceParamGenerateFun(params)
             }else{
-              this.subscribeDataDeal2()
+              this.subscribeDataDeal()
             }
           }
         },()=>{
-          this.subscribeDataDeal2()
+          this.subscribeDataDeal()
         })
       }else{
-        this.subscribeDataDeal2()
+        this.subscribeDataDeal()
       }
-    }else{
-      this.subscribeDataDeal2()
-    }
-  }
-  subscribeDataDeal2() {
-    if(this.emptyDeviceParamIds.length) { 
-      this.deviceParamGenerateFun(this.emptyDeviceParamIds)
     }else{
       this.subscribeDataDeal()
     }
@@ -348,6 +348,7 @@ class PreviewPage {
                   }
                 }
               })
+              $(ele).data('paramShow',paramShow)
             }
           })
         }
@@ -363,39 +364,41 @@ class PreviewPage {
       this.subscribeDataDeal()
     })
   }
-  dealModelFormulaFun(modelIdsParam,modelId,formula) {
+  dealModelFormulaFun(modelId,formula) {//拿到模型里面的绑定的参数去订阅
     let formulaAttr = JSON.parse(formula)
     let res = []
-    let deviceId
-    for (let key of modelIdsParam.keys()) {
-      let tempArr = key.split("_")
-      let resIndex = tempArr.findIndex((item)=>{
-        return item == modelId
-      })
-      if (resIndex != -1) {
-        deviceId = modelIdsParam.get(key)
-        break
-      }
-    }
-    formulaAttr.data.forEach(item=>{
-      let tempKey = item.key
-      if(tempKey) {
-        let keyArr = tempKey.split('/')
-        let partId = null
-        if(keyArr.length > 2) {
-          partId = keyArr[1]
+    for(let i = 0;i < this.cachCells.length;i++) {
+      let statesInfo = this.cachCells[i].statesInfo
+      let deviceId = null
+      for(let j = 0;j < statesInfo.length;j++) {
+        if (statesInfo[j].modelFormInfo === modelId) {
+          deviceId = this.deviceId || this.cachCells[i].bindData.dataSource.deviceNameChild.id
+          break
         }
-        res.push({
-          paramType: keyArr[0] == 'device' ? 0 : 1,
-          deviceId: deviceId,
-          partId: partId,
-          paramId: keyArr[keyArr.length - 1]
+      }
+      if(deviceId) {
+        formulaAttr.data.forEach(item=>{
+          let tempKey = item.key
+          if(tempKey) {
+            let keyArr = tempKey.split('/')
+            let partId = null
+            if(keyArr.length > 2) {
+              partId = keyArr[1]
+            }
+            res.push({
+              paramType: keyArr[0] == 'device' ? 0 : 1,
+              deviceId: deviceId,
+              partId: partId,
+              paramId: keyArr[keyArr.length - 1],
+              paramName: item.paramName
+            })
+          }
         })
       }
-    })
+    }
     return res
   }
-  subscribeDataDeal(res) { 
+  subscribeDataDeal(res) {
     if(res && res.length) {
       this.wsParams = this.wsParams.concat(res)
     }
@@ -412,7 +415,7 @@ class PreviewPage {
     }
   }
   // 解析页面
-  parsePage(page,fileSystemParam) {
+  parsePage(page, fileSystemParam) {
     fileSystem = fileSystemParam
     this.currentPageId = page.id
     const xmlDoc = mxUtils.parseXml(page.xml).documentElement
@@ -442,12 +445,46 @@ class PreviewPage {
     } else { //点弹窗关闭时候清空的内容和关闭ws连接
       // 弹窗页面
       let layerContent = this.createDialog(page)
-      layerContent.innerHTML = ''
-      this.renderPages(cells, layerContent)
+      if(layerContent) {
+        layerContent.innerHTML = ''
+        this.renderPages(cells, layerContent)
+      }
     }
     this.subscribeData()
     this.bindDeviceEleEvent()
+    this.getDataSource()
+    window.unReadNumberTm = setInterval(this.getDataSource.bind(this), window.unReadCountTime);
     return cells
+  }
+  /*
+  **默认页面上只有一个数据源状态控件
+  * status: 0 1 2 (在线 离线 未工作) -> 【0, 1 2 (在线 离线 离线)】
+  */
+  getDataSource() {
+    if (this.statusCells.length) {
+      let deviceId = ''
+      let cell = this.statusCells[0]
+      if(cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild) {
+        deviceId = cell.bindData.dataSource.deviceNameChild.id
+      }else {
+        deviceId = this.deviceId
+      }
+      requestUtil.get(`${urls.getDataSource.url}/${deviceId}`).then((res) => {
+        const status = res.length > 0 ? res[0].status : '';
+        let els = document.querySelector(`.deviceStatus_${deviceId}`)
+        if ([1, 2].includes(status)) { // 离线
+          els.children[0].style.color = onworkColor;
+          els.children[0].children[0].style.backgroundColor = onworkColor;
+          els.children[0].children[1].innerHTML = '离线';
+          els.style.borderColor = onworkColor;
+        } else if (status === 0) { // 在线
+          els.children[0].style.color = onlineColor;
+          els.children[0].children[0].style.backgroundColor = onlineColor;
+          els.children[0].children[1].innerHTML = '在线';
+          els.style.borderColor = onlineColor;
+        }
+      });
+    }
   }
   // 设备绑定mouse事件
   bindDeviceEleEvent() {
@@ -502,6 +539,9 @@ class PreviewPage {
       if (cell.children.length) {
         this.renderPages(cell.children, cellHtml)
       }
+    }
+    if (this.emptyDeviceParamIds.length > 0) {
+      this.deviceParamGenerateFun(this.emptyDeviceParamIds)
     }
   }
 
@@ -578,7 +618,7 @@ class PreviewPage {
     } else if (shapeName.includes('pipeline')) {
       cellHtml = dealPipeline(cell)
     } else if (shapeName.includes('Chart')) {
-      cellHtml =  dealCharts(this.mainProcess,cell)
+      cellHtml =  dealCharts(this.mainProcess,cell,this)
       cellHtml.style.display = 'block'
     } else if (shapeName == 'light') {
       cellHtml = dealLight(cell)
@@ -612,7 +652,7 @@ class PreviewPage {
         cellHtml.style.justifyContent = 'center'
       }
     }
-    if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress','triangle','pentagram','buttonSwitch'].includes(shapeName)) {
+    if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress','triangle','pentagram','buttonSwitch', 'status'].includes(shapeName)) {
       cellHtml.style.backgroundColor = 'transparent'
     }else{
       if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none') && shapeName != 'tableBox') {
@@ -642,6 +682,7 @@ class PreviewPage {
         cellHtml.style.border = "none"
       }
     }
+    
     cellHtml.className = 'gePalette'
     // 隐藏
     if (cell.hide == 'true') {
@@ -676,7 +717,20 @@ class PreviewPage {
     // 绑定事件
     $(cellHtml).data('hide',cell.hide)
     $(cellHtml).data("shapeName",shapeName)
-    bindEvent(cellHtml, cell, this.mainProcess, applyData,fileSystem)
+    bindEvent(cellHtml, cell, this.mainProcess, applyData, fileSystem)
+    // 单独处理 状态控件 绑定device_id
+    if (shapeName === 'status') {
+      let deviceId = ''
+      if(cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild) {
+        deviceId = cell.bindData.dataSource.deviceNameChild.id
+      }else {
+        deviceId = this.deviceId
+      }
+      cellHtml.classList.add(`deviceStatus_${deviceId}`)
+      if (deviceId) {
+        this.statusCells.push(cell)
+      }
+    }
     if (cell.bindData && cell.bindData.dataSource && cell.bindData.dataSource.deviceNameChild || this.deviceId) {
       let paramShow = []
       let device = cell.bindData ? (cell.bindData.dataSource.deviceNameChild ? cell.bindData.dataSource.deviceNameChild : '') : ''
@@ -712,11 +766,10 @@ class PreviewPage {
     return cellHtml
   }
   initWsParams(cellHtml, device, paramShow,shapeName,subParams) {
-    let deviceId
-    if(shapeName === 'lineChart' && !this.deviceId) { // 不是设备模板的情况
+    let deviceId = this.deviceId || device.id
+    if(shapeName === 'lineChart' && !this.deviceId) {
       this.dealLineChartWsParams(cellHtml,device,subParams)
     } else{
-      deviceId = this.deviceId || device.id
       cellHtml.classList.add(`device_${deviceId}`)
     }
     if(deviceId) {

@@ -19,25 +19,27 @@
         class="devicename-list-wrap"
       >
         <div
-          v-if="deviceData.length"
+          v-if="predData.length"
+          style="height:100%;"
         >
           <CheckboxGroup
             v-model="checkModelArr"
             class="devicename-listUl"
+            style="height:100%;overflow:hidden auto;"
             @on-change="checkAllGroupChange"
           >
             <Checkbox
-              v-for="(item) in deviceData"
-              v-show="!dName || item.deviceName.toUpperCase().includes(dName.toUpperCase())"
-              :key="item.deviceId"
-              :label="item.deviceId"
+              v-for="(item) in predData"
+              v-show="!dName || item.appName.toUpperCase().includes(dName.toUpperCase())"
+              :key="item.appId"
+              :label="item.appId"
               size="small"
             >
               <span 
-                :title="item.deviceName" 
-                style="display:inline-block;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;"
+                :title="item.appName" 
+                style="display:inline-block;overflow:hidden;text-overflow: ellipsis;white-space: nowrap;width: calc(100% - 24px);"
               >
-                {{ item.deviceName }}
+                {{ item.appName }}
               </span>
             </Checkbox>
           </CheckboxGroup>
@@ -109,11 +111,11 @@ export default{
       this.checkModelArr = []
     },
     init() {
-      this.getStudioDeviceData()
+      this.getPredictionData()
       this.bindData =  this.getCellModelInfo('bindData')
-      if(this.bindData && this.bindData.dataSource) {
-        this.model.deviceModelId = this.bindData.dataSource.deviceTypeChild.id
+      if(this.bindData && this.bindData.dataSource && this.bindData.dataSource.type === 1) {
         let bindDeviceNames = this.bindData.dataSource.deviceNameChild
+        this.applyObj.forecastId = bindDeviceNames.id
         if(Array.isArray(bindDeviceNames)) {
           bindDeviceNames.forEach(item=>{
             this.checkModelArr.push(item.id)
@@ -128,35 +130,31 @@ export default{
     },
     bindDeviceNameHandle() {
       this.bindData = this.getCellModelInfo('bindData')
-      if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个
+      // 注意要兼容就应用 没有type
+      if (this.bindData && this.bindData.dataSource && (this.bindData.dataSource.type === 0 || this.bindData.dataSource.type === 2 || !this.bindData.dataSource.type)) {
+        Message.warning(`${this.$t('rightBar.onlyOneTypeDatas')}`)
+        this.checkModelArr = []
+        return
+      }
+      if (singleDeviceName.includes(this.shapeName) && this.checkModelArr.length > 1) { // 绑定单个参数
         Message.warning(`${this.$t('rightBar.multiplyBindDevice')}`)
         // 清空勾选
         this.checkModelArr = []
         return
-      }  
+      }
+      // 已经绑定数据源
       if (singleDeviceName.includes(this.shapeName) && this.bindData && this.bindData.dataSource) {                    
         Message.warning(`${this.$t('rightBar.hasBindDevice')}`)
         this.checkModelArr = []
         return
       }
-      //组装数据 绑定
-      let objData = {}
-      objData.deviceTypeChild = {
-        id: this.model.deviceTypeId,
-        name:this.typeData.find(item=>{return item.deviceTypeId == this.model.deviceTypeId}).deviceTypeName
-      }
-      objData.deviceModel = {
-        id: this.model.deviceModelId,
-        name:this.modelData.find(item=>{return item.deviceModelId == this.model.deviceModelId}).deviceModelName
+      let objData = {
+        type: 1,
       }
       if(this.shapeName === 'lineChart') {
         objData.deviceNameChild = []
-        if(this.bindData && this.bindData.dataSource.deviceModel) {
-          if(this.model.deviceModelId != this.bindData.dataSource.deviceModel.id) {
-            Message.warning(`${this.$t('rightBar.notAllowBindMyltiplyDeviceModel')}`)
-            this.checkModelArr = []
-            return
-          }
+        if(this.bindData && this.bindData.dataSource.deviceNameChild) {
+          // 处理多个参数
           let deviceNameChildTemp = this.bindData.dataSource.deviceNameChild
           if(!Array.isArray(deviceNameChildTemp)) {
             objData.deviceNameChild.push(deviceNameChildTemp)
@@ -164,13 +162,21 @@ export default{
         }
         let tempArr = []
         this.checkModelArr.forEach((item) => {
-          tempArr.push({id:item,name:this.deviceData.find(d=>{return d.deviceId == item}).deviceName})
+          tempArr.push({
+            id:item,
+            name:this.predData.find(d=>{return d.appId == item}).appName,
+            mfaKey:this.predData.find(d=>{return d.appId == item}).mfaKey,
+          })
         })
         objData.deviceNameChild = objData.deviceNameChild.concat(tempArr)
       }else{
         objData.deviceNameChild = {}
         this.checkModelArr.forEach((item) => {
-          objData.deviceNameChild = {id:item,name:this.deviceData.find(d=>{return d.deviceId == item}).deviceName}
+          objData.deviceNameChild = {
+            id:item,
+            name:this.predData.find(d=>{return d.appId == item}).appName,
+            mfaKey: this.predData.find(d=>{return d.appId == item}).mfaKey,
+          }
         })
       }
       if (objData) {
@@ -189,7 +195,6 @@ export default{
           bindData = JSON.parse(bindAttr)
         }
       }
-      console.log(bindData)
       return bindData
     },
     checkAllGroupChange(data) {
@@ -223,10 +228,7 @@ export default{
       }
       .devicename-list-wrap{
         background: #fff;
-        height:100%;
-        max-height:calc(100% - 24px);
-        overflow-y: auto;
-        overflow-x:hidden;
+        height: calc(100% - 24px);
         .devicename-listUl{
           label{
             width:100%;
@@ -251,7 +253,6 @@ export default{
       }
     }
     .data-sources-bottom{
-      height:100px;
       padding-top:12px;
       button{
         height:24px;

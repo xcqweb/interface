@@ -40,7 +40,7 @@
             <span>{{ $t("image") }}</span>
             <img
               :src="state.imgInfo.url"
-              style="height:32px;margin:4px 0 0 4px;"
+              style="height:32px;margin:4px 0 0 4px;max-width:108px"
             >
           </template>
           <template v-if="shapeName!='light'">
@@ -74,7 +74,7 @@
 import StateDialog from './state-dialog'
 import {sureDialog} from '../../../services/Utils'
 import {mxUtils,Dialog} from '../../../services/mxGlobal'
-import VueEvent from '../../../services/VueEvent'
+ 
 //import {syncWidget} from '../../../services/sync-widgets'
 export default{
   components:{StateDialog},
@@ -103,10 +103,7 @@ export default{
     }
   },
   mounted() {
-    VueEvent.$off('refreshStates')
-    VueEvent.$on('refreshStates',()=>{
-      this.initStates()
-    })
+    
     this.initStates()
   },
   methods: {

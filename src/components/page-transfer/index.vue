@@ -17,6 +17,7 @@
             v-model="leftKeyword"
             :placeholder="inputHolder"
             :clearable="true"
+            size="small"
             @on-clear="inputSearch('all')" 
             @on-change="inputSearch('all')"
           />
@@ -34,9 +35,33 @@
                   :label="item.id" 
                   :disabled="item.disabled"
                 >
-                  <slot name="leftItem">
-                    &nbsp;&nbsp;{{ item.name }}
-                  </slot>
+                  <Tooltip 
+                    placement="right" 
+                    theme="light"
+                    class="tooltip-width-inner"
+                    transfer
+                  >
+                    <div slot="content">
+                      <p 
+                        style="line-height: 22px;text-align:left;white-space:normal"
+                      >
+                        设备名称:{{ item.name }}
+                      </p>
+                      <p
+                        style="line-height: 22px;text-align:left;white-space:normal"
+                      >
+                        设备编号:{{ item.serialNumber }}
+                      </p>
+                      <p
+                        style="line-height: 22px;text-align:left;white-space:normal"
+                      >
+                        设备位置:{{ item.locationNamePath }}
+                      </p>
+                    </div>
+                    <slot name="leftItem">
+                      &nbsp;&nbsp;{{ item.name }}
+                    </slot>
+                  </Tooltip>
                 </Checkbox>
               </div>
             </CheckboxGroup>
@@ -48,16 +73,16 @@
           type="default"
           size="small"
           style="margin-bottom:12px"
-          @click="add"
-        >
-          <Icon type="ios-arrow-forward" />
-        </Button>
-        <Button 
-          type="default"
-          size="small"
           @click="del"
         >
           <Icon type="ios-arrow-back" />
+        </Button>        
+        <Button 
+          type="default"
+          size="small"
+          @click="add"
+        >
+          <Icon type="ios-arrow-forward" />
         </Button>
       </div>
       <!-- 已选 -->
@@ -76,6 +101,7 @@
             v-model="rightKeyword" 
             :placeholder="inputHolder"
             :clearable="true" 
+            size="small"
             @on-change="inputSearch('right')"
           />
           <div class="data-wrap scrollbarStyle">
@@ -91,11 +117,35 @@
                 <Checkbox 
                   :label="item.id"
                 >
-                  <slot 
-                    name="rightItem"
+                  <Tooltip 
+                    placement="right" 
+                    theme="light"
+                    class="tooltip-width-inner"
+                    transfer
                   >
-                    &nbsp;&nbsp;{{ item.name }}
-                  </slot>
+                    <div slot="content">
+                      <p 
+                        style="line-height: 22px;text-align:left;white-space:normal"
+                      >
+                        设备名称:{{ item.name }}
+                      </p>
+                      <p
+                        style="line-height: 22px;text-align:left;white-space:normal"
+                      >
+                        设备编号:{{ item.serialNumber }}
+                      </p>
+                      <p
+                        style="line-height: 22px;text-align:left;white-space:normal"
+                      >
+                        设备位置:{{ item.locationNamePath }}
+                      </p>
+                    </div>
+                    <slot 
+                      name="rightItem"
+                    >
+                      &nbsp;&nbsp;{{ item.name }}
+                    </slot>
+                  </Tooltip>
                 </Checkbox>
               </div>
             </CheckboxGroup>
@@ -106,7 +156,7 @@
   </div>
 </template>
 <script>
-import {Button, CheckboxGroup, Checkbox, Input, Icon} from 'iview'
+import {Button, CheckboxGroup, Checkbox, Input, Icon, Tooltip} from 'iview'
 export default {
   components: {
     Button,
@@ -114,6 +164,7 @@ export default {
     Checkbox,
     Input,
     Icon,
+    Tooltip
   },
   props:{
     title:String,
@@ -212,7 +263,6 @@ export default {
         this.leftCheckModal = this.selectDatas.concat(this.checkDataBk).map(item=>{
           return item.id;
         });
-        console.log(this.selectDatas)
         for(const key of this.selectDatas.concat(this.checkDataBk)) {
           for(const item of this.allData) {
             if(key.id === item.id) {
@@ -369,6 +419,14 @@ export default {
         }
     }
     .add-modal{
+        /deep/.tooltip-width-inner{
+        background: #fff !important;
+        .ivu-tooltip-popper {
+          .ivu-tooltip-inner-with-width{
+            white-space: normal !important
+          }
+        }
+      }
         margin-left: 12px;
         /deep/.addFooter{
             .ivu-btn{
@@ -394,12 +452,9 @@ export default {
                 align-items: center;
                 flex-direction: column;
             }
-            /deep/.ivu-input-icon{
-                right:30px;
-            }
             .right{
                 .data-wrap{
-                    height:calc(378px - 96px) !important;
+                    height:calc(378px - 75px) !important;
                 }
             }
             .left, .right{
@@ -413,7 +468,7 @@ export default {
                 padding-top: 34px;
                 .data-wrap{
                     overflow: auto;
-                    height:calc(378px - 136px);
+                    height:calc(378px - 75px);
                     .data-item {
                         margin: 5px 0;
                         img {

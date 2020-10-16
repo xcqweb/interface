@@ -100,6 +100,10 @@ export default {
     }
   },
   mounted() {
+    if (window.unReadNumberTm) {
+      clearInterval(window.unReadNumberTm)
+      window.unReadNumberTm = null
+    }
     this.$nextTick(()=>{
       preview.mainProcess.init(this)
       history.pushState(null, null, document.URL)
@@ -110,7 +114,7 @@ export default {
     })
   },
   destroyed() {
-    window.removeEventListener('popstate',this.stateListener )
+    window.removeEventListener('popstate',this.stateListener )  
   },
   methods:{
     confirm() {

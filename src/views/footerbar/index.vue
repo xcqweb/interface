@@ -14,10 +14,14 @@
                 :label="$t(dataSourceName[0])"
               />
               <TabPane
+                v-if="shapeName !== 'status'"
                 :label="$t(dataSourceName[1])"
               />
 
-              <TabPane :label="$t(dataSourceName[2])" />
+              <TabPane
+                v-if="shapeName !== 'status'"
+                :label="$t(dataSourceName[2])" 
+              />
             </Tabs>
           </div>
           <div
@@ -112,7 +116,7 @@
           </div>
           <!--状态模型-->
           <div
-            v-show="tabsNum === 2 || (tabsNum == 1 && $store.state.main.isTemplateApply)"
+            v-show="shapeName !== 'status' && tabsNum === 2 || (tabsNum == 1 && $store.state.main.isTemplateApply)"
             class="footer-common stateList"
           >
             <div
@@ -166,6 +170,8 @@
       :device-model-id="deviceModelId"
       :device-id="deviceId"
       :multiple="multiple"
+      :from-text="fromText"
+      :app-id="deviceModelId"
       @callback="addParamDone"
     />
   </div>
@@ -189,7 +195,8 @@ const allShapes = [
   "lineChart",
   "gaugeChart",
   'triangle',
-  'pentagram'
+  'pentagram',
+  'status',
 ]; //可以绑定数据的控件
 const supportDataShow = [
   "rectangle",
@@ -199,7 +206,7 @@ const supportDataShow = [
   "lineChart",
   "gaugeChart",
   'triangle',
-  'pentagram'
+  'pentagram',
 ]; // 支持显示参数
 export default {
   components: {
@@ -282,7 +289,8 @@ export default {
           width: "160",
           slot: "actions"
         }
-      ]
+      ],
+      fromText: 0,
     };
   },
   computed: {
@@ -344,7 +352,8 @@ export default {
     });
     // 绑定数据源
     VueEvent.$on("emitDataSourceFooter", value => {
-      this.setCellModelInfo("bindData", {dataSource: value})
+      this.setCellModelInfo("bindData", {dataSource: value});
+      this.fromText = value.type
       if (this.shapeName === "lineChart") {
         this.dealDeviceParamIds()
       }
@@ -389,6 +398,7 @@ export default {
       if (startBindData && startBindData.dataSource) {
         let deviceNameChild = startBindData.dataSource.deviceNameChild
         this.deviceModelId = startBindData.dataSource.deviceModel.id
+        this.fromText = startBindData.dataSource.type || 0
         this.dataSourceList = []
         if (deviceNameChild && !Array.isArray(deviceNameChild)) {
           deviceNameChild = [deviceNameChild]
@@ -406,7 +416,7 @@ export default {
       } else {
         // 当为设备模版过来的时候 deviceModelId
         if (this.$store.state.main.isTemplateApply) {
-          this.deviceModelId = this.$route.query.modelId;
+          this.deviceModelId = sessionStorage.getItem('modelId')
         } else {
           this.deviceModelId = null
           this.dataSourceList = []
@@ -505,14 +515,13 @@ export default {
       if (isFirstCheck) {
         this.paramOutterList[0].type = true
       }
+      let tempObj = this.getCellModelInfo("bindData")
       if (this.shapeName === "lineChart") { 
-        if(this.$store.state.main.isTemplateApply) { // 组态模板时候，趋势图只能绑定一个设备，是预览时候动态传入的
-          tempObj.subParams = this.paramOutterList
-        } else {// 趋势图可以绑定多个数据源，需要做特殊处理，获取deviceParamId，
+        if(!this.$store.state.main.isTemplateApply) { // 组态模板时候，趋势图只能绑定一个设备，是预览时候动态传入的
+          // 趋势图可以绑定多个数据源，需要做特殊处理(数据源和参数交叉组装，获取deviceParamId)
           this.dealDeviceParamIds()
         }
       }
-      let tempObj = this.getCellModelInfo("bindData")
       tempObj.params = this.paramOutterList
       this.setCellModelInfo("bindData", tempObj)
     },
@@ -556,7 +565,7 @@ export default {
         }
         if(resParam.length) {
           let tempObj = this.getCellModelInfo("bindData")
-          tempObj.subParams = resParam
+          tempObj.subParams = resParam // subParams 多设备，多参数情况下交叉获取deviceParamsId参数处理
           this.setCellModelInfo("bindData", tempObj)
         }
       })
@@ -719,9 +728,7 @@ export default {
       }
       modelInfo.setAttribute(key, JSON.stringify(data));
       graph.getModel().setValue(cell, modelInfo);
-      if (key == "statesInfo") {
-        VueEvent.$emit("refreshStates");
-      }
+     
     }
   }
 };

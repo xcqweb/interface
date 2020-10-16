@@ -2,11 +2,15 @@
   <div class="device-data-wrap flex-row">
     <!-- 设备分类 -> 设备类型 -->
     <div class="device-clase-wrap">
-      <Tree 
-        ref="tree" 
-        :data="treeData" 
-        :render="renderContent" 
-        :load-data="loadData"
+      <device-list
+        class="deviceModel-data"
+        :title="$t('dataSource.deviceType')"
+        :width="200"
+        :data="deviceTypeData"
+        :search-flag="searchFlag"
+        prop="deviceTypeName"
+        @click="handleTypeClick"
+        @chooseData="chooseData"
       />
     </div>
     <!-- 设备型号 -->
@@ -15,22 +19,24 @@
       :title="$t('dataSource.deviceModel')"
       :width="200"
       :data="deviceModelData"
+      :search-flag="searchFlag"
       prop="deviceModelName"
-      @click="handleTypeClick"
+      @click="handleModelClick"
     />
     <!-- 参数穿梭框 -->
     <page-transfer
       ref="chooseDevice"
+      class="device-import-wrap"
       left-title="全部"
       right-title="已选"
-      input-holder="请输入设备名称"
+      input-holder="请输入搜索内容"
       :api-methods="apiMethods"
       :deal-data="dealData"
       :else-params="elseParams"
       keyword="deviceName"
       params-str="deviceModelId"
       page-size-params="size"
-      current-page-params="index"
+      current-page-params="current"
       :visible.sync="visible"
       :select-datas="deviceTypesBk"
       @chooseData="chooseData"
@@ -39,7 +45,6 @@
 </template>
 
 <script>
-import {Tree} from 'iview';
 import DeviceList from './device-list'
 import PageTransfer from '@/components/page-transfer/index.vue'
 import DatasourceStore from './js/datasource-store'
@@ -49,9 +54,9 @@ export default {
   components: {
     DeviceList,
     PageTransfer,
-    Tree,
   },
   mixins: [DatasourceStore],
+  props: ['visible'],
   data() {
     return {
       pageIndex: 1,
@@ -59,88 +64,94 @@ export default {
       editModelView: '',
       editModel: null,
       showForm: false,
-      apiMethods: `${this.urls.newImportDeviceList.url}`,
+      apiMethods: `${this.urls.newImportDeviceList.url}?current=1&size=10000`,
       elseParams: {},
-      visible: false,
       deviceTypesBk: [],
       chooseDeviceList: [],
       treeData: [],
-      curNodeData: null,
+      curNodeData: {},
       deviceModelData: [],
+      deviceTypeData: [],
       studioId: '',
+      preAppDataList: [],
+      staAppDataList: [],
+      searchFlag: true,
     };
   },
   async created() {
-    this.studioId = window.sessionStorage.getItem('applyId');
-    // await this.getDeviceTypes();
-    // this.getDeviceTemplateData(); // 获取型号
+    this.studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId'); 
   },
   mounted() {
     let that = this
     VueEvent.$off("getImportData")
     VueEvent.$on("getImportData", async() => {
-      console.log(123);
       that.studioId = that.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
       that.deviceTypesBk = [];
       await this.getDeviceTypes(); // 电子
-      that.getDeviceTemplateData(); // 获取型号
+      that.getApplyDataList(1);
+      that.getApplyDataList(2); // 华星去掉
     });
   },
 
   methods: {
     getDeviceTypes() {
-      const params = {}
-      params.parentId = ''
-      this.requestUtil.get(this.urls.newDeviceTypeList.url, {parentId: ''}).then(res => {
-        const curData = res || [];
-        if ( curData.length > 0 ) {
-          curData.forEach( el =>{
-            el.title = el.deviceTypeName;
-            if ( el.hasChild === true ) {
-              el.children = [];
-              el.loading = false;
-              el.expand = true;
-            } else {
-              el.expand = true;
+      this.requestUtil.get('api/device/deviceType/select').then(data => {
+        if (data.length > 0) {
+          this.deviceTypeData = data.map((item) => {
+            return {
+              deviceTypeId: item.deviceTypeId,
+              deviceTypeName: item.deviceTypeName,
             }
-            curData[0].selected = true;
           });
-          this.curNodeData = curData[0];
-          this.treeData = curData;
-          if ( curData[0].hasChild && curData[0].deviceTypeId && curData[0].level === 1 ) {
-            this.requestUtil.get(this.urls.newDeviceTypeList.url, {parentId: curData[0].deviceTypeId}).then( re => {
-              const curRedData = re || [];
-              curRedData.forEach( el => {
-                el.title = el.deviceTypeName;
-                if ( el.hasChild === true ) {
-                  el.children = [];
-                  el.loading = false;
-                  el.expand = false;
-                } else {
-                  el.expand = true;
-                }
-              });
-              this.$set(this.treeData[0], 'children', curRedData);
-              console.log(this.treeData[0])
-            });
-          }
+          this.curNodeData.deviceTypeId = this.deviceTypeData[0].deviceTypeId;
+          this.getDeviceTemplateData();
         }
-      }).catch(() => {});
+      });
+    },
+    /*
+    * type: 1 预测应用
+    * type: 2 统计应用
+    */
+    getApplyDataList(type) {
+      const params = {
+        studioId: this.studioId,
+        type,
+      }
+      this.requestUtil.post(this.urls.newAppDataList.url, params).then((res) => {
+        const data = res.returnObj || []
+        if (type === 1) {
+          this.preAppDataList = data.map((item) => {
+            if (item) {
+              return {
+                key: item.appId,
+                label: item.appName,
+              }
+            }
+          })
+          this.$emit('getApplyDataFun', this.preAppDataList)
+        } else if (type === 2) {
+          this.staAppDataList = data.map((item) => {
+            if (item) {
+              return {
+                key: item.appId,
+                label: item.appName,
+              }
+            }
+          })
+          this.$emit('getStaticDataFun', this.staAppDataList)
+        }
+        
+      })
     },
     getDeviceTemplateData() {
-      let deviceTypeId = this.curNodeData ? this.curNodeData.deviceTypeId : ''
-      if ( this.curNodeData && this.curNodeData.level === 1 ) {
-        deviceTypeId = ''
-      }
+      let deviceTypeId = this.curNodeData ? this.curNodeData.deviceTypeId : '' 
       this.model.deviceTypeId = deviceTypeId;
       const params = {
         deviceTypeId,
         deviceModelName: '',
-        size: this.pageSize,
-        current: this.pageIndex,
       }
-      this.requestUtil.get(this.urls.newDeviceTemplateLIST.url, params).then(res => {
-        this.deviceModelData = res.records.map((item) => {
+      this.requestUtil.get(this.urls.newDeviceModelList.url, params).then(res => {
+        this.deviceModelData = res.map((item) => {
           return {
             deviceModelId: item.deviceModelId,
             deviceModelName: item.deviceModelName,
@@ -148,15 +159,18 @@ export default {
         })
         if (this.deviceModelData.length) {
           this.getDeviceList(this.deviceModelData[0]);
+        } else {
+          this.getDeviceList({deviceModelId: ''});
         }
-                
       })
     },
     getDeviceList(data) {
       let deviceTypeId = this.curNodeData ? this.curNodeData.deviceTypeId : ''
-      this.$set(this.elseParams, 'deviceModelId', data.deviceModelId)
-      this.$set(this.elseParams, 'deviceTypeId', deviceTypeId)
-      this.$set(this.elseParams, 'studioId', this.studioId)
+      this.elseParams = {
+        deviceModelId: data.deviceModelId,
+        deviceTypeId,
+        studioId: this.studioId,
+      }
     },
     loadData(item, callback) {
       this.requestUtil.get(this.urls.newDeviceTypeList.url, {parentId: item.deviceTypeId}).then( re => {
@@ -223,15 +237,22 @@ export default {
         name:item.deviceName,
         deviceTypeId: item.deviceTypeId,
         deviceModelId: item.deviceModelId,
+        serialNumber: item.serialNumber,
+        locationNamePath: item.locationNamePath,
       }
     },
     chooseData(data) {
-      this.chooseDeviceList = JSON.parse(JSON.stringify(data));
+      this.chooseDeviceList = JSON.parse(JSON.stringify(data))
       this.$emit('chooseDeviceData', this.chooseDeviceList)
     },
     handleTypeClick(item) {
+      this.model.deviceTypeId = item.deviceTypeId
+      this.curNodeData.deviceTypeId = item.deviceTypeId
+      this.getDeviceTemplateData()
+    },
+    handleModelClick(item) {
       this.model.deviceModelId = item.deviceModelId;
-      this.$set(this.elseParams, 'deviceModelId', item.deviceModelId);
+      this.elseParams.deviceModelId = item.deviceModelId;
     },
     handleEditModel(model = null) {
       this.editModel = model;
@@ -264,6 +285,7 @@ export default {
   }
 }
 .deviceModel-data {
+    height: 100%;
     .data-column-body {
         .device-data-list {
             li {

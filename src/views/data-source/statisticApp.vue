@@ -1,7 +1,7 @@
 <template>
   <div class="device-data-wrap">
     <!-- 应用列表 -->
-    <device-list
+    <device-data
       class="device-data"
       :title="$t('dataSource.applyList')"
       :width="200"
@@ -12,11 +12,13 @@
       @remove="handleTypeRemove"
     />
     <!-- 参数列表 -->
-    <device-params
+    <device-list
       class="device-data"
       :title="$t('dataSource.parameters')"
       :width="300"
-      :device-model-id="model.deviceModelId"
+      :data="statiParamData"
+      prop="paramName"
+      true-prop="paramId"
     />
     <!-- 移除确认弹窗 -->
     <component
@@ -53,51 +55,54 @@ export default {
   data() {
     return {
       paramData: [],
+      statiParamData: [],
     };
   },
   watch: {
     reloadData() {
       this.getStatisticData();
     },
+    statiData(val) {
+      if (val.length) {
+        this.applyObj.appId = val[0].appId
+        this.getApplyParamsData()
+      } else {
+        this.statiParamData = []
+      }
+    },
   },
-  mounted() {
-    this.getStatisticData();
+  async mounted() {
+    await this.getStatisticData();
   },
   methods: {
     handleTypeClick(item) {
       this.applyObj.appId = item.appId;
+      this.getApplyParamsData()
+    },
+    getApplyParamsData() {
+      if (!this.statiData.length) {return}
+      const params = {
+        appId: this.applyObj.appId || this.statiData[0].appId,
+        type: 2,
+      }
+      if (!params.appId) {
+        return
+      }
+      this.requestUtil.post(this.urls.newApplyParams.url, params).then(res => {
+        this.statiParamData = res.returnObj || []
+      })
     },
     handleTypeRemove(items) {
       const ids = [];
       items.forEach(type => {
-        if (this.modelObj[type]) {
-          const modelData = this.modelObj[type];
-          modelData.forEach(model => {
-            if (this.deviceObj[model.deviceModelId]) {
-              const deviceData = this.deviceObj[model.deviceModelId];
-              deviceData.forEach(device => {
-                ids.push(device.id);
-              })
-            }
-          });
-        }
+        this.statiData.forEach((val) => {
+          if (type === val.appId) {
+            ids.push(val.id);
+          }
+        })
       });
       this.removeData = ids;
-      this.removeContent = this.$t('dataSource.confirmToRemoveDeviceType');
-      this.showRemoveModal();
-    },
-    handleModelRemove(items) {
-      const ids = [];
-      items.forEach(model => {
-        if (this.deviceObj[model]) {
-          const deviceData = this.deviceObj[model];
-          deviceData.forEach(device => {
-            ids.push(device.id);
-          })
-        }
-      });
-      this.removeData = ids;
-      this.removeContent = this.$t('dataSource.confirmToRemoveDeviceModel');
+      this.removeContent = this.$t('dataSource.confirmToRemoveApply');
       this.showRemoveModal();
     },
     handleDeviceRemove(items) {
@@ -109,8 +114,8 @@ export default {
       const params = {
         ids: this.removeData,
       };
-      this.requestUtil.post(this.urls.deleteDeviceList.url, params).then(() => {
-        Message.success(this.$t('dataSource.removeDeviceSuccessfully'));
+      this.requestUtil.post(this.urls.newDeleteApply.url, params).then(() => {
+        Message.success(this.$t('dataSource.removeApplySuccessfully'));
         this.getStatisticData();
       });
     },

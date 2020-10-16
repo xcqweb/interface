@@ -36,7 +36,7 @@ function dealdeviceParams(deviceParams) {
 /**
  * 
  * @param {*} isReal 是否是实时数据
- * @param {*} modeId 绑定数据时候 viewTool/model/serach 返回的 模型id
+ * @param {*} modelId 绑定数据时候 viewTool/model/serach 返回的 模型id
  */
 async function getSubscribeInfos(deviceParams) {
   let params = {
@@ -122,7 +122,7 @@ function setterRealData(res, fileSystem,mainProcess) {
                 }
                 if (val || val == 0) {
                   ser.data.push(val)
-                  let yMax = options.yAxis[0].max;
+                  let yMax = options.yAxis[0].max
                   options.yAxis[0].max = Math.max(yMax, val)
                   options.xAxis[0].data.push(timeFormate(item.timestamp, false))
                 }
@@ -153,11 +153,20 @@ function setterRealData(res, fileSystem,mainProcess) {
         }
         let stateModels = $ele.data("stateModels")
         if(stateModels) {
-          let stateIndex = 0 //默认状态 未找到要切换的状态，显示默认
+          let stateIndex = $ele.data("stateIndex") || 0
+          /* 默认状态 未找到(2种情况 1：当次没推送这个参数过来 2：推送过来了，
+            但是推送的数据不在绑定的状态模型的各种情况的范围内)要切换的状态
+          */
           for (let j = 1; j < stateModels.length;j++) {
-            if (dealStateFormula(stateModels[j].modelFormInfo.formula, item)) {
+            let result = dealStateFormula(stateModels[j].modelFormInfo.formula, item)
+            if (result === true) {
               stateIndex = j
+              $ele.data("stateIndex",stateIndex)
               break
+            }
+            if(j == stateModels.length - 1 && result !== undefined) { // 当次推送的数据没有这个参数会返回undefined，这是情况1，不需要还原为默认值
+              // 只有情况2需要这个处理
+              $ele.data("stateIndex",0)
             }
           }
           changeEleState(els[i], stateModels[stateIndex],fileSystem)
@@ -172,7 +181,7 @@ function setterRealData(res, fileSystem,mainProcess) {
           }
           paramShow.forEach(d => {
             let dpIdVal = item[d.deviceParamId]
-            if (dpIdVal || dpIdVal == 0) {
+            if (dpIdVal || dpIdVal === 0) {
               paramData.data[d.paramName] = dpIdVal
               paramData.time = timeFormate(item.timestamp, false)
             }else{
@@ -197,18 +206,18 @@ function setterRealData(res, fileSystem,mainProcess) {
  */
 function dealStateFormula(formula, data) {
   if(!formula) {
-    return false
+    return undefined
   }
   formula = JSON.parse(formula)
   let res1 = true,res2 = false
   let logics = formula.data
   if(!logics) {
-    return false
+    return undefined
   }
   if (!formula.conditionLogic || formula.conditionLogic == 1) { // 顶级条件是and，有一个为false，就返回false
     for(let i = 0;i < logics.length;i++) {
-      if (!dealLogic(logics[i],data)) {//子级条件有一个为false，整体为false
-        res1 = false
+      res1 = dealLogic(logics[i],data)
+      if (!res1) {//子级条件有一个为false 或者 undefined，整体为false或者undefined（表示当次推送的数据没有这个参数，没取到值)
         break 
       }
     }
@@ -216,7 +225,8 @@ function dealStateFormula(formula, data) {
   }  
   // 顶级条件or
   for (let i = 0; i < logics.length; i++) {
-    if (dealLogic(logics[i], data)) {//子级条件有一个为true，整体为true
+    res2 = dealLogic(logics[i], data)
+    if (res2) {//子级条件有一个为true，整体为true
       res2 = true
       break
     }
@@ -232,7 +242,7 @@ function dealLogic(logic,data) {
   let res = true
   let operate = +logic.logical
   if(!logic.key) {
-    return false
+    return undefined
   }
   let tempArr = logic.key.split("/")
   let deviceType = tempArr[0]
@@ -243,13 +253,21 @@ function dealLogic(logic,data) {
   }else{
     tempParamVal = dealDataVal(paramId, data)
   }
-  let fixed = +logic.fixedValue
+  let fixed 
+  if(isNaN(parseFloat(logic.fixedValue)) || parseFloat(logic.fixedValue) != 0) {
+    fixed = +logic.fixedValue
+  }else{
+    fixed = logic.fixedValue
+  }
   let min = +logic.minValue
   let max = +logic.maxValue
-  if (!tempParamVal && tempParamVal !== 0) {
-    return false
+  if (tempParamVal === undefined || tempParamVal === null) {
+    return undefined
   }
-  let paramVal = +tempParamVal
+  let paramVal = tempParamVal
+  if(operate != 4 && operate != 3) {
+    paramVal = +tempParamVal
+  }
   switch (operate) {
     case 1: // 介于
       res = paramVal > min && paramVal < max
@@ -311,10 +329,13 @@ function changeEleState(el, stateInfo,fileSystem) {
     text.css('color',stateInfo.style.color)
     return
   } 
-  let imgInfo = stateInfo.imgInfo
   for (let key in stateInfo.style) {
     el.style[key] = stateInfo.style[key]
   }
+  if(['image','userimage','light'].includes(shapeName)) {
+    el.style.background = "transparent"
+  }
+  let imgInfo = stateInfo.imgInfo
   if (imgInfo) {
     imgInfo.url = imgInfo.url.replace(/getechFileSystem\//, fileSystem)
     setSvgImageHref(el,imgInfo.url)
@@ -373,7 +394,11 @@ function initialWs(ws, pageId, applyData, fileSystem,mainProcess) {
     reconnect(pageId,applyData)
   }
 }
-
+//获取ws请求主机协议
+// function getWsHost() {
+//   const host = location.host
+//   return 'ws://' + (host.includes('localhost') || host.includes('127.0.0.1') ? 'kong.ele-iot.10.74.158.69.nip.io' : host)
+// }
 //实时数据
 function createWsReal(pageId, applyData, fileSystem,mainProcess) {
   let deviceParams = applyData[pageId].wsParams
@@ -381,7 +406,7 @@ function createWsReal(pageId, applyData, fileSystem,mainProcess) {
     if (deviceParams.length === 0 || !websocketUrlReal) {
       return
     }
-    let ws = new WebSocket(res.data) // 提交时使用这个
+    let ws = new WebSocket(/* getWsHost + */ res.data) // 提交时使用这个
     initialWs(ws, pageId, applyData, fileSystem,mainProcess)
     if(applyData[pageId].wsReal) {
       applyData[pageId].wsReal.close()

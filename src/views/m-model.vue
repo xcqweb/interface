@@ -33,7 +33,7 @@
     <div class="datasource-body flex-full-item">
       <!-- 设备模型 -> 设备 -->
       <Datamodel
-        v-show="dataType === 0"
+        v-if="dataType === 0"
         :reload-data="deviceDataChange"
       />
       <!-- 数据模型 -->
@@ -206,7 +206,7 @@ export default{
   height: 32px;
   background: rgba(242,242,242,1);
   border-bottom: 1px solid #ccc;
-
+  user-select: none;
   > li {
     float: left;
     width: 102px;
