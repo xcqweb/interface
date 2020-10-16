@@ -3,7 +3,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import store from '../store/'
 const isDev = process.env.NODE_ENV === 'development'
-window.PREFIX_PATH = isDev ? '' : '/interface'
+window.PREFIX_PATH = isDev ? '' : '/iot/interface'
 
 
 Vue.use(Router)
@@ -38,7 +38,7 @@ let routes = [
 const router = new Router({
   mode:'history',
   routes:routes,
-  base: '/iot/'
+  // base: '/iot/'
 })
 router.beforeEach((to,from,next)=>{
   store.commit('clearToken') // 取消请求
