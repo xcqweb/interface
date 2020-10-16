@@ -2,6 +2,7 @@
 /**
  * 获取一级域名
  */
+const host = location.hostname
 import {OpenDialog} from './editor/Dialogs'
 const getDomain = () => {
     let host = location.hostname;
@@ -38,7 +39,7 @@ let getCookie=function(cname) {
 let setCookie=function(cname, value, expiredays = null) {
     const exdate = new Date();
     exdate.setDate(exdate.getDate() + expiredays);
-    document.cookie = cname + '=' + escape(value) + ((expiredays == null) ? '' : ';expires=' + exdate.toUTCString()) + ';domain=' + getDomain() + ';path=/;';
+    document.cookie = cname + '=' + escape(value) + ((expiredays == null) ? '' : ';expires=' + exdate.toUTCString()) + ';domain=' + host + ';path=/;';
 }
 function throttle(func, wait, options) {
   /* options的默认值
