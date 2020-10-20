@@ -53,9 +53,7 @@ async function geAjax(url, method = 'GET', data = null) {
         },
         error:function(res) {
           if (res.status == 418) {
-            geAjax('api/auth/refreshToken', 'POST', {
-              refreshToken
-            }).then(res => {
+            geAjax('api/auth/refreshToken', 'POST', {refreshToken}).then(res => {
               setCookie('token', res.token);
               setCookie('refreshToken', res.refreshToken)
               callAjax()

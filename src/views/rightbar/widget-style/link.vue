@@ -19,6 +19,25 @@
         </Radio>
       </RadioGroup>
     </div>
+    <div class="item-line" />
+    <div class="openLinkTarget">
+      <span>传递参数:&nbsp;&nbsp;&nbsp;</span>
+      <RadioGroup v-model="openConfig">
+        <Radio label="1">
+          <span>是</span>
+        </Radio>
+        <Radio label="0">
+          <span>否</span>
+        </Radio>
+      </RadioGroup>
+    </div>
+    <button
+      class="mutual-btn config-btn"
+      @click="configParam()"
+    >
+      配置
+    </button>
+    <div class="item-line" />
     <div style="display:flex;justify-content:space-between;margin-top:20px;">
       <button
         class="mutual-btn"
@@ -33,23 +52,31 @@
         {{ $t('submit') }}
       </button>
     </div>
+    <config-params
+      :visible.sync="visible"
+    />
   </div>
 </template>
 <script>
 import {tipDialog} from '../../../services/Utils'
 import {RadioGroup, Radio} from 'iview'
 export default{
-  components:{RadioGroup, Radio},
+  components:{RadioGroup, Radio,
+    ConfigParams: resolve => {
+      return require(["./components/config-params"], resolve);
+    }
+  },
   props:['currentPageWidgets','bindActions'],
   data() {
     return {
       openlinkUrl: '',
       isEdit: false,
       isOpenNewWindow: '_blank',
+      openConfig:'1',// 传递参数
+      visible:false,
     }
   },
   created() {
-    console.log(this.currentPageWidgets)
   },
   methods: {
     initData() {
@@ -77,7 +104,10 @@ export default{
     },
     hide() {
       this.$emit("submitMutual")
-    }
+    },
+    configParam() {
+      this.visible = true
+    },
   },
 }
 </script>
@@ -104,5 +134,14 @@ export default{
       width: 12px;
       height: 12px;
     }
+}
+.item-line{
+  margin:6px 0;
+  background:#ccc;
+  height:1px;
+}
+.config-btn{
+  margin: 6px 0 10px 3px;
+  width:48px;
 }
 </style>

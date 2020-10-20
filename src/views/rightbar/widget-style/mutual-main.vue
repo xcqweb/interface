@@ -455,6 +455,7 @@ export default{
   .type-tab{
     flex:1;
     text-align:center;
+    cursor: pointer;
     &.selected{
       background:rgba(61,145,247,1);
       border:1px solid rgba(39,122,224,1);

@@ -330,14 +330,15 @@ Editor.prototype.refreshToken = function(refreshToken) {
     return new Promise((resolve, rejec) => {
         $.ajax({
             method: 'POST',
-            url: `${window.location.origin}/api/auth/refreshToken`,
-            data: {
-                refreshToken
+            headers: {
+              "Content-Type": 'application/json;charset=utf-8',
             },
+            url: `${window.location.origin}/api/auth/refreshToken`,
+            data: JSON.stringify({refreshToken}),
             success: function(res) {
-                setCookie('token', res.token);
-                setCookie('refreshToken', res.refreshToken);
-                resolve();
+              setCookie('token', res.token);
+              setCookie('refreshToken', res.refreshToken);
+              resolve();
             }
         })
     })

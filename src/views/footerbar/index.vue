@@ -21,7 +21,7 @@
             </Tabs>
           </div>
           <div
-            v-if="tabsNum == 1 && deviceModelId && footerContent && ifShowDataFlag || tabsNum ==0 && footerContent && ifShowDataFlag"
+            v-if="tabsNum == 0 && $store.state.main.isTemplateApply && footerContent && ifShowDataFlag || tabsNum ==1 && footerContent && ifShowDataFlag"
             style="margin-right:20px;cursor:pointer;"
             @click="addParam"
           >
@@ -43,7 +43,7 @@
         <div v-if="footerContent">
           <!--数据源-->
           <div
-            v-show="tabsNum === 0 && !$store.state.main.isTemplateApply"
+            v-show="tabsNum === 0 && !$store.state.main.isTemplateApply && cellsCount"
             class="footer-common dataSourceList"
           >
             <template>
@@ -233,7 +233,7 @@ export default {
       deviceModelId: null,
       deviceId: null,
       nodata: "noData",
-      tablTitles: [],
+      tablTitles: tableDeviceData,
       dataSourceList: [],
       heightlen: "190",
       paramOutterList: [],
@@ -382,7 +382,6 @@ export default {
     // 初始化数据源数据
     initDataSource() {
       let startBindData = this.getCellModelInfo("bindData")
-      console.log(startBindData)
       if (startBindData && startBindData.dataSource) {
         let type = startBindData.dataSource.type || 0
         this.fromText = type
@@ -469,6 +468,10 @@ export default {
     },
     addParam() {
       let startBindData = this.getCellModelInfo("bindData")
+      if(!startBindData) {
+        Message.warning(`请先绑定设备`)
+        return
+      }
       if(this.$store.state.main.isTemplateApply) {
         this.deviceModelId = sessionStorage.getItem('modelId')
         let temp = {dataSource:{}}

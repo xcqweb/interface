@@ -3305,7 +3305,7 @@ EditorUi.prototype.saveFile = function(forceDialog,hideDialog=false)
         // 编辑保存
         var dlg = new FilenameDialog(this,mxUtils.bind(this, function()
         {
-            autoSaveFlagTerry = 0
+            window.autoSaveFlagTerry = 0
             this.save()
         }), null, mxUtils.bind(this, function(name)
         {
@@ -3373,7 +3373,7 @@ EditorUi.prototype.save = function(hideDialog=false)
                     theme:JSON.stringify(ui.theme),
                     applyCon: editor.pagesNameList().join(),
                     content: JSON.stringify({pages, rank: editor.pagesRank}),
-                    lockStatus: 1
+                    lockStatus: 0
                 }
                 const svgImg = ui.sidebar.getSvgImage();
                 if (svgImg && svgImg.outerHTML) {

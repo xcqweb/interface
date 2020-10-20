@@ -557,7 +557,7 @@ let PreviewDialog = function(editorUi,fun) {
     nameTitle.className = 'geDialogInfoTitle';
     saveContent.appendChild(nameTitle)
 
-    autoSaveFlagTerry = 0
+    window.autoSaveFlagTerry = 0
     dealDefaultThem(editorUi)
     editorUi.save(true)
 
