@@ -29,7 +29,7 @@ let getCookie=function(cname) {
     for (let i = 0; i < ca.length; i++) {
         let c = ca[i];
         while (c.charAt(0) === ' ') {c = c.substring(1); }
-        if (c.indexOf(name) !== -1) {return c.substring(name.length, c.length); }
+        if (name === c) {return c.substring(name.length, c.length); }
     }
     return '';
 }
