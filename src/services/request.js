@@ -9,7 +9,7 @@ const isDev = process.env.NODE_ENV === 'development'
 if(isDev) {
   axios.defaults.baseURL = urls.testBaseUrl.url  //配置接口地址
 } else {
-  axios.defaults.baseURL = urls.baseUrl.url   //配置接口地址
+  axios.defaults.baseURL = window.API_PREFIX + urls.baseUrl.url   //配置接口地址
 } 
 // 是否正在刷新的标记
 let isRefreshing = false

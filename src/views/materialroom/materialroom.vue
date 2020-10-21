@@ -265,7 +265,7 @@ export default {
   },
   data() {
     return {
-      picAction:`${window.location.origin}/api/iot-cds/sources/material`,
+      picAction:`${window.location.origin}${window.API_PREFIX}/api/iot-cds/sources/material`,
       materialAlertName: 'materialLibrary',
       showmarerial: true,
       madeltext: ['cancel',this.$t('materialRoom.uploadWidget')],

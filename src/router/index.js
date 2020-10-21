@@ -3,7 +3,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import store from '../store/'
 const isDev = process.env.NODE_ENV === 'development'
-window.PREFIX_PATH = isDev ? '' : '/interface'
+window.PREFIX_PATH = isDev ? '' : process.env.NODE_ENV === 'tanent-uat' ? '/iot/interface' : '/interface'
 
 
 Vue.use(Router)

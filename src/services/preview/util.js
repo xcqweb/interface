@@ -47,7 +47,7 @@ async function geAjax(url, method = 'GET', data = null) {
           "Authorization": 'Bearer ' + token
         },
         data:data,
-        url:`${window.location.origin}/${url}`,
+        url:`${window.location.origin}${window.API_PREFIX}/${url}`,
         success: function(res) {
           resolve(res)
         },
