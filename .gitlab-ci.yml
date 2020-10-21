@@ -54,7 +54,7 @@ NPM-Build-GETECH-UAT:
 .docker_build_template: &docker_build_template
   stage: docker
   before_script:
-    - docker login -u $GETECH_CI_REGISTRY_USER -p $GETECH_CI_REGISTRY_PASSWORD $GETECH_CI_REGISTRY
+    - docker login -u $GETECH_CI_REGISTRY_USER -p $GETECH_CI_REGISTRY_PASSWORD $CI_REGISTRY
   variables:
   script:
     - CI_REGISTRY_IMAGE=$GETECH_CI_REGISTRY/$CI_PROJECT_NAME/$CUSTOM_PROFILE-$CI_BUILD_REF_NAME
