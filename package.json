@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --mode=development",
-    "build": "cross-env NODE_ENV=cost APP_MODE=tanent webpack --max_old_space_size=4096 --mode=production",
+    "build": "cross-env NODE_ENV=cost APP_MODE=tanent-uat webpack --max_old_space_size=4096 --mode=production",
     "tanent-sit": "cross-env NODE_ENV=cost  webpack --max_old_space_size=4096 --mode=production",
     "tanent-uat": "cross-env NODE_ENV=cost APP_MODE=tanent-uat webpack --max_old_space_size=4096 --mode=production",
     "csot": "cross-env NODE_ENV=cost webpack --max_old_space_size=4096 --mode=production",
