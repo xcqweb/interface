@@ -57,9 +57,11 @@ NPM-Build-GETECH-UAT:
     - docker login -u $GETECH_CI_REGISTRY_USER -p $GETECH_CI_REGISTRY_PASSWORD $CI_REGISTRY
   variables:
   script:
-    - CI_REGISTRY_IMAGE=$GETECH_CI_REGISTRY/$CI_PROJECT_NAME/$CUSTOM_PROFILE-$CI_BUILD_REF_NAME
+    - export CI_REGIST2RY_IMAGE=`echo "$CI_REGISTRY_IMAGE" | tr '[:upper:]' '[:lower:]'`
+    - echo $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
+    - CI_PROJECT_BASE=`echo $CI_PROJECT_URL | cut -d'/' -f3`
     - docker pull $CI_REGISTRY_IMAGE:latest || true
-    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG --tag $CI_REGISTRY_IMAGE:latest --build-arg PROFILE=$CUSTOM_PROFILE -f docker/Dockerfile .
+    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG --tag $CI_REGISTRY_IMAGE:latest .
     - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
     - docker push $CI_REGISTRY_IMAGE:latest  
 
