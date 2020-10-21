@@ -10,4 +10,4 @@ RUN echo 'Asia/Shanghai' >/etc/timezone
 EXPOSE 80/tcp
 
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY ./iot/interface  /usr/share/nginx/html/iot/interface
+COPY ./interface  /usr/share/nginx/html/iot/interface
