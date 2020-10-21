@@ -1,28 +1,27 @@
-image: docker:19.03.8
+image: registry.getech.cn/getech/ci-java:latest
 
 services:
   - docker:dind
 
 variables:
   DOCKER_HOST: tcp://docker:2375
-#  DOCKER_BUILDKIT: 1
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2  
   VERSION_BASE: "1.0."
   CI_IMAGE_TAG: $VERSION_BASE$CI_PIPELINE_IID
+  CI_REGISTRY_IMAGE: $CI_REGISTRY/iot/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+  
 
 stages:
   - build
-  - docker
+  - package
   
-.npm_build_template: &npm_build_template
-  image: node:alpine3.11
+npm-build:
   stage: build
-  script: 
+  script:
     - npm set registry https://registry.npm.taobao.org
-    - npm install --progress=false
-    - npm run $CUSTOM_PROFILE
-    - ls -l ./
+    - npm install
+    - npm run build 
   cache:
     paths:
       - node_modules/    
@@ -30,32 +29,14 @@ stages:
     name: $CI_PROJECT_NAME
     expire_in: 1 day
     paths:
-      - $CUSTOM_PROFILE/*
+      - interface/*
+
 
     
-NPM-Build-GETECH-SIT:
-  <<: *npm_build_template
-  variables:
-    CUSTOM_PROFILE: "tanent-sit"  
-  only:
-    - tanent
-    - /.*tanent-sit.*/
-
-NPM-Build-GETECH-UAT:
-  <<: *npm_build_template
-  variables:
-    CUSTOM_PROFILE: "tanent-uat"  
-  only:
-    - tanent
-    - /.*tanent-uat.*/
-  
-
-    
-.docker_build_template: &docker_build_template
-  stage: docker
+Docker-Build:
+  stage: package
   before_script:
     - docker login -u $GETECH_CI_REGISTRY_USER -p $GETECH_CI_REGISTRY_PASSWORD $CI_REGISTRY
-  variables:
   script:
     - export CI_REGIST2RY_IMAGE=`echo "$CI_REGISTRY_IMAGE" | tr '[:upper:]' '[:lower:]'`
     - echo $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
@@ -65,24 +46,4 @@ NPM-Build-GETECH-UAT:
     - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
     - docker push $CI_REGISTRY_IMAGE:latest  
 
-    
-    
-Docker-Build-GETECH-SIT:
-  <<: *docker_build_template
-  variables:
-    CUSTOM_PROFILE: "tanent-sit"        
-  only:
-    - tanent
-    - /.*tanent-sit.*/
-    
-Docker-Build-GETECH-UAT:
-  <<: *docker_build_template
-  variables:
-    CUSTOM_PROFILE: "tanent-uat"        
-  only:
-    - tanent
-    - /.*tanent-uat.*/
-
-before_script:
-  - export BUILD_TIMESTAMP=$(date +%y.%m)
 
