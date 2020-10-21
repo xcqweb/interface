@@ -20,9 +20,6 @@ stages:
   stage: build
   script: 
     - npm set registry https://registry.npm.taobao.org
-    - sed -i "s/[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} [0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/${BUILD_TIMESTAMP}/g" src/config/version.ts
-    - sed -i "s/\([0-9]\.[0-9]\.\)[0-9]/\1${CI_PIPELINE_IID}/g" src/config/version.ts
-    - cat src/config/version.ts
     - npm install --progress=false
     - npm run $CUSTOM_PROFILE
     - ls -l ./
