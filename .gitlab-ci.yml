@@ -1,27 +1,31 @@
-image: registry.getech.cn/getech/ci-java:latest
+image: docker:19.03.8
 
 services:
   - docker:dind
 
 variables:
   DOCKER_HOST: tcp://docker:2375
+#  DOCKER_BUILDKIT: 1
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2  
   VERSION_BASE: "1.0."
   CI_IMAGE_TAG: $VERSION_BASE$CI_PIPELINE_IID
-  CI_REGISTRY_IMAGE: $CI_REGISTRY/iot/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
-  
 
 stages:
   - build
-  - package
+  - docker
   
-npm-build:
+.npm_build_template: &npm_build_template
+  image: node:alpine3.11
   stage: build
-  script:
+  script: 
     - npm set registry https://registry.npm.taobao.org
-    - npm install
-    - npm run build 
+    - sed -i "s/[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} [0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/${BUILD_TIMESTAMP}/g" src/config/version.ts
+    - sed -i "s/\([0-9]\.[0-9]\.\)[0-9]/\1${CI_PIPELINE_IID}/g" src/config/version.ts
+    - cat src/config/version.ts
+    - npm install --progress=false
+    - npm run $CUSTOM_PROFILE
+    - ls -l ./
   cache:
     paths:
       - node_modules/    
@@ -29,21 +33,57 @@ npm-build:
     name: $CI_PROJECT_NAME
     expire_in: 1 day
     paths:
-      - interface/*
-
+      - $CUSTOM_PROFILE/*
 
     
-Docker-Build:
-  stage: package
+NPM-Build-GETECH-SIT:
+  <<: *npm_build_template
+  variables:
+    CUSTOM_PROFILE: "tanent-sit"  
+  only:
+    - tanent
+    - /.*tanent-sit.*/
+
+NPM-Build-GETECH-UAT:
+  <<: *npm_build_template
+  variables:
+    CUSTOM_PROFILE: "tanent-uat"  
+  only:
+    - tanent
+    - /.*tanent-uat.*/
+  
+
+    
+.docker_build_template: &docker_build_template
+  stage: docker
   before_script:
-    - docker login -u $GETECH_CI_REGISTRY_USER -p $GETECH_CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker login -u $GETECH_CI_REGISTRY_USER -p $GETECH_CI_REGISTRY_PASSWORD $GETECH_CI_REGISTRY
+  variables:
   script:
-    - export CI_REGIST2RY_IMAGE=`echo "$CI_REGISTRY_IMAGE" | tr '[:upper:]' '[:lower:]'`
-    - echo $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
-    - CI_PROJECT_BASE=`echo $CI_PROJECT_URL | cut -d'/' -f3`
+    - CI_REGISTRY_IMAGE=$GETECH_CI_REGISTRY/getech/$CI_PROJECT_NAME-$CUSTOM_PROFILE-$CI_BUILD_REF_NAME
     - docker pull $CI_REGISTRY_IMAGE:latest || true
-    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG --tag $CI_REGISTRY_IMAGE:latest .
+    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG --tag $CI_REGISTRY_IMAGE:latest --build-arg PROFILE=$CUSTOM_PROFILE -f docker/Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
     - docker push $CI_REGISTRY_IMAGE:latest  
 
+    
+    
+Docker-Build-GETECH-SIT:
+  <<: *docker_build_template
+  variables:
+    CUSTOM_PROFILE: "tanent-sit"        
+  only:
+    - tanent
+    - /.*tanent-sit.*/
+    
+Docker-Build-GETECH-UAT:
+  <<: *docker_build_template
+  variables:
+    CUSTOM_PROFILE: "tanent-uat"        
+  only:
+    - tanent
+    - /.*tanent-uat.*/
+
+before_script:
+  - export BUILD_TIMESTAMP=$(date +%y.%m)
 
