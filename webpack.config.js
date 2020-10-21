@@ -11,6 +11,8 @@ const postCssPlugin = require("autoprefixer")({
 });
 // 清除dist文件
 const CleanWebpackPlugin = require("clean-webpack-plugin");
+const preFix = process.env.NODE_ENV === 'tanent-uat' ? '/iot' : ''
+console.log(process.env.NODE_ENV, preFix)
 module.exports = {
   stats: {
     entrypoints: false,
@@ -18,7 +20,7 @@ module.exports = {
   },
   entry: ["babel-polyfill", "./src/main.js"], //入口文件，src下的main.js
   output: {
-    path: path.join(__dirname, "/iot/interface"), // 出口目录，dist文件
+    path: path.join(__dirname, `${preFix}/interface`), // 出口目录，dist文件
     publicPath: "",
     filename: "js/[name].[hash].js", //这里name就是打包出来的文件名
     chunkFilename: "js/[name].[hash].js" //指定动态生成的Chunk在输出时的文件名称
@@ -122,7 +124,7 @@ module.exports = {
     new CopyWebpackPlugin([
       {
         from: path.resolve(__dirname, "static"),
-        to: path.resolve(__dirname, "/iot/interface/static"),
+        to: path.resolve(__dirname, `${preFix}/interface/static`),
         ignore: [".*"]
       }
     ])
