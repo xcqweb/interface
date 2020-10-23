@@ -1380,7 +1380,7 @@ export default {
           var formData = new FormData();
           formData.append('file', localImage);
           formData.append('materialLibraryId', '');
-          this.myEditorUi.editor.uploadFile(this.myEditorUi, 'api/iot-cds/sources/material', 'POST', formData, function(res) {
+          this.myEditorUi.editor.uploadFile(this.myEditorUi, `${window.API_PREFIX}/api/iot-cds/sources/material`, 'POST', formData, function(res) {
             updateImg(res)
           })
         } 

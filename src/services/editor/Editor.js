@@ -414,7 +414,7 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
 Editor.prototype.InitEditor = function(editorUi) {
     // 获取文件服务器地址
     let getFileSystem = new Promise((resolve) => {
-        this.ajax(editorUi, 'api/console/host/imageHost', 'GET', null, function(res) {
+        this.ajax(editorUi, `${window.API_PREFIX}/api/console/host/imageHost`, 'GET', null, function(res) {
             // 文件服务器地址
             window.fileSystem = res.imageHost
             resolve(res)
@@ -446,7 +446,7 @@ Editor.prototype.InitEditor = function(editorUi) {
         sessionStorage.setItem("applyId", id)
         sessionStorage.setItem('modelId',modelId)
         editPromise = new Promise((resolve) => {
-          this.ajax(editorUi, 'api/iot-cds/cds/configurationDesignStudio/' + id, 'GET', null, function(res) {
+          this.ajax(editorUi, `${window.API_PREFIX}/api/iot-cds/cds/configurationDesignStudio/` + id, 'GET', null, function(res) {
               resolve(res)
           }, null)
         })

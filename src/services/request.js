@@ -9,7 +9,7 @@ const isDev = process.env.NODE_ENV === 'development'
 if(isDev) {
   axios.defaults.baseURL = urls.testBaseUrl.url  //配置接口地址
 } else {
-  axios.defaults.baseURL = window.API_PREFIX + '/' + urls.baseUrl.url   //配置接口地址
+  axios.defaults.baseURL = urls.baseUrl.url   //配置接口地址
 } 
 // 是否正在刷新的标记
 let isRefreshing = false
@@ -47,7 +47,7 @@ axios.interceptors.response.use((res) =>{
       if (!isRefreshing) {
         isRefreshing = true
         let refreshToken = getCookie('refreshToken')
-        return post('api/auth/refreshToken', {refreshToken}).then(res => {
+        return post(`${window.API_PREFIX}/api/auth/refreshToken`, {refreshToken}).then(res => {
           setCookie('token', res.token)
           setCookie('refreshToken', res.refreshToken)
           error.response.config.headers.Authorization = 'Bearer ' + res.token

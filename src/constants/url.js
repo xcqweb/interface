@@ -1,4 +1,4 @@
-let prefix = `api`;
+let prefix = `${window.API_PREFI}/api`;
 export default {
   testBaseUrl: {url: "", "desc": "测试环境"},
   baseUrl: {url: `${window.location.origin}/`, "desc": "生产环境"},

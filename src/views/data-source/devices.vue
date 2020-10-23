@@ -185,7 +185,7 @@ export default {
     },
     getDevices() {
       const query = `?size=${this.pageParams.size}&current=${this.pageParams.current}`;
-      this.requestUtil.post('api/iot-cds/cds/dataSource/selectDataImport' + query, this.params).then(res => {
+      this.requestUtil.post(`${window.API_PREFIX}/api/iot-cds/cds/dataSource/selectDataImport` + query, this.params).then(res => {
         if (res.records && res.records.length > 0) {
           res.records.forEach((item, index) => {
             item.index = index;
@@ -197,7 +197,7 @@ export default {
       });
     },
     getDeviceTypes() {
-      this.requestUtil.get('api/device/deviceType/select').then(data => {
+      this.requestUtil.get(`${window.API_PREFIX}/api/device/deviceType/select`).then(data => {
         let options = [];
         if (data && data.length > 0) {
           data.forEach(item => {
@@ -225,7 +225,7 @@ export default {
         deviceTypeId: item.value,
       };
             
-      this.requestUtil.get('api/device/deviceModel/select', params).then(data => {
+      this.requestUtil.get(`${window.API_PREFIX}/api/device/deviceModel/select`, params).then(data => {
         let options = [];
         if (data && data.length) {
           data.forEach(item => {
@@ -306,7 +306,7 @@ export default {
         appDataSources:[],
         studioDevs:list
       }
-      this.requestUtil.post('api/iot-cds/cds/configDevice', params).then(() => {
+      this.requestUtil.post(`${window.API_PREFIX}/api/iot-cds/cds/configDevice`, params).then(() => {
         this.loading = false;
         this.visible = false;
         Message.success(this.$t('dataSource.importSuccessfully'));

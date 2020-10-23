@@ -36,7 +36,7 @@ const mutations = {
 
 const actions = {
   loadStudioDevices({commit}, params) {
-    requestUtil.post('api/iot-cds/cds/findConfigDevice', params).then(res => {
+    requestUtil.post(`${window.API_PREFIX}/api/iot-cds/cds/findConfigDevice`, params).then(res => {
       const typeData = [];
       const modelObj = {};
       const deviceObj = {};
@@ -72,7 +72,7 @@ const actions = {
     })
   },
   loadStudioPredictionApp({commit}, params) {
-    requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
+    requestUtil.post(`${window.API_PREFIX}/api/iot-cds/cds/findImportApp`, params).then(res => {
       let predData = [];
       const data = res.returnObj;
       if (data) {
@@ -92,7 +92,7 @@ const actions = {
   loadStudioStatisticApp({commit}, params) {
     const statiData = [];
     commit('setPredData', statiData);
-    requestUtil.post('api/iot-cds/cds/findImportApp', params).then(res => {
+    requestUtil.post(`${window.API_PREFIX}/api/iot-cds/cds/findImportApp`, params).then(res => {
       const statiData = [];
       const data = res.returnObj;
       if (data) {

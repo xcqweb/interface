@@ -95,7 +95,7 @@ export default {
 
   methods: {
     getDeviceTypes() {
-      this.requestUtil.get('api/device/deviceType/select').then(data => {
+      this.requestUtil.get(`${window.API_PREFIX}/api/device/deviceType/select`).then(data => {
         if (data.length > 0) {
           this.deviceTypeData = data.map((item) => {
             return {

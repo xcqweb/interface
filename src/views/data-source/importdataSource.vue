@@ -249,7 +249,7 @@ export default {
         deviceTypeId: item.value,
       };
             
-      this.requestUtil.get('api/device/deviceModel/select', params).then(data => {
+      this.requestUtil.get(`${window.API_PREFIX}/api/device/deviceModel/select`, params).then(data => {
         let options = [];
         if (data && data.length) {
           data.forEach(item => {

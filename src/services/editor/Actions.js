@@ -1117,7 +1117,7 @@ Actions.prototype.init = function()
                         var formData = new FormData();
                         formData.append('file', localImage);
                         formData.append('materialLibraryId', '')
-                        ui.editor.uploadFile(ui, 'api/iot-cds/sources/material', 'POST', formData, function (res) {
+                        ui.editor.uploadFile(ui, `${window.API_PREFIX}/api/iot-cds/sources/material`, 'POST', formData, function (res) {
                             updateImg(res)
                         })
                     } 
