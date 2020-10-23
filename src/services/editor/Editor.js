@@ -315,7 +315,9 @@ Editor.prototype.getCookie = function(cname) {
     for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
         while (c.charAt(0) === ' ') {c = c.substring(1); }
-        if (c === name) {return c.substring(name.length, c.length); }
+        const pre_name = name && name.split('=')[0] || ''
+        const pre_c = name && c.split('=')[0] || ''
+        if (pre_name === pre_c) {return c.substring(name.length, c.length); }
     }
     return '';
 };
