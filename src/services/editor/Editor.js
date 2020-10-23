@@ -353,7 +353,7 @@ Editor.prototype.refreshToken = function(refreshToken) {
  * @param {Function} fn
  * @param {Function} errorfn
  */
-Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title,hideDialog=false) {
+Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}, title,hideDialog=false) { 
     if(!title){
         let resource = window.mxResources
         title=resource.get('loading')
@@ -375,6 +375,7 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
              }, 500)
             return
         }
+        debugger
         $.ajax({
             method,
             headers: {
@@ -411,9 +412,8 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
 /**
  * 初始化进入
  */
-Editor.prototype.InitEditor = function(editorUi) { 
-    // 获取文件服务器地址
-    let getFileSystem = new Promise((resolve) => {
+Editor.prototype.InitEditor = function(editorUi) {     // 获取文件服务器地址
+    let getFileSystem = new Promise((resolve) => {  
         this.ajax(editorUi, `${window.API_PREFIX}/api/console/host/imageHost`, 'GET', null, function(res) {
             // 文件服务器地址
             window.fileSystem = res.imageHost

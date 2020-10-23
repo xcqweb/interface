@@ -148,13 +148,6 @@ module.exports = {
         // "pathRewrite": {"^/api": "/api"}
         // "pathRewrite": {"^/api": ""}
       },
-      "/iot": {
-        //target: "http://10.74.20.25",
-        // target: "http://kong.ele-iot.10.74.158.69.nip.io/",
-        target: 'https://icloud.getech.cn/',
-        changeOrigin: true,
-        // "pathRewrite": {"^/api": ""}
-      },
       "/xj": {
         target: "http://10.8.4.152:8003/iot-device",
         changeOrigin: true,
