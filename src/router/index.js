@@ -5,7 +5,8 @@ import store from '../store/'
 const isDev = process.env.NODE_ENV === 'development'
 const isUat = true
 window.PREFIX_PATH = isDev ? '' : isUat ? '/iot/interface' : '/interface'
-window.API_PREFIX = isUat ? 'iot' : ''
+// window.PREFIX_PATH = '/iot/interface'
+window.API_PREFIX = isUat ? '/iot' : ''
 
 Vue.use(Router)
 
