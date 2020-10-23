@@ -1,4 +1,4 @@
-let prefix = `${window.API_PREFI}`;
+let prefix = `/iot`;
 console.log(prefix)
 export default {
   testBaseUrl: {url: "", "desc": "测试环境"},

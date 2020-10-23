@@ -387,7 +387,7 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
                 }
             },
             data: method == 'GET' ? data : data ? JSON.stringify(data) : '',
-            url:`${window.location.origin}${window.API_PREFIX}/${url}`,
+            url:`${window.location.origin}/${url}`,
             success: function(res) {
                 if(!hideDialog){
                     loadingBarInner.style.width = '100%';
@@ -482,7 +482,7 @@ Editor.prototype.uploadFile = function(editorUi, url, method, data, fn = functio
                 loadingBarInner.style.width = '20%'
             },
             data: data,
-            url:`${window.location.origin}${window.API_PREFIX}/${url}`,
+            url:`${window.location.origin}/${url}`,
             success: function(res) {
                 loadingBarInner.style.width = '100%'
                 setTimeout(() => {
