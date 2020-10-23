@@ -4,7 +4,6 @@ export const tableDeviceData = [
     title: '设备名',
     key: "deviceName",
     render: (h, params) => {
-      console.log(params)
       return h('Tooltip', {
         attrs: {
           placement: "bottom-start",

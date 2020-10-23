@@ -3,11 +3,13 @@
     <p style="margin-bottom: 2px;margin-top:10px;">
       {{ $t('rightBar.linkAddress') }}
     </p>
-    <input
+    <Input
       v-model="openlinkUrl"
+      type="textarea"
       placeholder="请输入链接地址"
       style="padding:0 4px;"
-    >
+      :autosize="{minRows: 1, maxRows: 6 }"
+    />
     <div class="openLinkTarget">
       <span>新窗口打开: </span>
       <RadioGroup v-model="isOpenNewWindow">
@@ -32,6 +34,7 @@
       </RadioGroup>
     </div>
     <button
+      v-if="openConfig==1"
       class="mutual-btn config-btn"
       @click="configParam()"
     >
@@ -53,15 +56,17 @@
       </button>
     </div>
     <config-params
-      :visible.sync="visible"
+      v-model="visible"
     />
   </div>
 </template>
 <script>
 import {tipDialog} from '../../../services/Utils'
-import {RadioGroup, Radio} from 'iview'
+import {RadioGroup, Message, Radio,Input} from 'iview'
+import {mxUtils} from "../../../services/mxGlobal"
 export default{
-  components:{RadioGroup, Radio,
+  components:{
+    RadioGroup, Radio,Input,
     ConfigParams: resolve => {
       return require(["./components/config-params"], resolve);
     }
@@ -72,11 +77,15 @@ export default{
       openlinkUrl: '',
       isEdit: false,
       isOpenNewWindow: '_blank',
-      openConfig:'1',// 传递参数
+      openConfig:'0',// 传递参数
       visible:false,
     }
   },
   created() {
+    let configParams = this.getCellModelInfo("configParams")
+    if(configParams) {
+      this.openConfig = "1"
+    }
   },
   methods: {
     initData() {
@@ -106,7 +115,49 @@ export default{
       this.$emit("submitMutual")
     },
     configParam() {
+      let startBindData = this.getCellModelInfo("bindData")
+      if(!startBindData) {
+        Message.warning(`请先绑定设备`)
+        return
+      }
       this.visible = true
+    },
+    getCellModelInfo(key, cell) {
+      let graph = this.myEditorUi.editor.graph;
+      if (!cell) {
+        cell = graph.getSelectionCell();
+      }
+      let modelInfo = graph.getModel().getValue(cell);
+      let bindData = null;
+      if (!mxUtils.isNode(modelInfo)) {
+        let doc = mxUtils.createXmlDocument();
+        let obj = doc.createElement("object");
+        obj.setAttribute("label", modelInfo || "");
+        modelInfo = obj;
+      }
+      if (modelInfo) {
+        let bindAttr = modelInfo.getAttribute(key);
+        if (bindAttr) {
+          bindData = JSON.parse(bindAttr);
+        }
+      }
+      return bindData;
+    },
+    setCellModelInfo(key, data, cell) {
+      let graph = this.myEditorUi.editor.graph;
+      if (!cell) {
+        cell = graph.getSelectionCell();
+      }
+      let modelInfo = graph.getModel().getValue(cell);
+      if (!mxUtils.isNode(modelInfo)) {
+        let doc = mxUtils.createXmlDocument();
+        let obj = doc.createElement("object");
+        obj.setAttribute("label", modelInfo || "");
+        modelInfo = obj;
+      }
+      modelInfo.setAttribute(key, JSON.stringify(data));
+      graph.getModel().setValue(cell, modelInfo);
+     
     },
   },
 }

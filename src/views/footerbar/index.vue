@@ -154,7 +154,8 @@
             !footerContent ||
               (tabsNum === 2 && cellsCount != 1) ||
               (tabsNum === 2 && cellsCount == 1 && stateList.length <= 1) ||
-              (tabsNum === 1 && $store.state.main.isTemplateApply)
+              (tabsNum === 1 && $store.state.main.isTemplateApply) ||
+              tabsNum === 1&&!paramOutterList.length&&!$store.state.main.isTemplateApply
           "
           :text="$t(nodata)"
         />
@@ -438,7 +439,7 @@ export default {
             this.modelList = res.returnObj
             this.dealStateListInit()
           }
-        });
+        })
       } else {
         this.modelList = []
         this.stateList = []
@@ -693,6 +694,7 @@ export default {
           }
           this.setCellModelInfo("bindData", startBindData)
           this.dataSourceList.splice(index, 1)
+          this.setCellModelInfo("configParams",null)
         }
       );
     },

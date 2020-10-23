@@ -120,6 +120,8 @@ class PreviewPage {
           let actionsInfo = JSON.parse(item.getAttribute('actionsInfo'))
           // 节点状态
           let statesInfo = JSON.parse(item.getAttribute('statesInfo'))
+          // 电子项目新增的 传递参数
+          let configParams = JSON.parse(item.getAttribute('configParams'))
           // 节点参数信息
           let getNodeInfo = new GetNodeInfo(node)
           // 节点类型
@@ -199,6 +201,7 @@ class PreviewPage {
             link,
             actionsInfo,
             statesInfo,
+            configParams,
             hide,
             verticalAlign,
             align,

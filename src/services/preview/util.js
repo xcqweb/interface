@@ -124,11 +124,49 @@ function actionShow(action, mainProcess) {
     mainProcess.renderPageFun(action.link)
   }
 }
-
+function dealConfigTime(str) {
+  let res = 0
+  let now = new Date()
+  let nowTime = now.getTime()
+  let hourSc = 60 * 60 * 1000 // 1小时毫秒数
+  let hour = now.getHours()
+  let y = now.getFullYear()
+  let m = now.getMonth() + 1
+  let temp = new Date(`${y}/${m}/01`)
+  let tempWeek = now.getDay() || 7
+  let tempTime = nowTime - (tempWeek - 1) * 24 * hourSc - hour * hourSc
+  switch(str) {
+    case '7天前':
+      res = nowTime - 7 * 24 * hourSc
+      break
+    case '1天前':
+      res = nowTime - 7 * 24 * hourSc
+      break
+    case '12小时前':
+      res = nowTime - 12 * hourSc
+      break
+    case '8小时前':
+      res = nowTime - 8 * hourSc
+      break
+    case '4小时前':
+      res = nowTime - 4 * hourSc
+      break
+    case '1小时前':
+      res = nowTime - hourSc
+      break
+    case '当月首日0点':
+      res = temp.getTime() - 7 * 24 * hourSc - hour * hourSc
+      break
+    case '当周周一0点':
+      res =  tempTime - 7 * 24 * hourSc
+      break
+  }
+  return res
+}
 /**
  * 打开事件
  */
-function actionOpen(action, mainProcess) {
+function actionOpen(action, mainProcess,{configParams}) {
   if (action.innerType === 'page') {
     // 打开页面
     const pageType = mainProcess.getPageType(action.link)
@@ -138,9 +176,19 @@ function actionOpen(action, mainProcess) {
       mainProcess.renderPageFun(action.link)
     }
   } else if (action.mutualType === 4) { // 打开外部链接
-    const url = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`;
-    // window.location.href = url
-    window.open(url, action.target ? action.target : '_blank');
+    let url = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`
+    if(configParams) {
+      let str = ''
+      configParams.forEach(item=>{
+        if(item.paramType == '时间') {
+          str += `&${item.paramIdentify}=${dealConfigTime(item.targetParam)}`
+        } else {
+          str += `&${item.paramIdentify}=${item.targetParam}`
+        }
+      })
+      url += str
+    }
+    window.open(url, action.target ? action.target : '_blank')
   }
 }
 /**
@@ -168,7 +216,7 @@ function hideFrameLayout() {
  * 触发事件
  * @param {object} action 
  */
-function effectEvent(action, mainProcess, applyData, fileSystem) {
+function effectEvent(action, mainProcess, applyData, fileSystem,cellInfo) {
   switch (action.effectAction) {
     case 'show':
       actionShow(action, mainProcess)
@@ -177,7 +225,7 @@ function effectEvent(action, mainProcess, applyData, fileSystem) {
       actionHide(action, applyData,mainProcess)
       break;
     case 'open':
-      actionOpen(action, mainProcess)
+      actionOpen(action, mainProcess,cellInfo)
       break;
     case 'close':
       actionClose(action, applyData,mainProcess)
@@ -269,7 +317,7 @@ function bindEvent(ele, cellInfo, mainProcess, applyData, fileSystem) {
           e.cancelBubble = true;
         }
         // 触发事件
-        effectEvent(action, mainProcess, applyData,fileSystem)
+        effectEvent(action, mainProcess, applyData,fileSystem,cellInfo)
       })
     }
   }

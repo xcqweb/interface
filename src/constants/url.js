@@ -36,5 +36,7 @@ export default {
   newImportApp: {url: `${prefix}/iot-cds/cds/findImportApp`, 'desc': '获取已导入的数据源应用'},
   newApplyParams: {url: `${prefix}/iot-cds/cds/findConfigAppParam`, 'desc': '数据源获取应用下参数'},
   newDeleteApply: {url: `${prefix}/iot-cds/cds/delConfigApp`, 'desc': '数据源移除应用'},
-
+  getDeviceTypeProperty: {url: `api/custommade/attrConfig/list?deviceTypeId=`, 'desc': '获取设备类型的所有属性'},
+  deviceModelParts: {url: `api/device/deviceModel/modelParts/`, 'desc': '获取设备型号下的部件'},
+  
 }
