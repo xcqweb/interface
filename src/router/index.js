@@ -38,7 +38,7 @@ let routes = [
 const router = new Router({
   mode:'history',
   routes:routes,
-  base: process.env.NODE_ENV === 'tanent-uat' ? '/iot/' : ''
+  base: process.env.NODE_ENV === 'tanent-uat' ? '/iot' : ''
 })
 router.beforeEach((to,from,next)=>{
   store.commit('clearToken') // 取消请求
