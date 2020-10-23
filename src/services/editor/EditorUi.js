@@ -3282,7 +3282,7 @@ EditorUi.prototype.getIfMulateEdit = function() {
         studioId: id,
         lockStatus: 0,
     };
-    editor.ajax(ui, urls.preview.url, 'PUT', objData, (res) => {
+    editor.ajax(ui, `/${urls.preview.url}`, 'PUT', objData, (res) => {
     }, (res) => {
     }, resource.get('loading'), false)
 }
@@ -3383,7 +3383,7 @@ EditorUi.prototype.save = function(hideDialog=false)
                 if (id) {// 编辑保存
                     data.studioId = id
                     const saveApplyFun = ()=> {
-                      editor.ajax(ui, urls.preview.url, 'PUT', data, (res) => {
+                      editor.ajax(ui, `/${urls.preview.url}`, 'PUT', data, (res) => {
                           this.saveSuccess(res, hideDialog);
                           setCookie('saveIotCds', 'put');
                           resolve(res);
@@ -3396,7 +3396,7 @@ EditorUi.prototype.save = function(hideDialog=false)
                     if(isTemplateApply == 1) {// 组态模板，不校验当前应用是否被其他人编辑
                       saveApplyFun()
                     } else {
-                        editor.ajax(ui, `${urls.ifMultipleEdit.url}${id}`, 'GET', '', (res) => {
+                        editor.ajax(ui, `/${urls.ifMultipleEdit.url}${id}`, 'GET', '', (res) => {
                             if (autoSaveFlagTerry === 0) {
                                 if (res.code === '3012') {
                                     autoSaveFlagTerry++
@@ -3414,7 +3414,7 @@ EditorUi.prototype.save = function(hideDialog=false)
                     data.appType = 0;
                     data.lengthWidth = "1366*768";
                     data.classifyId = "5766489a98ca72f47fefbd981295a733";              
-                    editor.ajax(ui, urls.preview.url, 'POST', data,(res) => {
+                    editor.ajax(ui, `/${urls.preview.url}`, 'POST', data,(res) => {
                         this.saveSuccess(res,hideDialog);
                         setCookie('saveIotCds', 'post');
                         resolve(res);
