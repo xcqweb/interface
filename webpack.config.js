@@ -11,8 +11,6 @@ const postCssPlugin = require("autoprefixer")({
 });
 // 清除dist文件
 const CleanWebpackPlugin = require("clean-webpack-plugin");
-const preFix = '/iot'
-console.log(process.env.NODE_ENV, preFix)
 module.exports = {
   stats: {
     entrypoints: false,
