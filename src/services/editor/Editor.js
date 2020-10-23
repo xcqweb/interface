@@ -482,7 +482,7 @@ Editor.prototype.uploadFile = function(editorUi, url, method, data, fn = functio
                 loadingBarInner.style.width = '20%'
             },
             data: data,
-            url:`${window.location.origin}/${url}`,
+            url:`${window.location.origin}${url}`,
             success: function(res) {
                 loadingBarInner.style.width = '100%'
                 setTimeout(() => {

@@ -630,7 +630,7 @@ export default {
           let formData = new FormData()
           formData.append('file', fileList)
           formData.append('materialLibraryId', this.uploadData.materialLibraryId)
-          this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, (data)=>{
+          this.myEditorUi.editor.uploadFile(this.myEditorUi, `/${this.urls.materialRightList.url}`, 'POST', formData, (data)=>{
             this.uploadSucc(data)
           })
         })
