@@ -225,7 +225,6 @@ export default {
                 }
               });
               this.$set(this.treeData[0], 'children', curRedData);
-              console.log(this.treeData[0])
             });
           }
         }

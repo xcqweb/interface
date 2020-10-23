@@ -23,9 +23,7 @@ export default {
   },
   beforeCreate() {
     let {search} = window.location
-    console.log('beforeCreate--------' )
     if(search.includes("preview=1")) {
-      console.log('beforeCreate if --------' )
       let split1 = search.split("&")
       let split2 = split1[1].split("=")
       this.$router.push({

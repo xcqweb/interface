@@ -11,7 +11,7 @@
 import Vue from 'vue';
 const isServer = Vue.prototype.$isServer;
 import {getStyle} from './assist';
-const Popper = isServer ? function() { console.log(1); } : require('popper.js/dist/umd/popper.js');
+const Popper = isServer ? function() {  } : require('popper.js/dist/umd/popper.js');
 
 import {transferIndex, transferIncrease} from './transfer-queue';
 

@@ -29,7 +29,6 @@ let getCookie=function(cname) {
     for (let i = 0; i < ca.length; i++) {
         let c = ca[i];
         while (c.charAt(0) === ' ') {c = c.substring(1); }
-        console.log(name, c)
         const pre_name = name && name.split('=')[0] || ''
         const pre_c = name && c.split('=')[0] || ''
         if (pre_name === pre_c) {return c.substring(name.length, c.length); }

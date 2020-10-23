@@ -465,6 +465,8 @@ Editor.prototype.InitEditor = function(editorUi) {     // 获取文件服务器�
  */
 Editor.prototype.uploadFile = function(editorUi, url, method, data, fn = function() {}, errorfn = function() {}) {
     let _that = this
+    console.log('url--cn',url)
+    console.log('url--cn--a',`${window.location.origin}${url}`)
     let loadingBarInner = editorUi.actions.get('loading').funct()
     callAjax()
     function callAjax() {

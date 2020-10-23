@@ -3426,8 +3426,7 @@ EditorUi.prototype.save = function(hideDialog=false)
             }
             catch (e)
             {
-                console.log(e)
-                editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
+              editor.setStatus(mxUtils.htmlEntities(mxResources.get('errorSavingFile')));
             }
         }
     })
