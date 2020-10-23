@@ -38,7 +38,7 @@ let routes = [
 const router = new Router({
   mode:'history',
   routes:routes,
-  // base: '/iot/'
+  base: '/iot/'
 })
 router.beforeEach((to,from,next)=>{
   store.commit('clearToken') // 取消请求
