@@ -97,6 +97,7 @@ function dealRequest(url,params,funName,isLoading) {
         // }
       })
       .catch((err) => {
+        console.log(err)
         if(isLoading) {
           //loading.close();
         }

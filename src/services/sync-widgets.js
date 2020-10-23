@@ -10,6 +10,7 @@ function syncWidget(editorUi,type,info) {
   xmlList.forEach(item=>{
     let doc = mxUtils.parseXml(item)
     let code = new mxCodec(doc)
+    console.log(code)
   })
   if(type == 'state') {
     if(info) {//同步状态修改
