@@ -186,7 +186,7 @@ function actionOpen(action, mainProcess,{configParams}) {
           str += `&${item.paramIdentify}=${item.targetParam}`
         }
       })
-      url += str
+      url += str + '&interface=1'
     }
     window.open(url, action.target ? action.target : '_blank')
   }
