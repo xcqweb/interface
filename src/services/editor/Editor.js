@@ -387,7 +387,7 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
                 }
             },
             data: method == 'GET' ? data : data ? JSON.stringify(data) : '',
-            url:`${window.location.origin}/${url}`,
+            url:`${window.location.origin}${url}`,
             success: function(res) {
                 if(!hideDialog){
                     loadingBarInner.style.width = '100%';
@@ -411,7 +411,7 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
 /**
  * 初始化进入
  */
-Editor.prototype.InitEditor = function(editorUi) {
+Editor.prototype.InitEditor = function(editorUi) { 
     // 获取文件服务器地址
     let getFileSystem = new Promise((resolve) => {
         this.ajax(editorUi, `${window.API_PREFIX}/api/console/host/imageHost`, 'GET', null, function(res) {
