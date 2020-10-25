@@ -246,6 +246,7 @@ class PreviewPage {
     this.wsParams = [] //切换页面或者弹窗时候，清空订阅的参数，重新添加
     this.cachCells = []
     this.mainProcess.realData = []
+    this.mainProcess.backRealData = []
     if (pageType == 'normal') {
       for (let key in applyData) {
         destroyWs(applyData, key)

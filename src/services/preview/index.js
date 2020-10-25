@@ -22,7 +22,8 @@ class Main {
     this.applyInfo = null
     this.shapeXmls = null
     this.previewContext = null // preview vue 组件实例
-    this.realData = [] //最后一笔数据或者实时推送过来的数据的备份
+    this.realData = [] // 仪表盘 最后一比数据备份处理
+    this.backRealData = [] // 每次推送数据备份
   }
 
   // 初始化

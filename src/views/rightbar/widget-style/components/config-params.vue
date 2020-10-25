@@ -536,8 +536,9 @@ export default {
     },
     dealDevciceTargeParam(data) {
       if(this.modifyData.configParamType == 'id') {
-        this.modifyData.targetParam = data[0].paramId
+        this.modifyData.targetParam = data[0].deviceParamId
       } else {
+        this.modifyData.targetParamId = data[0].paramId
         if(data[0].displayName) {
           this.modifyData.targetParam = `${data[0].paramName}(${data[0].displayName})`
         } else {

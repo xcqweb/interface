@@ -163,6 +163,20 @@ function dealConfigTime(str) {
   }
   return res
 }
+function dealParamValueFun(id, mainProcess) { // 处理传递参数值是id的情况
+  let res = ''
+  if (mainProcess.backRealData.length) {
+    for(let i = 0;i < mainProcess.backRealData.length;i++) {
+      let item = mainProcess.backRealData[i]
+      const keys = Object.keys(item)
+      if (keys.includes(id)) {
+        res = item[id]
+        break
+      }
+    }
+  }
+  return res
+}
 /**
  * 打开事件
  */
@@ -182,6 +196,8 @@ function actionOpen(action, mainProcess,{configParams}) {
       configParams.forEach(item=>{
         if(item.paramType == '时间') {
           str += `&${item.paramIdentify}=${dealConfigTime(item.targetParam)}`
+        } else if (item.pageType == '设备参数' && item.configParamType == '项目值') {
+          str += `&${item.paramIdentify}=${dealParamValueFun(item.targetParamId,mainProcess)}`
         } else {
           str += `&${item.paramIdentify}=${item.targetParam}`
         }

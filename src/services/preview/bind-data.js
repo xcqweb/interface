@@ -4,10 +4,17 @@ let reconnectCount = 0 //websocket连接出错时候，重连的次数
 const reconnectMaxCount = 5
 //获取websocket连接信息
 let websocketUrlReal = ''
+function splitArr(splitLen,arr) {
+  let result = []
+  for (let i = 0, len = arr.length; i < len; i += splitLen) {
+    result.push(arr.slice(i, i + splitLen))
+  }
+  return result
+}
 //获取最后一笔数据
-async function getLastData(deviceParams, fileSystem,mainProcess) {
+function getLastData(deviceParams, fileSystem,mainProcess) {
   let resParams = []
-  let maps = dealdeviceParams(deviceParams)
+  let maps = dealDeviceParams(deviceParams)
   for (let key of maps.keys()) {
     let item = maps.get(key)
     let keyArr = key.split('-')
@@ -19,31 +26,65 @@ async function getLastData(deviceParams, fileSystem,mainProcess) {
   // const foreastP = resParams.map(item=>item.bindType == 1) // 预测应用 这期不做最后一笔数据
   deviceP = deviceP.map(d=>d.item)
   staticsP = staticsP.map(d=>d.item)
+  let dpArr = [],spArr = []
+  if(deviceP.length <= 20) {
+    dpArr = deviceP
+  } else {
+    dpArr = splitArr(20,deviceP)
+  }
+  if(staticsP.length <= 20) {
+    spArr = staticsP
+  } else {
+    spArr = splitArr(20, staticsP)
+  }
+  let dpLen = dpArr.length,spLen = dpArr.length
+  let tempArr = []
+  let len = 0
+  if(dpLen < spLen) {
+    tempArr = spArr
+    len = dpLen
+  } else {
+    tempArr = dpArr
+    len = spLen
+  }
+  for(let i = 0; i < len; i++) {
+    lastRequestDeal(dpArr[i], spArr[i], fileSystem, mainProcess)
+  }
+
+  for (let j = len; j < tempArr.length; j++) {
+    if(dpLen < spLen) {
+      lastRequestDeal([],tempArr[j], fileSystem, mainProcess)
+    } else {
+      lastRequestDeal(tempArr[j], [], fileSystem, mainProcess)
+    }
+  }
+}
+async function lastRequestDeal(deviceP, staticsP,fileSystem,mainProcess) { // 最后一笔数据过慢，分批发请求处理
   let res = []
-  if(deviceP.length) {
+  if (deviceP.length) {
     res = await geAjax('api/v2/persist/tsdb/point/last', 'POST', JSON.stringify(deviceP))
   }
-  if(staticsP.length) {
-    staticsP = staticsP.map((item)=>{
+  if (staticsP.length) {
+    staticsP = staticsP.map((item) => {
       return {
         'params': item.paramIds,
         'appId': item.deviceId
       }
     })
     let result = await geAjax('api/v2/persist/tsdb/statistics/last', 'POST', JSON.stringify(staticsP))
-    if(result && result.length) {
-      result.forEach(item=>{
+    if (result && result.length) {
+      result.forEach(item => {
         item.deviceId = item.appId
       })
       res = res.concat(result)
     }
   }
-  if(res.length) {
-    setterRealData(res,fileSystem,mainProcess)
+  if (res.length) {
+    setterRealData(res, fileSystem, mainProcess)
   }
 }
 
-function dealdeviceParams(deviceParams) {
+function dealDeviceParams(deviceParams) {
   let maps = new Map()
   deviceParams.forEach(item => {
     let obj = {
@@ -67,7 +108,7 @@ async function getSubscribeInfos(deviceParams) {
     subscribeInfos: [],
     networkProtocol: 'websocket',
   };
-  let maps = dealdeviceParams(deviceParams)
+  let maps = dealDeviceParams(deviceParams)
   for (let key of maps.keys()) {
     let item = maps.get(key)
     let keyArr = key.split('-')
@@ -86,6 +127,7 @@ async function getSubscribeInfos(deviceParams) {
   return res
 }
 function setterRealData(res, fileSystem,mainProcess) {
+  mainProcess.backRealData = res
   let maps = new Map()
   let targetArr = []
   res.forEach(item=>{
