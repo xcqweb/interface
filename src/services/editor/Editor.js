@@ -375,7 +375,6 @@ Editor.prototype.ajax = function(editorUi, url, method, data, fn = function() {}
              }, 500)
             return
         }
-        debugger
         $.ajax({
             method,
             headers: {
