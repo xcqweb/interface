@@ -813,11 +813,25 @@ Sidebar.prototype.addChartPalette=function(){
 */
 Sidebar.prototype.addUserPalette = function (expand) {
     let arr = []
-    let dealSize=(size)=>{
-        if(size>500){
-            size = 500
+    let dealSize=(width,height)=>{
+        let obj = {w:200,h:150}
+        let maxSzie = 300
+        let ratio = width/height // 宽高比例
+        if(width && width != 1 && height && height != 1) {
+          if(width < maxSzie && height < maxSzie) {
+            obj.w = width
+            obj.h = height
+          } else {
+            if(width > maxSzie) {
+              obj.w = maxSzie
+              obj.h = parseInt(maxSzie/ratio)
+            } else if(height>maxSzie) {
+              obj.h = maxSzie
+              obj.w = parseInt(maxSzie*ratio)
+            }
+          }
         }
-        return size
+        return obj
     }
     requestUtil.get(Urls.materialList.url).then((res) => {
         let data = res.records || []
@@ -837,7 +851,7 @@ Sidebar.prototype.addUserPalette = function (expand) {
             res.forEach(item=>{
                 let array = []
                 item.materialList.forEach(d=>{
-                    array.push(this.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`, d.picWidth&&d.picWidth!=1 ? dealSize(parseInt(d.picWidth / 1.5)) : 200, d.picHeight&&d.picHeight!=1 ? dealSize(parseInt(d.picHeight / 1.5)) : 150, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
+                    array.push(this.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`,dealSize(d.picWidth,d.picHeight).w, dealSize(d.picWidth,d.picHeight).h, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
                 })
                 this.addPaletteFunctions('user', `${item.libraryName}`, false, array)
             })
