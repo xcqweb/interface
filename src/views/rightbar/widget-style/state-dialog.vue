@@ -245,7 +245,7 @@ export default{
         let formData = new FormData()
         formData.append('file', localImage)
         formData.append('materialLibraryId',"");
-        this.myEditorUi.editor.uploadFile(this.myEditorUi, this.urls.materialRightList.url, 'POST', formData, (res)=> {
+        this.myEditorUi.editor.uploadFile(this.myEditorUi, `/${this.urls.materialRightList.url}`, 'POST', formData, (res)=> {
           data.imgInfo = {
             url:`getechFileSystem/${res.picPath}`,
             width:res.picWidth,

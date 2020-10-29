@@ -91,7 +91,6 @@ function dealRequest(url,params,funName,isLoading) {
       },(err)=>{
         reject(err);
         // Message.warning('系统繁忙！')
-        // console.log(err)
         // return false
         // if(isLoading) {
         //     //loading.close();

@@ -1,5 +1,4 @@
-let prefix = `/iot`;
-console.log(prefix)
+let prefix = `iot`;
 export default {
   testBaseUrl: {url: "", "desc": "测试环境"},
   baseUrl: {url: `${window.location.origin}/`, "desc": "生产环境"},
