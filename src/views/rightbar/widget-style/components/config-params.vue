@@ -527,7 +527,7 @@ export default {
           if(this.deviceDataCache) {
             this.dealDevciceTargeParam(this.deviceDataCache)
           } else {
-            this.$set(this.tableData[this.editIndex],'targetParam',)
+            this.$set(this.tableData[this.editIndex],'targetParam','')
           }
           break
       }
