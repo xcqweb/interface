@@ -27,17 +27,9 @@ function getLastData(deviceParams, fileSystem,mainProcess) {
   deviceP = deviceP.map(d=>d.item)
   staticsP = staticsP.map(d=>d.item)
   let dpArr = [],spArr = []
-  if(deviceP.length <= 20) {
-    dpArr = deviceP
-  } else {
-    dpArr = splitArr(20,deviceP)
-  }
-  if(staticsP.length <= 20) {
-    spArr = staticsP
-  } else {
-    spArr = splitArr(20, staticsP)
-  }
-  let dpLen = dpArr.length,spLen = dpArr.length
+  dpArr = splitArr(20,deviceP)
+  spArr = splitArr(20, staticsP)
+  let dpLen = dpArr.length,spLen = spArr.length
   let tempArr = []
   let len = 0
   if(dpLen < spLen) {
