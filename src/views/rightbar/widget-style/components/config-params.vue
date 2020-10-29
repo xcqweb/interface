@@ -394,8 +394,8 @@ export default {
         return
       }
       const listRes = this.tableData.map(item=>item.paramIdentify)
-      const resArr = listRes.filter(item=>item === this.modifyData.paramIdentify)
-      if(resArr.length > 1) {
+      const resIndex = listRes.findIndex(item=>item === this.modifyData.paramIdentify)
+      if(resIndex != -1 && resIndex != this.editIndex) {
         Message.warning('参数标识不能重复')
         return
       }
