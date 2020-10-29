@@ -62,6 +62,7 @@ const actions = {
             deviceId: item.deviceId,
             deviceName: item.deviceName,
             serialNumber: item.serialNumber,
+            locationId:item.locationId,
             locationNamePath: item.locationNamePath
           });
         });

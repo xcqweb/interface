@@ -160,6 +160,12 @@ function dealConfigTime(str) {
     case '当周周一0点':
       res =  tempTime - 7 * 24 * hourSc
       break
+    case '当日0点':
+      res =  new Date(now.toDateString()).getTime()
+      break
+    case '当前时间':
+      res =  nowTime
+      break
   }
   return res
 }

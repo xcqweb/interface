@@ -118,6 +118,7 @@ export default {
             let edit
             if (this.editIndex === index) {
               this.modifyData.paramType = this.modifyData.paramType || this.findArrValue(this.paramTypeList,row.paramType)
+              this.dealConfigParmTypeNotSet(this.modifyData.paramType)
               edit = h('i-select', {
                 props: {
                   value: this.modifyData.paramType,
@@ -394,7 +395,7 @@ export default {
         return
       }
       const listRes = this.tableData.map(item=>item.paramIdentify)
-      const resIndex = listRes.findIndex(item=>item === this.modifyData.paramIdentify)
+      const resIndex = listRes.findIndex(item=>String(item).trim() === String(this.modifyData.paramIdentify).trim())
       if(resIndex != -1 && resIndex != this.editIndex) {
         Message.warning('参数标识不能重复')
         return
@@ -419,6 +420,7 @@ export default {
       return res.value
     },
     editRow(index) {
+      this.modifyData = {...initData}
       this.editIndex = index
     },
     delRow(row,index) {
@@ -430,7 +432,24 @@ export default {
         this.modifyData = {...initData}
       }
     },
-    dealParamType(val) {
+    dealConfigParmTypeNotSet(val) {
+      if(val == 'deviceProperty' || val == 'deviceNo' || val == 'time') {
+        this.configParamTypeList = [
+          {label:'项目值',value:'value'},
+        ]
+      } else if(val == 'deviceLocation') {
+        this.configParamTypeList = [
+          {label:'项目值',value:'value'},
+          {label:'项目id和值',value:'id@value'},
+        ]
+      } else {
+        this.configParamTypeList = [
+          {label:'项目id',value:'id'},
+          {label:'项目值',value:'value'},
+        ]
+      }
+    },
+    dealConfigParmType(val) {
       if(val == 'deviceProperty' || val == 'deviceNo' || val == 'time') {
         this.configParamTypeList = [
           {label:'项目值',value:'value'},
@@ -449,6 +468,9 @@ export default {
         ]
         this.modifyData.configParamType = 'id'
       }
+    },
+    dealParamType(val) {
+      this.dealConfigParmType(val)
       this.dealTarget()
     },
     dealTarget() {
@@ -504,6 +526,8 @@ export default {
         case 'deviceParam':
           if(this.deviceDataCache) {
             this.dealDevciceTargeParam(this.deviceDataCache)
+          } else {
+            this.$set(this.tableData[this.editIndex],'targetParam',)
           }
           break
       }
@@ -513,6 +537,7 @@ export default {
       let startBindData = this.getCellModelInfo("bindData")
       if(configParams && startBindData) {
         this.tableData = configParams
+        this.editIndex = -1
       } else {
         this.editIndex = 0
       }
