@@ -130,11 +130,13 @@ function dealConfigTime(str) {
   let nowTime = now.getTime()
   let hourSc = 60 * 60 * 1000 // 1小时毫秒数
   let hour = now.getHours()
+  let minute = now.getMinutes()
+  let second = now.getSeconds()
   let y = now.getFullYear()
   let m = now.getMonth() + 1
   let temp = new Date(`${y}/${m}/01`)
   let tempWeek = now.getDay() || 7
-  let tempTime = nowTime - (tempWeek - 1) * 24 * hourSc - hour * hourSc
+  let tempTime = nowTime - (tempWeek - 1) * 24 * hourSc - hour * hourSc - (minute * 60 * 1000) - (second * 1000)
   switch(str) {
     case '7天前':
       res = nowTime - 7 * 24 * hourSc
@@ -155,10 +157,10 @@ function dealConfigTime(str) {
       res = nowTime - hourSc
       break
     case '当月首日0点':
-      res = temp.getTime() - 7 * 24 * hourSc - hour * hourSc
+      res = temp.getTime()
       break
     case '当周周一0点':
-      res =  tempTime - 7 * 24 * hourSc
+      res =  tempTime
       break
     case '当日0点':
       res =  new Date(now.toDateString()).getTime()
