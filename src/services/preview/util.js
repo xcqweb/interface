@@ -140,7 +140,7 @@ function dealConfigTime(str) {
       res = nowTime - 7 * 24 * hourSc
       break
     case '1天前':
-      res = nowTime - 7 * 24 * hourSc
+      res = nowTime - 1 * 24 * hourSc
       break
     case '12小时前':
       res = nowTime - 12 * hourSc
