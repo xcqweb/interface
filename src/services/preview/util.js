@@ -204,7 +204,7 @@ function actionOpen(action, mainProcess,{configParams}) {
       configParams.forEach(item=>{
         if(item.paramType == '时间') {
           str += `&${item.paramIdentify}=${dealConfigTime(item.targetParam)}`
-        } else if (item.pageType == '设备参数' && item.configParamType == '项目值') {
+        } else if (item.paramType == '设备参数' && item.configParamType == '项目值') {
           str += `&${item.paramIdentify}=${dealParamValueFun(item.targetParamId,mainProcess)}`
         } else {
           str += `&${item.paramIdentify}=${item.targetParam}`
