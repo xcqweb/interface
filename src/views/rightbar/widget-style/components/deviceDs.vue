@@ -97,6 +97,7 @@
     <div class="data-sources-bottom">
       <Button 
         type="primary"
+        size="small"
         style="cursor: pointer;"
         long
         :disabled="!checkModelArr.length"

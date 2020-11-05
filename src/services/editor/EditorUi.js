@@ -5,10 +5,8 @@
 /**
  * Constructs a new graph editor
  */
-import {
-    FilenameDialog, ColorDialog
-} from './Dialogs'
- 
+import { FilenameDialog, ColorDialog} from './Dialogs'
+import {mxDualRuler} from './mxRuler'
 import {Format} from './Format'
 import urls from '../../constants/url'
 import { setCookie, tipDialog} from '../Utils'
@@ -860,6 +858,12 @@ window.EditorUi = function(editor, container, lightbox)
     graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt)
     {
         var cells = evt.getProperty('cells');
+        if(!cells.length) {
+          return
+        }
+        if(!Array.isArray(cells)) {
+          cells = [cells]
+        }
         // 转换类型
         for (let cell of cells) {
             let cellInfo = graph.getModel().getValue(cell)
@@ -1090,9 +1094,12 @@ EditorUi.prototype.init = function()
     // Hack to make editLink available in vertex handler
     graph.editLink = ui.actions.get('editLink').funct;
 
+
     this.updateActionStates();
     this.initClipboard();
     this.initCanvas();
+    this.ruler = new mxDualRuler(this, graph.view.unit)
+    this.refresh()
     if (this.format != null)
     {
         this.format.init();
@@ -2652,13 +2659,13 @@ EditorUi.prototype.updateActionStates = function()
     // 更新 action 状态
     var state = graph.view.getState(graph.getSelectionCell());
     var shapeName = state && state.style.shape;
-    var actions = ['cut', 'copy', 'bold', 'underline','paste', 'delete', 'duplicate',
-        'editLink', 'backgroundColor', 'borderColor', 'group','ungroup','resetHide',
-	               'edit', 'toFront', 'toBack', 'lockUnlock','lock','unlock',
-	               'fillColor', 'gradientColor', 'fontColor',
-	               'formattedText', 'strokeColor', 'turn', 'flipH', 'flipV', 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'];
+    // var actions = ['cut', 'copy', 'bold', 'underline','paste', 'delete', 'duplicate',
+    //     'editLink', 'backgroundColor', 'borderColor', 'group','ungroup','resetHide',
+	  //              'edit', 'toFront', 'toBack', 'lockUnlock','lock','unlock',
+	  //              'fillColor', 'gradientColor', 'fontColor',
+	  //              'formattedText', 'strokeColor', 'turn', 'flipH', 'flipV', 'leftalign', 'centeralign', 'rightalign', 'top', 'bottom', 'horizontalcenter', 'verticalcenter', 'verticalalign', 'horizontalalign'];
 
-    var menuDisabled = ['toFront', 'toBack','flipH', 'flipV', 'turn', 'rotation']
+    // var menuDisabled = ['toFront', 'toBack','flipH', 'flipV', 'turn', 'rotation']
     // 判断当前是否是菜单
     var notMenu = shapeNameStr.indexOf('menuCell') == -1 && shapeNameStr.indexOf('menulist') == -1;
     // 判断当前是否是表格
@@ -3282,7 +3289,7 @@ EditorUi.prototype.getIfMulateEdit = function() {
         studioId: id,
         lockStatus: 1,
     };
-    editor.ajax(ui, `/${urls.preview.url}`, 'PUT', objData, (res) => {
+    editor.ajax(ui, `${urls.preview.url}`, 'PUT', objData, (res) => {
     }, (res) => {
     }, resource.get('loading'), false)
 }
@@ -3369,10 +3376,11 @@ EditorUi.prototype.save = function(hideDialog=false)
                 editor.setXml();
                 // 页面信息
                 var pages = editor.pages;
+                var contentStr = JSON.stringify({pages, rank: editor.pagesRank})
                 var data = {
                     theme:JSON.stringify(ui.theme),
                     applyCon: editor.pagesNameList().join(),
-                    content: JSON.stringify({pages, rank: editor.pagesRank}),
+                    content: editor.graph.compress(contentStr),
                     lockStatus: 1
                 }
                 const svgImg = ui.sidebar.getSvgImage();
@@ -3383,7 +3391,7 @@ EditorUi.prototype.save = function(hideDialog=false)
                 if (id) {// 编辑保存
                     data.studioId = id
                     const saveApplyFun = ()=> {
-                      editor.ajax(ui, `/${urls.preview.url}`, 'PUT', data, (res) => {
+                      editor.ajax(ui, `${urls.preview.url}`, 'PUT', data, (res) => {
                           this.saveSuccess(res, hideDialog);
                           setCookie('saveIotCds', 'put');
                           resolve(res);
@@ -3396,7 +3404,7 @@ EditorUi.prototype.save = function(hideDialog=false)
                     if(isTemplateApply == 1) {// 组态模板，不校验当前应用是否被其他人编辑
                       saveApplyFun()
                     } else {
-                        editor.ajax(ui, `/${urls.ifMultipleEdit.url}${id}`, 'GET', '', (res) => {
+                        editor.ajax(ui, `${urls.ifMultipleEdit.url}${id}`, 'GET', '', (res) => {
                             if (autoSaveFlagTerry === 0) {
                                 if (res.code === '3012') {
                                     autoSaveFlagTerry++
@@ -3414,7 +3422,7 @@ EditorUi.prototype.save = function(hideDialog=false)
                     data.appType = 0;
                     data.lengthWidth = "1366*768";
                     data.classifyId = "5766489a98ca72f47fefbd981295a733";              
-                    editor.ajax(ui, `/${urls.preview.url}`, 'POST', data,(res) => {
+                    editor.ajax(ui, `${urls.preview.url}`, 'POST', data,(res) => {
                         this.saveSuccess(res,hideDialog);
                         setCookie('saveIotCds', 'post');
                         resolve(res);
@@ -3928,7 +3936,8 @@ EditorUi.prototype.createKeyHandler = function(editor)
         keyHandler.bindAction(66, true, 'bold'); // Ctrl+B
         keyHandler.bindAction(66, true, 'toBack', true); // Ctrl+Shift+B
         keyHandler.bindAction(70, true, 'toFront', true); // Ctrl+Shift+F
-        keyHandler.bindAction(68, true, 'duplicate'); // Ctrl+D
+        // keyHandler.bindAction(68, true, 'duplicate'); // Ctrl+D
+        keyHandler.bindAction(68, true, 'collectCustom'); // Ctrl+D
         keyHandler.bindAction(90, true, 'undo'); // Ctrl+Z
         keyHandler.bindAction(89, true, 'autosize', true); // Ctrl+Shift+Y
         keyHandler.bindAction(88, true, 'cut'); // Ctrl+X

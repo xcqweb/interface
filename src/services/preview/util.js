@@ -133,11 +133,14 @@ function actionOpen(action, mainProcess) {
   if (action.innerType === 'page') {
     // 打开页面
     const pageType = mainProcess.getPageType(action.link)
-    if (pageType === 'normal' && mainProcess.pageId !== action.link) {
+    if (pageType === 'normal' && mainProcess.previewPage.currentPageId !== action.link) {
       mainProcess.changePage(action.link,true)
     } else if (pageType === 'dialog') {
       mainProcess.renderPageFun(action.link)
     }
+  } else if (action.mutualType === 4) { // 打开外部链接
+    let url = `${/^(https|http):\/\//.test(action.link) ? '' : 'http://'}${action.link}`
+    window.open(url, action.target ? action.target : '_blank')
   }
 }
 /**
@@ -799,7 +802,35 @@ function getQueryVariable(variable) {
   }
   return null
 }
+// 解压，对应编辑模式下的graph.decompress
+function decompress(data) {
+  if (data == null || data.length == 0 || typeof(pako) === 'undefined') {
+    return data
+  }
+    
+  let tmp = (window.atob) ? atob(data) : window.decode(data, true)
+  return zapGremlins(decodeURIComponent(bytesToString(window.pako.inflateRaw(tmp))))
+}
+function bytesToString(arr) {
+  let result = new Array(arr.length)
+  for (let i = 0; i < arr.length; i++) {
+    result[i] = String.fromCharCode(arr[i])
+  }
+  return result.join('')
+}
+function zapGremlins(text) {
+  let checked = []
+  for (let i = 0; i < text.length; i++) {
+    let code = text.charCodeAt(i)
+    // Removes all control chars except TAB, LF and CR
+    if (code >= 32 || code == 9 || code == 10 || code == 13) {
+      checked.push(text.charAt(i))
+    }
+  }
+  return checked.join('')
+}
 export {
   removeEle, destroyWs, geAjax, insertImage, insertEdge, bindEvent, showTips, timeFormate,dealTriangle,dealSvgWidgets,loadShapeXml,
-  dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout,dealDefaultParams,insertSvg,svgShape,setSvgImageHref,getQueryVariable
+  dealProgress, dealPipeline, dealCharts, dealLight, toDecimal2NoZero, throttleFun, hideFrameLayout,dealDefaultParams,insertSvg,svgShape,setSvgImageHref,getQueryVariable,
+  decompress
 }

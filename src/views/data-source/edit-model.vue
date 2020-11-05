@@ -44,11 +44,15 @@
     >
       <!-- 编辑状态 -->
       <template v-if="showForm">
-        <Button @click="cancel">
+        <Button
+          size="small"
+          @click="cancel"
+        >
           {{ $t('cancel') }}
         </Button>
         <Button
           type="primary"
+          size="small"
           :loading="loading"
           @click="submit"
         >
@@ -59,6 +63,7 @@
       <template v-else>
         <Button
           type="primary"
+          size="small"
           @click="showForm = true"
         >
           {{ $t('dataSource.editModel') }}

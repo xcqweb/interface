@@ -1,5 +1,4 @@
 // mxClient.js 中的 全局函数、变量的导出
-let Graph = window.Graph
 let Editor = window.Editor
 let EditorUi = window.EditorUi
 let Toolbar = window.Toolbar
@@ -18,7 +17,8 @@ let mxPopupMenu = window.mxPopupMenu
 let mxClient = window.mxClient
 let mxEventSource = window.mxEventSource
 let mxCodec = window.mxCodec
+let mxGraphModel = window.mxGraphModel
 export {
-  Graph, Editor, EditorUi, Toolbar, mxUtils, mxEvent, Menu, mxConstants, mxCell, mxGeometry, Dialog,
-  mxRectangle, mxResources, mxEventObject, mxGraphView, mxPopupMenu, mxClient, mxEventSource, mxCodec
+  Editor, EditorUi, Toolbar, mxUtils, mxEvent, Menu, mxConstants, mxCell, mxGeometry, Dialog,
+  mxRectangle, mxResources, mxEventObject, mxGraphView, mxPopupMenu, mxClient, mxEventSource, mxCodec, mxGraphModel
 }

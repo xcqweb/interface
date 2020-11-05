@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --mode=development",
-    "build": "cross-env NODE_ENV=tanent-uat webpack --max_old_space_size=4096 --mode=production",
+    "build": "cross-env NODE_ENV=tenant webpack --max_old_space_size=4096 --mode=production",
     "csot": "cross-env NODE_ENV=cost webpack --max_old_space_size=4096 --mode=production",
     "tcl": "cross-env NODE_ENV=tcl webpack --max_old_space_size=4096 --mode=production",
     "lint": "eslint --ext .js --ext .vue src/",
@@ -80,6 +80,7 @@
     "vue": "^2.6.11",
     "vue-i18n": "^8.16.0",
     "vue-router": "^3.1.6",
+    "vuedraggable": "^2.24.3",
     "vuex": "^3.1.3"
   }
 }

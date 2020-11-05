@@ -57794,6 +57794,42 @@ mxGraph.prototype.orderCells = function(back, cells)
  * back - Boolean that specifies if the cells should be moved to back.
  */
 
+// 上移一层，下移一层 实现
+mxGraph.prototype.cellsOrdered2 = function(cells, back)
+{
+    if (cells != null)
+    {
+        this.model.beginUpdate();
+        try
+        {
+            for (var i = 0; i < cells.length; i++)
+            {
+                var parent = this.model.getParent(cells[i]);
+                var idx = parent.getIndex(cells[i]);
+                if (back)
+                {
+                  idx--;
+                  idx = Math.max(0,idx);
+                  this.model.add(parent, cells[i], idx);
+                }
+                else
+                {
+                  idx++;
+                  idx = Math.min(idx,this.model.getChildCount(parent) - 1)
+                    this.model.add(parent, cells[i],idx);
+                }
+            }
+			
+            this.fireEvent(new mxEventObject(mxEvent.CELLS_ORDERED,
+                'back', back, 'cells', cells));
+        }
+        finally
+        {
+            this.model.endUpdate();
+        }
+    }
+};
+
 mxGraph.prototype.cellsOrdered = function(cells, back)
 {
     if (cells != null)
@@ -86355,8 +86391,7 @@ mxCodec.prototype.decode = function(node, into)
  */
 mxCodec.prototype.encodeCell = function(cell, node, includeChildren)
 {
-    node.appendChild(this.encode(cell));
-	
+    node && node.appendChild(this.encode(cell));
     if (includeChildren == null || includeChildren)
     {
         var childCount = cell.getChildCount();

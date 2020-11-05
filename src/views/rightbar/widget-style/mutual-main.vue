@@ -60,11 +60,19 @@
         </div>
         <div
           class="type-tab"
-          style="border-top-right-radius:2px;border-bottom-right-radius:2px;"
           :class="{'selected':typeTab==3}"
           @click="changeTab(3)"
         >
           {{ $t("rightBar.change") }}
+        </div>
+        <!-- 链接 -->
+        <div
+          class="type-tab"
+          style="border-top-right-radius:2px;border-bottom-right-radius:2px;"
+          :class="{'selected':typeTab==4}"
+          @click="changeTab(4)"
+        >
+          {{ $t("rightBar.link") }}
         </div>
         <div
           class="type-tab"
@@ -99,6 +107,13 @@
         :current-page-widgets="currentPageWidgets"
         @submitMutual="editEventDone"
       />
+      <openLink
+        v-show="typeTab===4"
+        ref="link"
+        :bind-actions="bindActions"
+        :current-edit-item="currentEditItem"
+        @submitMutual="editEventDone"
+      />
       <Control
         v-show="typeTab===5"
         ref="control"
@@ -114,6 +129,7 @@
 import LinkTo from './linkto'
 import Visible from './visible'
 import Change from './change'
+import openLink from './link'
 import Control from './control'
 import {sureDialog} from '../../../services/Utils'
 import {mxUtils} from '../../../services/mxGlobal'
@@ -121,12 +137,12 @@ import VueEvent from '../../../services/VueEvent.js'
 // 不显示节点的名称
 let forbiddenShape = ['menuCell', 'tableCell', 'label']
 export default{
-  components:{LinkTo,Visible,Change,Control},
+  components:{LinkTo,Visible,Change,Control,openLink},
   data() {
     return {
       isEdit:false,
       typeTab:1,
-      mutualTypes:[this.$t('link'),this.$t('rightBar.visibleOrHide'),this.$t('rightBar.change'),this.$t('rightBar.link'),this.$t('controlS')],
+      mutualTypes:[this.$t('link'),this.$t('rightBar.visibleOrHide'),this.$t('rightBar.change'),'链接',this.$t('rightBar.link'),this.$t('controlS')],
       events:[],
       pages:[],//页面
       bindActions:[],
@@ -208,6 +224,8 @@ export default{
       this.isEdit = true
       if(this.typeTab == 3) {
         this.$refs.change.addInit()
+      } else if (this.typeTab == 4) {
+        this.$refs.init.initData()
       }
     },
     changeTab(index,changeEditFlag) {
@@ -249,7 +267,9 @@ export default{
       }else if(data.mutualType == 3) {
         action.effectAction = 'change'
         action.stateInfo = data.stateInfo
-      }else if(data.mutualType == 5) {
+      } else if(data.mutualType == 4) {
+        action.target = data.target
+      } else if(data.mutualType == 5) {
         action.data = data.commandData
         action.effectAction = data.effectAction
       }
@@ -275,6 +295,9 @@ export default{
             innerType:item.innerType,
             id:item.link//控件或者页面或者弹窗ID
           }
+          if(item.mutualType === 4) {
+            tempObj.target = item.target
+          }
           if(item.mutualType == 5) {// 指令
             tempObj.title = ''
           }
@@ -293,6 +316,9 @@ export default{
       }
     },
     findTitle(item) {
+      if (item.mutualType === 4) { // 链接
+        return '链接'
+      }  
       let tempList = this.pages
       if(item.mutualType > 1) {
         if(item.innerType == 'palette') {
@@ -404,37 +430,41 @@ export default{
     },
     editEvent(e) {
       let tempList = this.pages
-      if(e.type == 1) {
-        tempList = this.pages
-      }else  if(e.type == 2 || e.type == 5) {
-        if(e.innerType == 'palette') {
-          tempList = this.currentPageWidgets
-          this.visibleTypeTab = 2
-        }else{
-          tempList = this.dialogs
-          this.visibleTypeTab = 1
+      if (e.type !== 4) {
+        if(e.type == 1) {
+          tempList = this.pages
+        }else  if(e.type == 2 || e.type == 5) {
+          if(e.innerType == 'palette') {
+            tempList = this.currentPageWidgets
+            this.visibleTypeTab = 2
+          }else{
+            tempList = this.dialogs
+            this.visibleTypeTab = 1
+          }
+          if(e.type == 5) {
+            this.$refs.control.initDefaultData(e)
+          }
+        }else if(e.type == 3) {
+          this.$refs.change.checkCurrent(e)
         }
-        if(e.type == 5) {
-          this.$refs.control.initDefaultData(e)
-        }
-      }else if(e.type == 3) {
-        this.$refs.change.checkCurrent(e)
+        this.isEdit = true
+        tempList.forEach(item=>{
+          if(item.id === e.id) {
+            this.currentEditItem = item
+            item.selected = true
+          }else{
+            item.selected = false
+          }
+        })
+      } else { // 链接 不用处理
+        this.isEdit = true
+        this.$refs.link.inputCurrent(e)
       }
-      this.isEdit = true
-      tempList.forEach(item=>{
-        if(item.id === e.id) {
-          this.currentEditItem = item
-          item.selected = true
-        }else{
-          item.selected = false
-        }
-      })
       if(e.type == 3) {
         this.changeTab(e.type,true)
       }else {
         this.changeTab(e.type)
       }
-            
     },
   },      
 }
@@ -457,6 +487,7 @@ export default{
   .type-tab{
     flex:1;
     text-align:center;
+    cursor: pointer;
     &.selected{
       background:rgba(61,145,247,1);
       border:1px solid rgba(39,122,224,1);

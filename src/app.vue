@@ -61,4 +61,50 @@ export default {
   width:100%;
   height:100%;
 }
+/* 重置iview弹窗样式 */
+.custom-modal {
+  .ivu-modal-header {
+    padding: 0;
+  }
+  .ivu-modal-header-inner {
+    display: block;
+    height: 36px;
+    line-height: 36px;
+    color: #252525;
+    font-size: 12px;
+    font-weight: 400;
+    text-align: center;
+    background: linear-gradient(0deg,#d8d8d8,#e4e3e4);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+  .ivu-modal-close {
+    position: absolute;
+    top: 10px !important;
+    width: 16px;
+    height: 16px;
+    background-image: url('./assets/images/default/closeDialog.png');
+    background-size: cover;
+    i::before{
+      content:''
+    }
+  }
+  .ivu-modal-content {
+    background-color: #f5f5f5;
+  }
+  .ivu-modal {
+    top: 0 !important;
+    height: 100%;
+    overflow: hidden;
+  }
+  .ivu-modal-content {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  &.no-footer{
+    .ivu-modal-footer{
+      display: none;
+    }
+  }
+}
 </style>

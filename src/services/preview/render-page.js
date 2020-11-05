@@ -655,7 +655,7 @@ class PreviewPage {
     if (['image', 'userimage', 'pipeline1', 'pipeline2','pipeline3','beeline','lineChart','gaugeChart','light','progress','triangle','pentagram','buttonSwitch', 'status'].includes(shapeName)) {
       cellHtml.style.backgroundColor = 'transparent'
     }else{
-      if (cell.children.length > 0 && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none') && shapeName != 'tableBox') {
+      if ((cell.children.length > 0 || cell.isGroup) && (cell.fillColor === '#FFFFFF' || cell.fillColor == 'none') && shapeName != 'tableBox') {
         cellHtml.style.backgroundColor = 'transparent'
       } else {
         let tempBgColor = cell.fillColor

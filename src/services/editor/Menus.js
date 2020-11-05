@@ -616,15 +616,15 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                 if (!graph.getModel().isEdge(cell) && !graph.isSwimlane(cell) && graph.getModel().getChildCount(cell) > 0 && shapeName !== 'menulist') {
                     // 选择组合内的节点，增加取消组合操作
                     menu.addSeparator();
-                    this.addMenuItems(menu, ['copy', 'cut', 'paste', '-', 'toFront', 'toBack', '-', 'group', 'ungroup', '-', 'resetHide', 'delete'], null, evt);
+                    this.addMenuItems(menu, ['copy', 'cut', 'paste', '-', 'toFront', 'toBack', '-', 'group', 'ungroup', '-','collectCustom','-', 'resetHide', 'delete'], null, evt);
                 } else {
                     if (shapeName !== "menuCell" && shapeName !== 'tableCell'){ // 菜单或表格单元格
                         this.addMenuItems(menu, ['copy', 'cut', 'paste', '-', 'toFront', 'toBack', '-', 'group', 'ungroup', '-'], null, evt);
                     } 
                     menu.addSeparator();
                     let arr = ['rectangle', 'ellipse', 'button', 'menulist', 'image', 'select', 'tableBox', 'beeline', 'endarrow', 'curve', 'linkTag', 'text', 'light', 'progress', 'pipeline1', 'pipeline2', 'pipeline3', 'userimage', 'gaugeChart', 'lineChart','triangle','pentagram','buttonSwitch']
-                    if (arr.includes(shapeName)) {
-                        this.addMenuItems(menu, ['resetHide', '-', 'delete'], null, evt);
+                    if (arr.includes(shapeName) && shapeName != 'image') {
+                        this.addMenuItems(menu, ['collectCustom','-','resetHide', '-', 'delete',], null, evt);
                     }
                     if (shapeName == 'image') {
                         // 编辑图片
@@ -639,7 +639,7 @@ Menus.prototype.createPopupMenu = function(menu, cell, evt)
                 }
             } else if (graph.getSelectionCount() > 1){
                 menu.addSeparator();
-                this.addMenuItems(menu, ['copy', 'cut', 'paste', '-', 'toFront', 'toBack', '-', 'group', 'ungroup', '-', 'resetHide', 'delete'], null, evt);
+                this.addMenuItems(menu, ['copy', 'cut', 'paste', '-', 'toFront', 'toBack', '-', 'group', 'ungroup', '-','collectCustom','-', 'resetHide', 'delete'], null, evt);
             }
         }
     }

@@ -183,7 +183,7 @@ export default {
       let formData = new FormData()
       formData.append('file', localImage)
       formData.append('materialLibraryId',"");
-      this.myEditorUi.editor.uploadFile(this.myEditorUi, `/${this.urls.materialRightList.url}`, 'POST', formData, function(res) {
+      this.myEditorUi.editor.uploadFile(this.myEditorUi, `${this.urls.materialRightList.url}`, 'POST', formData, function(res) {
         let pageStyle = editor.pages[editor.currentPage].style
         if(!pageStyle) {
           editor.pages[editor.currentPage].style = { }
