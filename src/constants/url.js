@@ -1,4 +1,4 @@
-const isUat = false
+const isUat = process.env.IS_UAT === 'uat'
 const isDev = process.env.NODE_ENV === 'development'
 window.PREFIX_PATH = isDev ? '' : isUat ? '/iot/interface' : '/interface'
 window.API_PREFIX = isDev ? '' : isUat ? '/iot' : ''

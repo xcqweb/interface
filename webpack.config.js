@@ -6,6 +6,7 @@ const {VueLoaderPlugin} = require("vue-loader");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin"); //webpack内置的js压缩插件
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const webpack = require('webpack');
 const postCssPlugin = require("autoprefixer")({
   overrideBrowserslist: ["> 1%", "last 2 versions", "not ie <= 8"]
 });
@@ -106,6 +107,9 @@ module.exports = {
     ]
   },
   plugins: [
+    new webpack.DefinePlugin({
+        IS_UAT: JSON.stringify('uat'),
+    }),
     //new webpack.HotModuleReplacementPlugin(),//或者不添加插件，命令行里面添加hot参数
     new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
