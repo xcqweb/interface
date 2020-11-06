@@ -103,7 +103,7 @@ Sidebar.prototype.init = function(type,cb)
         this.addBasicPalette(()=>{//基础控件
             this.addChartPalette()// 图表控件
             this.addUserPalette(false) // 自定义控件
-            this.addWidgetNameShow() //添加基本控件的悬浮名称显示
+            this.addWidgetNameShow() //添加控件的悬浮名称显示
             cb&&cb()
         })
     }
@@ -594,7 +594,7 @@ Sidebar.prototype.cloneCell = function(cell, value)
 Sidebar.prototype.getSvgImage = function () {
     const editor = this.editorUi.editor;
     const graph = editor.graph;
-    let svgImage = graph.getSvg(graph.background, null, null, true, null, true, null, null, null, false);
+    let svgImage = graph.getSvg(graph.background, null, null, true, null, true, null, null);
     let widthlen = parseInt(svgImage.getAttribute('width'));
     let heightLen = parseInt(svgImage.getAttribute('height'));
     if (graph.backgroundUrl) {
@@ -616,7 +616,7 @@ Sidebar.prototype.addWidgetNameShow = function() {
         shapeScrollTopHeight = parseInt($(".geSidebarContainer-bottom").scrollTop())
     })
     // 鼠标滑过 悬浮控件名字
-    let controlName = ['text', 'beeline', 'rectangle', 'ellipse', 'menulist', 'button', 'tableBox', 'image', 'light', 'pipeline1', 'progress', 'pipeline2', 'pipeline3', 'linkTag', 'lineChart', 'gaugeChart','triangle','pentagram','buttonSwitch', 'status']
+    let controlName = ['text', 'beeline', 'rectangle', 'ellipse', 'menulist', 'button', 'tableBox', 'image', 'light', 'pipeline1', 'progress', 'pipeline2', 'pipeline3', 'linkTag', 'lineChart', 'gaugeChart','triangle','pentagram','buttonSwitch', 'status','userimage']
     let controlNameText = {
         'text': mxResources.get('text'),
         'beeline': mxResources.get('beeline'),
@@ -644,6 +644,7 @@ Sidebar.prototype.addWidgetNameShow = function() {
         evt.stopPropagation()
         $('.suspension-showShapename').remove()
         let shapename = $(this).data('shapename')
+        let imageName = $(this).data('imagename')
         if (shapename && controlName.includes(shapename)) {
             let ele = document.createElement('div')
             ele.className = "suspension-showShapename"
@@ -652,7 +653,14 @@ Sidebar.prototype.addWidgetNameShow = function() {
             ele.style.lineHeight = '30px'
             ele.style.textAlign = 'center'
             ele.style.padding="0 10px"
-            ele.innerText = controlNameText[shapename]
+            if(shapename == 'userimage') {
+              if(imageName) {
+                ele.innerText = imageName.split('.')[0]
+              }
+              console.log(evt,this)
+            } else {
+              ele.innerText = controlNameText[shapename]
+            }
             ele.style.position = 'absolute'
             ele.style.backgroundColor="#ffffff"
             ele.style.border="1px solid #d4d4d4"
@@ -808,31 +816,30 @@ Sidebar.prototype.addChartPalette=function(){
     ]
     this.addPaletteFunctions('chart', mxResources.get('chart'), false, fnsChart)
 }
+function dealSize(width,height,maxSzie = 300){
+  let obj = {w:200,h:150}
+  let ratio = width/height // 宽高比例
+  if(width && width != 1 && height && height != 1) {
+    if(width < maxSzie && height < maxSzie) {
+      obj.w = width
+      obj.h = height
+    } else {
+      if(width > maxSzie) {
+        obj.w = maxSzie
+        obj.h = parseInt(maxSzie/ratio)
+      } else if(height>maxSzie) {
+        obj.h = maxSzie
+        obj.w = parseInt(maxSzie*ratio)
+      }
+    }
+  }
+  return obj
+}
 /*
 用户自定义的组件
 */
 Sidebar.prototype.addUserPalette = function (expand) {
     let arr = []
-    let dealSize=(width,height)=>{
-        let obj = {w:200,h:150}
-        let maxSzie = 300
-        let ratio = width/height // 宽高比例
-        if(width && width != 1 && height && height != 1) {
-          if(width < maxSzie && height < maxSzie) {
-            obj.w = width
-            obj.h = height
-          } else {
-            if(width > maxSzie) {
-              obj.w = maxSzie
-              obj.h = parseInt(maxSzie/ratio)
-            } else if(height>maxSzie) {
-              obj.h = maxSzie
-              obj.w = parseInt(maxSzie*ratio)
-            }
-          }
-        }
-        return obj
-    }
     requestUtil.get(Urls.materialList.url).then((res) => {
         let data = res.records || []
         data.forEach((item) => {
@@ -849,9 +856,10 @@ Sidebar.prototype.addUserPalette = function (expand) {
         })
         axios.all(requests).then(res=>{
             res.forEach(item=>{
-                let array = []
+                let array = [],dealObj
                 item.materialList.forEach(d=>{
-                    array.push(this.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`,dealSize(d.picWidth,d.picHeight).w, dealSize(d.picWidth,d.picHeight).h, '', 'layout图', '', '', '', 'layout', `${d.picUrl}`))
+                  dealObj = dealSize(d.picWidth,d.picHeight)
+                  array.push(this.createVertexTemplateEntry(`shape=userimage;html=1;labelBackgroundColor=#ffffff;image=${d.picUrl};cusName=${d.descript};`,dealObj.w, dealObj.h, '', d.descript, false, false, '', 'layout', `${d.picUrl}`))
                 })
                 this.addPaletteFunctions('user', `${item.libraryName}`, false, array)
             })
@@ -864,7 +872,6 @@ Sidebar.prototype.addUserPalette = function (expand) {
  */
 Sidebar.prototype.addImagePalette = function(id, title, prefix, postfix, items, titles, tags)
 {
-	var showTitles = titles != null;
 	var fns = [];
 	
 	for (var i = 0; i < items.length; i++)
@@ -1021,10 +1028,12 @@ Sidebar.prototype.createItem = function(cells, title, showLabel, showTitle, widt
         return
     }
     var shapeName = tempArr[1]
-    elt.setAttribute('data-shapeName', shapeName)
+    elt.setAttribute('data-shapename', shapeName)
     if (type === 'layout') {
-        elt.style.backgroundImage = `url(${imageurl})`;
-        elt.style.backgroundSize = '36px 36px'
+        elt.setAttribute('data-imagename', title)
+        elt.style.backgroundImage = `url(${imageurl})`
+        let dealRes = dealSize(width,height,36)
+        elt.style.backgroundSize = `${dealRes.w}px ${dealRes.h}px`
     } else {
         elt.style.backgroundImage = 'url(' + window.PREFIX_PATH + '/static/stencils/basic/' + shapeName + '.png)';
     }
@@ -2384,12 +2393,9 @@ Sidebar.prototype.createVertexTemplateFromData = function(data, width, height, t
 {
     var doc = mxUtils.parseXml(this.graph.decompress(data));
     var codec = new mxCodec(doc);
-
     var model = new mxGraphModel();
     codec.decode(doc.documentElement, model);
-	
     var cells = this.graph.cloneCells(model.root.getChildAt(0).children);
-
     return this.createVertexTemplateFromCells(cells, width, height, title, showLabel, showTitle, allowCellsInserted);
 };
 

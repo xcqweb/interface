@@ -52,6 +52,7 @@ addUpRow=上方插入行
 addLowerRow=下方插入行
 addLeftCol=左侧插入列
 addRightCol=右侧插入列
+collectCustom=添加到组件库
 selectPic=选择图片
 sureDel=确定删除
 keepAtLeastOne=至少保留一个

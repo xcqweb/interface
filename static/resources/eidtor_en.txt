@@ -52,6 +52,7 @@ addUpRow=Insert row up
 addLowerRow=Insert row lower
 addLeftCol=Insert column left
 addRightCol=Insert column right
+collectCustom=Add to widget library
 selectPic=Select picture
 sureDel=Sure to delete
 keepAtLeastOne=Keep at least one

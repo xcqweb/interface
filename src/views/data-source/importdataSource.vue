@@ -65,12 +65,14 @@
     <!-- 按钮 -->
     <div slot="footer">
       <Button
+        size="small"
         @click="cancel"
       >
         {{ $t('cancel') }}
       </Button>
       <Button
         type="primary"
+        size="small"
         :loading="loading"
         @click="submit"
       >
@@ -278,31 +280,6 @@ export default {
       this.targetStaAppList = [];
     },
     submit() {
-
-      // if (!this.selectedItems.length) {
-      //     Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
-      //     return;
-      // }
-      // this.loading = true;
-      // const list = [];
-      // const studioId = this.myEditorUi.editor.getApplyId() || window.sessionStorage.getItem('applyId');
-      // const list = !this.selectDeviceList.length ? [] : this.selectDeviceList.map(item => {
-      //   return {
-      //     deviceId: item.id,
-      //     deviceModelId: item.deviceModelId,
-      //     deviceTypeId: item.deviceTypeId,
-      //     studioId: this.studioId,
-      //   }
-      // });
-      // this.requestUtil.post('api/iot-cds/cds/configDevice', {list}).then(() => {
-      //   this.loading = false;
-      //   this.visible = false;
-      //   Message.success(this.$t('dataSource.importSuccessfully'));
-      //   this.$emit('callback');
-      // }).catch(() => {
-      //   this.loading = false;
-      // });
-      // const allAppIds = [...this.targetPreAppList, ...this.targetStaAppList];
       if (!this.selectDeviceList.length && !this.targetPreAppList.length && !this.targetStaAppList.length) {
         Message.error(this.$t('dataSource.atLeaseSelectOneDevice'));
         return;

@@ -2,12 +2,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from '../store/'
-const isDev = process.env.NODE_ENV === 'development'
-const isUat = true
-window.PREFIX_PATH = isDev ? '' : isUat ? '/iot/interface' : '/interface'
-// window.PREFIX_PATH = '/iot/interface'
-window.API_PREFIX = isUat ? '/iot' : ''
-
 Vue.use(Router)
 
 const Preview = () => import("@views/preview.vue")
@@ -40,7 +34,6 @@ let routes = [
 const router = new Router({
   mode:'history',
   routes:routes,
-  // base: process.env.NODE_ENV === 'tanent-uat' ? '/iot' : ''
 })
 router.beforeEach((to,from,next)=>{
   store.commit('clearToken') // 取消请求

@@ -32,11 +32,13 @@
       <div class="params-item">
         <Button
           type="primary"
+          size="small"
           @click="search()"
         >
           {{ $t('search') }}
         </Button>
         <Button
+          size="small"
           @click="reset"
         >
           {{ $t('reset') }}
@@ -71,12 +73,14 @@
     <!-- 按钮 -->
     <div slot="footer">
       <Button
+        size="small"
         @click="cancel"
       >
         {{ $t('cancel') }}
       </Button>
       <Button
         type="primary"
+        size="small"
         :loading="loading"
         @click="submit"
       >

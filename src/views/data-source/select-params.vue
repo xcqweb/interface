@@ -43,12 +43,14 @@
     <!-- 按钮 -->
     <div slot="footer">
       <Button
+        size="small"
         @click="cancel"
       >
         {{ $t('cancel') }}
       </Button>
       <Button
         type="primary"
+        size="small"
         @click="submit"
       >
         {{ $t('confirm') }}

@@ -10,6 +10,7 @@ import {
 } from '../editor/Dialogs'
 import {mxUtils, mxResources}  from '../mxGlobal'
 import router from '../../router'
+import VueEvent from '../VueEvent'
 function Actions(editorUi)
 {
     this.editorUi = editorUi;
@@ -470,9 +471,13 @@ Actions.prototype.init = function()
     {
         deleteCells(true);
     }, null, null, Editor.ctrlKey + '+Delete');
-    this.addAction('duplicate', function()
+    // this.addAction('duplicate', function()
+    // {
+    //   graph.setSelectionCells(graph.duplicateCells());
+    // }, null, null, Editor.ctrlKey + '+D');
+    this.addAction('collectCustom', function()
     {
-        graph.setSelectionCells(graph.duplicateCells());
+      VueEvent.$emit('collectCustomDialog')
     }, null, null, Editor.ctrlKey + '+D');
     this.put('turn', new Action(mxResources.get('turn'), function()
     {

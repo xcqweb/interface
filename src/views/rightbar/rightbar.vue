@@ -21,6 +21,7 @@
       />
       <WidgetStyleMain v-if="showWidgetStyle" />
     </div>
+    <CustomWidget v-model="visible" />
   </div>
 </template>
 <script>
@@ -33,16 +34,26 @@ import WidgetStyleMain from './widget-style-main'
 //const allShapes = ['image','userimage','tableCell','rectangle','ellipse','light','progress','lineChart','gaugeChart','tableBox'] //可以绑定数据的控件
 let shortCutWidgets
 export default {
-  components:{PageStyle,DialogStyle,WidgetStyleMain},
+  components:{
+    PageStyle,DialogStyle,WidgetStyleMain,
+    CustomWidget: resolve => {
+      return require(["./components/custom-widget"], resolve)
+    }
+  },
   data() {
     return {
       showWidgetStyle:false,
       refresh:100,
       inited:false,
+      visible:false,
     }
   },
   created() {},
   mounted() {
+    VueEvent.$off('collectCustomDialog')
+    VueEvent.$on('collectCustomDialog',()=>{
+      this.visible = true
+    })
     VueEvent.$off('refreshCurrentPage')
     VueEvent.$on('refreshCurrentPage',(type)=>{
       this.$store.dispatch('pageTabIndex',type - 1)
@@ -123,6 +134,7 @@ export default {
         this.showWidgetStyle = !(graph.isSelectionEmpty())
         let selectCell = graph.getSelectionCell()
         let isBindData = this.showWidgetStyle
+
         if(this.getCellShapeName(selectCell) == 'label') {//组合 不允许设置样式
           this.showWidgetStyle = false
         }
@@ -140,15 +152,15 @@ export default {
           isBindData = false
         }
         /*  for(let i = 0;i < cells.length;i++) { //批量绑定数据源的，先注释
-                    if(!allShapes.includes(this.getCellShapeName(cells[i]))) {
-                        isBindData = false
-                        break
-                    }
-                    if(i < cells.length - 1 && this.getCellShapeName(cells[i]) != this.getCellShapeName(cells[i + 1])) {
-                        isBindData = false
-                        break
-                    }
-                } */
+            if(!allShapes.includes(this.getCellShapeName(cells[i]))) {
+                isBindData = false
+                break
+            }
+            if(i < cells.length - 1 && this.getCellShapeName(cells[i]) != this.getCellShapeName(cells[i + 1])) {
+                isBindData = false
+                break
+            }
+        } */
         VueEvent.$emit('isShowFootBar',{show:isBindData})
       }
       this.inited = true

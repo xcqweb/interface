@@ -216,7 +216,7 @@
       <div class="materialtabs-footer">
         <template v-if="isActive >= 2 && tabNumber === 0">
           <span>
-            <Upload 
+            <Upload
               :action="picAction"
               :show-upload-list="false"
               :with-credentials="true"
@@ -229,7 +229,7 @@
               :on-success="uploadSucc"
               :data="uploadData"
             >
-              <Button type="primary">{{ $t(madeltext[1]) }}</Button>
+              <Button type="primary" size="small">{{ $t(madeltext[1]) }}</Button>
             </Upload>
           </span>
         </template>
@@ -630,7 +630,7 @@ export default {
           let formData = new FormData()
           formData.append('file', fileList)
           formData.append('materialLibraryId', this.uploadData.materialLibraryId)
-          this.myEditorUi.editor.uploadFile(this.myEditorUi, `/${this.urls.materialRightList.url}`, 'POST', formData, (data)=>{
+          this.myEditorUi.editor.uploadFile(this.myEditorUi, `${this.urls.materialRightList.url}`, 'POST', formData, (data)=>{
             this.uploadSucc(data)
           })
         })
